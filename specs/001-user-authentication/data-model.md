@@ -1,8 +1,11 @@
 # Phase 1 Data Model: User Authentication & Access Control
 
-Domain entities live in `lib/core/access/` (shared kernel) and
-`lib/features/auth/domain/entities/` (feature-specific), as immutable
-`freezed` classes mapped from the generated OpenAPI DTOs in
+Domain entities live in `lib/core/access/` (shared kernel: `AccessRight`,
+`SystemObject`, `Privilege`, `UserSettings`, `User`/`UserSummary`,
+`AccessControlService` — consumed by every feature) and
+`lib/features/auth/domain/entities/` (feature-specific: `AuthState`/
+`AuthSession`, this feature's session-lifecycle wrapper around `User`), as
+immutable `freezed` classes mapped from the generated OpenAPI DTOs in
 `lib/generated/openapi/` (see [contracts/mbe-api-auth-users.md](contracts/mbe-api-auth-users.md)).
 No entity here is persisted locally (constitution §VII) beyond the access
 token (`AuthSession.token`) and the user's theme preference, which is outside
@@ -56,7 +59,7 @@ Maps from `PrivilegeResponse` / `PrivilegeUpdate`.
 **Validation**: `rawValue` MUST be in `0..15` (matches `PrivilegeUpdate.privileges`
 `minimum: 0, maximum: 15`).
 
-## UserSettings (`lib/core/access/user_settings.dart` or `features/auth/domain`)
+## UserSettings (`lib/core/access/user_settings.dart`)
 
 Maps `UserSettingsResponse` / `UserSettingsUpdate`.
 
@@ -70,7 +73,7 @@ Read-only display for this feature (FR-011); editing is part of the admin
 user-edit form (FR-012) but the values themselves are master-data references
 not yet modeled by other features — treated as opaque IDs here.
 
-## User (`lib/features/auth/domain/entities/user.dart`)
+## User (`lib/core/access/user.dart`)
 
 Maps `UserResponse` (full) and `UserListItem` (summary, for the admin list —
 modeled as a separate `UserSummary` to avoid optional/partial fields).

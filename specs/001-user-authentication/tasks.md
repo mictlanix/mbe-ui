@@ -63,8 +63,9 @@ contains a `dart-dio` client covering `auth`/`users`.
 ## Phase 2: Foundational (Blocking Prerequisites)
 
 **Purpose**: Shared kernel (`core/`), domain entities, session state, access
-control, network/storage, and app shell that ALL three user stories depend
-on. No user-story screen can be meaningfully implemented before this phase.
+control, network/storage, shared widgets, and app shell that ALL three user
+stories depend on. No user-story screen can be meaningfully implemented
+before this phase.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
@@ -80,9 +81,9 @@ on. No user-story screen can be meaningfully implemented before this phase.
   `lib/core/access/user_settings.dart` (data-model.md "UserSettings").
 - [ ] T008 [P] Create `Privilege` freezed entity (`systemObject`, `rawValue`,
   `allowCreate/Read/Update/Delete`, `0..15` validation) mapping
-  `PrivilegeResponse`/`PrivilegeUpdate` in
-  `lib/features/auth/domain/entities/privilege.dart` (data-model.md
-  "Privilege").
+  `PrivilegeResponse`/`PrivilegeUpdate` in `lib/core/access/privilege.dart`
+  (data-model.md "Privilege") — shared kernel per constitution §I, consumed
+  by `AccessControlService` (T017).
 - [ ] T009 [P] Create the `AppError` domain error hierarchy
   (`ValidationError`, `AuthError`, `NotFoundError`, `ServerError`,
   `NetworkError`) in `lib/core/errors/app_error.dart` (data-model.md "Domain
@@ -91,9 +92,10 @@ on. No user-story screen can be meaningfully implemented before this phase.
   `read`/`write`/`clear` for the access token) in
   `lib/core/storage/token_storage.dart` (research.md §5).
 - [ ] T011 [P] Create `User`/`UserSummary` freezed entities mapping
-  `UserResponse`/`UserListItem` in
-  `lib/features/auth/domain/entities/user.dart` (data-model.md "User" /
-  "UserSummary"); depends on T007, T008 for field types.
+  `UserResponse`/`UserListItem` in `lib/core/access/user.dart` (data-model.md
+  "User" / "UserSummary") — shared kernel per constitution §I, consumed by
+  `AccessControlService` (T017) and `AuthState` (T012); depends on T007, T008
+  for field types.
 - [ ] T012 [P] Create the `AuthState` sealed/freezed union
   (`unauthenticated(reason)`, `authenticating`, `authenticated(token, user)`)
   and `SignOutReason` in `lib/features/auth/domain/entities/auth_session.dart`
@@ -123,18 +125,22 @@ on. No user-story screen can be meaningfully implemented before this phase.
   thresholds) in `lib/core/layout/breakpoints.dart` (constitution §VI).
 - [ ] T019 [P] Create shared `ErrorBanner` widget (renders `AppError` /
   `ValidationError` field messages) in `lib/core/widgets/error_banner.dart`.
-- [ ] T020 [P] Create `AppTheme` (`ColorScheme.fromSeed`, light/dark theme
+- [ ] T020 [P] Create a shared `DataTableView` widget (sortable columns,
+  optional row actions, used by any feature's list screens) in
+  `lib/core/widgets/data_table_view.dart` (constitution §VI — shared data
+  tables MUST live in `core/widgets/`, not be reimplemented per module).
+- [ ] T021 [P] Create `AppTheme` (`ColorScheme.fromSeed`, light/dark theme
   data, `ThemeMode` provider persisted via `shared_preferences`) in
   `lib/app/theme/app_theme.dart` (constitution §V).
-- [ ] T021 Create the `GoRouter` instance and `redirect` guard skeleton
+- [ ] T022 Create the `GoRouter` instance and `redirect` guard skeleton
   (unauthenticated → `/auth/login`, authenticated-on-`/auth/login` →
   `/`, `refreshListenable` wired to `authNotifierProvider`) in
   `lib/app/router/app_router.dart` (contracts/routes.md "Redirect guard
   summary"; depends on T016, T017).
-- [ ] T022 Create `lib/app/app.dart` (`MaterialApp.router` wiring
+- [ ] T023 Create `lib/app/app.dart` (`MaterialApp.router` wiring
   `app_router.dart`, `AppTheme`, `flutter_localizations`/`intl` for `es-MX`)
   and update `lib/main.dart` to bootstrap `ProviderScope` + run the app
-  (depends on T020, T021).
+  (depends on T021, T022).
 
 **Checkpoint**: App builds and launches to a redirect-only shell (no screens
 yet); `AuthNotifier`/`AccessControlService`/router guard are wired and ready
@@ -155,50 +161,52 @@ expiry/revocation via `401`.
 
 ### Tests for User Story 1
 
-- [ ] T023 [P] [US1] `AuthNotifier` state-transition tests (sign in success/
+- [ ] T024 [P] [US1] `AuthNotifier` state-transition tests (sign in success/
   failure, sign out, 401 → `unauthenticated(sessionInvalid)`, app-start
   restore) in `test/unit/features/auth/auth_notifier_test.dart` (mocktail
   `AuthRepository`/`TokenStorage` fakes).
-- [ ] T024 [P] [US1] `AccessControlService.can()` truth table tests
+- [ ] T025 [P] [US1] `AccessControlService.can()` truth table tests
   (administrator override, missing privilege, partial bitmask, unauthenticated
   → `false`) in `test/unit/features/auth/access_control_test.dart`.
-- [ ] T025 [P] [US1] `AuthRepositoryImpl.login`/`.me` tests covering `200`,
+- [ ] T026 [P] [US1] `AuthRepositoryImpl.login`/`.me` tests covering `200`,
   `401`, `422`, `5xx`, network-error → `AppError` mapping in
   `test/unit/features/auth/auth_repository_impl_test.dart`.
-- [ ] T026 [P] [US1] Widget test for `LoginScreen` (empty-field validation,
+- [ ] T027 [P] [US1] Widget test for `LoginScreen` (empty-field validation,
   generic error display on `401`/`422`, no field-specific messaging per
   FR-008) in `test/widget/features/auth/login_screen_test.dart`.
-- [ ] T027 [P] [US1] Integration test: sign in (valid/invalid), permission-
+- [ ] T028 [P] [US1] Integration test: sign in (valid/invalid), permission-
   gated nav visibility for admin vs. non-admin, sign out, in
   `test/integration/auth_flow_test.dart` (quickstart Story 1 scenarios 1, 2,
-  3, 4, 6, 7; run against local mbe-api).
+  4, 6, 7 — run against local mbe-api). Scenario 3 (session expiry) requires
+  a separate mbe-api restart with `JWT_ACCESS_TOKEN_EXPIRE_MINUTES=0` and is
+  validated manually per quickstart.md, not in this automated suite.
 
 ### Implementation for User Story 1
 
-- [ ] T028 [P] [US1] Create `LoginController` (plain `Notifier`:
+- [ ] T029 [P] [US1] Create `LoginController` (plain `Notifier`:
   `username`, `password`, `submitting`, `error`) in
   `lib/features/auth/presentation/login/login_controller.dart`
   (data-model.md "Login form state").
-- [ ] T029 [US1] Create `LoginScreen` (form, generic error banner via
+- [ ] T030 [US1] Create `LoginScreen` (form, generic error banner via
   `ErrorBanner`, calls `AuthNotifier.signIn`) in
   `lib/features/auth/presentation/login/login_screen.dart` (depends on
-  T028).
-- [ ] T030 [US1] Create a minimal home screen with a navigation list gated by
+  T029).
+- [ ] T031 [US1] Create a minimal home screen with a navigation list gated by
   `accessControlProvider.can(object, AccessRight.read)` per visible
   `SystemObject` (FR-005/FR-006/FR-007), plus a sign-out action (FR-004), in
   `lib/features/home/presentation/home_screen.dart` (depends on T017).
-- [ ] T031 [US1] Register the `/auth/login` and `/` routes in
+- [ ] T032 [US1] Register the `/auth/login` and `/` routes in
   `lib/app/router/app_router.dart`, completing the redirect guard's
   authenticated/unauthenticated branches from contracts/routes.md (depends
-  on T021, T029, T030).
-- [ ] T032 [US1] Wire app-start session restore: call `AuthNotifier`'s
+  on T022, T030, T031).
+- [ ] T033 [US1] Wire app-start session restore: call `AuthNotifier`'s
   restore path from `lib/app/app.dart`/`main.dart` so a persisted token in
   `TokenStorage` resolves to `authenticated` (via `/auth/me`) or
-  `unauthenticated` before the first route resolves (depends on T016, T022).
-- [ ] T033 [US1] Verify/wire the `401` path end-to-end: `auth_interceptor.dart`
+  `unauthenticated` before the first route resolves (depends on T016, T023).
+- [ ] T034 [US1] Verify/wire the `401` path end-to-end: `auth_interceptor.dart`
   signals `AuthNotifier` → `unauthenticated(sessionInvalid)` →
   `refreshListenable` triggers `redirect` to `/auth/login` (FR-003, SC-003;
-  depends on T013, T016, T021).
+  depends on T013, T016, T022).
 
 **Checkpoint**: User Story 1 is fully functional and independently testable —
 sign in, permission-gated landing screen, sign out, and session
@@ -218,41 +226,41 @@ request → admin-issued token → `/auth/recover` confirm.
 
 ### Tests for User Story 2
 
-- [ ] T034 [P] [US2] `AuthRepositoryImpl.changePassword`/`.recoverConfirm`
+- [ ] T035 [P] [US2] `AuthRepositoryImpl.changePassword`/`.recoverConfirm`
   tests covering `204`, `422` (wrong current password / short new password /
   invalid recovery token) in
-  `test/unit/features/auth/auth_repository_impl_test.dart` (extends T025's
+  `test/unit/features/auth/auth_repository_impl_test.dart` (extends T026's
   file).
-- [ ] T035 [P] [US2] Widget test for `ChangePasswordScreen` (validation,
+- [ ] T036 [P] [US2] Widget test for `ChangePasswordScreen` (validation,
   rejection on wrong current password, success path) in
   `test/widget/features/auth/change_password_screen_test.dart`.
-- [ ] T036 [P] [US2] Widget test for `ForgotPasswordScreen` (recovery request
+- [ ] T037 [P] [US2] Widget test for `ForgotPasswordScreen` (recovery request
   informational message; recovery-token confirm form validation/success) in
   `test/widget/features/auth/forgot_password_screen_test.dart`.
 
 ### Implementation for User Story 2
 
-- [ ] T037 [US2] Add `changePassword(oldPassword, newPassword)` and
+- [ ] T038 [US2] Add `changePassword(oldPassword, newPassword)` and
   `recoverConfirm(recoveryToken, newPassword)` to `AuthRepository`
   (`lib/features/auth/domain/repositories/auth_repository.dart`) and
   `AuthRepositoryImpl` (`lib/features/auth/data/auth_repository_impl.dart`)
   per contracts/mbe-api-auth-users.md `POST /api/v1/auth/change-password` and
   `POST /api/v1/auth/recover` (depends on T015).
-- [ ] T038 [P] [US2] Create `AccountController` (plain `Notifier` for
+- [ ] T039 [P] [US2] Create `AccountController` (plain `Notifier` for
   change-password and recovery-confirm form state, `newPassword minLength
   6`) in `lib/features/auth/presentation/account/account_controller.dart`
-  (data-model.md "Password-change / recovery form state"; depends on T037).
-- [ ] T039 [US2] Create `ChangePasswordScreen` in
+  (data-model.md "Password-change / recovery form state"; depends on T038).
+- [ ] T040 [US2] Create `ChangePasswordScreen` in
   `lib/features/auth/presentation/account/change_password_screen.dart`
-  (depends on T038).
-- [ ] T040 [US2] Create `ForgotPasswordScreen` (request-help message +
+  (depends on T039).
+- [ ] T041 [US2] Create `ForgotPasswordScreen` (request-help message +
   recovery-token confirm form) in
   `lib/features/auth/presentation/account/forgot_password_screen.dart`
-  (depends on T038).
-- [ ] T041 [US2] Register `/auth/account/password` (any authenticated user)
+  (depends on T039).
+- [ ] T042 [US2] Register `/auth/account/password` (any authenticated user)
   and `/auth/recover` (unauthenticated + recovery-token holders) routes in
-  `lib/app/router/app_router.dart` per contracts/routes.md (depends on T039,
-  T040).
+  `lib/app/router/app_router.dart` per contracts/routes.md (depends on T040,
+  T041).
 
 **Checkpoint**: User Stories 1 AND 2 both work independently — password
 self-service is fully usable on top of the Story 1 session/auth foundation.
@@ -272,53 +280,62 @@ deactivate it, and confirm `/users` is unreachable for a non-administrator.
 
 ### Tests for User Story 3
 
-- [ ] T042 [P] [US3] `UserRepositoryImpl` tests for `list`/`get`/`create`/
-  `update`/`delete`/`recoverPassword` covering `200`/`201`/`204`/`404`/`422`
-  → `AppError` mapping in
-  `test/unit/features/auth/user_repository_impl_test.dart`.
-- [ ] T043 [P] [US3] `UsersController` tests: form state → `UserCreate`/
+- [ ] T043 [P] [US3] `UserRepositoryImpl` tests for `list`/`get`/`create`/
+  `update`/`recoverPassword` covering `200`/`201`/`204`/`404`/`422` →
+  `AppError` mapping in
+  `test/unit/features/auth/user_repository_impl_test.dart`. (`DELETE
+  /api/v1/users/{user_id}` is out of scope for this feature per
+  contracts/mbe-api-auth-users.md — not included here.)
+- [ ] T044 [P] [US3] `UsersController` tests: form state → `UserCreate`/
   `UserUpdate` mapping (incl. `privileges: PrivilegeUpdate[]` from the grid)
   in `test/unit/features/auth/users_controller_test.dart`.
-- [ ] T044 [P] [US3] Widget test for `PrivilegesGrid` (renders one row per
+- [ ] T045 [P] [US3] Widget test for `PrivilegesGrid` (renders one row per
   `SystemObject`, four C/R/U/D checkboxes, edits update `0..15` bitmask) in
   `test/widget/features/auth/privileges_grid_test.dart`.
-- [ ] T045 [P] [US3] Widget test for `UsersListScreen` (renders accounts with
+- [ ] T046 [P] [US3] Widget test for `UsersListScreen` (renders accounts with
   status/administrator flag; route hidden/redirected for a user without
   `Users` `read`) in `test/widget/features/auth/users_list_screen_test.dart`.
 
 ### Implementation for User Story 3
 
-- [ ] T046 [P] [US3] Define the `UserRepository` interface (`list`, `get`,
-  `create`, `update`, `delete`, `recoverPassword`) in
+- [ ] T047 [P] [US3] Define the `UserRepository` interface (`list`, `get`,
+  `create`, `update`, `recoverPassword`) in
   `lib/features/auth/domain/repositories/user_repository.dart` per
-  contracts/mbe-api-auth-users.md "Users" section.
-- [ ] T047 [US3] Implement `UserRepositoryImpl` in
+  contracts/mbe-api-auth-users.md "Users" section. (`delete` is intentionally
+  omitted — `DELETE /api/v1/users/{user_id}` is out of scope for this
+  feature; deactivation via `update(disabled: true)` is the FR-012/FR-014
+  path.)
+- [ ] T048 [US3] Implement `UserRepositoryImpl` in
   `lib/features/auth/data/user_repository_impl.dart` using the generated
   `lib/generated/openapi/` client, mapping `UserListResponse`/`UserResponse`
   to `UserSummary`/`User` and `UserCreate`/`UserUpdate`/`PrivilegeUpdate` from
-  domain entities (depends on T003, T011, T008, T046).
-- [ ] T048 [US3] Create `UsersController` (admin user-form state per
+  domain entities (depends on T003, T011, T008, T047).
+- [ ] T049 [US3] Create `UsersController` (admin user-form state per
   data-model.md "Admin user-form state": list/selection state, create/edit
-  form fields, privileges-grid state, save/delete/recover-password actions)
-  in `lib/features/auth/presentation/admin/users_controller.dart` (depends on
-  T047).
-- [ ] T049 [US3] Create `PrivilegesGrid` widget (one row per `SystemObject`
+  form fields, privileges-grid state, save/recover-password actions) in
+  `lib/features/auth/presentation/admin/users_controller.dart`. On a
+  successful `update` for the signed-in administrator's own `user_id`,
+  refresh `AuthNotifier`'s in-memory `AuthState.authenticated.user` per
+  contracts/mbe-api-auth-users.md "PUT /api/v1/users/{user_id}" self-refresh
+  note (FR-014) (depends on T048, T016).
+- [ ] T050 [US3] Create `PrivilegesGrid` widget (one row per `SystemObject`
   from T006, four C/R/U/D checkboxes bound to `Privilege.rawValue`) in
   `lib/features/auth/presentation/admin/privileges_grid.dart` (depends on
   T005, T006, T008).
-- [ ] T050 [US3] Create `UsersListScreen` (FR-011: list with status +
-  administrator flag, "New" action gated by `can(Users, create)`) in
+- [ ] T051 [US3] Create `UsersListScreen` (FR-011: list with status +
+  administrator flag using the shared `DataTableView` from T020, "New"
+  action gated by `can(Users, create)`) in
   `lib/features/auth/presentation/admin/users_list_screen.dart` (depends on
-  T048).
-- [ ] T051 [US3] Create `UserDetailScreen` (create + edit modes: account
+  T020, T049).
+- [ ] T052 [US3] Create `UserDetailScreen` (create + edit modes: account
   fields, activate/deactivate toggle, embedded `PrivilegesGrid`, "Recover
   password" action surfacing `recovery_token`/`expires_at`) in
   `lib/features/auth/presentation/admin/user_detail_screen.dart` (depends on
-  T048, T049).
-- [ ] T052 [US3] Register `/users`, `/users/new`, and `/users/:userId` routes
+  T049, T050).
+- [ ] T053 [US3] Register `/users`, `/users/new`, and `/users/:userId` routes
   in `lib/app/router/app_router.dart`, gated by `can(SystemObject.Users,
-  AccessRight.read|create|update)` per contracts/routes.md (depends on T050,
-  T051, T017).
+  AccessRight.read|create|update)` per contracts/routes.md (depends on T051,
+  T052, T017).
 
 **Checkpoint**: All three user stories are independently functional —
 administrators can fully manage accounts/permissions, and permission changes
@@ -330,15 +347,15 @@ are reflected for affected users on their next action (FR-014).
 
 **Purpose**: Final consistency pass across all three stories.
 
-- [ ] T053 [P] Run `dart run build_runner build --delete-conflicting-outputs`
+- [ ] T054 [P] Run `dart run build_runner build --delete-conflicting-outputs`
   and resolve any `freezed`/`json_serializable`/`riverpod_generator` codegen
   errors across `lib/`.
-- [ ] T054 [P] Add `es-MX` localized strings for all auth/admin screens
-  introduced in Phases 3-5 (constitution §"Technology Stack",
-  `flutter_localizations` + `intl`).
-- [ ] T055 Run `flutter analyze` across `lib/core/`, `lib/app/`,
+- [ ] T055 [P] Add `es-MX` localized strings (`.arb` files under `lib/l10n/`,
+  e.g. `app_es.arb`) for all auth/admin screens introduced in Phases 3-5
+  (constitution §"Technology Stack" / §V — `flutter_localizations` + `intl`).
+- [ ] T056 Run `flutter analyze` across `lib/core/`, `lib/app/`,
   `lib/features/auth/`, `lib/features/home/` and resolve all warnings/errors.
-- [ ] T056 Execute [quickstart.md](./quickstart.md) end-to-end against a local
+- [ ] T057 Execute [quickstart.md](./quickstart.md) end-to-end against a local
   mbe-api instance (Stories 1-3 validation scenarios) and fix any
   discrepancies found.
 
@@ -355,17 +372,18 @@ are reflected for affected users on their next action (FR-014).
   US2/US3.
 - **User Story 2 (Phase 4)**: Depends on Phase 2 completion (`AuthRepository`/
   `AuthNotifier` from T015/T016). Independent of US1/US3 at the code level,
-  but T041 adds routes alongside T031's router edits — coordinate to avoid
+  but T042 adds routes alongside T032's router edits — coordinate to avoid
   merge conflicts in `app_router.dart`.
 - **User Story 3 (Phase 5)**: Depends on Phase 2 completion (`User`/
-  `Privilege`/`SystemObject`/`AccessRight` from T006/T008/T011, and
-  `accessControlProvider` from T017). Independent of US1/US2 at the code
-  level; T052 also edits `app_router.dart`.
+  `Privilege`/`SystemObject`/`AccessRight` from T006/T008/T011, the shared
+  `DataTableView` from T020, and `accessControlProvider` from T017).
+  Independent of US1/US2 at the code level; T053 also edits
+  `app_router.dart`.
 - **Polish (Phase 6)**: Depends on whichever of Phases 3-5 are complete.
 
 ### Within Each User Story
 
-- Tests (T023-T027, T034-T036, T042-T045) MUST be written and FAIL before
+- Tests (T024-T028, T035-T037, T043-T046) MUST be written and FAIL before
   their corresponding implementation tasks.
 - Entities/repositories before controllers; controllers before screens;
   screens before router registration.
@@ -374,7 +392,7 @@ are reflected for affected users on their next action (FR-014).
 
 - Phase 1: T002 and T004 in parallel; T001 first, T003 after T002.
 - Phase 2: T005-T012 (entities/enums/errors/storage) can all run in parallel;
-  T013-T022 follow the dependency chain noted in each task.
+  T013-T023 follow the dependency chain noted in each task.
 - Once Phase 2 is complete, Phases 3, 4, and 5 can proceed in parallel by
   different contributors (see router-edit coordination note above).
 - All `[P]` test tasks within a story can run in parallel.
@@ -423,12 +441,12 @@ Task: "LoginController in lib/features/auth/presentation/login/login_controller.
 
 - `[P]` tasks touch different files with no unmet dependencies.
 - `[Story]` labels (US1/US2/US3) map to spec.md priorities P1/P2/P3.
-- `app_router.dart` is edited by T021 (Foundational) and again by T031
-  (US1), T041 (US2), T052 (US3) — these three are NOT parallel with each
+- `app_router.dart` is edited by T022 (Foundational) and again by T032
+  (US1), T042 (US2), T053 (US3) — these three are NOT parallel with each
   other; sequence or coordinate them even though they belong to different
   stories.
 - `auth_repository_impl.dart` / `auth_repository.dart` are edited by T015
-  (Foundational, `login`/`me`) and T037 (US2, `changePassword`/
+  (Foundational, `login`/`me`) and T038 (US2, `changePassword`/
   `recoverConfirm`) — sequence these two.
 - Commit after each task or logical group; stop at any checkpoint to validate
   a story independently.

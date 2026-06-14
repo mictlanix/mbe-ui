@@ -66,7 +66,7 @@ feature (sales, inventory, invoicing, accounting) will reuse.
 
 | Principle | Status | Notes |
 |---|---|---|
-| I. Feature-First Layered Architecture | ✅ PASS | `lib/features/auth/{data,domain,presentation}`. `User`/`Privilege`/`SystemObject`/`AccessRight` are placed in `core/` (not `features/auth/domain`) because every feature consumes them — consistent with the "shared kernel" carve-out in DESIGN.md §5 and Principle I. |
+| I. Feature-First Layered Architecture | ✅ PASS | `lib/features/auth/{data,domain,presentation}`. `User`/`UserSummary`/`Privilege`/`SystemObject`/`AccessRight`/`UserSettings` are placed in `lib/core/access/` (shared kernel) because `AccessControlService` and every feature's RBAC checks consume them; only `AuthState`/`AuthSession` (this feature's session-lifecycle wrapper around `User`) stays in `features/auth/domain/entities/` — consistent with the "shared kernel" carve-out in DESIGN.md §5 and Principle I. |
 | II. Riverpod for State & DI | ✅ PASS | `AuthNotifier` (`AsyncNotifier<AuthState>`) for session; derived `accessControlProvider` for `can()`; plain `Notifier`s for login/password/user-form state. |
 | III. Contract-Driven API Integration | ✅ PASS | `dart-dio` client generated from mbe-api's `/openapi.json` (`auth`, `users` paths — confirmed live, see research.md). `dio` interceptor for bearer token + 401 handling. Errors mapped to `ValidationError`/`NotFoundError`/`AuthError`/`ServerError`/`NetworkError`. |
 | IV. Deny-by-Default RBAC | ✅ PASS | This feature introduces the `SystemObject`/`AccessRight` enums and `can()` provider that Principle IV requires; `Users = 92` gates the admin screens this feature adds. |
@@ -113,25 +113,30 @@ lib/
 │   ├── access/
 │   │   ├── system_object.dart   # SystemObject enum (mirrors mbe-api/legacy codes)
 │   │   ├── access_right.dart    # AccessRight flags (Create/Read/Update/Delete)
+│   │   ├── user_settings.dart   # UserSettings (store/POS/cash-drawer ids)
+│   │   ├── privilege.dart       # freezed: Privilege
+│   │   ├── user.dart            # freezed: User, UserSummary — shared current-user identity
 │   │   └── access_control.dart  # can(SystemObject, AccessRight) provider
 │   ├── storage/
 │   │   └── token_storage.dart   # flutter_secure_storage wrapper
 │   ├── layout/
 │   │   └── breakpoints.dart     # centralized LayoutBuilder breakpoints
 │   └── widgets/
-│       └── error_banner.dart    # shared error-display widget
+│       ├── error_banner.dart    # shared error-display widget
+│       └── data_table_view.dart # shared sortable list/table widget (constitution §VI)
 ├── generated/
 │   └── openapi/                 # openapi-generator (dart-dio) output — auth + users APIs/models
 └── features/
+    ├── home/
+    │   └── presentation/
+    │       └── home_screen.dart # minimal landing screen, permission-gated nav (routes.md "/")
     └── auth/
         ├── data/
         │   ├── auth_repository_impl.dart
         │   └── user_repository_impl.dart
         ├── domain/
         │   ├── entities/
-        │   │   ├── auth_session.dart   # freezed: AuthState (unauthenticated/authenticating/authenticated/error)
-        │   │   ├── user.dart            # freezed: User, UserSummary, UserSettings
-        │   │   └── privilege.dart       # freezed: Privilege
+        │   │   └── auth_session.dart   # freezed: AuthState (unauthenticated/authenticating/authenticated), embeds core User
         │   └── repositories/
         │       ├── auth_repository.dart # interface
         │       └── user_repository.dart # interface
