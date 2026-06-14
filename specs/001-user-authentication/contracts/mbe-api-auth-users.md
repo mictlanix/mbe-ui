@@ -21,12 +21,22 @@ this file should be updated.
   `UserResponse` → `AuthState.authenticated`. On `422`/`401`, surface FR-008's
   generic error and stay `unauthenticated`.
 
-  > **Blocked on `mictlanix/mbe-api#1`**: `GET /api/v1/auth/me` does not exist
-  > yet. The originally-assumed fallback (decode the JWT `sub` claim and call
-  > `GET /api/v1/users/{user_id}`) only works for administrators — every
-  > `/users/*` endpoint requires `require_admin`, so a non-admin gets `403`
-  > fetching their own record (see DESIGN.md §7). This feature's session
-  > bootstrap depends on `/auth/me` shipping first.
+### `GET /api/v1/auth/me`
+
+- Resolves `mictlanix/mbe-api#1` — now live (`mbe-api v0.1.0` openapi.json,
+  confirmed `http://127.0.0.1:8000/openapi.json`).
+- Request: no body; `Authorization: Bearer <access_token>` (gated by
+  `get_current_user` only — works for non-administrators, unlike
+  `/users/{user_id}`).
+- Response `200`: `UserResponse { user_id, email, employee_id?,
+  administrator, disabled, session_version, settings?, privileges:
+  PrivilegeResponse[] }`.
+- Response `401`: invalid/expired token ⇒
+  `AuthState.unauthenticated(reason: sessionInvalid)`.
+- mbe-ui behavior: the session-bootstrap call after login (see above) and on
+  app start when restoring a persisted token (`TokenStorage`). Supersedes the
+  previously-assumed "decode JWT `sub` → `GET /users/{user_id}`" pattern,
+  which only worked for administrators.
 
 ### `POST /api/v1/auth/change-password`
 
@@ -61,9 +71,9 @@ this file should be updated.
 ### `GET /api/v1/users/{user_id}`
 
 - Response `200`: `UserResponse { user_id, email, employee_id?, administrator, disabled, session_version, settings?, privileges: PrivilegeResponse[] }`.
-- mbe-ui behavior: (a) called once at login for the current user (session
-  bootstrap, DESIGN.md §3.2); (b) called by the admin Users detail screen for
-  any user, gated by `can(SystemObject.Users, AccessRight.read)`.
+- mbe-ui behavior: called by the admin Users detail screen for any user,
+  gated by `can(SystemObject.Users, AccessRight.read)`. Session bootstrap
+  uses `GET /api/v1/auth/me` instead (see Authentication section above).
 
 ### `PUT /api/v1/users/{user_id}`
 
@@ -105,7 +115,3 @@ display.
 
 - `/auth/refresh` does not exist and the generated client MUST NOT assume
   one. `401` ⇒ `AuthState.unauthenticated(reason: sessionInvalid)`.
-- `GET /api/v1/auth/me` does not exist yet — tracked as
-  `mictlanix/mbe-api#1` and required for session bootstrap (see the
-  `POST /api/v1/auth/login` section above). This is a blocking dependency
-  for this feature, not out of scope.

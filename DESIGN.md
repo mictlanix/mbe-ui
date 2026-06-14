@@ -374,13 +374,13 @@ re-defining these entities.
   server-side revocation. Decide whether this is sufficient long-term (simple
   re-login on expiry/401) or whether mbe-api should add a refresh-token
   endpoint before other modules build on the same `dio` interceptor pattern.
-- **RBAC integration details** (§3.7): the "decode JWT `sub` →
+- ~~**RBAC integration details** (§3.7): the "decode JWT `sub` →
   `GET /users/{user_id}` for `privileges`" pattern does not work for
-  non-administrators — every `/users/*` endpoint requires `require_admin`,
-  so a non-admin user gets `403` fetching their own profile/privileges.
-  Tracked as `mictlanix/mbe-api#1` (add `GET /api/v1/auth/me`, gated only by
-  `get_current_user`); mbe-ui's session provider should consume `/auth/me`
-  once available.
+  non-administrators~~ **Resolved**: `mictlanix/mbe-api#1` shipped
+  `GET /api/v1/auth/me` → `UserResponse`, gated only by `get_current_user`
+  (works for non-administrators). mbe-ui's session provider consumes
+  `/auth/me` for bootstrap (see
+  [contracts/mbe-api-auth-users.md](specs/001-user-authentication/contracts/mbe-api-auth-users.md)).
 - Direct ESC-POS/thermal receipt printer access from cashier stations (§3.6)
   — browser/desktop print dialogs can't drive thermal printers directly;
   needs its own investigation if required for launch.
