@@ -17,9 +17,16 @@ this file should be updated.
   DESIGN.md §3.2).
 - Response `200`: `TokenResponse { access_token: string, token_type: "bearer" }`.
 - Response `422`: `HTTPValidationError`.
-- mbe-ui behavior: on `200`, decode the JWT `sub` claim (user id) and call
-  `GET /api/v1/users/{user_id}` to obtain `UserResponse` → `AuthState.authenticated`.
-  On `422`/`401`, surface FR-008's generic error and stay `unauthenticated`.
+- mbe-ui behavior: on `200`, call `GET /api/v1/auth/me` to obtain
+  `UserResponse` → `AuthState.authenticated`. On `422`/`401`, surface FR-008's
+  generic error and stay `unauthenticated`.
+
+  > **Blocked on `mictlanix/mbe-api#1`**: `GET /api/v1/auth/me` does not exist
+  > yet. The originally-assumed fallback (decode the JWT `sub` claim and call
+  > `GET /api/v1/users/{user_id}`) only works for administrators — every
+  > `/users/*` endpoint requires `require_admin`, so a non-admin gets `403`
+  > fetching their own record (see DESIGN.md §7). This feature's session
+  > bootstrap depends on `/auth/me` shipping first.
 
 ### `POST /api/v1/auth/change-password`
 
@@ -96,5 +103,9 @@ display.
 
 ## Out of scope for this feature
 
-- No `/auth/refresh` or `/me` endpoint exists (DESIGN.md §7 open question) —
-  the generated client MUST NOT assume one. `401` ⇒ `AuthState.unauthenticated(reason: sessionInvalid)`.
+- `/auth/refresh` does not exist and the generated client MUST NOT assume
+  one. `401` ⇒ `AuthState.unauthenticated(reason: sessionInvalid)`.
+- `GET /api/v1/auth/me` does not exist yet — tracked as
+  `mictlanix/mbe-api#1` and required for session bootstrap (see the
+  `POST /api/v1/auth/login` section above). This is a blocking dependency
+  for this feature, not out of scope.

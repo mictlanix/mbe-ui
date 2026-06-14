@@ -27,10 +27,18 @@ which exposes exactly the paths DESIGN.md §3.2/§3.3 describes:
 - `DELETE /api/v1/users/{user_id}` → `204`.
 - `POST /api/v1/users/{user_id}/recover-password` →
   `RecoverPasswordAdminResponse {recovery_token, expires_at}`.
+- `GET /api/v1/auth/me` — **does not exist yet**, tracked as
+  `mictlanix/mbe-api#1`. Required for session bootstrap (see
+  [contracts/mbe-api-auth-users.md](contracts/mbe-api-auth-users.md)): every
+  `/users/*` endpoint requires `require_admin`, so a non-admin user gets
+  `403` fetching their own record via `GET /api/v1/users/{user_id}`. This
+  feature is blocked on `/auth/me` shipping.
 
-**Rationale**: matches DESIGN.md exactly and confirms no `/me` or refresh
-endpoint exists yet (DESIGN.md §7 open question stands — out of scope for
-this feature; client treats `401` as session-invalid).
+**Rationale**: matches DESIGN.md exactly, except it surfaced a gap DESIGN.md
+didn't anticipate — non-admins cannot bootstrap their session via
+`/users/{user_id}` (admin-only). `/auth/refresh` remains genuinely out of
+scope (client treats `401` as session-invalid); `/auth/me` is now a tracked
+blocking dependency (`mictlanix/mbe-api#1`), not an open question.
 
 **Alternatives considered**: hand-writing DTOs from DESIGN.md alone — rejected
 per constitution §III (contract-driven, generated DTOs only).
