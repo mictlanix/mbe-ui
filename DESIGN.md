@@ -117,20 +117,56 @@ co-evolve — but the UI should be designed against a stable contract
 
 ### 3.2 Auth
 
-**Decision**: mbe-api exposes JWT bearer token-based auth (common for Python
-frameworks like FastAPI).
+**Status**: implemented in a first version on mbe-api (`/api/v1/auth/*`,
+`/api/v1/users/*`), per the published OpenAPI spec (§3.3).
 
-- Store tokens via `flutter_secure_storage` (mobile/desktop) — web storage
-  has weaker security guarantees, so plan for short-lived access tokens +
-  refresh tokens regardless of platform.
-- A `dio` interceptor attaches the bearer token and triggers refresh-on-401.
+- **Login**: `POST /api/v1/auth/login` — OAuth2 "password" grant
+  (`application/x-www-form-urlencoded`, fields `username`/`password`),
+  matching `dio`'s/`openapi-generator`'s standard `OAuth2PasswordBearer`
+  client. Returns `{ access_token, token_type: "bearer" }`.
+- **Token**: HS256 JWT, 8-hour expiry (`exp`), carrying `sub` (user_id),
+  `session_version`, `administrator`, and `store_id`. There is **no refresh
+  endpoint** — see open question in §7. An 8-hour token is workable for a
+  single workday; plan for re-login rather than silent refresh for now.
+- **Session invalidation**: every request is validated against
+  `user.session_version` in the DB (incremented whenever an admin edits the
+  user). A mismatch invalidates the token server-side even before `exp`.
+  A `dio` interceptor should treat any 401 as "session no longer valid" and
+  redirect to `/auth/login` — there's nothing to retry.
+- **Current user / privileges**: decode `sub` (user_id) from the stored JWT,
+  then `GET /api/v1/users/{user_id}` to fetch the full profile — `settings`
+  (default store/POS/cash drawer) and `privileges` (per-module RBAC, §3.7).
+  Cache this in a Riverpod `AuthNotifier`/session provider after login.
+- **Password change/recovery**:
+  `POST /api/v1/auth/change-password` (self-service, requires old password),
+  `POST /api/v1/auth/recover` (consumes a signed recovery token),
+  `POST /api/v1/users/{user_id}/recover-password` (admin-triggered, returns a
+  signed time-limited recovery token — admin must relay it to the user).
+- Store the access token via `flutter_secure_storage` (mobile/desktop); web
+  storage has weaker guarantees but is acceptable for an 8-hour token with
+  server-side `session_version` revocation as a backstop.
+- A `dio` interceptor attaches the bearer token and redirects to login on 401
+  (see above — no refresh-on-401 until mbe-api adds a refresh endpoint).
+
+> Note: mbe-api currently stores passwords as SHA1 (matching the legacy `mbe`
+> scheme) — a bcrypt/argon2 migration is planned per the migration spec
+> (`mbe/docs/specs/12-users.md` §"Password Storage Migration") but not yet
+> implemented. No action needed in mbe-ui; the hashing scheme is server-side.
 
 ### 3.3 Data models & serialization
 
-**Decision**: mbe-api will publish an OpenAPI (Swagger) spec. mbe-ui will
-generate its API client and DTOs from that spec using `openapi-generator`
-with the `dio` generator, keeping client models in sync with the backend
-automatically rather than hand-maintained.
+**Decision**: mbe-api publishes an OpenAPI (Swagger) spec
+(`GET /openapi.json`, currently `v0.1.0`). mbe-ui will generate its API
+client and DTOs from that spec using `openapi-generator` with the `dio`
+generator, keeping client models in sync with the backend automatically
+rather than hand-maintained.
+
+**Status**: the spec currently covers `health`, `auth`, and `users` (incl.
+`UserResponse`, `PrivilegeResponse`, `UserSettingsResponse`, etc. — see §3.7).
+Codegen for the `auth`/`users` feature modules can be bootstrapped now; the
+spec will grow incrementally as mbe-api implements master data, sales,
+inventory, invoicing, and accounting endpoints. Re-run codegen as the spec
+expands rather than waiting for full coverage.
 
 Generated DTOs sit in `data/`; map them to immutable domain entities
 (`freezed`) in `domain/` so presentation code isn't coupled to generated/
@@ -168,6 +204,46 @@ download, or share them.
   templates closest to the old jsreport approach, vs. ReportLab/fpdf2 for
   programmatic layouts) is an mbe-api implementation detail, out of scope for
   this document.
+
+### 3.7 Authorization / permissions model
+
+mbe-api carries over the legacy `mbe` RBAC model wholesale (see
+`mbe/docs/specs/12-users.md` and `mbe/docs/constants.md` §`SystemObjects`/
+§`AccessRight`):
+
+- **`SystemObjects`**: a flat enum of ~114 integer codes, one per
+  module/sub-feature/report (e.g. `0 = Products`, `7 = SalesOrders`,
+  `92 = Users`, `44 = POS`, ...). This is effectively the permission gate
+  catalog for every screen and action across sales, inventory, invoicing,
+  and accounting.
+- **`AccessRight`**: a `[Flags]` bitmask per `(user, SystemObject)` pair —
+  `Create=1`, `Read=2`, `Update=4`, `Delete=8` (combine by OR; `15` = full
+  access).
+- `UserResponse.privileges` (from `GET /api/v1/users/{user_id}`) returns one
+  `PrivilegeResponse` per `SystemObject` the user has a row for, each with
+  the raw bitmask plus precomputed `allow_create`/`allow_read`/
+  `allow_update`/`allow_delete` booleans.
+- `administrator = true` bypasses all privilege checks (both server- and
+  client-side equivalents should mirror this).
+- Missing privilege row = no access (deny by default).
+
+**Implications for mbe-ui**:
+
+- Define a `SystemObject` enum/constant table in `core/` mirroring mbe-api's
+  integer codes — generate or hand-maintain it alongside the OpenAPI client
+  so values stay in sync as mbe-api adds modules.
+- A session-scoped Riverpod provider (populated from `UserResponse` at login,
+  §3.2) exposes `bool can(SystemObject, AccessRight)`, short-circuiting to
+  `true` when `administrator`.
+- **Navigation**: go_router redirects/guards and the side nav (§4.2) use
+  `can(object, Read)` to hide/block routes the user has no access to —
+  mirroring the legacy "menu item only visible if `AllowRead`" pattern.
+- **Widgets**: shared list/detail screens (§4.3) use `can(object, Create|Update|Delete)`
+  to show/hide action buttons (new, edit, delete) per screen, rather than
+  each feature re-implementing the check.
+- Each feature module's routes/screens should document which `SystemObject`
+  code(s) they correspond to (most map 1:1, but some — e.g. `11 Addresses`,
+  `12 Contacts` — gate inline sub-panels rather than top-level routes).
 
 ---
 
@@ -243,7 +319,12 @@ placeholder theme (`Colors.deepPurple` seed) only as a temporary value.
 
 High-level boundaries for `lib/features/`:
 
-- **auth** — login, session, user profile, permissions/roles.
+- **auth** — login, session, user profile, password change/recovery, and the
+  admin-only **Users** screen (account CRUD + per-`SystemObject` privilege
+  grid, §3.7). Backed by mbe-api's `auth`/`users` endpoints — the first
+  modules with a published OpenAPI spec (§3.3), so this is the natural module
+  to bootstrap codegen, the Riverpod session provider, and go_router auth
+  guards against.
 - **sales** — customers, sales orders, quotes.
 - **inventory** — products, warehouses, stock levels, stock movements.
 - **invoicing** — invoices, payments, CFDI/electronic invoicing
@@ -256,6 +337,17 @@ entities (e.g. "Product" used by both inventory and invoicing) live in
 **this boundary should be settled with mbe-api's data model once defined**,
 since duplicating entity definitions across modules vs. a shared kernel is
 easier to get right when both UI and API are designed together.
+
+**Signal from the legacy schema**: `mbe/docs/specs/01-master-data.md` groups
+Products, Price Lists, Customers, Suppliers, Employees, Warehouses, Stores,
+Points of Sale, Cash Drawers, Exchange Rates, and Vehicles under a single
+"Master Data" area, all referenced by `SystemObjects` codes 0–13/29/43/88-89.
+These are the entities shared across sales/inventory/invoicing/accounting.
+Once mbe-api exposes these endpoints, a dedicated `master_data` (or
+`catalog`) feature module — owning Product, Customer, Supplier, Warehouse,
+PriceList, Store, etc. — is likely the right shared kernel, with
+sales/inventory/invoicing/accounting depending on it rather than each
+re-defining these entities.
 
 ---
 
@@ -272,8 +364,22 @@ easier to get right when both UI and API are designed together.
 
 ## 7. Open Questions
 
-- mbe-api OpenAPI spec — not yet published; codegen (§3.3) can't start until
-  a draft spec exists.
+- ~~mbe-api OpenAPI spec — not yet published~~ **Resolved**: a draft spec is
+  live (`auth`, `users`, `health`). Codegen (§3.3) can be bootstrapped for
+  these now; revisit as mbe-api adds master data, sales, inventory,
+  invoicing, and accounting endpoints.
+- **Refresh tokens**: §3.2 originally assumed short-lived access + refresh
+  tokens, but the current `auth` implementation issues only an 8-hour JWT via
+  `/auth/login` with no refresh endpoint, relying on `session_version` for
+  server-side revocation. Decide whether this is sufficient long-term (simple
+  re-login on expiry/401) or whether mbe-api should add a refresh-token
+  endpoint before other modules build on the same `dio` interceptor pattern.
+- **RBAC integration details** (§3.7): confirm the "decode JWT `sub` →
+  `GET /users/{user_id}` for `privileges`" pattern is the intended way for a
+  client to bootstrap its own permission set (vs. e.g. a dedicated `/me`
+  endpoint) — worth raising with the mbe-api team before building the auth
+  module, since it's a one-line addition there but a foundational pattern
+  for mbe-ui's session provider.
 - Direct ESC-POS/thermal receipt printer access from cashier stations (§3.6)
   — browser/desktop print dialogs can't drive thermal printers directly;
   needs its own investigation if required for launch.
