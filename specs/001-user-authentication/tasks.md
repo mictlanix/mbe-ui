@@ -36,22 +36,22 @@ Single Flutter project per plan.md "Project Structure": `lib/`, `test/`,
 
 **Purpose**: Toolchain and codegen prerequisites every later task depends on.
 
-- [ ] T001 Update `pubspec.yaml` with the dependencies listed in plan.md
+- [X] T001 Update `pubspec.yaml` with the dependencies listed in plan.md
   "Technical Context": `flutter_riverpod`, `riverpod_annotation`,
   `riverpod_generator`, `go_router`, `dio`, `freezed`, `freezed_annotation`,
   `json_annotation`, `json_serializable`, `build_runner`,
   `flutter_secure_storage`, `shared_preferences`, `flutter_localizations`,
   `intl`, and `mocktail` (dev dependency); run `flutter pub get`.
-- [ ] T002 [P] Create `tool/generate_api_client.sh`, wrapping `npx
+- [X] T002 [P] Create `tool/generate_api_client.sh`, wrapping `npx
   @openapitools/openapi-generator-cli generate` with the `dart-dio` generator
   (research.md §2), taking an OpenAPI spec URL/path as `$1` (default
   `http://127.0.0.1:8000/openapi.json`) and writing output to
   `lib/generated/openapi/`.
-- [ ] T003 Run `tool/generate_api_client.sh http://127.0.0.1:8000/openapi.json`
+- [X] T003 Run `tool/generate_api_client.sh http://127.0.0.1:8000/openapi.json`
   to generate the `dart-dio` client + models for the `auth` and `users`
   paths (incl. `GET /api/v1/auth/me`) into `lib/generated/openapi/`, and
   commit the generated output (research.md §2).
-- [ ] T004 [P] Verify/extend `analysis_options.yaml` at the repo root per
+- [X] T004 [P] Verify/extend `analysis_options.yaml` at the repo root per
   constitution "Development Workflow & Quality Gates" (lint rules for
   `freezed`/`riverpod_generator` generated files, etc.).
 
@@ -69,75 +69,75 @@ before this phase.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 [P] Create `AccessRight` flags enum (`none=0, create=1, read=2,
+- [X] T005 [P] Create `AccessRight` flags enum (`none=0, create=1, read=2,
   update=4, delete=8`) in `lib/core/access/access_right.dart`
   (data-model.md "AccessRight").
-- [ ] T006 [P] Create `SystemObject` enum with explicit `int` values `0`-`113`
+- [X] T006 [P] Create `SystemObject` enum with explicit `int` values `0`-`113`
   (114 entries, transcribed from `mbe/docs/constants.md`) in
   `lib/core/access/system_object.dart` (research.md §6, data-model.md
   "SystemObject"); include `Users = 92`.
-- [ ] T007 [P] Create `UserSettings` freezed entity (`storeId`, `pointSaleId`,
+- [X] T007 [P] Create `UserSettings` freezed entity (`storeId`, `pointSaleId`,
   `cashDrawerId`) mapping `UserSettingsResponse`/`UserSettingsUpdate` in
   `lib/core/access/user_settings.dart` (data-model.md "UserSettings").
-- [ ] T008 [P] Create `Privilege` freezed entity (`systemObject`, `rawValue`,
+- [X] T008 [P] Create `Privilege` freezed entity (`systemObject`, `rawValue`,
   `allowCreate/Read/Update/Delete`, `0..15` validation) mapping
   `PrivilegeResponse`/`PrivilegeUpdate` in `lib/core/access/privilege.dart`
   (data-model.md "Privilege") — shared kernel per constitution §I, consumed
   by `AccessControlService` (T017).
-- [ ] T009 [P] Create the `AppError` domain error hierarchy
+- [X] T009 [P] Create the `AppError` domain error hierarchy
   (`ValidationError`, `AuthError`, `NotFoundError`, `ServerError`,
   `NetworkError`) in `lib/core/errors/app_error.dart` (data-model.md "Domain
   error types"; contracts/mbe-api-auth-users.md "Error shape").
-- [ ] T010 [P] Create `TokenStorage` (`flutter_secure_storage` wrapper:
+- [X] T010 [P] Create `TokenStorage` (`flutter_secure_storage` wrapper:
   `read`/`write`/`clear` for the access token) in
   `lib/core/storage/token_storage.dart` (research.md §5).
-- [ ] T011 [P] Create `User`/`UserSummary` freezed entities mapping
+- [X] T011 [P] Create `User`/`UserSummary` freezed entities mapping
   `UserResponse`/`UserListItem` in `lib/core/access/user.dart` (data-model.md
   "User" / "UserSummary") — shared kernel per constitution §I, consumed by
   `AccessControlService` (T017) and `AuthState` (T012); depends on T007, T008
   for field types.
-- [ ] T012 [P] Create the `AuthState` sealed/freezed union
+- [X] T012 [P] Create the `AuthState` sealed/freezed union
   (`unauthenticated(reason)`, `authenticating`, `authenticated(token, user)`)
   and `SignOutReason` in `lib/features/auth/domain/entities/auth_session.dart`
   (data-model.md "AuthSession / AuthState"); depends on T011.
-- [ ] T013 Create `dio_client.dart` (base `Dio` instance/provider, pointed at
+- [X] T013 Create `dio_client.dart` (base `Dio` instance/provider, pointed at
   mbe-api base URL) and `auth_interceptor.dart` (attaches `Authorization:
   Bearer <token>` from `TokenStorage`, maps non-2xx responses to `AppError`
   subtypes) in `lib/core/network/` (depends on T009, T010).
-- [ ] T014 [P] Define the `AuthRepository` interface (`login`, `me`) in
+- [X] T014 [P] Define the `AuthRepository` interface (`login`, `me`) in
   `lib/features/auth/domain/repositories/auth_repository.dart`
   (contracts/mbe-api-auth-users.md "POST /api/v1/auth/login",
   "GET /api/v1/auth/me").
-- [ ] T015 Implement `AuthRepositoryImpl.login`/`.me` in
+- [X] T015 Implement `AuthRepositoryImpl.login`/`.me` in
   `lib/features/auth/data/auth_repository_impl.dart` using the generated
   `lib/generated/openapi/` client, mapping `TokenResponse`/`UserResponse` to
   `User`/`AuthState` and errors via `AppError` (depends on T003, T012, T013,
   T014).
-- [ ] T016 Implement `AuthNotifier` (`AsyncNotifier<AuthState>`) in
+- [X] T016 Implement `AuthNotifier` (`AsyncNotifier<AuthState>`) in
   `lib/features/auth/presentation/session/auth_notifier.dart`: `signIn`,
   `signOut`, and app-start restore (read `TokenStorage` → `AuthRepository.me`
   → `authenticated` or `unauthenticated`) (depends on T012, T015, T010).
-- [ ] T017 Create `AccessControlService` and `accessControlProvider` in
+- [X] T017 Create `AccessControlService` and `accessControlProvider` in
   `lib/core/access/access_control.dart`: `can(SystemObject, AccessRight)`,
   `isAuthenticated`, `isAdministrator`, derived from `authNotifierProvider`
   (contracts/access_control.md; depends on T005, T006, T016).
-- [ ] T018 [P] Create centralized `LayoutBreakpoints` (compact/expanded
+- [X] T018 [P] Create centralized `LayoutBreakpoints` (compact/expanded
   thresholds) in `lib/core/layout/breakpoints.dart` (constitution §VI).
-- [ ] T019 [P] Create shared `ErrorBanner` widget (renders `AppError` /
+- [X] T019 [P] Create shared `ErrorBanner` widget (renders `AppError` /
   `ValidationError` field messages) in `lib/core/widgets/error_banner.dart`.
-- [ ] T020 [P] Create a shared `DataTableView` widget (sortable columns,
+- [X] T020 [P] Create a shared `DataTableView` widget (sortable columns,
   optional row actions, used by any feature's list screens) in
   `lib/core/widgets/data_table_view.dart` (constitution §VI — shared data
   tables MUST live in `core/widgets/`, not be reimplemented per module).
-- [ ] T021 [P] Create `AppTheme` (`ColorScheme.fromSeed`, light/dark theme
+- [X] T021 [P] Create `AppTheme` (`ColorScheme.fromSeed`, light/dark theme
   data, `ThemeMode` provider persisted via `shared_preferences`) in
   `lib/app/theme/app_theme.dart` (constitution §V).
-- [ ] T022 Create the `GoRouter` instance and `redirect` guard skeleton
+- [X] T022 Create the `GoRouter` instance and `redirect` guard skeleton
   (unauthenticated → `/auth/login`, authenticated-on-`/auth/login` →
   `/`, `refreshListenable` wired to `authNotifierProvider`) in
   `lib/app/router/app_router.dart` (contracts/routes.md "Redirect guard
   summary"; depends on T016, T017).
-- [ ] T023 Create `lib/app/app.dart` (`MaterialApp.router` wiring
+- [X] T023 Create `lib/app/app.dart` (`MaterialApp.router` wiring
   `app_router.dart`, `AppTheme`, `flutter_localizations`/`intl` for `es-MX`)
   and update `lib/main.dart` to bootstrap `ProviderScope` + run the app
   (depends on T021, T022).
