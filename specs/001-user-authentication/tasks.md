@@ -161,20 +161,20 @@ expiry/revocation via `401`.
 
 ### Tests for User Story 1
 
-- [ ] T024 [P] [US1] `AuthNotifier` state-transition tests (sign in success/
+- [X] T024 [P] [US1] `AuthNotifier` state-transition tests (sign in success/
   failure, sign out, 401 → `unauthenticated(sessionInvalid)`, app-start
   restore) in `test/unit/features/auth/auth_notifier_test.dart` (mocktail
   `AuthRepository`/`TokenStorage` fakes).
-- [ ] T025 [P] [US1] `AccessControlService.can()` truth table tests
+- [X] T025 [P] [US1] `AccessControlService.can()` truth table tests
   (administrator override, missing privilege, partial bitmask, unauthenticated
   → `false`) in `test/unit/features/auth/access_control_test.dart`.
-- [ ] T026 [P] [US1] `AuthRepositoryImpl.login`/`.me` tests covering `200`,
+- [X] T026 [P] [US1] `AuthRepositoryImpl.login`/`.me` tests covering `200`,
   `401`, `422`, `5xx`, network-error → `AppError` mapping in
   `test/unit/features/auth/auth_repository_impl_test.dart`.
-- [ ] T027 [P] [US1] Widget test for `LoginScreen` (empty-field validation,
+- [X] T027 [P] [US1] Widget test for `LoginScreen` (empty-field validation,
   generic error display on `401`/`422`, no field-specific messaging per
   FR-008) in `test/widget/features/auth/login_screen_test.dart`.
-- [ ] T028 [P] [US1] Integration test: sign in (valid/invalid), permission-
+- [X] T028 [P] [US1] Integration test: sign in (valid/invalid), permission-
   gated nav visibility for admin vs. non-admin, sign out, in
   `test/integration/auth_flow_test.dart` (quickstart Story 1 scenarios 1, 2,
   4, 6, 7 — run against local mbe-api). Scenario 3 (session expiry) requires
@@ -183,27 +183,27 @@ expiry/revocation via `401`.
 
 ### Implementation for User Story 1
 
-- [ ] T029 [P] [US1] Create `LoginController` (plain `Notifier`:
+- [X] T029 [P] [US1] Create `LoginController` (plain `Notifier`:
   `username`, `password`, `submitting`, `error`) in
   `lib/features/auth/presentation/login/login_controller.dart`
   (data-model.md "Login form state").
-- [ ] T030 [US1] Create `LoginScreen` (form, generic error banner via
+- [X] T030 [US1] Create `LoginScreen` (form, generic error banner via
   `ErrorBanner`, calls `AuthNotifier.signIn`) in
   `lib/features/auth/presentation/login/login_screen.dart` (depends on
   T029).
-- [ ] T031 [US1] Create a minimal home screen with a navigation list gated by
+- [X] T031 [US1] Create a minimal home screen with a navigation list gated by
   `accessControlProvider.can(object, AccessRight.read)` per visible
   `SystemObject` (FR-005/FR-006/FR-007), plus a sign-out action (FR-004), in
   `lib/features/home/presentation/home_screen.dart` (depends on T017).
-- [ ] T032 [US1] Register the `/auth/login` and `/` routes in
+- [X] T032 [US1] Register the `/auth/login` and `/` routes in
   `lib/app/router/app_router.dart`, completing the redirect guard's
   authenticated/unauthenticated branches from contracts/routes.md (depends
   on T022, T030, T031).
-- [ ] T033 [US1] Wire app-start session restore: call `AuthNotifier`'s
+- [X] T033 [US1] Wire app-start session restore: call `AuthNotifier`'s
   restore path from `lib/app/app.dart`/`main.dart` so a persisted token in
   `TokenStorage` resolves to `authenticated` (via `/auth/me`) or
   `unauthenticated` before the first route resolves (depends on T016, T023).
-- [ ] T034 [US1] Verify/wire the `401` path end-to-end: `auth_interceptor.dart`
+- [X] T034 [US1] Verify/wire the `401` path end-to-end: `auth_interceptor.dart`
   signals `AuthNotifier` → `unauthenticated(sessionInvalid)` →
   `refreshListenable` triggers `redirect` to `/auth/login` (FR-003, SC-003;
   depends on T013, T016, T022).

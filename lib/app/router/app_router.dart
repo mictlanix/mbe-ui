@@ -6,7 +6,9 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
+import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
 /// Routes are registered by later phases; this provider gives them a
@@ -22,11 +24,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Home'),
+        builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
         path: '/auth/login',
-        builder: (context, state) => const _PlaceholderScreen(title: 'Sign in'),
+        builder: (context, state) => const LoginScreen(),
       ),
     ],
   );
@@ -76,18 +78,4 @@ String? _redirect(Ref ref, GoRouterState state) {
 SystemObject? _routeSystemObject(String location) {
   if (location.startsWith('/users')) return SystemObject.users;
   return null;
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  const _PlaceholderScreen({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text(title)),
-    );
-  }
 }
