@@ -151,4 +151,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get privilegesDeleteColumn => 'E';
+
+  @override
+  String get privilegesCreateTooltip => 'Crear';
+
+  @override
+  String get privilegesReadTooltip => 'Leer';
+
+  @override
+  String get privilegesUpdateTooltip => 'Actualizar';
+
+  @override
+  String get privilegesDeleteTooltip => 'Eliminar';
 }

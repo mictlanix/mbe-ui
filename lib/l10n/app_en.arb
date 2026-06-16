@@ -145,5 +145,17 @@
   "@privilegesUpdateColumn": {"description": "Update column header in permissions grid"},
 
   "privilegesDeleteColumn": "D",
-  "@privilegesDeleteColumn": {"description": "Delete column header in permissions grid"}
+  "@privilegesDeleteColumn": {"description": "Delete column header in permissions grid"},
+
+  "privilegesCreateTooltip": "Create",
+  "@privilegesCreateTooltip": {"description": "Tooltip for Create column in permissions grid"},
+
+  "privilegesReadTooltip": "Read",
+  "@privilegesReadTooltip": {"description": "Tooltip for Read column in permissions grid"},
+
+  "privilegesUpdateTooltip": "Update",
+  "@privilegesUpdateTooltip": {"description": "Tooltip for Update column in permissions grid"},
+
+  "privilegesDeleteTooltip": "Delete",
+  "@privilegesDeleteTooltip": {"description": "Tooltip for Delete column in permissions grid"}
 }

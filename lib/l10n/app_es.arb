@@ -53,5 +53,9 @@
   "privilegesCreateColumn": "C",
   "privilegesReadColumn": "L",
   "privilegesUpdateColumn": "A",
-  "privilegesDeleteColumn": "E"
+  "privilegesDeleteColumn": "E",
+  "privilegesCreateTooltip": "Crear",
+  "privilegesReadTooltip": "Leer",
+  "privilegesUpdateTooltip": "Actualizar",
+  "privilegesDeleteTooltip": "Eliminar"
 }

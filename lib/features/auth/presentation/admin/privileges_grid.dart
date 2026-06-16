@@ -5,9 +5,8 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Renders a full-height grid with one row per [SystemObject] and four
-/// C/R/U/D checkbox columns (constitution §VI — shared widget). Read-only
-/// when [onChanged] is null.
+/// Renders a full-width DataTable with one row per [SystemObject] and four
+/// C/R/U/D checkbox columns. Read-only when [onChanged] is null.
 class PrivilegesGrid extends StatelessWidget {
   const PrivilegesGrid({
     super.key,
@@ -26,90 +25,75 @@ class PrivilegesGrid extends StatelessWidget {
     final byObject = {for (final p in privileges) p.systemObject: p};
     final l10n = AppLocalizations.of(context)!;
 
-    return SingleChildScrollView(
-      child: Table(
-        columnWidths: const {
-          0: FlexColumnWidth(),
-          1: FixedColumnWidth(48),
-          2: FixedColumnWidth(48),
-          3: FixedColumnWidth(48),
-          4: FixedColumnWidth(48),
-        },
-        children: [
-          TableRow(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            ),
-            children: [
-              _HeaderCell(l10n.privilegesModuleColumn),
-              _HeaderCell(l10n.privilegesCreateColumn),
-              _HeaderCell(l10n.privilegesReadColumn),
-              _HeaderCell(l10n.privilegesUpdateColumn),
-              _HeaderCell(l10n.privilegesDeleteColumn),
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: constraints.maxWidth),
+          child: DataTable(
+            columns: [
+              DataColumn(label: Text(l10n.privilegesModuleColumn)),
+              DataColumn(
+                label: Tooltip(
+                  message: l10n.privilegesCreateTooltip,
+                  child: Text(l10n.privilegesCreateColumn),
+                ),
+              ),
+              DataColumn(
+                label: Tooltip(
+                  message: l10n.privilegesReadTooltip,
+                  child: Text(l10n.privilegesReadColumn),
+                ),
+              ),
+              DataColumn(
+                label: Tooltip(
+                  message: l10n.privilegesUpdateTooltip,
+                  child: Text(l10n.privilegesUpdateColumn),
+                ),
+              ),
+              DataColumn(
+                label: Tooltip(
+                  message: l10n.privilegesDeleteTooltip,
+                  child: Text(l10n.privilegesDeleteColumn),
+                ),
+              ),
+            ],
+            rows: [
+              for (final obj in SystemObject.values)
+                _buildRow(obj, byObject[obj]),
             ],
           ),
-          for (final obj in SystemObject.values)
-            _buildRow(context, obj, byObject[obj]),
-        ],
+        ),
       ),
     );
   }
 
-  TableRow _buildRow(
-      BuildContext context, SystemObject obj, Privilege? privilege) {
+  DataRow _buildRow(SystemObject obj, Privilege? privilege) {
     final raw = privilege?.rawValue ?? 0;
 
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Text(obj.name),
-        ),
+    return DataRow(
+      cells: [
+        DataCell(Text(obj.name)),
         for (final right in [
           AccessRight.create,
           AccessRight.read,
           AccessRight.update,
           AccessRight.delete,
         ])
-          _CheckCell(
-            key: Key('privilege_${obj.name}_${right.name}'),
-            value: raw & right.value != 0,
-            onChanged: onChanged == null
-                ? null
-                : (checked) {
-                    final newRaw = checked!
-                        ? raw | right.value
-                        : raw & ~right.value;
-                    onChanged!(obj, newRaw & 0xF);
-                  },
+          DataCell(
+            Checkbox(
+              key: Key('privilege_${obj.name}_${right.name}'),
+              value: raw & right.value != 0,
+              onChanged: onChanged == null
+                  ? null
+                  : (checked) {
+                      final newRaw =
+                          checked! ? raw | right.value : raw & ~right.value;
+                      onChanged!(obj, newRaw & 0xF);
+                    },
+            ),
           ),
       ],
     );
-  }
-}
-
-class _HeaderCell extends StatelessWidget {
-  const _HeaderCell(this.label);
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-      child: Text(label,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.labelSmall),
-    );
-  }
-}
-
-class _CheckCell extends StatelessWidget {
-  const _CheckCell({super.key, required this.value, required this.onChanged});
-  final bool value;
-  final ValueChanged<bool?>? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Checkbox(value: value, onChanged: onChanged);
   }
 }

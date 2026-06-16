@@ -373,6 +373,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'D'**
   String get privilegesDeleteColumn;
+
+  /// Tooltip for Create column in permissions grid
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get privilegesCreateTooltip;
+
+  /// Tooltip for Read column in permissions grid
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get privilegesReadTooltip;
+
+  /// Tooltip for Update column in permissions grid
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get privilegesUpdateTooltip;
+
+  /// Tooltip for Delete column in permissions grid
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get privilegesDeleteTooltip;
 }
 
 class _AppLocalizationsDelegate

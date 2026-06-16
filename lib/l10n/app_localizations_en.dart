@@ -151,4 +151,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privilegesDeleteColumn => 'D';
+
+  @override
+  String get privilegesCreateTooltip => 'Create';
+
+  @override
+  String get privilegesReadTooltip => 'Read';
+
+  @override
+  String get privilegesUpdateTooltip => 'Update';
+
+  @override
+  String get privilegesDeleteTooltip => 'Delete';
 }

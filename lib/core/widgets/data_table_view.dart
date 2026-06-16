@@ -53,9 +53,14 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
       }
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: DataTable(
+        showCheckboxColumn: false,
         sortColumnIndex: _sortColumnIndex,
         sortAscending: _sortAscending,
         columns: [
@@ -93,6 +98,9 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
               ],
             ),
         ],
+            ),
+          ),
+        ),
       ),
     );
   }
