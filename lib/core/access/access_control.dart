@@ -30,6 +30,8 @@ class AccessControlService {
   bool can(SystemObject object, AccessRight right) {
     final state = _authState;
     if (state is! AuthAuthenticated) return false;
+    // TODO(design): administrators bypass all privilege checks. Revisit if
+    // per-module restrictions should apply even to administrator accounts.
     if (state.user.administrator) return true;
 
     for (final privilege in state.user.privileges) {
