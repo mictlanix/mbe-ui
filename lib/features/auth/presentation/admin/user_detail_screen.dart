@@ -46,6 +46,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final controller = ref.read(userFormControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.users, AccessRight.update);
+    final canDelete = _isEdit && access.can(SystemObject.users, AccessRight.delete);
     final l10n = AppLocalizations.of(context)!;
 
     if (formState.loading) {
@@ -56,7 +57,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
       );
     }
 
-    if (formState.saved) {
+    if (formState.saved || formState.deleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.pop();
       });
@@ -74,6 +75,15 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
               onPressed: formState.submitting
                   ? null
                   : () => controller.recoverPassword(widget.userId!),
+            ),
+          if (canDelete)
+            IconButton(
+              key: const Key('delete_user_button'),
+              icon: const Icon(Icons.delete_outline),
+              tooltip: l10n.deleteUserTooltip,
+              onPressed: formState.submitting
+                  ? null
+                  : () => _confirmDelete(context, controller),
             ),
         ],
       ),
@@ -199,6 +209,30 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       controller.save(existingUserId: widget.userId);
     }
+  }
+
+  Future<void> _confirmDelete(
+      BuildContext context, UserFormController controller) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteUserConfirmTitle),
+        content: Text(l10n.deleteUserConfirmMessage(widget.userId!)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton(
+            key: const Key('confirm_delete_button'),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.deleteButton),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) controller.deleteUser(widget.userId!);
   }
 }
 

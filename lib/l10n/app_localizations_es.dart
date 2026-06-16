@@ -106,6 +106,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recoverPasswordTooltip => 'Recuperar contraseña';
 
   @override
+  String get deleteUserTooltip => 'Eliminar usuario';
+
+  @override
+  String get deleteUserConfirmTitle => '¿Eliminar usuario?';
+
+  @override
+  String deleteUserConfirmMessage(String userId) {
+    return '¿Seguro que deseas eliminar a \"$userId\"? Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get deleteButton => 'Eliminar';
+
+  @override
+  String get cancelButton => 'Cancelar';
+
+  @override
   String get emailLabel => 'Correo electrónico';
 
   @override

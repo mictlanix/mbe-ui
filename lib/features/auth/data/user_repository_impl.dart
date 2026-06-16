@@ -105,6 +105,15 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> delete({required String userId}) async {
+    try {
+      await _api.deleteUserApiV1UsersUserIdDelete(userId: userId);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
   Future<RecoverPasswordResult> recoverPassword({required String userId}) async {
     try {
       final response = await _api

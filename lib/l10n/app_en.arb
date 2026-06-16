@@ -98,6 +98,21 @@
   "recoverPasswordTooltip": "Recover password",
   "@recoverPasswordTooltip": {},
 
+  "deleteUserTooltip": "Delete user",
+  "@deleteUserTooltip": {},
+
+  "deleteUserConfirmTitle": "Delete user?",
+  "@deleteUserConfirmTitle": {},
+
+  "deleteUserConfirmMessage": "Are you sure you want to delete \"{userId}\"? This action cannot be undone.",
+  "@deleteUserConfirmMessage": {"placeholders": {"userId": {"type": "String"}}},
+
+  "deleteButton": "Delete",
+  "@deleteButton": {},
+
+  "cancelButton": "Cancel",
+  "@cancelButton": {},
+
   "emailLabel": "Email",
   "@emailLabel": {},
 

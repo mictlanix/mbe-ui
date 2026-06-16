@@ -28,6 +28,7 @@ mixin _$UserFormState {
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
+  bool get deleted => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   String? get recoveryToken => throw _privateConstructorUsedError;
   String? get recoveryExpiresAt => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $UserFormStateCopyWith<$Res> {
     bool loading,
     bool submitting,
     bool saved,
+    bool deleted,
     String? error,
     String? recoveryToken,
     String? recoveryExpiresAt,
@@ -92,6 +94,7 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
+    Object? deleted = null,
     Object? error = freezed,
     Object? recoveryToken = freezed,
     Object? recoveryExpiresAt = freezed,
@@ -141,6 +144,10 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
             saved: null == saved
                 ? _value.saved
                 : saved // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            deleted: null == deleted
+                ? _value.deleted
+                : deleted // ignore: cast_nullable_to_non_nullable
                       as bool,
             error: freezed == error
                 ? _value.error
@@ -195,6 +202,7 @@ abstract class _$$UserFormStateImplCopyWith<$Res>
     bool loading,
     bool submitting,
     bool saved,
+    bool deleted,
     String? error,
     String? recoveryToken,
     String? recoveryExpiresAt,
@@ -229,6 +237,7 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
+    Object? deleted = null,
     Object? error = freezed,
     Object? recoveryToken = freezed,
     Object? recoveryExpiresAt = freezed,
@@ -279,6 +288,10 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
             ? _value.saved
             : saved // ignore: cast_nullable_to_non_nullable
                   as bool,
+        deleted: null == deleted
+            ? _value.deleted
+            : deleted // ignore: cast_nullable_to_non_nullable
+                  as bool,
         error: freezed == error
             ? _value.error
             : error // ignore: cast_nullable_to_non_nullable
@@ -311,6 +324,7 @@ class _$UserFormStateImpl implements _UserFormState {
     this.loading = false,
     this.submitting = false,
     this.saved = false,
+    this.deleted = false,
     this.error,
     this.recoveryToken,
     this.recoveryExpiresAt,
@@ -354,6 +368,9 @@ class _$UserFormStateImpl implements _UserFormState {
   @JsonKey()
   final bool saved;
   @override
+  @JsonKey()
+  final bool deleted;
+  @override
   final String? error;
   @override
   final String? recoveryToken;
@@ -362,7 +379,7 @@ class _$UserFormStateImpl implements _UserFormState {
 
   @override
   String toString() {
-    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, error: $error, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
+    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
   }
 
   @override
@@ -390,6 +407,7 @@ class _$UserFormStateImpl implements _UserFormState {
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
             (identical(other.saved, saved) || other.saved == saved) &&
+            (identical(other.deleted, deleted) || other.deleted == deleted) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.recoveryToken, recoveryToken) ||
                 other.recoveryToken == recoveryToken) &&
@@ -411,6 +429,7 @@ class _$UserFormStateImpl implements _UserFormState {
     loading,
     submitting,
     saved,
+    deleted,
     error,
     recoveryToken,
     recoveryExpiresAt,
@@ -438,6 +457,7 @@ abstract class _UserFormState implements UserFormState {
     final bool loading,
     final bool submitting,
     final bool saved,
+    final bool deleted,
     final String? error,
     final String? recoveryToken,
     final String? recoveryExpiresAt,
@@ -465,6 +485,8 @@ abstract class _UserFormState implements UserFormState {
   bool get submitting;
   @override
   bool get saved;
+  @override
+  bool get deleted;
   @override
   String? get error;
   @override

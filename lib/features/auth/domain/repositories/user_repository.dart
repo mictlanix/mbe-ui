@@ -47,6 +47,9 @@ abstract class UserRepository {
     UserSettings? settings,
   });
 
+  /// `DELETE /api/v1/users/{user_id}`.
+  Future<void> delete({required String userId});
+
   /// `POST /api/v1/users/{user_id}/recover-password` (FR-010 admin path).
   Future<RecoverPasswordResult> recoverPassword({required String userId});
 }

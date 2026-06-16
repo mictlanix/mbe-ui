@@ -29,6 +29,7 @@ class UserFormState with _$UserFormState {
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
+    @Default(false) bool deleted,
     String? error,
     String? recoveryToken,
     String? recoveryExpiresAt,
@@ -184,6 +185,20 @@ class UserFormController extends _$UserFormController {
         submitting: false,
         error: 'Failed to generate recovery token.',
       );
+    }
+  }
+
+  Future<void> deleteUser(String userId) async {
+    state = state.copyWith(submitting: true, error: null);
+    try {
+      await ref.read(userRepositoryProvider).delete(userId: userId);
+      ref.read(usersControllerProvider.notifier).refresh();
+      state = state.copyWith(submitting: false, deleted: true);
+    } on AppError catch (e) {
+      final msg = e is ValidationError && e.errors.isNotEmpty
+          ? e.errors.first.msg
+          : 'Failed to delete user.';
+      state = state.copyWith(submitting: false, error: msg);
     }
   }
 

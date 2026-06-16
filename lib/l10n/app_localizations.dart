@@ -284,6 +284,36 @@ abstract class AppLocalizations {
   /// **'Recover password'**
   String get recoverPasswordTooltip;
 
+  /// No description provided for @deleteUserTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete user'**
+  String get deleteUserTooltip;
+
+  /// No description provided for @deleteUserConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete user?'**
+  String get deleteUserConfirmTitle;
+
+  /// No description provided for @deleteUserConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{userId}\"? This action cannot be undone.'**
+  String deleteUserConfirmMessage(String userId);
+
+  /// No description provided for @deleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteButton;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
   /// No description provided for @emailLabel.
   ///
   /// In en, this message translates to:
