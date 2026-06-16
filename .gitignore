@@ -1,3 +1,10 @@
+# Generated build artifacts — produced by build_runner, not manually authored
+# Regenerate with: tool/generate_api_client.sh (for the OpenAPI client)
+# or: dart run build_runner build (for freezed/riverpod/json_serializable)
+**/*.g.dart
+lib/generated/openapi/doc/
+lib/generated/openapi/test/
+
 # Miscellaneous
 *.class
 *.lock

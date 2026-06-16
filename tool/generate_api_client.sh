@@ -34,6 +34,7 @@ docker run --rm \
   -i /spec/openapi.json \
   -g dart-dio \
   -o "/local/${OUTPUT_DIR}" \
+  --global-property=apis,models,supportingFiles,apiTests=false,modelTests=false \
   --additional-properties=pubName=mbe_api_client,pubAuthor=Mictlanix,pubDescription="mbe-api OpenAPI client (generated)"
 
 # The generator may produce an sdk lower bound below 2.12.0 (e.g. '>=1.2.0'),
@@ -47,5 +48,8 @@ ROOT_SDK_LOWER_BOUND="$(grep -E '^\s+sdk:' "${REPO_ROOT}/pubspec.yaml" | grep -o
 sed -i.bak "s/sdk: '>=.*<4.0.0'/sdk: '>=${ROOT_SDK_LOWER_BOUND} <4.0.0'/" \
   "${REPO_ROOT}/${OUTPUT_DIR}/pubspec.yaml"
 rm -f "${REPO_ROOT}/${OUTPUT_DIR}/pubspec.yaml.bak"
+
+echo "Running build_runner to generate built_value *.g.dart files ..."
+(cd "${REPO_ROOT}/${OUTPUT_DIR}" && dart pub get && dart run build_runner build)
 
 echo "Done. Generated client is at ${OUTPUT_DIR}"
