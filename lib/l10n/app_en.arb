@@ -1,0 +1,149 @@
+{
+  "@@locale": "en",
+
+  "fieldRequired": "Required",
+  "@fieldRequired": {"description": "Generic required-field validation message"},
+
+  "fieldMinLength6": "Must be at least 6 characters",
+  "@fieldMinLength6": {"description": "Password minimum length validation"},
+
+  "signInTitle": "Sign in",
+  "@signInTitle": {},
+
+  "usernameLabel": "Username",
+  "@usernameLabel": {},
+
+  "passwordLabel": "Password",
+  "@passwordLabel": {},
+
+  "signInButton": "Sign in",
+  "@signInButton": {},
+
+  "usersMenuTitle": "Users",
+  "@usersMenuTitle": {},
+
+  "changePasswordTitle": "Change Password",
+  "@changePasswordTitle": {},
+
+  "currentPasswordLabel": "Current password",
+  "@currentPasswordLabel": {},
+
+  "newPasswordLabel": "New password",
+  "@newPasswordLabel": {},
+
+  "changePasswordButton": "Change password",
+  "@changePasswordButton": {},
+
+  "passwordChangedSuccess": "Password changed successfully.",
+  "@passwordChangedSuccess": {},
+
+  "backButton": "Back",
+  "@backButton": {},
+
+  "recoverPasswordTitle": "Recover Password",
+  "@recoverPasswordTitle": {},
+
+  "recoveryHelpText": "Ask your administrator to generate a recovery token for your account, then enter it below along with your new password.",
+  "@recoveryHelpText": {},
+
+  "recoveryTokenLabel": "Recovery token",
+  "@recoveryTokenLabel": {},
+
+  "setNewPasswordButton": "Set new password",
+  "@setNewPasswordButton": {},
+
+  "passwordResetSuccess": "Password reset successfully. You can now sign in.",
+  "@passwordResetSuccess": {},
+
+  "usersTitle": "Users",
+  "@usersTitle": {},
+
+  "newUserTooltip": "New user",
+  "@newUserTooltip": {},
+
+  "usersLoadError": "Failed to load users: {error}",
+  "@usersLoadError": {
+    "placeholders": {
+      "error": {"type": "Object"}
+    }
+  },
+
+  "noUsersFound": "No users found.",
+  "@noUsersFound": {},
+
+  "columnUsername": "Username",
+  "@columnUsername": {},
+
+  "columnEmail": "Email",
+  "@columnEmail": {},
+
+  "columnAdmin": "Admin",
+  "@columnAdmin": {},
+
+  "columnStatus": "Status",
+  "@columnStatus": {},
+
+  "statusDisabled": "Disabled",
+  "@statusDisabled": {},
+
+  "statusActive": "Active",
+  "@statusActive": {},
+
+  "editUserTitle": "Edit User",
+  "@editUserTitle": {},
+
+  "newUserTitle": "New User",
+  "@newUserTitle": {},
+
+  "recoverPasswordTooltip": "Recover password",
+  "@recoverPasswordTooltip": {},
+
+  "emailLabel": "Email",
+  "@emailLabel": {},
+
+  "employeeIdLabel": "Employee ID (optional)",
+  "@employeeIdLabel": {},
+
+  "administratorLabel": "Administrator",
+  "@administratorLabel": {},
+
+  "disabledLabel": "Disabled",
+  "@disabledLabel": {},
+
+  "permissionsLabel": "Permissions",
+  "@permissionsLabel": {},
+
+  "saveButton": "Save",
+  "@saveButton": {},
+
+  "recoveryTokenTitle": "Recovery Token",
+  "@recoveryTokenTitle": {},
+
+  "recoveryExpiresAt": "Expires: {expiresAt}",
+  "@recoveryExpiresAt": {
+    "placeholders": {
+      "expiresAt": {"type": "String"}
+    }
+  },
+
+  "userIdLengthError": "4–20 characters",
+  "@userIdLengthError": {"description": "Username length validation (4–20 chars)"},
+
+  "passwordLengthError": "At least 6 characters",
+  "@passwordLengthError": {},
+
+  "privilegesModuleColumn": "Module",
+  "@privilegesModuleColumn": {},
+
+  "privilegesCreateColumn": "C",
+  "@privilegesCreateColumn": {"description": "Create column header in permissions grid"},
+
+  "privilegesReadColumn": "R",
+  "@privilegesReadColumn": {"description": "Read column header in permissions grid"},
+
+  "privilegesUpdateColumn": "U",
+  "@privilegesUpdateColumn": {"description": "Update column header in permissions grid"},
+
+  "privilegesDeleteColumn": "D",
+  "@privilegesDeleteColumn": {"description": "Delete column header in permissions grid"}
+}

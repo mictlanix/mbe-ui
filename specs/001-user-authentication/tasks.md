@@ -226,38 +226,38 @@ request → admin-issued token → `/auth/recover` confirm.
 
 ### Tests for User Story 2
 
-- [ ] T035 [P] [US2] `AuthRepositoryImpl.changePassword`/`.recoverConfirm`
+- [X] T035 [P] [US2] `AuthRepositoryImpl.changePassword`/`.recoverConfirm`
   tests covering `204`, `422` (wrong current password / short new password /
   invalid recovery token) in
   `test/unit/features/auth/auth_repository_impl_test.dart` (extends T026's
   file).
-- [ ] T036 [P] [US2] Widget test for `ChangePasswordScreen` (validation,
+- [X] T036 [P] [US2] Widget test for `ChangePasswordScreen` (validation,
   rejection on wrong current password, success path) in
   `test/widget/features/auth/change_password_screen_test.dart`.
-- [ ] T037 [P] [US2] Widget test for `ForgotPasswordScreen` (recovery request
+- [X] T037 [P] [US2] Widget test for `ForgotPasswordScreen` (recovery request
   informational message; recovery-token confirm form validation/success) in
   `test/widget/features/auth/forgot_password_screen_test.dart`.
 
 ### Implementation for User Story 2
 
-- [ ] T038 [US2] Add `changePassword(oldPassword, newPassword)` and
+- [X] T038 [US2] Add `changePassword(oldPassword, newPassword)` and
   `recoverConfirm(recoveryToken, newPassword)` to `AuthRepository`
   (`lib/features/auth/domain/repositories/auth_repository.dart`) and
   `AuthRepositoryImpl` (`lib/features/auth/data/auth_repository_impl.dart`)
   per contracts/mbe-api-auth-users.md `POST /api/v1/auth/change-password` and
   `POST /api/v1/auth/recover` (depends on T015).
-- [ ] T039 [P] [US2] Create `AccountController` (plain `Notifier` for
+- [X] T039 [P] [US2] Create `AccountController` (plain `Notifier` for
   change-password and recovery-confirm form state, `newPassword minLength
   6`) in `lib/features/auth/presentation/account/account_controller.dart`
   (data-model.md "Password-change / recovery form state"; depends on T038).
-- [ ] T040 [US2] Create `ChangePasswordScreen` in
+- [X] T040 [US2] Create `ChangePasswordScreen` in
   `lib/features/auth/presentation/account/change_password_screen.dart`
   (depends on T039).
-- [ ] T041 [US2] Create `ForgotPasswordScreen` (request-help message +
+- [X] T041 [US2] Create `ForgotPasswordScreen` (request-help message +
   recovery-token confirm form) in
   `lib/features/auth/presentation/account/forgot_password_screen.dart`
   (depends on T039).
-- [ ] T042 [US2] Register `/auth/account/password` (any authenticated user)
+- [X] T042 [US2] Register `/auth/account/password` (any authenticated user)
   and `/auth/recover` (unauthenticated + recovery-token holders) routes in
   `lib/app/router/app_router.dart` per contracts/routes.md (depends on T040,
   T041).
@@ -280,37 +280,37 @@ deactivate it, and confirm `/users` is unreachable for a non-administrator.
 
 ### Tests for User Story 3
 
-- [ ] T043 [P] [US3] `UserRepositoryImpl` tests for `list`/`get`/`create`/
+- [X] T043 [P] [US3] `UserRepositoryImpl` tests for `list`/`get`/`create`/
   `update`/`recoverPassword` covering `200`/`201`/`204`/`404`/`422` →
   `AppError` mapping in
   `test/unit/features/auth/user_repository_impl_test.dart`. (`DELETE
   /api/v1/users/{user_id}` is out of scope for this feature per
   contracts/mbe-api-auth-users.md — not included here.)
-- [ ] T044 [P] [US3] `UsersController` tests: form state → `UserCreate`/
+- [X] T044 [P] [US3] `UsersController` tests: form state → `UserCreate`/
   `UserUpdate` mapping (incl. `privileges: PrivilegeUpdate[]` from the grid)
   in `test/unit/features/auth/users_controller_test.dart`.
-- [ ] T045 [P] [US3] Widget test for `PrivilegesGrid` (renders one row per
+- [X] T045 [P] [US3] Widget test for `PrivilegesGrid` (renders one row per
   `SystemObject`, four C/R/U/D checkboxes, edits update `0..15` bitmask) in
   `test/widget/features/auth/privileges_grid_test.dart`.
-- [ ] T046 [P] [US3] Widget test for `UsersListScreen` (renders accounts with
+- [X] T046 [P] [US3] Widget test for `UsersListScreen` (renders accounts with
   status/administrator flag; route hidden/redirected for a user without
   `Users` `read`) in `test/widget/features/auth/users_list_screen_test.dart`.
 
 ### Implementation for User Story 3
 
-- [ ] T047 [P] [US3] Define the `UserRepository` interface (`list`, `get`,
+- [X] T047 [P] [US3] Define the `UserRepository` interface (`list`, `get`,
   `create`, `update`, `recoverPassword`) in
   `lib/features/auth/domain/repositories/user_repository.dart` per
   contracts/mbe-api-auth-users.md "Users" section. (`delete` is intentionally
   omitted — `DELETE /api/v1/users/{user_id}` is out of scope for this
   feature; deactivation via `update(disabled: true)` is the FR-012/FR-014
   path.)
-- [ ] T048 [US3] Implement `UserRepositoryImpl` in
+- [X] T048 [US3] Implement `UserRepositoryImpl` in
   `lib/features/auth/data/user_repository_impl.dart` using the generated
   `lib/generated/openapi/` client, mapping `UserListResponse`/`UserResponse`
   to `UserSummary`/`User` and `UserCreate`/`UserUpdate`/`PrivilegeUpdate` from
   domain entities (depends on T003, T011, T008, T047).
-- [ ] T049 [US3] Create `UsersController` (admin user-form state per
+- [X] T049 [US3] Create `UsersController` (admin user-form state per
   data-model.md "Admin user-form state": list/selection state, create/edit
   form fields, privileges-grid state, save/recover-password actions) in
   `lib/features/auth/presentation/admin/users_controller.dart`. On a
@@ -318,21 +318,21 @@ deactivate it, and confirm `/users` is unreachable for a non-administrator.
   refresh `AuthNotifier`'s in-memory `AuthState.authenticated.user` per
   contracts/mbe-api-auth-users.md "PUT /api/v1/users/{user_id}" self-refresh
   note (FR-014) (depends on T048, T016).
-- [ ] T050 [US3] Create `PrivilegesGrid` widget (one row per `SystemObject`
+- [X] T050 [US3] Create `PrivilegesGrid` widget (one row per `SystemObject`
   from T006, four C/R/U/D checkboxes bound to `Privilege.rawValue`) in
   `lib/features/auth/presentation/admin/privileges_grid.dart` (depends on
   T005, T006, T008).
-- [ ] T051 [US3] Create `UsersListScreen` (FR-011: list with status +
+- [X] T051 [US3] Create `UsersListScreen` (FR-011: list with status +
   administrator flag using the shared `DataTableView` from T020, "New"
   action gated by `can(Users, create)`) in
   `lib/features/auth/presentation/admin/users_list_screen.dart` (depends on
   T020, T049).
-- [ ] T052 [US3] Create `UserDetailScreen` (create + edit modes: account
+- [X] T052 [US3] Create `UserDetailScreen` (create + edit modes: account
   fields, activate/deactivate toggle, embedded `PrivilegesGrid`, "Recover
   password" action surfacing `recovery_token`/`expires_at`) in
   `lib/features/auth/presentation/admin/user_detail_screen.dart` (depends on
   T049, T050).
-- [ ] T053 [US3] Register `/users`, `/users/new`, and `/users/:userId` routes
+- [X] T053 [US3] Register `/users`, `/users/new`, and `/users/:userId` routes
   in `lib/app/router/app_router.dart`, gated by `can(SystemObject.Users,
   AccessRight.read|create|update)` per contracts/routes.md (depends on T051,
   T052, T017).
@@ -347,13 +347,13 @@ are reflected for affected users on their next action (FR-014).
 
 **Purpose**: Final consistency pass across all three stories.
 
-- [ ] T054 [P] Run `dart run build_runner build --delete-conflicting-outputs`
+- [X] T054 [P] Run `dart run build_runner build --delete-conflicting-outputs`
   and resolve any `freezed`/`json_serializable`/`riverpod_generator` codegen
   errors across `lib/`.
-- [ ] T055 [P] Add `es-MX` localized strings (`.arb` files under `lib/l10n/`,
+- [X] T055 [P] Add `es-MX` localized strings (`.arb` files under `lib/l10n/`,
   e.g. `app_es.arb`) for all auth/admin screens introduced in Phases 3-5
   (constitution §"Technology Stack" / §V — `flutter_localizations` + `intl`).
-- [ ] T056 Run `flutter analyze` across `lib/core/`, `lib/app/`,
+- [X] T056 Run `flutter analyze` across `lib/core/`, `lib/app/`,
   `lib/features/auth/`, `lib/features/home/` and resolve all warnings/errors.
 - [ ] T057 Execute [quickstart.md](./quickstart.md) end-to-end against a local
   mbe-api instance (Stories 1-3 validation scenarios) and fix any

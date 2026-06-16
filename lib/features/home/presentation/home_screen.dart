@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Landing screen after sign-in (FR-005/006/007; contracts/routes.md "/").
 /// Lists nav entries gated by [AccessControlService.can], and provides the
@@ -24,6 +25,7 @@ class HomeScreen extends ConsumerWidget {
     }
 
     final user = authState.user;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
             ListTile(
               key: const Key('home_nav_users'),
               leading: const Icon(Icons.people),
-              title: const Text('Users'),
+              title: Text(l10n.usersMenuTitle),
               onTap: () => context.push('/users'),
             ),
         ],

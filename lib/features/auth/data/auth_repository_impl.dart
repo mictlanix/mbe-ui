@@ -50,6 +50,38 @@ class AuthRepositoryImpl implements AuthRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _api.changePasswordApiV1AuthChangePasswordPost(
+        changePasswordRequest: ChangePasswordRequest((b) => b
+          ..oldPassword = oldPassword
+          ..newPassword = newPassword),
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<void> recoverConfirm({
+    required String recoveryToken,
+    required String newPassword,
+  }) async {
+    try {
+      await _api.confirmRecoveryApiV1AuthRecoverPost(
+        confirmRecoveryRequest: ConfirmRecoveryRequest((b) => b
+          ..recoveryToken = recoveryToken
+          ..newPassword = newPassword),
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
 }
 
 AppError _toAppError(DioException error) {

@@ -11,4 +11,12 @@ abstract class AuthRepository {
 
   /// `GET /api/v1/auth/me`. Throws `AuthError` on `401`.
   Future<User> me();
+
+  /// `POST /api/v1/auth/change-password` (FR-009). Throws `ValidationError`
+  /// on `422` (wrong `old_password` or `new_password` too short).
+  Future<void> changePassword({required String oldPassword, required String newPassword});
+
+  /// `POST /api/v1/auth/recover` (FR-010). Throws `ValidationError` on `422`
+  /// (invalid/expired `recovery_token` or `new_password` too short).
+  Future<void> recoverConfirm({required String recoveryToken, required String newPassword});
 }

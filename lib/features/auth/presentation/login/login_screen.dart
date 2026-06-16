@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Sign-in screen (FR-001, FR-008; contracts/routes.md "Login is a centered
 /// single-column form"). On submit, delegates to [LoginController], which
@@ -23,6 +24,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final formState = ref.watch(loginControllerProvider);
     final controller = ref.read(loginControllerProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Center(
@@ -37,7 +39,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Sign in',
+                    l10n.signInTitle,
                     style: Theme.of(context).textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -49,24 +51,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextFormField(
                     key: const Key('login_username_field'),
                     initialValue: formState.username,
-                    decoration: const InputDecoration(labelText: 'Username'),
+                    decoration: InputDecoration(labelText: l10n.usernameLabel),
                     textInputAction: TextInputAction.next,
                     enabled: !formState.submitting,
                     onChanged: controller.usernameChanged,
                     validator: (value) =>
-                        (value == null || value.isEmpty) ? 'Required' : null,
+                        (value == null || value.isEmpty) ? l10n.fieldRequired : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     key: const Key('login_password_field'),
                     initialValue: formState.password,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(labelText: l10n.passwordLabel),
                     obscureText: true,
                     textInputAction: TextInputAction.done,
                     enabled: !formState.submitting,
                     onChanged: controller.passwordChanged,
                     validator: (value) =>
-                        (value == null || value.isEmpty) ? 'Required' : null,
+                        (value == null || value.isEmpty) ? l10n.fieldRequired : null,
                     onFieldSubmitted: (_) => _submit(controller),
                   ),
                   const SizedBox(height: 24),
@@ -78,7 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Sign in'),
+                        : Text(l10n.signInButton),
                   ),
                 ],
               ),

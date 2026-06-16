@@ -1,0 +1,57 @@
+{
+  "@@locale": "es",
+
+  "fieldRequired": "Requerido",
+  "fieldMinLength6": "Debe tener al menos 6 caracteres",
+
+  "signInTitle": "Iniciar sesión",
+  "usernameLabel": "Usuario",
+  "passwordLabel": "Contraseña",
+  "signInButton": "Iniciar sesión",
+
+  "usersMenuTitle": "Usuarios",
+
+  "changePasswordTitle": "Cambiar contraseña",
+  "currentPasswordLabel": "Contraseña actual",
+  "newPasswordLabel": "Nueva contraseña",
+  "changePasswordButton": "Cambiar contraseña",
+  "passwordChangedSuccess": "Contraseña cambiada exitosamente.",
+  "backButton": "Regresar",
+
+  "recoverPasswordTitle": "Recuperar contraseña",
+  "recoveryHelpText": "Solicite a su administrador que genere un token de recuperación para su cuenta, luego ingréselo a continuación junto con su nueva contraseña.",
+  "recoveryTokenLabel": "Token de recuperación",
+  "setNewPasswordButton": "Establecer nueva contraseña",
+  "passwordResetSuccess": "Contraseña restablecida exitosamente. Ya puede iniciar sesión.",
+
+  "usersTitle": "Usuarios",
+  "newUserTooltip": "Nuevo usuario",
+  "usersLoadError": "Error al cargar usuarios: {error}",
+  "noUsersFound": "No se encontraron usuarios.",
+  "columnUsername": "Usuario",
+  "columnEmail": "Correo",
+  "columnAdmin": "Admin",
+  "columnStatus": "Estado",
+  "statusDisabled": "Inactivo",
+  "statusActive": "Activo",
+
+  "editUserTitle": "Editar usuario",
+  "newUserTitle": "Nuevo usuario",
+  "recoverPasswordTooltip": "Recuperar contraseña",
+  "emailLabel": "Correo electrónico",
+  "employeeIdLabel": "ID de empleado (opcional)",
+  "administratorLabel": "Administrador",
+  "disabledLabel": "Inactivo",
+  "permissionsLabel": "Permisos",
+  "saveButton": "Guardar",
+  "recoveryTokenTitle": "Token de recuperación",
+  "recoveryExpiresAt": "Expira: {expiresAt}",
+  "userIdLengthError": "4–20 caracteres",
+  "passwordLengthError": "Al menos 6 caracteres",
+
+  "privilegesModuleColumn": "Módulo",
+  "privilegesCreateColumn": "C",
+  "privilegesReadColumn": "L",
+  "privilegesUpdateColumn": "A",
+  "privilegesDeleteColumn": "E"
+}

@@ -6,6 +6,10 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
+import 'package:mbe_ui/features/auth/presentation/account/change_password_screen.dart';
+import 'package:mbe_ui/features/auth/presentation/account/forgot_password_screen.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
@@ -29,6 +33,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/auth/account/password',
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: '/auth/recover',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/users',
+        builder: (context, state) => const UsersListScreen(),
+      ),
+      GoRoute(
+        path: '/users/new',
+        builder: (context, state) => const UserDetailScreen(),
+      ),
+      GoRoute(
+        path: '/users/:userId',
+        builder: (context, state) =>
+            UserDetailScreen(userId: state.pathParameters['userId']),
       ),
     ],
   );

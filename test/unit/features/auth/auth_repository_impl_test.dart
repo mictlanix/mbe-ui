@@ -165,6 +165,96 @@ void main() {
       await expectLater(() => repository.me(), throwsA(isA<NetworkError>()));
     });
   });
+
+  group('AuthRepositoryImpl.changePassword', () {
+    test('204 returns normally', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('', 204),
+      );
+      await expectLater(
+        () => repository.changePassword(oldPassword: 'old123', newPassword: 'new123'),
+        returnsNormally,
+      );
+    });
+
+    test('422 wrong current password maps to AppError.validation (FR-009)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'old_password'],
+                'msg': 'Incorrect password',
+                'type': 'value_error',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+      await expectLater(
+        () => repository.changePassword(oldPassword: 'wrong', newPassword: 'newpass1'),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+
+    test('422 new_password too short maps to AppError.validation (FR-009)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'new_password'],
+                'msg': 'Value should have at least 6 items',
+                'type': 'too_short',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+      await expectLater(
+        () => repository.changePassword(oldPassword: 'correct', newPassword: 'x'),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+  });
+
+  group('AuthRepositoryImpl.recoverConfirm', () {
+    test('204 returns normally', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('', 204),
+      );
+      await expectLater(
+        () => repository.recoverConfirm(recoveryToken: 'valid-tok', newPassword: 'newpass1'),
+        returnsNormally,
+      );
+    });
+
+    test('422 invalid/expired recovery token maps to AppError.validation (FR-010)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'recovery_token'],
+                'msg': 'Invalid or expired recovery token',
+                'type': 'value_error',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+      await expectLater(
+        () => repository.recoverConfirm(recoveryToken: 'bad-token', newPassword: 'newpass1'),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+  });
 }
 
 AuthRepositoryImpl _repositoryWith(

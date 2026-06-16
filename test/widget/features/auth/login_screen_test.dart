@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -33,7 +34,11 @@ void main() {
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
         ],
-        child: const MaterialApp(home: LoginScreen()),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const LoginScreen(),
+        ),
       ),
     );
     // Let `AuthNotifier.build()`'s session restore resolve.

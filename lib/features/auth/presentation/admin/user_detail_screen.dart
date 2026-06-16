@@ -1,0 +1,249 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
+/// Create / edit screen for a single user account (FR-012/FR-013/FR-014).
+/// [userId] is null in create mode; non-null in edit mode.
+class UserDetailScreen extends ConsumerStatefulWidget {
+  const UserDetailScreen({super.key, this.userId});
+
+  final String? userId;
+
+  @override
+  ConsumerState<UserDetailScreen> createState() => _UserDetailScreenState();
+}
+
+class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  bool get _isEdit => widget.userId != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEdit) {
+      // Load after the first frame so the provider is already mounted.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(userFormControllerProvider.notifier)
+            .loadUser(widget.userId!);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formState = ref.watch(userFormControllerProvider);
+    final controller = ref.read(userFormControllerProvider.notifier);
+    final access = ref.watch(accessControlProvider);
+    final canUpdate = access.can(SystemObject.users, AccessRight.update);
+    final l10n = AppLocalizations.of(context)!;
+
+    if (formState.loading) {
+      return Scaffold(
+        appBar: AppBar(
+            title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (formState.saved) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.pop();
+      });
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle),
+        actions: [
+          if (_isEdit && canUpdate)
+            IconButton(
+              key: const Key('recover_password_button'),
+              icon: const Icon(Icons.lock_reset),
+              tooltip: l10n.recoverPasswordTooltip,
+              onPressed: formState.submitting
+                  ? null
+                  : () => controller.recoverPassword(widget.userId!),
+            ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (formState.error != null) ...[
+                ErrorBanner(
+                  error: AppError.validation([
+                    FieldError(
+                        loc: const [], msg: formState.error!, type: 'error'),
+                  ]),
+                ),
+                const SizedBox(height: 16),
+              ],
+              if (formState.recoveryToken != null) ...[
+                _RecoveryTokenCard(
+                  token: formState.recoveryToken!,
+                  expiresAt: formState.recoveryExpiresAt ?? '',
+                  onDismiss: controller.clearRecoveryResult,
+                ),
+                const SizedBox(height: 16),
+              ],
+              if (!_isEdit) ...[
+                TextFormField(
+                  key: const Key('user_id_field'),
+                  decoration: InputDecoration(labelText: l10n.usernameLabel),
+                  enabled: !formState.submitting,
+                  onChanged: controller.userIdChanged,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return l10n.fieldRequired;
+                    if (v.length < 4 || v.length > 20) {
+                      return l10n.userIdLengthError;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  key: const Key('password_field'),
+                  decoration: InputDecoration(labelText: l10n.passwordLabel),
+                  obscureText: true,
+                  enabled: !formState.submitting,
+                  onChanged: controller.passwordChanged,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return l10n.fieldRequired;
+                    if (v.length < 6) return l10n.passwordLengthError;
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+              ],
+              TextFormField(
+                key: const Key('email_field'),
+                initialValue: formState.email,
+                decoration: InputDecoration(labelText: l10n.emailLabel),
+                enabled: !formState.submitting,
+                onChanged: controller.emailChanged,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? l10n.fieldRequired : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('employee_id_field'),
+                initialValue: formState.employeeId?.toString() ?? '',
+                decoration:
+                    InputDecoration(labelText: l10n.employeeIdLabel),
+                keyboardType: TextInputType.number,
+                enabled: !formState.submitting,
+                onChanged: controller.employeeIdChanged,
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                key: const Key('administrator_switch'),
+                title: Text(l10n.administratorLabel),
+                value: formState.administrator,
+                onChanged:
+                    formState.submitting ? null : controller.administratorChanged,
+              ),
+              SwitchListTile(
+                key: const Key('disabled_switch'),
+                title: Text(l10n.disabledLabel),
+                value: formState.disabled,
+                onChanged:
+                    formState.submitting ? null : controller.disabledChanged,
+              ),
+              const SizedBox(height: 16),
+              Text(l10n.permissionsLabel,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              PrivilegesGrid(
+                key: const Key('privileges_grid'),
+                privileges: formState.privileges,
+                onChanged: canUpdate ? controller.privilegeChanged : null,
+              ),
+              const SizedBox(height: 24),
+              if (canUpdate)
+                FilledButton(
+                  key: const Key('save_button'),
+                  onPressed: formState.submitting
+                      ? null
+                      : () => _submit(controller),
+                  child: formState.submitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.saveButton),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _submit(UserFormController controller) {
+    if (_formKey.currentState?.validate() ?? false) {
+      controller.save(existingUserId: widget.userId);
+    }
+  }
+}
+
+class _RecoveryTokenCard extends StatelessWidget {
+  const _RecoveryTokenCard({
+    required this.token,
+    required this.expiresAt,
+    required this.onDismiss,
+  });
+
+  final String token;
+  final String expiresAt;
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.key),
+                const SizedBox(width: 8),
+                Text(AppLocalizations.of(context)!.recoveryTokenTitle,
+                    style: Theme.of(context).textTheme.titleSmall),
+                const Spacer(),
+                IconButton(
+                    key: const Key('dismiss_recovery_button'),
+                    icon: const Icon(Icons.close),
+                    onPressed: onDismiss),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SelectableText(token,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontFamily: 'monospace')),
+            const SizedBox(height: 4),
+            Text(AppLocalizations.of(context)!.recoveryExpiresAt(expiresAt),
+                style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
+    );
+  }
+}

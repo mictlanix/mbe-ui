@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/app/router/app_router.dart';
 import 'package:mbe_ui/app/theme/app_theme.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Root widget: wires the redirect-guarded router (T022), the seeded
 /// light/dark theme + persisted `ThemeMode` (T021), and `es-MX` as the
@@ -23,8 +23,8 @@ class App extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
       locale: const Locale('es', 'MX'),
-      supportedLocales: const [Locale('es', 'MX')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
@@ -68,5 +69,16 @@ class AuthNotifier extends _$AuthNotifier {
   void handleSessionInvalid() {
     unawaited(ref.read(tokenStorageProvider).clear());
     state = const AsyncData(AuthState.unauthenticated(reason: SignOutReason.sessionInvalid));
+  }
+
+  /// Updates the in-memory [User] when an administrator edits their own
+  /// account (FR-014 best-effort; the authoritative invalidation is the next
+  /// `401` via `session_version`). No-op if [updated] does not match the
+  /// current user or the session is not authenticated.
+  void refreshCurrentUser(User updated) {
+    final current = state.valueOrNull;
+    if (current is! AuthAuthenticated) return;
+    if (current.user.userId != updated.userId) return;
+    state = AsyncData(AuthState.authenticated(token: current.token, user: updated));
   }
 }
