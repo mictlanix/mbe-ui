@@ -36,16 +36,15 @@ docker run --rm \
   -o "/local/${OUTPUT_DIR}" \
   --additional-properties=pubName=mbe_api_client,pubAuthor=Mictlanix,pubDescription="mbe-api OpenAPI client (generated)"
 
-# The generator defaults to `sdk: '>=2.18.0 <4.0.0'`, which gives this
-# nested package a different language version than mbe_ui (its parent
-# package). Since lib/generated/openapi sits under mbe_ui's own lib/, a
-# language version mismatch between the two breaks part-file resolution
-# (`flutter test`/`flutter run` fail with "language version override has to
-# be the same in the library and its part(s)"), even though `flutter
-# analyze` doesn't catch it (lib/generated/** is excluded from analysis).
-# Align it with mbe_ui's pubspec.yaml sdk lower bound.
-ROOT_SDK_LOWER_BOUND="$(grep -m1 -oE '[0-9]+\.[0-9]+\.[0-9]+' "${REPO_ROOT}/pubspec.yaml")"
-sed -i.bak "s/sdk: '>=2.18.0 <4.0.0'/sdk: '>=${ROOT_SDK_LOWER_BOUND%.*}.0 <4.0.0'/" \
+# The generator may produce an sdk lower bound below 2.12.0 (e.g. '>=1.2.0'),
+# which Dart 3 rejects outright ('pub get' fails: "The lower bound must be
+# 2.12.0 or higher to enable null safety"). Also, since lib/generated/openapi
+# sits under mbe_ui's own lib/, a language version mismatch between the two
+# packages breaks part-file resolution at runtime even when analysis passes.
+# Extract the lower bound from the sdk line specifically (not the package
+# version line) and patch the generated pubspec to match.
+ROOT_SDK_LOWER_BOUND="$(grep -E '^\s+sdk:' "${REPO_ROOT}/pubspec.yaml" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+sed -i.bak "s/sdk: '>=.*<4.0.0'/sdk: '>=${ROOT_SDK_LOWER_BOUND} <4.0.0'/" \
   "${REPO_ROOT}/${OUTPUT_DIR}/pubspec.yaml"
 rm -f "${REPO_ROOT}/${OUTPUT_DIR}/pubspec.yaml.bak"
 
