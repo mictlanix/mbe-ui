@@ -53,6 +53,13 @@ class HomeScreen extends ConsumerWidget {
               title: Text(l10n.usersMenuTitle),
               onTap: () => context.push('/users'),
             ),
+          if (access.can(SystemObject.products, AccessRight.read))
+            ListTile(
+              key: const Key('home_nav_products'),
+              leading: const Icon(Icons.inventory_2),
+              title: Text(l10n.productsTitle),
+              onTap: () => context.push('/products'),
+            ),
         ],
       ),
     );

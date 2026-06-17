@@ -103,6 +103,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusActive => 'Active';
 
   @override
+  String get productsTitle => 'Products';
+
+  @override
+  String get newProductTooltip => 'New product';
+
+  @override
+  String get productsSearchLabel => 'Search by code, name, brand, or model';
+
+  @override
+  String get productsShowInactiveFilter => 'Show inactive';
+
+  @override
+  String get productsStockableFilter => 'Stockable';
+
+  @override
+  String get productsSalableFilter => 'Salable';
+
+  @override
+  String get productsPurchasableFilter => 'Purchasable';
+
+  @override
+  String productsLoadError(Object error) {
+    return 'Failed to load products: $error';
+  }
+
+  @override
+  String get noProductsFound => 'No products found.';
+
+  @override
+  String get columnCode => 'Code';
+
+  @override
+  String get columnName => 'Name';
+
+  @override
+  String get columnBrand => 'Brand';
+
+  @override
+  String get columnUnit => 'Unit';
+
+  @override
+  String get loadMoreButton => 'Load more';
+
+  @override
   String get editUserTitle => 'Edit User';
 
   @override

@@ -103,6 +103,50 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statusActive => 'Activo';
 
   @override
+  String get productsTitle => 'Productos';
+
+  @override
+  String get newProductTooltip => 'Nuevo producto';
+
+  @override
+  String get productsSearchLabel => 'Buscar por código, nombre, marca o modelo';
+
+  @override
+  String get productsShowInactiveFilter => 'Mostrar inactivos';
+
+  @override
+  String get productsStockableFilter => 'Almacenable';
+
+  @override
+  String get productsSalableFilter => 'Vendible';
+
+  @override
+  String get productsPurchasableFilter => 'Comprable';
+
+  @override
+  String productsLoadError(Object error) {
+    return 'Error al cargar productos: $error';
+  }
+
+  @override
+  String get noProductsFound => 'No se encontraron productos.';
+
+  @override
+  String get columnCode => 'Código';
+
+  @override
+  String get columnName => 'Nombre';
+
+  @override
+  String get columnBrand => 'Marca';
+
+  @override
+  String get columnUnit => 'Unidad';
+
+  @override
+  String get loadMoreButton => 'Cargar más';
+
+  @override
   String get editUserTitle => 'Editar usuario';
 
   @override

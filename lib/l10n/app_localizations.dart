@@ -278,6 +278,90 @@ abstract class AppLocalizations {
   /// **'Active'**
   String get statusActive;
 
+  /// No description provided for @productsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get productsTitle;
+
+  /// No description provided for @newProductTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New product'**
+  String get newProductTooltip;
+
+  /// No description provided for @productsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code, name, brand, or model'**
+  String get productsSearchLabel;
+
+  /// No description provided for @productsShowInactiveFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Show inactive'**
+  String get productsShowInactiveFilter;
+
+  /// No description provided for @productsStockableFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Stockable'**
+  String get productsStockableFilter;
+
+  /// No description provided for @productsSalableFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Salable'**
+  String get productsSalableFilter;
+
+  /// No description provided for @productsPurchasableFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchasable'**
+  String get productsPurchasableFilter;
+
+  /// No description provided for @productsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load products: {error}'**
+  String productsLoadError(Object error);
+
+  /// No description provided for @noProductsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No products found.'**
+  String get noProductsFound;
+
+  /// No description provided for @columnCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get columnCode;
+
+  /// No description provided for @columnName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get columnName;
+
+  /// No description provided for @columnBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get columnBrand;
+
+  /// No description provided for @columnUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get columnUnit;
+
+  /// No description provided for @loadMoreButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get loadMoreButton;
+
   /// No description provided for @editUserTitle.
   ///
   /// In en, this message translates to:

@@ -95,6 +95,52 @@
   "statusActive": "Active",
   "@statusActive": {},
 
+  "productsTitle": "Products",
+  "@productsTitle": {},
+
+  "newProductTooltip": "New product",
+  "@newProductTooltip": {},
+
+  "productsSearchLabel": "Search by code, name, brand, or model",
+  "@productsSearchLabel": {},
+
+  "productsShowInactiveFilter": "Show inactive",
+  "@productsShowInactiveFilter": {},
+
+  "productsStockableFilter": "Stockable",
+  "@productsStockableFilter": {},
+
+  "productsSalableFilter": "Salable",
+  "@productsSalableFilter": {},
+
+  "productsPurchasableFilter": "Purchasable",
+  "@productsPurchasableFilter": {},
+
+  "productsLoadError": "Failed to load products: {error}",
+  "@productsLoadError": {
+    "placeholders": {
+      "error": {"type": "Object"}
+    }
+  },
+
+  "noProductsFound": "No products found.",
+  "@noProductsFound": {},
+
+  "columnCode": "Code",
+  "@columnCode": {},
+
+  "columnName": "Name",
+  "@columnName": {},
+
+  "columnBrand": "Brand",
+  "@columnBrand": {},
+
+  "columnUnit": "Unit",
+  "@columnUnit": {},
+
+  "loadMoreButton": "Load more",
+  "@loadMoreButton": {},
+
   "editUserTitle": "Edit User",
   "@editUserTitle": {},
 

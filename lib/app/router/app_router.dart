@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart'
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
@@ -54,6 +55,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/users/:userId',
         builder: (context, state) =>
             UserDetailScreen(userId: state.pathParameters['userId']),
+      ),
+      GoRoute(
+        path: '/products',
+        builder: (context, state) => const ProductsListScreen(),
       ),
     ],
   );
@@ -106,5 +111,6 @@ String? _redirect(Ref ref, GoRouterState state) {
 /// `null` for unguarded routes.
 SystemObject? _routeSystemObject(String location) {
   if (location.startsWith('/users')) return SystemObject.users;
+  if (location.startsWith('/products')) return SystemObject.products;
   return null;
 }

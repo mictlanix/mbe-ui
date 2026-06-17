@@ -41,7 +41,7 @@ against it. No new dependency or tooling decision is needed (plan.md
 "Technical Context" — all required packages already exist from the auth
 feature).
 
-- [ ] T001 Run `./tool/generate_api_client.sh http://127.0.0.1:8000/openapi.json`
+- [X] T001 Run `./tool/generate_api_client.sh http://127.0.0.1:8000/openapi.json`
   against a local mbe-api instance and confirm `lib/generated/openapi/`
   already contains `ProductsApi`, `ProductCreate`, `ProductUpdate`,
   `ProductResponse`, `ProductListItem`, `ProductPriceResponse` (research.md
@@ -60,23 +60,23 @@ No user-story screen can be meaningfully implemented before this phase.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 [P] Create `Product` freezed entity (all fields per data-model.md
+- [X] T002 [P] Create `Product` freezed entity (all fields per data-model.md
   "Product", incl. `prices: List<ProductPrice>`) mapping
   `ProductResponse`/`ProductCreate`/`ProductUpdate` in
   `lib/features/catalog/domain/entities/product.dart`.
-- [ ] T003 [P] Create `ProductPrice` freezed entity mapping
+- [X] T003 [P] Create `ProductPrice` freezed entity mapping
   `ProductPriceResponse` (read-only) in
   `lib/features/catalog/domain/entities/product_price.dart` (data-model.md
   "ProductPrice").
-- [ ] T004 [P] Create `ProductListItem` freezed entity mapping the API's
+- [X] T004 [P] Create `ProductListItem` freezed entity mapping the API's
   `ProductListItem` projection in
   `lib/features/catalog/domain/entities/product_list_item.dart`
   (data-model.md "ProductListItem").
-- [ ] T005 Define the `ProductRepository` interface (`list`, `get`) in
+- [X] T005 Define the `ProductRepository` interface (`list`, `get`) in
   `lib/features/catalog/domain/repositories/product_repository.dart` per
   contracts/mbe-api-products.md `GET /products`, `GET /products/{id}`
   (depends on T002, T004).
-- [ ] T006 Implement `ProductRepositoryImpl.list`/`.get` in
+- [X] T006 Implement `ProductRepositoryImpl.list`/`.get` in
   `lib/features/catalog/data/product_repository_impl.dart` using the
   generated `ProductsApi` client, mapping DTOs to `Product`/`ProductListItem`
   and errors to the existing shared `AppError` types
@@ -101,18 +101,18 @@ name search, active-only filter, deny-by-default for a no-privilege account.
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] `ProductRepositoryImpl.list`/`.get` tests covering
+- [X] T007 [P] [US1] `ProductRepositoryImpl.list`/`.get` tests covering
   `200`, `404`, `422`, network-error → `AppError` mapping in
   `test/unit/features/catalog/product_repository_impl_test.dart` (mocktail
   `ProductsApi` fake).
-- [ ] T008 [P] [US1] `ProductsListController` tests: search/filter state →
+- [X] T008 [P] [US1] `ProductsListController` tests: search/filter state →
   `skip`/`limit`/`search`/`deactivated`/`stockable`/`salable`/`purchasable`
   query param mapping (research.md §6) in
   `test/unit/features/catalog/products_list_controller_test.dart`.
-- [ ] T009 [P] [US1] Widget test for `ProductsListScreen` (search box,
+- [X] T009 [P] [US1] Widget test for `ProductsListScreen` (search box,
   filter chips, "no products found" empty state, inactive badge) in
   `test/widget/features/catalog/products_list_screen_test.dart`.
-- [ ] T010 [P] [US1] Integration test: sign in with a Read-privilege account
+- [X] T010 [P] [US1] Integration test: sign in with a Read-privilege account
   and find a known product by exact code and by partial name; sign in with a
   no-`products`-privilege account and confirm `/products` is unreachable, in
   `test/integration/product_catalog_flow_test.dart` (quickstart Story 1
@@ -120,17 +120,17 @@ name search, active-only filter, deny-by-default for a no-privilege account.
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Create `ProductsListController` (plain `Notifier`:
+- [X] T011 [P] [US1] Create `ProductsListController` (plain `Notifier`:
   `search`, `deactivated`/`stockable`/`salable`/`purchasable` filters,
   `skip`/`limit` pagination cursor, `AsyncValue<List<ProductListItem>>`
   results) in `lib/features/catalog/presentation/products_list_controller.dart`
   (data-model.md "ProductFilter"; depends on T004, T006).
-- [ ] T012 [US1] Create `ProductsListScreen` (search field, filter chips,
+- [X] T012 [US1] Create `ProductsListScreen` (search field, filter chips,
   the shared `DataTableView` from `lib/core/widgets/data_table_view.dart`,
   "load more"/infinite-scroll pagination per research.md §5) in
   `lib/features/catalog/presentation/products_list_screen.dart` (depends on
   T011).
-- [ ] T013 [US1] Register the `/products` route in
+- [X] T013 [US1] Register the `/products` route in
   `lib/app/router/app_router.dart`, gated by
   `can(SystemObject.products, AccessRight.read)` per contracts/routes.md
   (depends on T012).
