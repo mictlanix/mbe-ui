@@ -1,0 +1,18 @@
+{
+  "workflow": "speckit",
+  "specName": "001-user-authentication",
+  "branch": "001-user-authentication",
+  "selectedAt": "2026-06-17T03:24:08.467Z",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-17T03:25:16.859Z"
+    }
+  ],
+  "telemetryInstanceId": "156ee31d-c477-4ac5-bcb4-b6b53fc694f9"
+}
