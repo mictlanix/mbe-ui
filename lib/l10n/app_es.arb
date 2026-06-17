@@ -8,6 +8,8 @@
   "usernameLabel": "Usuario",
   "passwordLabel": "Contraseña",
   "signInButton": "Iniciar sesión",
+  "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+  "changePasswordMenuTitle": "Cambiar contraseña",
 
   "usersMenuTitle": "Usuarios",
 

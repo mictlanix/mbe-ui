@@ -83,8 +83,12 @@ String? _redirect(Ref ref, GoRouterState state) {
   if (authState == null || authState is AuthAuthenticating) return null;
 
   final isAuthRoute = state.matchedLocation.startsWith('/auth/');
+  // Unlike the rest of /auth/*, this screen requires an active session
+  // (FR-009 "a signed-in user"); /auth/recover is for users who can't sign in.
+  final requiresSession = state.matchedLocation == '/auth/account/password';
 
   if (authState is AuthUnauthenticated) {
+    if (requiresSession) return '/auth/login';
     return isAuthRoute ? null : '/auth/login';
   }
 

@@ -27,6 +27,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInButton => 'Sign in';
 
   @override
+  String get forgotPasswordLink => 'Forgot your password?';
+
+  @override
+  String get changePasswordMenuTitle => 'Change password';
+
+  @override
   String get usersMenuTitle => 'Users';
 
   @override

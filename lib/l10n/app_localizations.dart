@@ -134,6 +134,18 @@ abstract class AppLocalizations {
   /// **'Sign in'**
   String get signInButton;
 
+  /// No description provided for @forgotPasswordLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get forgotPasswordLink;
+
+  /// No description provided for @changePasswordMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePasswordMenuTitle;
+
   /// No description provided for @usersMenuTitle.
   ///
   /// In en, this message translates to:

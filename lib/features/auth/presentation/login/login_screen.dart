@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
@@ -81,6 +82,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(l10n.signInButton),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    key: const Key('forgot_password_link'),
+                    onPressed: () => context.push('/auth/recover'),
+                    child: Text(l10n.forgotPasswordLink),
                   ),
                 ],
               ),

@@ -355,7 +355,7 @@ are reflected for affected users on their next action (FR-014).
   (constitution §"Technology Stack" / §V — `flutter_localizations` + `intl`).
 - [X] T056 Run `flutter analyze` across `lib/core/`, `lib/app/`,
   `lib/features/auth/`, `lib/features/home/` and resolve all warnings/errors.
-- [ ] T057 Execute [quickstart.md](./quickstart.md) end-to-end against a local
+- [X] T057 Execute [quickstart.md](./quickstart.md) end-to-end against a local
   mbe-api instance (Stories 1-3 validation scenarios) and fix any
   discrepancies found.
 

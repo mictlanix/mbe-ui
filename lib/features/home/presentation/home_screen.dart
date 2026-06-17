@@ -40,6 +40,12 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: ListView(
         children: [
+          ListTile(
+            key: const Key('home_nav_change_password'),
+            leading: const Icon(Icons.lock_outline),
+            title: Text(l10n.changePasswordMenuTitle),
+            onTap: () => context.push('/auth/account/password'),
+          ),
           if (access.can(SystemObject.users, AccessRight.read))
             ListTile(
               key: const Key('home_nav_users'),

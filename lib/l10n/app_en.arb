@@ -19,6 +19,12 @@
   "signInButton": "Sign in",
   "@signInButton": {},
 
+  "forgotPasswordLink": "Forgot your password?",
+  "@forgotPasswordLink": {},
+
+  "changePasswordMenuTitle": "Change password",
+  "@changePasswordMenuTitle": {},
+
   "usersMenuTitle": "Users",
   "@usersMenuTitle": {},
 
