@@ -32,3 +32,18 @@ class FieldError with _$FieldError {
     required String type,
   }) = _FieldError;
 }
+
+extension AppErrorServerMessage on AppError {
+  /// The server-provided detail behind this error (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), for display alongside a localized generic
+  /// message since it can't be localized client-side. `null` for
+  /// [ValidationError] (its field-level messages are surfaced separately)
+  /// and for errors the server sent without a `detail` string.
+  String? get serverMessage => switch (this) {
+        AuthError(message: final m) => m,
+        NotFoundError(message: final m) => m,
+        ServerError(message: final m) => m,
+        NetworkError(message: final m) => m,
+        ValidationError() => null,
+      };
+}

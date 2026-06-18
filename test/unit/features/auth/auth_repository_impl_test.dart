@@ -39,7 +39,7 @@ void main() {
 
       await expectLater(
         () => repository.login(username: 'jdoe', password: 'wrong'),
-        throwsA(const AppError.auth()),
+        throwsA(const AppError.auth('Incorrect username or password')),
       );
     });
 

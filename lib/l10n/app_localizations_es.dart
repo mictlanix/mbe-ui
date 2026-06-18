@@ -345,4 +345,28 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get productDeactivatePermissionDeniedError =>
       'Ya no tienes permiso para desactivar productos.';
+
+  @override
+  String get userEmailRequiredError => 'El correo electrónico es obligatorio.';
+
+  @override
+  String get userUsernameRequiredError =>
+      'El nombre de usuario es obligatorio.';
+
+  @override
+  String get userPasswordLengthError =>
+      'La contraseña debe tener al menos 6 caracteres.';
+
+  @override
+  String get userLoadFailedError => 'No se pudo cargar el usuario.';
+
+  @override
+  String get userSaveFailedError => 'No se pudo guardar el usuario.';
+
+  @override
+  String get userDeleteFailedError => 'No se pudo eliminar el usuario.';
+
+  @override
+  String get userRecoveryFailedError =>
+      'No se pudo generar el token de recuperación.';
 }

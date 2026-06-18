@@ -228,7 +228,7 @@ void main() {
 
       await expectLater(
         () => repository.get(productId: 999),
-        throwsA(const AppError.notFound()),
+        throwsA(const AppError.notFound('Product not found')),
       );
     });
 
@@ -284,7 +284,7 @@ void main() {
 
       await expectLater(
         () => repository.update(productId: 999, name: 'Anything'),
-        throwsA(const AppError.notFound()),
+        throwsA(const AppError.notFound('Product not found')),
       );
     });
 

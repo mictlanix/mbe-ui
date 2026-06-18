@@ -56,6 +56,11 @@ class ProductFormState with _$ProductFormState {
     @Default(false) bool submitting,
     @Default(false) bool saved,
     String? error,
+    /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+    /// string on a `404`/`5xx`), shown alongside the localized [error]
+    /// message since it can't be localized client-side. `null` for
+    /// client-side-only errors (validation, permission checks).
+    String? errorDetail,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _ProductFormState;
 }
@@ -67,23 +72,36 @@ class ProductFormController extends _$ProductFormController {
   @override
   ProductFormState build() => const ProductFormState();
 
-  void codeChanged(String v) =>
-      state = state.copyWith(code: v, error: null, fieldErrors: const {});
+  void codeChanged(String v) => state = state.copyWith(
+        code: v,
+        error: null,
+        errorDetail: null,
+        fieldErrors: const {},
+      );
 
-  void nameChanged(String v) =>
-      state = state.copyWith(name: v, error: null, fieldErrors: const {});
+  void nameChanged(String v) => state = state.copyWith(
+        name: v,
+        error: null,
+        errorDetail: null,
+        fieldErrors: const {},
+      );
 
   void brandChanged(String v) => state = state.copyWith(brand: v);
   void modelChanged(String v) => state = state.copyWith(model: v);
 
-  void barCodeChanged(String v) =>
-      state = state.copyWith(barCode: v, error: null, fieldErrors: const {});
+  void barCodeChanged(String v) => state = state.copyWith(
+        barCode: v,
+        error: null,
+        errorDetail: null,
+        fieldErrors: const {},
+      );
 
   void locationChanged(String v) => state = state.copyWith(location: v);
 
   void unitOfMeasurementChanged(String v) => state = state.copyWith(
         unitOfMeasurement: v,
         error: null,
+        errorDetail: null,
         fieldErrors: const {},
       );
 
@@ -103,7 +121,7 @@ class ProductFormController extends _$ProductFormController {
   /// here — `ref.read` at this one-shot async call site could race with
   /// `authNotifierProvider`'s own async session restore.
   Future<void> loadForEdit(int productId) async {
-    state = state.copyWith(loading: true, error: null);
+    state = state.copyWith(loading: true, error: null, errorDetail: null);
     try {
       final product = await ref.read(productRepositoryProvider).get(productId: productId);
       state = ProductFormState(
@@ -125,10 +143,11 @@ class ProductFormController extends _$ProductFormController {
         invoiceable: product.invoiceable,
         deactivated: product.deactivated,
       );
-    } on AppError {
+    } on AppError catch (e) {
       state = state.copyWith(
         loading: false,
         error: ProductFormErrorCode.loadFailed,
+        errorDetail: e.serverMessage,
       );
     }
   }
@@ -172,7 +191,7 @@ class ProductFormController extends _$ProductFormController {
   Future<void> submitCreate() async {
     final fieldErrors = _validate();
     if (fieldErrors.isNotEmpty) {
-      state = state.copyWith(fieldErrors: fieldErrors, error: null);
+      state = state.copyWith(fieldErrors: fieldErrors, error: null, errorDetail: null);
       return;
     }
 
@@ -181,11 +200,17 @@ class ProductFormController extends _$ProductFormController {
         .can(SystemObject.products, AccessRight.create)) {
       state = state.copyWith(
         error: ProductFormErrorCode.createPermissionDenied,
+        errorDetail: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, fieldErrors: const {});
+    state = state.copyWith(
+      submitting: true,
+      error: null,
+      errorDetail: null,
+      fieldErrors: const {},
+    );
     try {
       await ref.read(productRepositoryProvider).create(
             code: state.code,
@@ -216,6 +241,7 @@ class ProductFormController extends _$ProductFormController {
         state = state.copyWith(
           submitting: false,
           error: ProductFormErrorCode.createFailed,
+          errorDetail: e.serverMessage,
         );
       }
     }
@@ -231,7 +257,7 @@ class ProductFormController extends _$ProductFormController {
 
     final fieldErrors = _validate();
     if (fieldErrors.isNotEmpty) {
-      state = state.copyWith(fieldErrors: fieldErrors, error: null);
+      state = state.copyWith(fieldErrors: fieldErrors, error: null, errorDetail: null);
       return;
     }
 
@@ -240,11 +266,17 @@ class ProductFormController extends _$ProductFormController {
         .can(SystemObject.products, AccessRight.update)) {
       state = state.copyWith(
         error: ProductFormErrorCode.updatePermissionDenied,
+        errorDetail: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, fieldErrors: const {});
+    state = state.copyWith(
+      submitting: true,
+      error: null,
+      errorDetail: null,
+      fieldErrors: const {},
+    );
     try {
       await ref.read(productRepositoryProvider).update(
             productId: productId,
@@ -276,6 +308,7 @@ class ProductFormController extends _$ProductFormController {
         state = state.copyWith(
           submitting: false,
           error: ProductFormErrorCode.updateFailed,
+          errorDetail: e.serverMessage,
         );
       }
     }
@@ -295,11 +328,12 @@ class ProductFormController extends _$ProductFormController {
         .can(SystemObject.products, AccessRight.delete)) {
       state = state.copyWith(
         error: ProductFormErrorCode.deactivatePermissionDenied,
+        errorDetail: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null);
+    state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
       await ref.read(productRepositoryProvider).update(
             productId: productId,
@@ -307,8 +341,9 @@ class ProductFormController extends _$ProductFormController {
           );
       ref.invalidate(productsListControllerProvider);
       state = state.copyWith(submitting: false, deactivated: true);
-    } on AppError {
+    } on AppError catch (e) {
       state = state.copyWith(
+        errorDetail: e.serverMessage,
         submitting: false,
         error: ProductFormErrorCode.deactivateFailed,
       );

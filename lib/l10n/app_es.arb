@@ -117,5 +117,13 @@
   "productDeactivateFailedError": "No se pudo desactivar el producto.",
   "productCreatePermissionDeniedError": "Ya no tienes permiso para crear productos.",
   "productUpdatePermissionDeniedError": "Ya no tienes permiso para editar productos.",
-  "productDeactivatePermissionDeniedError": "Ya no tienes permiso para desactivar productos."
+  "productDeactivatePermissionDeniedError": "Ya no tienes permiso para desactivar productos.",
+
+  "userEmailRequiredError": "El correo electrónico es obligatorio.",
+  "userUsernameRequiredError": "El nombre de usuario es obligatorio.",
+  "userPasswordLengthError": "La contraseña debe tener al menos 6 caracteres.",
+  "userLoadFailedError": "No se pudo cargar el usuario.",
+  "userSaveFailedError": "No se pudo guardar el usuario.",
+  "userDeleteFailedError": "No se pudo eliminar el usuario.",
+  "userRecoveryFailedError": "No se pudo generar el token de recuperación."
 }

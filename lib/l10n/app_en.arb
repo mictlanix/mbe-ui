@@ -333,5 +333,26 @@
   "@productUpdatePermissionDeniedError": {},
 
   "productDeactivatePermissionDeniedError": "You no longer have permission to deactivate products.",
-  "@productDeactivatePermissionDeniedError": {}
+  "@productDeactivatePermissionDeniedError": {},
+
+  "userEmailRequiredError": "Email is required.",
+  "@userEmailRequiredError": {},
+
+  "userUsernameRequiredError": "Username is required.",
+  "@userUsernameRequiredError": {},
+
+  "userPasswordLengthError": "Password must be at least 6 characters.",
+  "@userPasswordLengthError": {},
+
+  "userLoadFailedError": "Failed to load user.",
+  "@userLoadFailedError": {},
+
+  "userSaveFailedError": "Failed to save user.",
+  "@userSaveFailedError": {},
+
+  "userDeleteFailedError": "Failed to delete user.",
+  "@userDeleteFailedError": {},
+
+  "userRecoveryFailedError": "Failed to generate recovery token.",
+  "@userRecoveryFailedError": {}
 }

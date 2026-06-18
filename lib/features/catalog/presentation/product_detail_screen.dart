@@ -97,6 +97,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     msg: _localizeFormError(l10n, formState.error!),
                     type: 'error',
                   ),
+                  // The server's own message (e.g. "Product not found")
+                  // can't be localized client-side, so it's shown as
+                  // supplementary detail under the localized heading above.
+                  if (formState.errorDetail != null)
+                    FieldError(
+                      loc: const [],
+                      msg: formState.errorDetail!,
+                      type: 'error',
+                    ),
                 ]),
               ),
               const SizedBox(height: 16),

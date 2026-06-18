@@ -12,6 +12,21 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 part 'users_controller.freezed.dart';
 part 'users_controller.g.dart';
 
+/// Error codes for [UserFormState.error], mapped to localized text in the
+/// UI layer (`user_detail_screen.dart`) since this controller has no
+/// `BuildContext`/`AppLocalizations` access. A [ValidationError]'s
+/// server-provided `msg` is stored directly in `error` instead (it can't be
+/// localized client-side either way), so it isn't one of these codes.
+abstract final class UserFormErrorCode {
+  static const emailRequired = 'emailRequired';
+  static const usernameRequired = 'usernameRequired';
+  static const passwordLength = 'passwordLength';
+  static const loadFailed = 'loadFailed';
+  static const saveFailed = 'saveFailed';
+  static const deleteFailed = 'deleteFailed';
+  static const recoveryFailed = 'recoveryFailed';
+}
+
 /// Admin user-form state (data-model.md "Admin user-form state").
 /// Supports both create and edit modes; local UI state, not persisted
 /// (constitution §II).
@@ -31,6 +46,12 @@ class UserFormState with _$UserFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
+    /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+    /// string on a `404`/`5xx`), shown alongside the localized [error]
+    /// message since it can't be localized client-side. `null` for
+    /// client-side-only errors and for a [ValidationError]'s message
+    /// (already raw server text stored directly in `error`).
+    String? errorDetail,
     String? recoveryToken,
     String? recoveryExpiresAt,
   }) = _UserFormState;
@@ -62,7 +83,7 @@ class UserFormController extends _$UserFormController {
 
   /// Populates the form from an existing user (edit mode).
   Future<void> loadUser(String userId) async {
-    state = state.copyWith(loading: true, error: null);
+    state = state.copyWith(loading: true, error: null, errorDetail: null);
     try {
       final user = await ref.read(userRepositoryProvider).get(userId: userId);
       state = UserFormState(
@@ -73,24 +94,38 @@ class UserFormController extends _$UserFormController {
         privileges: user.privileges,
         settings: user.settings,
       );
-    } on AppError {
-      state = state.copyWith(loading: false, error: 'Failed to load user.');
+    } on AppError catch (e) {
+      state = state.copyWith(
+        loading: false,
+        error: UserFormErrorCode.loadFailed,
+        errorDetail: e.serverMessage,
+      );
     }
   }
 
-  void userIdChanged(String v) => state = state.copyWith(userId: v, error: null);
-  void passwordChanged(String v) => state = state.copyWith(password: v, error: null);
-  void emailChanged(String v) => state = state.copyWith(email: v, error: null);
+  void userIdChanged(String v) =>
+      state = state.copyWith(userId: v, error: null, errorDetail: null);
+  void passwordChanged(String v) =>
+      state = state.copyWith(password: v, error: null, errorDetail: null);
+  void emailChanged(String v) =>
+      state = state.copyWith(email: v, error: null, errorDetail: null);
 
   void employeeIdChanged(String v) {
-    state = state.copyWith(employeeId: int.tryParse(v), error: null);
+    state = state.copyWith(
+      employeeId: int.tryParse(v),
+      error: null,
+      errorDetail: null,
+    );
   }
 
-  void administratorChanged(bool v) =>
-      state = state.copyWith(administrator: v, error: null);
+  void administratorChanged(bool v) => state = state.copyWith(
+        administrator: v,
+        error: null,
+        errorDetail: null,
+      );
 
   void disabledChanged(bool v) =>
-      state = state.copyWith(disabled: v, error: null);
+      state = state.copyWith(disabled: v, error: null, errorDetail: null);
 
   /// Updates the `rawValue` bitmask for one [SystemObject] in the form's
   /// privileges list. Removes the entry when [rawValue] is 0.
@@ -101,7 +136,7 @@ class UserFormController extends _$UserFormController {
     if (rawValue != 0) {
       updated.add(Privilege(systemObject: obj, rawValue: rawValue));
     }
-    state = state.copyWith(privileges: updated, error: null);
+    state = state.copyWith(privileges: updated, error: null, errorDetail: null);
   }
 
   /// Creates or updates the user. Pass [existingUserId] for edit mode (null
@@ -109,21 +144,32 @@ class UserFormController extends _$UserFormController {
   /// account, refreshes the in-memory session (FR-014).
   Future<void> save({String? existingUserId}) async {
     if (state.email.isEmpty) {
-      state = state.copyWith(error: 'Email is required.');
+      state = state.copyWith(error: UserFormErrorCode.emailRequired, errorDetail: null);
       return;
     }
     if (existingUserId == null) {
       if (state.userId.isEmpty) {
-        state = state.copyWith(error: 'Username is required.');
+        state = state.copyWith(
+          error: UserFormErrorCode.usernameRequired,
+          errorDetail: null,
+        );
         return;
       }
       if (state.password.length < 6) {
-        state = state.copyWith(error: 'Password must be at least 6 characters.');
+        state = state.copyWith(
+          error: UserFormErrorCode.passwordLength,
+          errorDetail: null,
+        );
         return;
       }
     }
 
-    state = state.copyWith(submitting: true, error: null, saved: false);
+    state = state.copyWith(
+      submitting: true,
+      error: null,
+      errorDetail: null,
+      saved: false,
+    );
     try {
       final repo = ref.read(userRepositoryProvider);
       if (existingUserId != null) {
@@ -155,10 +201,15 @@ class UserFormController extends _$UserFormController {
       }
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
-      final msg = e is ValidationError && e.errors.isNotEmpty
-          ? e.errors.first.msg
-          : 'Failed to save user.';
-      state = state.copyWith(submitting: false, error: msg);
+      if (e is ValidationError && e.errors.isNotEmpty) {
+        state = state.copyWith(submitting: false, error: e.errors.first.msg);
+      } else {
+        state = state.copyWith(
+          submitting: false,
+          error: UserFormErrorCode.saveFailed,
+          errorDetail: e.serverMessage,
+        );
+      }
     }
   }
 
@@ -168,6 +219,7 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
+      errorDetail: null,
       recoveryToken: null,
       recoveryExpiresAt: null,
     );
@@ -180,25 +232,31 @@ class UserFormController extends _$UserFormController {
         recoveryToken: result.recoveryToken,
         recoveryExpiresAt: result.expiresAt,
       );
-    } on AppError {
+    } on AppError catch (e) {
       state = state.copyWith(
         submitting: false,
-        error: 'Failed to generate recovery token.',
+        error: UserFormErrorCode.recoveryFailed,
+        errorDetail: e.serverMessage,
       );
     }
   }
 
   Future<void> deleteUser(String userId) async {
-    state = state.copyWith(submitting: true, error: null);
+    state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
       await ref.read(userRepositoryProvider).delete(userId: userId);
       ref.read(usersControllerProvider.notifier).refresh();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
-      final msg = e is ValidationError && e.errors.isNotEmpty
-          ? e.errors.first.msg
-          : 'Failed to delete user.';
-      state = state.copyWith(submitting: false, error: msg);
+      if (e is ValidationError && e.errors.isNotEmpty) {
+        state = state.copyWith(submitting: false, error: e.errors.first.msg);
+      } else {
+        state = state.copyWith(
+          submitting: false,
+          error: UserFormErrorCode.deleteFailed,
+          errorDetail: e.serverMessage,
+        );
+      }
     }
   }
 

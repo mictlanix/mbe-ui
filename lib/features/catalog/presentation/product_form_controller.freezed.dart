@@ -38,6 +38,12 @@ mixin _$ProductFormState {
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
+
+  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), shown alongside the localized [error]
+  /// message since it can't be localized client-side. `null` for
+  /// client-side-only errors (validation, permission checks).
+  String? get errorDetail => throw _privateConstructorUsedError;
   Map<String, String> get fieldErrors => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductFormState
@@ -76,6 +82,7 @@ abstract class $ProductFormStateCopyWith<$Res> {
     bool submitting,
     bool saved,
     String? error,
+    String? errorDetail,
     Map<String, String> fieldErrors,
   });
 }
@@ -116,6 +123,7 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? submitting = null,
     Object? saved = null,
     Object? error = freezed,
+    Object? errorDetail = freezed,
     Object? fieldErrors = null,
   }) {
     return _then(
@@ -204,6 +212,10 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
                 ? _value.error
                 : error // ignore: cast_nullable_to_non_nullable
                       as String?,
+            errorDetail: freezed == errorDetail
+                ? _value.errorDetail
+                : errorDetail // ignore: cast_nullable_to_non_nullable
+                      as String?,
             fieldErrors: null == fieldErrors
                 ? _value.fieldErrors
                 : fieldErrors // ignore: cast_nullable_to_non_nullable
@@ -245,6 +257,7 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     bool submitting,
     bool saved,
     String? error,
+    String? errorDetail,
     Map<String, String> fieldErrors,
   });
 }
@@ -284,6 +297,7 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? submitting = null,
     Object? saved = null,
     Object? error = freezed,
+    Object? errorDetail = freezed,
     Object? fieldErrors = null,
   }) {
     return _then(
@@ -372,6 +386,10 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
             ? _value.error
             : error // ignore: cast_nullable_to_non_nullable
                   as String?,
+        errorDetail: freezed == errorDetail
+            ? _value.errorDetail
+            : errorDetail // ignore: cast_nullable_to_non_nullable
+                  as String?,
         fieldErrors: null == fieldErrors
             ? _value._fieldErrors
             : fieldErrors // ignore: cast_nullable_to_non_nullable
@@ -406,6 +424,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.submitting = false,
     this.saved = false,
     this.error,
+    this.errorDetail,
     final Map<String, String> fieldErrors = const <String, String>{},
   }) : _fieldErrors = fieldErrors;
 
@@ -464,6 +483,13 @@ class _$ProductFormStateImpl implements _ProductFormState {
   final bool saved;
   @override
   final String? error;
+
+  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), shown alongside the localized [error]
+  /// message since it can't be localized client-side. `null` for
+  /// client-side-only errors (validation, permission checks).
+  @override
+  final String? errorDetail;
   final Map<String, String> _fieldErrors;
   @override
   @JsonKey()
@@ -475,7 +501,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
 
   @override
   String toString() {
-    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, fieldErrors: $fieldErrors)';
+    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -514,6 +540,8 @@ class _$ProductFormStateImpl implements _ProductFormState {
                 other.submitting == submitting) &&
             (identical(other.saved, saved) || other.saved == saved) &&
             (identical(other.error, error) || other.error == error) &&
+            (identical(other.errorDetail, errorDetail) ||
+                other.errorDetail == errorDetail) &&
             const DeepCollectionEquality().equals(
               other._fieldErrors,
               _fieldErrors,
@@ -544,6 +572,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
     submitting,
     saved,
     error,
+    errorDetail,
     const DeepCollectionEquality().hash(_fieldErrors),
   ]);
 
@@ -582,6 +611,7 @@ abstract class _ProductFormState implements ProductFormState {
     final bool submitting,
     final bool saved,
     final String? error,
+    final String? errorDetail,
     final Map<String, String> fieldErrors,
   }) = _$ProductFormStateImpl;
 
@@ -627,6 +657,13 @@ abstract class _ProductFormState implements ProductFormState {
   bool get saved;
   @override
   String? get error;
+
+  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), shown alongside the localized [error]
+  /// message since it can't be localized client-side. `null` for
+  /// client-side-only errors (validation, permission checks).
+  @override
+  String? get errorDetail;
   @override
   Map<String, String> get fieldErrors;
 

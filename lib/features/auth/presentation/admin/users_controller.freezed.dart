@@ -30,6 +30,13 @@ mixin _$UserFormState {
   bool get saved => throw _privateConstructorUsedError;
   bool get deleted => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
+
+  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), shown alongside the localized [error]
+  /// message since it can't be localized client-side. `null` for
+  /// client-side-only errors and for a [ValidationError]'s message
+  /// (already raw server text stored directly in `error`).
+  String? get errorDetail => throw _privateConstructorUsedError;
   String? get recoveryToken => throw _privateConstructorUsedError;
   String? get recoveryExpiresAt => throw _privateConstructorUsedError;
 
@@ -61,6 +68,7 @@ abstract class $UserFormStateCopyWith<$Res> {
     bool saved,
     bool deleted,
     String? error,
+    String? errorDetail,
     String? recoveryToken,
     String? recoveryExpiresAt,
   });
@@ -96,6 +104,7 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
     Object? saved = null,
     Object? deleted = null,
     Object? error = freezed,
+    Object? errorDetail = freezed,
     Object? recoveryToken = freezed,
     Object? recoveryExpiresAt = freezed,
   }) {
@@ -153,6 +162,10 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
                 ? _value.error
                 : error // ignore: cast_nullable_to_non_nullable
                       as String?,
+            errorDetail: freezed == errorDetail
+                ? _value.errorDetail
+                : errorDetail // ignore: cast_nullable_to_non_nullable
+                      as String?,
             recoveryToken: freezed == recoveryToken
                 ? _value.recoveryToken
                 : recoveryToken // ignore: cast_nullable_to_non_nullable
@@ -204,6 +217,7 @@ abstract class _$$UserFormStateImplCopyWith<$Res>
     bool saved,
     bool deleted,
     String? error,
+    String? errorDetail,
     String? recoveryToken,
     String? recoveryExpiresAt,
   });
@@ -239,6 +253,7 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
     Object? saved = null,
     Object? deleted = null,
     Object? error = freezed,
+    Object? errorDetail = freezed,
     Object? recoveryToken = freezed,
     Object? recoveryExpiresAt = freezed,
   }) {
@@ -296,6 +311,10 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
             ? _value.error
             : error // ignore: cast_nullable_to_non_nullable
                   as String?,
+        errorDetail: freezed == errorDetail
+            ? _value.errorDetail
+            : errorDetail // ignore: cast_nullable_to_non_nullable
+                  as String?,
         recoveryToken: freezed == recoveryToken
             ? _value.recoveryToken
             : recoveryToken // ignore: cast_nullable_to_non_nullable
@@ -326,6 +345,7 @@ class _$UserFormStateImpl implements _UserFormState {
     this.saved = false,
     this.deleted = false,
     this.error,
+    this.errorDetail,
     this.recoveryToken,
     this.recoveryExpiresAt,
   }) : _privileges = privileges;
@@ -372,6 +392,14 @@ class _$UserFormStateImpl implements _UserFormState {
   final bool deleted;
   @override
   final String? error;
+
+  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), shown alongside the localized [error]
+  /// message since it can't be localized client-side. `null` for
+  /// client-side-only errors and for a [ValidationError]'s message
+  /// (already raw server text stored directly in `error`).
+  @override
+  final String? errorDetail;
   @override
   final String? recoveryToken;
   @override
@@ -379,7 +407,7 @@ class _$UserFormStateImpl implements _UserFormState {
 
   @override
   String toString() {
-    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
+    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
   }
 
   @override
@@ -409,6 +437,8 @@ class _$UserFormStateImpl implements _UserFormState {
             (identical(other.saved, saved) || other.saved == saved) &&
             (identical(other.deleted, deleted) || other.deleted == deleted) &&
             (identical(other.error, error) || other.error == error) &&
+            (identical(other.errorDetail, errorDetail) ||
+                other.errorDetail == errorDetail) &&
             (identical(other.recoveryToken, recoveryToken) ||
                 other.recoveryToken == recoveryToken) &&
             (identical(other.recoveryExpiresAt, recoveryExpiresAt) ||
@@ -431,6 +461,7 @@ class _$UserFormStateImpl implements _UserFormState {
     saved,
     deleted,
     error,
+    errorDetail,
     recoveryToken,
     recoveryExpiresAt,
   );
@@ -459,6 +490,7 @@ abstract class _UserFormState implements UserFormState {
     final bool saved,
     final bool deleted,
     final String? error,
+    final String? errorDetail,
     final String? recoveryToken,
     final String? recoveryExpiresAt,
   }) = _$UserFormStateImpl;
@@ -489,6 +521,14 @@ abstract class _UserFormState implements UserFormState {
   bool get deleted;
   @override
   String? get error;
+
+  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+  /// string on a `404`/`5xx`), shown alongside the localized [error]
+  /// message since it can't be localized client-side. `null` for
+  /// client-side-only errors and for a [ValidationError]'s message
+  /// (already raw server text stored directly in `error`).
+  @override
+  String? get errorDetail;
   @override
   String? get recoveryToken;
   @override

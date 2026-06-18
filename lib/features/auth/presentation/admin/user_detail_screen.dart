@@ -98,7 +98,19 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 ErrorBanner(
                   error: AppError.validation([
                     FieldError(
-                        loc: const [], msg: formState.error!, type: 'error'),
+                      loc: const [],
+                      msg: _localizeFormError(l10n, formState.error!),
+                      type: 'error',
+                    ),
+                    // The server's own message (e.g. "User not found") can't
+                    // be localized client-side, so it's shown as
+                    // supplementary detail under the localized heading above.
+                    if (formState.errorDetail != null)
+                      FieldError(
+                        loc: const [],
+                        msg: formState.errorDetail!,
+                        type: 'error',
+                      ),
                   ]),
                 ),
                 const SizedBox(height: 16),
@@ -118,7 +130,9 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                   enabled: !formState.submitting,
                   onChanged: controller.userIdChanged,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return l10n.fieldRequired;
+                    if (v == null || v.isEmpty) {
+                      return l10n.userUsernameRequiredError;
+                    }
                     if (v.length < 4 || v.length > 20) {
                       return l10n.userIdLengthError;
                     }
@@ -132,11 +146,8 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                   obscureText: true,
                   enabled: !formState.submitting,
                   onChanged: controller.passwordChanged,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return l10n.fieldRequired;
-                    if (v.length < 6) return l10n.passwordLengthError;
-                    return null;
-                  },
+                  validator: (v) =>
+                      (v ?? '').length < 6 ? l10n.userPasswordLengthError : null,
                 ),
                 const SizedBox(height: 12),
               ],
@@ -146,8 +157,9 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 decoration: InputDecoration(labelText: l10n.emailLabel),
                 enabled: !formState.submitting,
                 onChanged: controller.emailChanged,
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? l10n.fieldRequired : null,
+                validator: (v) => (v == null || v.isEmpty)
+                    ? l10n.userEmailRequiredError
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -279,5 +291,29 @@ class _RecoveryTokenCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Localizes a [UserFormErrorCode] for [UserFormState.error]. Falls back to
+/// the raw value for a [ValidationError]'s server-provided message, which
+/// is stored directly in `error` instead of being one of these codes.
+String _localizeFormError(AppLocalizations l10n, String code) {
+  switch (code) {
+    case UserFormErrorCode.emailRequired:
+      return l10n.userEmailRequiredError;
+    case UserFormErrorCode.usernameRequired:
+      return l10n.userUsernameRequiredError;
+    case UserFormErrorCode.passwordLength:
+      return l10n.userPasswordLengthError;
+    case UserFormErrorCode.loadFailed:
+      return l10n.userLoadFailedError;
+    case UserFormErrorCode.saveFailed:
+      return l10n.userSaveFailedError;
+    case UserFormErrorCode.deleteFailed:
+      return l10n.userDeleteFailedError;
+    case UserFormErrorCode.recoveryFailed:
+      return l10n.userRecoveryFailedError;
+    default:
+      return code;
   }
 }

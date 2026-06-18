@@ -47,17 +47,25 @@ AppError mapDioException(DioException error) {
   final statusCode = response.statusCode ?? 0;
   switch (statusCode) {
     case 401:
-      return const AppError.auth();
+      return AppError.auth(_detailFrom(response.data));
     case 404:
-      return const AppError.notFound();
+      return AppError.notFound(_detailFrom(response.data));
     case 422:
       return AppError.validation(_fieldErrorsFrom(response.data));
     default:
-      if (statusCode >= 500) {
-        return AppError.server(statusCode: statusCode);
-      }
-      return AppError.server(statusCode: statusCode);
+      return AppError.server(
+        statusCode: statusCode,
+        message: _detailFrom(response.data),
+      );
   }
+}
+
+/// Extracts FastAPI's `{"detail": "<message>"}` string shape (used for
+/// `HTTPException`, as opposed to `422`'s list-of-`ValidationError` shape).
+String? _detailFrom(Object? data) {
+  if (data is! Map) return null;
+  final detail = data['detail'];
+  return detail is String ? detail : null;
 }
 
 List<FieldError> _fieldErrorsFrom(Object? data) {

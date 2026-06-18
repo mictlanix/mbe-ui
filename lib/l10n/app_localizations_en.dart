@@ -342,4 +342,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get productDeactivatePermissionDeniedError =>
       'You no longer have permission to deactivate products.';
+
+  @override
+  String get userEmailRequiredError => 'Email is required.';
+
+  @override
+  String get userUsernameRequiredError => 'Username is required.';
+
+  @override
+  String get userPasswordLengthError =>
+      'Password must be at least 6 characters.';
+
+  @override
+  String get userLoadFailedError => 'Failed to load user.';
+
+  @override
+  String get userSaveFailedError => 'Failed to save user.';
+
+  @override
+  String get userDeleteFailedError => 'Failed to delete user.';
+
+  @override
+  String get userRecoveryFailedError => 'Failed to generate recovery token.';
 }

@@ -733,6 +733,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You no longer have permission to deactivate products.'**
   String get productDeactivatePermissionDeniedError;
+
+  /// No description provided for @userEmailRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required.'**
+  String get userEmailRequiredError;
+
+  /// No description provided for @userUsernameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required.'**
+  String get userUsernameRequiredError;
+
+  /// No description provided for @userPasswordLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get userPasswordLengthError;
+
+  /// No description provided for @userLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load user.'**
+  String get userLoadFailedError;
+
+  /// No description provided for @userSaveFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save user.'**
+  String get userSaveFailedError;
+
+  /// No description provided for @userDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete user.'**
+  String get userDeleteFailedError;
+
+  /// No description provided for @userRecoveryFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate recovery token.'**
+  String get userRecoveryFailedError;
 }
 
 class _AppLocalizationsDelegate
