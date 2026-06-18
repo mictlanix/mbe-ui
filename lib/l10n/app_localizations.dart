@@ -362,6 +362,138 @@ abstract class AppLocalizations {
   /// **'Load more'**
   String get loadMoreButton;
 
+  /// No description provided for @newProductTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Product'**
+  String get newProductTitle;
+
+  /// No description provided for @editProductTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Product'**
+  String get editProductTitle;
+
+  /// No description provided for @codeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get codeLabel;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get nameLabel;
+
+  /// No description provided for @unitOfMeasurementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit of Measurement'**
+  String get unitOfMeasurementLabel;
+
+  /// No description provided for @brandLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get brandLabel;
+
+  /// No description provided for @modelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get modelLabel;
+
+  /// No description provided for @barCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get barCodeLabel;
+
+  /// No description provided for @locationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bin Location'**
+  String get locationLabel;
+
+  /// No description provided for @taxRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax Rate'**
+  String get taxRateLabel;
+
+  /// No description provided for @commentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get commentLabel;
+
+  /// No description provided for @stockableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stockable'**
+  String get stockableLabel;
+
+  /// No description provided for @perishableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Perishable'**
+  String get perishableLabel;
+
+  /// No description provided for @seriableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Seriable'**
+  String get seriableLabel;
+
+  /// No description provided for @purchasableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchasable'**
+  String get purchasableLabel;
+
+  /// No description provided for @salableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Salable'**
+  String get salableLabel;
+
+  /// No description provided for @invoiceableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoiceable'**
+  String get invoiceableLabel;
+
+  /// No description provided for @deactivateProductTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate product'**
+  String get deactivateProductTooltip;
+
+  /// No description provided for @deactivateProductConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate product?'**
+  String get deactivateProductConfirmTitle;
+
+  /// No description provided for @deactivateProductConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to deactivate \"{code}\"? It will be hidden from new sales, purchases, and inventory transactions, but its history is kept.'**
+  String deactivateProductConfirmMessage(String code);
+
+  /// No description provided for @deactivateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivateButton;
+
+  /// No description provided for @statusInactiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get statusInactiveBadge;
+
   /// No description provided for @editUserTitle.
   ///
   /// In en, this message translates to:

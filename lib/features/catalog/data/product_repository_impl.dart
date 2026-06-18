@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide ProductListItem;
+import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
@@ -64,6 +65,109 @@ class ProductRepositoryImpl implements ProductRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<Product> create({
+    required String code,
+    required String name,
+    required String unitOfMeasurement,
+    String? brand,
+    String? model,
+    String? barCode,
+    String? location,
+    String? taxRate,
+    String? comment,
+    bool stockable = false,
+    bool perishable = false,
+    bool seriable = false,
+    bool purchasable = false,
+    bool salable = false,
+    bool invoiceable = false,
+  }) async {
+    try {
+      final response = await _api.createProductApiV1ProductsPost(
+        productCreate: ProductCreate((b) {
+          b
+            ..code = code
+            ..name = name
+            ..unitOfMeasurement = unitOfMeasurement
+            ..brand = brand
+            ..model = model
+            ..barCode = barCode
+            ..location = location
+            ..comment = comment
+            ..stockable = stockable
+            ..perishable = perishable
+            ..seriable = seriable
+            ..purchasable = purchasable
+            ..salable = salable
+            ..invoiceable = invoiceable;
+          if (taxRate != null) _setTaxRate(b.taxRate, taxRate);
+        }),
+      );
+      final product = response.data;
+      if (product == null) throw const AppError.server();
+      return Product.fromResponse(product);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<Product> update({
+    required int productId,
+    String? code,
+    String? name,
+    String? unitOfMeasurement,
+    String? brand,
+    String? model,
+    String? barCode,
+    String? location,
+    String? taxRate,
+    String? comment,
+    bool? stockable,
+    bool? perishable,
+    bool? seriable,
+    bool? purchasable,
+    bool? salable,
+    bool? invoiceable,
+    bool? deactivated,
+  }) async {
+    try {
+      final response = await _api.updateProductApiV1ProductsProductIdPut(
+        productId: productId,
+        productUpdate: ProductUpdate((b) {
+          if (code != null) b.code = code;
+          if (name != null) b.name = name;
+          if (unitOfMeasurement != null) b.unitOfMeasurement = unitOfMeasurement;
+          if (brand != null) b.brand = brand;
+          if (model != null) b.model = model;
+          if (barCode != null) b.barCode = barCode;
+          if (location != null) b.location = location;
+          if (comment != null) b.comment = comment;
+          if (stockable != null) b.stockable = stockable;
+          if (perishable != null) b.perishable = perishable;
+          if (seriable != null) b.seriable = seriable;
+          if (purchasable != null) b.purchasable = purchasable;
+          if (salable != null) b.salable = salable;
+          if (invoiceable != null) b.invoiceable = invoiceable;
+          if (deactivated != null) b.deactivated = deactivated;
+          if (taxRate != null) _setTaxRate(b.taxRate, taxRate);
+        }),
+      );
+      final product = response.data;
+      if (product == null) throw const AppError.server();
+      return Product.fromResponse(product);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+}
+
+/// `tax_rate` is `anyOf: [string, number]` in mbe-api's OpenAPI schema
+/// (Pydantic `Decimal | None`); this project always sends it as a string.
+void _setTaxRate(TaxRateBuilder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }
 
 AppError _toAppError(DioException error) {

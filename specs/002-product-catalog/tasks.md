@@ -154,21 +154,21 @@ code, invalid name, invalid barcode, no-create-privilege visibility check.
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] `ProductRepositoryImpl.create` tests covering `201`,
+- [X] T014 [P] [US2] `ProductRepositoryImpl.create` tests covering `201`,
   `422` (duplicate code, name too short, invalid barcode) → `AppError`
   mapping in `test/unit/features/catalog/product_repository_impl_test.dart`
   (extends T007's file).
-- [ ] T015 [P] [US2] `ProductFormController` tests: client-side validation
+- [X] T015 [P] [US2] `ProductFormController` tests: client-side validation
   (code 1–25 chars no whitespace, name 4–250 chars, barcode empty-or-13-
   digits per contracts/mbe-api-products.md) and create-submission mapping to
   `ProductCreate` (defaults: `deactivated: false` per FR-015) in
   `test/unit/features/catalog/product_form_controller_test.dart`.
-- [ ] T016 [P] [US2] Widget test for `ProductDetailScreen` create mode
+- [X] T016 [P] [US2] Widget test for `ProductDetailScreen` create mode
   (field-level validation errors block submission, duplicate-code server
   error surfaced via `ErrorBanner`, no "create product" action rendered for
   an account without Create privilege) in
   `test/widget/features/catalog/product_detail_screen_test.dart`.
-- [ ] T017 [P] [US2] Integration test: create a valid product and see it
+- [X] T017 [P] [US2] Integration test: create a valid product and see it
   appear in `/products`; attempt a duplicate code (incl. a disabled
   product's code) and an invalid name/barcode and confirm rejection; confirm
   a Read-only account has no create action, in
@@ -177,23 +177,23 @@ code, invalid name, invalid barcode, no-create-privilege visibility check.
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Add `create(ProductCreate) -> Product` to `ProductRepository`
+- [X] T018 [US2] Add `create(ProductCreate) -> Product` to `ProductRepository`
   (`lib/features/catalog/domain/repositories/product_repository.dart`) and
   `ProductRepositoryImpl`
   (`lib/features/catalog/data/product_repository_impl.dart`) per
   contracts/mbe-api-products.md `POST /products` (depends on T006).
-- [ ] T019 [P] [US2] Create `ProductFormController` (plain `Notifier`: all
+- [X] T019 [P] [US2] Create `ProductFormController` (plain `Notifier`: all
   editable `Product` fields per data-model.md, `submitting`, `fieldErrors`,
   client-side validation mirroring contracts/mbe-api-products.md, a
   `submitCreate()` action building `ProductCreate`) in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T002, T018).
-- [ ] T020 [US2] Create `ProductDetailScreen` create mode (multi-column
+- [X] T020 [US2] Create `ProductDetailScreen` create mode (multi-column
   form per constitution §VI, field-level error display, calls
   `ProductFormController.submitCreate`) in
   `lib/features/catalog/presentation/product_detail_screen.dart` (depends on
   T019).
-- [ ] T021 [US2] Register the `/products/new` route in
+- [X] T021 [US2] Register the `/products/new` route in
   `lib/app/router/app_router.dart` gated by
   `can(SystemObject.products, AccessRight.create)`, and add a gated "New
   product" action to `ProductsListScreen` per contracts/routes.md (depends
@@ -216,21 +216,21 @@ account.
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] `ProductRepositoryImpl.update` tests covering `200`,
+- [X] T022 [P] [US3] `ProductRepositoryImpl.update` tests covering `200`,
   `404`, `422` (duplicate code on rename) → `AppError` mapping in
   `test/unit/features/catalog/product_repository_impl_test.dart` (extends
   T007/T014's file).
-- [ ] T023 [P] [US3] `ProductFormController` tests: loading an existing
+- [X] T023 [P] [US3] `ProductFormController` tests: loading an existing
   `Product` into form state, building a partial `ProductUpdate` (only
   changed fields), and a `readOnly` flag that blocks `submitUpdate()` in
   `test/unit/features/catalog/product_form_controller_test.dart` (extends
   T015's file).
-- [ ] T024 [P] [US3] Widget test for `ProductDetailScreen` edit mode (fields
+- [X] T024 [P] [US3] Widget test for `ProductDetailScreen` edit mode (fields
   editable + Save visible when `can(products, update)`; all fields rendered
   read-only with no Save action when only `can(products, read)`) in
   `test/widget/features/catalog/product_detail_screen_test.dart` (extends
   T016's file).
-- [ ] T025 [P] [US3] Integration test: edit a product's name/tax rate and
+- [X] T025 [P] [US3] Integration test: edit a product's name/tax rate and
   confirm the change reflects in list and detail views; rename to an
   existing code and confirm rejection; confirm a Read-only account sees no
   Save action, in `test/integration/product_catalog_flow_test.dart` (extends
@@ -238,20 +238,20 @@ account.
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Add `update(int productId, ProductUpdate) -> Product` to
+- [X] T026 [US3] Add `update(int productId, ProductUpdate) -> Product` to
   `ProductRepository`/`ProductRepositoryImpl` per
   contracts/mbe-api-products.md `PUT /products/{product_id}` (depends on
   T018).
-- [ ] T027 [US3] Extend `ProductFormController` with edit-mode support:
+- [X] T027 [US3] Extend `ProductFormController` with edit-mode support:
   `loadForEdit(Product)`, a `readOnly` flag derived from
   `accessControlProvider.can(SystemObject.products, AccessRight.update)`,
   and `submitUpdate()` sending only changed fields as `ProductUpdate`
   (depends on T019, T026).
-- [ ] T028 [US3] Extend `ProductDetailScreen` to support view/edit mode:
+- [X] T028 [US3] Extend `ProductDetailScreen` to support view/edit mode:
   fetch the `Product` via `ProductRepository.get` for `/products/:productId`,
   render read-only when `readOnly` is true (FR-013), editable form + Save
   otherwise (depends on T027).
-- [ ] T029 [US3] Register the `/products/:productId` route in
+- [X] T029 [US3] Register the `/products/:productId` route in
   `lib/app/router/app_router.dart` gated by
   `can(SystemObject.products, AccessRight.read)` to view (Save itself is
   gated inside the screen per contracts/routes.md) (depends on T013, T028).
@@ -275,17 +275,17 @@ no action for a non-privileged account.
 
 ### Tests for User Story 4
 
-- [ ] T030 [P] [US4] `ProductFormController` tests: `deactivate()` calls
+- [X] T030 [P] [US4] `ProductFormController` tests: `deactivate()` calls
   `ProductRepository.update` with `{deactivated: true}` only, and is a no-op
   when the product is already `deactivated == true`, in
   `test/unit/features/catalog/product_form_controller_test.dart` (extends
   T023's file).
-- [ ] T031 [P] [US4] Widget test for `ProductDetailScreen` Deactivate action
+- [X] T031 [P] [US4] Widget test for `ProductDetailScreen` Deactivate action
   (visible only when `can(products, delete)` AND the product is currently
   active; absent/disabled otherwise) in
   `test/widget/features/catalog/product_detail_screen_test.dart` (extends
   T024's file).
-- [ ] T032 [P] [US4] Integration test: deactivate a product and confirm it
+- [X] T032 [P] [US4] Integration test: deactivate a product and confirm it
   disappears from the default `/products` list on next refresh; confirm it
   still appears, marked inactive, with the "include disabled" filter on;
   confirm a no-Delete-privilege account has no Deactivate action, in
@@ -294,17 +294,17 @@ no action for a non-privileged account.
 
 ### Implementation for User Story 4
 
-- [ ] T033 [US4] Add a `deactivate()` action to `ProductFormController`
+- [X] T033 [US4] Add a `deactivate()` action to `ProductFormController`
   (calls `submitUpdate`-equivalent with only `{deactivated: true}`; no-ops
   if already deactivated) in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T026, T027).
-- [ ] T034 [US4] Add a "Deactivate" action to `ProductDetailScreen`, gated
+- [X] T034 [US4] Add a "Deactivate" action to `ProductDetailScreen`, gated
   by `can(SystemObject.products, AccessRight.delete)` and the product's
   current `deactivated` state, in
   `lib/features/catalog/presentation/product_detail_screen.dart` (depends on
   T033, T028).
-- [ ] T035 [US4] Add an "include disabled" filter toggle to
+- [X] T035 [US4] Add an "include disabled" filter toggle to
   `ProductsListScreen`/`ProductsListController` and render an inactive badge
   per row (FR-011) in
   `lib/features/catalog/presentation/products_list_screen.dart` and

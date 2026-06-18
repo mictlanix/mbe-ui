@@ -147,6 +147,74 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loadMoreButton => 'Cargar más';
 
   @override
+  String get newProductTitle => 'Nuevo producto';
+
+  @override
+  String get editProductTitle => 'Editar producto';
+
+  @override
+  String get codeLabel => 'Código';
+
+  @override
+  String get nameLabel => 'Nombre';
+
+  @override
+  String get unitOfMeasurementLabel => 'Unidad de medida';
+
+  @override
+  String get brandLabel => 'Marca';
+
+  @override
+  String get modelLabel => 'Modelo';
+
+  @override
+  String get barCodeLabel => 'Código de barras';
+
+  @override
+  String get locationLabel => 'Ubicación';
+
+  @override
+  String get taxRateLabel => 'Tasa de impuesto';
+
+  @override
+  String get commentLabel => 'Notas';
+
+  @override
+  String get stockableLabel => 'Almacenable';
+
+  @override
+  String get perishableLabel => 'Perecedero';
+
+  @override
+  String get seriableLabel => 'Con número de serie';
+
+  @override
+  String get purchasableLabel => 'Comprable';
+
+  @override
+  String get salableLabel => 'Vendible';
+
+  @override
+  String get invoiceableLabel => 'Facturable';
+
+  @override
+  String get deactivateProductTooltip => 'Desactivar producto';
+
+  @override
+  String get deactivateProductConfirmTitle => '¿Desactivar producto?';
+
+  @override
+  String deactivateProductConfirmMessage(String code) {
+    return '¿Está seguro de que desea desactivar \"$code\"? Se ocultará de nuevas ventas, compras y movimientos de inventario, pero su historial se conserva.';
+  }
+
+  @override
+  String get deactivateButton => 'Desactivar';
+
+  @override
+  String get statusInactiveBadge => 'Inactivo';
+
+  @override
   String get editUserTitle => 'Editar usuario';
 
   @override

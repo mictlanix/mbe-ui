@@ -92,6 +92,110 @@ void main() {
     });
   });
 
+  group('ProductRepositoryImpl.create', () {
+    test('201 returns the created Product', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode(_productResponseJson()),
+          201,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final product = await repository.create(
+        code: 'SKU-001',
+        name: 'Widget',
+        unitOfMeasurement: 'PCE',
+        taxRate: '0.16',
+      );
+
+      expect(product.code, 'SKU-001');
+      expect(product.deactivated, isFalse);
+    });
+
+    test('422 duplicate code maps to AppError.validation', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'code'],
+                'msg': 'Code already in use',
+                'type': 'value_error',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.create(
+          code: 'SKU-001',
+          name: 'Widget',
+          unitOfMeasurement: 'PCE',
+        ),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+
+    test('422 name too short maps to AppError.validation', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'name'],
+                'msg': 'String should have at least 4 characters',
+                'type': 'string_too_short',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.create(
+          code: 'SKU-002',
+          name: 'Hi',
+          unitOfMeasurement: 'PCE',
+        ),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+
+    test('422 invalid barcode maps to AppError.validation', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'bar_code'],
+                'msg': 'Barcode must be empty or exactly 13 digits (EAN-13)',
+                'type': 'value_error',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.create(
+          code: 'SKU-003',
+          name: 'Widget',
+          unitOfMeasurement: 'PCE',
+          barCode: '12345',
+        ),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+  });
+
   group('ProductRepositoryImpl.get', () {
     test('200 maps to a Product', () async {
       final repository = _repositoryWith(
@@ -152,6 +256,81 @@ void main() {
         () => repository.get(productId: 1),
         throwsA(isA<NetworkError>()),
       );
+    });
+  });
+  group('ProductRepositoryImpl.update', () {
+    test('200 returns the updated Product', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({..._productResponseJson(), 'name': 'Updated Widget'}),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final product = await repository.update(productId: 1, name: 'Updated Widget');
+
+      expect(product.name, 'Updated Widget');
+    });
+
+    test('404 maps to AppError.notFound', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Product not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.update(productId: 999, name: 'Anything'),
+        throwsA(const AppError.notFound()),
+      );
+    });
+
+    test('422 duplicate code on rename maps to AppError.validation', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'code'],
+                'msg': 'Code already in use',
+                'type': 'value_error',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.update(productId: 1, code: 'SKU-EXISTING'),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+
+    test('a deactivate-only call sends just {deactivated: true}', () async {
+      late Object? sentData;
+      final repository = _repositoryWith((options) async {
+        sentData = options.data;
+        return ResponseBody.fromString(
+          jsonEncode({..._productResponseJson(), 'deactivated': true}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final product = await repository.update(productId: 1, deactivated: true);
+
+      expect(product.deactivated, isTrue);
+      final sentBody = sentData is String
+          ? jsonDecode(sentData as String) as Map<String, Object?>
+          : sentData as Map<String, Object?>;
+      expect(sentBody['deactivated'], isTrue);
+      expect(sentBody.containsKey('code'), isFalse);
+      expect(sentBody.containsKey('name'), isFalse);
     });
   });
 }

@@ -147,6 +147,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadMoreButton => 'Load more';
 
   @override
+  String get newProductTitle => 'New Product';
+
+  @override
+  String get editProductTitle => 'Edit Product';
+
+  @override
+  String get codeLabel => 'Code';
+
+  @override
+  String get nameLabel => 'Name';
+
+  @override
+  String get unitOfMeasurementLabel => 'Unit of Measurement';
+
+  @override
+  String get brandLabel => 'Brand';
+
+  @override
+  String get modelLabel => 'Model';
+
+  @override
+  String get barCodeLabel => 'Barcode';
+
+  @override
+  String get locationLabel => 'Bin Location';
+
+  @override
+  String get taxRateLabel => 'Tax Rate';
+
+  @override
+  String get commentLabel => 'Notes';
+
+  @override
+  String get stockableLabel => 'Stockable';
+
+  @override
+  String get perishableLabel => 'Perishable';
+
+  @override
+  String get seriableLabel => 'Seriable';
+
+  @override
+  String get purchasableLabel => 'Purchasable';
+
+  @override
+  String get salableLabel => 'Salable';
+
+  @override
+  String get invoiceableLabel => 'Invoiceable';
+
+  @override
+  String get deactivateProductTooltip => 'Deactivate product';
+
+  @override
+  String get deactivateProductConfirmTitle => 'Deactivate product?';
+
+  @override
+  String deactivateProductConfirmMessage(String code) {
+    return 'Are you sure you want to deactivate \"$code\"? It will be hidden from new sales, purchases, and inventory transactions, but its history is kept.';
+  }
+
+  @override
+  String get deactivateButton => 'Deactivate';
+
+  @override
+  String get statusInactiveBadge => 'Inactive';
+
+  @override
   String get editUserTitle => 'Edit User';
 
   @override

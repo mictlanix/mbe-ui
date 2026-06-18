@@ -118,11 +118,21 @@ class ProductsListScreen extends ConsumerWidget {
                               ),
                               DataTableColumn(
                                 label: l10n.columnStatus,
-                                cellBuilder: (_, p) => Text(
-                                  p.deactivated
-                                      ? l10n.statusDisabled
-                                      : l10n.statusActive,
-                                ),
+                                cellBuilder: (context, p) => p.deactivated
+                                    ? Chip(
+                                        key: const Key('inactive_badge'),
+                                        label: Text(l10n.statusInactiveBadge),
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .errorContainer,
+                                        labelStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onErrorContainer,
+                                        ),
+                                        visualDensity: VisualDensity.compact,
+                                      )
+                                    : Text(l10n.statusActive),
                               ),
                             ],
                             rows: result.items,

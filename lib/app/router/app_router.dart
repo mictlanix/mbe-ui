@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart'
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 
@@ -59,6 +60,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/products',
         builder: (context, state) => const ProductsListScreen(),
+      ),
+      GoRoute(
+        path: '/products/new',
+        builder: (context, state) => const ProductDetailScreen(),
+      ),
+      GoRoute(
+        path: '/products/:productId',
+        builder: (context, state) => ProductDetailScreen(
+          productId: int.parse(state.pathParameters['productId']!),
+        ),
       ),
     ],
   );

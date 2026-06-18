@@ -114,7 +114,8 @@ void main() {
     expect(find.text('Widget'), findsOneWidget);
     expect(find.text('SKU-002'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
-    expect(find.text('Disabled'), findsOneWidget);
+    expect(find.byKey(const Key('inactive_badge')), findsOneWidget);
+    expect(find.text('Inactive'), findsOneWidget);
   });
 
   testWidgets('shows the search field and filter chips (FR-001, FR-002)',

@@ -141,6 +141,76 @@
   "loadMoreButton": "Load more",
   "@loadMoreButton": {},
 
+  "newProductTitle": "New Product",
+  "@newProductTitle": {},
+
+  "editProductTitle": "Edit Product",
+  "@editProductTitle": {},
+
+  "codeLabel": "Code",
+  "@codeLabel": {},
+
+  "nameLabel": "Name",
+  "@nameLabel": {},
+
+  "unitOfMeasurementLabel": "Unit of Measurement",
+  "@unitOfMeasurementLabel": {},
+
+  "brandLabel": "Brand",
+  "@brandLabel": {},
+
+  "modelLabel": "Model",
+  "@modelLabel": {},
+
+  "barCodeLabel": "Barcode",
+  "@barCodeLabel": {},
+
+  "locationLabel": "Bin Location",
+  "@locationLabel": {},
+
+  "taxRateLabel": "Tax Rate",
+  "@taxRateLabel": {},
+
+  "commentLabel": "Notes",
+  "@commentLabel": {},
+
+  "stockableLabel": "Stockable",
+  "@stockableLabel": {},
+
+  "perishableLabel": "Perishable",
+  "@perishableLabel": {},
+
+  "seriableLabel": "Seriable",
+  "@seriableLabel": {},
+
+  "purchasableLabel": "Purchasable",
+  "@purchasableLabel": {},
+
+  "salableLabel": "Salable",
+  "@salableLabel": {},
+
+  "invoiceableLabel": "Invoiceable",
+  "@invoiceableLabel": {},
+
+  "deactivateProductTooltip": "Deactivate product",
+  "@deactivateProductTooltip": {},
+
+  "deactivateProductConfirmTitle": "Deactivate product?",
+  "@deactivateProductConfirmTitle": {},
+
+  "deactivateProductConfirmMessage": "Are you sure you want to deactivate \"{code}\"? It will be hidden from new sales, purchases, and inventory transactions, but its history is kept.",
+  "@deactivateProductConfirmMessage": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+
+  "deactivateButton": "Deactivate",
+  "@deactivateButton": {},
+
+  "statusInactiveBadge": "Inactive",
+  "@statusInactiveBadge": {},
+
   "editUserTitle": "Edit User",
   "@editUserTitle": {},
 
