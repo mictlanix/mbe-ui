@@ -92,7 +92,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             if (formState.error != null) ...[
               ErrorBanner(
                 error: AppError.validation([
-                  FieldError(loc: const [], msg: formState.error!, type: 'error'),
+                  FieldError(
+                    loc: const [],
+                    msg: _localizeFormError(l10n, formState.error!),
+                    type: 'error',
+                  ),
                 ]),
               ),
               const SizedBox(height: 16),
@@ -102,7 +106,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.code,
               decoration: InputDecoration(
                 labelText: l10n.codeLabel,
-                errorText: formState.fieldErrors['code'],
+                errorText: _localizeFieldError(l10n, formState.fieldErrors['code']),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.codeChanged,
@@ -113,7 +117,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.name,
               decoration: InputDecoration(
                 labelText: l10n.nameLabel,
-                errorText: formState.fieldErrors['name'],
+                errorText: _localizeFieldError(l10n, formState.fieldErrors['name']),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.nameChanged,
@@ -124,7 +128,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.unitOfMeasurement,
               decoration: InputDecoration(
                 labelText: l10n.unitOfMeasurementLabel,
-                errorText: formState.fieldErrors['unitOfMeasurement'],
+                errorText: _localizeFieldError(
+                  l10n,
+                  formState.fieldErrors['unitOfMeasurement'],
+                ),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.unitOfMeasurementChanged,
@@ -151,7 +158,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.barCode,
               decoration: InputDecoration(
                 labelText: l10n.barCodeLabel,
-                errorText: formState.fieldErrors['barCode'],
+                errorText: _localizeFieldError(l10n, formState.fieldErrors['barCode']),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.barCodeChanged,
@@ -264,5 +271,52 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
     );
     if (confirmed == true) controller.deactivate();
+  }
+}
+
+/// Localizes a [ProductFormErrorCode] for [ProductFormState.error].
+/// Falls back to the raw value for codes this UI doesn't recognize (e.g.
+/// a server-provided message that isn't one of our codes).
+String _localizeFormError(AppLocalizations l10n, String code) {
+  switch (code) {
+    case ProductFormErrorCode.loadFailed:
+      return l10n.productLoadFailedError;
+    case ProductFormErrorCode.createFailed:
+      return l10n.productCreateFailedError;
+    case ProductFormErrorCode.updateFailed:
+      return l10n.productUpdateFailedError;
+    case ProductFormErrorCode.deactivateFailed:
+      return l10n.productDeactivateFailedError;
+    case ProductFormErrorCode.createPermissionDenied:
+      return l10n.productCreatePermissionDeniedError;
+    case ProductFormErrorCode.updatePermissionDenied:
+      return l10n.productUpdatePermissionDeniedError;
+    case ProductFormErrorCode.deactivatePermissionDenied:
+      return l10n.productDeactivatePermissionDeniedError;
+    default:
+      return code;
+  }
+}
+
+/// Localizes a [ProductFormState.fieldErrors] entry. Server-provided
+/// messages (e.g. a duplicate-code rejection) aren't one of
+/// [ProductFormErrorCode]'s values, so they pass through unchanged.
+String? _localizeFieldError(AppLocalizations l10n, String? code) {
+  if (code == null) return null;
+  switch (code) {
+    case ProductFormErrorCode.codeRequired:
+      return l10n.productCodeRequiredError;
+    case ProductFormErrorCode.codeWhitespace:
+      return l10n.productCodeWhitespaceError;
+    case ProductFormErrorCode.codeTooLong:
+      return l10n.productCodeTooLongError;
+    case ProductFormErrorCode.nameLength:
+      return l10n.productNameLengthError;
+    case ProductFormErrorCode.unitRequired:
+      return l10n.productUnitRequiredError;
+    case ProductFormErrorCode.barCodeInvalid:
+      return l10n.productBarCodeInvalidError;
+    default:
+      return code;
   }
 }

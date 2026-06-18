@@ -11,6 +11,25 @@ import 'package:mbe_ui/features/catalog/presentation/products_list_controller.da
 part 'product_form_controller.freezed.dart';
 part 'product_form_controller.g.dart';
 
+/// Error codes for [ProductFormState.error]/`fieldErrors`, mapped to
+/// localized text in the UI layer (`product_detail_screen.dart`) since this
+/// controller has no `BuildContext`/`AppLocalizations` access.
+abstract final class ProductFormErrorCode {
+  static const codeRequired = 'codeRequired';
+  static const codeWhitespace = 'codeWhitespace';
+  static const codeTooLong = 'codeTooLong';
+  static const nameLength = 'nameLength';
+  static const unitRequired = 'unitRequired';
+  static const barCodeInvalid = 'barCodeInvalid';
+  static const loadFailed = 'loadFailed';
+  static const createFailed = 'createFailed';
+  static const updateFailed = 'updateFailed';
+  static const deactivateFailed = 'deactivateFailed';
+  static const createPermissionDenied = 'createPermissionDenied';
+  static const updatePermissionDenied = 'updatePermissionDenied';
+  static const deactivatePermissionDenied = 'deactivatePermissionDenied';
+}
+
 /// Create/edit form state for a single product. Local UI state, not
 /// persisted (constitution §II). [productId] is `null` in create mode.
 @freezed
@@ -107,7 +126,10 @@ class ProductFormController extends _$ProductFormController {
         deactivated: product.deactivated,
       );
     } on AppError {
-      state = state.copyWith(loading: false, error: 'Failed to load product.');
+      state = state.copyWith(
+        loading: false,
+        error: ProductFormErrorCode.loadFailed,
+      );
     }
   }
 
@@ -118,26 +140,26 @@ class ProductFormController extends _$ProductFormController {
 
     final code = state.code;
     if (code.isEmpty) {
-      errors['code'] = 'Code is required.';
+      errors['code'] = ProductFormErrorCode.codeRequired;
     } else if (code.contains(RegExp(r'\s'))) {
-      errors['code'] = 'Code must not contain whitespace.';
+      errors['code'] = ProductFormErrorCode.codeWhitespace;
     } else if (code.length > 25) {
-      errors['code'] = 'Code must be at most 25 characters.';
+      errors['code'] = ProductFormErrorCode.codeTooLong;
     }
 
     if (state.name.length < 4 || state.name.length > 250) {
-      errors['name'] = 'Name must be between 4 and 250 characters.';
+      errors['name'] = ProductFormErrorCode.nameLength;
     }
 
     if (state.unitOfMeasurement.trim().isEmpty) {
-      errors['unitOfMeasurement'] = 'Unit of measurement is required.';
+      errors['unitOfMeasurement'] = ProductFormErrorCode.unitRequired;
     }
 
     final barCode = state.barCode;
     if (barCode != null &&
         barCode.isNotEmpty &&
         !RegExp(r'^\d{13}$').hasMatch(barCode)) {
-      errors['barCode'] = 'Barcode must be empty or exactly 13 digits.';
+      errors['barCode'] = ProductFormErrorCode.barCodeInvalid;
     }
 
     return errors;
@@ -158,7 +180,7 @@ class ProductFormController extends _$ProductFormController {
         .read(accessControlProvider)
         .can(SystemObject.products, AccessRight.create)) {
       state = state.copyWith(
-        error: 'You no longer have permission to create products.',
+        error: ProductFormErrorCode.createPermissionDenied,
       );
       return;
     }
@@ -193,7 +215,7 @@ class ProductFormController extends _$ProductFormController {
       } else {
         state = state.copyWith(
           submitting: false,
-          error: 'Failed to create product.',
+          error: ProductFormErrorCode.createFailed,
         );
       }
     }
@@ -217,7 +239,7 @@ class ProductFormController extends _$ProductFormController {
         .read(accessControlProvider)
         .can(SystemObject.products, AccessRight.update)) {
       state = state.copyWith(
-        error: 'You no longer have permission to edit products.',
+        error: ProductFormErrorCode.updatePermissionDenied,
       );
       return;
     }
@@ -253,7 +275,7 @@ class ProductFormController extends _$ProductFormController {
       } else {
         state = state.copyWith(
           submitting: false,
-          error: 'Failed to update product.',
+          error: ProductFormErrorCode.updateFailed,
         );
       }
     }
@@ -272,7 +294,7 @@ class ProductFormController extends _$ProductFormController {
         .read(accessControlProvider)
         .can(SystemObject.products, AccessRight.delete)) {
       state = state.copyWith(
-        error: 'You no longer have permission to deactivate products.',
+        error: ProductFormErrorCode.deactivatePermissionDenied,
       );
       return;
     }
@@ -288,7 +310,7 @@ class ProductFormController extends _$ProductFormController {
     } on AppError {
       state = state.copyWith(
         submitting: false,
-        error: 'Failed to deactivate product.',
+        error: ProductFormErrorCode.deactivateFailed,
       );
     }
   }

@@ -294,5 +294,44 @@
   "@privilegesUpdateTooltip": {"description": "Tooltip for Update column in permissions grid"},
 
   "privilegesDeleteTooltip": "Delete",
-  "@privilegesDeleteTooltip": {"description": "Tooltip for Delete column in permissions grid"}
+  "@privilegesDeleteTooltip": {"description": "Tooltip for Delete column in permissions grid"},
+
+  "productCodeRequiredError": "Code is required.",
+  "@productCodeRequiredError": {},
+
+  "productCodeWhitespaceError": "Code must not contain whitespace.",
+  "@productCodeWhitespaceError": {},
+
+  "productCodeTooLongError": "Code must be at most 25 characters.",
+  "@productCodeTooLongError": {},
+
+  "productNameLengthError": "Name must be between 4 and 250 characters.",
+  "@productNameLengthError": {},
+
+  "productUnitRequiredError": "Unit of measurement is required.",
+  "@productUnitRequiredError": {},
+
+  "productBarCodeInvalidError": "Barcode must be empty or exactly 13 digits.",
+  "@productBarCodeInvalidError": {},
+
+  "productLoadFailedError": "Failed to load product.",
+  "@productLoadFailedError": {},
+
+  "productCreateFailedError": "Failed to create product.",
+  "@productCreateFailedError": {},
+
+  "productUpdateFailedError": "Failed to update product.",
+  "@productUpdateFailedError": {},
+
+  "productDeactivateFailedError": "Failed to deactivate product.",
+  "@productDeactivateFailedError": {},
+
+  "productCreatePermissionDeniedError": "You no longer have permission to create products.",
+  "@productCreatePermissionDeniedError": {},
+
+  "productUpdatePermissionDeniedError": "You no longer have permission to edit products.",
+  "@productUpdatePermissionDeniedError": {},
+
+  "productDeactivatePermissionDeniedError": "You no longer have permission to deactivate products.",
+  "@productDeactivatePermissionDeniedError": {}
 }

@@ -655,6 +655,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get privilegesDeleteTooltip;
+
+  /// No description provided for @productCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get productCodeRequiredError;
+
+  /// No description provided for @productCodeWhitespaceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code must not contain whitespace.'**
+  String get productCodeWhitespaceError;
+
+  /// No description provided for @productCodeTooLongError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code must be at most 25 characters.'**
+  String get productCodeTooLongError;
+
+  /// No description provided for @productNameLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be between 4 and 250 characters.'**
+  String get productNameLengthError;
+
+  /// No description provided for @productUnitRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit of measurement is required.'**
+  String get productUnitRequiredError;
+
+  /// No description provided for @productBarCodeInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode must be empty or exactly 13 digits.'**
+  String get productBarCodeInvalidError;
+
+  /// No description provided for @productLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load product.'**
+  String get productLoadFailedError;
+
+  /// No description provided for @productCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create product.'**
+  String get productCreateFailedError;
+
+  /// No description provided for @productUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update product.'**
+  String get productUpdateFailedError;
+
+  /// No description provided for @productDeactivateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to deactivate product.'**
+  String get productDeactivateFailedError;
+
+  /// No description provided for @productCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create products.'**
+  String get productCreatePermissionDeniedError;
+
+  /// No description provided for @productUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit products.'**
+  String get productUpdatePermissionDeniedError;
+
+  /// No description provided for @productDeactivatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to deactivate products.'**
+  String get productDeactivatePermissionDeniedError;
 }
 
 class _AppLocalizationsDelegate

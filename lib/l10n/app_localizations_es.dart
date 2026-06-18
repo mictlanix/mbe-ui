@@ -298,4 +298,51 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get privilegesDeleteTooltip => 'Eliminar';
+
+  @override
+  String get productCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get productCodeWhitespaceError =>
+      'El código no debe contener espacios en blanco.';
+
+  @override
+  String get productCodeTooLongError =>
+      'El código debe tener máximo 25 caracteres.';
+
+  @override
+  String get productNameLengthError =>
+      'El nombre debe tener entre 4 y 250 caracteres.';
+
+  @override
+  String get productUnitRequiredError => 'La unidad de medida es obligatoria.';
+
+  @override
+  String get productBarCodeInvalidError =>
+      'El código de barras debe estar vacío o tener exactamente 13 dígitos.';
+
+  @override
+  String get productLoadFailedError => 'No se pudo cargar el producto.';
+
+  @override
+  String get productCreateFailedError => 'No se pudo crear el producto.';
+
+  @override
+  String get productUpdateFailedError => 'No se pudo actualizar el producto.';
+
+  @override
+  String get productDeactivateFailedError =>
+      'No se pudo desactivar el producto.';
+
+  @override
+  String get productCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear productos.';
+
+  @override
+  String get productUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar productos.';
+
+  @override
+  String get productDeactivatePermissionDeniedError =>
+      'Ya no tienes permiso para desactivar productos.';
 }

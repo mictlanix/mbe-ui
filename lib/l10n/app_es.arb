@@ -103,5 +103,19 @@
   "privilegesCreateTooltip": "Crear",
   "privilegesReadTooltip": "Leer",
   "privilegesUpdateTooltip": "Actualizar",
-  "privilegesDeleteTooltip": "Eliminar"
+  "privilegesDeleteTooltip": "Eliminar",
+
+  "productCodeRequiredError": "El código es obligatorio.",
+  "productCodeWhitespaceError": "El código no debe contener espacios en blanco.",
+  "productCodeTooLongError": "El código debe tener máximo 25 caracteres.",
+  "productNameLengthError": "El nombre debe tener entre 4 y 250 caracteres.",
+  "productUnitRequiredError": "La unidad de medida es obligatoria.",
+  "productBarCodeInvalidError": "El código de barras debe estar vacío o tener exactamente 13 dígitos.",
+  "productLoadFailedError": "No se pudo cargar el producto.",
+  "productCreateFailedError": "No se pudo crear el producto.",
+  "productUpdateFailedError": "No se pudo actualizar el producto.",
+  "productDeactivateFailedError": "No se pudo desactivar el producto.",
+  "productCreatePermissionDeniedError": "Ya no tienes permiso para crear productos.",
+  "productUpdatePermissionDeniedError": "Ya no tienes permiso para editar productos.",
+  "productDeactivatePermissionDeniedError": "Ya no tienes permiso para desactivar productos."
 }
