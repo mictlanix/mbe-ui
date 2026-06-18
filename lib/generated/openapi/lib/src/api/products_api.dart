@@ -312,12 +312,12 @@ class ProductsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      r'label': encodeQueryParameter(_serializers, label, const FullType(int)),
-      r'deactivated': encodeQueryParameter(_serializers, deactivated, const FullType(bool)),
-      r'stockable': encodeQueryParameter(_serializers, stockable, const FullType(bool)),
-      r'salable': encodeQueryParameter(_serializers, salable, const FullType(bool)),
-      r'purchasable': encodeQueryParameter(_serializers, purchasable, const FullType(bool)),
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
+      if (label != null) r'label': encodeQueryParameter(_serializers, label, const FullType(int)),
+      if (deactivated != null) r'deactivated': encodeQueryParameter(_serializers, deactivated, const FullType(bool)),
+      if (stockable != null) r'stockable': encodeQueryParameter(_serializers, stockable, const FullType(bool)),
+      if (salable != null) r'salable': encodeQueryParameter(_serializers, salable, const FullType(bool)),
+      if (purchasable != null) r'purchasable': encodeQueryParameter(_serializers, purchasable, const FullType(bool)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -483,6 +483,109 @@ class ProductsApi {
     try {
       const _type = FullType(ProductUpdate);
       _bodyData = _serializers.serialize(productUpdate, specifiedType: _type);
+
+    } catch(error, stackTrace) {
+      throw DioException(
+         requestOptions: _options.compose(
+          _dio.options,
+          _path,
+        ),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ProductResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(ProductResponse),
+      ) as ProductResponse;
+
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ProductResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Upload Product Image
+  /// 
+  ///
+  /// Parameters:
+  /// * [productId] 
+  /// * [file] 
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ProductResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ProductResponse>> uploadProductImageApiV1ProductsProductIdImagePost({ 
+    required int productId,
+    required String file,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/products/{product_id}/image'.replaceAll('{' r'product_id' '}', encodeQueryParameter(_serializers, productId, const FullType(int)).toString());
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{
+        ...?headers,
+      },
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {
+            'type': 'oauth2',
+            'name': 'OAuth2PasswordBearer',
+          },
+        ],
+        ...?extra,
+      },
+      contentType: 'multipart/form-data',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      _bodyData = FormData.fromMap(<String, dynamic>{
+        r'file': encodeFormParameter(_serializers, file, const FullType(String)),
+      });
 
     } catch(error, stackTrace) {
       throw DioException(

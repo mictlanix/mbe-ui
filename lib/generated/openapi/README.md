@@ -125,6 +125,7 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**listProductsApiV1ProductsGet**](doc/ProductsApi.md#listproductsapiv1productsget) | **GET** /api/v1/products | List Products
 [*ProductsApi*](doc/ProductsApi.md) | [**mergeProductsApiV1ProductsMergePost**](doc/ProductsApi.md#mergeproductsapiv1productsmergepost) | **POST** /api/v1/products/merge | Merge Products
 [*ProductsApi*](doc/ProductsApi.md) | [**updateProductApiV1ProductsProductIdPut**](doc/ProductsApi.md#updateproductapiv1productsproductidput) | **PUT** /api/v1/products/{product_id} | Update Product
+[*ProductsApi*](doc/ProductsApi.md) | [**uploadProductImageApiV1ProductsProductIdImagePost**](doc/ProductsApi.md#uploadproductimageapiv1productsproductidimagepost) | **POST** /api/v1/products/{product_id}/image | Upload Product Image
 [*StoresApi*](doc/StoresApi.md) | [**createStoreApiV1StoresPost**](doc/StoresApi.md#createstoreapiv1storespost) | **POST** /api/v1/stores | Create Store
 [*StoresApi*](doc/StoresApi.md) | [**deleteStoreApiV1StoresStoreIdDelete**](doc/StoresApi.md#deletestoreapiv1storesstoreiddelete) | **DELETE** /api/v1/stores/{store_id} | Delete Store
 [*StoresApi*](doc/StoresApi.md) | [**getStoreApiV1StoresStoreIdGet**](doc/StoresApi.md#getstoreapiv1storesstoreidget) | **GET** /api/v1/stores/{store_id} | Get Store

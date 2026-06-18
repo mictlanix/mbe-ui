@@ -305,9 +305,9 @@ class EmployeesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      r'active': encodeQueryParameter(_serializers, active, const FullType(bool)),
-      r'sales_person': encodeQueryParameter(_serializers, salesPerson, const FullType(bool)),
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
+      if (active != null) r'active': encodeQueryParameter(_serializers, active, const FullType(bool)),
+      if (salesPerson != null) r'sales_person': encodeQueryParameter(_serializers, salesPerson, const FullType(bool)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

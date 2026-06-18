@@ -308,10 +308,10 @@ class ExchangeRatesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'date_from': encodeQueryParameter(_serializers, dateFrom, const FullType(Date)),
-      r'date_to': encodeQueryParameter(_serializers, dateTo, const FullType(Date)),
-      r'base': encodeQueryParameter(_serializers, base_, const FullType(int)),
-      r'target': encodeQueryParameter(_serializers, target, const FullType(int)),
+      if (dateFrom != null) r'date_from': encodeQueryParameter(_serializers, dateFrom, const FullType(Date)),
+      if (dateTo != null) r'date_to': encodeQueryParameter(_serializers, dateTo, const FullType(Date)),
+      if (base_ != null) r'base': encodeQueryParameter(_serializers, base_, const FullType(int)),
+      if (target != null) r'target': encodeQueryParameter(_serializers, target, const FullType(int)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

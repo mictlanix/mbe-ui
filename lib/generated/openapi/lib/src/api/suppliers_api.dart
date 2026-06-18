@@ -301,7 +301,7 @@ class SuppliersApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

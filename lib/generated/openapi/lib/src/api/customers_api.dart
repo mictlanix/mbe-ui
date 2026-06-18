@@ -303,8 +303,8 @@ class CustomersApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      r'disabled': encodeQueryParameter(_serializers, disabled, const FullType(bool)),
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
+      if (disabled != null) r'disabled': encodeQueryParameter(_serializers, disabled, const FullType(bool)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

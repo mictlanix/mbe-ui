@@ -301,7 +301,7 @@ class ProductionSitesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'store': encodeQueryParameter(_serializers, store, const FullType(int)),
+      if (store != null) r'store': encodeQueryParameter(_serializers, store, const FullType(int)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

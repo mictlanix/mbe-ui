@@ -6,6 +6,13 @@
 #
 # SPEC_URL_OR_PATH defaults to mbe-api's local dev server openapi.json.
 # Requires Docker (uses the openapitools/openapi-generator-cli image).
+#
+# tool/openapi-templates/dart-dio overrides the generator's query-param
+# template: upstream skips the `if (param != null)` guard whenever a query
+# param's schema itself is nullable (e.g. FastAPI `Optional[str] = None`
+# filters), even though the param is optional and the guard is needed to
+# omit it from the request when unset. See openapi-generator's
+# dart/libraries/dio/api.mustache for the original logic.
 set -euo pipefail
 
 SPEC_SOURCE="${1:-http://127.0.0.1:8000/openapi.json}"
@@ -34,6 +41,7 @@ docker run --rm \
   -i /spec/openapi.json \
   -g dart-dio \
   -o "/local/${OUTPUT_DIR}" \
+  -t /local/tool/openapi-templates/dart-dio \
   --global-property=apis,models,supportingFiles,apiTests=false,modelTests=false \
   --additional-properties=pubName=mbe_api_client,pubAuthor=Mictlanix,pubDescription="mbe-api OpenAPI client (generated)"
 
