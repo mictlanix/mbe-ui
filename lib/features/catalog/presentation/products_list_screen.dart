@@ -63,26 +63,23 @@ class ProductsListScreen extends ConsumerWidget {
                       onSelected: (selected) => filterController
                           .deactivatedChanged(selected ? null : false),
                     ),
-                    FilterChip(
-                      key: const Key('products_filter_stockable'),
-                      label: Text(l10n.productsStockableFilter),
-                      selected: filter.stockable == true,
-                      onSelected: (selected) => filterController
-                          .stockableChanged(selected ? true : null),
+                    _TriStateFilterChip(
+                      chipKey: const Key('products_filter_stockable'),
+                      label: l10n.productsStockableFilter,
+                      value: filter.stockable,
+                      onChanged: filterController.stockableChanged,
                     ),
-                    FilterChip(
-                      key: const Key('products_filter_salable'),
-                      label: Text(l10n.productsSalableFilter),
-                      selected: filter.salable == true,
-                      onSelected: (selected) => filterController
-                          .salableChanged(selected ? true : null),
+                    _TriStateFilterChip(
+                      chipKey: const Key('products_filter_salable'),
+                      label: l10n.productsSalableFilter,
+                      value: filter.salable,
+                      onChanged: filterController.salableChanged,
                     ),
-                    FilterChip(
-                      key: const Key('products_filter_purchasable'),
-                      label: Text(l10n.productsPurchasableFilter),
-                      selected: filter.purchasable == true,
-                      onSelected: (selected) => filterController
-                          .purchasableChanged(selected ? true : null),
+                    _TriStateFilterChip(
+                      chipKey: const Key('products_filter_purchasable'),
+                      label: l10n.productsPurchasableFilter,
+                      value: filter.purchasable,
+                      onChanged: filterController.purchasableChanged,
                     ),
                   ],
                 ),
@@ -150,6 +147,43 @@ class ProductsListScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// A [FilterChip] that cycles through `null` (no filter) → `true` → `false`
+/// → `null` on tap, since [ProductFilter]'s attribute filters are tri-state
+/// (data-model.md "ProductFilter").
+class _TriStateFilterChip extends StatelessWidget {
+  const _TriStateFilterChip({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.chipKey,
+  });
+
+  final String label;
+  final bool? value;
+  final ValueChanged<bool?> onChanged;
+  final Key? chipKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilterChip(
+      key: chipKey,
+      label: Text(label),
+      selected: value != null,
+      showCheckmark: false,
+      avatar: switch (value) {
+        true => const Icon(Icons.check, size: 18),
+        false => const Icon(Icons.close, size: 18),
+        null => null,
+      },
+      onSelected: (_) => onChanged(switch (value) {
+        null => true,
+        true => false,
+        false => null,
+      }),
     );
   }
 }

@@ -128,6 +128,31 @@ void main() {
     expect(find.byKey(const Key('products_filter_purchasable')), findsOneWidget);
   });
 
+  testWidgets(
+      'cycles the stockable filter through null -> true -> false -> null',
+      (tester) async {
+    await pumpScreen(tester, signedInAs: _readOnlyUser);
+    final chipFinder = find.byKey(const Key('products_filter_stockable'));
+
+    await tester.tap(chipFinder);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilterChip>(chipFinder).avatar,
+      isA<Icon>().having((i) => i.icon, 'icon', Icons.check),
+    );
+
+    await tester.tap(chipFinder);
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilterChip>(chipFinder).avatar,
+      isA<Icon>().having((i) => i.icon, 'icon', Icons.close),
+    );
+
+    await tester.tap(chipFinder);
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilterChip>(chipFinder).avatar, isNull);
+  });
+
   testWidgets('shows an empty state when there are no matches', (tester) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);
 
