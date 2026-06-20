@@ -321,15 +321,15 @@ default RBAC enforced throughout.
 
 **Purpose**: Final consistency pass across all four stories.
 
-- [ ] T036 [P] Run `dart run build_runner build --delete-conflicting-outputs`
+- [X] T036 [P] Run `dart run build_runner build --delete-conflicting-outputs`
   and resolve any `freezed`/`riverpod_generator` codegen errors introduced
   in `lib/features/catalog/`.
-- [ ] T037 [P] Add `es-MX` localized strings (`.arb` files under
+- [X] T037 [P] Add `es-MX` localized strings (`.arb` files under
   `lib/l10n/`) for all catalog screens introduced in Phases 3-6
   (constitution §V).
-- [ ] T038 Run `flutter analyze` across `lib/features/catalog/` and resolve
+- [X] T038 Run `flutter analyze` across `lib/features/catalog/` and resolve
   all warnings/errors.
-- [ ] T039 Execute [quickstart.md](./quickstart.md) end-to-end against a
+- [X] T039 Execute [quickstart.md](./quickstart.md) end-to-end against a
   local mbe-api instance (Stories 1-4 validation scenarios) and fix any
   discrepancies found.
 
