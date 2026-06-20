@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-16
 
-**Status**: Draft
+**Status**: Completed (remediation tasks T040–T043 carried over as GitHub issues #40–#43)
 
 **Input**: User description: "Add a Products CRUD feature: admin/staff can create, view, edit, and delete product records (e.g. SKU/code, name, description, price, unit, category, active/inactive status). List view supports search/filter; product detail/edit form validates required fields and price formatting. Access is gated by the existing RBAC system (Products system object) introduced in the auth feature — deny-by-default, only users with the appropriate privilege can create/edit/delete, others may have read-only or no access."
 
