@@ -34,7 +34,7 @@ const _userJson = {
 
 void main() {
   group('UserRepositoryImpl.list', () {
-    test('200 returns list of UserSummary', () async {
+    test('200 returns items and total', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
           jsonEncode({
@@ -61,18 +61,41 @@ void main() {
         ),
       );
 
-      final users = await repository.list();
+      final result = await repository.list();
 
-      expect(users, hasLength(2));
-      expect(users.first.userId, 'admin');
-      expect(users.first.administrator, isTrue);
+      expect(result.items, hasLength(2));
+      expect(result.total, 2);
+      expect(result.items.first.userId, 'admin');
+      expect(result.items.first.administrator, isTrue);
+    });
+
+    test('passes search/skip/limit through as query params', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode({'items': <dynamic>[], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.list(search: 'jdoe', skip: 20, limit: 20);
+
+      expect(captured!.queryParameters['search'], 'jdoe');
+      expect(captured!.queryParameters['skip'], 20);
+      expect(captured!.queryParameters['limit'], 20);
     });
 
     test('401 maps to AppError.auth', () async {
       final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString('{}', 401, headers: _jsonHeaders),
+        (options) async =>
+            ResponseBody.fromString('{}', 401, headers: _jsonHeaders),
       );
-      await expectLater(() => repository.list(), throwsA(const AppError.auth()));
+      await expectLater(
+        () => repository.list(),
+        throwsA(const AppError.auth()),
+      );
     });
   });
 
@@ -171,7 +194,8 @@ void main() {
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString('{}', 404, headers: _jsonHeaders),
+        (options) async =>
+            ResponseBody.fromString('{}', 404, headers: _jsonHeaders),
       );
       await expectLater(
         () => repository.update(userId: 'nobody'),
@@ -229,8 +253,7 @@ class _FakeHttpClientAdapter implements HttpClientAdapter {
     RequestOptions options,
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
-  ) =>
-      _handler(options);
+  ) => _handler(options);
 
   @override
   void close({bool force = false}) {}

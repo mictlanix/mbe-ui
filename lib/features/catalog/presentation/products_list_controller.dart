@@ -1,8 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 
 part 'products_list_controller.freezed.dart';
 part 'products_list_controller.g.dart';
@@ -47,46 +48,49 @@ class ProductFilterController extends _$ProductFilterController {
       state = state.copyWith(purchasable: value);
 }
 
-/// Fetches and holds the products list (FR-001, FR-002), re-fetching from
-/// the first page whenever [ProductFilterController]'s state changes.
-/// Supports incremental loading via [loadMore] (research.md §5).
+/// Fetches and holds the products list (FR-001, FR-002), re-fetching page
+/// 0 whenever [ProductFilterController]'s state changes. Supports
+/// page-based navigation via [goToPage], consumed by `DataTableView`'s
+/// `pagination` parameter (data-model.md "CatalogPage`<T>`", research.md
+/// §2 — replaces the prior `_skip`/`loadMore()` incremental-fetch
+/// pattern).
 @riverpod
 class ProductsListController extends _$ProductsListController {
-  int _skip = 0;
-
   @override
-  Future<ProductListResult> build() {
-    _skip = 0;
+  Future<CatalogPage<ProductListItem>> build() {
     final filter = ref.watch(productFilterControllerProvider);
-    return _fetch(filter, skip: 0);
+    return _fetch(filter, pageIndex: 0);
   }
 
-  Future<ProductListResult> _fetch(ProductFilter filter, {required int skip}) {
-    return ref.read(productRepositoryProvider).list(
+  Future<CatalogPage<ProductListItem>> _fetch(
+    ProductFilter filter, {
+    required int pageIndex,
+  }) async {
+    final result = await ref
+        .read(productRepositoryProvider)
+        .list(
           search: filter.search.isEmpty ? null : filter.search,
           deactivated: filter.deactivated,
           stockable: filter.stockable,
           salable: filter.salable,
           purchasable: filter.purchasable,
-          skip: skip,
+          skip: pageIndex * _pageSize,
           limit: _pageSize,
         );
+    return CatalogPage(
+      items: result.items,
+      total: result.total,
+      pageIndex: pageIndex,
+      pageSize: _pageSize,
+    );
   }
 
-  /// Fetches the next page and appends it to the current results. No-ops if
-  /// already loading or if every matching product has been loaded.
-  Future<void> loadMore() async {
-    final current = state.valueOrNull;
-    if (current == null || current.items.length >= current.total) return;
-
-    _skip += _pageSize;
+  /// Fetches [pageIndex] and replaces the current page with it.
+  Future<void> goToPage(int pageIndex) async {
     final filter = ref.read(productFilterControllerProvider);
-    final next = await _fetch(filter, skip: _skip);
-    state = AsyncData(
-      ProductListResult(
-        items: [...current.items, ...next.items],
-        total: next.total,
-      ),
+    state = const AsyncLoading<CatalogPage<ProductListItem>>().copyWithPrevious(
+      state,
     );
+    state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }

@@ -6,11 +6,32 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 
 part 'users_controller.freezed.dart';
 part 'users_controller.g.dart';
+
+const _pageSize = 20;
+
+/// The Users catalog's search selection (data-model.md "UserFilter"),
+/// mirroring `ProductFilterController` (FR-001). Local UI state, not
+/// persisted (constitution §II).
+@freezed
+class UserFilter with _$UserFilter {
+  const factory UserFilter({@Default('') String search}) = _UserFilter;
+}
+
+/// Holds the current search selection for the Users catalog (FR-001).
+/// Only updated on explicit submit — see `CatalogSearchBar` (FR-010).
+@riverpod
+class UserFilterController extends _$UserFilterController {
+  @override
+  UserFilter build() => const UserFilter();
+
+  void searchChanged(String value) => state = state.copyWith(search: value);
+}
 
 /// Error codes for [UserFormState.error], mapped to localized text in the
 /// UI layer (`user_detail_screen.dart`) since this controller has no
@@ -46,6 +67,7 @@ class UserFormState with _$UserFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
+
     /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
     /// string on a `404`/`5xx`), shown alongside the localized [error]
     /// message since it can't be localized client-side. `null` for
@@ -57,19 +79,51 @@ class UserFormState with _$UserFormState {
   }) = _UserFormState;
 }
 
-/// Fetches and holds the admin users list (FR-011).
+/// Fetches and holds the admin users list (FR-001, FR-002, FR-011),
+/// re-fetching page 0 whenever [UserFilterController]'s state changes.
+/// Supports page-based navigation via [goToPage], consumed by
+/// `DataTableView`'s `pagination` parameter (data-model.md
+/// "CatalogPage`<T>`", mirrors `ProductsListController`).
 @riverpod
 class UsersController extends _$UsersController {
   @override
-  Future<List<UserSummary>> build() {
-    return ref.read(userRepositoryProvider).list();
+  Future<CatalogPage<UserSummary>> build() {
+    final filter = ref.watch(userFilterControllerProvider);
+    return _fetch(filter, pageIndex: 0);
   }
 
-  Future<void> refresh() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(userRepositoryProvider).list(),
+  Future<CatalogPage<UserSummary>> _fetch(
+    UserFilter filter, {
+    required int pageIndex,
+  }) async {
+    final result = await ref
+        .read(userRepositoryProvider)
+        .list(
+          search: filter.search.isEmpty ? null : filter.search,
+          skip: pageIndex * _pageSize,
+          limit: _pageSize,
+        );
+    return CatalogPage(
+      items: result.items,
+      total: result.total,
+      pageIndex: pageIndex,
+      pageSize: _pageSize,
     );
+  }
+
+  /// Fetches [pageIndex] and replaces the current page with it.
+  Future<void> goToPage(int pageIndex) async {
+    final filter = ref.read(userFilterControllerProvider);
+    state = const AsyncLoading<CatalogPage<UserSummary>>().copyWithPrevious(
+      state,
+    );
+    state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
+  }
+
+  /// Re-fetches the current page (e.g. after a row is deleted).
+  Future<void> refresh() async {
+    final current = state.valueOrNull;
+    await goToPage(current?.pageIndex ?? 0);
   }
 }
 
@@ -118,11 +172,8 @@ class UserFormController extends _$UserFormController {
     );
   }
 
-  void administratorChanged(bool v) => state = state.copyWith(
-        administrator: v,
-        error: null,
-        errorDetail: null,
-      );
+  void administratorChanged(bool v) =>
+      state = state.copyWith(administrator: v, error: null, errorDetail: null);
 
   void disabledChanged(bool v) =>
       state = state.copyWith(disabled: v, error: null, errorDetail: null);
@@ -144,7 +195,10 @@ class UserFormController extends _$UserFormController {
   /// account, refreshes the in-memory session (FR-014).
   Future<void> save({String? existingUserId}) async {
     if (state.email.isEmpty) {
-      state = state.copyWith(error: UserFormErrorCode.emailRequired, errorDetail: null);
+      state = state.copyWith(
+        error: UserFormErrorCode.emailRequired,
+        errorDetail: null,
+      );
       return;
     }
     if (existingUserId == null) {

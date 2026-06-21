@@ -43,7 +43,7 @@ directories or feature modules.
 on (plan.md "Technical Context" / research.md §1) before any shared
 widget work begins.
 
-- [ ] T001 Add `data_table_2` to `pubspec.yaml` `dependencies`, run
+- [X] T001 Add `data_table_2` to `pubspec.yaml` `dependencies`, run
   `flutter pub get`, and confirm it resolves cleanly alongside existing
   `flutter_riverpod`/`go_router`/`dio` versions.
 
@@ -62,13 +62,13 @@ is layered on.
 **⚠️ CRITICAL**: No user story work can begin until this phase is
 complete.
 
-- [ ] T002 [P] Create `lib/core/widgets/catalog_pagination.dart` defining
+- [X] T002 [P] Create `lib/core/widgets/catalog_pagination.dart` defining
   `CatalogPage<T>` (`items`, `total`, `pageIndex`, `pageSize`) — the shared
   state shape `DataTableView` (T003) accepts via its `pagination`
   parameter, replacing the ad hoc "load more" pattern (research.md §2).
   This is a data shape, not a render widget — no UI code in this file
   (depends on T001).
-- [ ] T003 Rewrite `lib/core/widgets/data_table_view.dart` as the
+- [X] T003 Rewrite `lib/core/widgets/data_table_view.dart` as the
   single shared table widget: renders `data_table_2`'s `DataTable2` when
   its new optional `pagination` parameter is `null`, or
   `PaginatedDataTable2` when given a `CatalogPage<T>` (T002) — both
@@ -77,27 +77,27 @@ complete.
   existing constitution §VI truncation rule, so frozen columns and
   pagination are never on two different render paths (depends on T001,
   T002).
-- [ ] T004 [P] Create `lib/core/widgets/catalog_search_bar.dart`: a search
+- [X] T004 [P] Create `lib/core/widgets/catalog_search_bar.dart`: a search
   field exposing only `onSubmitted` (Enter key) and a trailing search
   `IconButton` — no `onChanged` parameter, so per-keystroke filtering
   cannot be wired by a caller (research.md §3, FR-010).
-- [ ] T005 [P] Create `lib/core/widgets/catalog_filter_bar.dart`: lays out
+- [X] T005 [P] Create `lib/core/widgets/catalog_filter_bar.dart`: lays out
   a search bar plus facet filter widgets in one `Row` at/above
   `LayoutBreakpoints.expanded` (840px) and in a `Wrap` below it
   (research.md §4, FR-009).
-- [ ] T006 [P] Create `lib/core/widgets/catalog_action_icons.dart`: a
+- [X] T006 [P] Create `lib/core/widgets/catalog_action_icons.dart`: a
   `CatalogAction` enum (`create`, `view`, `edit`, `delete`) with the fixed
   icon table from contracts/catalog-action-icons.md and a builder that
   renders row actions in `[view, edit, delete]` order, each conditional on
   an `AccessControlService.can(...)` check passed in by the caller
   (FR-003, FR-004, FR-005, FR-012).
-- [ ] T007 Migrate `lib/features/catalog/presentation/products_list_screen.dart`
+- [X] T007 Migrate `lib/features/catalog/presentation/products_list_screen.dart`
   and `products_list_controller.dart` to the rewritten `DataTableView`'s
   `pagination` parameter, replacing the `_skip`/`loadMore()`
   incremental-fetch pattern with `CatalogPage<ProductListItem>` state
   (data-model.md "CatalogPage\<T\>") — existing filter chips/search field
   behavior is left as-is for now (depends on T002, T003).
-- [ ] T008 Migrate `lib/features/auth/presentation/admin/users_list_screen.dart`
+- [X] T008 Migrate `lib/features/auth/presentation/admin/users_list_screen.dart`
   to the rewritten `DataTableView` (new constructor signature, `pagination`
   left `null` for now), still rendering the existing unfiltered/unpaginated
   `List<UserSummary>` for now (depends on T003).
@@ -121,20 +121,20 @@ returns.
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] `UserRepositoryImpl.list` test covering
+- [X] T009 [P] [US1] `UserRepositoryImpl.list` test covering
   `search`/`skip`/`limit` → query param mapping and `UserListResponse` →
   `UserListResult` mapping in
   `test/unit/features/auth/user_repository_impl_test.dart` (mocktail
   `UsersApi` fake).
-- [ ] T010 [P] [US1] `UserFilterController`/paginated `UsersController`
+- [X] T010 [P] [US1] `UserFilterController`/paginated `UsersController`
   tests: filter state → re-fetch page 0; `nextPage`/`previousPage` →
   correct `skip` value, in
   `test/unit/features/auth/users_controller_test.dart`.
-- [ ] T011 [P] [US1] Widget test for `UsersListScreen`: typing into the
+- [X] T011 [P] [US1] Widget test for `UsersListScreen`: typing into the
   search box issues no request until Enter/submit-button press; page
   navigation control changes the displayed rows, in
   `test/widget/features/auth/users_list_screen_test.dart`.
-- [ ] T012 [P] [US1] Integration test: sign in as administrator, search
+- [X] T012 [P] [US1] Integration test: sign in as administrator, search
   Users by partial username, confirm only matching users shown, navigate
   to page 2, clear search and confirm full paginated list returns, in
   `test/integration/catalog_consistency_flow_test.dart` (quickstart
@@ -142,19 +142,19 @@ returns.
 
 ### Implementation for User Story 1
 
-- [ ] T013 [US1] Extend `UserRepository`/`UserRepositoryImpl.list()` to
+- [X] T013 [US1] Extend `UserRepository`/`UserRepositoryImpl.list()` to
   accept `search`/`skip`/`limit` and return a new `UserListResult`
   (`items`, `total`), passing through to
   `UsersApi.listUsersApiV1UsersGet` per
   contracts/mbe-api-users-list.md (depends on T009).
-- [ ] T014 [US1] Add `UserFilterController` (mirrors
+- [X] T014 [US1] Add `UserFilterController` (mirrors
   `ProductFilterController`, holds `{search}`) in
   `lib/features/auth/presentation/admin/users_controller.dart`.
-- [ ] T015 [US1] Convert `UsersController` to hold
+- [X] T015 [US1] Convert `UsersController` to hold
   `AsyncValue<CatalogPage<UserSummary>>` state (`pageIndex`, fixed
   `pageSize` of 20), re-fetching page 0 whenever `UserFilterController`'s
   state changes (depends on T002, T013, T014).
-- [ ] T016 [US1] Update `UsersListScreen` to use `CatalogSearchBar`
+- [X] T016 [US1] Update `UsersListScreen` to use `CatalogSearchBar`
   (submit-on-Enter/button, FR-010) and pass `UsersController`'s
   `CatalogPage<UserSummary>` into `DataTableView`'s `pagination` parameter
   (depends on T004, T008, T015).
@@ -177,16 +177,16 @@ account; confirm View renders the Edit form read-only.
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Widget test: `CatalogActionIcons`' builder renders
+- [X] T017 [P] [US2] Widget test: `CatalogActionIcons`' builder renders
   `[view, edit, delete]` in that fixed order and omits any action whose
   `can(...)` check returns `false`, in
   `test/widget/core/widgets/catalog_action_icons_test.dart`.
-- [ ] T018 [P] [US2] Widget tests confirming `UsersListScreen` and
+- [X] T018 [P] [US2] Widget tests confirming `UsersListScreen` and
   `ProductsListScreen` render the same icon glyphs/order for row actions
   and the same toolbar Create icon, in
   `test/widget/features/auth/users_list_screen_test.dart` and
   `test/widget/features/catalog/products_list_screen_test.dart`.
-- [ ] T019 [P] [US2] Integration test: as administrator, click View on a
+- [X] T019 [P] [US2] Integration test: as administrator, click View on a
   row and confirm the Edit form opens read-only; as a Read-only account,
   confirm Edit/Delete icons and the toolbar Create icon are absent while
   View remains, in `test/integration/catalog_consistency_flow_test.dart`
@@ -194,24 +194,24 @@ account; confirm View renders the Edit form read-only.
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Confirm `/users/:userId` and `/products/:productId`
+- [X] T020 [US2] Confirm `/users/:userId` and `/products/:productId`
   navigate with a `view=true` query parameter when invoked from a View
   action (no `GoRoute` path/table change needed — `go_router` already
   exposes query params via `state.uri.queryParameters`; this task is just
   the navigation call sites used by T023/T024) (research.md §5).
-- [ ] T021 [P] [US2] Add a forced-read-only param to
+- [X] T021 [P] [US2] Add a forced-read-only param to
   `lib/features/auth/presentation/admin/user_detail_screen.dart`, read
   from `state.uri.queryParameters['view']`, composing with its existing
   permission-derived `readOnly` check (depends on T020).
-- [ ] T022 [P] [US2] Add a forced-read-only param to
+- [X] T022 [P] [US2] Add a forced-read-only param to
   `lib/features/catalog/presentation/product_detail_screen.dart`, read
   from `state.uri.queryParameters['view']`, composing with its existing
   `readOnly = _isEdit && !canUpdate` check
   (`product_detail_screen.dart:65`) (depends on T020).
-- [ ] T023 [US2] Wire `CatalogActionIcons` row actions (View/Edit/Delete)
+- [X] T023 [US2] Wire `CatalogActionIcons` row actions (View/Edit/Delete)
   and the toolbar Create icon into `UsersListScreen`, gated by
   `access.can(SystemObject.users, ...)` (depends on T006, T016, T021).
-- [ ] T024 [US2] Wire `CatalogActionIcons` row actions and the toolbar
+- [X] T024 [US2] Wire `CatalogActionIcons` row actions and the toolbar
   Create icon into `ProductsListScreen`, replacing the existing
   `Icons.add_box` toolbar icon, gated by
   `access.can(SystemObject.products, ...)` (depends on T006, T007, T022).
@@ -231,17 +231,17 @@ catalog horizontally and confirm the identity column stays visible.
 
 ### Tests for User Story 3
 
-- [ ] T025 [P] [US3] Widget test: a `DataTableView` column marked
+- [X] T025 [P] [US3] Widget test: a `DataTableView` column marked
   `frozen: true` remains visible/pinned while the table is scrolled
   horizontally, in `test/widget/core/widgets/data_table_view_test.dart`.
 
 ### Implementation for User Story 3
 
-- [ ] T026 [US3] Mark the product code column `frozen: true` in
+- [X] T026 [US3] Mark the product code column `frozen: true` in
   `ProductsListScreen`'s `DataTableColumn` list — exercised through
   `DataTableView`'s `PaginatedDataTable2` branch since Products always
   supplies `pagination` (T003, T007) (depends on T003, T007, T024).
-- [ ] T027 [US3] Mark the username column `frozen: true` in
+- [X] T027 [US3] Mark the username column `frozen: true` in
   `UsersListScreen`'s `DataTableColumn` list — exercised through
   `DataTableView`'s `PaginatedDataTable2` branch since Users always
   supplies `pagination` (T003, T016) (depends on T003, T016, T023).
@@ -264,22 +264,22 @@ submit.
 
 ### Tests for User Story 4
 
-- [ ] T028 [P] [US4] Widget test: `CatalogFilterBar` lays out children in
+- [X] T028 [P] [US4] Widget test: `CatalogFilterBar` lays out children in
   one `Row` at width ≥ 840px and in a `Wrap` below it, in
   `test/widget/core/widgets/catalog_filter_bar_test.dart`.
-- [ ] T029 [P] [US4] Widget test: `ProductsListScreen`'s search box issues
+- [X] T029 [P] [US4] Widget test: `ProductsListScreen`'s search box issues
   no filter update until Enter/submit-button press (regression test for
   the existing per-keystroke `onChanged` behavior), in
   `test/widget/features/catalog/products_list_screen_test.dart`.
 
 ### Implementation for User Story 4
 
-- [ ] T030 [US4] Replace `ProductsListScreen`'s `TextField(onChanged:
+- [X] T030 [US4] Replace `ProductsListScreen`'s `TextField(onChanged:
   filterController.searchChanged)` + `Wrap` with `CatalogFilterBar`
   wrapping `CatalogSearchBar` (submit-on-Enter/button) and the existing
   stockable/salable/purchasable/show-inactive filter chips (depends on
   T004, T005, T024).
-- [ ] T031 [US4] Wrap `UsersListScreen`'s search bar in `CatalogFilterBar`
+- [X] T031 [US4] Wrap `UsersListScreen`'s search bar in `CatalogFilterBar`
   for layout consistency with Products (depends on T005, T016).
 
 **Checkpoint**: Filter controls behave and lay out consistently on both
@@ -292,10 +292,10 @@ catalogs; no catalog issues a request before explicit search submission.
 **Purpose**: Regenerate generated code, and validate the full feature
 end-to-end.
 
-- [ ] T032 [P] Run `dart run build_runner build --delete-conflicting-outputs`
+- [X] T032 [P] Run `dart run build_runner build --delete-conflicting-outputs`
   to regenerate `freezed`/`riverpod` code for `UserFilterController`,
   `UsersController`, and `ProductsListController`.
-- [ ] T033 [P] Run `flutter analyze` and `dart format --output=none
+- [X] T033 [P] Run `flutter analyze` and `dart format --output=none
   --set-exit-if-changed .` across all files touched by this feature.
 - [ ] T034 Run quickstart.md's full validation sequence end-to-end against
   a local mbe-api instance (all four user stories).

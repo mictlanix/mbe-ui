@@ -22,12 +22,21 @@ class UserRepositoryImpl implements UserRepository {
   final UsersApi _api;
 
   @override
-  Future<List<UserSummary>> list() async {
+  Future<UserListResult> list({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
     try {
-      final response = await _api.listUsersApiV1UsersGet();
-      return (response.data?.items.toList() ?? <UserListItem>[])
+      final response = await _api.listUsersApiV1UsersGet(
+        search: search,
+        skip: skip,
+        limit: limit,
+      );
+      final items = (response.data?.items.toList() ?? <UserListItem>[])
           .map(UserSummary.fromListItem)
           .toList();
+      return UserListResult(items: items, total: response.data?.total ?? 0);
     } on DioException catch (e) {
       throw _toAppError(e);
     }
@@ -56,13 +65,15 @@ class UserRepositoryImpl implements UserRepository {
   }) async {
     try {
       final response = await _api.createUserApiV1UsersPost(
-        userCreate: UserCreate((b) => b
-          ..userId = userId
-          ..password = password
-          ..email = email
-          ..employeeId = employeeId
-          ..administrator = administrator
-          ..disabled = disabled),
+        userCreate: UserCreate(
+          (b) => b
+            ..userId = userId
+            ..password = password
+            ..email = email
+            ..employeeId = employeeId
+            ..administrator = administrator
+            ..disabled = disabled,
+        ),
       );
       final user = response.data;
       if (user == null) throw const AppError.server();
@@ -114,7 +125,9 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<RecoverPasswordResult> recoverPassword({required String userId}) async {
+  Future<RecoverPasswordResult> recoverPassword({
+    required String userId,
+  }) async {
     try {
       final response = await _api
           .recoverPasswordApiV1UsersUserIdRecoverPasswordPost(userId: userId);

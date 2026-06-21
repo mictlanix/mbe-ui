@@ -4,6 +4,11 @@
   "fieldRequired": "Requerido",
   "fieldMinLength6": "Debe tener al menos 6 caracteres",
 
+  "viewActionTooltip": "Ver",
+  "editActionTooltip": "Editar",
+  "deleteActionTooltip": "Eliminar",
+  "searchButtonTooltip": "Buscar",
+
   "signInTitle": "Iniciar sesión",
   "usernameLabel": "Usuario",
   "passwordLabel": "Contraseña",
@@ -28,6 +33,7 @@
 
   "usersTitle": "Usuarios",
   "newUserTooltip": "Nuevo usuario",
+  "usersSearchLabel": "Buscar por usuario o correo",
   "usersLoadError": "Error al cargar usuarios: {error}",
   "noUsersFound": "No se encontraron usuarios.",
   "columnUsername": "Usuario",
@@ -50,7 +56,6 @@
   "columnName": "Nombre",
   "columnBrand": "Marca",
   "columnUnit": "Unidad",
-  "loadMoreButton": "Cargar más",
 
   "newProductTitle": "Nuevo producto",
   "editProductTitle": "Editar producto",

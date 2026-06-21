@@ -28,10 +28,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: refreshListenable,
     redirect: (context, state) => _redirect(ref, state),
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/auth/login',
         builder: (context, state) => const LoginScreen(),
@@ -54,8 +51,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/users/:userId',
-        builder: (context, state) =>
-            UserDetailScreen(userId: state.pathParameters['userId']),
+        builder: (context, state) => UserDetailScreen(
+          userId: state.pathParameters['userId'],
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
       ),
       GoRoute(
         path: '/products',
@@ -69,6 +68,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/products/:productId',
         builder: (context, state) => ProductDetailScreen(
           productId: int.parse(state.pathParameters['productId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
     ],
@@ -80,7 +80,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 /// (FR-003, SC-003; research.md §4).
 class _AuthRefreshListenable extends ChangeNotifier {
   _AuthRefreshListenable(Ref ref) {
-    _subscription = ref.listen(authNotifierProvider, (_, _) => notifyListeners());
+    _subscription = ref.listen(
+      authNotifierProvider,
+      (_, _) => notifyListeners(),
+    );
   }
 
   late final ProviderSubscription<AsyncValue<AuthState>> _subscription;

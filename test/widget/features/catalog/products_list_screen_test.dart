@@ -77,15 +77,17 @@ void main() {
     List<ProductListItem> products = _testProducts,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
-    when(() => productRepository.list(
-          search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
-          stockable: any(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        )).thenAnswer(
+    when(
+      () => productRepository.list(
+        search: any(named: 'search'),
+        deactivated: any(named: 'deactivated'),
+        stockable: any(named: 'stockable'),
+        salable: any(named: 'salable'),
+        purchasable: any(named: 'purchasable'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
       (_) async => ProductListResult(items: products, total: products.length),
     );
 
@@ -106,8 +108,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows products with their status (FR-001, FR-002)',
-      (tester) async {
+  testWidgets('shows products with their status (FR-001, FR-002)', (
+    tester,
+  ) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser);
 
     expect(find.text('SKU-001'), findsOneWidget);
@@ -118,41 +121,90 @@ void main() {
     expect(find.text('Inactive'), findsOneWidget);
   });
 
-  testWidgets('shows the search field and filter chips (FR-001, FR-002)',
-      (tester) async {
+  testWidgets('shows the search field and filter chips (FR-001, FR-002)', (
+    tester,
+  ) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser);
 
     expect(find.byKey(const Key('products_search_field')), findsOneWidget);
-    expect(find.byKey(const Key('products_filter_show_inactive')), findsOneWidget);
+    expect(
+      find.byKey(const Key('products_filter_show_inactive')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('products_filter_stockable')), findsOneWidget);
     expect(find.byKey(const Key('products_filter_salable')), findsOneWidget);
-    expect(find.byKey(const Key('products_filter_purchasable')), findsOneWidget);
+    expect(
+      find.byKey(const Key('products_filter_purchasable')),
+      findsOneWidget,
+    );
   });
 
   testWidgets(
-      'cycles the stockable filter through null -> true -> false -> null',
-      (tester) async {
-    await pumpScreen(tester, signedInAs: _readOnlyUser);
-    final chipFinder = find.byKey(const Key('products_filter_stockable'));
+    'does not re-query while typing; queries only on submit (FR-010)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+      clearInteractions(productRepository);
 
-    await tester.tap(chipFinder);
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<FilterChip>(chipFinder).avatar,
-      isA<Icon>().having((i) => i.icon, 'icon', Icons.check),
-    );
+      await tester.enterText(
+        find.byKey(const Key('products_search_field')),
+        'widget',
+      );
+      await tester.pump();
 
-    await tester.tap(chipFinder);
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<FilterChip>(chipFinder).avatar,
-      isA<Icon>().having((i) => i.icon, 'icon', Icons.close),
-    );
+      verifyNever(
+        () => productRepository.list(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      );
 
-    await tester.tap(chipFinder);
-    await tester.pumpAndSettle();
-    expect(tester.widget<FilterChip>(chipFinder).avatar, isNull);
-  });
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => productRepository.list(
+          search: 'widget',
+          deactivated: null,
+          stockable: null,
+          salable: null,
+          purchasable: null,
+          skip: 0,
+          limit: 20,
+        ),
+      ).called(1);
+    },
+  );
+
+  testWidgets(
+    'cycles the stockable filter through null -> true -> false -> null',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+      final chipFinder = find.byKey(const Key('products_filter_stockable'));
+
+      await tester.tap(chipFinder);
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<FilterChip>(chipFinder).avatar,
+        isA<Icon>().having((i) => i.icon, 'icon', Icons.check),
+      );
+
+      await tester.tap(chipFinder);
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<FilterChip>(chipFinder).avatar,
+        isA<Icon>().having((i) => i.icon, 'icon', Icons.close),
+      );
+
+      await tester.tap(chipFinder);
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilterChip>(chipFinder).avatar, isNull);
+    },
+  );
 
   testWidgets('shows an empty state when there are no matches', (tester) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);
@@ -160,18 +212,80 @@ void main() {
     expect(find.text('No products found.'), findsOneWidget);
   });
 
-  testWidgets('shows the New product action for a user with create right',
-      (tester) async {
+  testWidgets('shows the New product action for a user with create right', (
+    tester,
+  ) async {
     await pumpScreen(tester, signedInAs: _fullAccessUser);
 
     expect(find.byKey(const Key('new_product_button')), findsOneWidget);
   });
 
   testWidgets(
-      'hides the New product action for a user without products.create',
-      (tester) async {
-    await pumpScreen(tester, signedInAs: _readOnlyUser);
+    'hides the New product action for a user without products.create',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-    expect(find.byKey(const Key('new_product_button')), findsNothing);
-  });
+      expect(find.byKey(const Key('new_product_button')), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'shows View/Edit/Delete row actions in fixed order for full access '
+    '(FR-003, FR-004)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      final rowActionIcons = {
+        Icons.visibility_outlined,
+        Icons.edit_outlined,
+        Icons.delete_outline,
+      };
+      final icons = tester
+          .widgetList<IconButton>(
+            find.descendant(
+              of: find.byKey(const Key('products_table')),
+              matching: find.byType(IconButton),
+            ),
+          )
+          .map((b) => (b.icon as Icon).icon)
+          .where(rowActionIcons.contains)
+          .toList();
+
+      // SKU-001 is active (View/Edit/Delete); SKU-002 is already deactivated,
+      // so Delete is omitted for it even with full access.
+      expect(icons, [
+        Icons.visibility_outlined,
+        Icons.edit_outlined,
+        Icons.delete_outline,
+        Icons.visibility_outlined,
+        Icons.edit_outlined,
+      ]);
+    },
+  );
+
+  testWidgets(
+    'omits Edit/Delete row actions for a read-only user, keeping View '
+    '(FR-012)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      final rowActionIcons = {
+        Icons.visibility_outlined,
+        Icons.edit_outlined,
+        Icons.delete_outline,
+      };
+      final icons = tester
+          .widgetList<IconButton>(
+            find.descendant(
+              of: find.byKey(const Key('products_table')),
+              matching: find.byType(IconButton),
+            ),
+          )
+          .map((b) => (b.icon as Icon).icon)
+          .where(rowActionIcons.contains)
+          .toList();
+
+      expect(icons, [Icons.visibility_outlined, Icons.visibility_outlined]);
+    },
+  );
 }
