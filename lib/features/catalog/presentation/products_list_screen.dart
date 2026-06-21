@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -99,21 +100,26 @@ class ProductsListScreen extends ConsumerWidget {
                           label: l10n.columnCode,
                           text: (p) => p.code,
                           frozen: true,
+                          fixedWidth: 110,
                         ),
                         DataTableColumn.text(
                           label: l10n.columnName,
                           text: (p) => p.name,
+                          size: ColumnSize.L,
                         ),
                         DataTableColumn.text(
                           label: l10n.columnBrand,
                           text: (p) => p.brand ?? '',
+                          size: ColumnSize.S,
                         ),
                         DataTableColumn.text(
                           label: l10n.columnUnit,
                           text: (p) => p.unitOfMeasurement,
+                          size: ColumnSize.M,
                         ),
                         DataTableColumn(
                           label: l10n.columnStatus,
+                          fixedWidth: 130,
                           cellBuilder: (context, p) => p.deactivated
                               ? Chip(
                                   key: const Key('inactive_badge'),

@@ -8,21 +8,21 @@
             "name": "mbe-ui",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "chrome"]
+            "args": ["-d", "chrome", "--web-port=8081"]
         },
         {
             "name": "mbe-ui (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
-            "args": ["-d", "chrome"]
+            "args": ["-d", "chrome", "--web-port=8081"]
         },
         {
             "name": "mbe-ui (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
-            "args": ["-d", "chrome"]
+            "args": ["-d", "chrome", "--web-port=8081"]
         }
     ]
 }

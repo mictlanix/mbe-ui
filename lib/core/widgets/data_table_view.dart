@@ -13,6 +13,8 @@ class DataTableColumn<T> {
     this.comparator,
     this.numeric = false,
     this.frozen = false,
+    this.size = ColumnSize.M,
+    this.fixedWidth,
   });
 
   /// Convenience for a plain-text cell: wraps [text] in an ellipsis-on-
@@ -29,12 +31,16 @@ class DataTableColumn<T> {
     Comparator<T>? comparator,
     bool numeric = false,
     bool frozen = false,
+    ColumnSize size = ColumnSize.M,
+    double? fixedWidth,
   }) {
     return DataTableColumn<T>(
       label: label,
       numeric: numeric,
       frozen: frozen,
       comparator: comparator,
+      size: size,
+      fixedWidth: fixedWidth,
       cellBuilder: (context, item) {
         final value = text(item);
         if (frozen) return Text(value);
@@ -58,6 +64,17 @@ class DataTableColumn<T> {
   /// — `data_table_2` only supports freezing a contiguous run of leading
   /// columns.
   final bool frozen;
+
+  /// Relative column width (`data_table_2`'s [ColumnSize]) — lets a screen
+  /// give a wide free-text column (e.g. a name) more room than narrow
+  /// columns (e.g. a code or status) without affecting any other catalog.
+  /// Ignored when [fixedWidth] is set.
+  final ColumnSize size;
+
+  /// Absolute column width in pixels, for short, bounded content (e.g. a
+  /// code or status badge) that shouldn't grow with the table's relative
+  /// `size` distribution. Takes precedence over [size] when set.
+  final double? fixedWidth;
 }
 
 /// Shared sortable/paginated data table for list screens (constitution
@@ -133,9 +150,11 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
   List<DataColumn> _buildColumns({required bool sortable}) {
     return [
       for (final column in widget.columns)
-        DataColumn(
+        DataColumn2(
           label: Text(column.label),
           numeric: column.numeric,
+          size: column.size,
+          fixedWidth: column.fixedWidth,
           onSort: !sortable || column.comparator == null
               ? null
               : (columnIndex, ascending) {
@@ -177,6 +196,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
       return PaginatedDataTable2(
         columns: _buildColumns(sortable: false),
         source: _source!,
+        showCheckboxColumn: false,
         fixedLeftColumns: _fixedLeftColumns,
         rowsPerPage: pagination.pageSize,
         availableRowsPerPage: [pagination.pageSize],
@@ -197,6 +217,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     }
 
     return DataTable2(
+      showCheckboxColumn: false,
       fixedLeftColumns: _fixedLeftColumns,
       sortColumnIndex: _sortColumnIndex,
       sortAscending: _sortAscending,

@@ -1,3 +1,4 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -71,19 +72,23 @@ class UsersListScreen extends ConsumerWidget {
                           label: l10n.columnUsername,
                           text: (u) => u.userId,
                           frozen: true,
+                          size: ColumnSize.M,
                         ),
                         DataTableColumn.text(
                           label: l10n.columnEmail,
                           text: (u) => u.email,
+                          size: ColumnSize.L,
                         ),
                         DataTableColumn(
                           label: l10n.columnAdmin,
+                          size: ColumnSize.S,
                           cellBuilder: (_, u) => u.administrator
                               ? const Icon(Icons.check)
                               : const SizedBox.shrink(),
                         ),
                         DataTableColumn(
                           label: l10n.columnStatus,
+                          size: ColumnSize.S,
                           cellBuilder: (_, u) => Text(
                             u.disabled
                                 ? l10n.statusDisabled
