@@ -116,13 +116,22 @@ specs/003-catalog-consistency/
 lib/
 ├── core/
 │   └── widgets/
-│       ├── data_table_view.dart        # REWRITTEN: backed by data_table_2's
-│       │                                 DataTable2, supports fixedLeftColumns
-│       │                                 (FR-007/FR-008) and ellipsis overflow
-│       │                                 (constitution §VI truncation rule)
-│       ├── catalog_pagination.dart     # NEW: page-based pagination control
-│       │                                 (FR-002), replacing Products' ad hoc
-│       │                                 "load more" button
+│       ├── data_table_view.dart        # REWRITTEN: backed by data_table_2;
+│       │                                 renders DataTable2 when no
+│       │                                 `pagination` is given, or
+│       │                                 PaginatedDataTable2 when given a
+│       │                                 CatalogPage<T> (FR-002) — one widget,
+│       │                                 one fixedLeftColumns/frozen-column
+│       │                                 code path (FR-007/FR-008) and one
+│       │                                 ellipsis-overflow path (constitution
+│       │                                 §VI truncation rule) for both branches
+│       ├── catalog_pagination.dart     # NEW: defines `CatalogPage<T>` — the
+│       │                                 shared {items, total, pageIndex,
+│       │                                 pageSize} state shape DataTableView
+│       │                                 consumes (FR-002); not a render
+│       │                                 widget itself (research.md §1/§2).
+│       │                                 Replaces Products' ad hoc "load more"
+│       │                                 button
 │       ├── catalog_search_bar.dart     # NEW: search field that only fires on
 │       │                                 Enter/submit button (FR-010)
 │       ├── catalog_filter_bar.dart     # NEW: lays out search + facet filters
@@ -144,17 +153,21 @@ lib/
 │   │       ├── users_controller.dart      # MODIFIED: UserFilterController
 │   │       │                                (mirrors ProductFilterController) +
 │   │       │                                paginated UsersController
-│   │       ├── users_list_screen.dart     # MODIFIED: CatalogFilterBar,
-│   │       │                                CatalogPagination, frozen username
-│   │       │                                column, CatalogActionIcons row actions
+│   │       ├── users_list_screen.dart     # MODIFIED: CatalogFilterBar, passes
+│   │       │                                a CatalogPage<UserSummary> into
+│   │       │                                DataTableView's `pagination` param,
+│   │       │                                frozen username column,
+│   │       │                                CatalogActionIcons row actions
 │   │       └── user_detail_screen.dart    # MODIFIED: explicit `readOnly` route
 │   │                                        param so View and Edit reach the
 │   │                                        same screen with different intents
 │   └── catalog/
 │       └── presentation/
 │           ├── products_list_controller.dart  # MODIFIED: replace _skip/loadMore
-│           │                                    incremental loading with page-based
-│           │                                    state consumed by CatalogPagination
+│           │                                    incremental loading with a
+│           │                                    CatalogPage<ProductListItem>
+│           │                                    state, passed into
+│           │                                    DataTableView's `pagination` param
 │           ├── products_list_screen.dart       # MODIFIED: CatalogSearchBar (submit-
 │           │                                    on-Enter/button) + CatalogFilterBar
 │           │                                    single-row layout, frozen code

@@ -3,10 +3,16 @@
 ## 1. Table/pagination/frozen-column widget choice
 
 **Decision**: Adopt `data_table_2` (pub.dev) to back the rewritten
-`core/widgets/data_table_view.dart`, using `DataTable2` for the
-non-paginated case (kept for any future small/bounded catalog) and
-`PaginatedDataTable2` for catalogs backed by a `skip`/`limit` API (Users,
-Products).
+`core/widgets/data_table_view.dart` as **one widget with one frozen-column
+code path**: `DataTableView<T>` takes an optional `pagination: CatalogPage<T>?`
+parameter (see research §2). When `pagination` is `null`, it renders
+`DataTable2` (kept for any future small/bounded catalog). When
+`pagination` is supplied — the case for both Users and Products, the only
+two catalogs in scope — it renders `PaginatedDataTable2` internally,
+driven by that same state. `fixedLeftColumns` (frozen-column support,
+FR-007/FR-008) is wired once, in `DataTableView`, and applies identically
+in both branches — there is no second, competing table-rendering widget a
+caller could end up using instead.
 
 **Rationale**: Flutter's first-party `DataTable`/`PaginatedDataTable` (the
 current basis for `DataTableView`) has no column-pinning support, so
@@ -16,6 +22,11 @@ per-screen-reimplementation constitution §VI forbids. `data_table_2`
 exposes `fixedLeftColumns` directly on `DataTable2`/`PaginatedDataTable2`
 and ships ellipsis/overflow handling for fixed-width columns, covering both
 FR-007 and the existing horizontal-scroll/ellipsis rule in one widget.
+Branching *inside* `DataTableView` (rather than having pagination be a
+separate wrapper widget around it) guarantees the frozen-column behavior
+this feature is also delivering can never be implemented against one
+branch and silently skipped for the other, since both catalogs that exist
+today always supply `pagination`.
 
 **Alternatives considered**:
 - *Hand-rolled pinned-column layout* (two `ListView`s scrolled in sync):
@@ -26,13 +37,28 @@ FR-007 and the existing horizontal-scroll/ellipsis rule in one widget.
   some use cases; `data_table_2` is BSD-licensed and purpose-built as a
   drop-in `DataTable`/`PaginatedDataTable` replacement, minimizing the
   diff against the existing `DataTableView` API surface.
+- *A separate `CatalogPagination` widget that itself renders
+  `PaginatedDataTable2`, used instead of `DataTableView` for paginated
+  catalogs*: rejected during `/speckit-analyze` — this would have created
+  two table-rendering code paths (`DataTableView` for `DataTable2`,
+  `CatalogPagination` for `PaginatedDataTable2`) with frozen-column support
+  only guaranteed to exist on one of them, contradicting constitution
+  §VI's "implemented once" rule for the exact feature this spec is
+  delivering. `CatalogPagination` is instead just the `CatalogPage<T>` data
+  shape (research §2), not a render widget.
 
 ## 2. Pagination model: page-based vs. "load more"
 
 **Decision**: Replace Products' incremental `loadMore()` with page-based
-pagination (`skip = pageIndex * pageSize`), surfaced through a new shared
-`CatalogPagination` control wrapping `data_table_2`'s built-in
-`PaginatedDataTable2` page footer.
+pagination (`skip = pageIndex * pageSize`). The shared state shape is a
+single generic `CatalogPage<T>` (`items`, `total`, `pageIndex`, `pageSize`)
+defined in `core/widgets/catalog_pagination.dart` — not a render widget,
+just the data contract `DataTableView` accepts via its `pagination`
+parameter (research §1) and that `UsersController`'s and
+`ProductsListController`'s list state are both instances of.
+`DataTableView` itself renders the page-navigation UI
+via `data_table_2`'s built-in `PaginatedDataTable2` footer when given a
+`CatalogPage<T>`.
 
 **Rationale**: The constitution's pagination rule (§VI) calls for "the
 shared pagination component from `core/widgets/`" — a single component

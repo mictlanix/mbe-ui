@@ -62,15 +62,21 @@ is layered on.
 **⚠️ CRITICAL**: No user story work can begin until this phase is
 complete.
 
-- [ ] T002 [P] Rewrite `lib/core/widgets/data_table_view.dart` to wrap
-  `data_table_2`'s `DataTable2`, adding a `frozen` flag to
-  `DataTableColumn` (`fixedLeftColumns`, research.md §1) and ellipsis
-  overflow on non-frozen text columns per the existing constitution §VI
-  truncation rule (depends on T001).
-- [ ] T003 [P] Create `lib/core/widgets/catalog_pagination.dart`: a
-  page-based pagination control over `{items, total, pageIndex,
-  pageSize}` (data-model.md "UserListPage"/"ProductListPage"), replacing
-  the ad hoc "load more" pattern (research.md §2) (depends on T001).
+- [ ] T002 [P] Create `lib/core/widgets/catalog_pagination.dart` defining
+  `CatalogPage<T>` (`items`, `total`, `pageIndex`, `pageSize`) — the shared
+  state shape `DataTableView` (T003) accepts via its `pagination`
+  parameter, replacing the ad hoc "load more" pattern (research.md §2).
+  This is a data shape, not a render widget — no UI code in this file
+  (depends on T001).
+- [ ] T003 Rewrite `lib/core/widgets/data_table_view.dart` as the
+  single shared table widget: renders `data_table_2`'s `DataTable2` when
+  its new optional `pagination` parameter is `null`, or
+  `PaginatedDataTable2` when given a `CatalogPage<T>` (T002) — both
+  branches honor a `frozen` flag on `DataTableColumn` (`fixedLeftColumns`,
+  research.md §1) and ellipsis overflow on non-frozen text columns per the
+  existing constitution §VI truncation rule, so frozen columns and
+  pagination are never on two different render paths (depends on T001,
+  T002).
 - [ ] T004 [P] Create `lib/core/widgets/catalog_search_bar.dart`: a search
   field exposing only `onSubmitted` (Enter key) and a trailing search
   `IconButton` — no `onChanged` parameter, so per-keystroke filtering
@@ -86,15 +92,15 @@ complete.
   an `AccessControlService.can(...)` check passed in by the caller
   (FR-003, FR-004, FR-005, FR-012).
 - [ ] T007 Migrate `lib/features/catalog/presentation/products_list_screen.dart`
-  and `products_list_controller.dart` to the rewritten `DataTableView`
-  (new constructor signature) and `CatalogPagination`, replacing the
-  `_skip`/`loadMore()` incremental-fetch pattern with page-based state
-  (data-model.md "ProductListPage") — existing filter chips/search field
+  and `products_list_controller.dart` to the rewritten `DataTableView`'s
+  `pagination` parameter, replacing the `_skip`/`loadMore()`
+  incremental-fetch pattern with `CatalogPage<ProductListItem>` state
+  (data-model.md "CatalogPage\<T\>") — existing filter chips/search field
   behavior is left as-is for now (depends on T002, T003).
 - [ ] T008 Migrate `lib/features/auth/presentation/admin/users_list_screen.dart`
-  to the rewritten `DataTableView` (new constructor signature), still
-  rendering the existing unfiltered/unpaginated `List<UserSummary>` for
-  now (depends on T002).
+  to the rewritten `DataTableView` (new constructor signature, `pagination`
+  left `null` for now), still rendering the existing unfiltered/unpaginated
+  `List<UserSummary>` for now (depends on T003).
 
 **Checkpoint**: Shared widgets exist; both catalog screens compile and
 render through the new `DataTableView`. No new user-facing search/
@@ -144,12 +150,14 @@ returns.
 - [ ] T014 [US1] Add `UserFilterController` (mirrors
   `ProductFilterController`, holds `{search}`) in
   `lib/features/auth/presentation/admin/users_controller.dart`.
-- [ ] T015 [US1] Convert `UsersController` to paginated `UserListPage`
-  state (`pageIndex`, fixed `pageSize` of 20), re-fetching page 0 whenever
-  `UserFilterController`'s state changes (depends on T013, T014).
+- [ ] T015 [US1] Convert `UsersController` to hold
+  `AsyncValue<CatalogPage<UserSummary>>` state (`pageIndex`, fixed
+  `pageSize` of 20), re-fetching page 0 whenever `UserFilterController`'s
+  state changes (depends on T002, T013, T014).
 - [ ] T016 [US1] Update `UsersListScreen` to use `CatalogSearchBar`
-  (submit-on-Enter/button, FR-010) and `CatalogPagination`, wired to
-  `UserFilterController`/`UsersController` (depends on T004, T008, T015).
+  (submit-on-Enter/button, FR-010) and pass `UsersController`'s
+  `CatalogPage<UserSummary>` into `DataTableView`'s `pagination` parameter
+  (depends on T004, T008, T015).
 
 **Checkpoint**: Users catalog has search + pagination parity with
 Products, independently testable.
@@ -186,16 +194,19 @@ account; confirm View renders the Edit form read-only.
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Add a `view` query-param-driven read-only mode to the
-  `/users/:userId` and `/products/:productId` routes in
-  `lib/app/router/app_router.dart` (research.md §5).
+- [ ] T020 [US2] Confirm `/users/:userId` and `/products/:productId`
+  navigate with a `view=true` query parameter when invoked from a View
+  action (no `GoRoute` path/table change needed — `go_router` already
+  exposes query params via `state.uri.queryParameters`; this task is just
+  the navigation call sites used by T023/T024) (research.md §5).
 - [ ] T021 [P] [US2] Add a forced-read-only param to
-  `lib/features/auth/presentation/admin/user_detail_screen.dart`,
-  composing with its existing permission-derived `readOnly` check
-  (depends on T020).
+  `lib/features/auth/presentation/admin/user_detail_screen.dart`, read
+  from `state.uri.queryParameters['view']`, composing with its existing
+  permission-derived `readOnly` check (depends on T020).
 - [ ] T022 [P] [US2] Add a forced-read-only param to
-  `lib/features/catalog/presentation/product_detail_screen.dart`,
-  composing with its existing `readOnly = _isEdit && !canUpdate` check
+  `lib/features/catalog/presentation/product_detail_screen.dart`, read
+  from `state.uri.queryParameters['view']`, composing with its existing
+  `readOnly = _isEdit && !canUpdate` check
   (`product_detail_screen.dart:65`) (depends on T020).
 - [ ] T023 [US2] Wire `CatalogActionIcons` row actions (View/Edit/Delete)
   and the toolbar Create icon into `UsersListScreen`, gated by
@@ -227,9 +238,13 @@ catalog horizontally and confirm the identity column stays visible.
 ### Implementation for User Story 3
 
 - [ ] T026 [US3] Mark the product code column `frozen: true` in
-  `ProductsListScreen`'s `DataTableColumn` list (depends on T002, T024).
+  `ProductsListScreen`'s `DataTableColumn` list — exercised through
+  `DataTableView`'s `PaginatedDataTable2` branch since Products always
+  supplies `pagination` (T003, T007) (depends on T003, T007, T024).
 - [ ] T027 [US3] Mark the username column `frozen: true` in
-  `UsersListScreen`'s `DataTableColumn` list (depends on T002, T023).
+  `UsersListScreen`'s `DataTableColumn` list — exercised through
+  `DataTableView`'s `PaginatedDataTable2` branch since Users always
+  supplies `pagination` (T003, T016) (depends on T003, T016, T023).
 
 **Checkpoint**: Both catalogs keep their identity column visible while
 scrolling horizontally.
@@ -327,8 +342,10 @@ end-to-end.
 
 ### Parallel Opportunities
 
-- T002-T006 (all new/rewritten shared widgets) can be implemented in
-  parallel — different files, only T007/T008 depend on them.
+- T002, T004, T005, T006 (all new shared widgets/data shapes) can be
+  implemented in parallel — different files. T003 (`DataTableView`
+  rewrite) depends on T002 (`CatalogPage<T>`) but can still run in
+  parallel with T004-T006; only T007/T008 depend on T003.
 - All Setup (T001) and most Foundational tasks marked [P] can run in
   parallel.
 - US1's tests (T009-T012) can run in parallel; US1's implementation tasks
@@ -345,9 +362,9 @@ end-to-end.
 ## Parallel Example: Foundational Phase
 
 ```bash
-# Launch all new/rewritten shared widgets together (different files):
-Task: "Rewrite lib/core/widgets/data_table_view.dart on data_table_2"
-Task: "Create lib/core/widgets/catalog_pagination.dart"
+# Launch the independent new shared widgets/data shapes together
+# (different files; data_table_view.dart waits on catalog_pagination.dart):
+Task: "Create lib/core/widgets/catalog_pagination.dart (CatalogPage<T>)"
 Task: "Create lib/core/widgets/catalog_search_bar.dart"
 Task: "Create lib/core/widgets/catalog_filter_bar.dart"
 Task: "Create lib/core/widgets/catalog_action_icons.dart"

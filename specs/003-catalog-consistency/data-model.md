@@ -20,21 +20,25 @@ calls for search + pagination; adding facet filters for those fields is
 out of scope (see spec.md Assumptions — only existing catalogs' current
 gaps are in scope).
 
-## UserListPage (new local UI state, replaces ad hoc list-only state)
+## CatalogPage\<T\> (new shared generic state shape, not per-feature)
+
+Defined once in `core/widgets/catalog_pagination.dart` (not a render
+widget — see research.md §1/§2) and passed into `DataTableView<T>`'s
+`pagination` parameter. Both catalogs' list controllers produce this same
+shape rather than each defining their own near-duplicate page-state class.
 
 | Field | Type | Notes |
 |---|---|---|
-| `items` | `List<UserSummary>` | Current page's rows. |
-| `total` | `int` | Total matching the active `UserFilter`, from `UserListResponse.total`. |
+| `items` | `List<T>` | Current page's rows (`UserSummary` for Users, `ProductListItem` for Products). |
+| `total` | `int` | Total matching the active filter, from the API's `ListResponse.total`. |
 | `pageIndex` | `int` | 0-based; drives `skip = pageIndex * pageSize`. |
-| `pageSize` | `int` | Fixed at 20, matching `ProductsListController`'s `_pageSize`. |
+| `pageSize` | `int` | Fixed at 20, matching `ProductsListController`'s existing `_pageSize`. |
 
-## ProductListPage (modification of existing `ProductListResult`)
-
-`ProductListResult` (specs/002) already holds `items`/`total`; this
-feature adds `pageIndex`/`pageSize` tracking to `ProductsListController` so
-its state can drive `CatalogPagination` the same way `UserListPage` does,
-replacing the `_skip`/`loadMore()` incremental-fetch pattern.
+`UsersController`'s state becomes `AsyncValue<CatalogPage<UserSummary>>`
+(replacing today's `AsyncValue<List<UserSummary>>`).
+`ProductsListController`'s state becomes `AsyncValue<CatalogPage<ProductListItem>>`,
+replacing the existing `ProductListResult` (specs/002) and its
+`_skip`/`loadMore()` incremental-fetch pattern with page-based navigation.
 
 ## CatalogAction (new shared vocabulary, not persisted)
 
