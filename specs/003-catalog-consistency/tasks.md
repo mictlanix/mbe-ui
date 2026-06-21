@@ -297,7 +297,7 @@ end-to-end.
   `UsersController`, and `ProductsListController`.
 - [X] T033 [P] Run `flutter analyze` and `dart format --output=none
   --set-exit-if-changed .` across all files touched by this feature.
-- [ ] T034 Run quickstart.md's full validation sequence end-to-end against
+- [X] T034 Run quickstart.md's full validation sequence end-to-end against
   a local mbe-api instance (all four user stories).
 
 ---
