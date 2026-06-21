@@ -16,6 +16,139 @@ final _privateConstructorUsedError = UnsupportedError(
 );
 
 /// @nodoc
+mixin _$UserFilter {
+  String get search => throw _privateConstructorUsedError;
+
+  /// Create a copy of UserFilter
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UserFilterCopyWith<UserFilter> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UserFilterCopyWith<$Res> {
+  factory $UserFilterCopyWith(
+    UserFilter value,
+    $Res Function(UserFilter) then,
+  ) = _$UserFilterCopyWithImpl<$Res, UserFilter>;
+  @useResult
+  $Res call({String search});
+}
+
+/// @nodoc
+class _$UserFilterCopyWithImpl<$Res, $Val extends UserFilter>
+    implements $UserFilterCopyWith<$Res> {
+  _$UserFilterCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UserFilter
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? search = null}) {
+    return _then(
+      _value.copyWith(
+            search: null == search
+                ? _value.search
+                : search // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$UserFilterImplCopyWith<$Res>
+    implements $UserFilterCopyWith<$Res> {
+  factory _$$UserFilterImplCopyWith(
+    _$UserFilterImpl value,
+    $Res Function(_$UserFilterImpl) then,
+  ) = __$$UserFilterImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String search});
+}
+
+/// @nodoc
+class __$$UserFilterImplCopyWithImpl<$Res>
+    extends _$UserFilterCopyWithImpl<$Res, _$UserFilterImpl>
+    implements _$$UserFilterImplCopyWith<$Res> {
+  __$$UserFilterImplCopyWithImpl(
+    _$UserFilterImpl _value,
+    $Res Function(_$UserFilterImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserFilter
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? search = null}) {
+    return _then(
+      _$UserFilterImpl(
+        search: null == search
+            ? _value.search
+            : search // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$UserFilterImpl implements _UserFilter {
+  const _$UserFilterImpl({this.search = ''});
+
+  @override
+  @JsonKey()
+  final String search;
+
+  @override
+  String toString() {
+    return 'UserFilter(search: $search)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UserFilterImpl &&
+            (identical(other.search, search) || other.search == search));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, search);
+
+  /// Create a copy of UserFilter
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UserFilterImplCopyWith<_$UserFilterImpl> get copyWith =>
+      __$$UserFilterImplCopyWithImpl<_$UserFilterImpl>(this, _$identity);
+}
+
+abstract class _UserFilter implements UserFilter {
+  const factory _UserFilter({final String search}) = _$UserFilterImpl;
+
+  @override
+  String get search;
+
+  /// Create a copy of UserFilter
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UserFilterImplCopyWith<_$UserFilterImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$UserFormState {
   String get userId => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;

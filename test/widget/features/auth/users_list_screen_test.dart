@@ -65,7 +65,15 @@ void main() {
     tokenStorage = MockTokenStorage();
     when(() => tokenStorage.read()).thenAnswer((_) async => null);
     when(() => tokenStorage.clear()).thenAnswer((_) async {});
-    when(() => userRepository.list()).thenAnswer((_) async => _testUsers);
+    when(
+      () => userRepository.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => UserListResult(items: _testUsers, total: _testUsers.length),
+    );
   });
 
   Future<void> pumpScreen(
@@ -94,27 +102,153 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows list of users for an administrator (FR-011)',
-      (tester) async {
+  testWidgets('shows list of users for an administrator (FR-011)', (
+    tester,
+  ) async {
     await pumpScreen(tester, signedInAs: _adminUser);
 
     expect(find.text('admin'), findsOneWidget);
     expect(find.text('jdoe'), findsOneWidget);
   });
 
-  testWidgets('shows New user button for administrator with create right',
-      (tester) async {
+  testWidgets('shows New user button for administrator with create right', (
+    tester,
+  ) async {
     await pumpScreen(tester, signedInAs: _adminUser);
 
     expect(find.byKey(const Key('new_user_button')), findsOneWidget);
   });
 
   testWidgets(
-      'hides New user button for user without Users.create permission',
-      (tester) async {
-    // _limitedUser has Users.read (rawValue=2) but not create
-    await pumpScreen(tester, signedInAs: _limitedUser);
+    'hides New user button for user without Users.create permission',
+    (tester) async {
+      // _limitedUser has Users.read (rawValue=2) but not create
+      await pumpScreen(tester, signedInAs: _limitedUser);
 
-    expect(find.byKey(const Key('new_user_button')), findsNothing);
+      expect(find.byKey(const Key('new_user_button')), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'does not re-query while typing; queries only on submit (FR-010)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _adminUser);
+      clearInteractions(userRepository);
+
+      await tester.enterText(
+        find.byKey(const Key('users_search_field')),
+        'jdoe',
+      );
+      await tester.pump();
+
+      verifyNever(
+        () => userRepository.list(
+          search: any(named: 'search'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      );
+
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => userRepository.list(search: 'jdoe', skip: 0, limit: 20),
+      ).called(1);
+    },
+  );
+
+  testWidgets('navigating to the next page fetches skip=20 (FR-002)', (
+    tester,
+  ) async {
+    final fullPage = List.generate(
+      20,
+      (i) => UserSummary(
+        userId: 'user$i',
+        email: 'user$i@example.com',
+        administrator: false,
+        disabled: false,
+      ),
+    );
+    when(
+      () => userRepository.list(
+        search: any(named: 'search'),
+        skip: 0,
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => UserListResult(items: fullPage, total: 21));
+    when(
+      () => userRepository.list(
+        search: any(named: 'search'),
+        skip: 20,
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => UserListResult(items: _testUsers, total: 21));
+
+    await pumpScreen(tester, signedInAs: _adminUser);
+
+    await tester.tap(find.byTooltip('Next page'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    verify(
+      () => userRepository.list(search: null, skip: 20, limit: 20),
+    ).called(1);
   });
+
+  testWidgets('shows View/Edit/Delete row actions in fixed order for an '
+      'administrator (FR-003, FR-004)', (tester) async {
+    await pumpScreen(tester, signedInAs: _adminUser);
+
+    final rowActionIcons = {
+      Icons.visibility_outlined,
+      Icons.edit_outlined,
+      Icons.delete_outline,
+    };
+    final icons = tester
+        .widgetList<IconButton>(
+          find.descendant(
+            of: find.byKey(const Key('users_table')),
+            matching: find.byType(IconButton),
+          ),
+        )
+        .map((b) => (b.icon as Icon).icon)
+        .where(rowActionIcons.contains)
+        .toList();
+
+    expect(icons, [
+      Icons.visibility_outlined,
+      Icons.edit_outlined,
+      Icons.delete_outline,
+      Icons.visibility_outlined,
+      Icons.edit_outlined,
+      Icons.delete_outline,
+    ]);
+  });
+
+  testWidgets(
+    'omits Edit/Delete row actions for a read-only user, keeping View '
+    '(FR-012)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _limitedUser);
+
+      final rowActionIcons = {
+        Icons.visibility_outlined,
+        Icons.edit_outlined,
+        Icons.delete_outline,
+      };
+      final icons = tester
+          .widgetList<IconButton>(
+            find.descendant(
+              of: find.byKey(const Key('users_table')),
+              matching: find.byType(IconButton),
+            ),
+          )
+          .map((b) => (b.icon as Icon).icon)
+          .where(rowActionIcons.contains)
+          .toList();
+
+      expect(icons, [Icons.visibility_outlined, Icons.visibility_outlined]);
+    },
+  );
 }

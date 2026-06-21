@@ -110,6 +110,30 @@ abstract class AppLocalizations {
   /// **'Must be at least 6 characters'**
   String get fieldMinLength6;
 
+  /// No description provided for @viewActionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get viewActionTooltip;
+
+  /// No description provided for @editActionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editActionTooltip;
+
+  /// No description provided for @deleteActionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteActionTooltip;
+
+  /// No description provided for @searchButtonTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchButtonTooltip;
+
   /// No description provided for @signInTitle.
   ///
   /// In en, this message translates to:
@@ -229,6 +253,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New user'**
   String get newUserTooltip;
+
+  /// No description provided for @usersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by username or email'**
+  String get usersSearchLabel;
 
   /// No description provided for @usersLoadError.
   ///
@@ -355,12 +385,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unit'**
   String get columnUnit;
-
-  /// No description provided for @loadMoreButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Load more'**
-  String get loadMoreButton;
 
   /// No description provided for @newProductTitle.
   ///

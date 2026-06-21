@@ -7,6 +7,15 @@
   "fieldMinLength6": "Must be at least 6 characters",
   "@fieldMinLength6": {"description": "Password minimum length validation"},
 
+  "viewActionTooltip": "View",
+  "@viewActionTooltip": {},
+  "editActionTooltip": "Edit",
+  "@editActionTooltip": {},
+  "deleteActionTooltip": "Delete",
+  "@deleteActionTooltip": {},
+  "searchButtonTooltip": "Search",
+  "@searchButtonTooltip": {},
+
   "signInTitle": "Sign in",
   "@signInTitle": {},
 
@@ -66,6 +75,9 @@
 
   "newUserTooltip": "New user",
   "@newUserTooltip": {},
+
+  "usersSearchLabel": "Search by username or email",
+  "@usersSearchLabel": {},
 
   "usersLoadError": "Failed to load users: {error}",
   "@usersLoadError": {
@@ -138,8 +150,6 @@
   "columnUnit": "Unit",
   "@columnUnit": {},
 
-  "loadMoreButton": "Load more",
-  "@loadMoreButton": {},
 
   "newProductTitle": "New Product",
   "@newProductTitle": {},

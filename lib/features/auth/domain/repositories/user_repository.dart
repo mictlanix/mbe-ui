@@ -18,8 +18,8 @@ class RecoverPasswordResult {
 /// section). Access is gated by `AccessControlService.can(SystemObject.users,
 /// ...)` at the screen level.
 abstract class UserRepository {
-  /// `GET /api/v1/users` (FR-011).
-  Future<List<UserSummary>> list();
+  /// `GET /api/v1/users` (FR-001, FR-002; contracts/mbe-api-users-list.md).
+  Future<UserListResult> list({String? search, int skip = 0, int limit = 20});
 
   /// `GET /api/v1/users/{user_id}` (FR-012/FR-013).
   Future<User> get({required String userId});
@@ -52,4 +52,13 @@ abstract class UserRepository {
 
   /// `POST /api/v1/users/{user_id}/recover-password` (FR-010 admin path).
   Future<RecoverPasswordResult> recoverPassword({required String userId});
+}
+
+/// `ListResponse[UserListItem]` (`items`, `total`) — used by
+/// `UsersController` for pagination (data-model.md "CatalogPage`<T>`").
+class UserListResult {
+  const UserListResult({required this.items, required this.total});
+
+  final List<UserSummary> items;
+  final int total;
 }

@@ -1,16 +1,20 @@
 <!--
 Sync Impact Report
-Version change: [TEMPLATE] → 1.0.0
-Modified principles: N/A (initial ratification)
-Added sections:
-  - Core Principles I-VII (Feature-First Layered Architecture, Riverpod for
-    State & DI, Contract-Driven API Integration, Deny-by-Default RBAC,
-    Material 3 White-Labeled Design System, Desktop/Web-First Compact-Ready
-    Layout, Online-Only Server-Rendered Documents)
-  - Technology Stack (Non-Negotiable Defaults)
-  - Development Workflow & Quality Gates
-  - Governance
-Removed sections: none (template placeholders replaced)
+Version change: 1.0.0 → 1.3.1
+Modified principles:
+  - VI. Desktop/Web-First, Compact-Ready Layout — materially expanded with
+    explicit cross-screen consistency requirements for shared data/list
+    widgets (hover, borders, header alignment, mandatory pagination) [1.1.0],
+    then further expanded with anti-horizontal-scroll/ellipsis truncation
+    rules (tooltip fallback required; never truncate critical info) [1.2.0],
+    then further expanded with mandatory filtering and consistent
+    cross-module CRUD action iconography for every catalog/list screen
+    [1.3.0], then clarified to define the action set as Create/View
+    (read-only Edit form)/Edit/Delete and to require a fixed
+    left-to-right icon order, not just matching icons, across modules
+    [1.3.1]
+Added sections: none (expansion of existing principle, not a new principle)
+Removed sections: none
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (Constitution Check gate is
     generic/derived from this file; no edits needed)
@@ -131,10 +135,52 @@ multi-column forms.
 - Shared data tables, formatted fields, date pickers, status badges, and
   form-field wrappers MUST live in `core/widgets/` rather than being
   reimplemented per module.
+- Every shared data table/list MUST present identical visual behavior
+  regardless of which feature module renders it: row hover highlighting,
+  consistent bottom/row borders, and consistent header alignment (text
+  columns left-aligned, numeric/currency columns right-aligned, action
+  columns centered). These behaviors MUST be implemented once in the
+  shared `core/widgets/` table component, not re-implemented per screen.
+- Any list/table screen backed by a dataset that can grow unbounded MUST
+  use the shared pagination component from `core/widgets/`. A list screen
+  MUST NOT ship without pagination unless the underlying dataset is
+  provably bounded (e.g. a small fixed enum-like list).
+- Every catalog/list screen MUST ship with filtering (a search box and, if
+  the entity has obvious facets — status, category, type — corresponding
+  filter controls) using the shared filter pattern from `core/widgets/`. A
+  catalog MUST NOT ship search-less, even if pagination alone could make
+  it "usable."
+- Every catalog/list screen MUST expose its supported actions (Create,
+  View [the same form as Edit, rendered read-only], Edit, Delete/
+  soft-delete) as row/toolbar actions using one fixed icon **and** one
+  fixed left-to-right order per action across the whole app, sourced from
+  `core/widgets/`. A module MUST NOT invent its own icon for an action
+  another module already represents differently, and MUST NOT reorder
+  the action icons relative to other modules. A module MUST NOT render an
+  action a user lacks the RBAC privilege for (see Principle IV) rather
+  than disabling/hiding it inconsistently.
+- Horizontal scrolling on data tables MUST be avoided wherever possible.
+  When a column's content would otherwise force horizontal scroll, the
+  shared table component MUST truncate that cell's text with an ellipsis
+  instead of widening the row, subject to:
+  - **Fallback required**: a truncated cell MUST expose the full text via
+    a hover tooltip (desktop/web) or an equivalent reveal-on-tap/expand
+    affordance, never truncate-and-hide with no way to read the rest.
+  - **Never truncate critical info**: fields the user needs to complete
+    the task at hand — totals, monetary amounts, error/validation
+    messages, status badges, and primary navigation/identifier links —
+    MUST NOT be ellipsized; only secondary/descriptive text columns may
+    be truncated.
 
 **Rationale**: avoids four slightly-different implementations across
 sales/inventory/invoicing/accounting and keeps a future mobile tier viable
-(DESIGN.md §4.2-§4.3).
+(DESIGN.md §4.2-§4.3). Added after the Users catalog screen shipped without
+filtering or pagination, diverging from other list screens — this
+codifies the shared table contract so future features inherit it by
+construction instead of
+each one being corrected after the fact. The truncation rule follows
+standard ellipsis UX guidance: always give users a way to recover the full
+text, and never hide information they need to act.
 
 ### VII. Online-Only, Server-Rendered Documents
 
@@ -194,4 +240,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.0.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-06-14
+**Version**: 1.3.1 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-06-20

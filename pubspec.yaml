@@ -46,6 +46,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   one_of: ^1.5.0
+  data_table_2: ^2.5.16
   mbe_api_client:
     path: lib/generated/openapi
 

@@ -373,6 +373,17 @@ phases, so they are sequenced after those phases rather than numbered inline.
 mid-session are re-checked at submit time, and server-side validation
 errors render through the same field-error UI as client-side ones.
 
+**Note**: Feature 002 is considered complete as of 2026-06-20. T040–T043
+remained open and are now tracked as GitHub issues #40–#43 respectively, to
+be picked up independently of this spec.
+
+**Out-of-scope reminders** (quickstart.md "Out of scope reminders", spec.md
+Assumptions): photo upload, SAT product-key picker, default-supplier picker,
+price-list *value* editing, label assignment editing, and the
+merge-duplicates feature were explicitly excluded from this spec and remain
+unimplemented. They are not tracked as issues yet — pick them up as separate
+future specs/features when prioritized.
+
 ---
 
 ## Dependencies & Execution Order

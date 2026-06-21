@@ -13,9 +13,18 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// Create / view / edit screen for a single product (FR-003..FR-009,
 /// FR-013, FR-014, FR-015). [productId] is `null` in create mode.
 class ProductDetailScreen extends ConsumerStatefulWidget {
-  const ProductDetailScreen({super.key, this.productId});
+  const ProductDetailScreen({
+    super.key,
+    this.productId,
+    this.forceReadOnly = false,
+  });
 
   final int? productId;
+
+  /// Forces read-only rendering regardless of update permission — set when
+  /// navigated to via the View row action rather than Edit (FR-006,
+  /// research.md §5), read from the `?view=true` query parameter.
+  final bool forceReadOnly;
 
   @override
   ConsumerState<ProductDetailScreen> createState() =>
@@ -62,10 +71,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     }
 
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
-    final readOnly = _isEdit && !canUpdate;
+    final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final fieldsEnabled = !formState.submitting && !readOnly;
-    final canSave = _isEdit ? canUpdate : canCreate;
-    final canDeactivate = _isEdit &&
+    final canSave = !widget.forceReadOnly && (_isEdit ? canUpdate : canCreate);
+    final canDeactivate =
+        !widget.forceReadOnly &&
+        _isEdit &&
         !formState.deactivated &&
         access.can(SystemObject.products, AccessRight.delete);
 
@@ -80,7 +91,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               tooltip: l10n.deactivateProductTooltip,
               onPressed: formState.submitting
                   ? null
-                  : () => _confirmDeactivate(context, controller, formState.code),
+                  : () =>
+                        _confirmDeactivate(context, controller, formState.code),
             ),
         ],
       ),
@@ -115,7 +127,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.code,
               decoration: InputDecoration(
                 labelText: l10n.codeLabel,
-                errorText: _localizeFieldError(l10n, formState.fieldErrors['code']),
+                errorText: _localizeFieldError(
+                  l10n,
+                  formState.fieldErrors['code'],
+                ),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.codeChanged,
@@ -126,7 +141,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.name,
               decoration: InputDecoration(
                 labelText: l10n.nameLabel,
-                errorText: _localizeFieldError(l10n, formState.fieldErrors['name']),
+                errorText: _localizeFieldError(
+                  l10n,
+                  formState.fieldErrors['name'],
+                ),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.nameChanged,
@@ -167,7 +185,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               initialValue: formState.barCode,
               decoration: InputDecoration(
                 labelText: l10n.barCodeLabel,
-                errorText: _localizeFieldError(l10n, formState.fieldErrors['barCode']),
+                errorText: _localizeFieldError(
+                  l10n,
+                  formState.fieldErrors['barCode'],
+                ),
               ),
               enabled: fieldsEnabled,
               onChanged: controller.barCodeChanged,
@@ -240,7 +261,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 key: const Key('save_button'),
                 onPressed: formState.submitting
                     ? null
-                    : (_isEdit ? controller.submitUpdate : controller.submitCreate),
+                    : (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate),
                 child: formState.submitting
                     ? const SizedBox(
                         width: 20,

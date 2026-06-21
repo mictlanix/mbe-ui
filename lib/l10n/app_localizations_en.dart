@@ -15,6 +15,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldMinLength6 => 'Must be at least 6 characters';
 
   @override
+  String get viewActionTooltip => 'View';
+
+  @override
+  String get editActionTooltip => 'Edit';
+
+  @override
+  String get deleteActionTooltip => 'Delete';
+
+  @override
+  String get searchButtonTooltip => 'Search';
+
+  @override
   String get signInTitle => 'Sign in';
 
   @override
@@ -75,6 +87,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newUserTooltip => 'New user';
+
+  @override
+  String get usersSearchLabel => 'Search by username or email';
 
   @override
   String usersLoadError(Object error) {
@@ -142,9 +157,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get columnUnit => 'Unit';
-
-  @override
-  String get loadMoreButton => 'Load more';
 
   @override
   String get newProductTitle => 'New Product';

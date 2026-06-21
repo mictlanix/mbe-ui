@@ -14,9 +14,14 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// Create / edit screen for a single user account (FR-012/FR-013/FR-014).
 /// [userId] is null in create mode; non-null in edit mode.
 class UserDetailScreen extends ConsumerStatefulWidget {
-  const UserDetailScreen({super.key, this.userId});
+  const UserDetailScreen({super.key, this.userId, this.forceReadOnly = false});
 
   final String? userId;
+
+  /// Forces read-only rendering regardless of update permission — set when
+  /// navigated to via the View row action rather than Edit (FR-006,
+  /// research.md §5), read from the `?view=true` query parameter.
+  final bool forceReadOnly;
 
   @override
   ConsumerState<UserDetailScreen> createState() => _UserDetailScreenState();
@@ -33,9 +38,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     if (_isEdit) {
       // Load after the first frame so the provider is already mounted.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
-            .read(userFormControllerProvider.notifier)
-            .loadUser(widget.userId!);
+        ref.read(userFormControllerProvider.notifier).loadUser(widget.userId!);
       });
     }
   }
@@ -46,13 +49,19 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final controller = ref.read(userFormControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.users, AccessRight.update);
-    final canDelete = _isEdit && access.can(SystemObject.users, AccessRight.delete);
+    final canDelete =
+        !widget.forceReadOnly &&
+        _isEdit &&
+        access.can(SystemObject.users, AccessRight.delete);
+    final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
+    final fieldsEnabled = !formState.submitting && !readOnly;
     final l10n = AppLocalizations.of(context)!;
 
     if (formState.loading) {
       return Scaffold(
         appBar: AppBar(
-            title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle)),
+          title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -67,7 +76,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle),
         actions: [
-          if (_isEdit && canUpdate)
+          if (_isEdit && canUpdate && !widget.forceReadOnly)
             IconButton(
               key: const Key('recover_password_button'),
               icon: const Icon(Icons.lock_reset),
@@ -127,7 +136,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 TextFormField(
                   key: const Key('user_id_field'),
                   decoration: InputDecoration(labelText: l10n.usernameLabel),
-                  enabled: !formState.submitting,
+                  enabled: fieldsEnabled,
                   onChanged: controller.userIdChanged,
                   validator: (v) {
                     if (v == null || v.isEmpty) {
@@ -144,10 +153,11 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                   key: const Key('password_field'),
                   decoration: InputDecoration(labelText: l10n.passwordLabel),
                   obscureText: true,
-                  enabled: !formState.submitting,
+                  enabled: fieldsEnabled,
                   onChanged: controller.passwordChanged,
-                  validator: (v) =>
-                      (v ?? '').length < 6 ? l10n.userPasswordLengthError : null,
+                  validator: (v) => (v ?? '').length < 6
+                      ? l10n.userPasswordLengthError
+                      : null,
                 ),
                 const SizedBox(height: 12),
               ],
@@ -155,7 +165,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 key: const Key('email_field'),
                 initialValue: formState.email,
                 decoration: InputDecoration(labelText: l10n.emailLabel),
-                enabled: !formState.submitting,
+                enabled: fieldsEnabled,
                 onChanged: controller.emailChanged,
                 validator: (v) => (v == null || v.isEmpty)
                     ? l10n.userEmailRequiredError
@@ -165,10 +175,9 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
               TextFormField(
                 key: const Key('employee_id_field'),
                 initialValue: formState.employeeId?.toString() ?? '',
-                decoration:
-                    InputDecoration(labelText: l10n.employeeIdLabel),
+                decoration: InputDecoration(labelText: l10n.employeeIdLabel),
                 keyboardType: TextInputType.number,
-                enabled: !formState.submitting,
+                enabled: fieldsEnabled,
                 onChanged: controller.employeeIdChanged,
               ),
               const SizedBox(height: 12),
@@ -176,27 +185,29 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 key: const Key('administrator_switch'),
                 title: Text(l10n.administratorLabel),
                 value: formState.administrator,
-                onChanged:
-                    formState.submitting ? null : controller.administratorChanged,
+                onChanged: fieldsEnabled
+                    ? controller.administratorChanged
+                    : null,
               ),
               SwitchListTile(
                 key: const Key('disabled_switch'),
                 title: Text(l10n.disabledLabel),
                 value: formState.disabled,
-                onChanged:
-                    formState.submitting ? null : controller.disabledChanged,
+                onChanged: fieldsEnabled ? controller.disabledChanged : null,
               ),
               const SizedBox(height: 16),
-              Text(l10n.permissionsLabel,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                l10n.permissionsLabel,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               PrivilegesGrid(
                 key: const Key('privileges_grid'),
                 privileges: formState.privileges,
-                onChanged: canUpdate ? controller.privilegeChanged : null,
+                onChanged: fieldsEnabled ? controller.privilegeChanged : null,
               ),
               const SizedBox(height: 24),
-              if (canUpdate)
+              if (canUpdate && !widget.forceReadOnly)
                 FilledButton(
                   key: const Key('save_button'),
                   onPressed: formState.submitting
@@ -224,7 +235,9 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
   }
 
   Future<void> _confirmDelete(
-      BuildContext context, UserFormController controller) async {
+    BuildContext context,
+    UserFormController controller,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -271,22 +284,30 @@ class _RecoveryTokenCard extends StatelessWidget {
               children: [
                 const Icon(Icons.key),
                 const SizedBox(width: 8),
-                Text(AppLocalizations.of(context)!.recoveryTokenTitle,
-                    style: Theme.of(context).textTheme.titleSmall),
+                Text(
+                  AppLocalizations.of(context)!.recoveryTokenTitle,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
                 const Spacer(),
                 IconButton(
-                    key: const Key('dismiss_recovery_button'),
-                    icon: const Icon(Icons.close),
-                    onPressed: onDismiss),
+                  key: const Key('dismiss_recovery_button'),
+                  icon: const Icon(Icons.close),
+                  onPressed: onDismiss,
+                ),
               ],
             ),
             const SizedBox(height: 8),
-            SelectableText(token,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontFamily: 'monospace')),
+            SelectableText(
+              token,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
+            ),
             const SizedBox(height: 4),
-            Text(AppLocalizations.of(context)!.recoveryExpiresAt(expiresAt),
-                style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              AppLocalizations.of(context)!.recoveryExpiresAt(expiresAt),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
       ),
