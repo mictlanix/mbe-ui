@@ -77,7 +77,7 @@ A user with edit privilege updates a product's existing photo with a new one, or
 - **FR-004**: System MUST allow a user with edit privilege to replace an existing product photo with a new one.
 - **FR-005**: System MUST allow a user with edit privilege to remove an existing product photo, reverting the product to the placeholder state.
 - **FR-006**: System MUST validate that an uploaded file is a supported image type (JPEG or PNG) and reject unsupported types with a clear, actionable message.
-- **FR-007**: System MUST validate that an uploaded image does not exceed the maximum allowed file size (5 MB) and reject oversized files with a clear, actionable message stating the limit.
+- **FR-007**: System MUST validate that an uploaded image does not exceed the maximum allowed file size (2 MB, matching the backend's enforced limit) and reject oversized files with a clear, actionable message stating the limit.
 - **FR-008**: System MUST gate upload, replace, and remove actions behind the existing RBAC system using the `Products` system object's edit privilege, deny-by-default — users without that privilege cannot perform these actions and the corresponding UI affordances MUST NOT be shown.
 - **FR-009**: System MUST allow a user with read-only privilege on `Products` to view product photos without exposing upload/replace/remove actions.
 - **FR-010**: System MUST apply photo changes (upload, replace, remove) only when the containing product form is saved, consistent with how other editable product fields behave; an unsaved selection MUST NOT alter the stored photo.
@@ -100,7 +100,7 @@ A user with edit privilege updates a product's existing photo with a new one, or
 ## Assumptions
 
 - This feature scopes a single photo per product (no photo galleries or multiple images per product); the legacy data model's photo/image field is treated as a single-value field, consistent with how 002-product-catalog deferred this exact capability.
-- Supported image formats are JPEG and PNG, and the maximum upload size is 5 MB; these are reasonable defaults consistent with typical catalog photo use and may be revisited if the backend API enforces different limits.
+- Supported image formats are JPEG and PNG, and the maximum upload size is 2 MB; this matches the backend API's actual enforced limit (confirmed during planning) rather than being an arbitrary client-side choice.
 - Photo storage, retrieval, and any server-side image processing (resizing, thumbnailing, format conversion) are backend/API concerns; this spec describes client-facing upload, display, replace, and remove behavior and assumes the API contract supports storing and serving a single photo per product.
 - RBAC gating reuses the existing `Products` system object and its edit privilege introduced in 002-product-catalog and the auth feature; no new system object or privilege is introduced for photos specifically.
 - Photo changes follow the same save-on-submit pattern as other product fields (per FR-010); there is no separate "save photo immediately" action independent of the product form's save.

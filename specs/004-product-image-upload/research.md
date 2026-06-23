@@ -1,0 +1,54 @@
+# Phase 0 Research: Product Photo Display & Upload
+
+## 1. Backend contract for product photos (mbe-api)
+
+**Decision**: Treat `Product.photo` as a server-resolved, ready-to-fetch URL string (already the case in the generated `Product` entity, `lib/features/catalog/domain/entities/product.dart`). Use the dedicated `POST /api/v1/products/{product_id}/image` endpoint for upload/replace, and `PUT /api/v1/products/{product_id}` with an explicit `photo: null` body for remove. There is no dedicated delete-photo endpoint.
+
+**Rationale**: Read directly from the sibling `mbe-api` repo (`/Users/augusto/development/repos/mictlanix/mbe-api`):
+
+- `app/models/product.py:33` — `photo` is a nullable `String(255)` filename column, not a URL.
+- `app/api/v1/endpoints/products.py:20-25,76-94,114-119` — every response handler (`create_product`, `get_product`, `update_product`, `upload_product_image`) rewrites the raw filename into a full URL via `_photo_url()` (`f"{base}/images/{filename}"`) before returning `ProductResponse`. The client never needs to construct this URL itself.
+- `app/main.py:22` — `/images` is a `StaticFiles` mount serving `settings.images_dir` directly; no auth is required to fetch an image by URL.
+- `app/services/product_service.py:100` — on **create**, if no photo is supplied, the backend itself defaults `photo` to `settings.default_photo_file` ("no-image.png"), so most products already resolve to a backend-served placeholder image, not `null`. `photo` only becomes `null` if a client explicitly clears it later.
+- `app/services/product_service.py:155-156` — **update** only touches `photo` `if "photo" in data.model_fields_set`, i.e. the client must send the field explicitly (`{"photo": null}`), not merely omit it, to clear a photo. Omitting `photo` from a `PUT` body leaves the existing photo untouched.
+- `app/api/v1/endpoints/products.py:76-94` — the dedicated upload endpoint is gated with `require_privilege(SystemObject.PRODUCTS, AccessRight.UPDATE)`. The plain `update_product` endpoint (`PUT /{product_id}`, line ~114) has **no** `require_privilege` dependency at all — it only requires `get_current_user`. This is the same pre-existing server-side RBAC gap already tracked for 002-product-catalog as [mictlanix/mbe-api#70](https://github.com/mictlanix/mbe-api/issues/70); it means "remove photo" (via `PUT` with `photo: null`) is not yet server-enforced for the edit privilege, while "upload/replace" (via the dedicated endpoint) already is. This feature implements full deny-by-default gating client-side regardless, consistent with how 002-product-catalog handled the same gap.
+
+**Alternatives considered**: Treating `photo` as a relative path/filename the client must resolve into a URL — rejected, because the backend already does this resolution server-side in every response; duplicating it client-side would be redundant and could drift from the server's `images_base_url` configuration.
+
+## 2. Upload validation limits
+
+**Decision**: Client-side pre-validation accepts JPEG and PNG, max 2 MB, mirroring the backend exactly, to give the user an immediate rejection message before a network round-trip; the backend remains the authoritative enforcement point.
+
+**Rationale**: `app/services/image_service.py` enforces `_MAX_BYTES` = 2 MB server-side and validates the upload is a real image via PIL (any PIL-decodable format is technically accepted server-side, then normalized to PNG). Limiting the client-side picker to JPEG/PNG keeps the user-facing contract simple and predictable (matching FR-006/FR-007 in spec.md) without promising support for formats PIL happens to accept but the UI doesn't intentionally support (e.g. BMP, TIFF). A mismatch between client pre-validation and server enforcement is avoided by always treating the server's 422 response as authoritative — see §4.
+
+**Alternatives considered**: Mirroring PIL's full accepted-format list — rejected as unnecessarily permissive and not user-facing-meaningful; "JPEG and PNG" is what catalog photos realistically are and is what the spec already documents.
+
+## 3. Generated API client cannot express upload or explicit-null (remove)
+
+**Decision**: Do not use the generated `ProductsApi.uploadProductImageApiV1ProductsProductIdImagePost()` method for upload. Issue the multipart upload via a raw `dio.post()` call (using the same shared `Dio` instance/interceptors as the generated client) with a hand-built `FormData` containing a real `MultipartFile.fromBytes(...)`. Likewise, do not use the generated `ProductsApi.updateProductApiV1ProductsProductIdPut()` for photo removal; issue a raw `dio.put()` call with a hand-built JSON body `{"photo": null}` merged with whatever other fields are being saved.
+
+**Rationale — upload**: Inspected `lib/generated/openapi/lib/src/api/products_api.dart:554-575` — the generated method signature is `uploadProductImageApiV1ProductsProductIdImagePost({required int productId, required String file, ...})`. Because FastAPI's OpenAPI output marks the upload param as `type: string, format: binary` and the project's dio/openapi-generator template doesn't special-case `format: binary` into a binary-capable parameter, the generated method treats `file` as a plain string. Tracing `encodeFormParameter()` (`lib/generated/openapi/lib/src/api_util.dart:15-31`) confirms a `String` value is passed straight through as a text form field — calling the generated method would send the file's bytes (or a path) as a text field, which FastAPI's `UploadFile` parameter cannot parse as a file. This is a codegen limitation, not a backend contract issue.
+
+**Rationale — remove (explicit null)**: Inspected `lib/generated/openapi/lib/src/model/product_update.dart:135-145` (the `_serializeProperties` generator method backing `ProductUpdate.serializer`) — every nullable field is only emitted if `object.<field> != null` (e.g. `if (object.code != null) { yield r'code'; ... }`). There is no way to make a built_value-generated `ProductUpdate` serialize a field as JSON `null`; setting `b.photo = null` on the builder is indistinguishable from never touching it, and the key is omitted from the request body entirely. Since the backend's `update_product` service only clears `photo` `if "photo" in data.model_fields_set` (`app/services/product_service.py:155-156`, found in research §1) — i.e. it requires the JSON key to be present with a `null` value — the generated client structurally cannot express "remove this product's photo." This is the same class of codegen limitation as the upload case, just surfacing for the first time because no prior feature needed to explicitly null a field that was previously set.
+
+**Alternatives considered**:
+- *Patch the generated file directly* — rejected; constitution III forbids hand-editing generated files (they get overwritten on next codegen run).
+- *Fix the openapi-generator template/config so future codegen emits a binary-capable parameter and supports explicit-null serialization* — desirable long-term, but out of scope for this feature; tracked as a follow-up rather than blocking this plan, since two small, contained, hand-rolled raw-`dio` calls are a well-precedented exception (constitution III's "all HTTP access MUST go through dio" is still satisfied — both calls still go through the shared `dio` instance and its interceptors, they're just not routed through the generated wrapper methods/models for these two specific operations).
+- *Use a third-party multipart/HTTP helper outside dio* — rejected; would violate constitution III's "All HTTP access MUST go through dio."
+- *Represent "remove photo" some other way than `null`* (e.g. a sentinel filename) — rejected; the backend contract already defines `null` as "no photo" (research §1) and introducing a sentinel would require a backend change, out of scope for a client-only feature.
+
+## 4. Client-side file picking
+
+**Decision**: Introduce `file_picker` as a new dependency for selecting an image file from the user's device, read its bytes in memory (`PlatformFile.bytes`), and pass those bytes directly into the hand-built multipart request from §3. No new dependency for image *display* — `Image.network` (already implicitly available via Flutter SDK) covers rendering a photo URL with an `errorBuilder` fallback to a local placeholder asset.
+
+**Rationale**: No prior file-upload feature exists in this codebase (`grep` for `MultipartFile`/`FormData`/`file_picker`/`image_picker` across `lib/` returned nothing outside generated code), so this is the first feature to need file selection. `file_picker` has solid support across the project's full target platform list (Web, Windows, macOS, Linux — constitution §VI's Expanded tier) and returns in-memory bytes on web without relying on a filesystem path, which `image_picker` does not handle as consistently on desktop/web. This is a deliberate, documented new dependency (constitution §"Technology Stack" lists current defaults but doesn't preclude additions where no existing tool covers the need).
+
+**Alternatives considered**: `image_picker` — weaker desktop/web parity historically, and is more camera/gallery-oriented than "pick any image file," which is the actual desktop/web use case here.
+
+## 5. Photo display fallback strategy
+
+**Decision**: Render product photos with `Image.network(photoUrl, errorBuilder: ...)` falling back to a single shared placeholder asset/widget in `core/widgets/`, used both when `photo` is `null` and when the network image fails to load (broken URL, network error). Do not attempt to special-case the backend's own `no-image.png` URL — if the backend returns that URL, it loads like any other photo and already renders as a placeholder-style image; the client-side placeholder only needs to cover `null`/load-failure, matching spec.md's Edge Cases and FR-002.
+
+**Rationale**: Keeps the display logic simple (one fallback path) and consistent with constitution §VI's requirement that shared visual components live once in `core/widgets/` rather than being reimplemented per screen (the catalog list and detail screen both need this).
+
+**Alternatives considered**: Treating "backend returned no-image.png" and "photo is null" as distinct UI states — rejected as unnecessary complexity; both already resolve to "no real photo," and the backend's own placeholder image is an acceptable visual.
