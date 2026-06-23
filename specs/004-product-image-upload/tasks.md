@@ -79,8 +79,10 @@ US2/US3 need both display-in-preview and the upload/remove calls).
   contracts/mbe-api-products-photo.md (depends on T004).
 - [ ] T006 [P] `ProductRepositoryImpl.uploadPhoto`/`.removePhoto` tests
   covering `200`, `404`, `422` (unsupported type / oversized file, upload
-  only) → `AppError` mapping, and asserting the raw request shape (multipart
-  field name `file` for upload; JSON body `{"photo": null}` for remove) in
+  only), and a network/timeout error → `NetworkError` mapping (spec.md Edge
+  Cases — interrupted upload), → `AppError` mapping, and asserting the raw
+  request shape (multipart field name `file` for upload; JSON body
+  `{"photo": null}` for remove) in
   `test/unit/features/catalog/product_repository_impl_test.dart` (extends
   the file from 002-product-catalog; write first, confirm it fails before
   T005 lands).
@@ -200,12 +202,21 @@ file type, oversized file, no-Update-privilege visibility check.
   creation, call `ProductRepository.uploadPhoto` when `pendingPhotoBytes` is
   set, using the newly-created product's id; surface a distinct, non-
   blocking error on upload failure without un-marking the create as `saved`
-  (data-model.md "Save (create)") in
+  (data-model.md "Save (create)"). **Move the existing
+  `ref.invalidate(productsListControllerProvider)` call (currently
+  immediately after the create call) to fire after the upload call as well**
+  — i.e. invalidate once after create, and again after a staged upload
+  completes — so the list view reflects the new photo on its next refresh
+  (FR-011, SC-001) rather than the pre-upload state in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T005, T017).
 - [ ] T019 [US2] Extend `submitUpdate()` to, after the existing field `PUT`
   succeeds, call `ProductRepository.uploadPhoto` when `pendingPhotoBytes` is
-  set (data-model.md "Save (edit)") in
+  set (data-model.md "Save (edit)"). **Add a second
+  `ref.invalidate(productsListControllerProvider)` call after the upload
+  call succeeds** (in addition to the existing one after the field `PUT`),
+  so the list view reflects the new photo on its next refresh rather than
+  the pre-upload state (FR-011, SC-005) in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T005, T017; T019 and T018 touch the same file as each other and as
   US3's T024 — sequence, do not parallelize).
@@ -274,7 +285,11 @@ Read-only account.
 - [ ] T026 [US3] Extend `submitUpdate()` to call
   `ProductRepository.removePhoto` when `photoMarkedForRemoval` is true and
   no new photo is staged, else `uploadPhoto` as added in T019, else neither
-  (data-model.md "Save (edit)") in
+  (data-model.md "Save (edit)"). The `removePhoto` branch must also trigger
+  the same second `ref.invalidate(productsListControllerProvider)` call
+  T019 added for the upload branch, so the list view reflects the photo's
+  removal on its next refresh rather than the pre-removal state (FR-011,
+  SC-005) in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T005, T019, T025; sequence after T019, same file).
 - [ ] T027 [US3] Add replace and remove controls to `ProductDetailScreen`
