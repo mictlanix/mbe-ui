@@ -24,11 +24,22 @@ void main() {
     expect(resolvePhotoUrl('/images/abc.png'), '$apiBaseUrl/images/abc.png');
   });
 
-  test('resolves a legacy "~/Photos/<file>" virtual-root path by '
-      'replacing "~" with apiBaseUrl', () {
+  test('resolves a legacy "~/Photos/<file>" virtual-root path against '
+      'legacyPhotosBaseUrl', () {
     expect(
       resolvePhotoUrl('~/Photos/fe18d04c.png'),
-      '$apiBaseUrl/Photos/fe18d04c.png',
+      '$legacyPhotosBaseUrl/Photos/fe18d04c.png',
+    );
+  });
+
+  test('resolves the real-world shape — "~" appearing after a bogus '
+      '"/images/" prefix, not at the start — against legacyPhotosBaseUrl '
+      '(mictlanix/mbe-api#72)', () {
+    expect(
+      resolvePhotoUrl(
+        '/images/~/Photos/fe18d04c7c4a0dda4b685d1293b649bb16ab95f2.png',
+      ),
+      '$legacyPhotosBaseUrl/Photos/fe18d04c7c4a0dda4b685d1293b649bb16ab95f2.png',
     );
   });
 
