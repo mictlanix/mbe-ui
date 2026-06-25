@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,12 +12,14 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
@@ -161,6 +165,39 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Like [pumpScreen], but returns the `ProviderContainer` backing the
+  /// widget tree so tests can drive [ProductFormController] directly for
+  /// states that have no UI trigger in widget tests (e.g. a file picked via
+  /// the native file dialog).
+  Future<ProviderContainer> pumpScreenWithContainer(
+    WidgetTester tester, {
+    required User signedInAs,
+    int? productId,
+  }) async {
+    when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
+    final container = ProviderContainer(
+      overrides: [
+        authRepositoryProvider.overrideWithValue(authRepository),
+        tokenStorageProvider.overrideWithValue(tokenStorage),
+        productRepositoryProvider.overrideWithValue(productRepository),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ProductDetailScreen(productId: productId),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    return container;
+  }
+
   testWidgets('renders the create form fields (FR-003)', (tester) async {
     await pumpScreen(tester, signedInAs: _createUser);
 
@@ -246,6 +283,93 @@ void main() {
     expect(find.text('Code already in use'), findsOneWidget);
   });
 
+  testWidgets(
+      'shows the upload control for a create-privilege user with no photo '
+      '(FR-003, FR-008)', (tester) async {
+    await pumpScreen(tester, signedInAs: _createUser);
+
+    expect(find.byKey(const Key('upload_photo_button')), findsOneWidget);
+  });
+
+  testWidgets(
+      'hides the upload control for a user without products.create '
+      '(FR-008, FR-009)', (tester) async {
+    await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+    expect(find.byKey(const Key('upload_photo_button')), findsNothing);
+  });
+
+  testWidgets(
+      'shows replace/remove controls for a product with a photo when '
+      'canUpdate (FR-004, FR-005)', (tester) async {
+    when(() => productRepository.get(productId: 1)).thenAnswer(
+      (_) async => _product().copyWith(photo: 'http://test/p.png'),
+    );
+
+    await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+    expect(find.byKey(const Key('replace_photo_button')), findsOneWidget);
+    expect(find.byKey(const Key('remove_photo_button')), findsOneWidget);
+    expect(find.byKey(const Key('upload_photo_button')), findsNothing);
+  });
+
+  testWidgets(
+      'hides the remove control for a product with no photo (spec.md '
+      'Edge Cases)', (tester) async {
+    when(() => productRepository.get(productId: 1))
+        .thenAnswer((_) async => _product());
+
+    await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+    expect(find.byKey(const Key('remove_photo_button')), findsNothing);
+    expect(find.byKey(const Key('replace_photo_button')), findsNothing);
+    expect(find.byKey(const Key('upload_photo_button')), findsOneWidget);
+  });
+
+  testWidgets(
+      'hides replace/remove controls for a Read-only account viewing a '
+      'product with a photo (FR-009)', (tester) async {
+    when(() => productRepository.get(productId: 1)).thenAnswer(
+      (_) async => _product().copyWith(photo: 'http://test/p.png'),
+    );
+
+    await pumpScreen(tester, signedInAs: _readOnlyUser, productId: 1);
+
+    expect(find.byKey(const Key('replace_photo_button')), findsNothing);
+    expect(find.byKey(const Key('remove_photo_button')), findsNothing);
+    final photo = tester.widget<ProductPhoto>(find.byType(ProductPhoto));
+    expect(photo.photoUrl, 'http://test/p.png');
+  });
+
+  testWidgets(
+      'removing a photo reverts the preview to the placeholder before '
+      'save (FR-005)', (tester) async {
+    when(() => productRepository.get(productId: 1)).thenAnswer(
+      (_) async => _product().copyWith(photo: 'http://test/p.png'),
+    );
+    final container =
+        await pumpScreenWithContainer(tester, signedInAs: _editUser, productId: 1);
+
+    container.read(productFormControllerProvider.notifier).photoRemoveRequested();
+    await tester.pumpAndSettle();
+
+    final photo = tester.widget<ProductPhoto>(find.byType(ProductPhoto));
+    expect(photo.photoUrl, isNull);
+    expect(find.byKey(const Key('upload_photo_button')), findsOneWidget);
+  });
+
+  testWidgets('shows a photo field error after an invalid pick (FR-006)',
+      (tester) async {
+    final container =
+        await pumpScreenWithContainer(tester, signedInAs: _createUser);
+    container
+        .read(productFormControllerProvider.notifier)
+        .photoPicked(Uint8List.fromList([1, 2, 3]), 'document.pdf');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Photo must be a JPEG or PNG file.'), findsOneWidget);
+  });
+
   testWidgets('hides the Save action for a user without products.create '
       '(FR-012, FR-013)', (tester) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser);
@@ -268,6 +392,29 @@ void main() {
       expect(codeField.initialValue, 'SKU-001');
       expect(nameField.initialValue, 'Widget');
       expect(find.byKey(const Key('save_button')), findsOneWidget);
+    });
+
+    testWidgets('displays the loaded product photo via ProductPhoto (FR-001)',
+        (tester) async {
+      when(() => productRepository.get(productId: 1)).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/images/p.png'),
+      );
+
+      await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+      final photo = tester.widget<ProductPhoto>(find.byType(ProductPhoto));
+      expect(photo.photoUrl, 'http://test/images/p.png');
+    });
+
+    testWidgets('displays the placeholder when the product has no photo '
+        '(FR-002)', (tester) async {
+      when(() => productRepository.get(productId: 1))
+          .thenAnswer((_) async => _product());
+
+      await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+      final photo = tester.widget<ProductPhoto>(find.byType(ProductPhoto));
+      expect(photo.photoUrl, isNull);
     });
 
     testWidgets(

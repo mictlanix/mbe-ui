@@ -26,6 +26,11 @@ mixin _$ProductListItem {
   String get taxRate => throw _privateConstructorUsedError;
   bool get deactivated => throw _privateConstructorUsedError;
 
+  /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
+  /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
+  /// way the detail endpoint always has).
+  String? get photo => throw _privateConstructorUsedError;
+
   /// Create a copy of ProductListItem
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,6 +54,7 @@ abstract class $ProductListItemCopyWith<$Res> {
     String unitOfMeasurement,
     String taxRate,
     bool deactivated,
+    String? photo,
   });
 }
 
@@ -75,6 +81,7 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
     Object? unitOfMeasurement = null,
     Object? taxRate = null,
     Object? deactivated = null,
+    Object? photo = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -110,6 +117,10 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
                 ? _value.deactivated
                 : deactivated // ignore: cast_nullable_to_non_nullable
                       as bool,
+            photo: freezed == photo
+                ? _value.photo
+                : photo // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -134,6 +145,7 @@ abstract class _$$ProductListItemImplCopyWith<$Res>
     String unitOfMeasurement,
     String taxRate,
     bool deactivated,
+    String? photo,
   });
 }
 
@@ -159,6 +171,7 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
     Object? unitOfMeasurement = null,
     Object? taxRate = null,
     Object? deactivated = null,
+    Object? photo = freezed,
   }) {
     return _then(
       _$ProductListItemImpl(
@@ -194,6 +207,10 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
             ? _value.deactivated
             : deactivated // ignore: cast_nullable_to_non_nullable
                   as bool,
+        photo: freezed == photo
+            ? _value.photo
+            : photo // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -211,6 +228,7 @@ class _$ProductListItemImpl implements _ProductListItem {
     required this.unitOfMeasurement,
     required this.taxRate,
     required this.deactivated,
+    this.photo,
   });
 
   @override
@@ -230,9 +248,15 @@ class _$ProductListItemImpl implements _ProductListItem {
   @override
   final bool deactivated;
 
+  /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
+  /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
+  /// way the detail endpoint always has).
+  @override
+  final String? photo;
+
   @override
   String toString() {
-    return 'ProductListItem(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, deactivated: $deactivated)';
+    return 'ProductListItem(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, deactivated: $deactivated, photo: $photo)';
   }
 
   @override
@@ -250,7 +274,8 @@ class _$ProductListItemImpl implements _ProductListItem {
                 other.unitOfMeasurement == unitOfMeasurement) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.deactivated, deactivated) ||
-                other.deactivated == deactivated));
+                other.deactivated == deactivated) &&
+            (identical(other.photo, photo) || other.photo == photo));
   }
 
   @override
@@ -264,6 +289,7 @@ class _$ProductListItemImpl implements _ProductListItem {
     unitOfMeasurement,
     taxRate,
     deactivated,
+    photo,
   );
 
   /// Create a copy of ProductListItem
@@ -288,6 +314,7 @@ abstract class _ProductListItem implements ProductListItem {
     required final String unitOfMeasurement,
     required final String taxRate,
     required final bool deactivated,
+    final String? photo,
   }) = _$ProductListItemImpl;
 
   @override
@@ -306,6 +333,12 @@ abstract class _ProductListItem implements ProductListItem {
   String get taxRate;
   @override
   bool get deactivated;
+
+  /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
+  /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
+  /// way the detail endpoint always has).
+  @override
+  String? get photo;
 
   /// Create a copy of ProductListItem
   /// with the given fields replaced by the non-null parameter values.

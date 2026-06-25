@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -88,6 +90,10 @@ ProviderContainer _containerFor(User user, ProductRepository repository) {
 
 void main() {
   late MockProductRepository repository;
+
+  setUpAll(() {
+    registerFallbackValue(Uint8List(0));
+  });
 
   setUp(() {
     repository = MockProductRepository();
@@ -271,6 +277,93 @@ void main() {
           )).called(1);
     });
 
+    test('uploads a staged photo using the newly-created product id and '
+        're-invalidates the list (FR-003, FR-011)', () async {
+      when(() => repository.create(
+            code: 'SKU-001',
+            name: 'Widget',
+            unitOfMeasurement: 'PCE',
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+          )).thenAnswer((_) async => _product());
+      when(() => repository.uploadPhoto(
+            productId: 1,
+            bytes: Uint8List.fromList([1, 2, 3]),
+            filename: 'photo.jpg',
+          )).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/p.png'),
+      );
+
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.codeChanged('SKU-001');
+      controller.nameChanged('Widget');
+      controller.unitOfMeasurementChanged('PCE');
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+      await controller.submitCreate();
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.saved, isTrue);
+      expect(state.photo, 'http://test/p.png');
+      verify(() => repository.uploadPhoto(
+            productId: 1,
+            bytes: Uint8List.fromList([1, 2, 3]),
+            filename: 'photo.jpg',
+          )).called(1);
+    });
+
+    test('a failed photo upload after a successful create still marks the '
+        'product as saved (data-model.md "Save (create)")', () async {
+      when(() => repository.create(
+            code: 'SKU-001',
+            name: 'Widget',
+            unitOfMeasurement: 'PCE',
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+          )).thenAnswer((_) async => _product());
+      when(() => repository.uploadPhoto(
+            productId: 1,
+            bytes: any(named: 'bytes'),
+            filename: any(named: 'filename'),
+          )).thenThrow(const AppError.network());
+
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.codeChanged('SKU-001');
+      controller.nameChanged('Widget');
+      controller.unitOfMeasurementChanged('PCE');
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+      await controller.submitCreate();
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.saved, isTrue);
+      expect(state.error, ProductFormErrorCode.photoUploadFailed);
+    });
+
     test('without products.create privilege, does not call the repository '
         '(spec.md Edge Cases — privilege revoked while form is open)', () async {
       final container = _containerFor(_readOnlyUser, repository);
@@ -388,6 +481,139 @@ void main() {
       expect(state.unitOfMeasurement, 'PCE');
       expect(state.loading, isFalse);
     });
+
+    test('populates photo from the loaded product (FR-001)', () async {
+      when(() => repository.get(productId: 1)).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/images/p.png'),
+      );
+
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      await controller.loadForEdit(1);
+
+      expect(
+        container.read(productFormControllerProvider).photo,
+        'http://test/images/p.png',
+      );
+    });
+  });
+
+  group('photoPicked', () {
+    test('stages a valid JPEG and clears photoMarkedForRemoval (FR-003)',
+        () async {
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+      controller.photoRemoveRequested();
+
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.pendingPhotoBytes, [1, 2, 3]);
+      expect(state.pendingPhotoFilename, 'photo.jpg');
+      expect(state.photoMarkedForRemoval, isFalse);
+      expect(state.fieldErrors.containsKey('photo'), isFalse);
+    });
+
+    test('stages a valid PNG (FR-003)', () async {
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.PNG');
+
+      expect(
+        container.read(productFormControllerProvider).pendingPhotoBytes,
+        [1, 2, 3],
+      );
+    });
+
+    test('rejects a non-JPEG/PNG file and does not stage it (FR-006)',
+        () async {
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'document.pdf');
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.pendingPhotoBytes, isNull);
+      expect(
+        state.fieldErrors['photo'],
+        ProductFormErrorCode.photoInvalidType,
+      );
+    });
+
+    test('rejects a file over 2 MB and does not stage it (FR-007)', () async {
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.photoPicked(
+        Uint8List(2 * 1024 * 1024 + 1),
+        'photo.jpg',
+      );
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.pendingPhotoBytes, isNull);
+      expect(state.fieldErrors['photo'], ProductFormErrorCode.photoTooLarge);
+    });
+  });
+
+  group('photoRemoveRequested', () {
+    test('marks the current photo for removal and clears any staged pick '
+        '(FR-005)', () async {
+      when(() => repository.get(productId: 1)).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/p.png'),
+      );
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+      await controller.loadForEdit(1);
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+
+      controller.photoRemoveRequested();
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.photoMarkedForRemoval, isTrue);
+      expect(state.pendingPhotoBytes, isNull);
+      expect(state.pendingPhotoFilename, isNull);
+    });
+
+    test('picking a new photo after a removal request clears '
+        'photoMarkedForRemoval again (mutually exclusive)', () async {
+      when(() => repository.get(productId: 1)).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/p.png'),
+      );
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+      await controller.loadForEdit(1);
+      controller.photoRemoveRequested();
+
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+
+      expect(
+        container.read(productFormControllerProvider).photoMarkedForRemoval,
+        isFalse,
+      );
+    });
+
+    test('is a no-op when there is no current photo and nothing staged '
+        '(spec.md Edge Cases)', () async {
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.photoRemoveRequested();
+
+      expect(
+        container.read(productFormControllerProvider).photoMarkedForRemoval,
+        isFalse,
+      );
+    });
   });
 
   group('submitUpdate', () {
@@ -441,6 +667,98 @@ void main() {
             salable: false,
             invoiceable: false,
           )).called(1);
+    });
+
+    test('uploads a staged photo after the field update and re-invalidates '
+        'the list (FR-004, FR-011)', () async {
+      when(() => repository.get(productId: 1)).thenAnswer((_) async => _product());
+      when(() => repository.update(
+            productId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            unitOfMeasurement: any(named: 'unitOfMeasurement'),
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+          )).thenAnswer((_) async => _product());
+      when(() => repository.uploadPhoto(
+            productId: 1,
+            bytes: Uint8List.fromList([1, 2, 3]),
+            filename: 'photo.jpg',
+          )).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/p.png'),
+      );
+
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      await controller.loadForEdit(1);
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+      await controller.submitUpdate();
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.saved, isTrue);
+      expect(state.photo, 'http://test/p.png');
+      verify(() => repository.uploadPhoto(
+            productId: 1,
+            bytes: Uint8List.fromList([1, 2, 3]),
+            filename: 'photo.jpg',
+          )).called(1);
+    });
+
+    test('removes the photo after the field update when marked for removal '
+        '(FR-005, FR-011)', () async {
+      when(() => repository.get(productId: 1)).thenAnswer(
+        (_) async => _product().copyWith(photo: 'http://test/p.png'),
+      );
+      when(() => repository.update(
+            productId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            unitOfMeasurement: any(named: 'unitOfMeasurement'),
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+          )).thenAnswer((_) async => _product().copyWith(photo: 'http://test/p.png'));
+      when(() => repository.removePhoto(productId: 1))
+          .thenAnswer((_) async => _product());
+
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      await controller.loadForEdit(1);
+      controller.photoRemoveRequested();
+      await controller.submitUpdate();
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.saved, isTrue);
+      expect(state.photo, isNull);
+      verify(() => repository.removePhoto(productId: 1)).called(1);
+      verifyNever(() => repository.uploadPhoto(
+            productId: any(named: 'productId'),
+            bytes: any(named: 'bytes'),
+            filename: any(named: 'filename'),
+          ));
     });
 
     test('without products.update privilege, does not call the repository '

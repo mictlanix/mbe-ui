@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 
@@ -70,6 +72,27 @@ abstract class ProductRepository {
     bool? invoiceable,
     bool? deactivated,
   });
+
+  /// `POST /api/v1/products/{product_id}/image` (FR-003, FR-004). Issued as
+  /// a raw multipart `dio` call rather than through the generated client —
+  /// the generated method's `file` param is codegen'd as a plain string,
+  /// not a binary-capable parameter (research.md §3, contracts/
+  /// mbe-api-products-photo.md). Throws `NotFoundError` on `404`,
+  /// `ValidationError` on `422` (unsupported image type or over the 2 MB
+  /// limit).
+  Future<Product> uploadPhoto({
+    required int productId,
+    required Uint8List bytes,
+    required String filename,
+  });
+
+  /// `PUT /api/v1/products/{product_id}` with a raw `{"photo": null}` body
+  /// (FR-005). Issued as a raw `dio` call rather than through the generated
+  /// `ProductUpdate` model — that model's serializer never emits a field
+  /// once it's `null`, so it cannot express "clear this field" (research.md
+  /// §3, contracts/mbe-api-products-photo.md). Throws `NotFoundError` on
+  /// `404`.
+  Future<Product> removePhoto({required int productId});
 }
 
 /// `ListResponse[ProductListItem]` (`items`, `total`) — used by

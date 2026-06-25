@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -28,7 +30,14 @@ abstract final class ProductFormErrorCode {
   static const createPermissionDenied = 'createPermissionDenied';
   static const updatePermissionDenied = 'updatePermissionDenied';
   static const deactivatePermissionDenied = 'deactivatePermissionDenied';
+  static const photoInvalidType = 'photoInvalidType';
+  static const photoTooLarge = 'photoTooLarge';
+  static const photoUploadFailed = 'photoUploadFailed';
 }
+
+/// Matches mbe-api's `image_service._MAX_BYTES` (research.md §2).
+const _maxPhotoBytes = 2 * 1024 * 1024;
+const _validPhotoExtensions = ['.jpg', '.jpeg', '.png'];
 
 /// Create/edit form state for a single product. Local UI state, not
 /// persisted (constitution §II). [productId] is `null` in create mode.
@@ -42,6 +51,22 @@ class ProductFormState with _$ProductFormState {
     String? model,
     String? barCode,
     String? location,
+    /// The product's currently-saved photo URL (FR-001), loaded via
+    /// [loadForEdit]. `null` in create mode until a photo is staged
+    /// (data-model.md "ProductFormState").
+    String? photo,
+    /// In-memory bytes of a newly-picked image file, staged but not yet
+    /// uploaded (FR-010 — applies only on save). `null` if nothing has been
+    /// picked since the form was opened/loaded (data-model.md
+    /// "ProductFormState").
+    Uint8List? pendingPhotoBytes,
+    /// Original filename of [pendingPhotoBytes], used only for the
+    /// upload's multipart filename.
+    String? pendingPhotoFilename,
+    /// `true` if the user chose "remove photo" since the form was
+    /// opened/loaded, and no new photo has been picked since. Mutually
+    /// exclusive with a non-null [pendingPhotoBytes].
+    @Default(false) bool photoMarkedForRemoval,
     @Default('') String unitOfMeasurement,
     String? taxRate,
     String? comment,
@@ -115,6 +140,50 @@ class ProductFormController extends _$ProductFormController {
   void salableChanged(bool v) => state = state.copyWith(salable: v);
   void invoiceableChanged(bool v) => state = state.copyWith(invoiceable: v);
 
+  /// Stages a newly-picked image file for upload on save (FR-003, FR-004,
+  /// FR-010). Validates type (JPEG/PNG by extension) and size (≤2 MB,
+  /// FR-006, FR-007) client-side before staging; rejects with a field error
+  /// and leaves any previously-staged/saved photo untouched on failure.
+  /// Clears [ProductFormState.photoMarkedForRemoval] on success — picking a
+  /// new photo supersedes a pending removal (data-model.md "State
+  /// transitions").
+  void photoPicked(Uint8List bytes, String filename) {
+    final lower = filename.toLowerCase();
+    if (!_validPhotoExtensions.any(lower.endsWith)) {
+      state = state.copyWith(
+        fieldErrors: {...state.fieldErrors, 'photo': ProductFormErrorCode.photoInvalidType},
+      );
+      return;
+    }
+    if (bytes.length > _maxPhotoBytes) {
+      state = state.copyWith(
+        fieldErrors: {...state.fieldErrors, 'photo': ProductFormErrorCode.photoTooLarge},
+      );
+      return;
+    }
+
+    final fieldErrors = {...state.fieldErrors}..remove('photo');
+    state = state.copyWith(
+      pendingPhotoBytes: bytes,
+      pendingPhotoFilename: filename,
+      photoMarkedForRemoval: false,
+      fieldErrors: fieldErrors,
+    );
+  }
+
+  /// Marks the current photo for removal on save (FR-005). No-ops when
+  /// there is no current photo and nothing staged (spec.md Edge Cases).
+  /// Clears any staged [ProductFormState.pendingPhotoBytes] — removal and a
+  /// new pick are mutually exclusive.
+  void photoRemoveRequested() {
+    if (state.photo == null && state.pendingPhotoBytes == null) return;
+    state = state.copyWith(
+      photoMarkedForRemoval: true,
+      pendingPhotoBytes: null,
+      pendingPhotoFilename: null,
+    );
+  }
+
   /// Loads an existing product into the form for viewing/editing (FR-008,
   /// FR-009). Whether the form renders read-only (FR-013) is derived
   /// reactively in the screen from `accessControlProvider`, not snapshotted
@@ -132,6 +201,7 @@ class ProductFormController extends _$ProductFormController {
         model: product.model,
         barCode: product.barCode,
         location: product.location,
+        photo: product.photo,
         unitOfMeasurement: product.unitOfMeasurement,
         taxRate: product.taxRate,
         comment: product.comment,
@@ -212,7 +282,7 @@ class ProductFormController extends _$ProductFormController {
       fieldErrors: const {},
     );
     try {
-      await ref.read(productRepositoryProvider).create(
+      final product = await ref.read(productRepositoryProvider).create(
             code: state.code,
             name: state.name,
             unitOfMeasurement: state.unitOfMeasurement,
@@ -230,7 +300,34 @@ class ProductFormController extends _$ProductFormController {
             invoiceable: state.invoiceable,
           );
       ref.invalidate(productsListControllerProvider);
-      state = state.copyWith(submitting: false, saved: true);
+
+      final pendingBytes = state.pendingPhotoBytes;
+      if (pendingBytes != null) {
+        try {
+          final withPhoto = await ref.read(productRepositoryProvider).uploadPhoto(
+                productId: product.productId,
+                bytes: pendingBytes,
+                filename: state.pendingPhotoFilename!,
+              );
+          ref.invalidate(productsListControllerProvider);
+          state = state.copyWith(
+            submitting: false,
+            saved: true,
+            photo: withPhoto.photo,
+            pendingPhotoBytes: null,
+            pendingPhotoFilename: null,
+          );
+        } on AppError catch (e) {
+          state = state.copyWith(
+            submitting: false,
+            saved: true,
+            error: ProductFormErrorCode.photoUploadFailed,
+            errorDetail: e.serverMessage,
+          );
+        }
+      } else {
+        state = state.copyWith(submitting: false, saved: true);
+      }
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(
@@ -297,7 +394,44 @@ class ProductFormController extends _$ProductFormController {
             invoiceable: state.invoiceable,
           );
       ref.invalidate(productsListControllerProvider);
-      state = state.copyWith(submitting: false, saved: true);
+
+      final pendingBytes = state.pendingPhotoBytes;
+      if (pendingBytes != null) {
+        try {
+          final withPhoto = await ref.read(productRepositoryProvider).uploadPhoto(
+                productId: productId,
+                bytes: pendingBytes,
+                filename: state.pendingPhotoFilename!,
+              );
+          ref.invalidate(productsListControllerProvider);
+          state = state.copyWith(
+            submitting: false,
+            saved: true,
+            photo: withPhoto.photo,
+            pendingPhotoBytes: null,
+            pendingPhotoFilename: null,
+          );
+        } on AppError catch (e) {
+          state = state.copyWith(
+            submitting: false,
+            saved: true,
+            error: ProductFormErrorCode.photoUploadFailed,
+            errorDetail: e.serverMessage,
+          );
+        }
+      } else if (state.photoMarkedForRemoval) {
+        final withoutPhoto =
+            await ref.read(productRepositoryProvider).removePhoto(productId: productId);
+        ref.invalidate(productsListControllerProvider);
+        state = state.copyWith(
+          submitting: false,
+          saved: true,
+          photo: withoutPhoto.photo,
+          photoMarkedForRemoval: false,
+        );
+      } else {
+        state = state.copyWith(submitting: false, saved: true);
+      }
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(

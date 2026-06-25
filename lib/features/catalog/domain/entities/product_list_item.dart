@@ -17,6 +17,10 @@ class ProductListItem with _$ProductListItem {
     required String unitOfMeasurement,
     required String taxRate,
     required bool deactivated,
+    /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
+    /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
+    /// way the detail endpoint always has).
+    String? photo,
   }) = _ProductListItem;
 
   factory ProductListItem.fromResponse(api.ProductListItem item) {
@@ -29,6 +33,7 @@ class ProductListItem with _$ProductListItem {
       unitOfMeasurement: item.unitOfMeasurement,
       taxRate: item.taxRate,
       deactivated: item.deactivated,
+      photo: item.photo,
     );
   }
 }

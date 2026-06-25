@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
@@ -101,6 +102,12 @@ class ProductsListScreen extends ConsumerWidget {
                           text: (p) => p.code,
                           frozen: true,
                           fixedWidth: 110,
+                        ),
+                        DataTableColumn(
+                          label: l10n.columnPhoto,
+                          fixedWidth: 64,
+                          cellBuilder: (context, p) =>
+                              ProductPhoto(photoUrl: p.photo),
                         ),
                         DataTableColumn.text(
                           label: l10n.columnName,

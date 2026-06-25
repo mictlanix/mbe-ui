@@ -24,6 +24,26 @@ mixin _$ProductFormState {
   String? get model => throw _privateConstructorUsedError;
   String? get barCode => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
+
+  /// The product's currently-saved photo URL (FR-001), loaded via
+  /// [loadForEdit]. `null` in create mode until a photo is staged
+  /// (data-model.md "ProductFormState").
+  String? get photo => throw _privateConstructorUsedError;
+
+  /// In-memory bytes of a newly-picked image file, staged but not yet
+  /// uploaded (FR-010 — applies only on save). `null` if nothing has been
+  /// picked since the form was opened/loaded (data-model.md
+  /// "ProductFormState").
+  Uint8List? get pendingPhotoBytes => throw _privateConstructorUsedError;
+
+  /// Original filename of [pendingPhotoBytes], used only for the
+  /// upload's multipart filename.
+  String? get pendingPhotoFilename => throw _privateConstructorUsedError;
+
+  /// `true` if the user chose "remove photo" since the form was
+  /// opened/loaded, and no new photo has been picked since. Mutually
+  /// exclusive with a non-null [pendingPhotoBytes].
+  bool get photoMarkedForRemoval => throw _privateConstructorUsedError;
   String get unitOfMeasurement => throw _privateConstructorUsedError;
   String? get taxRate => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
@@ -68,6 +88,10 @@ abstract class $ProductFormStateCopyWith<$Res> {
     String? model,
     String? barCode,
     String? location,
+    String? photo,
+    Uint8List? pendingPhotoBytes,
+    String? pendingPhotoFilename,
+    bool photoMarkedForRemoval,
     String unitOfMeasurement,
     String? taxRate,
     String? comment,
@@ -109,6 +133,10 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? model = freezed,
     Object? barCode = freezed,
     Object? location = freezed,
+    Object? photo = freezed,
+    Object? pendingPhotoBytes = freezed,
+    Object? pendingPhotoFilename = freezed,
+    Object? photoMarkedForRemoval = null,
     Object? unitOfMeasurement = null,
     Object? taxRate = freezed,
     Object? comment = freezed,
@@ -156,6 +184,22 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
                       as String?,
+            photo: freezed == photo
+                ? _value.photo
+                : photo // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            pendingPhotoBytes: freezed == pendingPhotoBytes
+                ? _value.pendingPhotoBytes
+                : pendingPhotoBytes // ignore: cast_nullable_to_non_nullable
+                      as Uint8List?,
+            pendingPhotoFilename: freezed == pendingPhotoFilename
+                ? _value.pendingPhotoFilename
+                : pendingPhotoFilename // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            photoMarkedForRemoval: null == photoMarkedForRemoval
+                ? _value.photoMarkedForRemoval
+                : photoMarkedForRemoval // ignore: cast_nullable_to_non_nullable
+                      as bool,
             unitOfMeasurement: null == unitOfMeasurement
                 ? _value.unitOfMeasurement
                 : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
@@ -243,6 +287,10 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     String? model,
     String? barCode,
     String? location,
+    String? photo,
+    Uint8List? pendingPhotoBytes,
+    String? pendingPhotoFilename,
+    bool photoMarkedForRemoval,
     String unitOfMeasurement,
     String? taxRate,
     String? comment,
@@ -283,6 +331,10 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? model = freezed,
     Object? barCode = freezed,
     Object? location = freezed,
+    Object? photo = freezed,
+    Object? pendingPhotoBytes = freezed,
+    Object? pendingPhotoFilename = freezed,
+    Object? photoMarkedForRemoval = null,
     Object? unitOfMeasurement = null,
     Object? taxRate = freezed,
     Object? comment = freezed,
@@ -330,6 +382,22 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
             ? _value.location
             : location // ignore: cast_nullable_to_non_nullable
                   as String?,
+        photo: freezed == photo
+            ? _value.photo
+            : photo // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        pendingPhotoBytes: freezed == pendingPhotoBytes
+            ? _value.pendingPhotoBytes
+            : pendingPhotoBytes // ignore: cast_nullable_to_non_nullable
+                  as Uint8List?,
+        pendingPhotoFilename: freezed == pendingPhotoFilename
+            ? _value.pendingPhotoFilename
+            : pendingPhotoFilename // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        photoMarkedForRemoval: null == photoMarkedForRemoval
+            ? _value.photoMarkedForRemoval
+            : photoMarkedForRemoval // ignore: cast_nullable_to_non_nullable
+                  as bool,
         unitOfMeasurement: null == unitOfMeasurement
             ? _value.unitOfMeasurement
             : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
@@ -410,6 +478,10 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.model,
     this.barCode,
     this.location,
+    this.photo,
+    this.pendingPhotoBytes,
+    this.pendingPhotoFilename,
+    this.photoMarkedForRemoval = false,
     this.unitOfMeasurement = '',
     this.taxRate,
     this.comment,
@@ -444,6 +516,31 @@ class _$ProductFormStateImpl implements _ProductFormState {
   final String? barCode;
   @override
   final String? location;
+
+  /// The product's currently-saved photo URL (FR-001), loaded via
+  /// [loadForEdit]. `null` in create mode until a photo is staged
+  /// (data-model.md "ProductFormState").
+  @override
+  final String? photo;
+
+  /// In-memory bytes of a newly-picked image file, staged but not yet
+  /// uploaded (FR-010 — applies only on save). `null` if nothing has been
+  /// picked since the form was opened/loaded (data-model.md
+  /// "ProductFormState").
+  @override
+  final Uint8List? pendingPhotoBytes;
+
+  /// Original filename of [pendingPhotoBytes], used only for the
+  /// upload's multipart filename.
+  @override
+  final String? pendingPhotoFilename;
+
+  /// `true` if the user chose "remove photo" since the form was
+  /// opened/loaded, and no new photo has been picked since. Mutually
+  /// exclusive with a non-null [pendingPhotoBytes].
+  @override
+  @JsonKey()
+  final bool photoMarkedForRemoval;
   @override
   @JsonKey()
   final String unitOfMeasurement;
@@ -501,7 +598,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
 
   @override
   String toString() {
-    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -518,6 +615,15 @@ class _$ProductFormStateImpl implements _ProductFormState {
             (identical(other.barCode, barCode) || other.barCode == barCode) &&
             (identical(other.location, location) ||
                 other.location == location) &&
+            (identical(other.photo, photo) || other.photo == photo) &&
+            const DeepCollectionEquality().equals(
+              other.pendingPhotoBytes,
+              pendingPhotoBytes,
+            ) &&
+            (identical(other.pendingPhotoFilename, pendingPhotoFilename) ||
+                other.pendingPhotoFilename == pendingPhotoFilename) &&
+            (identical(other.photoMarkedForRemoval, photoMarkedForRemoval) ||
+                other.photoMarkedForRemoval == photoMarkedForRemoval) &&
             (identical(other.unitOfMeasurement, unitOfMeasurement) ||
                 other.unitOfMeasurement == unitOfMeasurement) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
@@ -558,6 +664,10 @@ class _$ProductFormStateImpl implements _ProductFormState {
     model,
     barCode,
     location,
+    photo,
+    const DeepCollectionEquality().hash(pendingPhotoBytes),
+    pendingPhotoFilename,
+    photoMarkedForRemoval,
     unitOfMeasurement,
     taxRate,
     comment,
@@ -597,6 +707,10 @@ abstract class _ProductFormState implements ProductFormState {
     final String? model,
     final String? barCode,
     final String? location,
+    final String? photo,
+    final Uint8List? pendingPhotoBytes,
+    final String? pendingPhotoFilename,
+    final bool photoMarkedForRemoval,
     final String unitOfMeasurement,
     final String? taxRate,
     final String? comment,
@@ -629,6 +743,30 @@ abstract class _ProductFormState implements ProductFormState {
   String? get barCode;
   @override
   String? get location;
+
+  /// The product's currently-saved photo URL (FR-001), loaded via
+  /// [loadForEdit]. `null` in create mode until a photo is staged
+  /// (data-model.md "ProductFormState").
+  @override
+  String? get photo;
+
+  /// In-memory bytes of a newly-picked image file, staged but not yet
+  /// uploaded (FR-010 — applies only on save). `null` if nothing has been
+  /// picked since the form was opened/loaded (data-model.md
+  /// "ProductFormState").
+  @override
+  Uint8List? get pendingPhotoBytes;
+
+  /// Original filename of [pendingPhotoBytes], used only for the
+  /// upload's multipart filename.
+  @override
+  String? get pendingPhotoFilename;
+
+  /// `true` if the user chose "remove photo" since the form was
+  /// opened/loaded, and no new photo has been picked since. Mutually
+  /// exclusive with a non-null [pendingPhotoBytes].
+  @override
+  bool get photoMarkedForRemoval;
   @override
   String get unitOfMeasurement;
   @override

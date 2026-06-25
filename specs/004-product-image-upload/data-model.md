@@ -8,6 +8,12 @@ No new domain entity is introduced. This feature extends the existing `Product` 
 |---|---|---|
 | `photo` | `String?` | **Now editable via this feature** (previously read-only). A fully-resolved, ready-to-fetch URL string already returned by the backend in every `ProductResponse` (research.md §1) — never a bare filename the client must resolve. `null` means no photo; a non-`null` value (including the backend's own default placeholder URL) is rendered directly. No change to the `Product.fromResponse` mapping — `photo` already maps through unchanged. |
 
+## ProductListItem (`lib/features/catalog/domain/entities/product_list_item.dart`) — new field
+
+| Field | Type | Notes |
+|---|---|---|
+| `photo` | `String?` | A fully-resolved, ready-to-fetch photo URL, same shape as `Product.photo`. mbe-api's list-row projection initially had no `photo` field (discovered during implementation, not anticipated in research.md/plan.md — tracked as [mictlanix/mbe-api#71](https://github.com/mictlanix/mbe-api/issues/71)); that's now resolved, and `ProductListItem.fromResponse` maps it directly. |
+
 ## ProductFormState (`lib/features/catalog/presentation/product_form_controller.dart`) — new fields
 
 Local UI state only (constitution §II), not persisted. Represents an in-progress, *unsaved* photo change so FR-010 ("changes apply only on save") holds — selecting or removing a photo updates this state but does not call the API until the surrounding form is submitted.

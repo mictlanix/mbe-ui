@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide ProductListItem;
@@ -17,8 +20,11 @@ final productRepositoryProvider = Provider<ProductRepository>((ref) {
 /// `ProductRepository` backed by the generated `mbe_api_client` `ProductsApi`
 /// (contracts/mbe-api-products.md).
 class ProductRepositoryImpl implements ProductRepository {
-  ProductRepositoryImpl(Dio dio) : _api = ProductsApi(dio, standardSerializers);
+  ProductRepositoryImpl(Dio dio)
+      : _dio = dio,
+        _api = ProductsApi(dio, standardSerializers);
 
+  final Dio _dio;
   final ProductsApi _api;
 
   @override
@@ -162,6 +168,51 @@ class ProductRepositoryImpl implements ProductRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<Product> uploadPhoto({
+    required int productId,
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    try {
+      final response = await _dio.post<Object>(
+        '/api/v1/products/$productId/image',
+        data: FormData.fromMap({
+          'file': MultipartFile.fromBytes(bytes, filename: filename),
+        }),
+      );
+      return Product.fromResponse(_deserializeProductResponse(response));
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<Product> removePhoto({required int productId}) async {
+    try {
+      final response = await _dio.put<Object>(
+        '/api/v1/products/$productId',
+        data: {'photo': null},
+      );
+      return Product.fromResponse(_deserializeProductResponse(response));
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+}
+
+/// Mirrors the generated client's own response-deserialization pattern
+/// (`products_api.dart`'s `getProductApiV1ProductsProductIdGet`, etc.) for
+/// the two raw `dio` calls above, since they bypass the generated wrapper
+/// methods (research.md §3) but still want a `ProductResponse` back.
+ProductResponse _deserializeProductResponse(Response<Object?> response) {
+  final raw = response.data;
+  if (raw == null) throw const AppError.server();
+  return standardSerializers.deserialize(
+    raw,
+    specifiedType: const FullType(ProductResponse),
+  ) as ProductResponse;
 }
 
 /// `tax_rate` is `anyOf: [string, number]` in mbe-api's OpenAPI schema

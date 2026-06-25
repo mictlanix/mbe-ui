@@ -333,6 +333,155 @@ void main() {
       expect(sentBody.containsKey('name'), isFalse);
     });
   });
+
+  group('ProductRepositoryImpl.uploadPhoto', () {
+    test('200 sends a multipart "file" field and returns the updated '
+        'Product', () async {
+      late RequestOptions sentOptions;
+      final repository = _repositoryWith((options) async {
+        sentOptions = options;
+        return ResponseBody.fromString(
+          jsonEncode({
+            ..._productResponseJson(),
+            'photo': 'http://test/images/abc123.png',
+          }),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final product = await repository.uploadPhoto(
+        productId: 1,
+        bytes: Uint8List.fromList([1, 2, 3]),
+        filename: 'photo.png',
+      );
+
+      expect(product.photo, 'http://test/images/abc123.png');
+      expect(sentOptions.path, '/api/v1/products/1/image');
+      expect(sentOptions.method, 'POST');
+      final formData = sentOptions.data as FormData;
+      expect(formData.files.single.key, 'file');
+      expect(formData.files.single.value.filename, 'photo.png');
+    });
+
+    test('404 maps to AppError.notFound', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Product not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.uploadPhoto(
+          productId: 999,
+          bytes: Uint8List.fromList([1]),
+          filename: 'photo.png',
+        ),
+        throwsA(const AppError.notFound('Product not found')),
+      );
+    });
+
+    test('422 unsupported type / oversized file maps to '
+        'AppError.validation', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'File exceeds the 2 MB limit'}),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.uploadPhoto(
+          productId: 1,
+          bytes: Uint8List.fromList([1]),
+          filename: 'photo.png',
+        ),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+
+    test('a connection failure maps to AppError.network', () async {
+      final repository = _repositoryWith(
+        (options) async => throw DioException(
+          requestOptions: options,
+          type: DioExceptionType.connectionError,
+          error: 'Connection dropped mid-upload',
+        ),
+      );
+
+      await expectLater(
+        () => repository.uploadPhoto(
+          productId: 1,
+          bytes: Uint8List.fromList([1]),
+          filename: 'photo.png',
+        ),
+        throwsA(isA<NetworkError>()),
+      );
+    });
+  });
+
+  group('ProductRepositoryImpl.removePhoto', () {
+    test('200 sends {"photo": null} and returns the updated Product',
+        () async {
+      late Object? sentData;
+      late String sentPath;
+      late String sentMethod;
+      final repository = _repositoryWith((options) async {
+        sentData = options.data;
+        sentPath = options.path;
+        sentMethod = options.method;
+        return ResponseBody.fromString(
+          jsonEncode({..._productResponseJson(), 'photo': null}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final product = await repository.removePhoto(productId: 1);
+
+      expect(product.photo, isNull);
+      expect(sentPath, '/api/v1/products/1');
+      expect(sentMethod, 'PUT');
+      final sentBody = sentData is String
+          ? jsonDecode(sentData as String) as Map<String, Object?>
+          : sentData as Map<String, Object?>;
+      expect(sentBody.containsKey('photo'), isTrue);
+      expect(sentBody['photo'], isNull);
+    });
+
+    test('404 maps to AppError.notFound', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Product not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.removePhoto(productId: 999),
+        throwsA(const AppError.notFound('Product not found')),
+      );
+    });
+
+    test('a connection failure maps to AppError.network', () async {
+      final repository = _repositoryWith(
+        (options) async => throw DioException(
+          requestOptions: options,
+          type: DioExceptionType.connectionError,
+          error: 'Connection refused',
+        ),
+      );
+
+      await expectLater(
+        () => repository.removePhoto(productId: 1),
+        throwsA(isA<NetworkError>()),
+      );
+    });
+  });
 }
 
 Map<String, Object?> _productResponseJson() => {

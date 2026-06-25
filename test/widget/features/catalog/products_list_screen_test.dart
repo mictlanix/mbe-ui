@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -48,6 +49,7 @@ const _testProducts = [
     unitOfMeasurement: 'PCE',
     taxRate: '0.16',
     deactivated: false,
+    photo: 'http://test/images/widget.png',
   ),
   ProductListItem(
     productId: 2,
@@ -120,6 +122,25 @@ void main() {
     expect(find.byKey(const Key('inactive_badge')), findsOneWidget);
     expect(find.text('Inactive'), findsOneWidget);
   });
+
+  testWidgets(
+    'shows a ProductPhoto per row, with the placeholder for a product with '
+    'no photo (FR-001, FR-002)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      final photos = tester.widgetList<ProductPhoto>(
+        find.descendant(
+          of: find.byKey(const Key('products_table')),
+          matching: find.byType(ProductPhoto),
+        ),
+      ).toList();
+
+      expect(photos, hasLength(_testProducts.length));
+      expect(photos[0].photoUrl, 'http://test/images/widget.png');
+      expect(photos[1].photoUrl, isNull);
+    },
+  );
 
   testWidgets('shows the search field and filter chips (FR-001, FR-002)', (
     tester,

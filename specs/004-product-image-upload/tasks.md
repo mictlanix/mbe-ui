@@ -40,7 +40,7 @@ repository root. This feature extends `lib/features/catalog/` (created by
 **Purpose**: Add the one new dependency this feature needs before any code
 references it.
 
-- [ ] T001 Add `file_picker` to `pubspec.yaml` (research.md §4) and run
+- [X] T001 Add `file_picker` to `pubspec.yaml` (research.md §4) and run
   `flutter pub get`.
 
 **Checkpoint**: `file_picker` resolves and is importable.
@@ -55,21 +55,21 @@ US2/US3 need both display-in-preview and the upload/remove calls).
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 [P] Create the shared `ProductPhoto` widget (`Image.network` with
+- [X] T002 [P] Create the shared `ProductPhoto` widget (`Image.network` with
   an `errorBuilder` falling back to a placeholder; renders the placeholder
   directly when given a `null` URL — research.md §5, data-model.md "Derived
   display rule") in `lib/core/widgets/product_photo.dart`.
-- [ ] T003 [P] Widget test for `ProductPhoto`: renders the network image for
+- [X] T003 [P] Widget test for `ProductPhoto`: renders the network image for
   a non-null URL, renders the placeholder for a `null` URL, and renders the
   placeholder when the network image fails to load, in
   `test/widget/core/widgets/product_photo_test.dart` (write first, confirm
   it fails before T002 lands).
-- [ ] T004 [P] Add `uploadPhoto({required int productId, required Uint8List
+- [X] T004 [P] Add `uploadPhoto({required int productId, required Uint8List
   bytes, required String filename}) -> Product` and `removePhoto({required
   int productId}) -> Product` to the `ProductRepository` interface in
   `lib/features/catalog/domain/repositories/product_repository.dart`
   (data-model.md "No new repository entity, two new repository operations").
-- [ ] T005 Implement `ProductRepositoryImpl.uploadPhoto` (raw
+- [X] T005 Implement `ProductRepositoryImpl.uploadPhoto` (raw
   `dio.post('/api/v1/products/$productId/image', data: FormData.fromMap({...
   MultipartFile.fromBytes(bytes, filename: filename) ...}))`) and
   `.removePhoto` (raw `dio.put('/api/v1/products/$productId', data:
@@ -77,7 +77,7 @@ US2/US3 need both display-in-preview and the upload/remove calls).
   `lib/features/catalog/data/product_repository_impl.dart`, mapping errors
   through the existing `_toAppError(DioException)` helper, per
   contracts/mbe-api-products-photo.md (depends on T004).
-- [ ] T006 [P] `ProductRepositoryImpl.uploadPhoto`/`.removePhoto` tests
+- [X] T006 [P] `ProductRepositoryImpl.uploadPhoto`/`.removePhoto` tests
   covering `200`, `404`, `422` (unsupported type / oversized file, upload
   only), and a network/timeout error → `NetworkError` mapping (spec.md Edge
   Cases — interrupted upload), → `AppError` mapping, and asserting the raw
@@ -106,34 +106,41 @@ displays after simulating a broken photo URL.
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Widget test for `ProductsListScreen`: each row renders
-  a `ProductPhoto` for its `ProductListItem.photo` value (including the
-  placeholder-for-null case) in
+- [X] T007 [P] [US1] Widget test for `ProductsListScreen`: each row renders
+  a `ProductPhoto` for its `ProductListItem.photo` value, which is always
+  `null` today since mbe-api's list endpoint doesn't return a photo yet
+  (placeholder-for-null case only — see T010; [mictlanix/mbe-api#71](https://github.com/mictlanix/mbe-api/issues/71)) in
   `test/widget/features/catalog/products_list_screen_test.dart` (extends the
   002-product-catalog file; write first, confirm it fails).
-- [ ] T008 [P] [US1] Widget test for `ProductDetailScreen` (read/view mode):
+- [X] T008 [P] [US1] Widget test for `ProductDetailScreen` (read/view mode):
   renders a `ProductPhoto` for the loaded product's `photo` value in
   `test/widget/features/catalog/product_detail_screen_test.dart` (extends
   the 002-product-catalog file; write first, confirm it fails).
-- [ ] T009 [P] [US1] Integration test: open `/products` and confirm the
-  product with a photo shows it in the list row, the product with no photo
-  shows the placeholder in the list row, and both render correctly again on
-  their respective detail screens, in
+- [X] T009 [P] [US1] Integration test: open `/products` and confirm every
+  list row shows the placeholder (mbe-api#71 — list rows have no photo
+  data yet), then open a product with a photo and a product without one
+  and confirm the detail screen shows the real photo / placeholder
+  respectively, in
   `test/integration/product_photo_flow_test.dart` (new file; quickstart
-  Story 1 scenarios 1-2; write first, confirm it fails).
+  Story 1 scenarios 1-2, adjusted for the list-view limitation; write
+  first, confirm it fails).
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Add `photo` to the `ProductListItem` entity and its
-  `ProductListItem.fromResponse` mapping in
-  `lib/features/catalog/domain/entities/product_list_item.dart` (the field
-  already exists on the backend's list-row projection; data-model.md notes
-  no entity shape change beyond exposing this field — depends on T002).
-- [ ] T011 [US1] Render a `ProductPhoto` per row in `ProductsListScreen`'s
-  `DataTableView` column definition in
+- [X] T010 [US1] Add a `photo` field to the `ProductListItem` entity,
+  mapped from `ProductListItem.fromResponse` as `null` for now (the
+  backend's list-row projection has no `photo` field —
+  [mictlanix/mbe-api#71](https://github.com/mictlanix/mbe-api/issues/71); this keeps the entity forward-compatible so
+  only the one-line mapping needs to change once that field ships, not the
+  screen) in
+  `lib/features/catalog/domain/entities/product_list_item.dart` (depends on
+  T002).
+- [X] T011 [US1] Render a `ProductPhoto` per row (always the placeholder
+  today, per T010) in `ProductsListScreen`'s `DataTableView` column
+  definition in
   `lib/features/catalog/presentation/products_list_screen.dart` (depends on
   T002, T010).
-- [ ] T012 [US1] Render a `ProductPhoto` for the loaded product's `photo` on
+- [X] T012 [US1] Render a `ProductPhoto` for the loaded product's `photo` on
   `ProductDetailScreen` (view/edit mode, read-only positioning — no
   upload/replace/remove controls yet, those are US2/US3) in
   `lib/features/catalog/presentation/product_detail_screen.dart` (depends on
@@ -142,6 +149,15 @@ displays after simulating a broken photo URL.
 **Checkpoint**: User Story 1 is fully functional and independently
 testable — every product's photo or placeholder renders correctly in both
 the list and detail views, with no edit capability required yet.
+
+**Update**: [mictlanix/mbe-api#71](https://github.com/mictlanix/mbe-api/issues/71) (referenced in T007/T009/T010/T011 below as an
+open limitation at the time those tasks were implemented) has since been
+resolved — mbe-api's list endpoint now resolves `photo` to a full URL per
+row, mirroring the detail endpoint. `ProductListItem.fromResponse` was
+updated to map it directly (no longer hardcoded to `null`), and the
+list-screen/integration tests were updated accordingly. The task
+descriptions below are left as written to record what was actually true
+at implementation time.
 
 ---
 
@@ -159,14 +175,14 @@ file type, oversized file, no-Update-privilege visibility check.
 
 ### Tests for User Story 2
 
-- [ ] T013 [P] [US2] `ProductFormController` tests: `photoPicked(bytes,
+- [X] T013 [P] [US2] `ProductFormController` tests: `photoPicked(bytes,
   filename)` stages `pendingPhotoBytes`/`pendingPhotoFilename` and clears
   `photoMarkedForRemoval`; client-side validation rejects a non-JPEG/PNG
   file or one over 2 MB with a field error and does not stage it; `loadForEdit`
   populates `photo` from the loaded `Product` in
   `test/unit/features/catalog/product_form_controller_test.dart` (extends
   the 002-product-catalog file; write first, confirm it fails).
-- [ ] T014 [P] [US2] `ProductFormController` tests: `submitCreate()` creates
+- [X] T014 [P] [US2] `ProductFormController` tests: `submitCreate()` creates
   the product first, then — if a photo is staged — calls
   `ProductRepository.uploadPhoto` with the newly-returned `productId`, and
   surfaces an upload-specific, non-blocking error if that second call fails
@@ -174,13 +190,13 @@ file type, oversized file, no-Update-privilege visibility check.
   (create)") in
   `test/unit/features/catalog/product_form_controller_test.dart` (same file
   as T013; write first, confirm it fails).
-- [ ] T015 [P] [US2] Widget test for `ProductDetailScreen`: an upload/pick
+- [X] T015 [P] [US2] Widget test for `ProductDetailScreen`: an upload/pick
   control is shown for a no-photo product only when `can(products, update)`
   is true, hidden entirely otherwise (FR-008, FR-009); picking an invalid
   file shows a field error and does not call the repository, in
   `test/widget/features/catalog/product_detail_screen_test.dart` (extends
   the file from T008; write first, confirm it fails).
-- [ ] T016 [US2] Integration test: with the Update-privilege account, pick a
+- [X] T016 [US2] Integration test: with the Update-privilege account, pick a
   valid JPEG/PNG for a no-photo product, save, and confirm the photo appears
   on the detail screen and (after returning) in the list row; attempt an
   unsupported file type and confirm rejection with no change; attempt an
@@ -191,14 +207,14 @@ file type, oversized file, no-Update-privilege visibility check.
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Add `photo`, `pendingPhotoBytes`, `pendingPhotoFilename`,
+- [X] T017 [US2] Add `photo`, `pendingPhotoBytes`, `pendingPhotoFilename`,
   `photoMarkedForRemoval` fields to `ProductFormState`, populate `photo` in
   `loadForEdit`, and add a `photoPicked(Uint8List bytes, String filename)`
   action with client-side type (JPEG/PNG) and size (≤2 MB) validation
   (FR-006, FR-007) in
   `lib/features/catalog/presentation/product_form_controller.dart`
   (data-model.md "ProductFormState"; depends on T013).
-- [ ] T018 [US2] Extend `submitCreate()` to, after a successful product
+- [X] T018 [US2] Extend `submitCreate()` to, after a successful product
   creation, call `ProductRepository.uploadPhoto` when `pendingPhotoBytes` is
   set, using the newly-created product's id; surface a distinct, non-
   blocking error on upload failure without un-marking the create as `saved`
@@ -210,7 +226,7 @@ file type, oversized file, no-Update-privilege visibility check.
   (FR-011, SC-001) rather than the pre-upload state in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T005, T017).
-- [ ] T019 [US2] Extend `submitUpdate()` to, after the existing field `PUT`
+- [X] T019 [US2] Extend `submitUpdate()` to, after the existing field `PUT`
   succeeds, call `ProductRepository.uploadPhoto` when `pendingPhotoBytes` is
   set (data-model.md "Save (edit)"). **Add a second
   `ref.invalidate(productsListControllerProvider)` call after the upload
@@ -220,7 +236,7 @@ file type, oversized file, no-Update-privilege visibility check.
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T005, T017; T019 and T018 touch the same file as each other and as
   US3's T024 — sequence, do not parallelize).
-- [ ] T020 [US2] Add a file-picker (`file_picker`) upload control to
+- [X] T020 [US2] Add a file-picker (`file_picker`) upload control to
   `ProductDetailScreen`, calling `photoPicked`, gated by
   `can(SystemObject.products, AccessRight.update)` — shown whenever there is
   no current/staged photo (FR-003, FR-008, FR-009) in
@@ -246,7 +262,7 @@ Read-only account.
 
 ### Tests for User Story 3
 
-- [ ] T021 [P] [US3] `ProductFormController` tests: `photoRemoveRequested()`
+- [X] T021 [P] [US3] `ProductFormController` tests: `photoRemoveRequested()`
   sets `photoMarkedForRemoval` and clears any staged
   `pendingPhotoBytes`/`pendingPhotoFilename`; calling `photoPicked` after a
   removal request clears `photoMarkedForRemoval` again (mutually exclusive
@@ -254,18 +270,18 @@ Read-only account.
   no current photo and nothing staged, in
   `test/unit/features/catalog/product_form_controller_test.dart` (extends
   T013/T014's file; write first, confirm it fails).
-- [ ] T022 [P] [US3] `ProductFormController` tests: `submitUpdate()` calls
+- [X] T022 [P] [US3] `ProductFormController` tests: `submitUpdate()` calls
   `ProductRepository.removePhoto` when `photoMarkedForRemoval` is true and
   no new photo is staged (data-model.md "Save (edit)") in
   `test/unit/features/catalog/product_form_controller_test.dart` (same file
   as T021; write first, confirm it fails).
-- [ ] T023 [P] [US3] Widget test for `ProductDetailScreen`: replace and
+- [X] T023 [P] [US3] Widget test for `ProductDetailScreen`: replace and
   remove controls render for a product with a photo only when
   `can(products, update)` is true; the remove control is absent/disabled
   for a product with no photo; neither control is shown for a Read-only
   account, in `test/widget/features/catalog/product_detail_screen_test.dart`
   (extends T015's file; write first, confirm it fails).
-- [ ] T024 [US3] Integration test: with the Update-privilege account,
+- [X] T024 [US3] Integration test: with the Update-privilege account,
   replace an existing photo with a different valid image and confirm it
   updates everywhere the product is displayed; remove an existing photo and
   confirm the placeholder returns everywhere; confirm the Read-only account
@@ -275,14 +291,14 @@ Read-only account.
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Add a `photoRemoveRequested()` action to
+- [X] T025 [US3] Add a `photoRemoveRequested()` action to
   `ProductFormController` (sets `photoMarkedForRemoval`, clears
   `pendingPhotoBytes`/`pendingPhotoFilename`; no-ops when there is no
   current photo and nothing staged) and update `photoPicked` to clear
   `photoMarkedForRemoval` (data-model.md "State transitions") in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T017).
-- [ ] T026 [US3] Extend `submitUpdate()` to call
+- [X] T026 [US3] Extend `submitUpdate()` to call
   `ProductRepository.removePhoto` when `photoMarkedForRemoval` is true and
   no new photo is staged, else `uploadPhoto` as added in T019, else neither
   (data-model.md "Save (edit)"). The `removePhoto` branch must also trigger
@@ -292,7 +308,7 @@ Read-only account.
   SC-005) in
   `lib/features/catalog/presentation/product_form_controller.dart` (depends
   on T005, T019, T025; sequence after T019, same file).
-- [ ] T027 [US3] Add replace and remove controls to `ProductDetailScreen`
+- [X] T027 [US3] Add replace and remove controls to `ProductDetailScreen`
   for a product/staged-state that currently has a photo, gated by
   `can(SystemObject.products, AccessRight.update)` — replace reuses the
   file-picker flow from T020 (calls `photoPicked`), remove calls
@@ -311,13 +327,13 @@ end-to-end with deny-by-default RBAC enforced throughout.
 
 **Purpose**: Final consistency pass across all three stories.
 
-- [ ] T028 [P] Run `dart run build_runner build --delete-conflicting-outputs`
+- [X] T028 [P] Run `dart run build_runner build --delete-conflicting-outputs`
   and resolve any `freezed`/`riverpod_generator` codegen errors introduced
   by `ProductFormState`'s new fields.
-- [ ] T029 [P] Add/update `es-MX` localized strings (`.arb` files under
+- [X] T029 [P] Add/update `es-MX` localized strings (`.arb` files under
   `lib/l10n/`) for all new upload/replace/remove affordances and error
   messages introduced in Phases 3-5 (constitution §V).
-- [ ] T030 Run `flutter analyze` across `lib/features/catalog/` and
+- [X] T030 Run `flutter analyze` across `lib/features/catalog/` and
   `lib/core/widgets/product_photo.dart` and resolve all warnings/errors.
 - [ ] T031 Execute [quickstart.md](./quickstart.md) end-to-end against a
   local mbe-api instance (Stories 1-3 validation scenarios plus the Edge
