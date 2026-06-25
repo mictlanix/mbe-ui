@@ -6,13 +6,13 @@ No new domain entity is introduced. This feature extends the existing `Product` 
 
 | Field | Type | Notes |
 |---|---|---|
-| `photo` | `String?` | **Now editable via this feature** (previously read-only). A fully-resolved, ready-to-fetch URL string already returned by the backend in every `ProductResponse` (research.md §1) — never a bare filename the client must resolve. `null` means no photo; a non-`null` value (including the backend's own default placeholder URL) is rendered directly. No change to the `Product.fromResponse` mapping — `photo` already maps through unchanged. |
+| `photo` | `String?` | **Now editable via this feature** (previously read-only). Mapped through `resolvePhotoUrl()` (research.md §6) into an absolute, ready-to-fetch URL — the raw backend value may be an absolute URL, a root-relative path, or (for some legacy-migrated rows) a `~/Photos/<file>` virtual-root path, none of which `Product.fromResponse` passes through unchanged anymore. `null` means no photo; a non-`null` value (including the backend's own default placeholder URL) is rendered directly. |
 
 ## ProductListItem (`lib/features/catalog/domain/entities/product_list_item.dart`) — new field
 
 | Field | Type | Notes |
 |---|---|---|
-| `photo` | `String?` | A fully-resolved, ready-to-fetch photo URL, same shape as `Product.photo`. mbe-api's list-row projection initially had no `photo` field (discovered during implementation, not anticipated in research.md/plan.md — tracked as [mictlanix/mbe-api#71](https://github.com/mictlanix/mbe-api/issues/71)); that's now resolved, and `ProductListItem.fromResponse` maps it directly. |
+| `photo` | `String?` | An absolute, ready-to-fetch photo URL, same shape as `Product.photo` — also mapped through `resolvePhotoUrl()` (research.md §6). mbe-api's list-row projection initially had no `photo` field (discovered during implementation, not anticipated in research.md/plan.md — tracked as [mictlanix/mbe-api#71](https://github.com/mictlanix/mbe-api/issues/71)); that's now resolved. |
 
 ## ProductFormState (`lib/features/catalog/presentation/product_form_controller.dart`) — new fields
 

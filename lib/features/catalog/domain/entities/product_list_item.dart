@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/core/network/photo_url.dart';
+
 part 'product_list_item.freezed.dart';
 
 /// A row in the products list screen (data-model.md "ProductListItem"),
@@ -33,7 +35,7 @@ class ProductListItem with _$ProductListItem {
       unitOfMeasurement: item.unitOfMeasurement,
       taxRate: item.taxRate,
       deactivated: item.deactivated,
-      photo: item.photo,
+      photo: resolvePhotoUrl(item.photo),
     );
   }
 }
