@@ -53,6 +53,7 @@ import 'package:mbe_api_client/src/model/list_response_point_sale_response.dart'
 import 'package:mbe_api_client/src/model/list_response_price_list_response.dart';
 import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_production_site_response.dart';
+import 'package:mbe_api_client/src/model/list_response_sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/list_response_store_response.dart';
 import 'package:mbe_api_client/src/model/list_response_supplier_response.dart';
 import 'package:mbe_api_client/src/model/list_response_taxpayer_recipient_response.dart';
@@ -85,6 +86,7 @@ import 'package:mbe_api_client/src/model/production_site_update.dart';
 import 'package:mbe_api_client/src/model/rate.dart';
 import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
+import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/store_create.dart';
 import 'package:mbe_api_client/src/model/store_response.dart';
 import 'package:mbe_api_client/src/model/store_update.dart';
@@ -156,6 +158,7 @@ part 'serializers.g.dart';
   ListResponsePriceListResponse,
   ListResponseProductListItem,
   ListResponseProductionSiteResponse,
+  ListResponseSatCatalogResponse,
   ListResponseStoreResponse,
   ListResponseSupplierResponse,
   ListResponseTaxpayerRecipientResponse,
@@ -188,6 +191,7 @@ part 'serializers.g.dart';
   Rate,
   Rate1,
   RecoverPasswordAdminResponse,
+  SatCatalogResponse,
   StoreCreate,
   StoreResponse,
   StoreUpdate,

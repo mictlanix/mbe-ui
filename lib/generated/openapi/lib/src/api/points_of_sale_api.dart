@@ -259,6 +259,8 @@ class PointsOfSaleApi {
   /// 
   ///
   /// Parameters:
+  /// * [store] 
+  /// * [warehouse] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -271,6 +273,8 @@ class PointsOfSaleApi {
   /// Returns a [Future] containing a [Response] with a [ListResponsePointSaleResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponsePointSaleResponse>> listPointsOfSaleApiV1PointsOfSaleGet({ 
+    int? store,
+    int? warehouse,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -299,6 +303,8 @@ class PointsOfSaleApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (store != null) r'store': encodeQueryParameter(_serializers, store, const FullType(int)),
+      if (warehouse != null) r'warehouse': encodeQueryParameter(_serializers, warehouse, const FullType(int)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

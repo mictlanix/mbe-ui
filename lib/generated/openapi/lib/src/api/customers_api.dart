@@ -261,6 +261,8 @@ class CustomersApi {
   /// Parameters:
   /// * [search] 
   /// * [disabled] 
+  /// * [priceList] 
+  /// * [salesperson] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -275,6 +277,8 @@ class CustomersApi {
   Future<Response<ListResponseCustomerListItem>> listCustomersApiV1CustomersGet({ 
     String? search,
     bool? disabled,
+    int? priceList,
+    int? salesperson,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -305,6 +309,8 @@ class CustomersApi {
     final _queryParameters = <String, dynamic>{
       if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (disabled != null) r'disabled': encodeQueryParameter(_serializers, disabled, const FullType(bool)),
+      if (priceList != null) r'price_list': encodeQueryParameter(_serializers, priceList, const FullType(int)),
+      if (salesperson != null) r'salesperson': encodeQueryParameter(_serializers, salesperson, const FullType(int)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

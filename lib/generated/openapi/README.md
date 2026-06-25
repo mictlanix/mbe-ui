@@ -126,6 +126,38 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**mergeProductsApiV1ProductsMergePost**](doc/ProductsApi.md#mergeproductsapiv1productsmergepost) | **POST** /api/v1/products/merge | Merge Products
 [*ProductsApi*](doc/ProductsApi.md) | [**updateProductApiV1ProductsProductIdPut**](doc/ProductsApi.md#updateproductapiv1productsproductidput) | **PUT** /api/v1/products/{product_id} | Update Product
 [*ProductsApi*](doc/ProductsApi.md) | [**uploadProductImageApiV1ProductsProductIdImagePost**](doc/ProductsApi.md#uploadproductimageapiv1productsproductidimagepost) | **POST** /api/v1/products/{product_id}/image | Upload Product Image
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCfdiUsagesApiV1SatCfdiUsagesIdGet**](doc/SatCatalogsApi.md#getcfdiusagesapiv1satcfdiusagesidget) | **GET** /api/v1/sat/cfdi-usages/{id} | Get Cfdi Usages
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCfdiUsagesApiV1SatCfdiUsagesIdGet_0**](doc/SatCatalogsApi.md#getcfdiusagesapiv1satcfdiusagesidget_0) | **GET** /api/v1/sat/cfdi-usages/{id} | Get Cfdi Usages
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCountriesApiV1SatCountriesIdGet**](doc/SatCatalogsApi.md#getcountriesapiv1satcountriesidget) | **GET** /api/v1/sat/countries/{id} | Get Countries
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCountriesApiV1SatCountriesIdGet_0**](doc/SatCatalogsApi.md#getcountriesapiv1satcountriesidget_0) | **GET** /api/v1/sat/countries/{id} | Get Countries
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCurrenciesApiV1SatCurrenciesIdGet**](doc/SatCatalogsApi.md#getcurrenciesapiv1satcurrenciesidget) | **GET** /api/v1/sat/currencies/{id} | Get Currencies
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCurrenciesApiV1SatCurrenciesIdGet_0**](doc/SatCatalogsApi.md#getcurrenciesapiv1satcurrenciesidget_0) | **GET** /api/v1/sat/currencies/{id} | Get Currencies
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getPostalCodesApiV1SatPostalCodesIdGet**](doc/SatCatalogsApi.md#getpostalcodesapiv1satpostalcodesidget) | **GET** /api/v1/sat/postal-codes/{id} | Get Postal Codes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getPostalCodesApiV1SatPostalCodesIdGet_0**](doc/SatCatalogsApi.md#getpostalcodesapiv1satpostalcodesidget_0) | **GET** /api/v1/sat/postal-codes/{id} | Get Postal Codes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getProductServicesApiV1SatProductServicesIdGet**](doc/SatCatalogsApi.md#getproductservicesapiv1satproductservicesidget) | **GET** /api/v1/sat/product-services/{id} | Get Product Services
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getProductServicesApiV1SatProductServicesIdGet_0**](doc/SatCatalogsApi.md#getproductservicesapiv1satproductservicesidget_0) | **GET** /api/v1/sat/product-services/{id} | Get Product Services
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getReasonCancellationsApiV1SatReasonCancellationsIdGet**](doc/SatCatalogsApi.md#getreasoncancellationsapiv1satreasoncancellationsidget) | **GET** /api/v1/sat/reason-cancellations/{id} | Get Reason Cancellations
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getReasonCancellationsApiV1SatReasonCancellationsIdGet_0**](doc/SatCatalogsApi.md#getreasoncancellationsapiv1satreasoncancellationsidget_0) | **GET** /api/v1/sat/reason-cancellations/{id} | Get Reason Cancellations
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getTaxRegimesApiV1SatTaxRegimesIdGet**](doc/SatCatalogsApi.md#gettaxregimesapiv1sattaxregimesidget) | **GET** /api/v1/sat/tax-regimes/{id} | Get Tax Regimes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getTaxRegimesApiV1SatTaxRegimesIdGet_0**](doc/SatCatalogsApi.md#gettaxregimesapiv1sattaxregimesidget_0) | **GET** /api/v1/sat/tax-regimes/{id} | Get Tax Regimes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getUnitsOfMeasurementApiV1SatUnitsOfMeasurementIdGet**](doc/SatCatalogsApi.md#getunitsofmeasurementapiv1satunitsofmeasurementidget) | **GET** /api/v1/sat/units-of-measurement/{id} | Get Units Of Measurement
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getUnitsOfMeasurementApiV1SatUnitsOfMeasurementIdGet_0**](doc/SatCatalogsApi.md#getunitsofmeasurementapiv1satunitsofmeasurementidget_0) | **GET** /api/v1/sat/units-of-measurement/{id} | Get Units Of Measurement
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listCfdiUsagesApiV1SatCfdiUsagesGet**](doc/SatCatalogsApi.md#listcfdiusagesapiv1satcfdiusagesget) | **GET** /api/v1/sat/cfdi-usages | List Cfdi Usages
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listCfdiUsagesApiV1SatCfdiUsagesGet_0**](doc/SatCatalogsApi.md#listcfdiusagesapiv1satcfdiusagesget_0) | **GET** /api/v1/sat/cfdi-usages | List Cfdi Usages
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listCountriesApiV1SatCountriesGet**](doc/SatCatalogsApi.md#listcountriesapiv1satcountriesget) | **GET** /api/v1/sat/countries | List Countries
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listCountriesApiV1SatCountriesGet_0**](doc/SatCatalogsApi.md#listcountriesapiv1satcountriesget_0) | **GET** /api/v1/sat/countries | List Countries
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listCurrenciesApiV1SatCurrenciesGet**](doc/SatCatalogsApi.md#listcurrenciesapiv1satcurrenciesget) | **GET** /api/v1/sat/currencies | List Currencies
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listCurrenciesApiV1SatCurrenciesGet_0**](doc/SatCatalogsApi.md#listcurrenciesapiv1satcurrenciesget_0) | **GET** /api/v1/sat/currencies | List Currencies
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listPostalCodesApiV1SatPostalCodesGet**](doc/SatCatalogsApi.md#listpostalcodesapiv1satpostalcodesget) | **GET** /api/v1/sat/postal-codes | List Postal Codes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listPostalCodesApiV1SatPostalCodesGet_0**](doc/SatCatalogsApi.md#listpostalcodesapiv1satpostalcodesget_0) | **GET** /api/v1/sat/postal-codes | List Postal Codes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listProductServicesApiV1SatProductServicesGet**](doc/SatCatalogsApi.md#listproductservicesapiv1satproductservicesget) | **GET** /api/v1/sat/product-services | List Product Services
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listProductServicesApiV1SatProductServicesGet_0**](doc/SatCatalogsApi.md#listproductservicesapiv1satproductservicesget_0) | **GET** /api/v1/sat/product-services | List Product Services
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listReasonCancellationsApiV1SatReasonCancellationsGet**](doc/SatCatalogsApi.md#listreasoncancellationsapiv1satreasoncancellationsget) | **GET** /api/v1/sat/reason-cancellations | List Reason Cancellations
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listReasonCancellationsApiV1SatReasonCancellationsGet_0**](doc/SatCatalogsApi.md#listreasoncancellationsapiv1satreasoncancellationsget_0) | **GET** /api/v1/sat/reason-cancellations | List Reason Cancellations
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listTaxRegimesApiV1SatTaxRegimesGet**](doc/SatCatalogsApi.md#listtaxregimesapiv1sattaxregimesget) | **GET** /api/v1/sat/tax-regimes | List Tax Regimes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listTaxRegimesApiV1SatTaxRegimesGet_0**](doc/SatCatalogsApi.md#listtaxregimesapiv1sattaxregimesget_0) | **GET** /api/v1/sat/tax-regimes | List Tax Regimes
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
+[*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_0**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget_0) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
 [*StoresApi*](doc/StoresApi.md) | [**createStoreApiV1StoresPost**](doc/StoresApi.md#createstoreapiv1storespost) | **POST** /api/v1/stores | Create Store
 [*StoresApi*](doc/StoresApi.md) | [**deleteStoreApiV1StoresStoreIdDelete**](doc/StoresApi.md#deletestoreapiv1storesstoreiddelete) | **DELETE** /api/v1/stores/{store_id} | Delete Store
 [*StoresApi*](doc/StoresApi.md) | [**getStoreApiV1StoresStoreIdGet**](doc/StoresApi.md#getstoreapiv1storesstoreidget) | **GET** /api/v1/stores/{store_id} | Get Store
@@ -205,6 +237,7 @@ Class | Method | HTTP request | Description
  - [ListResponsePriceListResponse](doc/ListResponsePriceListResponse.md)
  - [ListResponseProductListItem](doc/ListResponseProductListItem.md)
  - [ListResponseProductionSiteResponse](doc/ListResponseProductionSiteResponse.md)
+ - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
  - [ListResponseStoreResponse](doc/ListResponseStoreResponse.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
  - [ListResponseTaxpayerRecipientResponse](doc/ListResponseTaxpayerRecipientResponse.md)
@@ -237,6 +270,7 @@ Class | Method | HTTP request | Description
  - [Rate](doc/Rate.md)
  - [Rate1](doc/Rate1.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
+ - [SatCatalogResponse](doc/SatCatalogResponse.md)
  - [StoreCreate](doc/StoreCreate.md)
  - [StoreResponse](doc/StoreResponse.md)
  - [StoreUpdate](doc/StoreUpdate.md)
