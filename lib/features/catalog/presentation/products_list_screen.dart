@@ -105,7 +105,7 @@ class ProductsListScreen extends ConsumerWidget {
                         ),
                         DataTableColumn(
                           label: l10n.columnPhoto,
-                          fixedWidth: 64,
+                          fixedWidth: 110,
                           cellBuilder: (context, p) =>
                               ProductPhoto(photoUrl: p.photo),
                         ),
