@@ -49,6 +49,7 @@ doc/ListResponsePointSaleResponse.md
 doc/ListResponsePriceListResponse.md
 doc/ListResponseProductListItem.md
 doc/ListResponseProductionSiteResponse.md
+doc/ListResponseSatCatalogResponse.md
 doc/ListResponseStoreResponse.md
 doc/ListResponseSupplierResponse.md
 doc/ListResponseTaxpayerRecipientResponse.md
@@ -86,6 +87,8 @@ doc/ProductsApi.md
 doc/Rate.md
 doc/Rate1.md
 doc/RecoverPasswordAdminResponse.md
+doc/SatCatalogResponse.md
+doc/SatCatalogsApi.md
 doc/StoreCreate.md
 doc/StoreResponse.md
 doc/StoreUpdate.md
@@ -136,6 +139,7 @@ lib/src/api/points_of_sale_api.dart
 lib/src/api/price_lists_api.dart
 lib/src/api/production_sites_api.dart
 lib/src/api/products_api.dart
+lib/src/api/sat_catalogs_api.dart
 lib/src/api/stores_api.dart
 lib/src/api/suppliers_api.dart
 lib/src/api/taxpayer_recipients_api.dart
@@ -190,6 +194,7 @@ lib/src/model/list_response_point_sale_response.dart
 lib/src/model/list_response_price_list_response.dart
 lib/src/model/list_response_product_list_item.dart
 lib/src/model/list_response_production_site_response.dart
+lib/src/model/list_response_sat_catalog_response.dart
 lib/src/model/list_response_store_response.dart
 lib/src/model/list_response_supplier_response.dart
 lib/src/model/list_response_taxpayer_recipient_response.dart
@@ -222,6 +227,7 @@ lib/src/model/production_site_update.dart
 lib/src/model/rate.dart
 lib/src/model/rate1.dart
 lib/src/model/recover_password_admin_response.dart
+lib/src/model/sat_catalog_response.dart
 lib/src/model/store_create.dart
 lib/src/model/store_response.dart
 lib/src/model/store_update.dart

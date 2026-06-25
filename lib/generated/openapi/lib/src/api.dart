@@ -22,6 +22,7 @@ import 'package:mbe_api_client/src/api/points_of_sale_api.dart';
 import 'package:mbe_api_client/src/api/price_lists_api.dart';
 import 'package:mbe_api_client/src/api/production_sites_api.dart';
 import 'package:mbe_api_client/src/api/products_api.dart';
+import 'package:mbe_api_client/src/api/sat_catalogs_api.dart';
 import 'package:mbe_api_client/src/api/stores_api.dart';
 import 'package:mbe_api_client/src/api/suppliers_api.dart';
 import 'package:mbe_api_client/src/api/taxpayer_recipients_api.dart';
@@ -160,6 +161,12 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   ProductsApi getProductsApi() {
     return ProductsApi(dio, serializers);
+  }
+
+  /// Get SatCatalogsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  SatCatalogsApi getSatCatalogsApi() {
+    return SatCatalogsApi(dio, serializers);
   }
 
   /// Get StoresApi instance, base route and serializer can be overridden by a given but be careful,

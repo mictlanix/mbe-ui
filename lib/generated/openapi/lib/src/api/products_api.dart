@@ -266,6 +266,7 @@ class ProductsApi {
   /// * [stockable] 
   /// * [salable] 
   /// * [purchasable] 
+  /// * [supplier] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -284,6 +285,7 @@ class ProductsApi {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? supplier,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -318,6 +320,7 @@ class ProductsApi {
       if (stockable != null) r'stockable': encodeQueryParameter(_serializers, stockable, const FullType(bool)),
       if (salable != null) r'salable': encodeQueryParameter(_serializers, salable, const FullType(bool)),
       if (purchasable != null) r'purchasable': encodeQueryParameter(_serializers, purchasable, const FullType(bool)),
+      if (supplier != null) r'supplier': encodeQueryParameter(_serializers, supplier, const FullType(int)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
