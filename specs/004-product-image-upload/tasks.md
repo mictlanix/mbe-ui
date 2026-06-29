@@ -335,7 +335,7 @@ end-to-end with deny-by-default RBAC enforced throughout.
   messages introduced in Phases 3-5 (constitution §V).
 - [X] T030 Run `flutter analyze` across `lib/features/catalog/` and
   `lib/core/widgets/product_photo.dart` and resolve all warnings/errors.
-- [ ] T031 Execute [quickstart.md](./quickstart.md) end-to-end against a
+- [X] T031 Execute [quickstart.md](./quickstart.md) end-to-end against a
   local mbe-api instance (Stories 1-3 validation scenarios plus the Edge
   Cases spot-checks) and fix any discrepancies found.
 
