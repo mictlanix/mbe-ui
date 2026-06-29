@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
 
+import 'package:mbe_ui/core/network/photo_url.dart';
+
 import 'product_price.dart';
 
 part 'product.freezed.dart';
@@ -46,7 +48,7 @@ class Product with _$Product {
       productId: response.productId,
       code: response.code,
       name: response.name,
-      photo: response.photo,
+      photo: resolvePhotoUrl(response.photo),
       sku: response.sku,
       brand: response.brand,
       model: response.model,

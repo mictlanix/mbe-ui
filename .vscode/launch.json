@@ -8,21 +8,27 @@
             "name": "mbe-ui",
             "request": "launch",
             "type": "dart",
-            "args": ["-d", "chrome", "--web-port=8081"]
+            "args": ["-d", "chrome", "--web-port=8081", "--dart-define=LEGACY_PHOTOS_BASE_URL=http://mbe.gruporamoshnos.com"]
         },
         {
             "name": "mbe-ui (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
-            "args": ["-d", "chrome", "--web-port=8081"]
+            "args": ["-d", "chrome", "--web-port=8081", "--dart-define=LEGACY_PHOTOS_BASE_URL=http://mbe.gruporamoshnos.com"]
         },
         {
             "name": "mbe-ui (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
-            "args": ["-d", "chrome", "--web-port=8081"]
-        }
+            "args": ["-d", "chrome", "--web-port=8081", "--dart-define=LEGACY_PHOTOS_BASE_URL=http://mbe.gruporamoshnos.com"]
+        },
+        {
+            "name": "mbe-ui macOS",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "macos", "--dart-define=LEGACY_PHOTOS_BASE_URL=http://mbe.gruporamoshnos.com"]
+        },
     ]
 }

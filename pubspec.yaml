@@ -47,6 +47,8 @@ dependencies:
   riverpod_annotation: ^2.6.1
   one_of: ^1.5.0
   data_table_2: ^2.5.16
+  file_picker: ^8.1.2
+  built_value: ^8.12.6
   mbe_api_client:
     path: lib/generated/openapi
 

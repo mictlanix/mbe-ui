@@ -113,6 +113,15 @@
   "newProductTooltip": "New product",
   "@newProductTooltip": {},
 
+  "uploadPhotoButton": "Upload photo",
+  "@uploadPhotoButton": {},
+
+  "replacePhotoButton": "Replace photo",
+  "@replacePhotoButton": {},
+
+  "removePhotoButton": "Remove photo",
+  "@removePhotoButton": {},
+
   "productsSearchLabel": "Search by code, name, brand, or model",
   "@productsSearchLabel": {},
 
@@ -137,6 +146,9 @@
 
   "noProductsFound": "No products found.",
   "@noProductsFound": {},
+
+  "columnPhoto": "Photo",
+  "@columnPhoto": {},
 
   "columnCode": "Code",
   "@columnCode": {},
@@ -323,6 +335,15 @@
 
   "productBarCodeInvalidError": "Barcode must be empty or exactly 13 digits.",
   "@productBarCodeInvalidError": {},
+
+  "productPhotoInvalidTypeError": "Photo must be a JPEG or PNG file.",
+  "@productPhotoInvalidTypeError": {},
+
+  "productPhotoTooLargeError": "Photo must be 2 MB or smaller.",
+  "@productPhotoTooLargeError": {},
+
+  "productPhotoUploadFailedError": "The product was saved, but the photo failed to upload. Try again.",
+  "@productPhotoUploadFailedError": {},
 
   "productLoadFailedError": "Failed to load product.",
   "@productLoadFailedError": {},

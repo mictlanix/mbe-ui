@@ -124,6 +124,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get newProductTooltip => 'Nuevo producto';
 
   @override
+  String get uploadPhotoButton => 'Subir foto';
+
+  @override
+  String get replacePhotoButton => 'Cambiar foto';
+
+  @override
+  String get removePhotoButton => 'Quitar foto';
+
+  @override
   String get productsSearchLabel => 'Buscar por código, nombre, marca o modelo';
 
   @override
@@ -145,6 +154,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noProductsFound => 'No se encontraron productos.';
+
+  @override
+  String get columnPhoto => 'Foto';
 
   @override
   String get columnCode => 'Código';
@@ -332,6 +344,17 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get productBarCodeInvalidError =>
       'El código de barras debe estar vacío o tener exactamente 13 dígitos.';
+
+  @override
+  String get productPhotoInvalidTypeError =>
+      'La foto debe ser un archivo JPEG o PNG.';
+
+  @override
+  String get productPhotoTooLargeError => 'La foto debe ser de 2 MB o menos.';
+
+  @override
+  String get productPhotoUploadFailedError =>
+      'El producto se guardó, pero la foto no se pudo subir. Intenta de nuevo.';
 
   @override
   String get productLoadFailedError => 'No se pudo cargar el producto.';

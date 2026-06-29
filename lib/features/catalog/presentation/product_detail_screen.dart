@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +8,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -79,6 +81,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         _isEdit &&
         !formState.deactivated &&
         access.can(SystemObject.products, AccessRight.delete);
+    final canEditPhoto = canSave;
+    final hasPhoto =
+        formState.pendingPhotoBytes != null ||
+        (formState.photo != null && !formState.photoMarkedForRemoval);
 
     return Scaffold(
       appBar: AppBar(
@@ -122,6 +128,74 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               ),
               const SizedBox(height: 16),
             ],
+            Center(
+              child: Column(
+                children: [
+                  if (formState.pendingPhotoBytes != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Image.memory(
+                        formState.pendingPhotoBytes!,
+                        width: 96,
+                        height: 96,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    ProductPhoto(
+                      photoUrl:
+                          formState.photoMarkedForRemoval ? null : formState.photo,
+                      size: 96,
+                    ),
+                  if (canEditPhoto && !hasPhoto) ...[
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      key: const Key('upload_photo_button'),
+                      onPressed: formState.submitting
+                          ? null
+                          : () => _pickPhoto(controller),
+                      icon: const Icon(Icons.upload),
+                      label: Text(l10n.uploadPhotoButton),
+                    ),
+                  ],
+                  if (canEditPhoto && hasPhoto) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton.icon(
+                          key: const Key('replace_photo_button'),
+                          onPressed: formState.submitting
+                              ? null
+                              : () => _pickPhoto(controller),
+                          icon: const Icon(Icons.upload),
+                          label: Text(l10n.replacePhotoButton),
+                        ),
+                        TextButton.icon(
+                          key: const Key('remove_photo_button'),
+                          onPressed: formState.submitting
+                              ? null
+                              : controller.photoRemoveRequested,
+                          icon: const Icon(Icons.delete_outline),
+                          label: Text(l10n.removePhotoButton),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (_localizeFieldError(l10n, formState.fieldErrors['photo'])
+                      case final photoError?) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      photoError,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             TextFormField(
               key: const Key('code_field'),
               initialValue: formState.code,
@@ -278,6 +352,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     );
   }
 
+  /// Opens the native file picker restricted to JPEG/PNG and stages the
+  /// result via [ProductFormController.photoPicked] (FR-003, FR-004).
+  /// Client-side type/size validation happens in the controller, not here.
+  Future<void> _pickPhoto(ProductFormController controller) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png'],
+      withData: true,
+    );
+    final file = result?.files.singleOrNull;
+    final bytes = file?.bytes;
+    if (file == null || bytes == null) return;
+    controller.photoPicked(bytes, file.name);
+  }
+
   Future<void> _confirmDeactivate(
     BuildContext context,
     ProductFormController controller,
@@ -325,6 +414,8 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.productUpdatePermissionDeniedError;
     case ProductFormErrorCode.deactivatePermissionDenied:
       return l10n.productDeactivatePermissionDeniedError;
+    case ProductFormErrorCode.photoUploadFailed:
+      return l10n.productPhotoUploadFailedError;
     default:
       return code;
   }
@@ -348,6 +439,10 @@ String? _localizeFieldError(AppLocalizations l10n, String? code) {
       return l10n.productUnitRequiredError;
     case ProductFormErrorCode.barCodeInvalid:
       return l10n.productBarCodeInvalidError;
+    case ProductFormErrorCode.photoInvalidType:
+      return l10n.productPhotoInvalidTypeError;
+    case ProductFormErrorCode.photoTooLarge:
+      return l10n.productPhotoTooLargeError;
     default:
       return code;
   }

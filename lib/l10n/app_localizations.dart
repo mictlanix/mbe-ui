@@ -320,6 +320,24 @@ abstract class AppLocalizations {
   /// **'New product'**
   String get newProductTooltip;
 
+  /// No description provided for @uploadPhotoButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload photo'**
+  String get uploadPhotoButton;
+
+  /// No description provided for @replacePhotoButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace photo'**
+  String get replacePhotoButton;
+
+  /// No description provided for @removePhotoButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removePhotoButton;
+
   /// No description provided for @productsSearchLabel.
   ///
   /// In en, this message translates to:
@@ -361,6 +379,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No products found.'**
   String get noProductsFound;
+
+  /// No description provided for @columnPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get columnPhoto;
 
   /// No description provided for @columnCode.
   ///
@@ -715,6 +739,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Barcode must be empty or exactly 13 digits.'**
   String get productBarCodeInvalidError;
+
+  /// No description provided for @productPhotoInvalidTypeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo must be a JPEG or PNG file.'**
+  String get productPhotoInvalidTypeError;
+
+  /// No description provided for @productPhotoTooLargeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo must be 2 MB or smaller.'**
+  String get productPhotoTooLargeError;
+
+  /// No description provided for @productPhotoUploadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'The product was saved, but the photo failed to upload. Try again.'**
+  String get productPhotoUploadFailedError;
 
   /// No description provided for @productLoadFailedError.
   ///

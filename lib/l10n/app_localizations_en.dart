@@ -124,6 +124,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newProductTooltip => 'New product';
 
   @override
+  String get uploadPhotoButton => 'Upload photo';
+
+  @override
+  String get replacePhotoButton => 'Replace photo';
+
+  @override
+  String get removePhotoButton => 'Remove photo';
+
+  @override
   String get productsSearchLabel => 'Search by code, name, brand, or model';
 
   @override
@@ -145,6 +154,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noProductsFound => 'No products found.';
+
+  @override
+  String get columnPhoto => 'Photo';
 
   @override
   String get columnCode => 'Code';
@@ -330,6 +342,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get productBarCodeInvalidError =>
       'Barcode must be empty or exactly 13 digits.';
+
+  @override
+  String get productPhotoInvalidTypeError =>
+      'Photo must be a JPEG or PNG file.';
+
+  @override
+  String get productPhotoTooLargeError => 'Photo must be 2 MB or smaller.';
+
+  @override
+  String get productPhotoUploadFailedError =>
+      'The product was saved, but the photo failed to upload. Try again.';
 
   @override
   String get productLoadFailedError => 'Failed to load product.';
