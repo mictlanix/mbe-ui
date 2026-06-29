@@ -4,6 +4,15 @@
   "branch": "004-product-image-upload",
   "selectedAt": "2026-06-23T20:49:55.683Z",
   "currentStep": "specify",
-  "status": "draft",
-  "history": []
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-29T01:46:51.899Z"
+    }
+  ],
+  "telemetryInstanceId": "79387dc9-cd06-4fd0-ad18-d6d70b9f2660"
 }
