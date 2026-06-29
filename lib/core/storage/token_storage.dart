@@ -5,7 +5,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// start and to clear it on sign-out / session-invalid.
 class TokenStorage {
   TokenStorage({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+      : _storage = storage ??
+            const FlutterSecureStorage(
+              // Without a paid Apple Developer team, ad-hoc signed local
+              // builds can't satisfy the Keychain entitlements the data
+              // protection keychain requires on macOS, causing -34018.
+              mOptions: MacOsOptions(usesDataProtectionKeychain: false),
+            );
 
   static const _tokenKey = 'access_token';
 
