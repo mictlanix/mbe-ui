@@ -4,6 +4,15 @@
   "branch": "003-catalog-consistency",
   "selectedAt": "2026-06-20T23:56:45.878Z",
   "currentStep": "specify",
-  "status": "draft",
-  "history": []
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-25T03:23:01.851Z"
+    }
+  ],
+  "telemetryInstanceId": "6e2909fd-bfa4-4006-a5c0-bf4843d23bf0"
 }
