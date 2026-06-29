@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-23
 
-**Status**: Draft
+**Status**: Completed (2026-06-28)
 
 **Input**: User description: "Add product photo/image display and upload: admin/staff with edit privilege on the Products system object can upload, replace, and remove a product's photo from the product detail/edit screen; the product list and detail views display the product's photo (or a placeholder when none is set). This was explicitly deferred from the 002-product-catalog spec (see its Assumptions section) and should now be implemented as its own feature, following the same RBAC gating (Products system object, deny-by-default) and validation rigor established in 002-product-catalog."
 
