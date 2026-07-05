@@ -143,6 +143,18 @@
   "productsAllLabels": "All labels",
   "@productsAllLabels": {},
 
+  "filtersButton": "Filters",
+  "@filtersButton": {"description": "Label/title of the catalog filter panel and its trigger button"},
+
+  "filtersTooltip": "Filters",
+  "@filtersTooltip": {"description": "Tooltip on the filter panel trigger icon button"},
+
+  "clearAllFilters": "Clear all",
+  "@clearAllFilters": {"description": "Filter panel action that resets every facet filter"},
+
+  "applyFilters": "Apply",
+  "@applyFilters": {"description": "Filter panel primary action that dismisses the panel"},
+
   "productsLoadError": "Failed to load products: {error}",
   "@productsLoadError": {
     "placeholders": {

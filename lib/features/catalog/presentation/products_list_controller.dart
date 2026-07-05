@@ -25,6 +25,25 @@ class ProductFilter with _$ProductFilter {
   }) = _ProductFilter;
 }
 
+/// Derived facet-filter summary used by the products list's Filters button
+/// badge (FR-003, data-model.md). [search] is deliberately excluded — it has
+/// its own always-visible box — and `deactivated == null` (the default, which
+/// includes inactive products) does not count; only narrowing to active-only
+/// (`deactivated == false`) does, so a freshly-loaded list shows no badge.
+extension ProductFilterBadge on ProductFilter {
+  int get activeFilterCount {
+    var count = 0;
+    if (deactivated == false) count++;
+    if (stockable != null) count++;
+    if (salable != null) count++;
+    if (purchasable != null) count++;
+    if (label != null) count++;
+    return count;
+  }
+
+  bool get hasActiveFilters => activeFilterCount > 0;
+}
+
 /// Holds the current search/filter selection for the products list
 /// (FR-001, FR-002).
 @riverpod
@@ -49,6 +68,11 @@ class ProductFilterController extends _$ProductFilterController {
       state = state.copyWith(purchasable: value);
 
   void labelChanged(int? value) => state = state.copyWith(label: value);
+
+  /// Resets every facet filter to its default while preserving the current
+  /// [ProductFilter.search] text (FR-004; the search box stays outside the
+  /// filter panel). Wired to the panel's "Clear all" action.
+  void reset() => state = ProductFilter(search: state.search);
 }
 
 /// Fetches and holds the products list (FR-001, FR-002), re-fetching page

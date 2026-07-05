@@ -380,6 +380,30 @@ abstract class AppLocalizations {
   /// **'All labels'**
   String get productsAllLabels;
 
+  /// Label/title of the catalog filter panel and its trigger button
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersButton;
+
+  /// Tooltip on the filter panel trigger icon button
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersTooltip;
+
+  /// Filter panel action that resets every facet filter
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearAllFilters;
+
+  /// Filter panel primary action that dismisses the panel
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyFilters;
+
   /// No description provided for @productsLoadError.
   ///
   /// In en, this message translates to:

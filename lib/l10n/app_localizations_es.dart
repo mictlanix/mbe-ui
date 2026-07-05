@@ -154,6 +154,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsAllLabels => 'Todas las etiquetas';
 
   @override
+  String get filtersButton => 'Filtros';
+
+  @override
+  String get filtersTooltip => 'Filtros';
+
+  @override
+  String get clearAllFilters => 'Limpiar filtros';
+
+  @override
+  String get applyFilters => 'Aplicar';
+
+  @override
   String productsLoadError(Object error) {
     return 'Error al cargar productos: $error';
   }

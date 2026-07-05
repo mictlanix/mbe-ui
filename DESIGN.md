@@ -299,6 +299,31 @@ pickers, status badges (e.g. invoice status), and form field wrappers with
 consistent validation-error display. This avoids four slightly-different
 implementations across sales/inventory/invoicing/accounting.
 
+**Responsive forms — use space, don't waste it**: multi-field create/edit/
+detail forms MUST NOT stretch single-column, full-width fields across a wide
+desktop display — that leaves large empty gutters and long eye-travel. Instead
+use the shared responsive form-grid widget (`core/widgets/responsive_form_grid.dart`,
+`ResponsiveFormGrid`), which lays fields into a centered, max-width column grid:
+one column on Compact, two on wider tiers, capped per screen via `maxColumns`
+(most forms prefer **two** columns even on the widest tier — paired fields read
+better than three narrow ones). Constitution §VI makes this binding.
+
+Within a form, group related content and separate logical sections to aid
+scanning:
+
+- **Section dividers**: delimit distinct blocks (e.g. an attribute/toggle
+  group, a prices sub-panel, a labels section) with the standard Material 3
+  `Divider` when it improves scanability or reclaims wasted vertical space —
+  dividers are M3's idiomatic group separator.
+- **Side-by-side grouping**: pair naturally related blocks into a two-column
+  band on wide tiers (e.g. boolean attribute switches on the left, the prices
+  list on the right) rather than stacking each full-width; collapse to a
+  vertical stack on Compact.
+
+The product catalog detail screen (`features/catalog/presentation/product_detail_screen.dart`)
+is the reference implementation of all three (two-column field grid, section
+dividers, switches|prices two-column band).
+
 ### 4.4 Localization
 
 Mictlanix operates in Mexico — plan for **es-MX** as a first-class locale

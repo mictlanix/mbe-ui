@@ -57,6 +57,58 @@ void main() {
       expect(filter.salable, isTrue);
       expect(filter.purchasable, isTrue);
     });
+
+    test('reset() clears every facet but preserves the search text', () {
+      final notifier = container.read(productFilterControllerProvider.notifier);
+      notifier
+        ..searchChanged('widget')
+        ..deactivatedChanged(false)
+        ..stockableChanged(true)
+        ..salableChanged(false)
+        ..purchasableChanged(true)
+        ..labelChanged(7);
+
+      notifier.reset();
+
+      final filter = container.read(productFilterControllerProvider);
+      expect(filter.search, 'widget');
+      expect(filter.deactivated, isNull);
+      expect(filter.stockable, isNull);
+      expect(filter.salable, isNull);
+      expect(filter.purchasable, isNull);
+      expect(filter.label, isNull);
+    });
+  });
+
+  group('ProductFilter.activeFilterCount', () {
+    test('is zero for the default filter (inactive included, no facets)', () {
+      const filter = ProductFilter();
+      expect(filter.activeFilterCount, 0);
+      expect(filter.hasActiveFilters, isFalse);
+    });
+
+    test('ignores search text and the default deactivated == null', () {
+      const filter = ProductFilter(search: 'widget');
+      expect(filter.activeFilterCount, 0);
+      expect(filter.hasActiveFilters, isFalse);
+    });
+
+    test('counts narrowing to active-only (deactivated == false)', () {
+      const filter = ProductFilter(deactivated: false);
+      expect(filter.activeFilterCount, 1);
+      expect(filter.hasActiveFilters, isTrue);
+    });
+
+    test('counts each set attribute facet and the label', () {
+      const filter = ProductFilter(
+        deactivated: false,
+        stockable: true,
+        salable: false,
+        purchasable: true,
+        label: 3,
+      );
+      expect(filter.activeFilterCount, 5);
+    });
   });
 
   group('ProductsListController', () {
