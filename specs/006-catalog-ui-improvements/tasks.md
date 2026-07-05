@@ -33,7 +33,7 @@ Single Flutter project, feature-first (plan.md §Project Structure):
 
 **Purpose**: Establish a green baseline before layout changes.
 
-- [ ] T001 Run the existing catalog tests to confirm a green baseline before any change: `flutter test test/widget/features/catalog/ test/unit/features/catalog/` and record which tests currently pass (they will be intentionally updated in later phases).
+- [X] T001 Run the existing catalog tests to confirm a green baseline before any change: `flutter test test/widget/features/catalog/ test/unit/features/catalog/` and record which tests currently pass (they will be intentionally updated in later phases).
 
 ---
 
@@ -63,14 +63,14 @@ matches; Clear all resets facets and removes the badge while preserving search t
 
 ### Implementation for User Story 1
 
-- [ ] T002 [P] [US1] Add filter-panel localized strings (`filtersButton`, `filtersTooltip`, `clearAllFilters`, `applyFilters`) with `@`-metadata to `lib/l10n/app_en.arb`.
-- [ ] T003 [P] [US1] Add the Spanish translations of the same four keys to `lib/l10n/app_es.arb` (e.g. "Filtros", "Filtrar", "Limpiar filtros", "Aplicar").
-- [ ] T004 [US1] Add an `extension ProductFilterBadge on ProductFilter` with `int get activeFilterCount` and `bool get hasActiveFilters` to `lib/features/catalog/presentation/products_list_controller.dart`, per the count definition in data-model.md (facets only; search excluded; `deactivated == false` counts as active).
-- [ ] T005 [US1] Add `ProductFilterController.reset()` to `lib/features/catalog/presentation/products_list_controller.dart` that clears all facets while preserving `search` (`state = ProductFilter(search: state.search)`).
-- [ ] T006 [US1] Create the shared launcher `showCatalogFilterSheet(context, {title, builder, onClearAll})` in `lib/core/widgets/catalog_filter_sheet.dart`: `showModalBottomSheet` (drag handle, scrollable) when width `< LayoutBreakpoints.expanded`, else a right-anchored modal side sheet via `showGeneralDialog` (~360dp, scrim, slide-from-right, Escape-to-close); footer with Clear all (calls `onClearAll`) and an Apply/Done button that pops. Contract in contracts/ui-components.md §1.
-- [ ] T007 [US1] Rewire `lib/features/catalog/presentation/products_list_screen.dart`: replace the `CatalogFilterBar` `filters:` list with a single Filters `IconButton` (new key `products_filter_button`) wrapped in an M3 `Badge` showing `filter.activeFilterCount` (badge hidden when 0); on press call `showCatalogFilterSheet`, whose `builder` renders the existing show-inactive `FilterChip`, the three `_TriStateFilterChip`s, and the label `DropdownButton` — **all existing keys unchanged** (`products_filter_show_inactive`, `products_filter_stockable`, `products_filter_salable`, `products_filter_purchasable`, `products_filter_label`); wire `onClearAll` to `filterController.reset()`. Keep the search bar in the bar.
-- [ ] T008 [US1] Update `test/widget/features/catalog/products_list_screen_test.dart`: assert `products_search_field` + `products_filter_button` are present initially and facet chips are **not**; tap the button, then assert each facet chip is findable and the tri-state cycle test still passes (opening the sheet first); add a test that N active facets render a `Badge`/count of N and that Clear all resets facets + removes the badge.
-- [ ] T009 [P] [US1] Add unit tests to `test/unit/features/catalog/products_list_controller_test.dart` for `ProductFilter.activeFilterCount`/`hasActiveFilters` across representative states and for `reset()` clearing facets while preserving `search`.
+- [X] T002 [P] [US1] Add filter-panel localized strings (`filtersButton`, `filtersTooltip`, `clearAllFilters`, `applyFilters`) with `@`-metadata to `lib/l10n/app_en.arb`.
+- [X] T003 [P] [US1] Add the Spanish translations of the same four keys to `lib/l10n/app_es.arb` (e.g. "Filtros", "Filtrar", "Limpiar filtros", "Aplicar").
+- [X] T004 [US1] Add an `extension ProductFilterBadge on ProductFilter` with `int get activeFilterCount` and `bool get hasActiveFilters` to `lib/features/catalog/presentation/products_list_controller.dart`, per the count definition in data-model.md (facets only; search excluded; `deactivated == false` counts as active).
+- [X] T005 [US1] Add `ProductFilterController.reset()` to `lib/features/catalog/presentation/products_list_controller.dart` that clears all facets while preserving `search` (`state = ProductFilter(search: state.search)`).
+- [X] T006 [US1] Create the shared launcher `showCatalogFilterSheet(context, {title, builder, onClearAll})` in `lib/core/widgets/catalog_filter_sheet.dart`: `showModalBottomSheet` (drag handle, scrollable) when width `< LayoutBreakpoints.expanded`, else a right-anchored modal side sheet via `showGeneralDialog` (~360dp, scrim, slide-from-right, Escape-to-close); footer with Clear all (calls `onClearAll`) and an Apply/Done button that pops. Contract in contracts/ui-components.md §1.
+- [X] T007 [US1] Rewire `lib/features/catalog/presentation/products_list_screen.dart`: replace the `CatalogFilterBar` `filters:` list with a single Filters `IconButton` (new key `products_filter_button`) wrapped in an M3 `Badge` showing `filter.activeFilterCount` (badge hidden when 0); on press call `showCatalogFilterSheet`, whose `builder` renders the existing show-inactive `FilterChip`, the three `_TriStateFilterChip`s, and the label `DropdownButton` — **all existing keys unchanged** (`products_filter_show_inactive`, `products_filter_stockable`, `products_filter_salable`, `products_filter_purchasable`, `products_filter_label`); wire `onClearAll` to `filterController.reset()`. Keep the search bar in the bar.
+- [X] T008 [US1] Update `test/widget/features/catalog/products_list_screen_test.dart`: assert `products_search_field` + `products_filter_button` are present initially and facet chips are **not**; tap the button, then assert each facet chip is findable and the tri-state cycle test still passes (opening the sheet first); add a test that N active facets render a `Badge`/count of N and that Clear all resets facets + removes the badge.
+- [X] T009 [P] [US1] Add unit tests to `test/unit/features/catalog/products_list_controller_test.dart` for `ProductFilter.activeFilterCount`/`hasActiveFilters` across representative states and for `reset()` clearing facets while preserving `search`.
 
 **Checkpoint**: US1 fully functional and independently testable — MVP deliverable.
 
@@ -87,10 +87,10 @@ errors render in-grid; view mode keeps the same layout with fields disabled.
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Extend `lib/core/layout/breakpoints.dart`: add `static const double large = 1200`, add `LayoutTier.large` to the enum, update `tierOf` to return `LayoutTier.large` for `width >= large`, and add `isLarge(context)`. Audit every `LayoutTier`/`tierOf`/`isExpanded` call site (notably `lib/core/widgets/catalog_filter_bar.dart`) so the new value is handled correctly (no non-exhaustive `switch`).
-- [ ] T011 [P] [US2] Create the shared `ResponsiveFormGrid`, `FormGridChild`, and `FormGridSpan` in `lib/core/widgets/responsive_form_grid.dart` per contracts/ui-components.md §2: `LayoutBuilder` + `Wrap`, columns from `LayoutBreakpoints.tierOf` (compact→1, medium/expanded→2, large→3), `single` cells sized `(inner - spacing*(cols-1))/cols`, `full` cells span the row, centered inside `ConstrainedBox(maxWidth: maxContentWidth)`, no horizontal scroll.
-- [ ] T012 [US2] Rewire the field section of `lib/features/catalog/presentation/product_detail_screen.dart` to use `ResponsiveFormGrid`: wrap the single-column text fields/pickers as `single` children and the multiline comment field, section headers, switches, prices, and labels blocks (and the save button) as `full` children; keep every existing `Key`, `enabled`/read-only gating, `errorText`, and error banner intact (FR-010, FR-013).
-- [ ] T013 [US2] Update `test/widget/features/catalog/product_detail_screen_test.dart`: pump at a wide viewport (`tester.view.physicalSize`/`devicePixelRatio`) and assert the form renders with all field keys present and editable/disabled per mode; assert no `RenderFlex`/overflow errors; confirm a triggered validation error still displays. Keys unchanged.
+- [X] T010 [US2] Extend `lib/core/layout/breakpoints.dart`: add `static const double large = 1200`, add `LayoutTier.large` to the enum, update `tierOf` to return `LayoutTier.large` for `width >= large`, and add `isLarge(context)`. Audit every `LayoutTier`/`tierOf`/`isExpanded` call site (notably `lib/core/widgets/catalog_filter_bar.dart`) so the new value is handled correctly (no non-exhaustive `switch`).
+- [X] T011 [P] [US2] Create the shared `ResponsiveFormGrid`, `FormGridChild`, and `FormGridSpan` in `lib/core/widgets/responsive_form_grid.dart` per contracts/ui-components.md §2: `LayoutBuilder` + `Wrap`, columns from `LayoutBreakpoints.tierOf` (compact→1, medium/expanded→2, large→3), `single` cells sized `(inner - spacing*(cols-1))/cols`, `full` cells span the row, centered inside `ConstrainedBox(maxWidth: maxContentWidth)`, no horizontal scroll.
+- [X] T012 [US2] Rewire the field section of `lib/features/catalog/presentation/product_detail_screen.dart` to use `ResponsiveFormGrid`: wrap the single-column text fields/pickers as `single` children and the multiline comment field, section headers, switches, prices, and labels blocks (and the save button) as `full` children; keep every existing `Key`, `enabled`/read-only gating, `errorText`, and error banner intact (FR-010, FR-013).
+- [X] T013 [US2] Update `test/widget/features/catalog/product_detail_screen_test.dart`: pump at a wide viewport (`tester.view.physicalSize`/`devicePixelRatio`) and assert the form renders with all field keys present and editable/disabled per mode; assert no `RenderFlex`/overflow errors; confirm a triggered validation error still displays. Keys unchanged.
 
 **Checkpoint**: US1 and US2 both work independently.
 
@@ -107,8 +107,8 @@ no actions; upload/replace/remove still work and photo errors still show.
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Restructure the photo area in `lib/features/catalog/presentation/product_detail_screen.dart` from the centered `Column` to a `Row` (thumbnail + a `Column`/`Wrap` of actions beside it), falling back to stacked layout at compact width to avoid overflow; preserve keys `upload_photo_button`/`replace_photo_button`/`remove_photo_button`, the `canEditPhoto`/`hasPhoto` gating, read-only behavior (no actions), and the photo field-error text placement.
-- [ ] T015 [US3] Extend `test/widget/features/catalog/product_detail_screen_test.dart` to assert the photo action buttons render beside the thumbnail in edit mode (with/without an existing photo), are absent in read-only mode, and still respond. (Same file as T013 — run after it.)
+- [X] T014 [US3] Restructure the photo area in `lib/features/catalog/presentation/product_detail_screen.dart` from the centered `Column` to a `Row` (thumbnail + a `Column`/`Wrap` of actions beside it), falling back to stacked layout at compact width to avoid overflow; preserve keys `upload_photo_button`/`replace_photo_button`/`remove_photo_button`, the `canEditPhoto`/`hasPhoto` gating, read-only behavior (no actions), and the photo field-error text placement.
+- [X] T015 [US3] Extend `test/widget/features/catalog/product_detail_screen_test.dart` to assert the photo action buttons render beside the thumbnail in edit mode (with/without an existing photo), are absent in read-only mode, and still respond. (Same file as T013 — run after it.)
 
 **Checkpoint**: All three stories independently functional.
 
@@ -116,9 +116,9 @@ no actions; upload/replace/remove still work and photo errors still show.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T016 [P] Run `dart analyze` and `dart format` on all changed/new files; resolve any warnings.
-- [ ] T017 Verify FR-015: grep `lib/features/catalog/presentation/` for hardcoded breakpoint widths (e.g. `600`, `840`, `1200`) and confirm all responsive decisions route through `LayoutBreakpoints`.
-- [ ] T018 Run the full validation guide in quickstart.md (automated tests + manual US1/US2/US3 resize checks) and confirm SC-001..SC-006, including zero behavior regressions in existing product create/view/edit/deactivate and photo flows.
+- [X] T016 [P] Run `dart analyze` and `dart format` on all changed/new files; resolve any warnings.
+- [X] T017 Verify FR-015: grep `lib/features/catalog/presentation/` for hardcoded breakpoint widths (e.g. `600`, `840`, `1200`) and confirm all responsive decisions route through `LayoutBreakpoints`.
+- [X] T018 Run the full validation guide in quickstart.md (automated tests + manual US1/US2/US3 resize checks) and confirm SC-001..SC-006, including zero behavior regressions in existing product create/view/edit/deactivate and photo flows.
 
 ---
 

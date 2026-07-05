@@ -112,6 +112,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Opens the filter panel by tapping the Filters button (facets now live in
+  /// a sheet rather than inline; FR-001/FR-003).
+  Future<void> openFilterSheet(WidgetTester tester) async {
+    await tester.tap(find.byKey(const Key('products_filter_button')));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('shows products with their status (FR-001, FR-002)', (
     tester,
   ) async {
@@ -131,12 +138,14 @@ void main() {
     (tester) async {
       await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-      final photos = tester.widgetList<ProductPhoto>(
-        find.descendant(
-          of: find.byKey(const Key('products_table')),
-          matching: find.byType(ProductPhoto),
-        ),
-      ).toList();
+      final photos = tester
+          .widgetList<ProductPhoto>(
+            find.descendant(
+              of: find.byKey(const Key('products_table')),
+              matching: find.byType(ProductPhoto),
+            ),
+          )
+          .toList();
 
       expect(photos, hasLength(_testProducts.length));
       expect(photos[0].photoUrl, 'http://test/images/widget.png');
@@ -144,23 +153,108 @@ void main() {
     },
   );
 
-  testWidgets('shows the search field and filter chips (FR-001, FR-002)', (
-    tester,
-  ) async {
-    await pumpScreen(tester, signedInAs: _readOnlyUser);
+  testWidgets(
+    'shows the search field and a Filters button; facets live in the sheet '
+    '(FR-001, FR-002, FR-003)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-    expect(find.byKey(const Key('products_search_field')), findsOneWidget);
-    expect(
-      find.byKey(const Key('products_filter_show_inactive')),
-      findsOneWidget,
-    );
-    expect(find.byKey(const Key('products_filter_stockable')), findsOneWidget);
-    expect(find.byKey(const Key('products_filter_salable')), findsOneWidget);
-    expect(
-      find.byKey(const Key('products_filter_purchasable')),
-      findsOneWidget,
-    );
-  });
+      // At rest: only the search box and the Filters button — no inline facets.
+      expect(find.byKey(const Key('products_search_field')), findsOneWidget);
+      expect(find.byKey(const Key('products_filter_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('products_filter_show_inactive')),
+        findsNothing,
+      );
+      expect(find.byKey(const Key('products_filter_stockable')), findsNothing);
+
+      // Opening the panel reveals every facet control.
+      await openFilterSheet(tester);
+      expect(
+        find.byKey(const Key('products_filter_show_inactive')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('products_filter_stockable')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('products_filter_salable')), findsOneWidget);
+      expect(
+        find.byKey(const Key('products_filter_purchasable')),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'the Filters button badge counts active facets and clears via Clear all '
+    '(FR-003, FR-004)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      Badge filterBadge() => tester.widget<Badge>(
+        find.ancestor(
+          of: find.byKey(const Key('products_filter_button')),
+          matching: find.byType(Badge),
+        ),
+      );
+
+      // No badge at rest.
+      expect(filterBadge().isLabelVisible, isFalse);
+
+      // Activate the stockable facet -> badge shows a count of 1.
+      await openFilterSheet(tester);
+      await tester.tap(find.byKey(const Key('products_filter_stockable')));
+      await tester.pumpAndSettle();
+      expect(filterBadge().isLabelVisible, isTrue);
+      expect(
+        filterBadge().label,
+        isA<Text>().having((t) => t.data, 'data', '1'),
+      );
+
+      // Clear all resets facets and removes the badge; the chip avatar clears.
+      await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<FilterChip>(
+              find.byKey(const Key('products_filter_stockable')),
+            )
+            .avatar,
+        isNull,
+      );
+      expect(filterBadge().isLabelVisible, isFalse);
+    },
+  );
+
+  testWidgets(
+    'opens a right-anchored side sheet with facets on a wide viewport '
+    '(FR-005)',
+    (tester) async {
+      // >= 840 logical px selects the side-sheet (showGeneralDialog) branch.
+      tester.view.physicalSize = const Size(1400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+      await openFilterSheet(tester);
+
+      // The side-sheet chrome (titled header with a close button) and the
+      // facets are present.
+      expect(
+        find.byKey(const Key('filter_sheet_close_button')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('products_filter_stockable')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('filter_sheet_apply_button')),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets(
     'does not re-query while typing; queries only on submit (FR-010)',
@@ -207,6 +301,7 @@ void main() {
     'cycles the stockable filter through null -> true -> false -> null',
     (tester) async {
       await pumpScreen(tester, signedInAs: _readOnlyUser);
+      await openFilterSheet(tester);
       final chipFinder = find.byKey(const Key('products_filter_stockable'));
 
       await tester.tap(chipFinder);

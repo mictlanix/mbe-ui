@@ -7,10 +7,12 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
@@ -115,319 +117,326 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ResponsiveFormGrid(
           children: [
-            if (formState.error != null) ...[
-              ErrorBanner(
-                error: AppError.validation([
-                  FieldError(
-                    loc: const [],
-                    msg: _localizeFormError(l10n, formState.error!),
-                    type: 'error',
-                  ),
-                  // The server's own message (e.g. "Product not found")
-                  // can't be localized client-side, so it's shown as
-                  // supplementary detail under the localized heading above.
-                  if (formState.errorDetail != null)
+            if (formState.error != null)
+              FormGridChild(
+                span: FormGridSpan.full,
+                ErrorBanner(
+                  error: AppError.validation([
                     FieldError(
                       loc: const [],
-                      msg: formState.errorDetail!,
+                      msg: _localizeFormError(l10n, formState.error!),
                       type: 'error',
                     ),
-                ]),
-              ),
-              const SizedBox(height: 16),
-            ],
-            Center(
-              child: Column(
-                children: [
-                  if (formState.pendingPhotoBytes != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image.memory(
-                        formState.pendingPhotoBytes!,
-                        width: 96,
-                        height: 96,
-                        fit: BoxFit.cover,
+                    // The server's own message (e.g. "Product not found")
+                    // can't be localized client-side, so it's shown as
+                    // supplementary detail under the localized heading above.
+                    if (formState.errorDetail != null)
+                      FieldError(
+                        loc: const [],
+                        msg: formState.errorDetail!,
+                        type: 'error',
                       ),
-                    )
-                  else
-                    ProductPhoto(
-                      photoUrl:
-                          formState.photoMarkedForRemoval ? null : formState.photo,
-                      size: 96,
-                    ),
-                  if (canEditPhoto && !hasPhoto) ...[
-                    const SizedBox(height: 8),
-                    TextButton.icon(
-                      key: const Key('upload_photo_button'),
-                      onPressed: formState.submitting
-                          ? null
-                          : () => _pickPhoto(controller),
-                      icon: const Icon(Icons.upload),
-                      label: Text(l10n.uploadPhotoButton),
-                    ),
-                  ],
-                  if (canEditPhoto && hasPhoto) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton.icon(
-                          key: const Key('replace_photo_button'),
-                          onPressed: formState.submitting
-                              ? null
-                              : () => _pickPhoto(controller),
-                          icon: const Icon(Icons.upload),
-                          label: Text(l10n.replacePhotoButton),
-                        ),
-                        TextButton.icon(
-                          key: const Key('remove_photo_button'),
-                          onPressed: formState.submitting
-                              ? null
-                              : controller.photoRemoveRequested,
-                          icon: const Icon(Icons.delete_outline),
-                          label: Text(l10n.removePhotoButton),
-                        ),
-                      ],
-                    ),
-                  ],
-                  if (_localizeFieldError(l10n, formState.fieldErrors['photo'])
-                      case final photoError?) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      photoError,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              key: const Key('code_field'),
-              initialValue: formState.code,
-              decoration: InputDecoration(
-                labelText: l10n.codeLabel,
-                errorText: _localizeFieldError(
-                  l10n,
-                  formState.fieldErrors['code'],
+                  ]),
                 ),
               ),
-              enabled: fieldsEnabled,
-              onChanged: controller.codeChanged,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('name_field'),
-              initialValue: formState.name,
-              decoration: InputDecoration(
-                labelText: l10n.nameLabel,
-                errorText: _localizeFieldError(
+            FormGridChild(
+              span: FormGridSpan.full,
+              _PhotoSection(
+                formState: formState,
+                controller: controller,
+                canEditPhoto: canEditPhoto,
+                hasPhoto: hasPhoto,
+                photoError: _localizeFieldError(
                   l10n,
-                  formState.fieldErrors['name'],
+                  formState.fieldErrors['photo'],
                 ),
+                onPick: () => _pickPhoto(controller),
+                uploadLabel: l10n.uploadPhotoButton,
+                replaceLabel: l10n.replacePhotoButton,
+                removeLabel: l10n.removePhotoButton,
               ),
-              enabled: fieldsEnabled,
-              onChanged: controller.nameChanged,
             ),
-            const SizedBox(height: 12),
-            CatalogEntityPicker<SatCatalogItem>(
-              key: const Key('unit_of_measurement_field'),
-              label: l10n.unitOfMeasurementLabel,
-              displayStringForOption: (item) => item.description != null
-                  ? '${item.code} — ${item.description}'
-                  : item.code,
-              optionsBuilder: (query) async {
-                final result = await satRepo.listUnitsOfMeasurement(search: query.isEmpty ? null : query);
-                return result.items;
-              },
-              onSelected: controller.unitSelected,
-              initialDisplayText: formState.unitOfMeasurementDisplayText.isNotEmpty
-                  ? formState.unitOfMeasurementDisplayText
-                  : formState.unitOfMeasurementCode,
-              errorText: _localizeFieldError(
-                l10n,
-                formState.fieldErrors['unitOfMeasurementCode'],
+            FormGridChild(
+              TextFormField(
+                key: const Key('code_field'),
+                initialValue: formState.code,
+                decoration: InputDecoration(
+                  labelText: l10n.codeLabel,
+                  errorText: _localizeFieldError(
+                    l10n,
+                    formState.fieldErrors['code'],
+                  ),
+                ),
+                enabled: fieldsEnabled,
+                onChanged: controller.codeChanged,
               ),
-              enabled: fieldsEnabled,
             ),
-            const SizedBox(height: 12),
-            CatalogEntityPicker<SupplierListItem>(
-              key: const Key('supplier_field'),
-              label: l10n.supplierLabel,
-              displayStringForOption: (item) => '${item.code} — ${item.name}',
-              optionsBuilder: (query) async {
-                final result = await supplierRepo.list(search: query.isEmpty ? null : query);
-                return result.items;
-              },
-              onSelected: controller.supplierSelected,
-              initialDisplayText: formState.supplierName ?? '',
-              enabled: fieldsEnabled,
+            FormGridChild(
+              TextFormField(
+                key: const Key('name_field'),
+                initialValue: formState.name,
+                decoration: InputDecoration(
+                  labelText: l10n.nameLabel,
+                  errorText: _localizeFieldError(
+                    l10n,
+                    formState.fieldErrors['name'],
+                  ),
+                ),
+                enabled: fieldsEnabled,
+                onChanged: controller.nameChanged,
+              ),
             ),
-            if (fieldsEnabled || formState.satKeyCode != null) ...[
-              const SizedBox(height: 12),
+            FormGridChild(
               CatalogEntityPicker<SatCatalogItem>(
-                key: const Key('sat_key_field'),
-                label: l10n.satKeyLabel,
+                key: const Key('unit_of_measurement_field'),
+                label: l10n.unitOfMeasurementLabel,
                 displayStringForOption: (item) => item.description != null
                     ? '${item.code} — ${item.description}'
                     : item.code,
                 optionsBuilder: (query) async {
-                  final result = await satRepo.listProductServices(search: query.isEmpty ? null : query);
+                  final result = await satRepo.listUnitsOfMeasurement(
+                    search: query.isEmpty ? null : query,
+                  );
                   return result.items;
                 },
-                onSelected: controller.satKeySelected,
-                initialDisplayText: formState.satKeyDisplayText ?? '',
-                enabled: fieldsEnabled,
-              ),
-            ],
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('brand_field'),
-              initialValue: formState.brand,
-              decoration: InputDecoration(labelText: l10n.brandLabel),
-              enabled: fieldsEnabled,
-              onChanged: controller.brandChanged,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('model_field'),
-              initialValue: formState.model,
-              decoration: InputDecoration(labelText: l10n.modelLabel),
-              enabled: fieldsEnabled,
-              onChanged: controller.modelChanged,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('bar_code_field'),
-              initialValue: formState.barCode,
-              decoration: InputDecoration(
-                labelText: l10n.barCodeLabel,
+                onSelected: controller.unitSelected,
+                initialDisplayText:
+                    formState.unitOfMeasurementDisplayText.isNotEmpty
+                    ? formState.unitOfMeasurementDisplayText
+                    : formState.unitOfMeasurementCode,
                 errorText: _localizeFieldError(
                   l10n,
-                  formState.fieldErrors['barCode'],
+                  formState.fieldErrors['unitOfMeasurementCode'],
                 ),
-              ),
-              enabled: fieldsEnabled,
-              onChanged: controller.barCodeChanged,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('location_field'),
-              initialValue: formState.location,
-              decoration: InputDecoration(labelText: l10n.locationLabel),
-              enabled: fieldsEnabled,
-              onChanged: controller.locationChanged,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('tax_rate_field'),
-              initialValue: formState.taxRate,
-              decoration: InputDecoration(labelText: l10n.taxRateLabel),
-              enabled: fieldsEnabled,
-              onChanged: controller.taxRateChanged,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('comment_field'),
-              initialValue: formState.comment,
-              decoration: InputDecoration(labelText: l10n.commentLabel),
-              enabled: fieldsEnabled,
-              onChanged: controller.commentChanged,
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-            SwitchListTile(
-              key: const Key('stockable_switch'),
-              title: Text(l10n.stockableLabel),
-              value: formState.stockable,
-              onChanged: fieldsEnabled ? controller.stockableChanged : null,
-            ),
-            SwitchListTile(
-              key: const Key('perishable_switch'),
-              title: Text(l10n.perishableLabel),
-              value: formState.perishable,
-              onChanged: fieldsEnabled ? controller.perishableChanged : null,
-            ),
-            SwitchListTile(
-              key: const Key('seriable_switch'),
-              title: Text(l10n.seriableLabel),
-              value: formState.seriable,
-              onChanged: fieldsEnabled ? controller.seriableChanged : null,
-            ),
-            SwitchListTile(
-              key: const Key('purchasable_switch'),
-              title: Text(l10n.purchasableLabel),
-              value: formState.purchasable,
-              onChanged: fieldsEnabled ? controller.purchasableChanged : null,
-            ),
-            SwitchListTile(
-              key: const Key('salable_switch'),
-              title: Text(l10n.salableLabel),
-              value: formState.salable,
-              onChanged: fieldsEnabled ? controller.salableChanged : null,
-            ),
-            SwitchListTile(
-              key: const Key('invoiceable_switch'),
-              title: Text(l10n.invoiceableLabel),
-              value: formState.invoiceable,
-              onChanged: fieldsEnabled ? controller.invoiceableChanged : null,
-            ),
-            if (_isEdit && formState.prices.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(l10n.pricesSubpanelTitle, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 8),
-              ...formState.prices.map(
-                (price) => ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    price.priceListName.trim().isEmpty
-                        ? l10n.unknownPriceList
-                        : price.priceListName,
-                  ),
-                  trailing: Text(price.price),
-                ),
-              ),
-            ],
-            if (allLabels.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(l10n.labelsLabel, style: Theme.of(context).textTheme.titleSmall),
-              const SizedBox(height: 8),
-              LabelMultiPicker(
-                key: const Key('label_multi_picker'),
-                labels: allLabels,
-                selectedIds: formState.labelIds,
-                onChanged: (newIds) {
-                  final current = formState.labelIds;
-                  final toggled = newIds.length > current.length
-                      ? newIds.firstWhere((id) => !current.contains(id))
-                      : current.firstWhere((id) => !newIds.contains(id));
-                  controller.labelToggled(toggled);
-                },
                 enabled: fieldsEnabled,
               ),
-            ],
-            const SizedBox(height: 24),
+            ),
+            FormGridChild(
+              CatalogEntityPicker<SupplierListItem>(
+                key: const Key('supplier_field'),
+                label: l10n.supplierLabel,
+                displayStringForOption: (item) => '${item.code} — ${item.name}',
+                optionsBuilder: (query) async {
+                  final result = await supplierRepo.list(
+                    search: query.isEmpty ? null : query,
+                  );
+                  return result.items;
+                },
+                onSelected: controller.supplierSelected,
+                initialDisplayText: formState.supplierName ?? '',
+                enabled: fieldsEnabled,
+              ),
+            ),
+            if (fieldsEnabled || formState.satKeyCode != null)
+              FormGridChild(
+                CatalogEntityPicker<SatCatalogItem>(
+                  key: const Key('sat_key_field'),
+                  label: l10n.satKeyLabel,
+                  displayStringForOption: (item) => item.description != null
+                      ? '${item.code} — ${item.description}'
+                      : item.code,
+                  optionsBuilder: (query) async {
+                    final result = await satRepo.listProductServices(
+                      search: query.isEmpty ? null : query,
+                    );
+                    return result.items;
+                  },
+                  onSelected: controller.satKeySelected,
+                  initialDisplayText: formState.satKeyDisplayText ?? '',
+                  enabled: fieldsEnabled,
+                ),
+              ),
+            FormGridChild(
+              TextFormField(
+                key: const Key('brand_field'),
+                initialValue: formState.brand,
+                decoration: InputDecoration(labelText: l10n.brandLabel),
+                enabled: fieldsEnabled,
+                onChanged: controller.brandChanged,
+              ),
+            ),
+            FormGridChild(
+              TextFormField(
+                key: const Key('model_field'),
+                initialValue: formState.model,
+                decoration: InputDecoration(labelText: l10n.modelLabel),
+                enabled: fieldsEnabled,
+                onChanged: controller.modelChanged,
+              ),
+            ),
+            FormGridChild(
+              TextFormField(
+                key: const Key('bar_code_field'),
+                initialValue: formState.barCode,
+                decoration: InputDecoration(
+                  labelText: l10n.barCodeLabel,
+                  errorText: _localizeFieldError(
+                    l10n,
+                    formState.fieldErrors['barCode'],
+                  ),
+                ),
+                enabled: fieldsEnabled,
+                onChanged: controller.barCodeChanged,
+              ),
+            ),
+            FormGridChild(
+              TextFormField(
+                key: const Key('location_field'),
+                initialValue: formState.location,
+                decoration: InputDecoration(labelText: l10n.locationLabel),
+                enabled: fieldsEnabled,
+                onChanged: controller.locationChanged,
+              ),
+            ),
+            FormGridChild(
+              TextFormField(
+                key: const Key('tax_rate_field'),
+                initialValue: formState.taxRate,
+                decoration: InputDecoration(labelText: l10n.taxRateLabel),
+                enabled: fieldsEnabled,
+                onChanged: controller.taxRateChanged,
+              ),
+            ),
+            FormGridChild(
+              span: FormGridSpan.full,
+              TextFormField(
+                key: const Key('comment_field'),
+                initialValue: formState.comment,
+                decoration: InputDecoration(labelText: l10n.commentLabel),
+                enabled: fieldsEnabled,
+                onChanged: controller.commentChanged,
+                maxLines: 3,
+              ),
+            ),
+            FormGridChild(
+              span: FormGridSpan.full,
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SwitchListTile(
+                    key: const Key('stockable_switch'),
+                    title: Text(l10n.stockableLabel),
+                    value: formState.stockable,
+                    onChanged: fieldsEnabled
+                        ? controller.stockableChanged
+                        : null,
+                  ),
+                  SwitchListTile(
+                    key: const Key('perishable_switch'),
+                    title: Text(l10n.perishableLabel),
+                    value: formState.perishable,
+                    onChanged: fieldsEnabled
+                        ? controller.perishableChanged
+                        : null,
+                  ),
+                  SwitchListTile(
+                    key: const Key('seriable_switch'),
+                    title: Text(l10n.seriableLabel),
+                    value: formState.seriable,
+                    onChanged: fieldsEnabled
+                        ? controller.seriableChanged
+                        : null,
+                  ),
+                  SwitchListTile(
+                    key: const Key('purchasable_switch'),
+                    title: Text(l10n.purchasableLabel),
+                    value: formState.purchasable,
+                    onChanged: fieldsEnabled
+                        ? controller.purchasableChanged
+                        : null,
+                  ),
+                  SwitchListTile(
+                    key: const Key('salable_switch'),
+                    title: Text(l10n.salableLabel),
+                    value: formState.salable,
+                    onChanged: fieldsEnabled ? controller.salableChanged : null,
+                  ),
+                  SwitchListTile(
+                    key: const Key('invoiceable_switch'),
+                    title: Text(l10n.invoiceableLabel),
+                    value: formState.invoiceable,
+                    onChanged: fieldsEnabled
+                        ? controller.invoiceableChanged
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+            if (_isEdit && formState.prices.isNotEmpty)
+              FormGridChild(
+                span: FormGridSpan.full,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.pricesSubpanelTitle,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    ...formState.prices.map(
+                      (price) => ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          price.priceListName.trim().isEmpty
+                              ? l10n.unknownPriceList
+                              : price.priceListName,
+                        ),
+                        trailing: Text(price.price),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (allLabels.isNotEmpty)
+              FormGridChild(
+                span: FormGridSpan.full,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.labelsLabel,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    LabelMultiPicker(
+                      key: const Key('label_multi_picker'),
+                      labels: allLabels,
+                      selectedIds: formState.labelIds,
+                      onChanged: (newIds) {
+                        final current = formState.labelIds;
+                        final toggled = newIds.length > current.length
+                            ? newIds.firstWhere((id) => !current.contains(id))
+                            : current.firstWhere((id) => !newIds.contains(id));
+                        controller.labelToggled(toggled);
+                      },
+                      enabled: fieldsEnabled,
+                    ),
+                  ],
+                ),
+              ),
             if (canSave)
-              FilledButton(
-                key: const Key('save_button'),
-                onPressed: formState.submitting
-                    ? null
-                    : (_isEdit
-                          ? controller.submitUpdate
-                          : controller.submitCreate),
-                child: formState.submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.saveButton),
+              FormGridChild(
+                span: FormGridSpan.full,
+                FilledButton(
+                  key: const Key('save_button'),
+                  onPressed: formState.submitting
+                      ? null
+                      : (_isEdit
+                            ? controller.submitUpdate
+                            : controller.submitCreate),
+                  child: formState.submitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(l10n.saveButton),
+                ),
               ),
           ],
         ),
@@ -475,6 +484,132 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
     );
     if (confirmed == true) controller.deactivate();
+  }
+}
+
+/// The product photo thumbnail plus its edit affordances (upload / replace /
+/// remove) and any photo field error. Rendered as a full-width row in the
+/// responsive form grid (FR-012).
+class _PhotoSection extends StatelessWidget {
+  const _PhotoSection({
+    required this.formState,
+    required this.controller,
+    required this.canEditPhoto,
+    required this.hasPhoto,
+    required this.photoError,
+    required this.onPick,
+    required this.uploadLabel,
+    required this.replaceLabel,
+    required this.removeLabel,
+  });
+
+  final ProductFormState formState;
+  final ProductFormController controller;
+  final bool canEditPhoto;
+  final bool hasPhoto;
+  final String? photoError;
+  final VoidCallback onPick;
+  final String uploadLabel;
+  final String replaceLabel;
+  final String removeLabel;
+
+  Widget _thumbnail() {
+    if (formState.pendingPhotoBytes != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Image.memory(
+          formState.pendingPhotoBytes!,
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    return ProductPhoto(
+      photoUrl: formState.photoMarkedForRemoval ? null : formState.photo,
+      size: 96,
+    );
+  }
+
+  /// The upload / replace+remove controls, or `null` for read-only users.
+  /// [horizontal] left-aligns them (beside the thumbnail); otherwise they
+  /// center (stacked below the thumbnail on compact).
+  Widget? _actions({required bool horizontal}) {
+    if (!canEditPhoto) return null;
+    final children = hasPhoto
+        ? [
+            TextButton.icon(
+              key: const Key('replace_photo_button'),
+              onPressed: formState.submitting ? null : onPick,
+              icon: const Icon(Icons.upload),
+              label: Text(replaceLabel),
+            ),
+            TextButton.icon(
+              key: const Key('remove_photo_button'),
+              onPressed: formState.submitting
+                  ? null
+                  : controller.photoRemoveRequested,
+              icon: const Icon(Icons.delete_outline),
+              label: Text(removeLabel),
+            ),
+          ]
+        : [
+            TextButton.icon(
+              key: const Key('upload_photo_button'),
+              onPressed: formState.submitting ? null : onPick,
+              icon: const Icon(Icons.upload),
+              label: Text(uploadLabel),
+            ),
+          ];
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: horizontal
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      children: children,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // On compact widths, stack the actions below the thumbnail to avoid a
+    // horizontal overflow; otherwise place them beside it, reclaiming the row
+    // (FR-012, spec.md Edge Cases).
+    final compact = LayoutBreakpoints.isCompact(context);
+    final actions = _actions(horizontal: !compact);
+    final thumbnail = _thumbnail();
+
+    final Widget media;
+    if (actions == null) {
+      media = thumbnail;
+    } else if (compact) {
+      media = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [thumbnail, const SizedBox(height: 8), actions],
+      );
+    } else {
+      media = Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [thumbnail, const SizedBox(width: 16), actions],
+      );
+    }
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          media,
+          if (photoError case final error?) ...[
+            const SizedBox(height: 4),
+            Text(
+              error,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 
