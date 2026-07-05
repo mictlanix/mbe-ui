@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-05
 
-**Status**: Draft
+**Status**: Completed (2026-07-05)
 
 **Input**: User description: "Catalog UI/layout improvements for the product catalog screens. Two focused, presentation-only enhancements (no API or data-model changes): (1) declutter the products-list filter bar behind a Filters button + sheet with an active-filter count badge; (2) make the product detail screen use horizontal space on wide screens via a responsive multi-column form and a photo thumbnail with its action buttons on the same row."
 
