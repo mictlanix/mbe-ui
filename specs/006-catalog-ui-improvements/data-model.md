@@ -75,9 +75,13 @@ not new state (FR-014-compliant).
 `LayoutTier` enum gains a `large` member; `LayoutBreakpoints` gains `large = 1200`. Purely a
 threshold/type extension — no data flows through it beyond the existing width→tier mapping.
 
-| Tier | Width range | Form columns |
-|---|---|---|
-| `compact` | `< 600` | 1 |
-| `medium` | `600 – 839` | 2 |
-| `expanded` | `840 – 1199` | 2 |
-| `large` | `>= 1200` | 3 |
+| Tier | Width range | Grid columns (max) | Product form columns |
+|---|---|---|---|
+| `compact` | `< 600` | 1 | 1 |
+| `medium` | `600 – 839` | 2 | 2 |
+| `expanded` | `840 – 1199` | 2 | 2 |
+| `large` | `>= 1200` | 3 | 2 (capped via `maxColumns: 2`) |
+
+The shared `ResponsiveFormGrid` still derives up to three columns at the `large` tier for
+any future consumer, but the **product detail form** passes `maxColumns: 2` so it never
+exceeds two columns (paired fields read better than three narrow ones). See FR-009.

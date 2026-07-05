@@ -20,23 +20,29 @@ class FormGridChild {
   final FormGridSpan span;
 }
 
-/// Lays [children] out in a responsive 1/2/3-column grid inside a centered,
+/// Lays [children] out in a responsive column grid inside a centered,
 /// max-width container (constitution §VI; research.md §4). The column count is
 /// derived from the centralized [LayoutBreakpoints] tier of the available
-/// width: compact → 1, medium/expanded → 2, large → 3. Uses a [Wrap] so the
-/// trailing row of an odd child count is left-aligned rather than stretched,
-/// and so nothing forces horizontal scrolling.
+/// width: compact → 1, medium/expanded → 2, large → 3, then capped at
+/// [maxColumns]. Uses a [Wrap] so the trailing row of an odd child count is
+/// left-aligned rather than stretched, and so nothing forces horizontal
+/// scrolling.
 class ResponsiveFormGrid extends StatelessWidget {
   const ResponsiveFormGrid({
     super.key,
     required this.children,
     this.maxContentWidth = LayoutBreakpoints.large,
     this.spacing = 16,
+    this.maxColumns = 3,
   });
 
   final List<FormGridChild> children;
   final double maxContentWidth;
   final double spacing;
+
+  /// Upper bound on the column count regardless of width — e.g. a form that
+  /// prefers two columns even on the widest screens passes `maxColumns: 2`.
+  final int maxColumns;
 
   static int columnsForWidth(double width) =>
       switch (LayoutBreakpoints.tierOf(width)) {
@@ -53,7 +59,8 @@ class ResponsiveFormGrid extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final inner = constraints.maxWidth;
-            final columns = columnsForWidth(inner);
+            final tierColumns = columnsForWidth(inner);
+            final columns = tierColumns > maxColumns ? maxColumns : tierColumns;
             // Subtract a sub-pixel epsilon so floating-point rounding never
             // pushes the last cell past `inner` and forces an early wrap.
             final cellWidth =

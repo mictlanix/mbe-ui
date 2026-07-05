@@ -53,11 +53,13 @@ class ResponsiveFormGrid extends StatelessWidget {
     required this.children,      // list of FormGridChild
     this.maxContentWidth = 1200, // caps overall width; centered
     this.spacing = 16,           // horizontal + vertical gap between cells
+    this.maxColumns = 3,         // upper bound on columns regardless of width
   });
 
   final List<FormGridChild> children;
   final double maxContentWidth;
   final double spacing;
+  final int maxColumns;
 }
 
 /// Wraps a field/section with its column span.
@@ -73,7 +75,8 @@ enum FormGridSpan { single, full } // single = one column; full = whole row
 **Behavioral requirements**:
 
 - Column count derived once per layout via `LayoutBuilder` +
-  `LayoutBreakpoints.tierOf(constraints.maxWidth)`.
+  `LayoutBreakpoints.tierOf(constraints.maxWidth)`, then capped at `maxColumns` (the
+  product form passes `maxColumns: 2`).
 - `single` children occupy one column of width `(inner - spacing*(cols-1))/cols`; `full`
   children occupy the entire row regardless of column count.
 - Odd trailing cells are left-aligned (no stretching to fill) — `Wrap`-based.

@@ -653,10 +653,11 @@ void main() {
 
   group('responsive form layout (US2)', () {
     testWidgets(
-      'lays fields into multiple columns on a wide viewport without overflow '
-      '(FR-008, FR-009)',
+      'lays fields into exactly two columns on a wide viewport without '
+      'overflow (FR-008, FR-009)',
       (tester) async {
-        // A wide (large-tier) viewport: >= 1200 logical px -> 3 columns.
+        // A wide (large-tier) viewport: >= 1200 logical px. The form caps at
+        // two columns even here (maxColumns: 2).
         tester.view.physicalSize = const Size(1600, 1200);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.reset);
@@ -668,13 +669,48 @@ void main() {
         expect(find.byKey(const Key('code_field')), findsOneWidget);
         expect(find.byKey(const Key('name_field')), findsOneWidget);
 
-        // Code and Name sit on the same row (same top edge, different x) —
-        // i.e. the form is genuinely multi-column, not a single stack. A
+        // Code and Name pair on the first row (same top edge, different x). A
         // RenderFlex overflow during pump would already have failed the test.
         final codeTop = tester.getTopLeft(find.byKey(const Key('code_field')));
         final nameTop = tester.getTopLeft(find.byKey(const Key('name_field')));
         expect(codeTop.dy, nameTop.dy);
         expect(codeTop.dx, lessThan(nameTop.dx));
+
+        // Two columns only: the third field (unit) wraps to the next row under
+        // Code, rather than sitting in a third column beside Name.
+        final unitTop = tester.getTopLeft(
+          find.byKey(const Key('unit_of_measurement_field')),
+        );
+        expect(unitTop.dy, greaterThan(codeTop.dy));
+        expect(unitTop.dx, codeTop.dx);
+      },
+    );
+
+    testWidgets(
+      'brackets the attributes/prices band with dividers (Material 3)',
+      (tester) async {
+        tester.view.physicalSize = const Size(1600, 1200);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
+
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+        final topDivider = tester.getTopLeft(
+          find.byKey(const Key('attributes_divider_top')),
+        );
+        final bottomDivider = tester.getTopLeft(
+          find.byKey(const Key('attributes_divider_bottom')),
+        );
+        final stockable = tester.getTopLeft(
+          find.byKey(const Key('stockable_switch')),
+        );
+        // Top divider is above the switches, bottom divider below them.
+        expect(topDivider.dy, lessThan(stockable.dy));
+        expect(bottomDivider.dy, greaterThan(stockable.dy));
       },
     );
 

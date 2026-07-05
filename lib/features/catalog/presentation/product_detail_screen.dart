@@ -118,6 +118,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: ResponsiveFormGrid(
+          // Two columns is the widest this form uses — the text fields read
+          // best paired rather than in three narrow columns (US2, FR-009).
+          maxColumns: 2,
           children: [
             if (formState.error != null)
               FormGridChild(
@@ -310,6 +313,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 maxLines: 3,
               ),
             ),
+            const FormGridChild(
+              span: FormGridSpan.full,
+              Divider(key: Key('attributes_divider_top')),
+            ),
             FormGridChild(
               span: FormGridSpan.full,
               _SwitchesPricesBand(
@@ -392,6 +399,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       )
                     : null,
               ),
+            ),
+            const FormGridChild(
+              span: FormGridSpan.full,
+              Divider(key: Key('attributes_divider_bottom')),
             ),
             if (allLabels.isNotEmpty)
               FormGridChild(

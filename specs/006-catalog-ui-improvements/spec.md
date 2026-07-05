@@ -74,10 +74,10 @@ respects read-only/view mode exactly as before.
 **Acceptance Scenarios**:
 
 1. **Given** a viewport at the widest tier, **When** the product form renders, **Then**
-   the text fields are laid out in three columns within a constrained maximum content
-   width (not stretched edge-to-edge).
+   the text fields are laid out in two columns within a constrained maximum content
+   width (not stretched edge-to-edge, and not narrowed into three columns).
 2. **Given** a viewport at the medium/expanded tier, **When** the form renders, **Then**
-   fields are laid out in two columns.
+   fields are laid out in two columns (identical to the widest tier).
 3. **Given** a viewport at the compact tier, **When** the form renders, **Then** fields
    are laid out in a single column identical in behavior to today.
 4. **Given** view (read-only) mode, **When** the form renders at any width, **Then** the
@@ -91,6 +91,9 @@ respects read-only/view mode exactly as before.
    renders, **Then** the boolean attribute switches appear in the left column and the
    Precios section in the right column (a two-column band); **and given** a compact
    viewport, they stack vertically (switches above prices).
+8. **Given** any viewport, **When** the form renders, **Then** a horizontal divider
+   appears immediately before and immediately after the attributes/prices band,
+   visually separating it from the fields above and the labels below.
 
 ---
 
@@ -168,7 +171,10 @@ remove still work and that any photo validation error still displays.
 - **FR-008**: The product form MUST be constrained to a maximum content width rather than
   stretching text fields across the full width of large displays.
 - **FR-009**: The product form's fields MUST lay out in a responsive column grid: one
-  column on compact, two on medium/expanded, and three on the widest tier.
+  column on compact and two columns on every larger tier (medium/expanded and the widest
+  tier alike). The form MUST NOT render three columns — paired fields read better than
+  three narrow columns on wide displays. (The shared grid still supports three columns for
+  other potential consumers; this form caps itself at two.)
 - **FR-010**: The responsive layout MUST apply identically in create, edit, and view
   (read-only) modes, preserving each field's existing order, label, validation, and
   enabled/disabled state.
@@ -185,6 +191,9 @@ remove still work and that any photo validation error still displays.
   switch row otherwise wastes. On compact viewports the two sections stack vertically
   (switches above prices). When a product has no price list, the switches occupy the full
   band width. All switch keys, values, and enabled/read-only gating are preserved.
+- **FR-018**: The attributes/prices band MUST be visually delimited by a horizontal
+  divider immediately before and after it, using the standard Material 3 divider, to
+  group it apart from the field grid above and the labels section below.
 
 **Cross-cutting constraints**
 
