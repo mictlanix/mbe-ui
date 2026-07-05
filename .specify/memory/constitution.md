@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.3.1
+Version change: 1.0.0 → 1.4.0
 Modified principles:
   - VI. Desktop/Web-First, Compact-Ready Layout — materially expanded with
     explicit cross-screen consistency requirements for shared data/list
@@ -12,7 +12,9 @@ Modified principles:
     [1.3.0], then clarified to define the action set as Create/View
     (read-only Edit form)/Edit/Delete and to require a fixed
     left-to-right icon order, not just matching icons, across modules
-    [1.3.1]
+    [1.3.1], then expanded with responsive multi-column form layout (shared
+    form-grid, no full-width single-field stretch on wide displays) and
+    section-divider / side-by-side grouping guidance [1.4.0]
 Added sections: none (expansion of existing principle, not a new principle)
 Removed sections: none
 Templates requiring updates:
@@ -171,6 +173,21 @@ multi-column forms.
     messages, status badges, and primary navigation/identifier links —
     MUST NOT be ellipsized; only secondary/descriptive text columns may
     be truncated.
+- Multi-field forms (create/edit/detail screens) MUST use the shared
+  responsive multi-column form layout from `core/widgets/` rather than a
+  full-width single-column stack: one column on the Compact tier and two or
+  more columns on wider tiers, so text fields never stretch across the full
+  width of a wide/desktop display. A screen MAY cap its own maximum column
+  count (e.g. two columns even on the widest tier when paired fields read
+  better than three narrow ones) but MUST NOT stretch single fields edge to
+  edge. This column logic MUST live in the shared form-grid component, not be
+  re-implemented per screen.
+- Logically distinct groups within a form or panel (an attribute/toggle
+  block, a prices sub-panel, a labels section, etc.) SHOULD be delimited from
+  the surrounding content with the shared Material 3 divider where it improves
+  scanability or reclaims otherwise-wasted vertical space, and naturally
+  related blocks SHOULD be paired side by side (a two-column band) on wide
+  tiers rather than each stacked full-width.
 
 **Rationale**: avoids four slightly-different implementations across
 sales/inventory/invoicing/accounting and keeps a future mobile tier viable
@@ -240,4 +257,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.3.1 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-06-20
+**Version**: 1.4.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-05

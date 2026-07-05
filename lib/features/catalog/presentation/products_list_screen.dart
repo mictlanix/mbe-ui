@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
+import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
@@ -34,7 +35,6 @@ class ProductsListScreen extends ConsumerWidget {
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
     final canDelete = access.can(SystemObject.products, AccessRight.delete);
     final l10n = AppLocalizations.of(context)!;
-    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -62,53 +62,23 @@ class ProductsListScreen extends ConsumerWidget {
                 onSubmitted: filterController.searchChanged,
               ),
               filters: [
-                FilterChip(
-                  key: const Key('products_filter_show_inactive'),
-                  label: Text(l10n.productsShowInactiveFilter),
-                  selected: filter.deactivated == null,
-                  onSelected: (selected) => filterController.deactivatedChanged(
-                    selected ? null : false,
+                Badge.count(
+                  count: filter.activeFilterCount,
+                  isLabelVisible: filter.hasActiveFilters,
+                  child: IconButton.outlined(
+                    key: const Key('products_filter_button'),
+                    icon: const Icon(Icons.tune),
+                    tooltip: l10n.filtersTooltip,
+                    onPressed: () => showCatalogFilterSheet(
+                      context,
+                      title: l10n.filtersButton,
+                      clearAllLabel: l10n.clearAllFilters,
+                      applyLabel: l10n.applyFilters,
+                      onClearAll: filterController.reset,
+                      builder: (_) => const _ProductFiltersPanel(),
+                    ),
                   ),
                 ),
-                _TriStateFilterChip(
-                  chipKey: const Key('products_filter_stockable'),
-                  label: l10n.productsStockableFilter,
-                  value: filter.stockable,
-                  onChanged: filterController.stockableChanged,
-                ),
-                _TriStateFilterChip(
-                  chipKey: const Key('products_filter_salable'),
-                  label: l10n.productsSalableFilter,
-                  value: filter.salable,
-                  onChanged: filterController.salableChanged,
-                ),
-                _TriStateFilterChip(
-                  chipKey: const Key('products_filter_purchasable'),
-                  label: l10n.productsPurchasableFilter,
-                  value: filter.purchasable,
-                  onChanged: filterController.purchasableChanged,
-                ),
-                if (allLabels.isNotEmpty)
-                  DropdownButton<int?>(
-                    key: const Key('products_filter_label'),
-                    value: filter.label,
-                    hint: Text(l10n.productsLabelFilter),
-                    underline: const SizedBox.shrink(),
-                    isDense: true,
-                    items: [
-                      DropdownMenuItem<int?>(
-                        value: null,
-                        child: Text(l10n.productsAllLabels),
-                      ),
-                      ...allLabels.map(
-                        (lb) => DropdownMenuItem<int?>(
-                          value: lb.labelId,
-                          child: Text(lb.name),
-                        ),
-                      ),
-                    ],
-                    onChanged: filterController.labelChanged,
-                  ),
               ],
             ),
           ),
@@ -227,6 +197,83 @@ class ProductsListScreen extends ConsumerWidget {
           ref.read(productsListControllerProvider).value?.pageIndex ?? 0;
       ref.read(productsListControllerProvider.notifier).goToPage(pageIndex);
     }
+  }
+}
+
+/// The products catalog's facet filters (show-inactive, the three tri-state
+/// attribute chips, and the label selector), rendered inside the filter panel
+/// opened from the Filters button (FR-001). A [ConsumerWidget] so the controls
+/// stay reactive to [ProductFilterController] changes while the sheet — which
+/// lives on its own navigator route — is open.
+class _ProductFiltersPanel extends ConsumerWidget {
+  const _ProductFiltersPanel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filter = ref.watch(productFilterControllerProvider);
+    final filterController = ref.read(productFilterControllerProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
+    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            FilterChip(
+              key: const Key('products_filter_show_inactive'),
+              label: Text(l10n.productsShowInactiveFilter),
+              selected: filter.deactivated == null,
+              onSelected: (selected) =>
+                  filterController.deactivatedChanged(selected ? null : false),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('products_filter_stockable'),
+              label: l10n.productsStockableFilter,
+              value: filter.stockable,
+              onChanged: filterController.stockableChanged,
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('products_filter_salable'),
+              label: l10n.productsSalableFilter,
+              value: filter.salable,
+              onChanged: filterController.salableChanged,
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('products_filter_purchasable'),
+              label: l10n.productsPurchasableFilter,
+              value: filter.purchasable,
+              onChanged: filterController.purchasableChanged,
+            ),
+          ],
+        ),
+        if (allLabels.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          DropdownButton<int?>(
+            key: const Key('products_filter_label'),
+            value: filter.label,
+            hint: Text(l10n.productsLabelFilter),
+            isExpanded: true,
+            items: [
+              DropdownMenuItem<int?>(
+                value: null,
+                child: Text(l10n.productsAllLabels),
+              ),
+              ...allLabels.map(
+                (lb) => DropdownMenuItem<int?>(
+                  value: lb.labelId,
+                  child: Text(lb.name),
+                ),
+              ),
+            ],
+            onChanged: filterController.labelChanged,
+          ),
+        ],
+      ],
+    );
   }
 }
 
