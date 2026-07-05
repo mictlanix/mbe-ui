@@ -3,13 +3,12 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/store_summary.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'warehouse_response.g.dart';
+part 'warehouse_summary.g.dart';
 
-/// WarehouseResponse
+/// Flat Warehouse representation used when embedded as another resource's FK.
 ///
 /// Properties:
 /// * [warehouseId] 
@@ -19,12 +18,12 @@ part 'warehouse_response.g.dart';
 /// * [comment] 
 /// * [disabled] 
 @BuiltValue()
-abstract class WarehouseResponse implements Built<WarehouseResponse, WarehouseResponseBuilder> {
+abstract class WarehouseSummary implements Built<WarehouseSummary, WarehouseSummaryBuilder> {
   @BuiltValueField(wireName: r'warehouse_id')
   int get warehouseId;
 
   @BuiltValueField(wireName: r'store')
-  StoreSummary get store;
+  int get store;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -38,27 +37,27 @@ abstract class WarehouseResponse implements Built<WarehouseResponse, WarehouseRe
   @BuiltValueField(wireName: r'disabled')
   bool? get disabled;
 
-  WarehouseResponse._();
+  WarehouseSummary._();
 
-  factory WarehouseResponse([void updates(WarehouseResponseBuilder b)]) = _$WarehouseResponse;
+  factory WarehouseSummary([void updates(WarehouseSummaryBuilder b)]) = _$WarehouseSummary;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(WarehouseResponseBuilder b) => b;
+  static void _defaults(WarehouseSummaryBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<WarehouseResponse> get serializer => _$WarehouseResponseSerializer();
+  static Serializer<WarehouseSummary> get serializer => _$WarehouseSummarySerializer();
 }
 
-class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResponse> {
+class _$WarehouseSummarySerializer implements PrimitiveSerializer<WarehouseSummary> {
   @override
-  final Iterable<Type> types = const [WarehouseResponse, _$WarehouseResponse];
+  final Iterable<Type> types = const [WarehouseSummary, _$WarehouseSummary];
 
   @override
-  final String wireName = r'WarehouseResponse';
+  final String wireName = r'WarehouseSummary';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    WarehouseResponse object, {
+    WarehouseSummary object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     yield r'warehouse_id';
@@ -69,7 +68,7 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
     yield r'store';
     yield serializers.serialize(
       object.store,
-      specifiedType: const FullType(StoreSummary),
+      specifiedType: const FullType(int),
     );
     yield r'code';
     yield serializers.serialize(
@@ -96,7 +95,7 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
   @override
   Object serialize(
     Serializers serializers,
-    WarehouseResponse object, {
+    WarehouseSummary object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -107,7 +106,7 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required WarehouseResponseBuilder result,
+    required WarehouseSummaryBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -124,9 +123,9 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
         case r'store':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(StoreSummary),
-          ) as StoreSummary;
-          result.store.replace(valueDes);
+            specifiedType: const FullType(int),
+          ) as int;
+          result.store = valueDes;
           break;
         case r'code':
           final valueDes = serializers.deserialize(
@@ -167,12 +166,12 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
   }
 
   @override
-  WarehouseResponse deserialize(
+  WarehouseSummary deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = WarehouseResponseBuilder();
+    final result = WarehouseSummaryBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

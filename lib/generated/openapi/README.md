@@ -273,6 +273,7 @@ Class | Method | HTTP request | Description
  - [SatCatalogResponse](doc/SatCatalogResponse.md)
  - [StoreCreate](doc/StoreCreate.md)
  - [StoreResponse](doc/StoreResponse.md)
+ - [StoreSummary](doc/StoreSummary.md)
  - [StoreUpdate](doc/StoreUpdate.md)
  - [SupplierCreate](doc/SupplierCreate.md)
  - [SupplierResponse](doc/SupplierResponse.md)
@@ -298,6 +299,7 @@ Class | Method | HTTP request | Description
  - [VehicleUpdate](doc/VehicleUpdate.md)
  - [WarehouseCreate](doc/WarehouseCreate.md)
  - [WarehouseResponse](doc/WarehouseResponse.md)
+ - [WarehouseSummary](doc/WarehouseSummary.md)
  - [WarehouseUpdate](doc/WarehouseUpdate.md)
 
 

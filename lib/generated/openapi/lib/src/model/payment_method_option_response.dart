@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/store_summary.dart';
+import 'package:mbe_api_client/src/model/warehouse_summary.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -26,10 +28,10 @@ abstract class PaymentMethodOptionResponse implements Built<PaymentMethodOptionR
   int get paymentMethodOptionId;
 
   @BuiltValueField(wireName: r'store')
-  int get store;
+  StoreSummary get store;
 
   @BuiltValueField(wireName: r'warehouse')
-  int? get warehouse;
+  WarehouseSummary? get warehouse;
 
   @BuiltValueField(wireName: r'name')
   String get name;
@@ -80,12 +82,12 @@ class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<Pay
     yield r'store';
     yield serializers.serialize(
       object.store,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(StoreSummary),
     );
     yield r'warehouse';
     yield object.warehouse == null ? null : serializers.serialize(
       object.warehouse,
-      specifiedType: const FullType.nullable(int),
+      specifiedType: const FullType.nullable(WarehouseSummary),
     );
     yield r'name';
     yield serializers.serialize(
@@ -150,17 +152,17 @@ class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<Pay
         case r'store':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.store = valueDes;
+            specifiedType: const FullType(StoreSummary),
+          ) as StoreSummary;
+          result.store.replace(valueDes);
           break;
         case r'warehouse':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+            specifiedType: const FullType.nullable(WarehouseSummary),
+          ) as WarehouseSummary?;
           if (valueDes == null) continue;
-          result.warehouse = valueDes;
+          result.warehouse.replace(valueDes);
           break;
         case r'name':
           final valueDes = serializers.deserialize(

@@ -3,32 +3,28 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/employee_response.dart';
-import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'customer_response.g.dart';
+part 'store_summary.g.dart';
 
-/// CustomerResponse
+/// Flat Store representation used when embedded as another resource's FK.
 ///
 /// Properties:
-/// * [customerId] 
+/// * [storeId] 
 /// * [code] 
 /// * [name] 
-/// * [zone] 
-/// * [creditLimit] 
-/// * [creditDays] 
-/// * [priceList] 
-/// * [shipping] 
-/// * [shippingRequiredDocument] 
-/// * [salesperson] 
+/// * [location] 
+/// * [address] 
+/// * [taxpayer] 
+/// * [logo] 
+/// * [receiptMessage] 
+/// * [defaultBatch] 
 /// * [disabled] 
-/// * [comment] 
 @BuiltValue()
-abstract class CustomerResponse implements Built<CustomerResponse, CustomerResponseBuilder> {
-  @BuiltValueField(wireName: r'customer_id')
-  int get customerId;
+abstract class StoreSummary implements Built<StoreSummary, StoreSummaryBuilder> {
+  @BuiltValueField(wireName: r'store_id')
+  int get storeId;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -36,59 +32,53 @@ abstract class CustomerResponse implements Built<CustomerResponse, CustomerRespo
   @BuiltValueField(wireName: r'name')
   String get name;
 
-  @BuiltValueField(wireName: r'zone')
-  String? get zone;
+  @BuiltValueField(wireName: r'location')
+  String get location;
 
-  @BuiltValueField(wireName: r'credit_limit')
-  String get creditLimit;
+  @BuiltValueField(wireName: r'address')
+  int get address;
 
-  @BuiltValueField(wireName: r'credit_days')
-  int get creditDays;
+  @BuiltValueField(wireName: r'taxpayer')
+  String get taxpayer;
 
-  @BuiltValueField(wireName: r'price_list')
-  PriceListResponse get priceList;
+  @BuiltValueField(wireName: r'logo')
+  String get logo;
 
-  @BuiltValueField(wireName: r'shipping')
-  bool get shipping;
+  @BuiltValueField(wireName: r'receipt_message')
+  String? get receiptMessage;
 
-  @BuiltValueField(wireName: r'shipping_required_document')
-  bool get shippingRequiredDocument;
-
-  @BuiltValueField(wireName: r'salesperson')
-  EmployeeResponse? get salesperson;
+  @BuiltValueField(wireName: r'default_batch')
+  String? get defaultBatch;
 
   @BuiltValueField(wireName: r'disabled')
   bool? get disabled;
 
-  @BuiltValueField(wireName: r'comment')
-  String? get comment;
+  StoreSummary._();
 
-  CustomerResponse._();
-
-  factory CustomerResponse([void updates(CustomerResponseBuilder b)]) = _$CustomerResponse;
+  factory StoreSummary([void updates(StoreSummaryBuilder b)]) = _$StoreSummary;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CustomerResponseBuilder b) => b;
+  static void _defaults(StoreSummaryBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CustomerResponse> get serializer => _$CustomerResponseSerializer();
+  static Serializer<StoreSummary> get serializer => _$StoreSummarySerializer();
 }
 
-class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerResponse> {
+class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
   @override
-  final Iterable<Type> types = const [CustomerResponse, _$CustomerResponse];
+  final Iterable<Type> types = const [StoreSummary, _$StoreSummary];
 
   @override
-  final String wireName = r'CustomerResponse';
+  final String wireName = r'StoreSummary';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    CustomerResponse object, {
+    StoreSummary object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'customer_id';
+    yield r'store_id';
     yield serializers.serialize(
-      object.customerId,
+      object.storeId,
       specifiedType: const FullType(int),
     );
     yield r'code';
@@ -101,57 +91,47 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
       object.name,
       specifiedType: const FullType(String),
     );
-    yield r'zone';
-    yield object.zone == null ? null : serializers.serialize(
-      object.zone,
-      specifiedType: const FullType.nullable(String),
-    );
-    yield r'credit_limit';
+    yield r'location';
     yield serializers.serialize(
-      object.creditLimit,
+      object.location,
       specifiedType: const FullType(String),
     );
-    yield r'credit_days';
+    yield r'address';
     yield serializers.serialize(
-      object.creditDays,
+      object.address,
       specifiedType: const FullType(int),
     );
-    yield r'price_list';
+    yield r'taxpayer';
     yield serializers.serialize(
-      object.priceList,
-      specifiedType: const FullType(PriceListResponse),
+      object.taxpayer,
+      specifiedType: const FullType(String),
     );
-    yield r'shipping';
+    yield r'logo';
     yield serializers.serialize(
-      object.shipping,
-      specifiedType: const FullType(bool),
+      object.logo,
+      specifiedType: const FullType(String),
     );
-    yield r'shipping_required_document';
-    yield serializers.serialize(
-      object.shippingRequiredDocument,
-      specifiedType: const FullType(bool),
+    yield r'receipt_message';
+    yield object.receiptMessage == null ? null : serializers.serialize(
+      object.receiptMessage,
+      specifiedType: const FullType.nullable(String),
     );
-    yield r'salesperson';
-    yield object.salesperson == null ? null : serializers.serialize(
-      object.salesperson,
-      specifiedType: const FullType.nullable(EmployeeResponse),
+    yield r'default_batch';
+    yield object.defaultBatch == null ? null : serializers.serialize(
+      object.defaultBatch,
+      specifiedType: const FullType.nullable(String),
     );
     yield r'disabled';
     yield object.disabled == null ? null : serializers.serialize(
       object.disabled,
       specifiedType: const FullType.nullable(bool),
     );
-    yield r'comment';
-    yield object.comment == null ? null : serializers.serialize(
-      object.comment,
-      specifiedType: const FullType.nullable(String),
-    );
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    CustomerResponse object, {
+    StoreSummary object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -162,19 +142,19 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required CustomerResponseBuilder result,
+    required StoreSummaryBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'customer_id':
+        case r'store_id':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(int),
           ) as int;
-          result.customerId = valueDes;
+          result.storeId = valueDes;
           break;
         case r'code':
           final valueDes = serializers.deserialize(
@@ -190,56 +170,49 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
           ) as String;
           result.name = valueDes;
           break;
-        case r'zone':
+        case r'location':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.location = valueDes;
+          break;
+        case r'address':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(int),
+          ) as int;
+          result.address = valueDes;
+          break;
+        case r'taxpayer':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.taxpayer = valueDes;
+          break;
+        case r'logo':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(String),
+          ) as String;
+          result.logo = valueDes;
+          break;
+        case r'receipt_message':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType.nullable(String),
           ) as String?;
           if (valueDes == null) continue;
-          result.zone = valueDes;
+          result.receiptMessage = valueDes;
           break;
-        case r'credit_limit':
+        case r'default_batch':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.creditLimit = valueDes;
-          break;
-        case r'credit_days':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.creditDays = valueDes;
-          break;
-        case r'price_list':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(PriceListResponse),
-          ) as PriceListResponse;
-          result.priceList.replace(valueDes);
-          break;
-        case r'shipping':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
-          result.shipping = valueDes;
-          break;
-        case r'shipping_required_document':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
-          result.shippingRequiredDocument = valueDes;
-          break;
-        case r'salesperson':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(EmployeeResponse),
-          ) as EmployeeResponse?;
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
           if (valueDes == null) continue;
-          result.salesperson.replace(valueDes);
+          result.defaultBatch = valueDes;
           break;
         case r'disabled':
           final valueDes = serializers.deserialize(
@@ -248,14 +221,6 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
           ) as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
-          break;
-        case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.comment = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -266,12 +231,12 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
   }
 
   @override
-  CustomerResponse deserialize(
+  StoreSummary deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = CustomerResponseBuilder();
+    final result = StoreSummaryBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

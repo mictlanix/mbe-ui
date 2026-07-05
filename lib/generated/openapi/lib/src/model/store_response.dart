@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -33,7 +34,7 @@ abstract class StoreResponse implements Built<StoreResponse, StoreResponseBuilde
   String get name;
 
   @BuiltValueField(wireName: r'location')
-  String get location;
+  SatCatalogResponse get location;
 
   @BuiltValueField(wireName: r'address')
   int get address;
@@ -94,7 +95,7 @@ class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
     yield r'location';
     yield serializers.serialize(
       object.location,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(SatCatalogResponse),
     );
     yield r'address';
     yield serializers.serialize(
@@ -173,9 +174,9 @@ class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
         case r'location':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.location = valueDes;
+            specifiedType: const FullType(SatCatalogResponse),
+          ) as SatCatalogResponse;
+          result.location.replace(valueDes);
           break;
         case r'address':
           final valueDes = serializers.deserialize(

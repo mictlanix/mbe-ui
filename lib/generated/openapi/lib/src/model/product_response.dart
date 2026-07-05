@@ -6,6 +6,8 @@
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/product_price_response.dart';
+import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
+import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -72,10 +74,10 @@ abstract class ProductResponse implements Built<ProductResponse, ProductResponse
   String? get location;
 
   @BuiltValueField(wireName: r'unit_of_measurement')
-  String get unitOfMeasurement;
+  SatCatalogResponse get unitOfMeasurement;
 
   @BuiltValueField(wireName: r'key')
-  String? get key;
+  SatCatalogResponse? get key;
 
   @BuiltValueField(wireName: r'tax_rate')
   String get taxRate;
@@ -93,7 +95,7 @@ abstract class ProductResponse implements Built<ProductResponse, ProductResponse
   int get minOrderQty;
 
   @BuiltValueField(wireName: r'supplier')
-  int? get supplier;
+  SupplierResponse? get supplier;
 
   @BuiltValueField(wireName: r'stockable')
   bool get stockable;
@@ -201,12 +203,12 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
     yield r'unit_of_measurement';
     yield serializers.serialize(
       object.unitOfMeasurement,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(SatCatalogResponse),
     );
     yield r'key';
     yield object.key == null ? null : serializers.serialize(
       object.key,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType.nullable(SatCatalogResponse),
     );
     yield r'tax_rate';
     yield serializers.serialize(
@@ -236,7 +238,7 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
     yield r'supplier';
     yield object.supplier == null ? null : serializers.serialize(
       object.supplier,
-      specifiedType: const FullType.nullable(int),
+      specifiedType: const FullType.nullable(SupplierResponse),
     );
     yield r'stockable';
     yield serializers.serialize(
@@ -392,17 +394,17 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
         case r'unit_of_measurement':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.unitOfMeasurement = valueDes;
+            specifiedType: const FullType(SatCatalogResponse),
+          ) as SatCatalogResponse;
+          result.unitOfMeasurement.replace(valueDes);
           break;
         case r'key':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+            specifiedType: const FullType.nullable(SatCatalogResponse),
+          ) as SatCatalogResponse?;
           if (valueDes == null) continue;
-          result.key = valueDes;
+          result.key.replace(valueDes);
           break;
         case r'tax_rate':
           final valueDes = serializers.deserialize(
@@ -442,10 +444,10 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
         case r'supplier':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+            specifiedType: const FullType.nullable(SupplierResponse),
+          ) as SupplierResponse?;
           if (valueDes == null) continue;
-          result.supplier = valueDes;
+          result.supplier.replace(valueDes);
           break;
         case r'stockable':
           final valueDes = serializers.deserialize(

@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -28,10 +29,10 @@ abstract class TaxpayerRecipientResponse implements Built<TaxpayerRecipientRespo
   String get email;
 
   @BuiltValueField(wireName: r'postal_code')
-  String? get postalCode;
+  SatCatalogResponse? get postalCode;
 
   @BuiltValueField(wireName: r'regime')
-  String? get regime;
+  SatCatalogResponse? get regime;
 
   TaxpayerRecipientResponse._();
 
@@ -74,12 +75,12 @@ class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<Taxpa
     yield r'postal_code';
     yield object.postalCode == null ? null : serializers.serialize(
       object.postalCode,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType.nullable(SatCatalogResponse),
     );
     yield r'regime';
     yield object.regime == null ? null : serializers.serialize(
       object.regime,
-      specifiedType: const FullType.nullable(String),
+      specifiedType: const FullType.nullable(SatCatalogResponse),
     );
   }
 
@@ -129,18 +130,18 @@ class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<Taxpa
         case r'postal_code':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+            specifiedType: const FullType.nullable(SatCatalogResponse),
+          ) as SatCatalogResponse?;
           if (valueDes == null) continue;
-          result.postalCode = valueDes;
+          result.postalCode.replace(valueDes);
           break;
         case r'regime':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+            specifiedType: const FullType.nullable(SatCatalogResponse),
+          ) as SatCatalogResponse?;
           if (valueDes == null) continue;
-          result.regime = valueDes;
+          result.regime.replace(valueDes);
           break;
         default:
           unhandled.add(key);

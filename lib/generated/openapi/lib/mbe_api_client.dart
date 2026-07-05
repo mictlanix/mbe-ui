@@ -107,6 +107,7 @@ export 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 export 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 export 'package:mbe_api_client/src/model/store_create.dart';
 export 'package:mbe_api_client/src/model/store_response.dart';
+export 'package:mbe_api_client/src/model/store_summary.dart';
 export 'package:mbe_api_client/src/model/store_update.dart';
 export 'package:mbe_api_client/src/model/supplier_create.dart';
 export 'package:mbe_api_client/src/model/supplier_response.dart';
@@ -132,5 +133,6 @@ export 'package:mbe_api_client/src/model/vehicle_response.dart';
 export 'package:mbe_api_client/src/model/vehicle_update.dart';
 export 'package:mbe_api_client/src/model/warehouse_create.dart';
 export 'package:mbe_api_client/src/model/warehouse_response.dart';
+export 'package:mbe_api_client/src/model/warehouse_summary.dart';
 export 'package:mbe_api_client/src/model/warehouse_update.dart';
 

@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/store_summary.dart';
+import 'package:mbe_api_client/src/model/warehouse_summary.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -24,7 +26,7 @@ abstract class PointSaleResponse implements Built<PointSaleResponse, PointSaleRe
   int get pointSaleId;
 
   @BuiltValueField(wireName: r'store')
-  int get store;
+  StoreSummary get store;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -33,7 +35,7 @@ abstract class PointSaleResponse implements Built<PointSaleResponse, PointSaleRe
   String get name;
 
   @BuiltValueField(wireName: r'warehouse')
-  int get warehouse;
+  WarehouseSummary get warehouse;
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
@@ -72,7 +74,7 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
     yield r'store';
     yield serializers.serialize(
       object.store,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(StoreSummary),
     );
     yield r'code';
     yield serializers.serialize(
@@ -87,7 +89,7 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
     yield r'warehouse';
     yield serializers.serialize(
       object.warehouse,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(WarehouseSummary),
     );
     yield r'comment';
     yield object.comment == null ? null : serializers.serialize(
@@ -132,9 +134,9 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
         case r'store':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.store = valueDes;
+            specifiedType: const FullType(StoreSummary),
+          ) as StoreSummary;
+          result.store.replace(valueDes);
           break;
         case r'code':
           final valueDes = serializers.deserialize(
@@ -153,9 +155,9 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
         case r'warehouse':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.warehouse = valueDes;
+            specifiedType: const FullType(WarehouseSummary),
+          ) as WarehouseSummary;
+          result.warehouse.replace(valueDes);
           break;
         case r'comment':
           final valueDes = serializers.deserialize(
