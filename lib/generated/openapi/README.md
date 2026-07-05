@@ -114,6 +114,11 @@ Class | Method | HTTP request | Description
 [*PriceListsApi*](doc/PriceListsApi.md) | [**getPriceListApiV1PriceListsPriceListIdGet**](doc/PriceListsApi.md#getpricelistapiv1pricelistspricelistidget) | **GET** /api/v1/price-lists/{price_list_id} | Get Price List
 [*PriceListsApi*](doc/PriceListsApi.md) | [**listPriceListsApiV1PriceListsGet**](doc/PriceListsApi.md#listpricelistsapiv1pricelistsget) | **GET** /api/v1/price-lists | List Price Lists
 [*PriceListsApi*](doc/PriceListsApi.md) | [**updatePriceListApiV1PriceListsPriceListIdPut**](doc/PriceListsApi.md#updatepricelistapiv1pricelistspricelistidput) | **PUT** /api/v1/price-lists/{price_list_id} | Update Price List
+[*ProductPricesApi*](doc/ProductPricesApi.md) | [**createProductPriceApiV1ProductPricesPost**](doc/ProductPricesApi.md#createproductpriceapiv1productpricespost) | **POST** /api/v1/product-prices | Create Product Price
+[*ProductPricesApi*](doc/ProductPricesApi.md) | [**deleteProductPriceApiV1ProductPricesProductPriceIdDelete**](doc/ProductPricesApi.md#deleteproductpriceapiv1productpricesproductpriceiddelete) | **DELETE** /api/v1/product-prices/{product_price_id} | Delete Product Price
+[*ProductPricesApi*](doc/ProductPricesApi.md) | [**getProductPriceApiV1ProductPricesProductPriceIdGet**](doc/ProductPricesApi.md#getproductpriceapiv1productpricesproductpriceidget) | **GET** /api/v1/product-prices/{product_price_id} | Get Product Price
+[*ProductPricesApi*](doc/ProductPricesApi.md) | [**listProductPricesApiV1ProductPricesGet**](doc/ProductPricesApi.md#listproductpricesapiv1productpricesget) | **GET** /api/v1/product-prices | List Product Prices
+[*ProductPricesApi*](doc/ProductPricesApi.md) | [**updateProductPriceApiV1ProductPricesProductPriceIdPut**](doc/ProductPricesApi.md#updateproductpriceapiv1productpricesproductpriceidput) | **PUT** /api/v1/product-prices/{product_price_id} | Update Product Price
 [*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**createProductionSiteApiV1ProductionSitesPost**](doc/ProductionSitesApi.md#createproductionsiteapiv1productionsitespost) | **POST** /api/v1/production-sites | Create Production Site
 [*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**deleteProductionSiteApiV1ProductionSitesProductionSiteIdDelete**](doc/ProductionSitesApi.md#deleteproductionsiteapiv1productionsitesproductionsiteiddelete) | **DELETE** /api/v1/production-sites/{production_site_id} | Delete Production Site
 [*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**getProductionSiteApiV1ProductionSitesProductionSiteIdGet**](doc/ProductionSitesApi.md#getproductionsiteapiv1productionsitesproductionsiteidget) | **GET** /api/v1/production-sites/{production_site_id} | Get Production Site
@@ -221,6 +226,8 @@ Class | Method | HTTP request | Description
  - [ExpenseResponse](doc/ExpenseResponse.md)
  - [ExpenseUpdate](doc/ExpenseUpdate.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
+ - [HighProfit](doc/HighProfit.md)
+ - [HighProfit1](doc/HighProfit1.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
  - [HighProfitMargin1](doc/HighProfitMargin1.md)
  - [LabelCreate](doc/LabelCreate.md)
@@ -236,6 +243,7 @@ Class | Method | HTTP request | Description
  - [ListResponsePointSaleResponse](doc/ListResponsePointSaleResponse.md)
  - [ListResponsePriceListResponse](doc/ListResponsePriceListResponse.md)
  - [ListResponseProductListItem](doc/ListResponseProductListItem.md)
+ - [ListResponseProductPriceResponse](doc/ListResponseProductPriceResponse.md)
  - [ListResponseProductionSiteResponse](doc/ListResponseProductionSiteResponse.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
  - [ListResponseStoreResponse](doc/ListResponseStoreResponse.md)
@@ -245,6 +253,8 @@ Class | Method | HTTP request | Description
  - [ListResponseVehicleResponse](doc/ListResponseVehicleResponse.md)
  - [ListResponseWarehouseResponse](doc/ListResponseWarehouseResponse.md)
  - [LocationInner](doc/LocationInner.md)
+ - [LowProfit](doc/LowProfit.md)
+ - [LowProfit1](doc/LowProfit1.md)
  - [LowProfitMargin](doc/LowProfitMargin.md)
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)
@@ -253,6 +263,8 @@ Class | Method | HTTP request | Description
  - [PointSaleCreate](doc/PointSaleCreate.md)
  - [PointSaleResponse](doc/PointSaleResponse.md)
  - [PointSaleUpdate](doc/PointSaleUpdate.md)
+ - [Price](doc/Price.md)
+ - [Price1](doc/Price1.md)
  - [PriceListCreate](doc/PriceListCreate.md)
  - [PriceListResponse](doc/PriceListResponse.md)
  - [PriceListUpdate](doc/PriceListUpdate.md)
@@ -261,7 +273,9 @@ Class | Method | HTTP request | Description
  - [ProductCreate](doc/ProductCreate.md)
  - [ProductListItem](doc/ProductListItem.md)
  - [ProductMergeRequest](doc/ProductMergeRequest.md)
+ - [ProductPriceCreate](doc/ProductPriceCreate.md)
  - [ProductPriceResponse](doc/ProductPriceResponse.md)
+ - [ProductPriceUpdate](doc/ProductPriceUpdate.md)
  - [ProductResponse](doc/ProductResponse.md)
  - [ProductUpdate](doc/ProductUpdate.md)
  - [ProductionSiteCreate](doc/ProductionSiteCreate.md)

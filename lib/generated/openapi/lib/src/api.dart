@@ -20,6 +20,7 @@ import 'package:mbe_api_client/src/api/labels_api.dart';
 import 'package:mbe_api_client/src/api/payment_method_options_api.dart';
 import 'package:mbe_api_client/src/api/points_of_sale_api.dart';
 import 'package:mbe_api_client/src/api/price_lists_api.dart';
+import 'package:mbe_api_client/src/api/product_prices_api.dart';
 import 'package:mbe_api_client/src/api/production_sites_api.dart';
 import 'package:mbe_api_client/src/api/products_api.dart';
 import 'package:mbe_api_client/src/api/sat_catalogs_api.dart';
@@ -149,6 +150,12 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   PriceListsApi getPriceListsApi() {
     return PriceListsApi(dio, serializers);
+  }
+
+  /// Get ProductPricesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  ProductPricesApi getProductPricesApi() {
+    return ProductPricesApi(dio, serializers);
   }
 
   /// Get ProductionSitesApi instance, base route and serializer can be overridden by a given but be careful,

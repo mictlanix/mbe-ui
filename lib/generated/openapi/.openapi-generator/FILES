@@ -32,6 +32,8 @@ doc/ExpenseUpdate.md
 doc/ExpensesApi.md
 doc/HTTPValidationError.md
 doc/HealthApi.md
+doc/HighProfit.md
+doc/HighProfit1.md
 doc/HighProfitMargin.md
 doc/HighProfitMargin1.md
 doc/LabelCreate.md
@@ -48,6 +50,7 @@ doc/ListResponsePaymentMethodOptionResponse.md
 doc/ListResponsePointSaleResponse.md
 doc/ListResponsePriceListResponse.md
 doc/ListResponseProductListItem.md
+doc/ListResponseProductPriceResponse.md
 doc/ListResponseProductionSiteResponse.md
 doc/ListResponseSatCatalogResponse.md
 doc/ListResponseStoreResponse.md
@@ -57,6 +60,8 @@ doc/ListResponseVehicleOperatorResponse.md
 doc/ListResponseVehicleResponse.md
 doc/ListResponseWarehouseResponse.md
 doc/LocationInner.md
+doc/LowProfit.md
+doc/LowProfit1.md
 doc/LowProfitMargin.md
 doc/LowProfitMargin1.md
 doc/PaymentMethodOptionCreate.md
@@ -67,6 +72,8 @@ doc/PointSaleCreate.md
 doc/PointSaleResponse.md
 doc/PointSaleUpdate.md
 doc/PointsOfSaleApi.md
+doc/Price.md
+doc/Price1.md
 doc/PriceListCreate.md
 doc/PriceListResponse.md
 doc/PriceListUpdate.md
@@ -76,7 +83,10 @@ doc/PrivilegeUpdate.md
 doc/ProductCreate.md
 doc/ProductListItem.md
 doc/ProductMergeRequest.md
+doc/ProductPriceCreate.md
 doc/ProductPriceResponse.md
+doc/ProductPriceUpdate.md
+doc/ProductPricesApi.md
 doc/ProductResponse.md
 doc/ProductUpdate.md
 doc/ProductionSiteCreate.md
@@ -140,6 +150,7 @@ lib/src/api/labels_api.dart
 lib/src/api/payment_method_options_api.dart
 lib/src/api/points_of_sale_api.dart
 lib/src/api/price_lists_api.dart
+lib/src/api/product_prices_api.dart
 lib/src/api/production_sites_api.dart
 lib/src/api/products_api.dart
 lib/src/api/sat_catalogs_api.dart
@@ -180,6 +191,8 @@ lib/src/model/exchange_rate_update.dart
 lib/src/model/expense_create.dart
 lib/src/model/expense_response.dart
 lib/src/model/expense_update.dart
+lib/src/model/high_profit.dart
+lib/src/model/high_profit1.dart
 lib/src/model/high_profit_margin.dart
 lib/src/model/high_profit_margin1.dart
 lib/src/model/http_validation_error.dart
@@ -196,6 +209,7 @@ lib/src/model/list_response_payment_method_option_response.dart
 lib/src/model/list_response_point_sale_response.dart
 lib/src/model/list_response_price_list_response.dart
 lib/src/model/list_response_product_list_item.dart
+lib/src/model/list_response_product_price_response.dart
 lib/src/model/list_response_production_site_response.dart
 lib/src/model/list_response_sat_catalog_response.dart
 lib/src/model/list_response_store_response.dart
@@ -205,6 +219,8 @@ lib/src/model/list_response_vehicle_operator_response.dart
 lib/src/model/list_response_vehicle_response.dart
 lib/src/model/list_response_warehouse_response.dart
 lib/src/model/location_inner.dart
+lib/src/model/low_profit.dart
+lib/src/model/low_profit1.dart
 lib/src/model/low_profit_margin.dart
 lib/src/model/low_profit_margin1.dart
 lib/src/model/payment_method_option_create.dart
@@ -213,6 +229,8 @@ lib/src/model/payment_method_option_update.dart
 lib/src/model/point_sale_create.dart
 lib/src/model/point_sale_response.dart
 lib/src/model/point_sale_update.dart
+lib/src/model/price.dart
+lib/src/model/price1.dart
 lib/src/model/price_list_create.dart
 lib/src/model/price_list_response.dart
 lib/src/model/price_list_update.dart
@@ -221,7 +239,9 @@ lib/src/model/privilege_update.dart
 lib/src/model/product_create.dart
 lib/src/model/product_list_item.dart
 lib/src/model/product_merge_request.dart
+lib/src/model/product_price_create.dart
 lib/src/model/product_price_response.dart
+lib/src/model/product_price_update.dart
 lib/src/model/product_response.dart
 lib/src/model/product_update.dart
 lib/src/model/production_site_create.dart

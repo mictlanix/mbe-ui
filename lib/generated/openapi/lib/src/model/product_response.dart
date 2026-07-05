@@ -5,7 +5,6 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
@@ -43,7 +42,6 @@ part 'product_response.g.dart';
 /// * [stockVerification] 
 /// * [deactivated] 
 /// * [comment] 
-/// * [prices] 
 /// * [labels] 
 @BuiltValue()
 abstract class ProductResponse implements Built<ProductResponse, ProductResponseBuilder> {
@@ -125,9 +123,6 @@ abstract class ProductResponse implements Built<ProductResponse, ProductResponse
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'prices')
-  BuiltList<ProductPriceResponse>? get prices;
-
   @BuiltValueField(wireName: r'labels')
   BuiltList<LabelResponse>? get labels;
 
@@ -137,7 +132,6 @@ abstract class ProductResponse implements Built<ProductResponse, ProductResponse
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ProductResponseBuilder b) => b
-      ..prices = ListBuilder()
       ..labels = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
@@ -286,13 +280,6 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
       object.comment,
       specifiedType: const FullType.nullable(String),
     );
-    if (object.prices != null) {
-      yield r'prices';
-      yield serializers.serialize(
-        object.prices,
-        specifiedType: const FullType(BuiltList, [FullType(ProductPriceResponse)]),
-      );
-    }
     if (object.labels != null) {
       yield r'labels';
       yield serializers.serialize(
@@ -513,13 +500,6 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
           ) as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
-          break;
-        case r'prices':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(ProductPriceResponse)]),
-          ) as BuiltList<ProductPriceResponse>;
-          result.prices.replace(valueDes);
           break;
         case r'labels':
           final valueDes = serializers.deserialize(
