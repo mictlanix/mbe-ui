@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/tax_rate.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -35,6 +36,7 @@ part 'product_create.g.dart';
 /// * [invoiceable] 
 /// * [stockRequired] 
 /// * [comment] 
+/// * [labels] 
 @BuiltValue()
 abstract class ProductCreate implements Built<ProductCreate, ProductCreateBuilder> {
   @BuiltValueField(wireName: r'code')
@@ -105,6 +107,9 @@ abstract class ProductCreate implements Built<ProductCreate, ProductCreateBuilde
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
+
+  @BuiltValueField(wireName: r'labels')
+  BuiltList<int>? get labels;
 
   ProductCreate._();
 
@@ -289,6 +294,13 @@ class _$ProductCreateSerializer implements PrimitiveSerializer<ProductCreate> {
       yield serializers.serialize(
         object.comment,
         specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.labels != null) {
+      yield r'labels';
+      yield serializers.serialize(
+        object.labels,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(int)]),
       );
     }
   }
@@ -487,6 +499,14 @@ class _$ProductCreateSerializer implements PrimitiveSerializer<ProductCreate> {
           ) as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'labels':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(BuiltList, [FullType(int)]),
+          ) as BuiltList<int>?;
+          if (valueDes == null) continue;
+          result.labels.replace(valueDes);
           break;
         default:
           unhandled.add(key);

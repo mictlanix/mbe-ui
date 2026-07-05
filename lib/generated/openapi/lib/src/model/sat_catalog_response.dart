@@ -12,10 +12,14 @@ part 'sat_catalog_response.g.dart';
 ///
 /// Properties:
 /// * [id] 
+/// * [description] 
 @BuiltValue()
 abstract class SatCatalogResponse implements Built<SatCatalogResponse, SatCatalogResponseBuilder> {
   @BuiltValueField(wireName: r'id')
   String get id;
+
+  @BuiltValueField(wireName: r'description')
+  String? get description;
 
   SatCatalogResponse._();
 
@@ -45,6 +49,13 @@ class _$SatCatalogResponseSerializer implements PrimitiveSerializer<SatCatalogRe
       object.id,
       specifiedType: const FullType(String),
     );
+    if (object.description != null) {
+      yield r'description';
+      yield serializers.serialize(
+        object.description,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
   }
 
   @override
@@ -74,6 +85,14 @@ class _$SatCatalogResponseSerializer implements PrimitiveSerializer<SatCatalogRe
             specifiedType: const FullType(String),
           ) as String;
           result.id = valueDes;
+          break;
+        case r'description':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.description = valueDes;
           break;
         default:
           unhandled.add(key);

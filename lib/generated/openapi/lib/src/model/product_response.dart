@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:built_value/built_value.dart';
@@ -40,6 +41,7 @@ part 'product_response.g.dart';
 /// * [deactivated] 
 /// * [comment] 
 /// * [prices] 
+/// * [labels] 
 @BuiltValue()
 abstract class ProductResponse implements Built<ProductResponse, ProductResponseBuilder> {
   @BuiltValueField(wireName: r'product_id')
@@ -123,13 +125,17 @@ abstract class ProductResponse implements Built<ProductResponse, ProductResponse
   @BuiltValueField(wireName: r'prices')
   BuiltList<ProductPriceResponse>? get prices;
 
+  @BuiltValueField(wireName: r'labels')
+  BuiltList<LabelResponse>? get labels;
+
   ProductResponse._();
 
   factory ProductResponse([void updates(ProductResponseBuilder b)]) = _$ProductResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ProductResponseBuilder b) => b
-      ..prices = ListBuilder();
+      ..prices = ListBuilder()
+      ..labels = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<ProductResponse> get serializer => _$ProductResponseSerializer();
@@ -282,6 +288,13 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
       yield serializers.serialize(
         object.prices,
         specifiedType: const FullType(BuiltList, [FullType(ProductPriceResponse)]),
+      );
+    }
+    if (object.labels != null) {
+      yield r'labels';
+      yield serializers.serialize(
+        object.labels,
+        specifiedType: const FullType(BuiltList, [FullType(LabelResponse)]),
       );
     }
   }
@@ -504,6 +517,13 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
             specifiedType: const FullType(BuiltList, [FullType(ProductPriceResponse)]),
           ) as BuiltList<ProductPriceResponse>;
           result.prices.replace(valueDes);
+          break;
+        case r'labels':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(LabelResponse)]),
+          ) as BuiltList<LabelResponse>;
+          result.labels.replace(valueDes);
           break;
         default:
           unhandled.add(key);
