@@ -4,6 +4,15 @@
   "branch": "005-catalog-master-data",
   "selectedAt": "2026-07-05T02:54:54.477Z",
   "currentStep": "specify",
-  "status": "draft",
-  "history": []
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-05T19:26:54.811Z"
+    }
+  ],
+  "telemetryInstanceId": "de309548-7e81-4dee-a6f7-e229ea9fd3ce"
 }
