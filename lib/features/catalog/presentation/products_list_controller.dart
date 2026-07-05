@@ -21,6 +21,7 @@ class ProductFilter with _$ProductFilter {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? label,
   }) = _ProductFilter;
 }
 
@@ -46,6 +47,8 @@ class ProductFilterController extends _$ProductFilterController {
 
   void purchasableChanged(bool? value) =>
       state = state.copyWith(purchasable: value);
+
+  void labelChanged(int? value) => state = state.copyWith(label: value);
 }
 
 /// Fetches and holds the products list (FR-001, FR-002), re-fetching page
@@ -74,6 +77,7 @@ class ProductsListController extends _$ProductsListController {
           stockable: filter.stockable,
           salable: filter.salable,
           purchasable: filter.purchasable,
+          label: filter.label,
           skip: pageIndex * _pageSize,
           limit: _pageSize,
         );

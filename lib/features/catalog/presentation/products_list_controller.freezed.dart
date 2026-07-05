@@ -22,6 +22,7 @@ mixin _$ProductFilter {
   bool? get stockable => throw _privateConstructorUsedError;
   bool? get salable => throw _privateConstructorUsedError;
   bool? get purchasable => throw _privateConstructorUsedError;
+  int? get label => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -43,6 +44,7 @@ abstract class $ProductFilterCopyWith<$Res> {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? label,
   });
 }
 
@@ -66,6 +68,7 @@ class _$ProductFilterCopyWithImpl<$Res, $Val extends ProductFilter>
     Object? stockable = freezed,
     Object? salable = freezed,
     Object? purchasable = freezed,
+    Object? label = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +92,10 @@ class _$ProductFilterCopyWithImpl<$Res, $Val extends ProductFilter>
                 ? _value.purchasable
                 : purchasable // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            label: freezed == label
+                ? _value.label
+                : label // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -110,6 +117,7 @@ abstract class _$$ProductFilterImplCopyWith<$Res>
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? label,
   });
 }
 
@@ -132,6 +140,7 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
     Object? stockable = freezed,
     Object? salable = freezed,
     Object? purchasable = freezed,
+    Object? label = freezed,
   }) {
     return _then(
       _$ProductFilterImpl(
@@ -155,6 +164,10 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
             ? _value.purchasable
             : purchasable // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        label: freezed == label
+            ? _value.label
+            : label // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -169,6 +182,7 @@ class _$ProductFilterImpl implements _ProductFilter {
     this.stockable,
     this.salable,
     this.purchasable,
+    this.label,
   });
 
   @override
@@ -182,10 +196,12 @@ class _$ProductFilterImpl implements _ProductFilter {
   final bool? salable;
   @override
   final bool? purchasable;
+  @override
+  final int? label;
 
   @override
   String toString() {
-    return 'ProductFilter(search: $search, deactivated: $deactivated, stockable: $stockable, salable: $salable, purchasable: $purchasable)';
+    return 'ProductFilter(search: $search, deactivated: $deactivated, stockable: $stockable, salable: $salable, purchasable: $purchasable, label: $label)';
   }
 
   @override
@@ -200,7 +216,8 @@ class _$ProductFilterImpl implements _ProductFilter {
                 other.stockable == stockable) &&
             (identical(other.salable, salable) || other.salable == salable) &&
             (identical(other.purchasable, purchasable) ||
-                other.purchasable == purchasable));
+                other.purchasable == purchasable) &&
+            (identical(other.label, label) || other.label == label));
   }
 
   @override
@@ -211,6 +228,7 @@ class _$ProductFilterImpl implements _ProductFilter {
     stockable,
     salable,
     purchasable,
+    label,
   );
 
   /// Create a copy of ProductFilter
@@ -229,6 +247,7 @@ abstract class _ProductFilter implements ProductFilter {
     final bool? stockable,
     final bool? salable,
     final bool? purchasable,
+    final int? label,
   }) = _$ProductFilterImpl;
 
   @override
@@ -241,6 +260,8 @@ abstract class _ProductFilter implements ProductFilter {
   bool? get salable;
   @override
   bool? get purchasable;
+  @override
+  int? get label;
 
   /// Create a copy of ProductFilter
   /// with the given fields replaced by the non-null parameter values.

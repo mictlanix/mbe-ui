@@ -368,6 +368,18 @@ abstract class AppLocalizations {
   /// **'Purchasable'**
   String get productsPurchasableFilter;
 
+  /// No description provided for @productsLabelFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get productsLabelFilter;
+
+  /// No description provided for @productsAllLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'All labels'**
+  String get productsAllLabels;
+
   /// No description provided for @productsLoadError.
   ///
   /// In en, this message translates to:
@@ -440,6 +452,18 @@ abstract class AppLocalizations {
   /// **'Unit of Measurement'**
   String get unitOfMeasurementLabel;
 
+  /// No description provided for @supplierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get supplierLabel;
+
+  /// No description provided for @satKeyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SAT Product/Service Key'**
+  String get satKeyLabel;
+
   /// No description provided for @brandLabel.
   ///
   /// In en, this message translates to:
@@ -511,6 +535,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invoiceable'**
   String get invoiceableLabel;
+
+  /// No description provided for @pricesSubpanelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices'**
+  String get pricesSubpanelTitle;
+
+  /// No description provided for @unknownPriceList.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown price list'**
+  String get unknownPriceList;
+
+  /// No description provided for @labelsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get labelsLabel;
 
   /// No description provided for @deactivateProductTooltip.
   ///

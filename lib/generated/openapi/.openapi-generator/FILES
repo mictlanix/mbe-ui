@@ -89,8 +89,10 @@ doc/Rate1.md
 doc/RecoverPasswordAdminResponse.md
 doc/SatCatalogResponse.md
 doc/SatCatalogsApi.md
+doc/SatUnitOfMeasurementResponse.md
 doc/StoreCreate.md
 doc/StoreResponse.md
+doc/StoreSummary.md
 doc/StoreUpdate.md
 doc/StoresApi.md
 doc/SupplierCreate.md
@@ -122,6 +124,7 @@ doc/VehicleUpdate.md
 doc/VehiclesApi.md
 doc/WarehouseCreate.md
 doc/WarehouseResponse.md
+doc/WarehouseSummary.md
 doc/WarehouseUpdate.md
 doc/WarehousesApi.md
 lib/mbe_api_client.dart
@@ -228,8 +231,10 @@ lib/src/model/rate.dart
 lib/src/model/rate1.dart
 lib/src/model/recover_password_admin_response.dart
 lib/src/model/sat_catalog_response.dart
+lib/src/model/sat_unit_of_measurement_response.dart
 lib/src/model/store_create.dart
 lib/src/model/store_response.dart
+lib/src/model/store_summary.dart
 lib/src/model/store_update.dart
 lib/src/model/supplier_create.dart
 lib/src/model/supplier_response.dart
@@ -255,6 +260,7 @@ lib/src/model/vehicle_response.dart
 lib/src/model/vehicle_update.dart
 lib/src/model/warehouse_create.dart
 lib/src/model/warehouse_response.dart
+lib/src/model/warehouse_summary.dart
 lib/src/model/warehouse_update.dart
 lib/src/serializers.dart
 pubspec.yaml

@@ -44,7 +44,14 @@ mixin _$ProductFormState {
   /// opened/loaded, and no new photo has been picked since. Mutually
   /// exclusive with a non-null [pendingPhotoBytes].
   bool get photoMarkedForRemoval => throw _privateConstructorUsedError;
-  String get unitOfMeasurement => throw _privateConstructorUsedError;
+  String get unitOfMeasurementCode => throw _privateConstructorUsedError;
+  String get unitOfMeasurementDisplayText => throw _privateConstructorUsedError;
+  String? get satKeyCode => throw _privateConstructorUsedError;
+  String? get satKeyDisplayText => throw _privateConstructorUsedError;
+  int? get supplierId => throw _privateConstructorUsedError;
+  String? get supplierName => throw _privateConstructorUsedError;
+  List<int> get labelIds => throw _privateConstructorUsedError;
+  List<ProductPrice> get prices => throw _privateConstructorUsedError;
   String? get taxRate => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   bool get stockable => throw _privateConstructorUsedError;
@@ -92,7 +99,14 @@ abstract class $ProductFormStateCopyWith<$Res> {
     Uint8List? pendingPhotoBytes,
     String? pendingPhotoFilename,
     bool photoMarkedForRemoval,
-    String unitOfMeasurement,
+    String unitOfMeasurementCode,
+    String unitOfMeasurementDisplayText,
+    String? satKeyCode,
+    String? satKeyDisplayText,
+    int? supplierId,
+    String? supplierName,
+    List<int> labelIds,
+    List<ProductPrice> prices,
     String? taxRate,
     String? comment,
     bool stockable,
@@ -137,7 +151,14 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? pendingPhotoBytes = freezed,
     Object? pendingPhotoFilename = freezed,
     Object? photoMarkedForRemoval = null,
-    Object? unitOfMeasurement = null,
+    Object? unitOfMeasurementCode = null,
+    Object? unitOfMeasurementDisplayText = null,
+    Object? satKeyCode = freezed,
+    Object? satKeyDisplayText = freezed,
+    Object? supplierId = freezed,
+    Object? supplierName = freezed,
+    Object? labelIds = null,
+    Object? prices = null,
     Object? taxRate = freezed,
     Object? comment = freezed,
     Object? stockable = null,
@@ -200,10 +221,38 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
                 ? _value.photoMarkedForRemoval
                 : photoMarkedForRemoval // ignore: cast_nullable_to_non_nullable
                       as bool,
-            unitOfMeasurement: null == unitOfMeasurement
-                ? _value.unitOfMeasurement
-                : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
+            unitOfMeasurementCode: null == unitOfMeasurementCode
+                ? _value.unitOfMeasurementCode
+                : unitOfMeasurementCode // ignore: cast_nullable_to_non_nullable
                       as String,
+            unitOfMeasurementDisplayText: null == unitOfMeasurementDisplayText
+                ? _value.unitOfMeasurementDisplayText
+                : unitOfMeasurementDisplayText // ignore: cast_nullable_to_non_nullable
+                      as String,
+            satKeyCode: freezed == satKeyCode
+                ? _value.satKeyCode
+                : satKeyCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            satKeyDisplayText: freezed == satKeyDisplayText
+                ? _value.satKeyDisplayText
+                : satKeyDisplayText // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            supplierId: freezed == supplierId
+                ? _value.supplierId
+                : supplierId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            supplierName: freezed == supplierName
+                ? _value.supplierName
+                : supplierName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            labelIds: null == labelIds
+                ? _value.labelIds
+                : labelIds // ignore: cast_nullable_to_non_nullable
+                      as List<int>,
+            prices: null == prices
+                ? _value.prices
+                : prices // ignore: cast_nullable_to_non_nullable
+                      as List<ProductPrice>,
             taxRate: freezed == taxRate
                 ? _value.taxRate
                 : taxRate // ignore: cast_nullable_to_non_nullable
@@ -291,7 +340,14 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     Uint8List? pendingPhotoBytes,
     String? pendingPhotoFilename,
     bool photoMarkedForRemoval,
-    String unitOfMeasurement,
+    String unitOfMeasurementCode,
+    String unitOfMeasurementDisplayText,
+    String? satKeyCode,
+    String? satKeyDisplayText,
+    int? supplierId,
+    String? supplierName,
+    List<int> labelIds,
+    List<ProductPrice> prices,
     String? taxRate,
     String? comment,
     bool stockable,
@@ -335,7 +391,14 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? pendingPhotoBytes = freezed,
     Object? pendingPhotoFilename = freezed,
     Object? photoMarkedForRemoval = null,
-    Object? unitOfMeasurement = null,
+    Object? unitOfMeasurementCode = null,
+    Object? unitOfMeasurementDisplayText = null,
+    Object? satKeyCode = freezed,
+    Object? satKeyDisplayText = freezed,
+    Object? supplierId = freezed,
+    Object? supplierName = freezed,
+    Object? labelIds = null,
+    Object? prices = null,
     Object? taxRate = freezed,
     Object? comment = freezed,
     Object? stockable = null,
@@ -398,10 +461,38 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
             ? _value.photoMarkedForRemoval
             : photoMarkedForRemoval // ignore: cast_nullable_to_non_nullable
                   as bool,
-        unitOfMeasurement: null == unitOfMeasurement
-            ? _value.unitOfMeasurement
-            : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
+        unitOfMeasurementCode: null == unitOfMeasurementCode
+            ? _value.unitOfMeasurementCode
+            : unitOfMeasurementCode // ignore: cast_nullable_to_non_nullable
                   as String,
+        unitOfMeasurementDisplayText: null == unitOfMeasurementDisplayText
+            ? _value.unitOfMeasurementDisplayText
+            : unitOfMeasurementDisplayText // ignore: cast_nullable_to_non_nullable
+                  as String,
+        satKeyCode: freezed == satKeyCode
+            ? _value.satKeyCode
+            : satKeyCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        satKeyDisplayText: freezed == satKeyDisplayText
+            ? _value.satKeyDisplayText
+            : satKeyDisplayText // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        supplierId: freezed == supplierId
+            ? _value.supplierId
+            : supplierId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        supplierName: freezed == supplierName
+            ? _value.supplierName
+            : supplierName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        labelIds: null == labelIds
+            ? _value._labelIds
+            : labelIds // ignore: cast_nullable_to_non_nullable
+                  as List<int>,
+        prices: null == prices
+            ? _value._prices
+            : prices // ignore: cast_nullable_to_non_nullable
+                  as List<ProductPrice>,
         taxRate: freezed == taxRate
             ? _value.taxRate
             : taxRate // ignore: cast_nullable_to_non_nullable
@@ -482,7 +573,14 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.pendingPhotoBytes,
     this.pendingPhotoFilename,
     this.photoMarkedForRemoval = false,
-    this.unitOfMeasurement = '',
+    this.unitOfMeasurementCode = '',
+    this.unitOfMeasurementDisplayText = '',
+    this.satKeyCode,
+    this.satKeyDisplayText,
+    this.supplierId,
+    this.supplierName,
+    final List<int> labelIds = const <int>[],
+    final List<ProductPrice> prices = const <ProductPrice>[],
     this.taxRate,
     this.comment,
     this.stockable = false,
@@ -498,7 +596,9 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.error,
     this.errorDetail,
     final Map<String, String> fieldErrors = const <String, String>{},
-  }) : _fieldErrors = fieldErrors;
+  }) : _labelIds = labelIds,
+       _prices = prices,
+       _fieldErrors = fieldErrors;
 
   @override
   final int? productId;
@@ -543,7 +643,36 @@ class _$ProductFormStateImpl implements _ProductFormState {
   final bool photoMarkedForRemoval;
   @override
   @JsonKey()
-  final String unitOfMeasurement;
+  final String unitOfMeasurementCode;
+  @override
+  @JsonKey()
+  final String unitOfMeasurementDisplayText;
+  @override
+  final String? satKeyCode;
+  @override
+  final String? satKeyDisplayText;
+  @override
+  final int? supplierId;
+  @override
+  final String? supplierName;
+  final List<int> _labelIds;
+  @override
+  @JsonKey()
+  List<int> get labelIds {
+    if (_labelIds is EqualUnmodifiableListView) return _labelIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_labelIds);
+  }
+
+  final List<ProductPrice> _prices;
+  @override
+  @JsonKey()
+  List<ProductPrice> get prices {
+    if (_prices is EqualUnmodifiableListView) return _prices;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_prices);
+  }
+
   @override
   final String? taxRate;
   @override
@@ -598,7 +727,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
 
   @override
   String toString() {
-    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementDisplayText: $unitOfMeasurementDisplayText, satKeyCode: $satKeyCode, satKeyDisplayText: $satKeyDisplayText, supplierId: $supplierId, supplierName: $supplierName, labelIds: $labelIds, prices: $prices, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -624,8 +753,24 @@ class _$ProductFormStateImpl implements _ProductFormState {
                 other.pendingPhotoFilename == pendingPhotoFilename) &&
             (identical(other.photoMarkedForRemoval, photoMarkedForRemoval) ||
                 other.photoMarkedForRemoval == photoMarkedForRemoval) &&
-            (identical(other.unitOfMeasurement, unitOfMeasurement) ||
-                other.unitOfMeasurement == unitOfMeasurement) &&
+            (identical(other.unitOfMeasurementCode, unitOfMeasurementCode) ||
+                other.unitOfMeasurementCode == unitOfMeasurementCode) &&
+            (identical(
+                  other.unitOfMeasurementDisplayText,
+                  unitOfMeasurementDisplayText,
+                ) ||
+                other.unitOfMeasurementDisplayText ==
+                    unitOfMeasurementDisplayText) &&
+            (identical(other.satKeyCode, satKeyCode) ||
+                other.satKeyCode == satKeyCode) &&
+            (identical(other.satKeyDisplayText, satKeyDisplayText) ||
+                other.satKeyDisplayText == satKeyDisplayText) &&
+            (identical(other.supplierId, supplierId) ||
+                other.supplierId == supplierId) &&
+            (identical(other.supplierName, supplierName) ||
+                other.supplierName == supplierName) &&
+            const DeepCollectionEquality().equals(other._labelIds, _labelIds) &&
+            const DeepCollectionEquality().equals(other._prices, _prices) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.comment, comment) || other.comment == comment) &&
             (identical(other.stockable, stockable) ||
@@ -668,7 +813,14 @@ class _$ProductFormStateImpl implements _ProductFormState {
     const DeepCollectionEquality().hash(pendingPhotoBytes),
     pendingPhotoFilename,
     photoMarkedForRemoval,
-    unitOfMeasurement,
+    unitOfMeasurementCode,
+    unitOfMeasurementDisplayText,
+    satKeyCode,
+    satKeyDisplayText,
+    supplierId,
+    supplierName,
+    const DeepCollectionEquality().hash(_labelIds),
+    const DeepCollectionEquality().hash(_prices),
     taxRate,
     comment,
     stockable,
@@ -711,7 +863,14 @@ abstract class _ProductFormState implements ProductFormState {
     final Uint8List? pendingPhotoBytes,
     final String? pendingPhotoFilename,
     final bool photoMarkedForRemoval,
-    final String unitOfMeasurement,
+    final String unitOfMeasurementCode,
+    final String unitOfMeasurementDisplayText,
+    final String? satKeyCode,
+    final String? satKeyDisplayText,
+    final int? supplierId,
+    final String? supplierName,
+    final List<int> labelIds,
+    final List<ProductPrice> prices,
     final String? taxRate,
     final String? comment,
     final bool stockable,
@@ -768,7 +927,21 @@ abstract class _ProductFormState implements ProductFormState {
   @override
   bool get photoMarkedForRemoval;
   @override
-  String get unitOfMeasurement;
+  String get unitOfMeasurementCode;
+  @override
+  String get unitOfMeasurementDisplayText;
+  @override
+  String? get satKeyCode;
+  @override
+  String? get satKeyDisplayText;
+  @override
+  int? get supplierId;
+  @override
+  String? get supplierName;
+  @override
+  List<int> get labelIds;
+  @override
+  List<ProductPrice> get prices;
   @override
   String? get taxRate;
   @override

@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -41,7 +42,7 @@ abstract class ProductListItem implements Built<ProductListItem, ProductListItem
   String? get model;
 
   @BuiltValueField(wireName: r'unit_of_measurement')
-  String get unitOfMeasurement;
+  SatUnitOfMeasurementResponse get unitOfMeasurement;
 
   @BuiltValueField(wireName: r'tax_rate')
   String get taxRate;
@@ -105,7 +106,7 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
     yield r'unit_of_measurement';
     yield serializers.serialize(
       object.unitOfMeasurement,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(SatUnitOfMeasurementResponse),
     );
     yield r'tax_rate';
     yield serializers.serialize(
@@ -188,9 +189,9 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
         case r'unit_of_measurement':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.unitOfMeasurement = valueDes;
+            specifiedType: const FullType(SatUnitOfMeasurementResponse),
+          ) as SatUnitOfMeasurementResponse;
+          result.unitOfMeasurement.replace(valueDes);
           break;
         case r'tax_rate':
           final valueDes = serializers.deserialize(

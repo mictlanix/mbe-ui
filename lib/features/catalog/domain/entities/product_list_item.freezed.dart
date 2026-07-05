@@ -22,7 +22,8 @@ mixin _$ProductListItem {
   String get name => throw _privateConstructorUsedError;
   String? get brand => throw _privateConstructorUsedError;
   String? get model => throw _privateConstructorUsedError;
-  String get unitOfMeasurement => throw _privateConstructorUsedError;
+  String get unitOfMeasurementCode => throw _privateConstructorUsedError;
+  String get unitOfMeasurementName => throw _privateConstructorUsedError;
   String get taxRate => throw _privateConstructorUsedError;
   bool get deactivated => throw _privateConstructorUsedError;
 
@@ -51,7 +52,8 @@ abstract class $ProductListItemCopyWith<$Res> {
     String name,
     String? brand,
     String? model,
-    String unitOfMeasurement,
+    String unitOfMeasurementCode,
+    String unitOfMeasurementName,
     String taxRate,
     bool deactivated,
     String? photo,
@@ -78,7 +80,8 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
     Object? name = null,
     Object? brand = freezed,
     Object? model = freezed,
-    Object? unitOfMeasurement = null,
+    Object? unitOfMeasurementCode = null,
+    Object? unitOfMeasurementName = null,
     Object? taxRate = null,
     Object? deactivated = null,
     Object? photo = freezed,
@@ -105,9 +108,13 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
                 ? _value.model
                 : model // ignore: cast_nullable_to_non_nullable
                       as String?,
-            unitOfMeasurement: null == unitOfMeasurement
-                ? _value.unitOfMeasurement
-                : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
+            unitOfMeasurementCode: null == unitOfMeasurementCode
+                ? _value.unitOfMeasurementCode
+                : unitOfMeasurementCode // ignore: cast_nullable_to_non_nullable
+                      as String,
+            unitOfMeasurementName: null == unitOfMeasurementName
+                ? _value.unitOfMeasurementName
+                : unitOfMeasurementName // ignore: cast_nullable_to_non_nullable
                       as String,
             taxRate: null == taxRate
                 ? _value.taxRate
@@ -142,7 +149,8 @@ abstract class _$$ProductListItemImplCopyWith<$Res>
     String name,
     String? brand,
     String? model,
-    String unitOfMeasurement,
+    String unitOfMeasurementCode,
+    String unitOfMeasurementName,
     String taxRate,
     bool deactivated,
     String? photo,
@@ -168,7 +176,8 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
     Object? name = null,
     Object? brand = freezed,
     Object? model = freezed,
-    Object? unitOfMeasurement = null,
+    Object? unitOfMeasurementCode = null,
+    Object? unitOfMeasurementName = null,
     Object? taxRate = null,
     Object? deactivated = null,
     Object? photo = freezed,
@@ -195,9 +204,13 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
             ? _value.model
             : model // ignore: cast_nullable_to_non_nullable
                   as String?,
-        unitOfMeasurement: null == unitOfMeasurement
-            ? _value.unitOfMeasurement
-            : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
+        unitOfMeasurementCode: null == unitOfMeasurementCode
+            ? _value.unitOfMeasurementCode
+            : unitOfMeasurementCode // ignore: cast_nullable_to_non_nullable
+                  as String,
+        unitOfMeasurementName: null == unitOfMeasurementName
+            ? _value.unitOfMeasurementName
+            : unitOfMeasurementName // ignore: cast_nullable_to_non_nullable
                   as String,
         taxRate: null == taxRate
             ? _value.taxRate
@@ -225,7 +238,8 @@ class _$ProductListItemImpl implements _ProductListItem {
     required this.name,
     this.brand,
     this.model,
-    required this.unitOfMeasurement,
+    required this.unitOfMeasurementCode,
+    required this.unitOfMeasurementName,
     required this.taxRate,
     required this.deactivated,
     this.photo,
@@ -242,7 +256,9 @@ class _$ProductListItemImpl implements _ProductListItem {
   @override
   final String? model;
   @override
-  final String unitOfMeasurement;
+  final String unitOfMeasurementCode;
+  @override
+  final String unitOfMeasurementName;
   @override
   final String taxRate;
   @override
@@ -256,7 +272,7 @@ class _$ProductListItemImpl implements _ProductListItem {
 
   @override
   String toString() {
-    return 'ProductListItem(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, unitOfMeasurement: $unitOfMeasurement, taxRate: $taxRate, deactivated: $deactivated, photo: $photo)';
+    return 'ProductListItem(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, taxRate: $taxRate, deactivated: $deactivated, photo: $photo)';
   }
 
   @override
@@ -270,8 +286,10 @@ class _$ProductListItemImpl implements _ProductListItem {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.model, model) || other.model == model) &&
-            (identical(other.unitOfMeasurement, unitOfMeasurement) ||
-                other.unitOfMeasurement == unitOfMeasurement) &&
+            (identical(other.unitOfMeasurementCode, unitOfMeasurementCode) ||
+                other.unitOfMeasurementCode == unitOfMeasurementCode) &&
+            (identical(other.unitOfMeasurementName, unitOfMeasurementName) ||
+                other.unitOfMeasurementName == unitOfMeasurementName) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.deactivated, deactivated) ||
                 other.deactivated == deactivated) &&
@@ -286,7 +304,8 @@ class _$ProductListItemImpl implements _ProductListItem {
     name,
     brand,
     model,
-    unitOfMeasurement,
+    unitOfMeasurementCode,
+    unitOfMeasurementName,
     taxRate,
     deactivated,
     photo,
@@ -311,7 +330,8 @@ abstract class _ProductListItem implements ProductListItem {
     required final String name,
     final String? brand,
     final String? model,
-    required final String unitOfMeasurement,
+    required final String unitOfMeasurementCode,
+    required final String unitOfMeasurementName,
     required final String taxRate,
     required final bool deactivated,
     final String? photo,
@@ -328,7 +348,9 @@ abstract class _ProductListItem implements ProductListItem {
   @override
   String? get model;
   @override
-  String get unitOfMeasurement;
+  String get unitOfMeasurementCode;
+  @override
+  String get unitOfMeasurementName;
   @override
   String get taxRate;
   @override

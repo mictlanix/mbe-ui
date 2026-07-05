@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
 
@@ -59,7 +60,8 @@ Product _product() => Product(
       productId: 1,
       code: 'SKU-001',
       name: 'Widget',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurementCode: 'PCE',
+      unitOfMeasurementName: 'Piece',
       taxRate: '0.16',
       taxIncluded: false,
       priceType: 0,
@@ -106,7 +108,7 @@ void main() {
       final controller = container.read(productFormControllerProvider.notifier);
 
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       final state = container.read(productFormControllerProvider);
@@ -125,7 +127,7 @@ void main() {
 
       controller.codeChanged('SKU 001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       expect(
@@ -141,7 +143,7 @@ void main() {
 
       controller.codeChanged('A' * 26);
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       expect(
@@ -157,7 +159,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Hi');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       expect(
@@ -173,7 +175,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       controller.barCodeChanged('12345');
       await controller.submitCreate();
 
@@ -208,7 +210,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       expect(
@@ -246,7 +248,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       controller.brandChanged('Acme');
       controller.taxRateChanged('0.16');
       controller.stockableChanged(true);
@@ -310,7 +312,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
       await controller.submitCreate();
 
@@ -355,7 +357,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
       await controller.submitCreate();
 
@@ -372,7 +374,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       final state = container.read(productFormControllerProvider);
@@ -413,7 +415,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       final state = container.read(productFormControllerProvider);
@@ -453,7 +455,7 @@ void main() {
 
       controller.codeChanged('SKU-001');
       controller.nameChanged('Widget');
-      controller.unitOfMeasurementChanged('PCE');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
       await controller.submitCreate();
 
       expect(
@@ -478,7 +480,7 @@ void main() {
       expect(state.productId, 1);
       expect(state.code, 'SKU-001');
       expect(state.name, 'Widget');
-      expect(state.unitOfMeasurement, 'PCE');
+      expect(state.unitOfMeasurementCode, 'PCE');
       expect(state.loading, isFalse);
     });
 
@@ -637,6 +639,9 @@ void main() {
             purchasable: false,
             salable: false,
             invoiceable: false,
+            supplier: null,
+            key: null,
+            labels: const [],
           )).thenAnswer((_) async => _product());
 
       final container = _containerFor(_editUser, repository);
@@ -666,6 +671,9 @@ void main() {
             purchasable: false,
             salable: false,
             invoiceable: false,
+            supplier: null,
+            key: null,
+            labels: const [],
           )).called(1);
     });
 
@@ -689,6 +697,9 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            key: any(named: 'key'),
+            labels: any(named: 'labels'),
           )).thenAnswer((_) async => _product());
       when(() => repository.uploadPhoto(
             productId: 1,
@@ -738,6 +749,9 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            key: any(named: 'key'),
+            labels: any(named: 'labels'),
           )).thenAnswer((_) async => _product().copyWith(photo: 'http://test/p.png'));
       when(() => repository.removePhoto(productId: 1))
           .thenAnswer((_) async => _product());
@@ -803,6 +817,9 @@ void main() {
             purchasable: false,
             salable: false,
             invoiceable: false,
+            supplier: null,
+            key: null,
+            labels: const [],
           )).thenThrow(const AppError.validation([
         FieldError(loc: ['body', 'code'], msg: 'Code already in use', type: 'value_error'),
       ]));

@@ -1305,6 +1305,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1317,6 +1318,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listCfdiUsagesApiV1SatCfdiUsagesGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1345,6 +1347,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1393,6 +1396,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1405,6 +1409,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listCfdiUsagesApiV1SatCfdiUsagesGet_9({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1433,6 +1438,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1481,6 +1487,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1493,6 +1500,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listCountriesApiV1SatCountriesGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1521,6 +1529,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1569,6 +1578,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1581,6 +1591,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listCountriesApiV1SatCountriesGet_10({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1609,6 +1620,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1657,6 +1669,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1669,6 +1682,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listCurrenciesApiV1SatCurrenciesGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1697,6 +1711,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1745,6 +1760,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1757,6 +1773,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listCurrenciesApiV1SatCurrenciesGet_11({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1785,6 +1802,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1833,6 +1851,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1845,6 +1864,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listPostalCodesApiV1SatPostalCodesGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1873,6 +1893,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -1921,6 +1942,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -1933,6 +1955,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listPostalCodesApiV1SatPostalCodesGet_12({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -1961,6 +1984,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2009,6 +2033,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2021,6 +2046,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listProductServicesApiV1SatProductServicesGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2049,6 +2075,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2097,6 +2124,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2109,6 +2137,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listProductServicesApiV1SatProductServicesGet_13({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2137,6 +2166,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2185,6 +2215,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2197,6 +2228,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listReasonCancellationsApiV1SatReasonCancellationsGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2225,6 +2257,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2273,6 +2306,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2285,6 +2319,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listReasonCancellationsApiV1SatReasonCancellationsGet_14({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2313,6 +2348,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2361,6 +2397,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2373,6 +2410,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listTaxRegimesApiV1SatTaxRegimesGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2401,6 +2439,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2449,6 +2488,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2461,6 +2501,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listTaxRegimesApiV1SatTaxRegimesGet_15({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2489,6 +2530,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2537,6 +2579,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2549,6 +2592,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2577,6 +2621,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };
@@ -2625,6 +2670,7 @@ class SatCatalogsApi {
   /// 
   ///
   /// Parameters:
+  /// * [search] 
   /// * [skip] 
   /// * [limit] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -2637,6 +2683,7 @@ class SatCatalogsApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseSatCatalogResponse>> listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_16({ 
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -2665,6 +2712,7 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
       if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
     };

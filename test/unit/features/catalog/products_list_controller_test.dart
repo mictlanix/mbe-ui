@@ -13,7 +13,8 @@ ProductListItem _item(int id) => ProductListItem(
   productId: id,
   code: 'SKU-$id',
   name: 'Product $id',
-  unitOfMeasurement: 'PCE',
+  unitOfMeasurementCode: 'PCE',
+  unitOfMeasurementName: 'Piece',
   taxRate: '0.16',
   deactivated: false,
 );

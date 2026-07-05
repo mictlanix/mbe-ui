@@ -87,8 +87,10 @@ import 'package:mbe_api_client/src/model/rate.dart';
 import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
+import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/store_create.dart';
 import 'package:mbe_api_client/src/model/store_response.dart';
+import 'package:mbe_api_client/src/model/store_summary.dart';
 import 'package:mbe_api_client/src/model/store_update.dart';
 import 'package:mbe_api_client/src/model/supplier_create.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
@@ -114,6 +116,7 @@ import 'package:mbe_api_client/src/model/vehicle_response.dart';
 import 'package:mbe_api_client/src/model/vehicle_update.dart';
 import 'package:mbe_api_client/src/model/warehouse_create.dart';
 import 'package:mbe_api_client/src/model/warehouse_response.dart';
+import 'package:mbe_api_client/src/model/warehouse_summary.dart';
 import 'package:mbe_api_client/src/model/warehouse_update.dart';
 
 part 'serializers.g.dart';
@@ -192,8 +195,10 @@ part 'serializers.g.dart';
   Rate1,
   RecoverPasswordAdminResponse,
   SatCatalogResponse,
+  SatUnitOfMeasurementResponse,
   StoreCreate,
   StoreResponse,
+  StoreSummary,
   StoreUpdate,
   SupplierCreate,
   SupplierResponse,
@@ -219,6 +224,7 @@ part 'serializers.g.dart';
   VehicleUpdate,
   WarehouseCreate,
   WarehouseResponse,
+  WarehouseSummary,
   WarehouseUpdate,
 ])
 Serializers serializers = (_$serializers.toBuilder()

@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/employee_response.dart';
+import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -44,7 +46,7 @@ abstract class CustomerResponse implements Built<CustomerResponse, CustomerRespo
   int get creditDays;
 
   @BuiltValueField(wireName: r'price_list')
-  int get priceList;
+  PriceListResponse get priceList;
 
   @BuiltValueField(wireName: r'shipping')
   bool get shipping;
@@ -53,7 +55,7 @@ abstract class CustomerResponse implements Built<CustomerResponse, CustomerRespo
   bool get shippingRequiredDocument;
 
   @BuiltValueField(wireName: r'salesperson')
-  int? get salesperson;
+  EmployeeResponse? get salesperson;
 
   @BuiltValueField(wireName: r'disabled')
   bool? get disabled;
@@ -117,7 +119,7 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
     yield r'price_list';
     yield serializers.serialize(
       object.priceList,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(PriceListResponse),
     );
     yield r'shipping';
     yield serializers.serialize(
@@ -132,7 +134,7 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
     yield r'salesperson';
     yield object.salesperson == null ? null : serializers.serialize(
       object.salesperson,
-      specifiedType: const FullType.nullable(int),
+      specifiedType: const FullType.nullable(EmployeeResponse),
     );
     yield r'disabled';
     yield object.disabled == null ? null : serializers.serialize(
@@ -213,9 +215,9 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
         case r'price_list':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.priceList = valueDes;
+            specifiedType: const FullType(PriceListResponse),
+          ) as PriceListResponse;
+          result.priceList.replace(valueDes);
           break;
         case r'shipping':
           final valueDes = serializers.deserialize(
@@ -234,10 +236,10 @@ class _$CustomerResponseSerializer implements PrimitiveSerializer<CustomerRespon
         case r'salesperson':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+            specifiedType: const FullType.nullable(EmployeeResponse),
+          ) as EmployeeResponse?;
           if (valueDes == null) continue;
-          result.salesperson = valueDes;
+          result.salesperson.replace(valueDes);
           break;
         case r'disabled':
           final valueDes = serializers.deserialize(

@@ -137,6 +137,12 @@
   "productsPurchasableFilter": "Purchasable",
   "@productsPurchasableFilter": {},
 
+  "productsLabelFilter": "Label",
+  "@productsLabelFilter": {},
+
+  "productsAllLabels": "All labels",
+  "@productsAllLabels": {},
+
   "productsLoadError": "Failed to load products: {error}",
   "@productsLoadError": {
     "placeholders": {
@@ -178,6 +184,12 @@
   "unitOfMeasurementLabel": "Unit of Measurement",
   "@unitOfMeasurementLabel": {},
 
+  "supplierLabel": "Supplier",
+  "@supplierLabel": {},
+
+  "satKeyLabel": "SAT Product/Service Key",
+  "@satKeyLabel": {},
+
   "brandLabel": "Brand",
   "@brandLabel": {},
 
@@ -213,6 +225,15 @@
 
   "invoiceableLabel": "Invoiceable",
   "@invoiceableLabel": {},
+
+  "pricesSubpanelTitle": "Prices",
+  "@pricesSubpanelTitle": {},
+
+  "unknownPriceList": "Unknown price list",
+  "@unknownPriceList": {},
+
+  "labelsLabel": "Labels",
+  "@labelsLabel": {},
 
   "deactivateProductTooltip": "Deactivate product",
   "@deactivateProductTooltip": {},

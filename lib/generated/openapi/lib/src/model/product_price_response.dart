@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -22,7 +23,7 @@ abstract class ProductPriceResponse implements Built<ProductPriceResponse, Produ
   int get productPriceId;
 
   @BuiltValueField(wireName: r'price_list')
-  int get priceList;
+  PriceListResponse get priceList;
 
   @BuiltValueField(wireName: r'price')
   String get price;
@@ -64,7 +65,7 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
     yield r'price_list';
     yield serializers.serialize(
       object.priceList,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(PriceListResponse),
     );
     yield r'price';
     yield serializers.serialize(
@@ -114,9 +115,9 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
         case r'price_list':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.priceList = valueDes;
+            specifiedType: const FullType(PriceListResponse),
+          ) as PriceListResponse;
+          result.priceList.replace(valueDes);
           break;
         case r'price':
           final valueDes = serializers.deserialize(

@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/store_summary.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -23,7 +24,7 @@ abstract class WarehouseResponse implements Built<WarehouseResponse, WarehouseRe
   int get warehouseId;
 
   @BuiltValueField(wireName: r'store')
-  int get store;
+  StoreSummary get store;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -68,7 +69,7 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
     yield r'store';
     yield serializers.serialize(
       object.store,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(StoreSummary),
     );
     yield r'code';
     yield serializers.serialize(
@@ -123,9 +124,9 @@ class _$WarehouseResponseSerializer implements PrimitiveSerializer<WarehouseResp
         case r'store':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.store = valueDes;
+            specifiedType: const FullType(StoreSummary),
+          ) as StoreSummary;
+          result.store.replace(valueDes);
           break;
         case r'code':
           final valueDes = serializers.deserialize(

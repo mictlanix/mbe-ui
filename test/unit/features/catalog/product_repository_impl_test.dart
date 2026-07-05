@@ -24,7 +24,7 @@ void main() {
                 'name': 'Widget',
                 'brand': 'Acme',
                 'model': null,
-                'unit_of_measurement': 'PCE',
+                'unit_of_measurement': {'id': 'PCE', 'name': 'Piece', 'description': null, 'symbol': null},
                 'tax_rate': '0.16',
                 'deactivated': false,
               },
@@ -211,10 +211,10 @@ void main() {
       expect(product.productId, 1);
       expect(product.code, 'SKU-001');
       expect(product.name, 'Widget');
-      expect(product.unitOfMeasurement, 'PCE');
+      expect(product.unitOfMeasurementCode, 'PCE');
       expect(product.deactivated, isFalse);
       expect(product.prices, hasLength(1));
-      expect(product.prices.single.priceList, 1);
+      expect(product.prices.single.priceListId, 1);
     });
 
     test('404 maps to AppError.notFound', () async {
@@ -494,7 +494,7 @@ Map<String, Object?> _productResponseJson() => {
       'model': null,
       'bar_code': null,
       'location': null,
-      'unit_of_measurement': 'PCE',
+      'unit_of_measurement': {'id': 'PCE', 'name': 'Piece', 'description': null, 'symbol': null},
       'key': null,
       'tax_rate': '0.16',
       'tax_included': false,
@@ -514,7 +514,7 @@ Map<String, Object?> _productResponseJson() => {
       'prices': [
         {
           'product_price_id': 10,
-          'price_list': 1,
+          'price_list': {'price_list_id': 1, 'name': 'Retail', 'high_profit_margin': '0.30', 'low_profit_margin': '0.10'},
           'price': '0',
           'low_profit': '0',
           'high_profit': '0',

@@ -12,7 +12,9 @@ import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -32,6 +34,7 @@ class ProductsListScreen extends ConsumerWidget {
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
     final canDelete = access.can(SystemObject.products, AccessRight.delete);
     final l10n = AppLocalizations.of(context)!;
+    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -85,6 +88,27 @@ class ProductsListScreen extends ConsumerWidget {
                   value: filter.purchasable,
                   onChanged: filterController.purchasableChanged,
                 ),
+                if (allLabels.isNotEmpty)
+                  DropdownButton<int?>(
+                    key: const Key('products_filter_label'),
+                    value: filter.label,
+                    hint: Text(l10n.productsLabelFilter),
+                    underline: const SizedBox.shrink(),
+                    isDense: true,
+                    items: [
+                      DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text(l10n.productsAllLabels),
+                      ),
+                      ...allLabels.map(
+                        (lb) => DropdownMenuItem<int?>(
+                          value: lb.labelId,
+                          child: Text(lb.name),
+                        ),
+                      ),
+                    ],
+                    onChanged: filterController.labelChanged,
+                  ),
               ],
             ),
           ),
@@ -121,7 +145,7 @@ class ProductsListScreen extends ConsumerWidget {
                         ),
                         DataTableColumn.text(
                           label: l10n.columnUnit,
-                          text: (p) => p.unitOfMeasurement,
+                          text: (p) => p.unitOfMeasurementName,
                           size: ColumnSize.M,
                         ),
                         DataTableColumn(

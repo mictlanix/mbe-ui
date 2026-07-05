@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/date.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -31,7 +32,7 @@ abstract class VehicleOperatorResponse implements Built<VehicleOperatorResponse,
   int get vehicleOperatorId;
 
   @BuiltValueField(wireName: r'driver')
-  int get driver;
+  EmployeeResponse get driver;
 
   @BuiltValueField(wireName: r'license_type')
   String get licenseType;
@@ -55,10 +56,10 @@ abstract class VehicleOperatorResponse implements Built<VehicleOperatorResponse,
   DateTime get modificationTime;
 
   @BuiltValueField(wireName: r'creator')
-  int get creator;
+  EmployeeResponse get creator;
 
   @BuiltValueField(wireName: r'updater')
-  int get updater;
+  EmployeeResponse get updater;
 
   @BuiltValueField(wireName: r'active')
   bool get active;
@@ -98,7 +99,7 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
     yield r'driver';
     yield serializers.serialize(
       object.driver,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(EmployeeResponse),
     );
     yield r'license_type';
     yield serializers.serialize(
@@ -138,12 +139,12 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
     yield r'creator';
     yield serializers.serialize(
       object.creator,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(EmployeeResponse),
     );
     yield r'updater';
     yield serializers.serialize(
       object.updater,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(EmployeeResponse),
     );
     yield r'active';
     yield serializers.serialize(
@@ -190,9 +191,9 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
         case r'driver':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.driver = valueDes;
+            specifiedType: const FullType(EmployeeResponse),
+          ) as EmployeeResponse;
+          result.driver.replace(valueDes);
           break;
         case r'license_type':
           final valueDes = serializers.deserialize(
@@ -246,16 +247,16 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
         case r'creator':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.creator = valueDes;
+            specifiedType: const FullType(EmployeeResponse),
+          ) as EmployeeResponse;
+          result.creator.replace(valueDes);
           break;
         case r'updater':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.updater = valueDes;
+            specifiedType: const FullType(EmployeeResponse),
+          ) as EmployeeResponse;
+          result.updater.replace(valueDes);
           break;
         case r'active':
           final valueDes = serializers.deserialize(

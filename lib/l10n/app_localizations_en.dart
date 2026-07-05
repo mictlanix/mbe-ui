@@ -148,6 +148,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productsPurchasableFilter => 'Purchasable';
 
   @override
+  String get productsLabelFilter => 'Label';
+
+  @override
+  String get productsAllLabels => 'All labels';
+
+  @override
   String productsLoadError(Object error) {
     return 'Failed to load products: $error';
   }
@@ -186,6 +192,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitOfMeasurementLabel => 'Unit of Measurement';
 
   @override
+  String get supplierLabel => 'Supplier';
+
+  @override
+  String get satKeyLabel => 'SAT Product/Service Key';
+
+  @override
   String get brandLabel => 'Brand';
 
   @override
@@ -220,6 +232,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invoiceableLabel => 'Invoiceable';
+
+  @override
+  String get pricesSubpanelTitle => 'Prices';
+
+  @override
+  String get unknownPriceList => 'Unknown price list';
+
+  @override
+  String get labelsLabel => 'Labels';
 
   @override
   String get deactivateProductTooltip => 'Deactivate product';

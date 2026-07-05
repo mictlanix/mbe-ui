@@ -18,7 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ProductPrice {
   int get productPriceId => throw _privateConstructorUsedError;
-  int get priceList => throw _privateConstructorUsedError;
+  int get priceListId => throw _privateConstructorUsedError;
+  String get priceListName => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
   String get lowProfit => throw _privateConstructorUsedError;
   String get highProfit => throw _privateConstructorUsedError;
@@ -39,7 +40,8 @@ abstract class $ProductPriceCopyWith<$Res> {
   @useResult
   $Res call({
     int productPriceId,
-    int priceList,
+    int priceListId,
+    String priceListName,
     String price,
     String lowProfit,
     String highProfit,
@@ -62,7 +64,8 @@ class _$ProductPriceCopyWithImpl<$Res, $Val extends ProductPrice>
   @override
   $Res call({
     Object? productPriceId = null,
-    Object? priceList = null,
+    Object? priceListId = null,
+    Object? priceListName = null,
     Object? price = null,
     Object? lowProfit = null,
     Object? highProfit = null,
@@ -73,10 +76,14 @@ class _$ProductPriceCopyWithImpl<$Res, $Val extends ProductPrice>
                 ? _value.productPriceId
                 : productPriceId // ignore: cast_nullable_to_non_nullable
                       as int,
-            priceList: null == priceList
-                ? _value.priceList
-                : priceList // ignore: cast_nullable_to_non_nullable
+            priceListId: null == priceListId
+                ? _value.priceListId
+                : priceListId // ignore: cast_nullable_to_non_nullable
                       as int,
+            priceListName: null == priceListName
+                ? _value.priceListName
+                : priceListName // ignore: cast_nullable_to_non_nullable
+                      as String,
             price: null == price
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
@@ -106,7 +113,8 @@ abstract class _$$ProductPriceImplCopyWith<$Res>
   @useResult
   $Res call({
     int productPriceId,
-    int priceList,
+    int priceListId,
+    String priceListName,
     String price,
     String lowProfit,
     String highProfit,
@@ -128,7 +136,8 @@ class __$$ProductPriceImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? productPriceId = null,
-    Object? priceList = null,
+    Object? priceListId = null,
+    Object? priceListName = null,
     Object? price = null,
     Object? lowProfit = null,
     Object? highProfit = null,
@@ -139,10 +148,14 @@ class __$$ProductPriceImplCopyWithImpl<$Res>
             ? _value.productPriceId
             : productPriceId // ignore: cast_nullable_to_non_nullable
                   as int,
-        priceList: null == priceList
-            ? _value.priceList
-            : priceList // ignore: cast_nullable_to_non_nullable
+        priceListId: null == priceListId
+            ? _value.priceListId
+            : priceListId // ignore: cast_nullable_to_non_nullable
                   as int,
+        priceListName: null == priceListName
+            ? _value.priceListName
+            : priceListName // ignore: cast_nullable_to_non_nullable
+                  as String,
         price: null == price
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
@@ -165,7 +178,8 @@ class __$$ProductPriceImplCopyWithImpl<$Res>
 class _$ProductPriceImpl implements _ProductPrice {
   const _$ProductPriceImpl({
     required this.productPriceId,
-    required this.priceList,
+    required this.priceListId,
+    required this.priceListName,
     required this.price,
     required this.lowProfit,
     required this.highProfit,
@@ -174,7 +188,9 @@ class _$ProductPriceImpl implements _ProductPrice {
   @override
   final int productPriceId;
   @override
-  final int priceList;
+  final int priceListId;
+  @override
+  final String priceListName;
   @override
   final String price;
   @override
@@ -184,7 +200,7 @@ class _$ProductPriceImpl implements _ProductPrice {
 
   @override
   String toString() {
-    return 'ProductPrice(productPriceId: $productPriceId, priceList: $priceList, price: $price, lowProfit: $lowProfit, highProfit: $highProfit)';
+    return 'ProductPrice(productPriceId: $productPriceId, priceListId: $priceListId, priceListName: $priceListName, price: $price, lowProfit: $lowProfit, highProfit: $highProfit)';
   }
 
   @override
@@ -194,8 +210,10 @@ class _$ProductPriceImpl implements _ProductPrice {
             other is _$ProductPriceImpl &&
             (identical(other.productPriceId, productPriceId) ||
                 other.productPriceId == productPriceId) &&
-            (identical(other.priceList, priceList) ||
-                other.priceList == priceList) &&
+            (identical(other.priceListId, priceListId) ||
+                other.priceListId == priceListId) &&
+            (identical(other.priceListName, priceListName) ||
+                other.priceListName == priceListName) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.lowProfit, lowProfit) ||
                 other.lowProfit == lowProfit) &&
@@ -207,7 +225,8 @@ class _$ProductPriceImpl implements _ProductPrice {
   int get hashCode => Object.hash(
     runtimeType,
     productPriceId,
-    priceList,
+    priceListId,
+    priceListName,
     price,
     lowProfit,
     highProfit,
@@ -225,7 +244,8 @@ class _$ProductPriceImpl implements _ProductPrice {
 abstract class _ProductPrice implements ProductPrice {
   const factory _ProductPrice({
     required final int productPriceId,
-    required final int priceList,
+    required final int priceListId,
+    required final String priceListName,
     required final String price,
     required final String lowProfit,
     required final String highProfit,
@@ -234,7 +254,9 @@ abstract class _ProductPrice implements ProductPrice {
   @override
   int get productPriceId;
   @override
-  int get priceList;
+  int get priceListId;
+  @override
+  String get priceListName;
   @override
   String get price;
   @override
