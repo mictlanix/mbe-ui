@@ -87,6 +87,10 @@ respects read-only/view mode exactly as before.
 6. **Given** the switches, prices, and labels sections, **When** the form renders,
    **Then** they sit within the same constrained max-width container and remain legible
    and aligned rather than stretching full screen width.
+7. **Given** a non-compact viewport and a product with a price list, **When** the form
+   renders, **Then** the boolean attribute switches appear in the left column and the
+   Precios section in the right column (a two-column band); **and given** a compact
+   viewport, they stack vertically (switches above prices).
 
 ---
 
@@ -175,6 +179,12 @@ remove still work and that any photo validation error still displays.
   viewports, reflowing to stacked on compact viewports if needed.
 - **FR-013**: All existing widget keys, RBAC gating, localized strings, error banners,
   field-error messages, and the save/deactivate actions MUST be preserved unchanged.
+- **FR-017**: The boolean attribute switches and the Precios (price list) section MUST be
+  arranged in a two-column band on non-compact viewports — the switches stacked in the left
+  column and the price list in the right column — reclaiming the horizontal space each
+  switch row otherwise wastes. On compact viewports the two sections stack vertically
+  (switches above prices). When a product has no price list, the switches occupy the full
+  band width. All switch keys, values, and enabled/read-only gating are preserved.
 
 **Cross-cutting constraints**
 

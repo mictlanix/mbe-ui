@@ -21,6 +21,7 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_price.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
@@ -718,6 +719,73 @@ void main() {
             .dx;
         expect(replaceLeft, greaterThan(photoRight));
         expect(find.byKey(const Key('remove_photo_button')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'places the price list beside the switches on a wide viewport (FR-017)',
+      (tester) async {
+        tester.view.physicalSize = const Size(1600, 1200);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
+
+        when(() => productRepository.get(productId: 1)).thenAnswer(
+          (_) async => _product().copyWith(
+            prices: const [
+              ProductPrice(
+                productPriceId: 1,
+                priceListId: 1,
+                priceListName: 'Mostrador',
+                price: '23.0000',
+                lowProfit: '0',
+                highProfit: '0',
+              ),
+            ],
+          ),
+        );
+
+        await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+        // Prices header sits to the right of the switches (two-column band),
+        // not below them.
+        final switchLeft = tester
+            .getTopLeft(find.byKey(const Key('stockable_switch')))
+            .dx;
+        final pricesLeft = tester.getTopLeft(find.text('Prices')).dx;
+        expect(pricesLeft, greaterThan(switchLeft));
+      },
+    );
+
+    testWidgets(
+      'stacks the price list below the switches on a compact viewport '
+      '(FR-017 compact fallback)',
+      (tester) async {
+        tester.view.physicalSize = const Size(500, 1400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.reset);
+
+        when(() => productRepository.get(productId: 1)).thenAnswer(
+          (_) async => _product().copyWith(
+            prices: const [
+              ProductPrice(
+                productPriceId: 1,
+                priceListId: 1,
+                priceListName: 'Mostrador',
+                price: '23.0000',
+                lowProfit: '0',
+                highProfit: '0',
+              ),
+            ],
+          ),
+        );
+
+        await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+        final switchBottom = tester
+            .getBottomLeft(find.byKey(const Key('invoiceable_switch')))
+            .dy;
+        final pricesTop = tester.getTopLeft(find.text('Prices')).dy;
+        expect(pricesTop, greaterThan(switchBottom));
       },
     );
 

@@ -312,85 +312,87 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
             FormGridChild(
               span: FormGridSpan.full,
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SwitchListTile(
-                    key: const Key('stockable_switch'),
-                    title: Text(l10n.stockableLabel),
-                    value: formState.stockable,
-                    onChanged: fieldsEnabled
-                        ? controller.stockableChanged
-                        : null,
-                  ),
-                  SwitchListTile(
-                    key: const Key('perishable_switch'),
-                    title: Text(l10n.perishableLabel),
-                    value: formState.perishable,
-                    onChanged: fieldsEnabled
-                        ? controller.perishableChanged
-                        : null,
-                  ),
-                  SwitchListTile(
-                    key: const Key('seriable_switch'),
-                    title: Text(l10n.seriableLabel),
-                    value: formState.seriable,
-                    onChanged: fieldsEnabled
-                        ? controller.seriableChanged
-                        : null,
-                  ),
-                  SwitchListTile(
-                    key: const Key('purchasable_switch'),
-                    title: Text(l10n.purchasableLabel),
-                    value: formState.purchasable,
-                    onChanged: fieldsEnabled
-                        ? controller.purchasableChanged
-                        : null,
-                  ),
-                  SwitchListTile(
-                    key: const Key('salable_switch'),
-                    title: Text(l10n.salableLabel),
-                    value: formState.salable,
-                    onChanged: fieldsEnabled ? controller.salableChanged : null,
-                  ),
-                  SwitchListTile(
-                    key: const Key('invoiceable_switch'),
-                    title: Text(l10n.invoiceableLabel),
-                    value: formState.invoiceable,
-                    onChanged: fieldsEnabled
-                        ? controller.invoiceableChanged
-                        : null,
-                  ),
-                ],
-              ),
-            ),
-            if (_isEdit && formState.prices.isNotEmpty)
-              FormGridChild(
-                span: FormGridSpan.full,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+              _SwitchesPricesBand(
+                switches: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      l10n.pricesSubpanelTitle,
-                      style: Theme.of(context).textTheme.titleSmall,
+                    SwitchListTile(
+                      key: const Key('stockable_switch'),
+                      title: Text(l10n.stockableLabel),
+                      value: formState.stockable,
+                      onChanged: fieldsEnabled
+                          ? controller.stockableChanged
+                          : null,
                     ),
-                    const SizedBox(height: 8),
-                    ...formState.prices.map(
-                      (price) => ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          price.priceListName.trim().isEmpty
-                              ? l10n.unknownPriceList
-                              : price.priceListName,
-                        ),
-                        trailing: Text(price.price),
-                      ),
+                    SwitchListTile(
+                      key: const Key('perishable_switch'),
+                      title: Text(l10n.perishableLabel),
+                      value: formState.perishable,
+                      onChanged: fieldsEnabled
+                          ? controller.perishableChanged
+                          : null,
+                    ),
+                    SwitchListTile(
+                      key: const Key('seriable_switch'),
+                      title: Text(l10n.seriableLabel),
+                      value: formState.seriable,
+                      onChanged: fieldsEnabled
+                          ? controller.seriableChanged
+                          : null,
+                    ),
+                    SwitchListTile(
+                      key: const Key('purchasable_switch'),
+                      title: Text(l10n.purchasableLabel),
+                      value: formState.purchasable,
+                      onChanged: fieldsEnabled
+                          ? controller.purchasableChanged
+                          : null,
+                    ),
+                    SwitchListTile(
+                      key: const Key('salable_switch'),
+                      title: Text(l10n.salableLabel),
+                      value: formState.salable,
+                      onChanged: fieldsEnabled
+                          ? controller.salableChanged
+                          : null,
+                    ),
+                    SwitchListTile(
+                      key: const Key('invoiceable_switch'),
+                      title: Text(l10n.invoiceableLabel),
+                      value: formState.invoiceable,
+                      onChanged: fieldsEnabled
+                          ? controller.invoiceableChanged
+                          : null,
                     ),
                   ],
                 ),
+                prices: (_isEdit && formState.prices.isNotEmpty)
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.pricesSubpanelTitle,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 8),
+                          ...formState.prices.map(
+                            (price) => ListTile(
+                              dense: true,
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                price.priceListName.trim().isEmpty
+                                    ? l10n.unknownPriceList
+                                    : price.priceListName,
+                              ),
+                              trailing: Text(price.price),
+                            ),
+                          ),
+                        ],
+                      )
+                    : null,
               ),
+            ),
             if (allLabels.isNotEmpty)
               FormGridChild(
                 span: FormGridSpan.full,
@@ -484,6 +486,40 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       ),
     );
     if (confirmed == true) controller.deactivate();
+  }
+}
+
+/// Lays the boolean attribute [switches] and the (optional) [prices] section
+/// into a two-column band on non-compact viewports — switches on the left,
+/// prices on the right — reclaiming the horizontal space each switch row
+/// otherwise wastes (FR-017). On compact widths they stack vertically, and
+/// when there is no price list the switches occupy the full width.
+class _SwitchesPricesBand extends StatelessWidget {
+  const _SwitchesPricesBand({required this.switches, this.prices});
+
+  final Widget switches;
+  final Widget? prices;
+
+  @override
+  Widget build(BuildContext context) {
+    if (prices == null) return switches;
+
+    if (LayoutBreakpoints.isCompact(context)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [switches, const SizedBox(height: 24), prices!],
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: switches),
+        const SizedBox(width: 32),
+        Expanded(child: prices!),
+      ],
+    );
   }
 }
 
