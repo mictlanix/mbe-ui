@@ -291,6 +291,27 @@ Even so, centralize `LayoutBuilder`/`MediaQuery` breakpoints in `core/` from
 the start, so adding the Compact tier later doesn't require each feature to
 retrofit its own breakpoints.
 
+### 4.2.1 Catalog/list row actions — Edit-only, click-to-view
+
+**Decision** (constitution §VI, amended 2026-07-05 per specs/007-catalog-ui-improvements-2):
+every catalog/list screen's row exposes exactly one row-level icon action,
+**Edit** — no per-row View or Delete icon. Clicking anywhere else on the row
+opens the same detail screen **read-only** (titled as a "View" screen, not
+"Edit"); from there, a user holding the update privilege gets an explicit
+control to switch to the editable form. Create stays toolbar-only. Delete/
+soft-delete moves off the list entirely onto the record's own detail screen —
+typically a warning-styled button in the form body, though a module may keep
+it as a detail-screen app-bar action if a form-body button doesn't fit (the
+Users admin screen does this).
+
+**Rationale**: an earlier version of this rule (through constitution v1.4.0)
+put View, Edit, and Delete all on the row as three separate icons. Usage
+feedback showed this added visual noise without reducing risk: a stray click
+anywhere on the row still opened the *editable* form, so "safe browsing" was
+never actually the default. Defaulting row-click to read-only, and shrinking
+the row's icon surface to just Edit, makes the safe path the path of least
+resistance while keeping editing and deletion one deliberate step away.
+
 ### 4.3 Shared component library
 
 Build a small `core/widgets/` library early for things every module needs:
