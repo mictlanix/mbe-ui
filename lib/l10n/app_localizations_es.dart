@@ -148,6 +148,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsPurchasableFilter => 'Comprable';
 
   @override
+  String get productsLabelFilter => 'Etiqueta';
+
+  @override
+  String get productsAllLabels => 'Todas las etiquetas';
+
+  @override
   String productsLoadError(Object error) {
     return 'Error al cargar productos: $error';
   }
@@ -186,6 +192,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unitOfMeasurementLabel => 'Unidad de medida';
 
   @override
+  String get supplierLabel => 'Proveedor';
+
+  @override
+  String get satKeyLabel => 'Clave SAT Producto/Servicio';
+
+  @override
   String get brandLabel => 'Marca';
 
   @override
@@ -220,6 +232,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get invoiceableLabel => 'Facturable';
+
+  @override
+  String get pricesSubpanelTitle => 'Precios';
+
+  @override
+  String get unknownPriceList => 'Lista de precios desconocida';
+
+  @override
+  String get labelsLabel => 'Etiquetas';
 
   @override
   String get deactivateProductTooltip => 'Desactivar producto';

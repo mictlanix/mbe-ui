@@ -3,6 +3,7 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 
 import 'package:mbe_ui/core/network/photo_url.dart';
 
+import 'product_label.dart';
 import 'product_price.dart';
 
 part 'product.freezed.dart';
@@ -23,14 +24,19 @@ class Product with _$Product {
     String? model,
     String? barCode,
     String? location,
-    required String unitOfMeasurement,
-    String? key,
+    required String unitOfMeasurementCode,
+    required String unitOfMeasurementName,
+    String? unitOfMeasurementDescription,
+    String? unitOfMeasurementSymbol,
+    String? satKeyCode,
+    String? satKeyDescription,
     required String taxRate,
     required bool taxIncluded,
     required int priceType,
     required int currency,
     required int minOrderQty,
-    int? supplier,
+    int? supplierId,
+    String? supplierName,
     required bool stockable,
     required bool perishable,
     required bool seriable,
@@ -41,6 +47,7 @@ class Product with _$Product {
     required bool deactivated,
     String? comment,
     required List<ProductPrice> prices,
+    @Default([]) List<ProductLabel> labels,
   }) = _Product;
 
   factory Product.fromResponse(ProductResponse response) {
@@ -54,14 +61,19 @@ class Product with _$Product {
       model: response.model,
       barCode: response.barCode,
       location: response.location,
-      unitOfMeasurement: response.unitOfMeasurement,
-      key: response.key,
+      unitOfMeasurementCode: response.unitOfMeasurement.id,
+      unitOfMeasurementName: response.unitOfMeasurement.name,
+      unitOfMeasurementDescription: response.unitOfMeasurement.description,
+      unitOfMeasurementSymbol: response.unitOfMeasurement.symbol,
+      satKeyCode: response.key?.id,
+      satKeyDescription: response.key?.description,
       taxRate: response.taxRate,
       taxIncluded: response.taxIncluded,
       priceType: response.priceType,
       currency: response.currency,
       minOrderQty: response.minOrderQty,
-      supplier: response.supplier,
+      supplierId: response.supplier?.supplierId,
+      supplierName: response.supplier?.name,
       stockable: response.stockable,
       perishable: response.perishable,
       seriable: response.seriable,
@@ -73,6 +85,9 @@ class Product with _$Product {
       comment: response.comment,
       prices: (response.prices?.toList() ?? <ProductPriceResponse>[])
           .map(ProductPrice.fromResponse)
+          .toList(),
+      labels: (response.labels?.toList() ?? <LabelResponse>[])
+          .map(ProductLabel.fromResponse)
           .toList(),
     );
   }

@@ -10,7 +10,8 @@ part 'product_price.freezed.dart';
 class ProductPrice with _$ProductPrice {
   const factory ProductPrice({
     required int productPriceId,
-    required int priceList,
+    required int priceListId,
+    required String priceListName,
     required String price,
     required String lowProfit,
     required String highProfit,
@@ -19,7 +20,8 @@ class ProductPrice with _$ProductPrice {
   factory ProductPrice.fromResponse(ProductPriceResponse response) {
     return ProductPrice(
       productPriceId: response.productPriceId,
-      priceList: response.priceList,
+      priceListId: response.priceList.priceListId,
+      priceListName: response.priceList.name,
       price: response.price,
       lowProfit: response.lowProfit,
       highProfit: response.highProfit,

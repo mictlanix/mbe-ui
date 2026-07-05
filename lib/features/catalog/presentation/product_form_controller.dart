@@ -8,6 +8,9 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_price.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
 
 part 'product_form_controller.freezed.dart';
@@ -67,7 +70,14 @@ class ProductFormState with _$ProductFormState {
     /// opened/loaded, and no new photo has been picked since. Mutually
     /// exclusive with a non-null [pendingPhotoBytes].
     @Default(false) bool photoMarkedForRemoval,
-    @Default('') String unitOfMeasurement,
+    @Default('') String unitOfMeasurementCode,
+    @Default('') String unitOfMeasurementDisplayText,
+    String? satKeyCode,
+    String? satKeyDisplayText,
+    int? supplierId,
+    String? supplierName,
+    @Default(<int>[]) List<int> labelIds,
+    @Default(<ProductPrice>[]) List<ProductPrice> prices,
     String? taxRate,
     String? comment,
     @Default(false) bool stockable,
@@ -123,12 +133,39 @@ class ProductFormController extends _$ProductFormController {
 
   void locationChanged(String v) => state = state.copyWith(location: v);
 
-  void unitOfMeasurementChanged(String v) => state = state.copyWith(
-        unitOfMeasurement: v,
+  void supplierSelected(SupplierListItem? item) => state = state.copyWith(
+        supplierId: item?.supplierId,
+        supplierName: item?.name,
+      );
+
+  void unitSelected(SatCatalogItem item) => state = state.copyWith(
+        unitOfMeasurementCode: item.code,
+        unitOfMeasurementDisplayText: item.description != null
+            ? '${item.code} — ${item.description}'
+            : item.code,
+        fieldErrors: Map.of(state.fieldErrors)..remove('unitOfMeasurementCode'),
         error: null,
         errorDetail: null,
-        fieldErrors: const {},
       );
+
+  void satKeySelected(SatCatalogItem? item) => state = state.copyWith(
+        satKeyCode: item?.code,
+        satKeyDisplayText: item != null
+            ? (item.description != null
+                ? '${item.code} — ${item.description}'
+                : item.code)
+            : null,
+      );
+
+  void labelToggled(int labelId) {
+    final updated = List<int>.from(state.labelIds);
+    if (updated.contains(labelId)) {
+      updated.remove(labelId);
+    } else {
+      updated.add(labelId);
+    }
+    state = state.copyWith(labelIds: updated);
+  }
 
   void taxRateChanged(String v) => state = state.copyWith(taxRate: v);
   void commentChanged(String v) => state = state.copyWith(comment: v);
@@ -202,7 +239,18 @@ class ProductFormController extends _$ProductFormController {
         barCode: product.barCode,
         location: product.location,
         photo: product.photo,
-        unitOfMeasurement: product.unitOfMeasurement,
+        unitOfMeasurementCode: product.unitOfMeasurementCode,
+        unitOfMeasurementDisplayText:
+            '${product.unitOfMeasurementCode} — ${product.unitOfMeasurementName}',
+        satKeyCode: product.satKeyCode,
+        satKeyDisplayText: product.satKeyCode != null
+            ? '${product.satKeyCode}'
+                '${product.satKeyDescription != null ? ' — ${product.satKeyDescription}' : ''}'
+            : null,
+        supplierId: product.supplierId,
+        supplierName: product.supplierName,
+        labelIds: product.labels.map((l) => l.labelId).toList(),
+        prices: product.prices,
         taxRate: product.taxRate,
         comment: product.comment,
         stockable: product.stockable,
@@ -240,8 +288,8 @@ class ProductFormController extends _$ProductFormController {
       errors['name'] = ProductFormErrorCode.nameLength;
     }
 
-    if (state.unitOfMeasurement.trim().isEmpty) {
-      errors['unitOfMeasurement'] = ProductFormErrorCode.unitRequired;
+    if (state.unitOfMeasurementCode.trim().isEmpty) {
+      errors['unitOfMeasurementCode'] = ProductFormErrorCode.unitRequired;
     }
 
     final barCode = state.barCode;
@@ -285,7 +333,7 @@ class ProductFormController extends _$ProductFormController {
       final product = await ref.read(productRepositoryProvider).create(
             code: state.code,
             name: state.name,
-            unitOfMeasurement: state.unitOfMeasurement,
+            unitOfMeasurement: state.unitOfMeasurementCode,
             brand: _orNull(state.brand),
             model: _orNull(state.model),
             barCode: _orNull(state.barCode),
@@ -298,6 +346,9 @@ class ProductFormController extends _$ProductFormController {
             purchasable: state.purchasable,
             salable: state.salable,
             invoiceable: state.invoiceable,
+            supplier: state.supplierId,
+            key: state.satKeyCode,
+            labels: state.labelIds,
           );
       ref.invalidate(productsListControllerProvider);
 
@@ -379,7 +430,7 @@ class ProductFormController extends _$ProductFormController {
             productId: productId,
             code: state.code,
             name: state.name,
-            unitOfMeasurement: state.unitOfMeasurement,
+            unitOfMeasurement: state.unitOfMeasurementCode,
             brand: _orNull(state.brand),
             model: _orNull(state.model),
             barCode: _orNull(state.barCode),
@@ -392,6 +443,9 @@ class ProductFormController extends _$ProductFormController {
             purchasable: state.purchasable,
             salable: state.salable,
             invoiceable: state.invoiceable,
+            supplier: state.supplierId,
+            key: state.satKeyCode,
+            labels: state.labelIds,
           );
       ref.invalidate(productsListControllerProvider);
 
@@ -493,7 +547,7 @@ String? _orNull(String? value) =>
 /// server-only rejections (e.g. a concurrent duplicate-code race) render
 /// through the same field-error UI as client-side ones (FR-014).
 Map<String, String> _fieldErrorsFromServer(ValidationError error) {
-  const keyMap = {'bar_code': 'barCode', 'unit_of_measurement': 'unitOfMeasurement'};
+  const keyMap = {'bar_code': 'barCode', 'unit_of_measurement': 'unitOfMeasurementCode'};
   final result = <String, String>{};
   for (final fieldError in error.errors) {
     final locKey = fieldError.loc.isNotEmpty ? fieldError.loc.last : 'error';

@@ -26,14 +26,20 @@ mixin _$Product {
   String? get model => throw _privateConstructorUsedError;
   String? get barCode => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
-  String get unitOfMeasurement => throw _privateConstructorUsedError;
-  String? get key => throw _privateConstructorUsedError;
+  String get unitOfMeasurementCode => throw _privateConstructorUsedError;
+  String get unitOfMeasurementName => throw _privateConstructorUsedError;
+  String? get unitOfMeasurementDescription =>
+      throw _privateConstructorUsedError;
+  String? get unitOfMeasurementSymbol => throw _privateConstructorUsedError;
+  String? get satKeyCode => throw _privateConstructorUsedError;
+  String? get satKeyDescription => throw _privateConstructorUsedError;
   String get taxRate => throw _privateConstructorUsedError;
   bool get taxIncluded => throw _privateConstructorUsedError;
   int get priceType => throw _privateConstructorUsedError;
   int get currency => throw _privateConstructorUsedError;
   int get minOrderQty => throw _privateConstructorUsedError;
-  int? get supplier => throw _privateConstructorUsedError;
+  int? get supplierId => throw _privateConstructorUsedError;
+  String? get supplierName => throw _privateConstructorUsedError;
   bool get stockable => throw _privateConstructorUsedError;
   bool get perishable => throw _privateConstructorUsedError;
   bool get seriable => throw _privateConstructorUsedError;
@@ -44,6 +50,7 @@ mixin _$Product {
   bool get deactivated => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   List<ProductPrice> get prices => throw _privateConstructorUsedError;
+  List<ProductLabel> get labels => throw _privateConstructorUsedError;
 
   /// Create a copy of Product
   /// with the given fields replaced by the non-null parameter values.
@@ -66,14 +73,19 @@ abstract class $ProductCopyWith<$Res> {
     String? model,
     String? barCode,
     String? location,
-    String unitOfMeasurement,
-    String? key,
+    String unitOfMeasurementCode,
+    String unitOfMeasurementName,
+    String? unitOfMeasurementDescription,
+    String? unitOfMeasurementSymbol,
+    String? satKeyCode,
+    String? satKeyDescription,
     String taxRate,
     bool taxIncluded,
     int priceType,
     int currency,
     int minOrderQty,
-    int? supplier,
+    int? supplierId,
+    String? supplierName,
     bool stockable,
     bool perishable,
     bool seriable,
@@ -84,6 +96,7 @@ abstract class $ProductCopyWith<$Res> {
     bool deactivated,
     String? comment,
     List<ProductPrice> prices,
+    List<ProductLabel> labels,
   });
 }
 
@@ -111,14 +124,19 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
     Object? model = freezed,
     Object? barCode = freezed,
     Object? location = freezed,
-    Object? unitOfMeasurement = null,
-    Object? key = freezed,
+    Object? unitOfMeasurementCode = null,
+    Object? unitOfMeasurementName = null,
+    Object? unitOfMeasurementDescription = freezed,
+    Object? unitOfMeasurementSymbol = freezed,
+    Object? satKeyCode = freezed,
+    Object? satKeyDescription = freezed,
     Object? taxRate = null,
     Object? taxIncluded = null,
     Object? priceType = null,
     Object? currency = null,
     Object? minOrderQty = null,
-    Object? supplier = freezed,
+    Object? supplierId = freezed,
+    Object? supplierName = freezed,
     Object? stockable = null,
     Object? perishable = null,
     Object? seriable = null,
@@ -129,6 +147,7 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
     Object? deactivated = null,
     Object? comment = freezed,
     Object? prices = null,
+    Object? labels = null,
   }) {
     return _then(
       _value.copyWith(
@@ -168,13 +187,30 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
                       as String?,
-            unitOfMeasurement: null == unitOfMeasurement
-                ? _value.unitOfMeasurement
-                : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
+            unitOfMeasurementCode: null == unitOfMeasurementCode
+                ? _value.unitOfMeasurementCode
+                : unitOfMeasurementCode // ignore: cast_nullable_to_non_nullable
                       as String,
-            key: freezed == key
-                ? _value.key
-                : key // ignore: cast_nullable_to_non_nullable
+            unitOfMeasurementName: null == unitOfMeasurementName
+                ? _value.unitOfMeasurementName
+                : unitOfMeasurementName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            unitOfMeasurementDescription:
+                freezed == unitOfMeasurementDescription
+                ? _value.unitOfMeasurementDescription
+                : unitOfMeasurementDescription // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            unitOfMeasurementSymbol: freezed == unitOfMeasurementSymbol
+                ? _value.unitOfMeasurementSymbol
+                : unitOfMeasurementSymbol // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            satKeyCode: freezed == satKeyCode
+                ? _value.satKeyCode
+                : satKeyCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            satKeyDescription: freezed == satKeyDescription
+                ? _value.satKeyDescription
+                : satKeyDescription // ignore: cast_nullable_to_non_nullable
                       as String?,
             taxRate: null == taxRate
                 ? _value.taxRate
@@ -196,10 +232,14 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
                 ? _value.minOrderQty
                 : minOrderQty // ignore: cast_nullable_to_non_nullable
                       as int,
-            supplier: freezed == supplier
-                ? _value.supplier
-                : supplier // ignore: cast_nullable_to_non_nullable
+            supplierId: freezed == supplierId
+                ? _value.supplierId
+                : supplierId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            supplierName: freezed == supplierName
+                ? _value.supplierName
+                : supplierName // ignore: cast_nullable_to_non_nullable
+                      as String?,
             stockable: null == stockable
                 ? _value.stockable
                 : stockable // ignore: cast_nullable_to_non_nullable
@@ -240,6 +280,10 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
                 ? _value.prices
                 : prices // ignore: cast_nullable_to_non_nullable
                       as List<ProductPrice>,
+            labels: null == labels
+                ? _value.labels
+                : labels // ignore: cast_nullable_to_non_nullable
+                      as List<ProductLabel>,
           )
           as $Val,
     );
@@ -264,14 +308,19 @@ abstract class _$$ProductImplCopyWith<$Res> implements $ProductCopyWith<$Res> {
     String? model,
     String? barCode,
     String? location,
-    String unitOfMeasurement,
-    String? key,
+    String unitOfMeasurementCode,
+    String unitOfMeasurementName,
+    String? unitOfMeasurementDescription,
+    String? unitOfMeasurementSymbol,
+    String? satKeyCode,
+    String? satKeyDescription,
     String taxRate,
     bool taxIncluded,
     int priceType,
     int currency,
     int minOrderQty,
-    int? supplier,
+    int? supplierId,
+    String? supplierName,
     bool stockable,
     bool perishable,
     bool seriable,
@@ -282,6 +331,7 @@ abstract class _$$ProductImplCopyWith<$Res> implements $ProductCopyWith<$Res> {
     bool deactivated,
     String? comment,
     List<ProductPrice> prices,
+    List<ProductLabel> labels,
   });
 }
 
@@ -308,14 +358,19 @@ class __$$ProductImplCopyWithImpl<$Res>
     Object? model = freezed,
     Object? barCode = freezed,
     Object? location = freezed,
-    Object? unitOfMeasurement = null,
-    Object? key = freezed,
+    Object? unitOfMeasurementCode = null,
+    Object? unitOfMeasurementName = null,
+    Object? unitOfMeasurementDescription = freezed,
+    Object? unitOfMeasurementSymbol = freezed,
+    Object? satKeyCode = freezed,
+    Object? satKeyDescription = freezed,
     Object? taxRate = null,
     Object? taxIncluded = null,
     Object? priceType = null,
     Object? currency = null,
     Object? minOrderQty = null,
-    Object? supplier = freezed,
+    Object? supplierId = freezed,
+    Object? supplierName = freezed,
     Object? stockable = null,
     Object? perishable = null,
     Object? seriable = null,
@@ -326,6 +381,7 @@ class __$$ProductImplCopyWithImpl<$Res>
     Object? deactivated = null,
     Object? comment = freezed,
     Object? prices = null,
+    Object? labels = null,
   }) {
     return _then(
       _$ProductImpl(
@@ -365,13 +421,29 @@ class __$$ProductImplCopyWithImpl<$Res>
             ? _value.location
             : location // ignore: cast_nullable_to_non_nullable
                   as String?,
-        unitOfMeasurement: null == unitOfMeasurement
-            ? _value.unitOfMeasurement
-            : unitOfMeasurement // ignore: cast_nullable_to_non_nullable
+        unitOfMeasurementCode: null == unitOfMeasurementCode
+            ? _value.unitOfMeasurementCode
+            : unitOfMeasurementCode // ignore: cast_nullable_to_non_nullable
                   as String,
-        key: freezed == key
-            ? _value.key
-            : key // ignore: cast_nullable_to_non_nullable
+        unitOfMeasurementName: null == unitOfMeasurementName
+            ? _value.unitOfMeasurementName
+            : unitOfMeasurementName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        unitOfMeasurementDescription: freezed == unitOfMeasurementDescription
+            ? _value.unitOfMeasurementDescription
+            : unitOfMeasurementDescription // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        unitOfMeasurementSymbol: freezed == unitOfMeasurementSymbol
+            ? _value.unitOfMeasurementSymbol
+            : unitOfMeasurementSymbol // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        satKeyCode: freezed == satKeyCode
+            ? _value.satKeyCode
+            : satKeyCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        satKeyDescription: freezed == satKeyDescription
+            ? _value.satKeyDescription
+            : satKeyDescription // ignore: cast_nullable_to_non_nullable
                   as String?,
         taxRate: null == taxRate
             ? _value.taxRate
@@ -393,10 +465,14 @@ class __$$ProductImplCopyWithImpl<$Res>
             ? _value.minOrderQty
             : minOrderQty // ignore: cast_nullable_to_non_nullable
                   as int,
-        supplier: freezed == supplier
-            ? _value.supplier
-            : supplier // ignore: cast_nullable_to_non_nullable
+        supplierId: freezed == supplierId
+            ? _value.supplierId
+            : supplierId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        supplierName: freezed == supplierName
+            ? _value.supplierName
+            : supplierName // ignore: cast_nullable_to_non_nullable
+                  as String?,
         stockable: null == stockable
             ? _value.stockable
             : stockable // ignore: cast_nullable_to_non_nullable
@@ -437,6 +513,10 @@ class __$$ProductImplCopyWithImpl<$Res>
             ? _value._prices
             : prices // ignore: cast_nullable_to_non_nullable
                   as List<ProductPrice>,
+        labels: null == labels
+            ? _value._labels
+            : labels // ignore: cast_nullable_to_non_nullable
+                  as List<ProductLabel>,
       ),
     );
   }
@@ -455,14 +535,19 @@ class _$ProductImpl implements _Product {
     this.model,
     this.barCode,
     this.location,
-    required this.unitOfMeasurement,
-    this.key,
+    required this.unitOfMeasurementCode,
+    required this.unitOfMeasurementName,
+    this.unitOfMeasurementDescription,
+    this.unitOfMeasurementSymbol,
+    this.satKeyCode,
+    this.satKeyDescription,
     required this.taxRate,
     required this.taxIncluded,
     required this.priceType,
     required this.currency,
     required this.minOrderQty,
-    this.supplier,
+    this.supplierId,
+    this.supplierName,
     required this.stockable,
     required this.perishable,
     required this.seriable,
@@ -473,7 +558,9 @@ class _$ProductImpl implements _Product {
     required this.deactivated,
     this.comment,
     required final List<ProductPrice> prices,
-  }) : _prices = prices;
+    final List<ProductLabel> labels = const [],
+  }) : _prices = prices,
+       _labels = labels;
 
   @override
   final int productId;
@@ -494,9 +581,17 @@ class _$ProductImpl implements _Product {
   @override
   final String? location;
   @override
-  final String unitOfMeasurement;
+  final String unitOfMeasurementCode;
   @override
-  final String? key;
+  final String unitOfMeasurementName;
+  @override
+  final String? unitOfMeasurementDescription;
+  @override
+  final String? unitOfMeasurementSymbol;
+  @override
+  final String? satKeyCode;
+  @override
+  final String? satKeyDescription;
   @override
   final String taxRate;
   @override
@@ -508,7 +603,9 @@ class _$ProductImpl implements _Product {
   @override
   final int minOrderQty;
   @override
-  final int? supplier;
+  final int? supplierId;
+  @override
+  final String? supplierName;
   @override
   final bool stockable;
   @override
@@ -535,9 +632,18 @@ class _$ProductImpl implements _Product {
     return EqualUnmodifiableListView(_prices);
   }
 
+  final List<ProductLabel> _labels;
+  @override
+  @JsonKey()
+  List<ProductLabel> get labels {
+    if (_labels is EqualUnmodifiableListView) return _labels;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_labels);
+  }
+
   @override
   String toString() {
-    return 'Product(productId: $productId, code: $code, name: $name, photo: $photo, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurement: $unitOfMeasurement, key: $key, taxRate: $taxRate, taxIncluded: $taxIncluded, priceType: $priceType, currency: $currency, minOrderQty: $minOrderQty, supplier: $supplier, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, stockRequired: $stockRequired, deactivated: $deactivated, comment: $comment, prices: $prices)';
+    return 'Product(productId: $productId, code: $code, name: $name, photo: $photo, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, unitOfMeasurementDescription: $unitOfMeasurementDescription, unitOfMeasurementSymbol: $unitOfMeasurementSymbol, satKeyCode: $satKeyCode, satKeyDescription: $satKeyDescription, taxRate: $taxRate, taxIncluded: $taxIncluded, priceType: $priceType, currency: $currency, minOrderQty: $minOrderQty, supplierId: $supplierId, supplierName: $supplierName, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, stockRequired: $stockRequired, deactivated: $deactivated, comment: $comment, prices: $prices, labels: $labels)';
   }
 
   @override
@@ -556,9 +662,25 @@ class _$ProductImpl implements _Product {
             (identical(other.barCode, barCode) || other.barCode == barCode) &&
             (identical(other.location, location) ||
                 other.location == location) &&
-            (identical(other.unitOfMeasurement, unitOfMeasurement) ||
-                other.unitOfMeasurement == unitOfMeasurement) &&
-            (identical(other.key, key) || other.key == key) &&
+            (identical(other.unitOfMeasurementCode, unitOfMeasurementCode) ||
+                other.unitOfMeasurementCode == unitOfMeasurementCode) &&
+            (identical(other.unitOfMeasurementName, unitOfMeasurementName) ||
+                other.unitOfMeasurementName == unitOfMeasurementName) &&
+            (identical(
+                  other.unitOfMeasurementDescription,
+                  unitOfMeasurementDescription,
+                ) ||
+                other.unitOfMeasurementDescription ==
+                    unitOfMeasurementDescription) &&
+            (identical(
+                  other.unitOfMeasurementSymbol,
+                  unitOfMeasurementSymbol,
+                ) ||
+                other.unitOfMeasurementSymbol == unitOfMeasurementSymbol) &&
+            (identical(other.satKeyCode, satKeyCode) ||
+                other.satKeyCode == satKeyCode) &&
+            (identical(other.satKeyDescription, satKeyDescription) ||
+                other.satKeyDescription == satKeyDescription) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.taxIncluded, taxIncluded) ||
                 other.taxIncluded == taxIncluded) &&
@@ -568,8 +690,10 @@ class _$ProductImpl implements _Product {
                 other.currency == currency) &&
             (identical(other.minOrderQty, minOrderQty) ||
                 other.minOrderQty == minOrderQty) &&
-            (identical(other.supplier, supplier) ||
-                other.supplier == supplier) &&
+            (identical(other.supplierId, supplierId) ||
+                other.supplierId == supplierId) &&
+            (identical(other.supplierName, supplierName) ||
+                other.supplierName == supplierName) &&
             (identical(other.stockable, stockable) ||
                 other.stockable == stockable) &&
             (identical(other.perishable, perishable) ||
@@ -586,7 +710,8 @@ class _$ProductImpl implements _Product {
             (identical(other.deactivated, deactivated) ||
                 other.deactivated == deactivated) &&
             (identical(other.comment, comment) || other.comment == comment) &&
-            const DeepCollectionEquality().equals(other._prices, _prices));
+            const DeepCollectionEquality().equals(other._prices, _prices) &&
+            const DeepCollectionEquality().equals(other._labels, _labels));
   }
 
   @override
@@ -601,14 +726,19 @@ class _$ProductImpl implements _Product {
     model,
     barCode,
     location,
-    unitOfMeasurement,
-    key,
+    unitOfMeasurementCode,
+    unitOfMeasurementName,
+    unitOfMeasurementDescription,
+    unitOfMeasurementSymbol,
+    satKeyCode,
+    satKeyDescription,
     taxRate,
     taxIncluded,
     priceType,
     currency,
     minOrderQty,
-    supplier,
+    supplierId,
+    supplierName,
     stockable,
     perishable,
     seriable,
@@ -619,6 +749,7 @@ class _$ProductImpl implements _Product {
     deactivated,
     comment,
     const DeepCollectionEquality().hash(_prices),
+    const DeepCollectionEquality().hash(_labels),
   ]);
 
   /// Create a copy of Product
@@ -641,14 +772,19 @@ abstract class _Product implements Product {
     final String? model,
     final String? barCode,
     final String? location,
-    required final String unitOfMeasurement,
-    final String? key,
+    required final String unitOfMeasurementCode,
+    required final String unitOfMeasurementName,
+    final String? unitOfMeasurementDescription,
+    final String? unitOfMeasurementSymbol,
+    final String? satKeyCode,
+    final String? satKeyDescription,
     required final String taxRate,
     required final bool taxIncluded,
     required final int priceType,
     required final int currency,
     required final int minOrderQty,
-    final int? supplier,
+    final int? supplierId,
+    final String? supplierName,
     required final bool stockable,
     required final bool perishable,
     required final bool seriable,
@@ -659,6 +795,7 @@ abstract class _Product implements Product {
     required final bool deactivated,
     final String? comment,
     required final List<ProductPrice> prices,
+    final List<ProductLabel> labels,
   }) = _$ProductImpl;
 
   @override
@@ -680,9 +817,17 @@ abstract class _Product implements Product {
   @override
   String? get location;
   @override
-  String get unitOfMeasurement;
+  String get unitOfMeasurementCode;
   @override
-  String? get key;
+  String get unitOfMeasurementName;
+  @override
+  String? get unitOfMeasurementDescription;
+  @override
+  String? get unitOfMeasurementSymbol;
+  @override
+  String? get satKeyCode;
+  @override
+  String? get satKeyDescription;
   @override
   String get taxRate;
   @override
@@ -694,7 +839,9 @@ abstract class _Product implements Product {
   @override
   int get minOrderQty;
   @override
-  int? get supplier;
+  int? get supplierId;
+  @override
+  String? get supplierName;
   @override
   bool get stockable;
   @override
@@ -715,6 +862,8 @@ abstract class _Product implements Product {
   String? get comment;
   @override
   List<ProductPrice> get prices;
+  @override
+  List<ProductLabel> get labels;
 
   /// Create a copy of Product
   /// with the given fields replaced by the non-null parameter values.

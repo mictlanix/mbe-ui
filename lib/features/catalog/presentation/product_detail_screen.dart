@@ -7,8 +7,16 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -56,6 +64,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.products, AccessRight.create);
     final l10n = AppLocalizations.of(context)!;
+    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
+    final satRepo = ref.read(satCatalogRepositoryProvider);
+    final supplierRepo = ref.read(supplierRepositoryProvider);
 
     if (formState.loading) {
       return Scaffold(
@@ -224,19 +235,56 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               onChanged: controller.nameChanged,
             ),
             const SizedBox(height: 12),
-            TextFormField(
+            CatalogEntityPicker<SatCatalogItem>(
               key: const Key('unit_of_measurement_field'),
-              initialValue: formState.unitOfMeasurement,
-              decoration: InputDecoration(
-                labelText: l10n.unitOfMeasurementLabel,
-                errorText: _localizeFieldError(
-                  l10n,
-                  formState.fieldErrors['unitOfMeasurement'],
-                ),
+              label: l10n.unitOfMeasurementLabel,
+              displayStringForOption: (item) => item.description != null
+                  ? '${item.code} — ${item.description}'
+                  : item.code,
+              optionsBuilder: (query) async {
+                final result = await satRepo.listUnitsOfMeasurement(search: query.isEmpty ? null : query);
+                return result.items;
+              },
+              onSelected: controller.unitSelected,
+              initialDisplayText: formState.unitOfMeasurementDisplayText.isNotEmpty
+                  ? formState.unitOfMeasurementDisplayText
+                  : formState.unitOfMeasurementCode,
+              errorText: _localizeFieldError(
+                l10n,
+                formState.fieldErrors['unitOfMeasurementCode'],
               ),
               enabled: fieldsEnabled,
-              onChanged: controller.unitOfMeasurementChanged,
             ),
+            const SizedBox(height: 12),
+            CatalogEntityPicker<SupplierListItem>(
+              key: const Key('supplier_field'),
+              label: l10n.supplierLabel,
+              displayStringForOption: (item) => '${item.code} — ${item.name}',
+              optionsBuilder: (query) async {
+                final result = await supplierRepo.list(search: query.isEmpty ? null : query);
+                return result.items;
+              },
+              onSelected: controller.supplierSelected,
+              initialDisplayText: formState.supplierName ?? '',
+              enabled: fieldsEnabled,
+            ),
+            if (fieldsEnabled || formState.satKeyCode != null) ...[
+              const SizedBox(height: 12),
+              CatalogEntityPicker<SatCatalogItem>(
+                key: const Key('sat_key_field'),
+                label: l10n.satKeyLabel,
+                displayStringForOption: (item) => item.description != null
+                    ? '${item.code} — ${item.description}'
+                    : item.code,
+                optionsBuilder: (query) async {
+                  final result = await satRepo.listProductServices(search: query.isEmpty ? null : query);
+                  return result.items;
+                },
+                onSelected: controller.satKeySelected,
+                initialDisplayText: formState.satKeyDisplayText ?? '',
+                enabled: fieldsEnabled,
+              ),
+            ],
             const SizedBox(height: 12),
             TextFormField(
               key: const Key('brand_field'),
@@ -329,6 +377,41 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               value: formState.invoiceable,
               onChanged: fieldsEnabled ? controller.invoiceableChanged : null,
             ),
+            if (_isEdit && formState.prices.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(l10n.pricesSubpanelTitle, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              ...formState.prices.map(
+                (price) => ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    price.priceListName.trim().isEmpty
+                        ? l10n.unknownPriceList
+                        : price.priceListName,
+                  ),
+                  trailing: Text(price.price),
+                ),
+              ),
+            ],
+            if (allLabels.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(l10n.labelsLabel, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              LabelMultiPicker(
+                key: const Key('label_multi_picker'),
+                labels: allLabels,
+                selectedIds: formState.labelIds,
+                onChanged: (newIds) {
+                  final current = formState.labelIds;
+                  final toggled = newIds.length > current.length
+                      ? newIds.firstWhere((id) => !current.contains(id))
+                      : current.firstWhere((id) => !newIds.contains(id));
+                  controller.labelToggled(toggled);
+                },
+                enabled: fieldsEnabled,
+              ),
+            ],
             const SizedBox(height: 24),
             if (canSave)
               FilledButton(

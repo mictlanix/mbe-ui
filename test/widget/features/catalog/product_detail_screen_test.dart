@@ -15,9 +15,15 @@ import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -27,6 +33,10 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 class MockTokenStorage extends Mock implements TokenStorage {}
 
 class MockProductRepository extends Mock implements ProductRepository {}
+
+class MockSatCatalogRepository extends Mock implements SatCatalogRepository {}
+
+class MockSupplierRepository extends Mock implements SupplierRepository {}
 
 const _createUser = User(
   userId: 'creator',
@@ -70,7 +80,8 @@ Product _product() => Product(
       productId: 1,
       code: 'SKU-001',
       name: 'Widget',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurementCode: 'PCE',
+      unitOfMeasurementName: 'Piece',
       taxRate: '0.16',
       taxIncluded: false,
       priceType: 0,
@@ -91,12 +102,31 @@ void main() {
   late MockAuthRepository authRepository;
   late MockTokenStorage tokenStorage;
   late MockProductRepository productRepository;
+  late MockSatCatalogRepository satCatalogRepository;
+  late MockSupplierRepository supplierRepository;
 
   setUp(() {
     authRepository = MockAuthRepository();
     tokenStorage = MockTokenStorage();
     productRepository = MockProductRepository();
+    satCatalogRepository = MockSatCatalogRepository();
+    supplierRepository = MockSupplierRepository();
     when(() => tokenStorage.read()).thenAnswer((_) async => 'test-token');
+    when(() => satCatalogRepository.listUnitsOfMeasurement(
+          search: any(named: 'search'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        )).thenAnswer((_) async => const SatCatalogListResult(items: [], total: 0));
+    when(() => satCatalogRepository.listProductServices(
+          search: any(named: 'search'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        )).thenAnswer((_) async => const SatCatalogListResult(items: [], total: 0));
+    when(() => supplierRepository.list(
+          search: any(named: 'search'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        )).thenAnswer((_) async => const SupplierListResult(items: [], total: 0));
   });
 
   Future<void> pumpScreen(
@@ -112,6 +142,9 @@ void main() {
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
           productRepositoryProvider.overrideWithValue(productRepository),
+          satCatalogRepositoryProvider.overrideWithValue(satCatalogRepository),
+          supplierRepositoryProvider.overrideWithValue(supplierRepository),
+          allLabelsProvider.overrideWith((_) async => []),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -152,6 +185,9 @@ void main() {
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
           productRepositoryProvider.overrideWithValue(productRepository),
+          satCatalogRepositoryProvider.overrideWithValue(satCatalogRepository),
+          supplierRepositoryProvider.overrideWithValue(supplierRepository),
+          allLabelsProvider.overrideWith((_) async => []),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -180,6 +216,9 @@ void main() {
         authRepositoryProvider.overrideWithValue(authRepository),
         tokenStorageProvider.overrideWithValue(tokenStorage),
         productRepositoryProvider.overrideWithValue(productRepository),
+        satCatalogRepositoryProvider.overrideWithValue(satCatalogRepository),
+        supplierRepositoryProvider.overrideWithValue(supplierRepository),
+        allLabelsProvider.overrideWith((_) async => []),
       ],
     );
     addTearDown(container.dispose);
@@ -266,16 +305,24 @@ void main() {
           purchasable: any(named: 'purchasable'),
           salable: any(named: 'salable'),
           invoiceable: any(named: 'invoiceable'),
+          supplier: any(named: 'supplier'),
+          key: any(named: 'key'),
+          labels: any(named: 'labels'),
         )).thenThrow(const AppError.validation([
       FieldError(loc: ['body', 'code'], msg: 'Code already in use', type: 'value_error'),
     ]));
 
-    await pumpScreen(tester, signedInAs: _createUser);
+    // Use pumpScreenWithContainer so we can drive the unit picker via the
+    // controller (Autocomplete has no way to programmatically "select" an
+    // option without a real pointer interaction in widget tests).
+    final container = await pumpScreenWithContainer(tester, signedInAs: _createUser);
 
     await tester.enterText(find.byKey(const Key('code_field')), 'SKU-001');
     await tester.enterText(find.byKey(const Key('name_field')), 'Widget');
-    await tester.enterText(
-        find.byKey(const Key('unit_of_measurement_field')), 'PCE');
+    container
+        .read(productFormControllerProvider.notifier)
+        .unitSelected(const SatCatalogItem(code: 'PCE'));
+    await tester.pump();
     await tester.ensureVisible(find.byKey(const Key('save_button')));
     await tester.tap(find.byKey(const Key('save_button')));
     await tester.pumpAndSettle();
@@ -453,6 +500,9 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            key: any(named: 'key'),
+            labels: any(named: 'labels'),
           )).thenAnswer((_) async => _product());
 
       await pumpScreenWithRouter(tester, signedInAs: _editUser, productId: 1);
@@ -479,6 +529,9 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            key: any(named: 'key'),
+            labels: any(named: 'labels'),
           )).called(1);
     });
 

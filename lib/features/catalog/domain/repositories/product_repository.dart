@@ -19,6 +19,7 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? label,
     int skip = 0,
     int limit = 20,
   });
@@ -45,6 +46,9 @@ abstract class ProductRepository {
     bool purchasable = false,
     bool salable = false,
     bool invoiceable = false,
+    int? supplier,
+    String? key,
+    List<int> labels = const [],
   });
 
   /// `PUT /api/v1/products/{product_id}` (FR-009, FR-010). All fields
@@ -71,6 +75,9 @@ abstract class ProductRepository {
     bool? salable,
     bool? invoiceable,
     bool? deactivated,
+    int? supplier,
+    String? key,
+    List<int>? labels,
   });
 
   /// `POST /api/v1/products/{product_id}/image` (FR-003, FR-004). Issued as

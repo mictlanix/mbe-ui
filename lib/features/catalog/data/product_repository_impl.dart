@@ -34,6 +34,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? label,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -44,6 +45,7 @@ class ProductRepositoryImpl implements ProductRepository {
         stockable: stockable,
         salable: salable,
         purchasable: purchasable,
+        label: label,
         skip: skip,
         limit: limit,
       );
@@ -89,6 +91,9 @@ class ProductRepositoryImpl implements ProductRepository {
     bool purchasable = false,
     bool salable = false,
     bool invoiceable = false,
+    int? supplier,
+    String? key,
+    List<int> labels = const [],
   }) async {
     try {
       final response = await _api.createProductApiV1ProductsPost(
@@ -107,8 +112,11 @@ class ProductRepositoryImpl implements ProductRepository {
             ..seriable = seriable
             ..purchasable = purchasable
             ..salable = salable
-            ..invoiceable = invoiceable;
+            ..invoiceable = invoiceable
+            ..supplier = supplier
+            ..key = key;
           if (taxRate != null) _setTaxRate(b.taxRate, taxRate);
+          b.labels.replace(labels);
         }),
       );
       final product = response.data;
@@ -138,6 +146,9 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? salable,
     bool? invoiceable,
     bool? deactivated,
+    int? supplier,
+    String? key,
+    List<int>? labels,
   }) async {
     try {
       final response = await _api.updateProductApiV1ProductsProductIdPut(
@@ -158,7 +169,10 @@ class ProductRepositoryImpl implements ProductRepository {
           if (salable != null) b.salable = salable;
           if (invoiceable != null) b.invoiceable = invoiceable;
           if (deactivated != null) b.deactivated = deactivated;
+          if (supplier != null) b.supplier = supplier;
+          if (key != null) b.key = key;
           if (taxRate != null) _setTaxRate(b.taxRate, taxRate);
+          if (labels != null) b.labels.replace(labels);
         }),
       );
       final product = response.data;
