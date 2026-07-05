@@ -89,6 +89,7 @@ doc/Rate1.md
 doc/RecoverPasswordAdminResponse.md
 doc/SatCatalogResponse.md
 doc/SatCatalogsApi.md
+doc/SatUnitOfMeasurementResponse.md
 doc/StoreCreate.md
 doc/StoreResponse.md
 doc/StoreSummary.md
@@ -230,6 +231,7 @@ lib/src/model/rate.dart
 lib/src/model/rate1.dart
 lib/src/model/recover_password_admin_response.dart
 lib/src/model/sat_catalog_response.dart
+lib/src/model/sat_unit_of_measurement_response.dart
 lib/src/model/store_create.dart
 lib/src/model/store_response.dart
 lib/src/model/store_summary.dart

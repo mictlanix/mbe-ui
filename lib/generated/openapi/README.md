@@ -271,6 +271,7 @@ Class | Method | HTTP request | Description
  - [Rate1](doc/Rate1.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [SatCatalogResponse](doc/SatCatalogResponse.md)
+ - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
  - [StoreCreate](doc/StoreCreate.md)
  - [StoreResponse](doc/StoreResponse.md)
  - [StoreSummary](doc/StoreSummary.md)

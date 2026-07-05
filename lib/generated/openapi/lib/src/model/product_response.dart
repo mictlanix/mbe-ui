@@ -7,6 +7,7 @@ import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
+import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -74,7 +75,7 @@ abstract class ProductResponse implements Built<ProductResponse, ProductResponse
   String? get location;
 
   @BuiltValueField(wireName: r'unit_of_measurement')
-  SatCatalogResponse get unitOfMeasurement;
+  SatUnitOfMeasurementResponse get unitOfMeasurement;
 
   @BuiltValueField(wireName: r'key')
   SatCatalogResponse? get key;
@@ -203,7 +204,7 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
     yield r'unit_of_measurement';
     yield serializers.serialize(
       object.unitOfMeasurement,
-      specifiedType: const FullType(SatCatalogResponse),
+      specifiedType: const FullType(SatUnitOfMeasurementResponse),
     );
     yield r'key';
     yield object.key == null ? null : serializers.serialize(
@@ -394,8 +395,8 @@ class _$ProductResponseSerializer implements PrimitiveSerializer<ProductResponse
         case r'unit_of_measurement':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(SatCatalogResponse),
-          ) as SatCatalogResponse;
+            specifiedType: const FullType(SatUnitOfMeasurementResponse),
+          ) as SatUnitOfMeasurementResponse;
           result.unitOfMeasurement.replace(valueDes);
           break;
         case r'key':

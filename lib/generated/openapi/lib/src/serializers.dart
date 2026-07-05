@@ -87,6 +87,7 @@ import 'package:mbe_api_client/src/model/rate.dart';
 import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
+import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/store_create.dart';
 import 'package:mbe_api_client/src/model/store_response.dart';
 import 'package:mbe_api_client/src/model/store_summary.dart';
@@ -194,6 +195,7 @@ part 'serializers.g.dart';
   Rate1,
   RecoverPasswordAdminResponse,
   SatCatalogResponse,
+  SatUnitOfMeasurementResponse,
   StoreCreate,
   StoreResponse,
   StoreSummary,

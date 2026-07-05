@@ -105,6 +105,7 @@ export 'package:mbe_api_client/src/model/rate.dart';
 export 'package:mbe_api_client/src/model/rate1.dart';
 export 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 export 'package:mbe_api_client/src/model/sat_catalog_response.dart';
+export 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 export 'package:mbe_api_client/src/model/store_create.dart';
 export 'package:mbe_api_client/src/model/store_response.dart';
 export 'package:mbe_api_client/src/model/store_summary.dart';
