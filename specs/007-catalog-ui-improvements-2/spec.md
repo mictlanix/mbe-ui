@@ -8,6 +8,12 @@
 
 **Input**: User description: "Follow-up refinements to the catalog CRUD screens (products list and product detail, and the shared row-action/data-table widgets other catalog CRUDs also use) based on usage feedback after the previous improvements round: drop frozen table columns, reduce row actions to Edit-only with row-click opening a read-only view, multi-select label filtering, complete the product form (SKU, supplier, drop price list in favor of labels), relocate the deactivate action into the form body with a warning style, enlarge and correctly fit the product photo, reorder the product list's photo column, let users copy a product's code, and rename the LEGACY_PHOTOS_BASE_URL setting to PHOTOS_BASE_URL."
 
+## Clarifications
+
+### Session 2026-07-05
+
+- Q: Should the product form's relocated destructive action perform a real hard delete, or keep the current soft-delete (deactivate) behavior under a new "Delete" label? → A: **Hard delete + rename.** Code review confirmed mbe-api's `DELETE /api/v1/products/{id}` endpoint is a genuine hard delete (`db.delete(product)`, also removing the product's price rows), whereas the current UI button only soft-deletes via `update(deactivated: true)`. The action is renamed from "Deactivate" to "Delete" everywhere (button, confirmation dialog, tooltips/labels) and rewired to call the hard-delete endpoint, permanently and irreversibly removing the product. Consequences: the confirmation dialog must communicate permanence; the button is shown for any existing product the user may delete regardless of its `deactivated` state (deactivated products can still be deleted); a server rejection (e.g., referential integrity) must be surfaced and leave the product in place; the UI no longer offers a soft-deactivate action for products.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Browse and open a product without accidentally editing it (Priority: P1)
@@ -64,20 +70,22 @@ A user editing a product notices the form doesn't show every attribute the catal
 
 ---
 
-### User Story 4 - Deactivate a product from a safer, more visible control (Priority: P3)
+### User Story 4 - Delete a product from a safer, more visible control (Priority: P3)
 
-A user deactivating a product currently taps a small icon in the app bar — a spot with no room to signal "this is a consequential, hard-to-miss action." The user wants deactivation moved into the form body as a clearly-styled warning action, directly below Save, so it reads as deliberate and distinct from routine navigation-bar icons.
+A user deleting a product currently taps a small icon in the app bar — a spot with no room to signal "this permanently removes the product." The user wants deletion moved into the form body as a clearly-styled warning action, directly below Save, so it reads as deliberate and distinct from routine navigation-bar icons. (This action is now a true hard delete — it permanently removes the product — so it is renamed from "Deactivate" to "Delete".)
 
-**Why this priority**: Deactivation is already confirmed via a dialog today, so this is a discoverability/affordance improvement, not a data-safety fix — lower urgency than the items above.
+**Why this priority**: The action is now destructive and irreversible (permanent removal via the hard-delete endpoint), so the visible warning-styled button plus an explicit, permanence-communicating confirmation is a genuine data-safety affordance. It remains P3 because it refines an existing, permission-gated, dialog-confirmed action rather than unblocking a new workflow.
 
-**Independent Test**: Open an editable, active product with delete rights. Confirm there is no deactivate icon in the app bar, and a warning-styled "Deactivate" button appears just below the Save button; pressing it still asks for confirmation before deactivating.
+**Independent Test**: Open an editable product with delete rights. Confirm there is no delete icon in the app bar, and a warning-styled "Delete" button appears just below the Save button; pressing it shows a confirmation that warns the removal is permanent, and confirming removes the product and returns to the list.
 
 **Acceptance Scenarios**:
 
-1. **Given** an editable product detail screen for an active product, **When** the app bar renders, **Then** it no longer shows a deactivate icon.
-2. **Given** an editable product detail screen for an active product with delete rights, **When** the form renders, **Then** a button styled to signal a warning/destructive action ("Deactivate") appears directly below the Save button.
-3. **Given** the new Deactivate button, **When** a user presses it, **Then** the existing confirmation dialog still appears before the product is deactivated.
-4. **Given** a product that is already deactivated, or a user without delete rights, or read-only/create mode, **When** the form renders, **Then** the Deactivate button is not shown (matching today's visibility rule for the app-bar icon it replaces).
+1. **Given** an editable product detail screen, **When** the app bar renders, **Then** it no longer shows a delete/deactivate icon.
+2. **Given** an editable product detail screen for an existing product with delete rights, **When** the form renders, **Then** a button styled to signal a warning/destructive action ("Delete") appears directly below the Save button.
+3. **Given** the Delete button, **When** a user presses it, **Then** a confirmation dialog appears that communicates the deletion is permanent/irreversible before anything is removed.
+4. **Given** the confirmation dialog, **When** the user confirms, **Then** the product is permanently removed (via the hard-delete endpoint) and the user is returned to the products list.
+5. **Given** a user without delete rights, or read-only mode, or create mode (no existing product yet), **When** the form renders, **Then** the Delete button is not shown.
+6. **Given** an existing product that is currently deactivated, **When** an editable form with delete rights renders, **Then** the Delete button is still shown (a deactivated product can be deleted — its `deactivated` state no longer gates the action).
 
 ---
 
@@ -119,7 +127,9 @@ A user building a downstream form (e.g., an order) needs a product's code and cu
 - A user has view-but-not-edit rights on a product reached via row click (read-only): the "switch to edit" button must not appear, consistent with them never being able to reach the editable form for that record.
 - All labels are deselected in the multi-select filter: the list behaves exactly as "no label filter applied" (matches today's `null`/no-filter semantics).
 - A product carries labels that get deleted/deactivated elsewhere while its detail screen is open in read-only mode: the read-only labels display simply omits them, consistent with existing label-rendering behavior.
-- A user is mid-edit on the form (unsaved changes) and taps Deactivate: the existing confirmation dialog still gates the destructive action before anything is submitted, and canceling leaves the in-progress edits untouched.
+- A user is mid-edit on the form (unsaved changes) and taps Delete: the confirmation dialog still gates the destructive action before anything is submitted, and canceling leaves the in-progress edits untouched.
+- The hard delete is rejected by the server because the product is still referenced elsewhere (e.g., by sales orders or quotations): the UI surfaces the server's error via the existing error-banner pattern and the product remains in place (not removed).
+- The product being deleted is currently deactivated: the delete still succeeds — deactivated state does not block hard deletion.
 
 ## Requirements *(mandatory)*
 
@@ -138,9 +148,12 @@ A user building a downstream form (e.g., an order) needs a product's code and cu
 - **FR-011**: The product form's supplier control MUST support assigning, changing, and clearing the supplier, and clearing MUST persist as "no supplier" on save (not silently retain the prior value).
 - **FR-012**: The product form MUST NOT display any price-list section or price values.
 - **FR-013**: The product form MUST present the labels control in the layout area previously occupied by the price-list section, alongside the boolean attribute switches.
-- **FR-014**: The product detail screen's app bar MUST NOT contain a deactivate/delete icon.
-- **FR-015**: The product form MUST present a Deactivate button styled to signal a warning/destructive action, positioned directly below the Save button, visible under the same conditions (permissions, product state, mode) that today gate the app-bar deactivate icon.
-- **FR-016**: Pressing the Deactivate button MUST show the existing confirmation dialog before the product is deactivated.
+- **FR-014**: The product detail screen's app bar MUST NOT contain a delete/deactivate icon.
+- **FR-015**: The product form MUST present a "Delete" button styled to signal a warning/destructive action, positioned directly below the Save button, visible only for an existing product in editable mode when the current user holds delete rights; it MUST be hidden in create mode, in read-only mode, and for users without delete rights. Unlike today's app-bar action, the button's visibility MUST NOT be gated by the product's `deactivated` state (a deactivated product can still be deleted).
+- **FR-016**: Pressing the Delete button MUST show a confirmation dialog that communicates the deletion is permanent and irreversible before any removal occurs.
+- **FR-016a**: On confirmation, the Delete action MUST perform a hard delete via mbe-api's product delete endpoint (permanently removing the product and its associated price records), replacing today's soft-delete (`deactivated: true`) behavior; on success the user MUST be returned to the products list.
+- **FR-016b**: If the server rejects the deletion (e.g., because the product is still referenced by other records), the UI MUST surface the server-provided error and leave the product in place.
+- **FR-016c**: The renamed "Delete" terminology (button, confirmation dialog, tooltips/labels) MUST replace the prior "Deactivate" wording for the product action; after this change the product UI MUST NOT offer a soft-deactivate action.
 - **FR-017**: The product photo thumbnail MUST render at 75% larger dimensions than its current size, consistently everywhere that thumbnail is reused (list and detail screen).
 - **FR-018**: The product photo MUST be displayed with a fit that shows the entire image without cropping, replacing any current fit behavior that cuts off part of the image.
 - **FR-019**: The products list table MUST show the photo as its first (leftmost) column, with no header text for that column.
@@ -149,7 +162,7 @@ A user building a downstream form (e.g., an order) needs a product's code and cu
 
 ### Key Entities
 
-- **Product**: The catalog item being viewed/edited. Gains visible SKU; supplier is assigned/cleared as a settable reference to a **Supplier**; loses its association with price-list display in the form; retains its many-to-many association with **Label**.
+- **Product**: The catalog item being viewed/edited. Gains visible SKU; supplier is assigned/cleared as a settable reference to a **Supplier**; loses its association with price-list display in the form; retains its many-to-many association with **Label**. Its destructive form action is now a permanent hard delete (row removal) rather than a soft-deactivate flag flip. The `deactivated` attribute remains on the entity for the list's show-inactive filter and inactive badge (reflecting records deactivated outside this flow), but is no longer set through the product UI.
 - **Label**: A tag attachable to products, already used for editing a product's own labels; reused here as the basis for multi-select list filtering (a product matches the filter if it carries any selected label).
 - **Supplier**: An existing reference entity selectable on a product; scope here is completing/confirming its assign-clear-persist behavior, not introducing it.
 
@@ -163,6 +176,7 @@ A user building a downstream form (e.g., an order) needs a product's code and cu
 - **SC-004**: Users can copy a product code from the list in a single action, without opening the product detail screen.
 - **SC-005**: No catalog table exhibits horizontal scrolling or a frozen column after release.
 - **SC-006**: Product photos display with no visibly cropped/cut-off content across a representative sample of existing product images.
+- **SC-007**: Confirming the product Delete action permanently removes the product — after deletion it no longer appears in the catalog at all (not merely hidden as inactive) — and the action is unreachable without passing a confirmation that states the removal is permanent.
 
 ## Assumptions
 
@@ -173,3 +187,6 @@ A user building a downstream form (e.g., an order) needs a product's code and cu
 - The label multi-select filter uses OR semantics (match any selected label) as the default, matching how label filtering commonly behaves elsewhere in the app (e.g., existing per-product label assignment being a set, not an exclusive choice).
 - Renaming `LEGACY_PHOTOS_BASE_URL` to `PHOTOS_BASE_URL` is a naming-only change: the setting continues to resolve the same legacy photo paths it does today, under its new name.
 - The "75% bigger" photo sizing is measured against the current thumbnail's rendered dimensions on each screen where it appears (list and detail), so both grow proportionally from their own current baseline.
+- The product Delete action is a permanent hard delete via mbe-api's existing `DELETE /api/v1/products/{id}` endpoint (which also removes the product's price rows server-side); there is no in-UI undo, and the confirmation dialog is the sole safeguard. The hard-delete endpoint already exists in the generated API client and requires no backend change.
+- After this change the product UI no longer offers a soft "deactivate" action. The list's existing show-inactive filter and inactive badge remain and are out of scope for change — they reflect products deactivated outside this flow (e.g., legacy/migrated data or other subsystems).
+- A hard delete may be rejected server-side when the product is still referenced by other records (orders, quotations, etc.); handling that rejection reuses the form's existing error-display pattern rather than introducing new pre-delete dependency checks in the UI.
