@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-28
 
-**Status**: Refined
+**Status**: Completed (2026-07-05; backend bug filed as mbe-api#75)
 
 **Input**: User description: "Complement the Product Catalog feature (002-product-catalog) by wiring it to the master-data reference entities that mbe-api now exposes (Suppliers, Price Lists, Labels, SAT Catalogs). Replace the raw numeric supplier field with a searchable supplier picker showing the supplier's name; replace the free-text unit-of-measurement and SAT product/service key fields with pickers backed by the read-only SAT catalogs, validated before submit; resolve each product price's price-list id to its name on the detail screen; add a label filter to the products list (filtering only — assigning labels to a product is not yet supported by the backend and stays deferred). Reuses existing Products RBAC; no new privileges."
 
