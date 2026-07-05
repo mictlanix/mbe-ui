@@ -10,7 +10,7 @@ Unchanged shape. Field-usage deltas only:
 |-------|-------|
 | `sku` (`String?`) | Already present and mapped from `ProductResponse.sku`. **Now surfaced** on the form (previously never displayed). |
 | `supplierId` / `supplierName` | Already present/mapped. Assign & change supported; **clear not supported** (mbe-api limitation — see plan Complexity Tracking). |
-| `prices` (`List<ProductPrice>`) | Still mapped from the response (mbe-api still returns it) but **no longer displayed**. May stop being copied into `ProductFormState` since nothing reads it. Entity/DTO removal deferred to a future codegen pass when mbe-api drops prices. |
+| `prices` (`List<ProductPrice>`) | **Already removed from the wire format.** mbe-api dropped `prices` from `ProductResponse` (`e4b50c5`) and mbe-ui's generated client was already regenerated (`2a9eddc`) — `Product.fromResponse` currently fails to compile (`dart analyze` confirms: `product.dart:86` — "getter 'prices' isn't defined"). This field and its mapping MUST be deleted from `Product` outright (not deferred), along with the now-orphaned `ProductPrice` entity (`features/catalog/domain/entities/product_price.dart`). This is a prerequisite fix, not an optional cleanup. |
 | `deactivated` (`bool`) | Retained; still used by the list's show-inactive filter and inactive badge. **No longer set from the product UI** (the soft-deactivate action is gone). |
 
 No new fields, no validation-rule changes on the entity.
@@ -21,7 +21,7 @@ No new fields, no validation-rule changes on the entity.
 |-------|--------|-------|
 | `sku` (`String`) | **Add** | Seeded from `Product.sku ?? ''` in `loadForEdit`; edited via `skuChanged`; sent through `create`/`update`. |
 | `deleted` (`bool`, default `false`) | **Add** | Set true after a successful hard delete → triggers `context.pop()` (mirrors existing `saved` flag and `UserFormState.deleted`). |
-| `prices` (`List<ProductPrice>`) | **Remove usage** | No UI consumer after FR-012; may be dropped from state, or left populated-but-unread if that minimizes churn. |
+| `prices` (`List<ProductPrice>`) | **Remove** | Must be dropped, not left populated-but-unread — its source (`Product.prices`) no longer exists once the entity fix above lands, and `ProductResponse` no longer carries the data at all. |
 | (unchanged) `code, name, unitOfMeasurement…, supplierId, supplierName, labelIds, photo…` | — | Existing fields keep their behavior. |
 
 Controller method deltas:
