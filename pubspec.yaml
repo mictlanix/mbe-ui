@@ -49,6 +49,7 @@ dependencies:
   data_table_2: ^2.5.16
   file_picker: ^8.1.2
   built_value: ^8.12.6
+  built_collection: ^5.1.1
   mbe_api_client:
     path: lib/generated/openapi
 

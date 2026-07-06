@@ -12,7 +12,6 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
-import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -29,7 +28,6 @@ class UsersListScreen extends ConsumerWidget {
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.users, AccessRight.create);
     final canUpdate = access.can(SystemObject.users, AccessRight.update);
-    final canDelete = access.can(SystemObject.users, AccessRight.delete);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -71,7 +69,6 @@ class UsersListScreen extends ConsumerWidget {
                         DataTableColumn.text(
                           label: l10n.columnUsername,
                           text: (u) => u.userId,
-                          frozen: true,
                           size: ColumnSize.M,
                         ),
                         DataTableColumn.text(
@@ -101,18 +98,12 @@ class UsersListScreen extends ConsumerWidget {
                       onPageChanged: (pageIndex) => ref
                           .read(usersControllerProvider.notifier)
                           .goToPage(pageIndex),
-                      onRowTap: (u) => context.push('/users/${u.userId}'),
+                      onRowTap: (u) =>
+                          context.push('/users/${u.userId}?view=true'),
                       rowActionsBuilder: (context, u) => buildCatalogRowActions(
-                        viewTooltip: l10n.viewActionTooltip,
                         editTooltip: l10n.editActionTooltip,
-                        deleteTooltip: l10n.deleteActionTooltip,
-                        onView: () =>
-                            context.push('/users/${u.userId}?view=true'),
                         onEdit: canUpdate
                             ? () => context.push('/users/${u.userId}')
-                            : null,
-                        onDelete: canDelete
-                            ? () => _confirmDelete(context, ref, u.userId)
                             : null,
                       ),
                     ),
@@ -121,35 +112,5 @@ class UsersListScreen extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _confirmDelete(
-    BuildContext context,
-    WidgetRef ref,
-    String userId,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteUserConfirmTitle),
-        content: Text(l10n.deleteUserConfirmMessage(userId)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_delete_user_button'),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      await ref.read(userRepositoryProvider).delete(userId: userId);
-      ref.read(usersControllerProvider.notifier).refresh();
-    }
   }
 }

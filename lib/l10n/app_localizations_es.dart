@@ -148,10 +148,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsPurchasableFilter => 'Comprable';
 
   @override
-  String get productsLabelFilter => 'Etiqueta';
-
-  @override
-  String get productsAllLabels => 'Todas las etiquetas';
+  String get productsLabelFilter => 'Etiquetas';
 
   @override
   String get filtersButton => 'Filtros';
@@ -180,6 +177,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get columnCode => 'Código';
 
   @override
+  String get copyCodeTooltip => 'Copiar código';
+
+  @override
+  String get codeCopiedMessage => 'Código copiado al portapapeles';
+
+  @override
   String get columnName => 'Nombre';
 
   @override
@@ -195,10 +198,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get editProductTitle => 'Editar producto';
 
   @override
+  String get viewProductTitle => 'Ver producto';
+
+  @override
   String get codeLabel => 'Código';
 
   @override
   String get nameLabel => 'Nombre';
+
+  @override
+  String get skuLabel => 'SKU';
 
   @override
   String get unitOfMeasurementLabel => 'Unidad de medida';
@@ -246,33 +255,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get invoiceableLabel => 'Facturable';
 
   @override
-  String get pricesSubpanelTitle => 'Precios';
-
-  @override
-  String get unknownPriceList => 'Lista de precios desconocida';
-
-  @override
   String get labelsLabel => 'Etiquetas';
 
   @override
-  String get deactivateProductTooltip => 'Desactivar producto';
+  String get deleteProductButton => 'Eliminar producto';
 
   @override
-  String get deactivateProductConfirmTitle => '¿Desactivar producto?';
+  String get deleteProductConfirmTitle => '¿Eliminar producto permanentemente?';
 
   @override
-  String deactivateProductConfirmMessage(String code) {
-    return '¿Está seguro de que desea desactivar \"$code\"? Se ocultará de nuevas ventas, compras y movimientos de inventario, pero su historial se conserva.';
+  String deleteProductConfirmMessage(String code) {
+    return '¿Está seguro de que desea eliminar permanentemente \"$code\"? Esta acción no se puede deshacer: el producto y su historial se eliminarán por completo, no solo se ocultarán.';
   }
-
-  @override
-  String get deactivateButton => 'Desactivar';
 
   @override
   String get statusInactiveBadge => 'Inactivo';
 
   @override
   String get editUserTitle => 'Editar usuario';
+
+  @override
+  String get viewUserTitle => 'Ver usuario';
 
   @override
   String get newUserTitle => 'Nuevo usuario';
@@ -296,6 +299,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cancelButton => 'Cancelar';
+
+  @override
+  String get editButton => 'Editar';
+
+  @override
+  String get editRecordTooltip => 'Cambiar al formulario editable';
 
   @override
   String get emailLabel => 'Correo electrónico';
@@ -399,8 +408,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productUpdateFailedError => 'No se pudo actualizar el producto.';
 
   @override
-  String get productDeactivateFailedError =>
-      'No se pudo desactivar el producto.';
+  String get productDeleteFailedError => 'No se pudo eliminar el producto.';
 
   @override
   String get productCreatePermissionDeniedError =>
@@ -411,8 +419,8 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ya no tienes permiso para editar productos.';
 
   @override
-  String get productDeactivatePermissionDeniedError =>
-      'Ya no tienes permiso para desactivar productos.';
+  String get productDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar productos.';
 
   @override
   String get userEmailRequiredError => 'El correo electrónico es obligatorio.';

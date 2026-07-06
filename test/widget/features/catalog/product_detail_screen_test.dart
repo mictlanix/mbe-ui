@@ -20,8 +20,8 @@ import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/product_price.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
@@ -78,6 +78,17 @@ const _deleteUser = User(
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 14)],
 );
 
+/// A minimal valid 1x1 PNG, used so a staged-photo preview can actually
+/// decode (mirrors test/integration/product_photo_flow_test.dart).
+final _tinyPngBytes = Uint8List.fromList([
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+  0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
+  0x0D, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x64, 0x60, 0x60, 0x60,
+  0x00, 0x00, 0x00, 0x05, 0x00, 0x01, 0x5D, 0x4C, 0x8F, 0x0C, 0x00, 0x00,
+  0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+]);
+
 Product _product() => Product(
   productId: 1,
   code: 'SKU-001',
@@ -97,7 +108,6 @@ Product _product() => Product(
   invoiceable: false,
   stockRequired: false,
   deactivated: false,
-  prices: const [],
 );
 
 void main() {
@@ -141,6 +151,8 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     int? productId,
+    List<LabelItem> labels = const [],
+    bool forceReadOnly = false,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
 
@@ -152,12 +164,15 @@ void main() {
           productRepositoryProvider.overrideWithValue(productRepository),
           satCatalogRepositoryProvider.overrideWithValue(satCatalogRepository),
           supplierRepositoryProvider.overrideWithValue(supplierRepository),
-          allLabelsProvider.overrideWith((_) async => []),
+          allLabelsProvider.overrideWith((_) async => labels),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: ProductDetailScreen(productId: productId),
+          home: ProductDetailScreen(
+            productId: productId,
+            forceReadOnly: forceReadOnly,
+          ),
         ),
       ),
     );
@@ -250,6 +265,7 @@ void main() {
 
     expect(find.byKey(const Key('code_field')), findsOneWidget);
     expect(find.byKey(const Key('name_field')), findsOneWidget);
+    expect(find.byKey(const Key('sku_field')), findsOneWidget);
     expect(find.byKey(const Key('unit_of_measurement_field')), findsOneWidget);
     expect(find.byKey(const Key('bar_code_field')), findsOneWidget);
     expect(find.byKey(const Key('save_button')), findsOneWidget);
@@ -432,6 +448,27 @@ void main() {
     expect(find.byKey(const Key('upload_photo_button')), findsOneWidget);
   });
 
+  testWidgets(
+    'shows a staged photo preview at the enlarged size with a non-cropping '
+    'fit (FR-017, FR-018)',
+    (tester) async {
+      final container = await pumpScreenWithContainer(
+        tester,
+        signedInAs: _createUser,
+      );
+
+      container
+          .read(productFormControllerProvider.notifier)
+          .photoPicked(_tinyPngBytes, 'photo.png');
+      await tester.pumpAndSettle();
+
+      final image = tester.widget<Image>(find.byType(Image));
+      expect(image.width, 168);
+      expect(image.height, 168);
+      expect(image.fit, BoxFit.contain);
+    },
+  );
+
   testWidgets('shows a photo field error after an invalid pick (FR-006)', (
     tester,
   ) async {
@@ -475,6 +512,36 @@ void main() {
       expect(find.byKey(const Key('save_button')), findsOneWidget);
     });
 
+    testWidgets(
+      'displays and allows editing the sku field, seeded from the loaded '
+      'product (FR-010)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product().copyWith(sku: 'SKU-ABC'));
+
+        final container = await pumpScreenWithContainer(
+          tester,
+          signedInAs: _editUser,
+          productId: 1,
+        );
+
+        final skuField = tester.widget<TextFormField>(
+          find.byKey(const Key('sku_field')),
+        );
+        expect(skuField.initialValue, 'SKU-ABC');
+        expect(skuField.enabled, isTrue);
+
+        await tester.enterText(find.byKey(const Key('sku_field')), 'SKU-XYZ');
+        await tester.pump();
+
+        expect(
+          container.read(productFormControllerProvider).sku,
+          'SKU-XYZ',
+        );
+      },
+    );
+
     testWidgets('displays the loaded product photo via ProductPhoto (FR-001)', (
       tester,
     ) async {
@@ -486,6 +553,7 @@ void main() {
 
       final photo = tester.widget<ProductPhoto>(find.byType(ProductPhoto));
       expect(photo.photoUrl, 'http://test/images/p.png');
+      expect(photo.size, 168);
     });
 
     testWidgets('displays the placeholder when the product has no photo '
@@ -515,6 +583,66 @@ void main() {
       expect(codeField.enabled, isFalse);
       expect(find.byKey(const Key('save_button')), findsNothing);
     });
+
+    testWidgets(
+      'titles the app bar "View Product" when read-only via lack of update '
+      'rights, with no Edit affordance (FR-005, FR-006)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(tester, signedInAs: _readOnlyUser, productId: 1);
+
+        expect(find.text('View Product'), findsOneWidget);
+        expect(find.text('Edit Product'), findsNothing);
+        expect(find.byKey(const Key('edit_product_button')), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'titles the app bar "View Product" and shows an Edit affordance when '
+      'read-only via row click for a user with update rights (FR-005, '
+      'FR-006)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(
+          tester,
+          signedInAs: _editUser,
+          productId: 1,
+          forceReadOnly: true,
+        );
+
+        expect(find.text('View Product'), findsOneWidget);
+        expect(find.byKey(const Key('edit_product_button')), findsOneWidget);
+        expect(find.byKey(const Key('code_field')), findsOneWidget);
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isFalse,
+        );
+      },
+    );
+
+    testWidgets(
+      'titles the app bar "Edit Product" with no Edit affordance in the '
+      'ordinary editable case (FR-005, FR-006)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+        expect(find.text('Edit Product'), findsOneWidget);
+        expect(find.text('View Product'), findsNothing);
+        expect(find.byKey(const Key('edit_product_button')), findsNothing);
+      },
+    );
 
     testWidgets('saves an edit and calls the repository (FR-009)', (
       tester,
@@ -581,23 +709,54 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('shows the Deactivate action for a user with products.delete '
-        '(FR-010)', (tester) async {
-      when(
-        () => productRepository.get(productId: 1),
-      ).thenAnswer((_) async => _product());
+    testWidgets(
+      'shows no delete icon in the app bar (FR-014)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
 
-      await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
+        await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 
-      expect(
-        find.byKey(const Key('deactivate_product_button')),
-        findsOneWidget,
-      );
-    });
+        expect(
+          find.byKey(const Key('deactivate_product_button')),
+          findsNothing,
+        );
+        expect(find.byIcon(Icons.block), findsNothing);
+      },
+    );
 
     testWidgets(
-      'hides the Deactivate action for a user without products.delete '
-      '(FR-012)',
+      'shows a warning-styled Delete button below Save for a user with '
+      'products.delete (FR-015)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
+
+        final saveTop = tester
+            .getTopLeft(find.byKey(const Key('save_button')))
+            .dy;
+        final deleteTop = tester
+            .getTopLeft(find.byKey(const Key('delete_product_button')))
+            .dy;
+        expect(deleteTop, greaterThan(saveTop));
+
+        final button = tester.widget<FilledButton>(
+          find.byKey(const Key('delete_product_button')),
+        );
+        final theme = Theme.of(tester.element(find.byType(Scaffold).first));
+        expect(
+          button.style?.backgroundColor?.resolve({}),
+          theme.colorScheme.error,
+        );
+      },
+    );
+
+    testWidgets(
+      'hides the Delete button for a user without products.delete (FR-015)',
       (tester) async {
         when(
           () => productRepository.get(productId: 1),
@@ -606,15 +765,15 @@ void main() {
         await pumpScreen(tester, signedInAs: _editUser, productId: 1);
 
         expect(
-          find.byKey(const Key('deactivate_product_button')),
+          find.byKey(const Key('delete_product_button')),
           findsNothing,
         );
       },
     );
 
     testWidgets(
-      'hides the Deactivate action for an already-deactivated product '
-      '(edge case)',
+      'still shows the Delete button for an already-deactivated product '
+      '(FR-015 — not gated by deactivated state)',
       (tester) async {
         when(
           () => productRepository.get(productId: 1),
@@ -623,32 +782,78 @@ void main() {
         await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 
         expect(
-          find.byKey(const Key('deactivate_product_button')),
+          find.byKey(const Key('delete_product_button')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'hides the Delete button in create mode',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _deleteUser);
+
+        expect(
+          find.byKey(const Key('delete_product_button')),
           findsNothing,
         );
       },
     );
 
-    testWidgets('deactivates after confirmation (FR-010)', (tester) async {
-      when(
-        () => productRepository.get(productId: 1),
-      ).thenAnswer((_) async => _product());
-      when(
-        () => productRepository.update(productId: 1, deactivated: true),
-      ).thenAnswer((_) async => _product().copyWith(deactivated: true));
+    testWidgets(
+      'confirmation dialog communicates the deletion is permanent (FR-016)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
 
-      await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
+        await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 
-      await tester.tap(find.byKey(const Key('deactivate_product_button')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('confirm_deactivate_button')));
-      await tester.pumpAndSettle();
+        await tester.ensureVisible(
+          find.byKey(const Key('delete_product_button')),
+        );
+        await tester.tap(find.byKey(const Key('delete_product_button')));
+        await tester.pumpAndSettle();
 
-      verify(
-        () => productRepository.update(productId: 1, deactivated: true),
-      ).called(1);
-      expect(find.byKey(const Key('deactivate_product_button')), findsNothing);
-    });
+        expect(find.text('Delete product permanently?'), findsOneWidget);
+        expect(
+          find.textContaining('cannot be undone'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'deletes permanently after confirmation and returns to the list '
+      '(FR-016a)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+        when(
+          () => productRepository.delete(productId: 1),
+        ).thenAnswer((_) async {});
+
+        await pumpScreenWithRouter(
+          tester,
+          signedInAs: _deleteUser,
+          productId: 1,
+        );
+
+        await tester.ensureVisible(
+          find.byKey(const Key('delete_product_button')),
+        );
+        await tester.tap(find.byKey(const Key('delete_product_button')));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const Key('confirm_delete_product_button')),
+        );
+        await tester.pumpAndSettle();
+
+        verify(() => productRepository.delete(productId: 1)).called(1);
+        expect(find.byType(ProductDetailScreen), findsNothing);
+      },
+    );
   });
 
   group('responsive form layout (US2)', () {
@@ -676,18 +881,22 @@ void main() {
         expect(codeTop.dy, nameTop.dy);
         expect(codeTop.dx, lessThan(nameTop.dx));
 
-        // Two columns only: the third field (unit) wraps to the next row under
-        // Code, rather than sitting in a third column beside Name.
+        // Two columns only: the third field (sku) wraps to the next row
+        // under Code, rather than sitting in a third column beside Name —
+        // and unit (the fourth field) pairs beside it under Name.
+        final skuTop = tester.getTopLeft(find.byKey(const Key('sku_field')));
         final unitTop = tester.getTopLeft(
           find.byKey(const Key('unit_of_measurement_field')),
         );
-        expect(unitTop.dy, greaterThan(codeTop.dy));
-        expect(unitTop.dx, codeTop.dx);
+        expect(skuTop.dy, greaterThan(codeTop.dy));
+        expect(skuTop.dx, codeTop.dx);
+        expect(unitTop.dy, skuTop.dy);
+        expect(unitTop.dx, nameTop.dx);
       },
     );
 
     testWidgets(
-      'brackets the attributes/prices band with dividers (Material 3)',
+      'brackets the attributes/labels band with dividers (Material 3)',
       (tester) async {
         tester.view.physicalSize = const Size(1600, 1200);
         tester.view.devicePixelRatio = 1.0;
@@ -711,6 +920,25 @@ void main() {
         // Top divider is above the switches, bottom divider below them.
         expect(topDivider.dy, lessThan(stockable.dy));
         expect(bottomDivider.dy, greaterThan(stockable.dy));
+      },
+    );
+
+    testWidgets(
+      'never renders a price-list section (FR-012)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(
+          tester,
+          signedInAs: _editUser,
+          productId: 1,
+          labels: const [LabelItem(labelId: 1, name: 'Clearance')],
+        );
+
+        expect(find.text('Prices'), findsNothing);
+        expect(find.byKey(const Key('label_multi_picker')), findsOneWidget);
       },
     );
 
@@ -759,69 +987,62 @@ void main() {
     );
 
     testWidgets(
-      'places the price list beside the switches on a wide viewport (FR-017)',
+      'places the labels control beside the switches on a wide viewport '
+      '(FR-013)',
       (tester) async {
         tester.view.physicalSize = const Size(1600, 1200);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.reset);
 
-        when(() => productRepository.get(productId: 1)).thenAnswer(
-          (_) async => _product().copyWith(
-            prices: const [
-              ProductPrice(
-                productPriceId: 1,
-                priceListId: 1,
-                priceListName: 'Mostrador',
-                price: '23.0000',
-                lowProfit: '0',
-                highProfit: '0',
-              ),
-            ],
-          ),
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(
+          tester,
+          signedInAs: _editUser,
+          productId: 1,
+          labels: const [LabelItem(labelId: 1, name: 'Clearance')],
         );
 
-        await pumpScreen(tester, signedInAs: _editUser, productId: 1);
-
-        // Prices header sits to the right of the switches (two-column band),
+        // Labels header sits to the right of the switches (two-column band),
         // not below them.
         final switchLeft = tester
             .getTopLeft(find.byKey(const Key('stockable_switch')))
             .dx;
-        final pricesLeft = tester.getTopLeft(find.text('Prices')).dx;
-        expect(pricesLeft, greaterThan(switchLeft));
+        final labelsLeft = tester
+            .getTopLeft(find.byKey(const Key('label_multi_picker')))
+            .dx;
+        expect(labelsLeft, greaterThan(switchLeft));
       },
     );
 
     testWidgets(
-      'stacks the price list below the switches on a compact viewport '
-      '(FR-017 compact fallback)',
+      'stacks the labels control below the switches on a compact viewport '
+      '(FR-013 compact fallback)',
       (tester) async {
         tester.view.physicalSize = const Size(500, 1400);
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.reset);
 
-        when(() => productRepository.get(productId: 1)).thenAnswer(
-          (_) async => _product().copyWith(
-            prices: const [
-              ProductPrice(
-                productPriceId: 1,
-                priceListId: 1,
-                priceListName: 'Mostrador',
-                price: '23.0000',
-                lowProfit: '0',
-                highProfit: '0',
-              ),
-            ],
-          ),
-        );
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
 
-        await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+        await pumpScreen(
+          tester,
+          signedInAs: _editUser,
+          productId: 1,
+          labels: const [LabelItem(labelId: 1, name: 'Clearance')],
+        );
 
         final switchBottom = tester
             .getBottomLeft(find.byKey(const Key('invoiceable_switch')))
             .dy;
-        final pricesTop = tester.getTopLeft(find.text('Prices')).dy;
-        expect(pricesTop, greaterThan(switchBottom));
+        final labelsTop = tester
+            .getTopLeft(find.byKey(const Key('label_multi_picker')))
+            .dy;
+        expect(labelsTop, greaterThan(switchBottom));
       },
     );
 

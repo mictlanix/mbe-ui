@@ -5,7 +5,7 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 /// served by the old `mbe` app's still-running web server, not mbe-api's
 /// own image storage, so this is intentionally independent of [apiBaseUrl]
 /// and typically points at a separate host/CDN. Override via
-/// `--dart-define=LEGACY_PHOTOS_BASE_URL=https://...`; defaults to
+/// `--dart-define=PHOTOS_BASE_URL=https://...`; defaults to
 /// [apiBaseUrl] so local dev (where nothing else is configured) at least
 /// produces a same-origin-with-the-API guess rather than a broken one.
 ///
@@ -16,8 +16,8 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 /// `<img src>` load. Desktop/mobile builds are unaffected — `dart:io` HTTP
 /// has no CORS concept. Fixing this requires CORS configuration on
 /// whatever host this points to, outside mbe-ui's/mbe-api's control.
-const legacyPhotosBaseUrl = String.fromEnvironment(
-  'LEGACY_PHOTOS_BASE_URL',
+const photosBaseUrl = String.fromEnvironment(
+  'PHOTOS_BASE_URL',
   defaultValue: apiBaseUrl,
 );
 
@@ -37,14 +37,14 @@ const legacyPhotosBaseUrl = String.fromEnvironment(
 ///   verbatim from the old `mbe` app's `PhotosPath` convention) can appear
 ///   anywhere after that prefix, not just at the start. Everything from
 ///   `~` onward (minus the `~` itself) is resolved against
-///   [legacyPhotosBaseUrl] instead — that's where these files actually live.
+///   [photosBaseUrl] instead — that's where these files actually live.
 String? resolvePhotoUrl(String? raw) {
   if (raw == null) return null;
   if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
 
   final tildeIndex = raw.indexOf('~');
   if (tildeIndex != -1) {
-    return '${_withoutTrailingSlash(legacyPhotosBaseUrl)}${raw.substring(tildeIndex + 1)}';
+    return '${_withoutTrailingSlash(photosBaseUrl)}${raw.substring(tildeIndex + 1)}';
   }
   if (raw.startsWith('/')) return '${_withoutTrailingSlash(apiBaseUrl)}$raw';
   return '${_withoutTrailingSlash(apiBaseUrl)}/$raw';

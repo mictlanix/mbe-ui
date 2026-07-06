@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
+import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
@@ -65,34 +66,35 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final controller = ref.read(productFormControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.products, AccessRight.create);
+    final canUpdate = access.can(SystemObject.products, AccessRight.update);
+    final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final l10n = AppLocalizations.of(context)!;
     final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
     final satRepo = ref.read(satCatalogRepositoryProvider);
     final supplierRepo = ref.read(supplierRepositoryProvider);
 
+    final title = readOnly
+        ? l10n.viewProductTitle
+        : (_isEdit ? l10n.editProductTitle : l10n.newProductTitle);
+
     if (formState.loading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_isEdit ? l10n.editProductTitle : l10n.newProductTitle),
-        ),
+        appBar: AppBar(title: Text(title)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (formState.saved) {
+    if (formState.saved || formState.deleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.pop();
       });
     }
 
-    final canUpdate = access.can(SystemObject.products, AccessRight.update);
-    final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final fieldsEnabled = !formState.submitting && !readOnly;
     final canSave = !widget.forceReadOnly && (_isEdit ? canUpdate : canCreate);
-    final canDeactivate =
-        !widget.forceReadOnly &&
+    final canDelete =
         _isEdit &&
-        !formState.deactivated &&
+        !readOnly &&
         access.can(SystemObject.products, AccessRight.delete);
     final canEditPhoto = canSave;
     final hasPhoto =
@@ -101,17 +103,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? l10n.editProductTitle : l10n.newProductTitle),
+        title: Text(title),
         actions: [
-          if (canDeactivate)
+          if (readOnly && canUpdate && widget.productId != null)
             IconButton(
-              key: const Key('deactivate_product_button'),
-              icon: const Icon(Icons.block),
-              tooltip: l10n.deactivateProductTooltip,
-              onPressed: formState.submitting
-                  ? null
-                  : () =>
-                        _confirmDeactivate(context, controller, formState.code),
+              key: const Key('edit_product_button'),
+              icon: Icon(CatalogAction.edit.icon),
+              tooltip: l10n.editRecordTooltip,
+              onPressed: () =>
+                  context.replace('/products/${widget.productId}'),
             ),
         ],
       ),
@@ -189,6 +189,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 ),
                 enabled: fieldsEnabled,
                 onChanged: controller.nameChanged,
+              ),
+            ),
+            FormGridChild(
+              TextFormField(
+                key: const Key('sku_field'),
+                initialValue: formState.sku,
+                decoration: InputDecoration(labelText: l10n.skuLabel),
+                enabled: fieldsEnabled,
+                onChanged: controller.skuChanged,
               ),
             ),
             FormGridChild(
@@ -319,7 +328,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
             FormGridChild(
               span: FormGridSpan.full,
-              _SwitchesPricesBand(
+              _SwitchesLabelsBand(
                 switches: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -373,27 +382,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                   ],
                 ),
-                prices: (_isEdit && formState.prices.isNotEmpty)
+                labels: allLabels.isNotEmpty
                     ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            l10n.pricesSubpanelTitle,
+                            l10n.labelsLabel,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           const SizedBox(height: 8),
-                          ...formState.prices.map(
-                            (price) => ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(
-                                price.priceListName.trim().isEmpty
-                                    ? l10n.unknownPriceList
-                                    : price.priceListName,
-                              ),
-                              trailing: Text(price.price),
-                            ),
+                          LabelMultiPicker(
+                            key: const Key('label_multi_picker'),
+                            labels: allLabels,
+                            selectedIds: formState.labelIds,
+                            onChanged: (newIds) {
+                              final current = formState.labelIds;
+                              final toggled = newIds.length > current.length
+                                  ? newIds.firstWhere(
+                                      (id) => !current.contains(id),
+                                    )
+                                  : current.firstWhere(
+                                      (id) => !newIds.contains(id),
+                                    );
+                              controller.labelToggled(toggled);
+                            },
+                            enabled: fieldsEnabled,
                           ),
                         ],
                       )
@@ -404,34 +418,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               span: FormGridSpan.full,
               Divider(key: Key('attributes_divider_bottom')),
             ),
-            if (allLabels.isNotEmpty)
-              FormGridChild(
-                span: FormGridSpan.full,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.labelsLabel,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    LabelMultiPicker(
-                      key: const Key('label_multi_picker'),
-                      labels: allLabels,
-                      selectedIds: formState.labelIds,
-                      onChanged: (newIds) {
-                        final current = formState.labelIds;
-                        final toggled = newIds.length > current.length
-                            ? newIds.firstWhere((id) => !current.contains(id))
-                            : current.firstWhere((id) => !newIds.contains(id));
-                        controller.labelToggled(toggled);
-                      },
-                      enabled: fieldsEnabled,
-                    ),
-                  ],
-                ),
-              ),
             if (canSave)
               FormGridChild(
                 span: FormGridSpan.full,
@@ -449,6 +435,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Text(l10n.saveButton),
+                ),
+              ),
+            if (canDelete)
+              FormGridChild(
+                span: FormGridSpan.full,
+                FilledButton(
+                  key: const Key('delete_product_button'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    foregroundColor: Theme.of(context).colorScheme.onError,
+                  ),
+                  onPressed: formState.submitting
+                      ? null
+                      : () => _confirmDelete(context, controller, formState.code),
+                  child: Text(l10n.deleteProductButton),
                 ),
               ),
           ],
@@ -472,7 +473,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     controller.photoPicked(bytes, file.name);
   }
 
-  Future<void> _confirmDeactivate(
+  /// Confirms the permanent, irreversible hard delete (FR-016) before
+  /// calling [ProductFormController.delete].
+  Future<void> _confirmDelete(
     BuildContext context,
     ProductFormController controller,
     String code,
@@ -481,45 +484,49 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.deactivateProductConfirmTitle),
-        content: Text(l10n.deactivateProductConfirmMessage(code)),
+        title: Text(l10n.deleteProductConfirmTitle),
+        content: Text(l10n.deleteProductConfirmMessage(code)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancelButton),
           ),
           FilledButton(
-            key: const Key('confirm_deactivate_button'),
+            key: const Key('confirm_delete_product_button'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+              foregroundColor: Theme.of(ctx).colorScheme.onError,
+            ),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deactivateButton),
+            child: Text(l10n.deleteButton),
           ),
         ],
       ),
     );
-    if (confirmed == true) controller.deactivate();
+    if (confirmed == true) controller.delete();
   }
 }
 
-/// Lays the boolean attribute [switches] and the (optional) [prices] section
+/// Lays the boolean attribute [switches] and the (optional) [labels] section
 /// into a two-column band on non-compact viewports — switches on the left,
-/// prices on the right — reclaiming the horizontal space each switch row
-/// otherwise wastes (FR-017). On compact widths they stack vertically, and
-/// when there is no price list the switches occupy the full width.
-class _SwitchesPricesBand extends StatelessWidget {
-  const _SwitchesPricesBand({required this.switches, this.prices});
+/// labels on the right — reclaiming the horizontal space each switch row
+/// otherwise wastes (FR-013). On compact widths they stack vertically, and
+/// when there are no labels the switches occupy the full width.
+class _SwitchesLabelsBand extends StatelessWidget {
+  const _SwitchesLabelsBand({required this.switches, this.labels});
 
   final Widget switches;
-  final Widget? prices;
+  final Widget? labels;
 
   @override
   Widget build(BuildContext context) {
-    if (prices == null) return switches;
+    if (labels == null) return switches;
 
     if (LayoutBreakpoints.isCompact(context)) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
-        children: [switches, const SizedBox(height: 24), prices!],
+        children: [switches, const SizedBox(height: 24), labels!],
       );
     }
 
@@ -528,7 +535,7 @@ class _SwitchesPricesBand extends StatelessWidget {
       children: [
         Expanded(child: switches),
         const SizedBox(width: 32),
-        Expanded(child: prices!),
+        Expanded(child: labels!),
       ],
     );
   }
@@ -566,15 +573,15 @@ class _PhotoSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         child: Image.memory(
           formState.pendingPhotoBytes!,
-          width: 96,
-          height: 96,
-          fit: BoxFit.cover,
+          width: 168,
+          height: 168,
+          fit: BoxFit.contain,
         ),
       );
     }
     return ProductPhoto(
       photoUrl: formState.photoMarkedForRemoval ? null : formState.photo,
-      size: 96,
+      size: 168,
     );
   }
 
@@ -671,14 +678,14 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.productCreateFailedError;
     case ProductFormErrorCode.updateFailed:
       return l10n.productUpdateFailedError;
-    case ProductFormErrorCode.deactivateFailed:
-      return l10n.productDeactivateFailedError;
+    case ProductFormErrorCode.deleteFailed:
+      return l10n.productDeleteFailedError;
     case ProductFormErrorCode.createPermissionDenied:
       return l10n.productCreatePermissionDeniedError;
     case ProductFormErrorCode.updatePermissionDenied:
       return l10n.productUpdatePermissionDeniedError;
-    case ProductFormErrorCode.deactivatePermissionDenied:
-      return l10n.productDeactivatePermissionDeniedError;
+    case ProductFormErrorCode.deletePermissionDenied:
+      return l10n.productDeletePermissionDeniedError;
     case ProductFormErrorCode.photoUploadFailed:
       return l10n.productPhotoUploadFailedError;
     default:

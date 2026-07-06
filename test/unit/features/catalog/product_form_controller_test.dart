@@ -75,7 +75,6 @@ Product _product() => Product(
       invoiceable: false,
       stockRequired: false,
       deactivated: false,
-      prices: const [],
     );
 
 ProviderContainer _containerFor(User user, ProductRepository repository) {
@@ -276,6 +275,57 @@ void main() {
             purchasable: true,
             salable: true,
             invoiceable: false,
+          )).called(1);
+    });
+
+    test('sends a set sku (FR-010)', () async {
+      when(() => repository.create(
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            unitOfMeasurement: any(named: 'unitOfMeasurement'),
+            sku: 'SKU-NEW',
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+          )).thenAnswer((_) async => _product());
+
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.codeChanged('SKU-001');
+      controller.nameChanged('Widget');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
+      controller.skuChanged('SKU-NEW');
+
+      await controller.submitCreate();
+
+      verify(() => repository.create(
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            unitOfMeasurement: any(named: 'unitOfMeasurement'),
+            sku: 'SKU-NEW',
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
           )).called(1);
     });
 
@@ -500,6 +550,35 @@ void main() {
         'http://test/images/p.png',
       );
     });
+
+    test('seeds sku from the loaded product (FR-010)', () async {
+      when(() => repository.get(productId: 1)).thenAnswer(
+        (_) async => _product().copyWith(sku: 'SKU-ABC'),
+      );
+
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      await controller.loadForEdit(1);
+
+      expect(container.read(productFormControllerProvider).sku, 'SKU-ABC');
+    });
+
+    test('seeds an empty sku when the loaded product has none (FR-010)',
+        () async {
+      when(
+        () => repository.get(productId: 1),
+      ).thenAnswer((_) async => _product());
+
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      await controller.loadForEdit(1);
+
+      expect(container.read(productFormControllerProvider).sku, '');
+    });
   });
 
   group('photoPicked', () {
@@ -627,6 +706,7 @@ void main() {
             code: 'SKU-001',
             name: 'Updated Widget',
             unitOfMeasurement: 'PCE',
+            sku: null,
             brand: null,
             model: null,
             barCode: null,
@@ -659,6 +739,7 @@ void main() {
             code: 'SKU-001',
             name: 'Updated Widget',
             unitOfMeasurement: 'PCE',
+            sku: null,
             brand: null,
             model: null,
             barCode: null,
@@ -674,6 +755,65 @@ void main() {
             supplier: null,
             key: null,
             labels: const [],
+          )).called(1);
+    });
+
+    test('sends an updated sku (FR-010)', () async {
+      when(
+        () => repository.get(productId: 1),
+      ).thenAnswer((_) async => _product());
+      when(() => repository.update(
+            productId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            unitOfMeasurement: any(named: 'unitOfMeasurement'),
+            sku: 'SKU-NEW',
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            key: any(named: 'key'),
+            labels: any(named: 'labels'),
+          )).thenAnswer((_) async => _product());
+
+      final container = _containerFor(_editUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      await controller.loadForEdit(1);
+      controller.skuChanged('SKU-NEW');
+      await controller.submitUpdate();
+
+      verify(() => repository.update(
+            productId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            unitOfMeasurement: any(named: 'unitOfMeasurement'),
+            sku: 'SKU-NEW',
+            brand: any(named: 'brand'),
+            model: any(named: 'model'),
+            barCode: any(named: 'barCode'),
+            location: any(named: 'location'),
+            taxRate: any(named: 'taxRate'),
+            comment: any(named: 'comment'),
+            stockable: any(named: 'stockable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            purchasable: any(named: 'purchasable'),
+            salable: any(named: 'salable'),
+            invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            key: any(named: 'key'),
+            labels: any(named: 'labels'),
           )).called(1);
     });
 
@@ -853,41 +993,44 @@ void main() {
     });
   });
 
-  group('deactivate', () {
-    test('sends only {deactivated: true} (FR-010)', () async {
+  group('delete', () {
+    test('calls ProductRepository.delete and sets deleted (FR-016a)',
+        () async {
       when(() => repository.get(productId: 1)).thenAnswer((_) async => _product());
-      when(() => repository.update(productId: 1, deactivated: true))
-          .thenAnswer((_) async => _product());
+      when(() => repository.delete(productId: 1)).thenAnswer((_) async {});
 
       final container = _containerFor(_deleteUser, repository);
       addTearDown(container.dispose);
       final controller = container.read(productFormControllerProvider.notifier);
 
       await controller.loadForEdit(1);
-      await controller.deactivate();
+      await controller.delete();
 
       final state = container.read(productFormControllerProvider);
-      expect(state.deactivated, isTrue);
-      verify(() => repository.update(productId: 1, deactivated: true)).called(1);
+      expect(state.deleted, isTrue);
+      expect(state.submitting, isFalse);
+      verify(() => repository.delete(productId: 1)).called(1);
     });
 
-    test('is a no-op when the product is already deactivated (edge case)',
-        () async {
-      when(() => repository.get(productId: 1))
-          .thenAnswer((_) async => _product().copyWith(deactivated: true));
+    test(
+      'deletes an already-deactivated product (FR-015 — not gated by '
+      'deactivated state)',
+      () async {
+        when(() => repository.get(productId: 1))
+            .thenAnswer((_) async => _product().copyWith(deactivated: true));
+        when(() => repository.delete(productId: 1)).thenAnswer((_) async {});
 
-      final container = _containerFor(_deleteUser, repository);
-      addTearDown(container.dispose);
-      final controller = container.read(productFormControllerProvider.notifier);
+        final container = _containerFor(_deleteUser, repository);
+        addTearDown(container.dispose);
+        final controller = container.read(productFormControllerProvider.notifier);
 
-      await controller.loadForEdit(1);
-      await controller.deactivate();
+        await controller.loadForEdit(1);
+        await controller.delete();
 
-      verifyNever(() => repository.update(
-            productId: any(named: 'productId'),
-            deactivated: any(named: 'deactivated'),
-          ));
-    });
+        expect(container.read(productFormControllerProvider).deleted, isTrue);
+        verify(() => repository.delete(productId: 1)).called(1);
+      },
+    );
 
     test('without products.delete privilege, does not call the repository '
         '(spec.md Edge Cases)', () async {
@@ -898,15 +1041,12 @@ void main() {
       final controller = container.read(productFormControllerProvider.notifier);
 
       await controller.loadForEdit(1);
-      await controller.deactivate();
+      await controller.delete();
 
       final state = container.read(productFormControllerProvider);
-      expect(state.deactivated, isFalse);
-      expect(state.error, isNotNull);
-      verifyNever(() => repository.update(
-            productId: any(named: 'productId'),
-            deactivated: any(named: 'deactivated'),
-          ));
+      expect(state.deleted, isFalse);
+      expect(state.error, ProductFormErrorCode.deletePermissionDenied);
+      verifyNever(() => repository.delete(productId: any(named: 'productId')));
     });
 
     test('is a no-op when no product has been loaded', () async {
@@ -914,12 +1054,37 @@ void main() {
       addTearDown(container.dispose);
       final controller = container.read(productFormControllerProvider.notifier);
 
-      await controller.deactivate();
+      await controller.delete();
 
-      verifyNever(() => repository.update(
-            productId: any(named: 'productId'),
-            deactivated: any(named: 'deactivated'),
-          ));
+      verifyNever(() => repository.delete(productId: any(named: 'productId')));
     });
+
+    test(
+      'a server rejection (e.g. referential integrity) surfaces an error '
+      'and leaves the product in place (FR-016b)',
+      () async {
+        when(
+          () => repository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+        when(() => repository.delete(productId: 1)).thenThrow(
+          const AppError.server(
+            statusCode: 409,
+            message: 'Product is referenced by other records',
+          ),
+        );
+
+        final container = _containerFor(_deleteUser, repository);
+        addTearDown(container.dispose);
+        final controller = container.read(productFormControllerProvider.notifier);
+
+        await controller.loadForEdit(1);
+        await controller.delete();
+
+        final state = container.read(productFormControllerProvider);
+        expect(state.deleted, isFalse);
+        expect(state.error, ProductFormErrorCode.deleteFailed);
+        expect(state.submitting, isFalse);
+      },
+    );
   });
 }

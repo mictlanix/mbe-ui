@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -102,6 +103,43 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Like [pumpScreen], but backed by a real `GoRouter` so tests can assert
+  /// on where a row click/action navigates.
+  Future<void> pumpScreenWithRouter(
+    WidgetTester tester, {
+    required User signedInAs,
+  }) async {
+    when(() => tokenStorage.read()).thenAnswer((_) async => 'test-token');
+    when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
+
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const UsersListScreen()),
+        GoRoute(
+          path: '/users/:userId',
+          builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(authRepository),
+          userRepositoryProvider.overrideWithValue(userRepository),
+          tokenStorageProvider.overrideWithValue(tokenStorage),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('shows list of users for an administrator (FR-011)', (
     tester,
   ) async {
@@ -196,47 +234,12 @@ void main() {
     ).called(1);
   });
 
-  testWidgets('shows View/Edit/Delete row actions in fixed order for an '
-      'administrator (FR-003, FR-004)', (tester) async {
-    await pumpScreen(tester, signedInAs: _adminUser);
-
-    final rowActionIcons = {
-      Icons.visibility_outlined,
-      Icons.edit_outlined,
-      Icons.delete_outline,
-    };
-    final icons = tester
-        .widgetList<IconButton>(
-          find.descendant(
-            of: find.byKey(const Key('users_table')),
-            matching: find.byType(IconButton),
-          ),
-        )
-        .map((b) => (b.icon as Icon).icon)
-        .where(rowActionIcons.contains)
-        .toList();
-
-    expect(icons, [
-      Icons.visibility_outlined,
-      Icons.edit_outlined,
-      Icons.delete_outline,
-      Icons.visibility_outlined,
-      Icons.edit_outlined,
-      Icons.delete_outline,
-    ]);
-  });
-
   testWidgets(
-    'omits Edit/Delete row actions for a read-only user, keeping View '
-    '(FR-012)',
+    'shows only the Edit row action for an administrator (FR-001, FR-002)',
     (tester) async {
-      await pumpScreen(tester, signedInAs: _limitedUser);
+      await pumpScreen(tester, signedInAs: _adminUser);
 
-      final rowActionIcons = {
-        Icons.visibility_outlined,
-        Icons.edit_outlined,
-        Icons.delete_outline,
-      };
+      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
       final icons = tester
           .widgetList<IconButton>(
             find.descendant(
@@ -248,7 +251,52 @@ void main() {
           .where(rowActionIcons.contains)
           .toList();
 
-      expect(icons, [Icons.visibility_outlined, Icons.visibility_outlined]);
+      expect(icons, [Icons.edit_outlined, Icons.edit_outlined]);
+    },
+  );
+
+  testWidgets(
+    'omits the Edit row action for a read-only user (FR-004)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _limitedUser);
+
+      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
+      final icons = tester
+          .widgetList<IconButton>(
+            find.descendant(
+              of: find.byKey(const Key('users_table')),
+              matching: find.byType(IconButton),
+            ),
+          )
+          .map((b) => (b.icon as Icon).icon)
+          .where(rowActionIcons.contains)
+          .toList();
+
+      expect(icons, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'tapping a row opens the user read-only, not the editable form (FR-003)',
+    (tester) async {
+      await pumpScreenWithRouter(tester, signedInAs: _adminUser);
+
+      await tester.tap(find.text('jdoe'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('/users/jdoe?view=true'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'the Edit row action opens the user editable form (FR-004)',
+    (tester) async {
+      await pumpScreenWithRouter(tester, signedInAs: _adminUser);
+
+      await tester.tap(find.byIcon(Icons.edit_outlined).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('/users/admin'), findsOneWidget);
     },
   );
 }

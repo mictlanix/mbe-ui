@@ -333,17 +333,17 @@ Within a form, group related content and separate logical sections to aid
 scanning:
 
 - **Section dividers**: delimit distinct blocks (e.g. an attribute/toggle
-  group, a prices sub-panel, a labels section) with the standard Material 3
+  group, a labels section) with the standard Material 3
   `Divider` when it improves scanability or reclaims wasted vertical space —
   dividers are M3's idiomatic group separator.
 - **Side-by-side grouping**: pair naturally related blocks into a two-column
-  band on wide tiers (e.g. boolean attribute switches on the left, the prices
-  list on the right) rather than stacking each full-width; collapse to a
+  band on wide tiers (e.g. boolean attribute switches on the left, the labels
+  picker on the right) rather than stacking each full-width; collapse to a
   vertical stack on Compact.
 
 The product catalog detail screen (`features/catalog/presentation/product_detail_screen.dart`)
 is the reference implementation of all three (two-column field grid, section
-dividers, switches|prices two-column band).
+dividers, switches|labels two-column band).
 
 ### 4.4 Localization
 

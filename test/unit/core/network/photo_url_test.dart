@@ -25,21 +25,21 @@ void main() {
   });
 
   test('resolves a legacy "~/Photos/<file>" virtual-root path against '
-      'legacyPhotosBaseUrl', () {
+      'photosBaseUrl', () {
     expect(
       resolvePhotoUrl('~/Photos/fe18d04c.png'),
-      '$legacyPhotosBaseUrl/Photos/fe18d04c.png',
+      '$photosBaseUrl/Photos/fe18d04c.png',
     );
   });
 
   test('resolves the real-world shape — "~" appearing after a bogus '
-      '"/images/" prefix, not at the start — against legacyPhotosBaseUrl '
+      '"/images/" prefix, not at the start — against photosBaseUrl '
       '(mictlanix/mbe-api#72)', () {
     expect(
       resolvePhotoUrl(
         '/images/~/Photos/fe18d04c7c4a0dda4b685d1293b649bb16ab95f2.png',
       ),
-      '$legacyPhotosBaseUrl/Photos/fe18d04c7c4a0dda4b685d1293b649bb16ab95f2.png',
+      '$photosBaseUrl/Photos/fe18d04c7c4a0dda4b685d1293b649bb16ab95f2.png',
     );
   });
 

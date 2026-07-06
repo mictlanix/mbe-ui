@@ -8,7 +8,6 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/product_price.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
@@ -29,10 +28,10 @@ abstract final class ProductFormErrorCode {
   static const loadFailed = 'loadFailed';
   static const createFailed = 'createFailed';
   static const updateFailed = 'updateFailed';
-  static const deactivateFailed = 'deactivateFailed';
+  static const deleteFailed = 'deleteFailed';
   static const createPermissionDenied = 'createPermissionDenied';
   static const updatePermissionDenied = 'updatePermissionDenied';
-  static const deactivatePermissionDenied = 'deactivatePermissionDenied';
+  static const deletePermissionDenied = 'deletePermissionDenied';
   static const photoInvalidType = 'photoInvalidType';
   static const photoTooLarge = 'photoTooLarge';
   static const photoUploadFailed = 'photoUploadFailed';
@@ -50,6 +49,7 @@ class ProductFormState with _$ProductFormState {
     int? productId,
     @Default('') String code,
     @Default('') String name,
+    @Default('') String sku,
     String? brand,
     String? model,
     String? barCode,
@@ -77,7 +77,6 @@ class ProductFormState with _$ProductFormState {
     int? supplierId,
     String? supplierName,
     @Default(<int>[]) List<int> labelIds,
-    @Default(<ProductPrice>[]) List<ProductPrice> prices,
     String? taxRate,
     String? comment,
     @Default(false) bool stockable,
@@ -86,10 +85,13 @@ class ProductFormState with _$ProductFormState {
     @Default(false) bool purchasable,
     @Default(false) bool salable,
     @Default(false) bool invoiceable,
-    @Default(false) bool deactivated,
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
+    /// `true` after a successful hard [ProductFormController.delete] call
+    /// (FR-016a) — the screen pops back to the list on this, mirroring
+    /// [saved].
+    @Default(false) bool deleted,
     String? error,
     /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
     /// string on a `404`/`5xx`), shown alongside the localized [error]
@@ -120,6 +122,8 @@ class ProductFormController extends _$ProductFormController {
         errorDetail: null,
         fieldErrors: const {},
       );
+
+  void skuChanged(String v) => state = state.copyWith(sku: v);
 
   void brandChanged(String v) => state = state.copyWith(brand: v);
   void modelChanged(String v) => state = state.copyWith(model: v);
@@ -234,6 +238,7 @@ class ProductFormController extends _$ProductFormController {
         productId: product.productId,
         code: product.code,
         name: product.name,
+        sku: product.sku ?? '',
         brand: product.brand,
         model: product.model,
         barCode: product.barCode,
@@ -250,7 +255,6 @@ class ProductFormController extends _$ProductFormController {
         supplierId: product.supplierId,
         supplierName: product.supplierName,
         labelIds: product.labels.map((l) => l.labelId).toList(),
-        prices: product.prices,
         taxRate: product.taxRate,
         comment: product.comment,
         stockable: product.stockable,
@@ -259,7 +263,6 @@ class ProductFormController extends _$ProductFormController {
         purchasable: product.purchasable,
         salable: product.salable,
         invoiceable: product.invoiceable,
-        deactivated: product.deactivated,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -334,6 +337,7 @@ class ProductFormController extends _$ProductFormController {
             code: state.code,
             name: state.name,
             unitOfMeasurement: state.unitOfMeasurementCode,
+            sku: _orNull(state.sku),
             brand: _orNull(state.brand),
             model: _orNull(state.model),
             barCode: _orNull(state.barCode),
@@ -431,6 +435,7 @@ class ProductFormController extends _$ProductFormController {
             code: state.code,
             name: state.name,
             unitOfMeasurement: state.unitOfMeasurementCode,
+            sku: _orNull(state.sku),
             brand: _orNull(state.brand),
             model: _orNull(state.model),
             barCode: _orNull(state.barCode),
@@ -502,20 +507,24 @@ class ProductFormController extends _$ProductFormController {
     }
   }
 
-  /// Deactivates the loaded product ("soft delete", FR-010, FR-011) by
-  /// calling `update` with only `deactivated: true`. No-ops if already
-  /// deactivated or if no product has been loaded (edge case: repeated
-  /// deactivation). Re-checks the caller's `products` delete privilege
-  /// immediately before submitting (spec.md Edge Cases).
-  Future<void> deactivate() async {
+  /// Permanently deletes the loaded product (FR-016a) via
+  /// `ProductRepository.delete` — a genuine hard delete, not the prior
+  /// soft-deactivate. No-ops if no product has been loaded; unlike the
+  /// former `deactivate()`, this is NOT gated by the product's deactivated
+  /// state (FR-015 — a deactivated product can still be deleted). Re-checks
+  /// the caller's `products` delete privilege immediately before submitting
+  /// (spec.md Edge Cases). A server rejection (e.g. referential integrity)
+  /// is surfaced via `error`/`errorDetail`, leaving the product in place
+  /// (FR-016b).
+  Future<void> delete() async {
     final productId = state.productId;
-    if (productId == null || state.deactivated) return;
+    if (productId == null) return;
 
     if (!ref
         .read(accessControlProvider)
         .can(SystemObject.products, AccessRight.delete)) {
       state = state.copyWith(
-        error: ProductFormErrorCode.deactivatePermissionDenied,
+        error: ProductFormErrorCode.deletePermissionDenied,
         errorDetail: null,
       );
       return;
@@ -523,17 +532,14 @@ class ProductFormController extends _$ProductFormController {
 
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
-      await ref.read(productRepositoryProvider).update(
-            productId: productId,
-            deactivated: true,
-          );
+      await ref.read(productRepositoryProvider).delete(productId: productId);
       ref.invalidate(productsListControllerProvider);
-      state = state.copyWith(submitting: false, deactivated: true);
+      state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       state = state.copyWith(
         errorDetail: e.serverMessage,
         submitting: false,
-        error: ProductFormErrorCode.deactivateFailed,
+        error: ProductFormErrorCode.deleteFailed,
       );
     }
   }

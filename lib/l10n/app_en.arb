@@ -137,11 +137,8 @@
   "productsPurchasableFilter": "Purchasable",
   "@productsPurchasableFilter": {},
 
-  "productsLabelFilter": "Label",
+  "productsLabelFilter": "Labels",
   "@productsLabelFilter": {},
-
-  "productsAllLabels": "All labels",
-  "@productsAllLabels": {},
 
   "filtersButton": "Filters",
   "@filtersButton": {"description": "Label/title of the catalog filter panel and its trigger button"},
@@ -171,6 +168,12 @@
   "columnCode": "Code",
   "@columnCode": {},
 
+  "copyCodeTooltip": "Copy code",
+  "@copyCodeTooltip": {},
+
+  "codeCopiedMessage": "Code copied to clipboard",
+  "@codeCopiedMessage": {},
+
   "columnName": "Name",
   "@columnName": {},
 
@@ -187,11 +190,17 @@
   "editProductTitle": "Edit Product",
   "@editProductTitle": {},
 
+  "viewProductTitle": "View Product",
+  "@viewProductTitle": {},
+
   "codeLabel": "Code",
   "@codeLabel": {},
 
   "nameLabel": "Name",
   "@nameLabel": {},
+
+  "skuLabel": "SKU",
+  "@skuLabel": {},
 
   "unitOfMeasurementLabel": "Unit of Measurement",
   "@unitOfMeasurementLabel": {},
@@ -238,36 +247,30 @@
   "invoiceableLabel": "Invoiceable",
   "@invoiceableLabel": {},
 
-  "pricesSubpanelTitle": "Prices",
-  "@pricesSubpanelTitle": {},
-
-  "unknownPriceList": "Unknown price list",
-  "@unknownPriceList": {},
-
   "labelsLabel": "Labels",
   "@labelsLabel": {},
 
-  "deactivateProductTooltip": "Deactivate product",
-  "@deactivateProductTooltip": {},
+  "deleteProductButton": "Delete product",
+  "@deleteProductButton": {},
 
-  "deactivateProductConfirmTitle": "Deactivate product?",
-  "@deactivateProductConfirmTitle": {},
+  "deleteProductConfirmTitle": "Delete product permanently?",
+  "@deleteProductConfirmTitle": {},
 
-  "deactivateProductConfirmMessage": "Are you sure you want to deactivate \"{code}\"? It will be hidden from new sales, purchases, and inventory transactions, but its history is kept.",
-  "@deactivateProductConfirmMessage": {
+  "deleteProductConfirmMessage": "Are you sure you want to permanently delete \"{code}\"? This cannot be undone — the product and its history will be removed entirely, not just hidden.",
+  "@deleteProductConfirmMessage": {
     "placeholders": {
       "code": {"type": "String"}
     }
   },
-
-  "deactivateButton": "Deactivate",
-  "@deactivateButton": {},
 
   "statusInactiveBadge": "Inactive",
   "@statusInactiveBadge": {},
 
   "editUserTitle": "Edit User",
   "@editUserTitle": {},
+
+  "viewUserTitle": "View User",
+  "@viewUserTitle": {},
 
   "newUserTitle": "New User",
   "@newUserTitle": {},
@@ -289,6 +292,12 @@
 
   "cancelButton": "Cancel",
   "@cancelButton": {},
+
+  "editButton": "Edit",
+  "@editButton": {},
+
+  "editRecordTooltip": "Switch to the editable form",
+  "@editRecordTooltip": {},
 
   "emailLabel": "Email",
   "@emailLabel": {},
@@ -387,8 +396,8 @@
   "productUpdateFailedError": "Failed to update product.",
   "@productUpdateFailedError": {},
 
-  "productDeactivateFailedError": "Failed to deactivate product.",
-  "@productDeactivateFailedError": {},
+  "productDeleteFailedError": "Failed to delete product.",
+  "@productDeleteFailedError": {},
 
   "productCreatePermissionDeniedError": "You no longer have permission to create products.",
   "@productCreatePermissionDeniedError": {},
@@ -396,8 +405,8 @@
   "productUpdatePermissionDeniedError": "You no longer have permission to edit products.",
   "@productUpdatePermissionDeniedError": {},
 
-  "productDeactivatePermissionDeniedError": "You no longer have permission to deactivate products.",
-  "@productDeactivatePermissionDeniedError": {},
+  "productDeletePermissionDeniedError": "You no longer have permission to delete products.",
+  "@productDeletePermissionDeniedError": {},
 
   "userEmailRequiredError": "Email is required.",
   "@userEmailRequiredError": {},

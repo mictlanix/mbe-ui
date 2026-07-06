@@ -30,10 +30,9 @@ Templates requiring updates:
     generic/derived from this file; no edits needed)
   - .specify/templates/spec-template.md ✅ (no changes needed)
   - .specify/templates/tasks-template.md ✅ (no changes needed)
-Follow-up TODOs:
-  - Update DESIGN.md §4.3's "switches|prices two-column band" reference
-    example once the product catalog detail screen ships the labels-in-
-    place-of-prices change (tracked in specs/007-catalog-ui-improvements-2).
+Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
+  updated to "switches|labels" once specs/007-catalog-ui-improvements-2
+  shipped the labels-in-place-of-prices change.
 -->
 
 # MBE-UI Constitution

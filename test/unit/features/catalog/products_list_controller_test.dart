@@ -66,7 +66,7 @@ void main() {
         ..stockableChanged(true)
         ..salableChanged(false)
         ..purchasableChanged(true)
-        ..labelChanged(7);
+        ..labelsChanged([7]);
 
       notifier.reset();
 
@@ -76,7 +76,7 @@ void main() {
       expect(filter.stockable, isNull);
       expect(filter.salable, isNull);
       expect(filter.purchasable, isNull);
-      expect(filter.label, isNull);
+      expect(filter.labels, isEmpty);
     });
   });
 
@@ -99,15 +99,21 @@ void main() {
       expect(filter.hasActiveFilters, isTrue);
     });
 
-    test('counts each set attribute facet and the label', () {
+    test('counts each set attribute facet and a single selected label', () {
       const filter = ProductFilter(
         deactivated: false,
         stockable: true,
         salable: false,
         purchasable: true,
-        label: 3,
+        labels: [3],
       );
       expect(filter.activeFilterCount, 5);
+    });
+
+    test('counts each selected label individually (FR-009)', () {
+      const filter = ProductFilter(labels: [1, 2, 3]);
+      expect(filter.activeFilterCount, 3);
+      expect(filter.hasActiveFilters, isTrue);
     });
   });
 
@@ -122,6 +128,7 @@ void main() {
             stockable: null,
             salable: null,
             purchasable: null,
+            labels: const [],
             skip: 0,
             limit: 20,
           ),
@@ -148,6 +155,7 @@ void main() {
             stockable: null,
             salable: null,
             purchasable: null,
+            labels: const [],
             skip: 0,
             limit: 20,
           ),
@@ -163,6 +171,7 @@ void main() {
             stockable: null,
             salable: null,
             purchasable: null,
+            labels: const [],
             skip: 0,
             limit: 20,
           ),
@@ -189,6 +198,7 @@ void main() {
           stockable: null,
           salable: null,
           purchasable: null,
+          labels: const [],
           skip: 0,
           limit: 20,
         ),
@@ -204,6 +214,7 @@ void main() {
           stockable: null,
           salable: null,
           purchasable: null,
+          labels: const [],
           skip: 20,
           limit: 20,
         ),

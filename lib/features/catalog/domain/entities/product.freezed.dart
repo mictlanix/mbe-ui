@@ -49,7 +49,6 @@ mixin _$Product {
   bool get stockRequired => throw _privateConstructorUsedError;
   bool get deactivated => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
-  List<ProductPrice> get prices => throw _privateConstructorUsedError;
   List<ProductLabel> get labels => throw _privateConstructorUsedError;
 
   /// Create a copy of Product
@@ -95,7 +94,6 @@ abstract class $ProductCopyWith<$Res> {
     bool stockRequired,
     bool deactivated,
     String? comment,
-    List<ProductPrice> prices,
     List<ProductLabel> labels,
   });
 }
@@ -146,7 +144,6 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
     Object? stockRequired = null,
     Object? deactivated = null,
     Object? comment = freezed,
-    Object? prices = null,
     Object? labels = null,
   }) {
     return _then(
@@ -276,10 +273,6 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
                       as String?,
-            prices: null == prices
-                ? _value.prices
-                : prices // ignore: cast_nullable_to_non_nullable
-                      as List<ProductPrice>,
             labels: null == labels
                 ? _value.labels
                 : labels // ignore: cast_nullable_to_non_nullable
@@ -330,7 +323,6 @@ abstract class _$$ProductImplCopyWith<$Res> implements $ProductCopyWith<$Res> {
     bool stockRequired,
     bool deactivated,
     String? comment,
-    List<ProductPrice> prices,
     List<ProductLabel> labels,
   });
 }
@@ -380,7 +372,6 @@ class __$$ProductImplCopyWithImpl<$Res>
     Object? stockRequired = null,
     Object? deactivated = null,
     Object? comment = freezed,
-    Object? prices = null,
     Object? labels = null,
   }) {
     return _then(
@@ -509,10 +500,6 @@ class __$$ProductImplCopyWithImpl<$Res>
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
                   as String?,
-        prices: null == prices
-            ? _value._prices
-            : prices // ignore: cast_nullable_to_non_nullable
-                  as List<ProductPrice>,
         labels: null == labels
             ? _value._labels
             : labels // ignore: cast_nullable_to_non_nullable
@@ -557,10 +544,8 @@ class _$ProductImpl implements _Product {
     required this.stockRequired,
     required this.deactivated,
     this.comment,
-    required final List<ProductPrice> prices,
     final List<ProductLabel> labels = const [],
-  }) : _prices = prices,
-       _labels = labels;
+  }) : _labels = labels;
 
   @override
   final int productId;
@@ -624,14 +609,6 @@ class _$ProductImpl implements _Product {
   final bool deactivated;
   @override
   final String? comment;
-  final List<ProductPrice> _prices;
-  @override
-  List<ProductPrice> get prices {
-    if (_prices is EqualUnmodifiableListView) return _prices;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_prices);
-  }
-
   final List<ProductLabel> _labels;
   @override
   @JsonKey()
@@ -643,7 +620,7 @@ class _$ProductImpl implements _Product {
 
   @override
   String toString() {
-    return 'Product(productId: $productId, code: $code, name: $name, photo: $photo, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, unitOfMeasurementDescription: $unitOfMeasurementDescription, unitOfMeasurementSymbol: $unitOfMeasurementSymbol, satKeyCode: $satKeyCode, satKeyDescription: $satKeyDescription, taxRate: $taxRate, taxIncluded: $taxIncluded, priceType: $priceType, currency: $currency, minOrderQty: $minOrderQty, supplierId: $supplierId, supplierName: $supplierName, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, stockRequired: $stockRequired, deactivated: $deactivated, comment: $comment, prices: $prices, labels: $labels)';
+    return 'Product(productId: $productId, code: $code, name: $name, photo: $photo, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, unitOfMeasurementDescription: $unitOfMeasurementDescription, unitOfMeasurementSymbol: $unitOfMeasurementSymbol, satKeyCode: $satKeyCode, satKeyDescription: $satKeyDescription, taxRate: $taxRate, taxIncluded: $taxIncluded, priceType: $priceType, currency: $currency, minOrderQty: $minOrderQty, supplierId: $supplierId, supplierName: $supplierName, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, stockRequired: $stockRequired, deactivated: $deactivated, comment: $comment, labels: $labels)';
   }
 
   @override
@@ -710,7 +687,6 @@ class _$ProductImpl implements _Product {
             (identical(other.deactivated, deactivated) ||
                 other.deactivated == deactivated) &&
             (identical(other.comment, comment) || other.comment == comment) &&
-            const DeepCollectionEquality().equals(other._prices, _prices) &&
             const DeepCollectionEquality().equals(other._labels, _labels));
   }
 
@@ -748,7 +724,6 @@ class _$ProductImpl implements _Product {
     stockRequired,
     deactivated,
     comment,
-    const DeepCollectionEquality().hash(_prices),
     const DeepCollectionEquality().hash(_labels),
   ]);
 
@@ -794,7 +769,6 @@ abstract class _Product implements Product {
     required final bool stockRequired,
     required final bool deactivated,
     final String? comment,
-    required final List<ProductPrice> prices,
     final List<ProductLabel> labels,
   }) = _$ProductImpl;
 
@@ -860,8 +834,6 @@ abstract class _Product implements Product {
   bool get deactivated;
   @override
   String? get comment;
-  @override
-  List<ProductPrice> get prices;
   @override
   List<ProductLabel> get labels;
 

@@ -32,7 +32,7 @@ All decisions below are grounded in the current codebase and the sibling `mbe-ap
 
 **Rationale**: `LabelMultiPicker` already renders labels as multi-select `FilterChip`s and is the natural, consistent control (avoids inventing a new checkbox list). OR semantics (match any) matches how labels behave elsewhere and is the documented assumption.
 
-**Risk / dependency**: mbe-api's product list filter may accept only a single `label` query param. If so, true multi-label filtering needs a backend change (repeated/`in` param). Confirm against `GET /api/v1/products` during implementation; if unsupported, ship the multi-select UI but flag the server-side OR filter as a dependency (do **not** silently send only one label without noting it).
+**Risk / dependency — RESOLVED 2026-07-05 during implementation**: confirmed against mbe-api's source (`app/services/product_service.py`) that the `label` param only accepted a single value (`== label`, not `IN`); shipped an interim workaround sending only the first selected label, documented inline. The finding was reported to the API team, who shipped a fix same-day — mbe-api's `label` query param now accepts repeated values (`?label=1&label=2`), and the generated client was regenerated (`BuiltList<int>? label` with `ListFormat.multi`). `ProductRepositoryImpl.list` now sends the full selected-labels list; the interim single-value fallback and its doc-comment caveat were removed.
 
 **Alternatives considered**: A bespoke checkbox `ListView` — rejected: duplicates `LabelMultiPicker`. Client-side filtering of a full fetch — rejected: violates pagination/§VI and online-only data flow.
 

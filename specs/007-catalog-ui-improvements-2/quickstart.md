@@ -51,7 +51,7 @@ Manual + automated validation for each user story. Assumes a running mbe-api dev
 
 ## FR-021 — Config rename
 
-1. `grep -r LEGACY_PHOTOS_BASE_URL` across the repo (code, `.vscode/launch.json`, `.env*`, docs) returns **no matches**.
+1. `grep -rl LEGACY_PHOTOS_BASE_URL --include="*.dart" --include="*.json"` returns **no matches** (code and `.vscode/launch.json` are clean). Historical spec docs — spec 004's own record of the original decision, and this feature's own spec/plan/research/tasks describing the rename itself — intentionally still mention the old name and are not rewritten.
 2. Photos still resolve correctly using `PHOTOS_BASE_URL`.
 
 ## Constitution

@@ -4,7 +4,6 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 import 'package:mbe_ui/core/network/photo_url.dart';
 
 import 'product_label.dart';
-import 'product_price.dart';
 
 part 'product.freezed.dart';
 
@@ -46,7 +45,6 @@ class Product with _$Product {
     required bool stockRequired,
     required bool deactivated,
     String? comment,
-    required List<ProductPrice> prices,
     @Default([]) List<ProductLabel> labels,
   }) = _Product;
 
@@ -83,9 +81,6 @@ class Product with _$Product {
       stockRequired: response.stockVerification,
       deactivated: response.deactivated,
       comment: response.comment,
-      prices: (response.prices?.toList() ?? <ProductPriceResponse>[])
-          .map(ProductPrice.fromResponse)
-          .toList(),
       labels: (response.labels?.toList() ?? <LabelResponse>[])
           .map(ProductLabel.fromResponse)
           .toList(),

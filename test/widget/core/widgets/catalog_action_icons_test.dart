@@ -8,19 +8,11 @@ void main() {
         home: Scaffold(body: Row(children: children)),
       );
 
-  testWidgets(
-      'renders view, edit, delete in that fixed left-to-right order (FR-004)',
+  testWidgets('renders only the Edit action (constitution §VI)',
       (tester) async {
     await tester.pumpWidget(
       wrap(
-        buildCatalogRowActions(
-          viewTooltip: 'View',
-          editTooltip: 'Edit',
-          deleteTooltip: 'Delete',
-          onView: () {},
-          onEdit: () {},
-          onDelete: () {},
-        ),
+        buildCatalogRowActions(editTooltip: 'Edit', onEdit: () {}),
       ),
     );
 
@@ -29,39 +21,20 @@ void main() {
         .map((b) => (b.icon as Icon).icon)
         .toList();
 
-    expect(icons, [
-      CatalogAction.view.icon,
-      CatalogAction.edit.icon,
-      CatalogAction.delete.icon,
-    ]);
+    expect(icons, [CatalogAction.edit.icon]);
   });
 
-  testWidgets('omits an action when its callback is null, rather than '
-      'disabling it (FR-012)', (tester) async {
+  testWidgets('omits the Edit action when its callback is null, rather '
+      'than disabling it', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        buildCatalogRowActions(
-          viewTooltip: 'View',
-          editTooltip: 'Edit',
-          deleteTooltip: 'Delete',
-          onView: () {},
-          onEdit: null,
-          onDelete: null,
-        ),
-      ),
+      wrap(buildCatalogRowActions(editTooltip: 'Edit', onEdit: null)),
     );
 
-    expect(find.byType(IconButton), findsOneWidget);
-    expect(
-      tester.widget<IconButton>(find.byType(IconButton)).onPressed,
-      isNotNull,
-    );
+    expect(find.byType(IconButton), findsNothing);
   });
 
-  test('each action maps to exactly one icon glyph (FR-005)', () {
+  test('each action maps to exactly one icon glyph', () {
     expect(CatalogAction.create.icon, Icons.add);
-    expect(CatalogAction.view.icon, Icons.visibility_outlined);
     expect(CatalogAction.edit.icon, Icons.edit_outlined);
-    expect(CatalogAction.delete.icon, Icons.delete_outline);
   });
 }

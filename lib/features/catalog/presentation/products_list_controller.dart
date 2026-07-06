@@ -21,7 +21,7 @@ class ProductFilter with _$ProductFilter {
     bool? stockable,
     bool? salable,
     bool? purchasable,
-    int? label,
+    @Default(<int>[]) List<int> labels,
   }) = _ProductFilter;
 }
 
@@ -30,6 +30,8 @@ class ProductFilter with _$ProductFilter {
 /// its own always-visible box — and `deactivated == null` (the default, which
 /// includes inactive products) does not count; only narrowing to active-only
 /// (`deactivated == false`) does, so a freshly-loaded list shows no badge.
+/// Each selected label counts individually (FR-009), so selecting N labels
+/// contributes N to the total.
 extension ProductFilterBadge on ProductFilter {
   int get activeFilterCount {
     var count = 0;
@@ -37,7 +39,7 @@ extension ProductFilterBadge on ProductFilter {
     if (stockable != null) count++;
     if (salable != null) count++;
     if (purchasable != null) count++;
-    if (label != null) count++;
+    count += labels.length;
     return count;
   }
 
@@ -67,7 +69,7 @@ class ProductFilterController extends _$ProductFilterController {
   void purchasableChanged(bool? value) =>
       state = state.copyWith(purchasable: value);
 
-  void labelChanged(int? value) => state = state.copyWith(label: value);
+  void labelsChanged(List<int> value) => state = state.copyWith(labels: value);
 
   /// Resets every facet filter to its default while preserving the current
   /// [ProductFilter.search] text (FR-004; the search box stays outside the
@@ -101,7 +103,7 @@ class ProductsListController extends _$ProductsListController {
           stockable: filter.stockable,
           salable: filter.salable,
           purchasable: filter.purchasable,
-          label: filter.label,
+          labels: filter.labels,
           skip: pageIndex * _pageSize,
           limit: _pageSize,
         );

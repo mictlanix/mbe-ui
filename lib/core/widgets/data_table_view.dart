@@ -12,38 +12,32 @@ class DataTableColumn<T> {
     required this.cellBuilder,
     this.comparator,
     this.numeric = false,
-    this.frozen = false,
     this.size = ColumnSize.M,
     this.fixedWidth,
   });
 
   /// Convenience for a plain-text cell: wraps [text] in an ellipsis-on-
   /// overflow [Text] with a hover-tooltip fallback showing the full value
-  /// (constitution §VI truncation rule). MUST NOT be used for [frozen]
-  /// (identity) columns, totals/amounts, status badges, or other text the
-  /// user needs in full — those MUST use the default constructor with a
-  /// [cellBuilder] that never truncates, per the constitution's "never
-  /// truncate critical info" rule. When [frozen] is true this falls back to
-  /// plain, non-ellipsized text.
+  /// (constitution §VI truncation rule). MUST NOT be used for totals/
+  /// amounts, status badges, or other text the user needs in full — those
+  /// MUST use the default constructor with a [cellBuilder] that never
+  /// truncates, per the constitution's "never truncate critical info" rule.
   factory DataTableColumn.text({
     required String label,
     required String Function(T item) text,
     Comparator<T>? comparator,
     bool numeric = false,
-    bool frozen = false,
     ColumnSize size = ColumnSize.M,
     double? fixedWidth,
   }) {
     return DataTableColumn<T>(
       label: label,
       numeric: numeric,
-      frozen: frozen,
       comparator: comparator,
       size: size,
       fixedWidth: fixedWidth,
       cellBuilder: (context, item) {
         final value = text(item);
-        if (frozen) return Text(value);
         return Tooltip(
           message: value,
           child: Text(value, overflow: TextOverflow.ellipsis, maxLines: 1),
@@ -56,14 +50,6 @@ class DataTableColumn<T> {
   final Widget Function(BuildContext context, T item) cellBuilder;
   final Comparator<T>? comparator;
   final bool numeric;
-
-  /// Pins this column to the left edge during horizontal scroll
-  /// (constitution §VI; FR-007/FR-008 — the catalog's identity column,
-  /// e.g. product code or username). At most one column per table should
-  /// set this, and it MUST be the first column in [DataTableView.columns]
-  /// — `data_table_2` only supports freezing a contiguous run of leading
-  /// columns.
-  final bool frozen;
 
   /// Relative column width (`data_table_2`'s [ColumnSize]) — lets a screen
   /// give a wide free-text column (e.g. a name) more room than narrow
@@ -97,14 +83,6 @@ class DataTableView<T> extends StatefulWidget {
   }) : assert(
          pagination == null || onPageChanged != null,
          'onPageChanged is required when pagination is supplied',
-       ),
-       assert(
-         columns.where((c) => c.frozen).length <= 1,
-         'At most one column may be frozen',
-       ),
-       assert(
-         columns.isEmpty || columns.indexWhere((c) => c.frozen) <= 0,
-         'The frozen column must be the first column',
        );
 
   final List<DataTableColumn<T>> columns;
@@ -131,9 +109,6 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
   int? _sortColumnIndex;
   bool _sortAscending = true;
   _CatalogDataTableSource<T>? _source;
-
-  int get _fixedLeftColumns =>
-      widget.columns.isNotEmpty && widget.columns.first.frozen ? 1 : 0;
 
   @override
   void didUpdateWidget(DataTableView<T> oldWidget) {
@@ -197,7 +172,6 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         columns: _buildColumns(sortable: false),
         source: _source!,
         showCheckboxColumn: false,
-        fixedLeftColumns: _fixedLeftColumns,
         rowsPerPage: pagination.pageSize,
         availableRowsPerPage: [pagination.pageSize],
         onRowsPerPageChanged: null,
@@ -218,7 +192,6 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
 
     return DataTable2(
       showCheckboxColumn: false,
-      fixedLeftColumns: _fixedLeftColumns,
       sortColumnIndex: _sortColumnIndex,
       sortAscending: _sortAscending,
       columns: _buildColumns(sortable: true),
