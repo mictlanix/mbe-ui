@@ -1,6 +1,9 @@
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -11,7 +14,9 @@ import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
@@ -79,6 +84,50 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<ProductListItem> products = _testProducts,
+    List<LabelItem> labels = const [],
+  }) async {
+    when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
+    when(
+      () => productRepository.list(
+        search: any(named: 'search'),
+        deactivated: any(named: 'deactivated'),
+        stockable: any(named: 'stockable'),
+        salable: any(named: 'salable'),
+        purchasable: any(named: 'purchasable'),
+        labels: any(named: 'labels'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => ProductListResult(items: products, total: products.length),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(authRepository),
+          tokenStorageProvider.overrideWithValue(tokenStorage),
+          productRepositoryProvider.overrideWithValue(productRepository),
+          allLabelsProvider.overrideWith((_) async => labels),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ProductsListScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  /// Like [pumpScreen], but backed by a real `GoRouter` so tests can assert
+  /// on where a row click/action navigates (FR-003, FR-004). The
+  /// destination route renders the matched URI as text so tests can assert
+  /// on it directly.
+  Future<void> pumpScreenWithRouter(
+    WidgetTester tester, {
+    required User signedInAs,
+    List<ProductListItem> products = _testProducts,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
     when(
@@ -95,6 +144,17 @@ void main() {
       (_) async => ProductListResult(items: products, total: products.length),
     );
 
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const ProductsListScreen()),
+        GoRoute(
+          path: '/products/:productId',
+          builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -102,10 +162,10 @@ void main() {
           tokenStorageProvider.overrideWithValue(tokenStorage),
           productRepositoryProvider.overrideWithValue(productRepository),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ProductsListScreen(),
         ),
       ),
     );
@@ -149,6 +209,7 @@ void main() {
 
       expect(photos, hasLength(_testProducts.length));
       expect(photos[0].photoUrl, 'http://test/images/widget.png');
+      expect(photos[0].size, 84);
       expect(photos[1].photoUrl, isNull);
     },
   );
@@ -275,6 +336,7 @@ void main() {
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
+          labels: any(named: 'labels'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -290,6 +352,7 @@ void main() {
           stockable: null,
           salable: null,
           purchasable: null,
+          labels: const [],
           skip: 0,
           limit: 20,
         ),
@@ -324,6 +387,103 @@ void main() {
     },
   );
 
+  testWidgets(
+    'the label filter is multi-select, not a single-choice dropdown '
+    '(FR-007)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        labels: const [
+          LabelItem(labelId: 1, name: 'Clearance'),
+          LabelItem(labelId: 2, name: 'Seasonal'),
+        ],
+      );
+      await openFilterSheet(tester);
+
+      expect(find.byType(DropdownButton<int?>), findsNothing);
+      expect(find.byKey(const Key('products_filter_label')), findsOneWidget);
+      expect(find.widgetWithText(FilterChip, 'Clearance'), findsOneWidget);
+      expect(find.widgetWithText(FilterChip, 'Seasonal'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'selecting two labels filters by either and counts 2 toward the badge '
+    '(FR-007, FR-008, FR-009)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        labels: const [
+          LabelItem(labelId: 1, name: 'Clearance'),
+          LabelItem(labelId: 2, name: 'Seasonal'),
+        ],
+      );
+      await openFilterSheet(tester);
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Clearance'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilterChip, 'Seasonal'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => productRepository.list(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: [1, 2],
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+
+      final filterBadge = tester.widget<Badge>(
+        find.ancestor(
+          of: find.byKey(const Key('products_filter_button')),
+          matching: find.byType(Badge),
+        ),
+      );
+      expect(
+        filterBadge.label,
+        isA<Text>().having((t) => t.data, 'data', '2'),
+      );
+    },
+  );
+
+  testWidgets(
+    'Clear all empties the label selection along with the other facets',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        labels: const [LabelItem(labelId: 1, name: 'Clearance')],
+      );
+      await openFilterSheet(tester);
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Clearance'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Clearance'))
+            .selected,
+        isTrue,
+      );
+
+      await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Clearance'))
+            .selected,
+        isFalse,
+      );
+    },
+  );
+
   testWidgets('shows an empty state when there are no matches', (tester) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);
 
@@ -348,16 +508,12 @@ void main() {
   );
 
   testWidgets(
-    'shows View/Edit/Delete row actions in fixed order for full access '
-    '(FR-003, FR-004)',
+    'shows only the Edit row action for a user with update rights '
+    '(FR-001, FR-002)',
     (tester) async {
       await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-      final rowActionIcons = {
-        Icons.visibility_outlined,
-        Icons.edit_outlined,
-        Icons.delete_outline,
-      };
+      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
       final icons = tester
           .widgetList<IconButton>(
             find.descendant(
@@ -369,29 +525,17 @@ void main() {
           .where(rowActionIcons.contains)
           .toList();
 
-      // SKU-001 is active (View/Edit/Delete); SKU-002 is already deactivated,
-      // so Delete is omitted for it even with full access.
-      expect(icons, [
-        Icons.visibility_outlined,
-        Icons.edit_outlined,
-        Icons.delete_outline,
-        Icons.visibility_outlined,
-        Icons.edit_outlined,
-      ]);
+      // One Edit icon per row (both rows), never a Delete icon.
+      expect(icons, [Icons.edit_outlined, Icons.edit_outlined]);
     },
   );
 
   testWidgets(
-    'omits Edit/Delete row actions for a read-only user, keeping View '
-    '(FR-012)',
+    'omits the Edit row action for a read-only user (FR-004)',
     (tester) async {
       await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-      final rowActionIcons = {
-        Icons.visibility_outlined,
-        Icons.edit_outlined,
-        Icons.delete_outline,
-      };
+      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
       final icons = tester
           .widgetList<IconButton>(
             find.descendant(
@@ -403,7 +547,133 @@ void main() {
           .where(rowActionIcons.contains)
           .toList();
 
-      expect(icons, [Icons.visibility_outlined, Icons.visibility_outlined]);
+      expect(icons, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'no column is frozen/pinned (FR-001)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      expect(
+        tester
+            .widget<DataTable2>(
+              find.descendant(
+                of: find.byKey(const Key('products_table')),
+                matching: find.byType(DataTable2),
+              ),
+            )
+            .fixedLeftColumns,
+        0,
+      );
+    },
+  );
+
+  testWidgets(
+    'shows the photo as the first column with a blank header (FR-019)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      final headerRow = tester.widget<DataTable2>(
+        find.descendant(
+          of: find.byKey(const Key('products_table')),
+          matching: find.byType(DataTable2),
+        ),
+      );
+      final labels = headerRow.columns
+          .map((c) => (c.label as Text).data ?? '')
+          .toList();
+
+      expect(labels.first, '');
+      // Every column between the photo and the trailing row-actions column
+      // (which also has no header, by existing design) has a label.
+      expect(
+        labels.sublist(1, labels.length - 1).every((l) => l.isNotEmpty),
+        isTrue,
+      );
+
+      // The photo cell sits to the left of the code cell in each row.
+      final photoLeft = tester
+          .getTopLeft(
+            find
+                .descendant(
+                  of: find.byKey(const Key('products_table')),
+                  matching: find.byType(ProductPhoto),
+                )
+                .first,
+          )
+          .dx;
+      final codeLeft = tester.getTopLeft(find.text('SKU-001')).dx;
+      expect(photoLeft, lessThan(codeLeft));
+    },
+  );
+
+  testWidgets(
+    'copies the product code to the clipboard with a confirmation (FR-020)',
+    (tester) async {
+      // Mocked directly rather than round-tripping through
+      // Clipboard.getData(): this Flutter SDK's test binding doesn't
+      // auto-provide a response for the platform clipboard-read channel,
+      // so awaiting it hangs indefinitely. Capturing the Clipboard.setData
+      // call is sufficient to verify the copied value.
+      String? copiedText;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copiedText = (call.arguments as Map)['text'] as String?;
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      // Invoked directly rather than via tester.tap(): PaginatedDataTable2's
+      // scrollable render tree makes precise hit-testing of small nested
+      // cell widgets unreliable in the test environment. This still
+      // exercises the real onPressed behavior.
+      final button = tester.widget<IconButton>(
+        find.byKey(const Key('copy_code_button_1')),
+      );
+      button.onPressed!();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 750));
+
+      expect(copiedText, 'SKU-001');
+      expect(find.text('Code copied to clipboard'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'tapping a row opens the product read-only, not the editable form '
+    '(FR-003)',
+    (tester) async {
+      await pumpScreenWithRouter(tester, signedInAs: _fullAccessUser);
+
+      await tester.tap(find.text('Widget'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('/products/1?view=true'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'the Edit row action opens the product editable form (FR-004)',
+    (tester) async {
+      await pumpScreenWithRouter(tester, signedInAs: _fullAccessUser);
+
+      await tester.tap(find.byIcon(Icons.edit_outlined).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('/products/1'), findsOneWidget);
     },
   );
 }

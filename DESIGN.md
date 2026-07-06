@@ -291,6 +291,27 @@ Even so, centralize `LayoutBuilder`/`MediaQuery` breakpoints in `core/` from
 the start, so adding the Compact tier later doesn't require each feature to
 retrofit its own breakpoints.
 
+### 4.2.1 Catalog/list row actions — Edit-only, click-to-view
+
+**Decision** (constitution §VI, amended 2026-07-05 per specs/007-catalog-ui-improvements-2):
+every catalog/list screen's row exposes exactly one row-level icon action,
+**Edit** — no per-row View or Delete icon. Clicking anywhere else on the row
+opens the same detail screen **read-only** (titled as a "View" screen, not
+"Edit"); from there, a user holding the update privilege gets an explicit
+control to switch to the editable form. Create stays toolbar-only. Delete/
+soft-delete moves off the list entirely onto the record's own detail screen —
+typically a warning-styled button in the form body, though a module may keep
+it as a detail-screen app-bar action if a form-body button doesn't fit (the
+Users admin screen does this).
+
+**Rationale**: an earlier version of this rule (through constitution v1.4.0)
+put View, Edit, and Delete all on the row as three separate icons. Usage
+feedback showed this added visual noise without reducing risk: a stray click
+anywhere on the row still opened the *editable* form, so "safe browsing" was
+never actually the default. Defaulting row-click to read-only, and shrinking
+the row's icon surface to just Edit, makes the safe path the path of least
+resistance while keeping editing and deletion one deliberate step away.
+
 ### 4.3 Shared component library
 
 Build a small `core/widgets/` library early for things every module needs:
@@ -312,17 +333,17 @@ Within a form, group related content and separate logical sections to aid
 scanning:
 
 - **Section dividers**: delimit distinct blocks (e.g. an attribute/toggle
-  group, a prices sub-panel, a labels section) with the standard Material 3
+  group, a labels section) with the standard Material 3
   `Divider` when it improves scanability or reclaims wasted vertical space —
   dividers are M3's idiomatic group separator.
 - **Side-by-side grouping**: pair naturally related blocks into a two-column
-  band on wide tiers (e.g. boolean attribute switches on the left, the prices
-  list on the right) rather than stacking each full-width; collapse to a
+  band on wide tiers (e.g. boolean attribute switches on the left, the labels
+  picker on the right) rather than stacking each full-width; collapse to a
   vertical stack on Compact.
 
 The product catalog detail screen (`features/catalog/presentation/product_detail_screen.dart`)
 is the reference implementation of all three (two-column field grid, section
-dividers, switches|prices two-column band).
+dividers, switches|labels two-column band).
 
 ### 4.4 Localization
 

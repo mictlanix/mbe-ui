@@ -148,10 +148,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productsPurchasableFilter => 'Purchasable';
 
   @override
-  String get productsLabelFilter => 'Label';
-
-  @override
-  String get productsAllLabels => 'All labels';
+  String get productsLabelFilter => 'Labels';
 
   @override
   String get filtersButton => 'Filters';
@@ -180,6 +177,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnCode => 'Code';
 
   @override
+  String get copyCodeTooltip => 'Copy code';
+
+  @override
+  String get codeCopiedMessage => 'Code copied to clipboard';
+
+  @override
   String get columnName => 'Name';
 
   @override
@@ -195,10 +198,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProductTitle => 'Edit Product';
 
   @override
+  String get viewProductTitle => 'View Product';
+
+  @override
   String get codeLabel => 'Code';
 
   @override
   String get nameLabel => 'Name';
+
+  @override
+  String get skuLabel => 'SKU';
 
   @override
   String get unitOfMeasurementLabel => 'Unit of Measurement';
@@ -246,33 +255,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invoiceableLabel => 'Invoiceable';
 
   @override
-  String get pricesSubpanelTitle => 'Prices';
-
-  @override
-  String get unknownPriceList => 'Unknown price list';
-
-  @override
   String get labelsLabel => 'Labels';
 
   @override
-  String get deactivateProductTooltip => 'Deactivate product';
+  String get deleteProductButton => 'Delete product';
 
   @override
-  String get deactivateProductConfirmTitle => 'Deactivate product?';
+  String get deleteProductConfirmTitle => 'Delete product permanently?';
 
   @override
-  String deactivateProductConfirmMessage(String code) {
-    return 'Are you sure you want to deactivate \"$code\"? It will be hidden from new sales, purchases, and inventory transactions, but its history is kept.';
+  String deleteProductConfirmMessage(String code) {
+    return 'Are you sure you want to permanently delete \"$code\"? This cannot be undone — the product and its history will be removed entirely, not just hidden.';
   }
-
-  @override
-  String get deactivateButton => 'Deactivate';
 
   @override
   String get statusInactiveBadge => 'Inactive';
 
   @override
   String get editUserTitle => 'Edit User';
+
+  @override
+  String get viewUserTitle => 'View User';
 
   @override
   String get newUserTitle => 'New User';
@@ -296,6 +299,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelButton => 'Cancel';
+
+  @override
+  String get editButton => 'Edit';
+
+  @override
+  String get editRecordTooltip => 'Switch to the editable form';
 
   @override
   String get emailLabel => 'Email';
@@ -397,7 +406,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productUpdateFailedError => 'Failed to update product.';
 
   @override
-  String get productDeactivateFailedError => 'Failed to deactivate product.';
+  String get productDeleteFailedError => 'Failed to delete product.';
 
   @override
   String get productCreatePermissionDeniedError =>
@@ -408,8 +417,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'You no longer have permission to edit products.';
 
   @override
-  String get productDeactivatePermissionDeniedError =>
-      'You no longer have permission to deactivate products.';
+  String get productDeletePermissionDeniedError =>
+      'You no longer have permission to delete products.';
 
   @override
   String get userEmailRequiredError => 'Email is required.';

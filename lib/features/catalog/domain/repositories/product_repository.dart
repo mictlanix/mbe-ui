@@ -8,18 +8,24 @@ import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 /// screen level (research.md §1 — these endpoints are not yet server-side
 /// privilege-gated; tracked as mictlanix/mbe-api#70).
 ///
-/// `create`/`update` are added by later tasks (T018, T026) as their user
-/// stories are implemented; `delete` (hard delete) is intentionally never
-/// added — soft delete goes through `update` (research.md §2).
+/// [delete] performs a genuine hard delete against mbe-api's
+/// `DELETE /api/v1/products/{product_id}` (confirmed via code review: it
+/// runs `db.delete(product)`, permanently removing the row and its price
+/// records) — it replaces the product UI's former soft-delete-via-[update]
+/// flow (spec.md Clarifications, 2026-07-05).
 abstract class ProductRepository {
-  /// `GET /api/v1/products` (FR-001, FR-002).
+  /// `GET /api/v1/products` (FR-001, FR-002). [labels] filters to products
+  /// matching any of the given label ids (FR-008, OR semantics) — mbe-api's
+  /// `label` query param now accepts repeated values
+  /// (`?label=1&label=2`); this previously accepted only a single value
+  /// (research.md §4), resolved server-side 2026-07-05.
   Future<ProductListResult> list({
     String? search,
     bool? deactivated,
     bool? stockable,
     bool? salable,
     bool? purchasable,
-    int? label,
+    List<int> labels = const [],
     int skip = 0,
     int limit = 20,
   });
@@ -28,12 +34,21 @@ abstract class ProductRepository {
   /// `404`.
   Future<Product> get({required int productId});
 
+  /// `DELETE /api/v1/products/{product_id}` (FR-016a). A genuine hard
+  /// delete — permanently removes the product and its price records.
+  /// Irreversible; there is no undo. Throws `NotFoundError` on `404`, and
+  /// whatever `AppError` mbe-api maps a referential-integrity rejection to
+  /// (e.g. a product still referenced by orders/quotations) so the caller
+  /// can surface it and leave the product in place (FR-016b).
+  Future<void> delete({required int productId});
+
   /// `POST /api/v1/products` (FR-003). Throws `ValidationError` on `422`
   /// (e.g. duplicate code, invalid name length, invalid barcode).
   Future<Product> create({
     required String code,
     required String name,
     required String unitOfMeasurement,
+    String? sku,
     String? brand,
     String? model,
     String? barCode,
@@ -57,11 +72,21 @@ abstract class ProductRepository {
   /// soft-delete (FR-010 — call with only `deactivated: true`). Throws
   /// `NotFoundError` on `404`, `ValidationError` on `422` (e.g. duplicate
   /// code on rename).
+  ///
+  /// **Known limitation ([supplier], research.md §5)**: this "only send
+  /// non-null" convention means [supplier] cannot express "clear the
+  /// supplier" — mbe-api's `update_product` does
+  /// `if data.supplier is not None: product.supplier = data.supplier`, so a
+  /// null value is read server-side as "leave unchanged", not "unset".
+  /// Assigning/changing the supplier works; clearing it does not, until
+  /// mbe-api adopts the same `model_fields_set`-based null-means-clear
+  /// pattern it already uses for `photo`.
   Future<Product> update({
     required int productId,
     String? code,
     String? name,
     String? unitOfMeasurement,
+    String? sku,
     String? brand,
     String? model,
     String? barCode,

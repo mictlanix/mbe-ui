@@ -1,5 +1,6 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,9 +13,9 @@ import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
@@ -33,7 +34,6 @@ class ProductsListScreen extends ConsumerWidget {
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.products, AccessRight.create);
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
-    final canDelete = access.can(SystemObject.products, AccessRight.delete);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -91,17 +91,33 @@ class ProductsListScreen extends ConsumerWidget {
                   : DataTableView<ProductListItem>(
                       key: const Key('products_table'),
                       columns: [
-                        DataTableColumn.text(
-                          label: l10n.columnCode,
-                          text: (p) => p.code,
-                          frozen: true,
-                          fixedWidth: 110,
-                        ),
                         DataTableColumn(
-                          label: l10n.columnPhoto,
-                          fixedWidth: 110,
+                          label: '',
+                          fixedWidth: 120,
                           cellBuilder: (context, p) =>
                               ProductPhoto(photoUrl: p.photo),
+                        ),
+                        DataTableColumn(
+                          label: l10n.columnCode,
+                          fixedWidth: 200,
+                          cellBuilder: (context, p) => Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(p.code),
+                              IconButton(
+                                key: Key('copy_code_button_${p.productId}'),
+                                icon: const Icon(Icons.copy, size: 16),
+                                tooltip: l10n.copyCodeTooltip,
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(
+                                  minWidth: 28,
+                                  minHeight: 28,
+                                ),
+                                onPressed: () => _copyCode(context, p.code, l10n),
+                              ),
+                            ],
+                          ),
                         ),
                         DataTableColumn.text(
                           label: l10n.columnName,
@@ -143,18 +159,12 @@ class ProductsListScreen extends ConsumerWidget {
                       onPageChanged: (pageIndex) => ref
                           .read(productsListControllerProvider.notifier)
                           .goToPage(pageIndex),
-                      onRowTap: (p) => context.push('/products/${p.productId}'),
+                      onRowTap: (p) =>
+                          context.push('/products/${p.productId}?view=true'),
                       rowActionsBuilder: (context, p) => buildCatalogRowActions(
-                        viewTooltip: l10n.viewActionTooltip,
                         editTooltip: l10n.editActionTooltip,
-                        deleteTooltip: l10n.deleteActionTooltip,
-                        onView: () =>
-                            context.push('/products/${p.productId}?view=true'),
                         onEdit: canUpdate
                             ? () => context.push('/products/${p.productId}')
-                            : null,
-                        onDelete: (canDelete && !p.deactivated)
-                            ? () => _confirmDeactivate(context, ref, p)
                             : null,
                       ),
                     ),
@@ -165,38 +175,18 @@ class ProductsListScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmDeactivate(
+  /// Copies [code] to the system clipboard and shows a brief confirmation
+  /// (FR-020).
+  Future<void> _copyCode(
     BuildContext context,
-    WidgetRef ref,
-    ProductListItem product,
+    String code,
+    AppLocalizations l10n,
   ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deactivateProductConfirmTitle),
-        content: Text(l10n.deactivateProductConfirmMessage(product.code)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_deactivate_product_button'),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deactivateButton),
-          ),
-        ],
-      ),
+    await Clipboard.setData(ClipboardData(text: code));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.codeCopiedMessage)),
     );
-    if (confirmed == true) {
-      await ref
-          .read(productRepositoryProvider)
-          .update(productId: product.productId, deactivated: true);
-      final pageIndex =
-          ref.read(productsListControllerProvider).value?.pageIndex ?? 0;
-      ref.read(productsListControllerProvider.notifier).goToPage(pageIndex);
-    }
   }
 }
 
@@ -252,24 +242,16 @@ class _ProductFiltersPanel extends ConsumerWidget {
         ),
         if (allLabels.isNotEmpty) ...[
           const SizedBox(height: 12),
-          DropdownButton<int?>(
+          Text(
+            l10n.productsLabelFilter,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          LabelMultiPicker(
             key: const Key('products_filter_label'),
-            value: filter.label,
-            hint: Text(l10n.productsLabelFilter),
-            isExpanded: true,
-            items: [
-              DropdownMenuItem<int?>(
-                value: null,
-                child: Text(l10n.productsAllLabels),
-              ),
-              ...allLabels.map(
-                (lb) => DropdownMenuItem<int?>(
-                  value: lb.labelId,
-                  child: Text(lb.name),
-                ),
-              ),
-            ],
-            onChanged: filterController.labelChanged,
+            labels: allLabels,
+            selectedIds: filter.labels,
+            onChanged: filterController.labelsChanged,
           ),
         ],
       ],

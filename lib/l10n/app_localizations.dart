@@ -371,14 +371,8 @@ abstract class AppLocalizations {
   /// No description provided for @productsLabelFilter.
   ///
   /// In en, this message translates to:
-  /// **'Label'**
+  /// **'Labels'**
   String get productsLabelFilter;
-
-  /// No description provided for @productsAllLabels.
-  ///
-  /// In en, this message translates to:
-  /// **'All labels'**
-  String get productsAllLabels;
 
   /// Label/title of the catalog filter panel and its trigger button
   ///
@@ -428,6 +422,18 @@ abstract class AppLocalizations {
   /// **'Code'**
   String get columnCode;
 
+  /// No description provided for @copyCodeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code'**
+  String get copyCodeTooltip;
+
+  /// No description provided for @codeCopiedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied to clipboard'**
+  String get codeCopiedMessage;
+
   /// No description provided for @columnName.
   ///
   /// In en, this message translates to:
@@ -458,6 +464,12 @@ abstract class AppLocalizations {
   /// **'Edit Product'**
   String get editProductTitle;
 
+  /// No description provided for @viewProductTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Product'**
+  String get viewProductTitle;
+
   /// No description provided for @codeLabel.
   ///
   /// In en, this message translates to:
@@ -469,6 +481,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name'**
   String get nameLabel;
+
+  /// No description provided for @skuLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SKU'**
+  String get skuLabel;
 
   /// No description provided for @unitOfMeasurementLabel.
   ///
@@ -560,47 +578,29 @@ abstract class AppLocalizations {
   /// **'Invoiceable'**
   String get invoiceableLabel;
 
-  /// No description provided for @pricesSubpanelTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Prices'**
-  String get pricesSubpanelTitle;
-
-  /// No description provided for @unknownPriceList.
-  ///
-  /// In en, this message translates to:
-  /// **'Unknown price list'**
-  String get unknownPriceList;
-
   /// No description provided for @labelsLabel.
   ///
   /// In en, this message translates to:
   /// **'Labels'**
   String get labelsLabel;
 
-  /// No description provided for @deactivateProductTooltip.
+  /// No description provided for @deleteProductButton.
   ///
   /// In en, this message translates to:
-  /// **'Deactivate product'**
-  String get deactivateProductTooltip;
+  /// **'Delete product'**
+  String get deleteProductButton;
 
-  /// No description provided for @deactivateProductConfirmTitle.
+  /// No description provided for @deleteProductConfirmTitle.
   ///
   /// In en, this message translates to:
-  /// **'Deactivate product?'**
-  String get deactivateProductConfirmTitle;
+  /// **'Delete product permanently?'**
+  String get deleteProductConfirmTitle;
 
-  /// No description provided for @deactivateProductConfirmMessage.
+  /// No description provided for @deleteProductConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to deactivate \"{code}\"? It will be hidden from new sales, purchases, and inventory transactions, but its history is kept.'**
-  String deactivateProductConfirmMessage(String code);
-
-  /// No description provided for @deactivateButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Deactivate'**
-  String get deactivateButton;
+  /// **'Are you sure you want to permanently delete \"{code}\"? This cannot be undone — the product and its history will be removed entirely, not just hidden.'**
+  String deleteProductConfirmMessage(String code);
 
   /// No description provided for @statusInactiveBadge.
   ///
@@ -613,6 +613,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit User'**
   String get editUserTitle;
+
+  /// No description provided for @viewUserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View User'**
+  String get viewUserTitle;
 
   /// No description provided for @newUserTitle.
   ///
@@ -655,6 +661,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancelButton;
+
+  /// No description provided for @editButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editButton;
+
+  /// No description provided for @editRecordTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to the editable form'**
+  String get editRecordTooltip;
 
   /// No description provided for @emailLabel.
   ///
@@ -842,11 +860,11 @@ abstract class AppLocalizations {
   /// **'Failed to update product.'**
   String get productUpdateFailedError;
 
-  /// No description provided for @productDeactivateFailedError.
+  /// No description provided for @productDeleteFailedError.
   ///
   /// In en, this message translates to:
-  /// **'Failed to deactivate product.'**
-  String get productDeactivateFailedError;
+  /// **'Failed to delete product.'**
+  String get productDeleteFailedError;
 
   /// No description provided for @productCreatePermissionDeniedError.
   ///
@@ -860,11 +878,11 @@ abstract class AppLocalizations {
   /// **'You no longer have permission to edit products.'**
   String get productUpdatePermissionDeniedError;
 
-  /// No description provided for @productDeactivatePermissionDeniedError.
+  /// No description provided for @productDeletePermissionDeniedError.
   ///
   /// In en, this message translates to:
-  /// **'You no longer have permission to deactivate products.'**
-  String get productDeactivatePermissionDeniedError;
+  /// **'You no longer have permission to delete products.'**
+  String get productDeletePermissionDeniedError;
 
   /// No description provided for @userEmailRequiredError.
   ///

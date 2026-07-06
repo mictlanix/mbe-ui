@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 /// rule") — constitution §VI requires shared visual components to live once
 /// in `core/widgets/`.
 class ProductPhoto extends StatelessWidget {
-  const ProductPhoto({super.key, this.photoUrl, this.size = 48});
+  const ProductPhoto({super.key, this.photoUrl, this.size = 84});
 
   final String? photoUrl;
   final double size;
@@ -23,7 +23,7 @@ class ProductPhoto extends StatelessWidget {
         url,
         width: size,
         height: size,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) => _placeholder(context),
       ),
     );

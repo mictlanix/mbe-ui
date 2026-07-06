@@ -8,6 +8,7 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
@@ -280,7 +281,7 @@ class ProductsApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseProductListItem>> listProductsApiV1ProductsGet({ 
     String? search,
-    int? label,
+    BuiltList<int>? label,
     bool? deactivated,
     bool? stockable,
     bool? salable,
@@ -315,7 +316,7 @@ class ProductsApi {
 
     final _queryParameters = <String, dynamic>{
       if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (label != null) r'label': encodeQueryParameter(_serializers, label, const FullType(int)),
+      if (label != null) r'label': encodeCollectionQueryParameter<int>(_serializers, label, const FullType(BuiltList, [FullType(int)]), format: ListFormat.multi,),
       if (deactivated != null) r'deactivated': encodeQueryParameter(_serializers, deactivated, const FullType(bool)),
       if (stockable != null) r'stockable': encodeQueryParameter(_serializers, stockable, const FullType(bool)),
       if (salable != null) r'salable': encodeQueryParameter(_serializers, salable, const FullType(bool)),

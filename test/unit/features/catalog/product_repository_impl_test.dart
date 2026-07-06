@@ -90,6 +90,43 @@ void main() {
 
       await expectLater(() => repository.list(), throwsA(isA<NetworkError>()));
     });
+
+    test(
+      'sends every selected label as a repeated query param (FR-008)',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode({'items': [], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.list(labels: [5, 6, 7]);
+
+        final label = captured!.queryParameters['label'] as ListParam;
+        expect(label.value, [5, 6, 7]);
+        expect(label.format, ListFormat.multi);
+      },
+    );
+
+    test('omits the label param when no labels are selected', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode({'items': [], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.list();
+
+      expect(captured!.queryParameters.containsKey('label'), isFalse);
+    });
   });
 
   group('ProductRepositoryImpl.create', () {
@@ -111,6 +148,27 @@ void main() {
 
       expect(product.code, 'SKU-001');
       expect(product.deactivated, isFalse);
+    });
+
+    test('sends sku in the request body', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_productResponseJson()),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.create(
+        code: 'SKU-001',
+        name: 'Widget',
+        unitOfMeasurement: 'PCE',
+        sku: 'SKU-NEW',
+      );
+
+      expect((captured!.data as Map)['sku'], 'SKU-NEW');
     });
 
     test('422 duplicate code maps to AppError.validation', () async {
@@ -213,8 +271,6 @@ void main() {
       expect(product.name, 'Widget');
       expect(product.unitOfMeasurementCode, 'PCE');
       expect(product.deactivated, isFalse);
-      expect(product.prices, hasLength(1));
-      expect(product.prices.single.priceListId, 1);
     });
 
     test('404 maps to AppError.notFound', () async {
@@ -258,6 +314,73 @@ void main() {
       );
     });
   });
+
+  group('ProductRepositoryImpl.delete', () {
+    test('204 completes with no error (hard delete)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('', 204),
+      );
+
+      await expectLater(repository.delete(productId: 1), completes);
+    });
+
+    test('404 maps to AppError.notFound', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Product not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.delete(productId: 999),
+        throwsA(const AppError.notFound('Product not found')),
+      );
+    });
+
+    test(
+      'a referential-integrity rejection surfaces the server message '
+      '(FR-016b)',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': 'Product is referenced by existing sales orders',
+            }),
+            400,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        await expectLater(
+          () => repository.delete(productId: 1),
+          throwsA(
+            const AppError.server(
+              statusCode: 400,
+              message: 'Product is referenced by existing sales orders',
+            ),
+          ),
+        );
+      },
+    );
+
+    test('a connection failure maps to AppError.network', () async {
+      final repository = _repositoryWith(
+        (options) async => throw DioException(
+          requestOptions: options,
+          type: DioExceptionType.connectionError,
+          error: 'Connection refused',
+        ),
+      );
+
+      await expectLater(
+        () => repository.delete(productId: 1),
+        throwsA(isA<NetworkError>()),
+      );
+    });
+  });
+
   group('ProductRepositoryImpl.update', () {
     test('200 returns the updated Product', () async {
       final repository = _repositoryWith(
@@ -271,6 +394,38 @@ void main() {
       final product = await repository.update(productId: 1, name: 'Updated Widget');
 
       expect(product.name, 'Updated Widget');
+    });
+
+    test('sends sku in the request body when provided', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_productResponseJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.update(productId: 1, sku: 'SKU-NEW');
+
+      expect((captured!.data as Map)['sku'], 'SKU-NEW');
+    });
+
+    test('omits sku from the request body when not provided', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_productResponseJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.update(productId: 1, name: 'Updated Widget');
+
+      expect((captured!.data as Map).containsKey('sku'), isFalse);
     });
 
     test('404 maps to AppError.notFound', () async {
@@ -511,15 +666,6 @@ Map<String, Object?> _productResponseJson() => {
       'stock_verification': true,
       'deactivated': false,
       'comment': null,
-      'prices': [
-        {
-          'product_price_id': 10,
-          'price_list': {'price_list_id': 1, 'name': 'Retail', 'high_profit_margin': '0.30', 'low_profit_margin': '0.10'},
-          'price': '0',
-          'low_profit': '0',
-          'high_profit': '0',
-        },
-      ],
     };
 
 ProductRepositoryImpl _repositoryWith(

@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
@@ -56,12 +57,13 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final fieldsEnabled = !formState.submitting && !readOnly;
     final l10n = AppLocalizations.of(context)!;
+    final title = readOnly
+        ? l10n.viewUserTitle
+        : (_isEdit ? l10n.editUserTitle : l10n.newUserTitle);
 
     if (formState.loading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle),
-        ),
+        appBar: AppBar(title: Text(title)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -74,8 +76,15 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? l10n.editUserTitle : l10n.newUserTitle),
+        title: Text(title),
         actions: [
+          if (readOnly && canUpdate && widget.userId != null)
+            IconButton(
+              key: const Key('edit_user_button'),
+              icon: Icon(CatalogAction.edit.icon),
+              tooltip: l10n.editRecordTooltip,
+              onPressed: () => context.replace('/users/${widget.userId}'),
+            ),
           if (_isEdit && canUpdate && !widget.forceReadOnly)
             IconButton(
               key: const Key('recover_password_button'),

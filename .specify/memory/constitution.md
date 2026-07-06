@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.4.0
+Version change: 1.0.0 → 1.5.0
 Modified principles:
   - VI. Desktop/Web-First, Compact-Ready Layout — materially expanded with
     explicit cross-screen consistency requirements for shared data/list
@@ -14,15 +14,25 @@ Modified principles:
     left-to-right icon order, not just matching icons, across modules
     [1.3.1], then expanded with responsive multi-column form layout (shared
     form-grid, no full-width single-field stretch on wide displays) and
-    section-divider / side-by-side grouping guidance [1.4.0]
-Added sections: none (expansion of existing principle, not a new principle)
+    section-divider / side-by-side grouping guidance [1.4.0], then the
+    row-level action set was redefined from Create/View/Edit/Delete to
+    Create/Edit-only, with a whole-row click opening the read-only view
+    (superseding the dedicated View icon) and Delete/soft-delete moving
+    off the row entirely onto the record's own detail screen — reflecting
+    usage feedback that three row icons and a frozen identity column added
+    friction without reducing accidental-edit risk, and that a stray click
+    should default to safe (read-only), not to a mutable form [1.5.0]
+Added sections: none (redefinition of an existing principle's operative
+  rule, not a new principle)
 Removed sections: none
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (Constitution Check gate is
     generic/derived from this file; no edits needed)
   - .specify/templates/spec-template.md ✅ (no changes needed)
   - .specify/templates/tasks-template.md ✅ (no changes needed)
-Follow-up TODOs: none
+Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
+  updated to "switches|labels" once specs/007-catalog-ui-improvements-2
+  shipped the labels-in-place-of-prices change.
 -->
 
 # MBE-UI Constitution
@@ -152,15 +162,30 @@ multi-column forms.
   filter controls) using the shared filter pattern from `core/widgets/`. A
   catalog MUST NOT ship search-less, even if pagination alone could make
   it "usable."
-- Every catalog/list screen MUST expose its supported actions (Create,
-  View [the same form as Edit, rendered read-only], Edit, Delete/
-  soft-delete) as row/toolbar actions using one fixed icon **and** one
-  fixed left-to-right order per action across the whole app, sourced from
-  `core/widgets/`. A module MUST NOT invent its own icon for an action
-  another module already represents differently, and MUST NOT reorder
-  the action icons relative to other modules. A module MUST NOT render an
-  action a user lacks the RBAC privilege for (see Principle IV) rather
-  than disabling/hiding it inconsistently.
+- Every catalog/list screen's row MUST expose exactly one row-level
+  action, Edit, using one fixed icon sourced from `core/widgets/`. A
+  module MUST NOT invent its own icon for Edit, MUST NOT add other
+  row-level action icons (no per-row View or Delete icon), and MUST NOT
+  render the Edit icon for a user lacking the RBAC update privilege (see
+  Principle IV) rather than disabling/hiding it inconsistently.
+- Clicking anywhere on a row (outside the Edit icon) MUST open that
+  record's detail screen in **read-only** mode — the same form Edit
+  opens, rendered non-editable — never the editable form. This is the
+  row's sole non-icon affordance and MUST behave identically across
+  modules; a stray click MUST NOT risk an unintended edit.
+- The read-only detail screen MUST label itself as a "View" screen (not
+  an "Edit" title) and, when the current user holds the update privilege,
+  MUST offer an explicit control to switch to the editable form for the
+  same record; a user lacking that privilege MUST NOT be shown that
+  control.
+- Create remains a toolbar-only action (never a row action). Delete/
+  soft-delete MUST be surfaced on the record's own detail screen (e.g. a
+  warning-styled button in the form body for catalog records), not as a
+  row/app-bar icon on the list — a module MAY additionally keep a
+  delete affordance on its detail screen's app bar if a form-body warning
+  button does not fit that module's layout, but MUST NOT place it back on
+  the list row. A module MUST NOT render a delete action a user lacks the
+  RBAC delete privilege for (see Principle IV) rather than hiding it.
 - Horizontal scrolling on data tables MUST be avoided wherever possible.
   When a column's content would otherwise force horizontal scroll, the
   shared table component MUST truncate that cell's text with an ellipsis
@@ -257,4 +282,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.4.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-05
+**Version**: 1.5.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-05

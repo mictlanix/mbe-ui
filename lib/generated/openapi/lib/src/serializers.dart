@@ -37,6 +37,8 @@ import 'package:mbe_api_client/src/model/expense_create.dart';
 import 'package:mbe_api_client/src/model/expense_response.dart';
 import 'package:mbe_api_client/src/model/expense_update.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
+import 'package:mbe_api_client/src/model/high_profit.dart';
+import 'package:mbe_api_client/src/model/high_profit1.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/label_create.dart';
@@ -52,6 +54,7 @@ import 'package:mbe_api_client/src/model/list_response_payment_method_option_res
 import 'package:mbe_api_client/src/model/list_response_point_sale_response.dart';
 import 'package:mbe_api_client/src/model/list_response_price_list_response.dart';
 import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
+import 'package:mbe_api_client/src/model/list_response_product_price_response.dart';
 import 'package:mbe_api_client/src/model/list_response_production_site_response.dart';
 import 'package:mbe_api_client/src/model/list_response_sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/list_response_store_response.dart';
@@ -61,6 +64,8 @@ import 'package:mbe_api_client/src/model/list_response_vehicle_operator_response
 import 'package:mbe_api_client/src/model/list_response_vehicle_response.dart';
 import 'package:mbe_api_client/src/model/list_response_warehouse_response.dart';
 import 'package:mbe_api_client/src/model/location_inner.dart';
+import 'package:mbe_api_client/src/model/low_profit.dart';
+import 'package:mbe_api_client/src/model/low_profit1.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
@@ -69,6 +74,8 @@ import 'package:mbe_api_client/src/model/payment_method_option_update.dart';
 import 'package:mbe_api_client/src/model/point_sale_create.dart';
 import 'package:mbe_api_client/src/model/point_sale_response.dart';
 import 'package:mbe_api_client/src/model/point_sale_update.dart';
+import 'package:mbe_api_client/src/model/price.dart';
+import 'package:mbe_api_client/src/model/price1.dart';
 import 'package:mbe_api_client/src/model/price_list_create.dart';
 import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:mbe_api_client/src/model/price_list_update.dart';
@@ -77,7 +84,9 @@ import 'package:mbe_api_client/src/model/privilege_update.dart';
 import 'package:mbe_api_client/src/model/product_create.dart';
 import 'package:mbe_api_client/src/model/product_list_item.dart';
 import 'package:mbe_api_client/src/model/product_merge_request.dart';
+import 'package:mbe_api_client/src/model/product_price_create.dart';
 import 'package:mbe_api_client/src/model/product_price_response.dart';
+import 'package:mbe_api_client/src/model/product_price_update.dart';
 import 'package:mbe_api_client/src/model/product_response.dart';
 import 'package:mbe_api_client/src/model/product_update.dart';
 import 'package:mbe_api_client/src/model/production_site_create.dart';
@@ -145,6 +154,8 @@ part 'serializers.g.dart';
   ExpenseResponse,
   ExpenseUpdate,
   HTTPValidationError,
+  HighProfit,
+  HighProfit1,
   HighProfitMargin,
   HighProfitMargin1,
   LabelCreate,
@@ -160,6 +171,7 @@ part 'serializers.g.dart';
   ListResponsePointSaleResponse,
   ListResponsePriceListResponse,
   ListResponseProductListItem,
+  ListResponseProductPriceResponse,
   ListResponseProductionSiteResponse,
   ListResponseSatCatalogResponse,
   ListResponseStoreResponse,
@@ -169,6 +181,8 @@ part 'serializers.g.dart';
   ListResponseVehicleResponse,
   ListResponseWarehouseResponse,
   LocationInner,
+  LowProfit,
+  LowProfit1,
   LowProfitMargin,
   LowProfitMargin1,
   PaymentMethodOptionCreate,
@@ -177,6 +191,8 @@ part 'serializers.g.dart';
   PointSaleCreate,
   PointSaleResponse,
   PointSaleUpdate,
+  Price,
+  Price1,
   PriceListCreate,
   PriceListResponse,
   PriceListUpdate,
@@ -185,7 +201,9 @@ part 'serializers.g.dart';
   ProductCreate,
   ProductListItem,
   ProductMergeRequest,
+  ProductPriceCreate,
   ProductPriceResponse,
+  ProductPriceUpdate,
   ProductResponse,
   ProductUpdate,
   ProductionSiteCreate,
@@ -228,6 +246,10 @@ part 'serializers.g.dart';
   WarehouseUpdate,
 ])
 Serializers serializers = (_$serializers.toBuilder()
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType.nullable(int)]),
+        () => ListBuilder<int>(),
+      )
       ..addBuilderFactory(
         const FullType(BuiltMap, [FullType(String), FullType(String)]),
         () => MapBuilder<String, String>(),

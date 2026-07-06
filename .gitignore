@@ -18,6 +18,9 @@ lib/generated/openapi/test/
 .idea/
 *.iml
 
+# Local integration-test credentials (see .env.template)
+.env
+
 
 
 # Flutter repo-specific

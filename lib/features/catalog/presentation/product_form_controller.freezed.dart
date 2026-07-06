@@ -20,6 +20,7 @@ mixin _$ProductFormState {
   int? get productId => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get sku => throw _privateConstructorUsedError;
   String? get brand => throw _privateConstructorUsedError;
   String? get model => throw _privateConstructorUsedError;
   String? get barCode => throw _privateConstructorUsedError;
@@ -51,7 +52,6 @@ mixin _$ProductFormState {
   int? get supplierId => throw _privateConstructorUsedError;
   String? get supplierName => throw _privateConstructorUsedError;
   List<int> get labelIds => throw _privateConstructorUsedError;
-  List<ProductPrice> get prices => throw _privateConstructorUsedError;
   String? get taxRate => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   bool get stockable => throw _privateConstructorUsedError;
@@ -60,10 +60,14 @@ mixin _$ProductFormState {
   bool get purchasable => throw _privateConstructorUsedError;
   bool get salable => throw _privateConstructorUsedError;
   bool get invoiceable => throw _privateConstructorUsedError;
-  bool get deactivated => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
+
+  /// `true` after a successful hard [ProductFormController.delete] call
+  /// (FR-016a) — the screen pops back to the list on this, mirroring
+  /// [saved].
+  bool get deleted => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
   /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
@@ -91,6 +95,7 @@ abstract class $ProductFormStateCopyWith<$Res> {
     int? productId,
     String code,
     String name,
+    String sku,
     String? brand,
     String? model,
     String? barCode,
@@ -106,7 +111,6 @@ abstract class $ProductFormStateCopyWith<$Res> {
     int? supplierId,
     String? supplierName,
     List<int> labelIds,
-    List<ProductPrice> prices,
     String? taxRate,
     String? comment,
     bool stockable,
@@ -115,10 +119,10 @@ abstract class $ProductFormStateCopyWith<$Res> {
     bool purchasable,
     bool salable,
     bool invoiceable,
-    bool deactivated,
     bool loading,
     bool submitting,
     bool saved,
+    bool deleted,
     String? error,
     String? errorDetail,
     Map<String, String> fieldErrors,
@@ -143,6 +147,7 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? productId = freezed,
     Object? code = null,
     Object? name = null,
+    Object? sku = null,
     Object? brand = freezed,
     Object? model = freezed,
     Object? barCode = freezed,
@@ -158,7 +163,6 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? supplierId = freezed,
     Object? supplierName = freezed,
     Object? labelIds = null,
-    Object? prices = null,
     Object? taxRate = freezed,
     Object? comment = freezed,
     Object? stockable = null,
@@ -167,10 +171,10 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? purchasable = null,
     Object? salable = null,
     Object? invoiceable = null,
-    Object? deactivated = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
+    Object? deleted = null,
     Object? error = freezed,
     Object? errorDetail = freezed,
     Object? fieldErrors = null,
@@ -188,6 +192,10 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            sku: null == sku
+                ? _value.sku
+                : sku // ignore: cast_nullable_to_non_nullable
                       as String,
             brand: freezed == brand
                 ? _value.brand
@@ -249,10 +257,6 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
                 ? _value.labelIds
                 : labelIds // ignore: cast_nullable_to_non_nullable
                       as List<int>,
-            prices: null == prices
-                ? _value.prices
-                : prices // ignore: cast_nullable_to_non_nullable
-                      as List<ProductPrice>,
             taxRate: freezed == taxRate
                 ? _value.taxRate
                 : taxRate // ignore: cast_nullable_to_non_nullable
@@ -285,10 +289,6 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
                 ? _value.invoiceable
                 : invoiceable // ignore: cast_nullable_to_non_nullable
                       as bool,
-            deactivated: null == deactivated
-                ? _value.deactivated
-                : deactivated // ignore: cast_nullable_to_non_nullable
-                      as bool,
             loading: null == loading
                 ? _value.loading
                 : loading // ignore: cast_nullable_to_non_nullable
@@ -300,6 +300,10 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
             saved: null == saved
                 ? _value.saved
                 : saved // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            deleted: null == deleted
+                ? _value.deleted
+                : deleted // ignore: cast_nullable_to_non_nullable
                       as bool,
             error: freezed == error
                 ? _value.error
@@ -332,6 +336,7 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     int? productId,
     String code,
     String name,
+    String sku,
     String? brand,
     String? model,
     String? barCode,
@@ -347,7 +352,6 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     int? supplierId,
     String? supplierName,
     List<int> labelIds,
-    List<ProductPrice> prices,
     String? taxRate,
     String? comment,
     bool stockable,
@@ -356,10 +360,10 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     bool purchasable,
     bool salable,
     bool invoiceable,
-    bool deactivated,
     bool loading,
     bool submitting,
     bool saved,
+    bool deleted,
     String? error,
     String? errorDetail,
     Map<String, String> fieldErrors,
@@ -383,6 +387,7 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? productId = freezed,
     Object? code = null,
     Object? name = null,
+    Object? sku = null,
     Object? brand = freezed,
     Object? model = freezed,
     Object? barCode = freezed,
@@ -398,7 +403,6 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? supplierId = freezed,
     Object? supplierName = freezed,
     Object? labelIds = null,
-    Object? prices = null,
     Object? taxRate = freezed,
     Object? comment = freezed,
     Object? stockable = null,
@@ -407,10 +411,10 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? purchasable = null,
     Object? salable = null,
     Object? invoiceable = null,
-    Object? deactivated = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
+    Object? deleted = null,
     Object? error = freezed,
     Object? errorDetail = freezed,
     Object? fieldErrors = null,
@@ -428,6 +432,10 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
         name: null == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        sku: null == sku
+            ? _value.sku
+            : sku // ignore: cast_nullable_to_non_nullable
                   as String,
         brand: freezed == brand
             ? _value.brand
@@ -489,10 +497,6 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
             ? _value._labelIds
             : labelIds // ignore: cast_nullable_to_non_nullable
                   as List<int>,
-        prices: null == prices
-            ? _value._prices
-            : prices // ignore: cast_nullable_to_non_nullable
-                  as List<ProductPrice>,
         taxRate: freezed == taxRate
             ? _value.taxRate
             : taxRate // ignore: cast_nullable_to_non_nullable
@@ -525,10 +529,6 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
             ? _value.invoiceable
             : invoiceable // ignore: cast_nullable_to_non_nullable
                   as bool,
-        deactivated: null == deactivated
-            ? _value.deactivated
-            : deactivated // ignore: cast_nullable_to_non_nullable
-                  as bool,
         loading: null == loading
             ? _value.loading
             : loading // ignore: cast_nullable_to_non_nullable
@@ -540,6 +540,10 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
         saved: null == saved
             ? _value.saved
             : saved // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        deleted: null == deleted
+            ? _value.deleted
+            : deleted // ignore: cast_nullable_to_non_nullable
                   as bool,
         error: freezed == error
             ? _value.error
@@ -565,6 +569,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.productId,
     this.code = '',
     this.name = '',
+    this.sku = '',
     this.brand,
     this.model,
     this.barCode,
@@ -580,7 +585,6 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.supplierId,
     this.supplierName,
     final List<int> labelIds = const <int>[],
-    final List<ProductPrice> prices = const <ProductPrice>[],
     this.taxRate,
     this.comment,
     this.stockable = false,
@@ -589,15 +593,14 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.purchasable = false,
     this.salable = false,
     this.invoiceable = false,
-    this.deactivated = false,
     this.loading = false,
     this.submitting = false,
     this.saved = false,
+    this.deleted = false,
     this.error,
     this.errorDetail,
     final Map<String, String> fieldErrors = const <String, String>{},
   }) : _labelIds = labelIds,
-       _prices = prices,
        _fieldErrors = fieldErrors;
 
   @override
@@ -608,6 +611,9 @@ class _$ProductFormStateImpl implements _ProductFormState {
   @override
   @JsonKey()
   final String name;
+  @override
+  @JsonKey()
+  final String sku;
   @override
   final String? brand;
   @override
@@ -664,15 +670,6 @@ class _$ProductFormStateImpl implements _ProductFormState {
     return EqualUnmodifiableListView(_labelIds);
   }
 
-  final List<ProductPrice> _prices;
-  @override
-  @JsonKey()
-  List<ProductPrice> get prices {
-    if (_prices is EqualUnmodifiableListView) return _prices;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_prices);
-  }
-
   @override
   final String? taxRate;
   @override
@@ -697,9 +694,6 @@ class _$ProductFormStateImpl implements _ProductFormState {
   final bool invoiceable;
   @override
   @JsonKey()
-  final bool deactivated;
-  @override
-  @JsonKey()
   final bool loading;
   @override
   @JsonKey()
@@ -707,6 +701,13 @@ class _$ProductFormStateImpl implements _ProductFormState {
   @override
   @JsonKey()
   final bool saved;
+
+  /// `true` after a successful hard [ProductFormController.delete] call
+  /// (FR-016a) — the screen pops back to the list on this, mirroring
+  /// [saved].
+  @override
+  @JsonKey()
+  final bool deleted;
   @override
   final String? error;
 
@@ -727,7 +728,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
 
   @override
   String toString() {
-    return 'ProductFormState(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementDisplayText: $unitOfMeasurementDisplayText, satKeyCode: $satKeyCode, satKeyDisplayText: $satKeyDisplayText, supplierId: $supplierId, supplierName: $supplierName, labelIds: $labelIds, prices: $prices, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, deactivated: $deactivated, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'ProductFormState(productId: $productId, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementDisplayText: $unitOfMeasurementDisplayText, satKeyCode: $satKeyCode, satKeyDisplayText: $satKeyDisplayText, supplierId: $supplierId, supplierName: $supplierName, labelIds: $labelIds, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -739,6 +740,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
                 other.productId == productId) &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.sku, sku) || other.sku == sku) &&
             (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.model, model) || other.model == model) &&
             (identical(other.barCode, barCode) || other.barCode == barCode) &&
@@ -770,7 +772,6 @@ class _$ProductFormStateImpl implements _ProductFormState {
             (identical(other.supplierName, supplierName) ||
                 other.supplierName == supplierName) &&
             const DeepCollectionEquality().equals(other._labelIds, _labelIds) &&
-            const DeepCollectionEquality().equals(other._prices, _prices) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.comment, comment) || other.comment == comment) &&
             (identical(other.stockable, stockable) ||
@@ -784,12 +785,11 @@ class _$ProductFormStateImpl implements _ProductFormState {
             (identical(other.salable, salable) || other.salable == salable) &&
             (identical(other.invoiceable, invoiceable) ||
                 other.invoiceable == invoiceable) &&
-            (identical(other.deactivated, deactivated) ||
-                other.deactivated == deactivated) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
             (identical(other.saved, saved) || other.saved == saved) &&
+            (identical(other.deleted, deleted) || other.deleted == deleted) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.errorDetail, errorDetail) ||
                 other.errorDetail == errorDetail) &&
@@ -805,6 +805,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
     productId,
     code,
     name,
+    sku,
     brand,
     model,
     barCode,
@@ -820,7 +821,6 @@ class _$ProductFormStateImpl implements _ProductFormState {
     supplierId,
     supplierName,
     const DeepCollectionEquality().hash(_labelIds),
-    const DeepCollectionEquality().hash(_prices),
     taxRate,
     comment,
     stockable,
@@ -829,10 +829,10 @@ class _$ProductFormStateImpl implements _ProductFormState {
     purchasable,
     salable,
     invoiceable,
-    deactivated,
     loading,
     submitting,
     saved,
+    deleted,
     error,
     errorDetail,
     const DeepCollectionEquality().hash(_fieldErrors),
@@ -855,6 +855,7 @@ abstract class _ProductFormState implements ProductFormState {
     final int? productId,
     final String code,
     final String name,
+    final String sku,
     final String? brand,
     final String? model,
     final String? barCode,
@@ -870,7 +871,6 @@ abstract class _ProductFormState implements ProductFormState {
     final int? supplierId,
     final String? supplierName,
     final List<int> labelIds,
-    final List<ProductPrice> prices,
     final String? taxRate,
     final String? comment,
     final bool stockable,
@@ -879,10 +879,10 @@ abstract class _ProductFormState implements ProductFormState {
     final bool purchasable,
     final bool salable,
     final bool invoiceable,
-    final bool deactivated,
     final bool loading,
     final bool submitting,
     final bool saved,
+    final bool deleted,
     final String? error,
     final String? errorDetail,
     final Map<String, String> fieldErrors,
@@ -894,6 +894,8 @@ abstract class _ProductFormState implements ProductFormState {
   String get code;
   @override
   String get name;
+  @override
+  String get sku;
   @override
   String? get brand;
   @override
@@ -941,8 +943,6 @@ abstract class _ProductFormState implements ProductFormState {
   @override
   List<int> get labelIds;
   @override
-  List<ProductPrice> get prices;
-  @override
   String? get taxRate;
   @override
   String? get comment;
@@ -959,13 +959,17 @@ abstract class _ProductFormState implements ProductFormState {
   @override
   bool get invoiceable;
   @override
-  bool get deactivated;
-  @override
   bool get loading;
   @override
   bool get submitting;
   @override
   bool get saved;
+
+  /// `true` after a successful hard [ProductFormController.delete] call
+  /// (FR-016a) — the screen pops back to the list on this, mirroring
+  /// [saved].
+  @override
+  bool get deleted;
   @override
   String? get error;
 

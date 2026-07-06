@@ -13,6 +13,7 @@ part 'product_price_response.g.dart';
 ///
 /// Properties:
 /// * [productPriceId] 
+/// * [product] 
 /// * [priceList] 
 /// * [price] 
 /// * [lowProfit] 
@@ -21,6 +22,9 @@ part 'product_price_response.g.dart';
 abstract class ProductPriceResponse implements Built<ProductPriceResponse, ProductPriceResponseBuilder> {
   @BuiltValueField(wireName: r'product_price_id')
   int get productPriceId;
+
+  @BuiltValueField(wireName: r'product')
+  int get product;
 
   @BuiltValueField(wireName: r'price_list')
   PriceListResponse get priceList;
@@ -60,6 +64,11 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
     yield r'product_price_id';
     yield serializers.serialize(
       object.productPriceId,
+      specifiedType: const FullType(int),
+    );
+    yield r'product';
+    yield serializers.serialize(
+      object.product,
       specifiedType: const FullType(int),
     );
     yield r'price_list';
@@ -111,6 +120,13 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
             specifiedType: const FullType(int),
           ) as int;
           result.productPriceId = valueDes;
+          break;
+        case r'product':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(int),
+          ) as int;
+          result.product = valueDes;
           break;
         case r'price_list':
           final valueDes = serializers.deserialize(

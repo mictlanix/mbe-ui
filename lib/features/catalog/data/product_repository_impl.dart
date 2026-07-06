@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +35,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
-    int? label,
+    List<int> labels = const [],
     int skip = 0,
     int limit = 20,
   }) async {
@@ -45,7 +46,7 @@ class ProductRepositoryImpl implements ProductRepository {
         stockable: stockable,
         salable: salable,
         purchasable: purchasable,
-        label: label,
+        label: labels.isEmpty ? null : BuiltList<int>(labels),
         skip: skip,
         limit: limit,
       );
@@ -75,10 +76,22 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
+  Future<void> delete({required int productId}) async {
+    try {
+      await _api.deleteProductApiV1ProductsProductIdDelete(
+        productId: productId,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
   Future<Product> create({
     required String code,
     required String name,
     required String unitOfMeasurement,
+    String? sku,
     String? brand,
     String? model,
     String? barCode,
@@ -102,6 +115,7 @@ class ProductRepositoryImpl implements ProductRepository {
             ..code = code
             ..name = name
             ..unitOfMeasurement = unitOfMeasurement
+            ..sku = sku
             ..brand = brand
             ..model = model
             ..barCode = barCode
@@ -133,6 +147,7 @@ class ProductRepositoryImpl implements ProductRepository {
     String? code,
     String? name,
     String? unitOfMeasurement,
+    String? sku,
     String? brand,
     String? model,
     String? barCode,
@@ -157,6 +172,7 @@ class ProductRepositoryImpl implements ProductRepository {
           if (code != null) b.code = code;
           if (name != null) b.name = name;
           if (unitOfMeasurement != null) b.unitOfMeasurement = unitOfMeasurement;
+          if (sku != null) b.sku = sku;
           if (brand != null) b.brand = brand;
           if (model != null) b.model = model;
           if (barCode != null) b.barCode = barCode;
