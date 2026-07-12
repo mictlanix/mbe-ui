@@ -1,7 +1,17 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.5.0
+Version change: 1.0.0 → 1.6.0
 Modified principles:
+  - III. Contract-Driven API Integration — materially expanded with an
+    explicit repo-boundary rule: mbe-ui MUST NOT directly edit mbe-api's (or
+    any sibling repo's) source, even when both are checked out locally in
+    the same working session; a needed backend change MUST be filed as an
+    mbe-api issue and recorded as an external dependency in the feature's
+    plan instead. Prompted by specs/008-merge-products, where an agent
+    working across both repos patched mbe-api directly to unblock a UI
+    requirement (SKU on the products-list projection) before being
+    corrected — codifying the correction so it doesn't have to be
+    re-taught per session [1.6.0]
   - VI. Desktop/Web-First, Compact-Ready Layout — materially expanded with
     explicit cross-screen consistency requirements for shared data/list
     widgets (hover, borders, header alignment, mandatory pagination) [1.1.0],
@@ -30,9 +40,13 @@ Templates requiring updates:
     generic/derived from this file; no edits needed)
   - .specify/templates/spec-template.md ✅ (no changes needed)
   - .specify/templates/tasks-template.md ✅ (no changes needed)
+  - DESIGN.md §3.3 ✅ updated with the same repo-boundary note ahead of this
+    constitution amendment, per the Governance section's amendment process.
 Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
   updated to "switches|labels" once specs/007-catalog-ui-improvements-2
-  shipped the labels-in-place-of-prices change.
+  shipped the labels-in-place-of-prices change. specs/008-merge-products'
+  mbe-api dependency (mictlanix/mbe-api#76, sku on ProductListItem) remains
+  open and unaffected by this amendment.
 -->
 
 # MBE-UI Constitution
@@ -91,9 +105,23 @@ DTOs for a resource that already has a published schema are NOT permitted.
   widget rather than handled ad hoc per screen.
 - Codegen MUST be re-run whenever mbe-api's OpenAPI spec changes; generated
   files MUST NOT be hand-edited.
+- mbe-ui MUST NOT directly modify mbe-api's source (or any other sibling
+  repository), even when a local checkout makes this technically possible
+  within the same working session. When a feature needs a backend change —
+  a new/changed endpoint, a schema or response-projection field, anything
+  on the mbe-api side — the feature's plan MUST record it as an external
+  dependency (Complexity Tracking or an Assumptions/research entry) and a
+  corresponding issue MUST be filed against mbe-api describing the exact
+  change needed, instead of patching it in place from an mbe-ui session.
+  The mbe-ui-side consumption (codegen + domain-entity mapping) proceeds
+  once that change ships upstream and the client is regenerated.
 
 **Rationale**: keeps client models in sync with a backend under active
 development and gives consistent error UX across modules (DESIGN.md §3.1-§3.4).
+The repo-boundary rule keeps mbe-api's own review/release process intact —
+a cross-repo edit made from an mbe-ui session bypasses whatever process
+mbe-api's own maintainers use to accept changes, and generated files edited
+that way would be silently overwritten by the next real regeneration anyway.
 
 ### IV. Deny-by-Default RBAC
 
@@ -264,6 +292,9 @@ document representation (DESIGN.md §3.5-§3.6).
   feature's plan MUST include: re-running codegen, updating the
   domain-entity mapping, and — if RBAC-relevant — updating the
   `SystemObject` table in `core/`.
+- Whenever a feature *needs* an mbe-api change that doesn't exist yet, file
+  an mbe-api issue and record it as a plan dependency — never patch
+  mbe-api's source directly from an mbe-ui session (§III).
 
 ## Governance
 
@@ -282,4 +313,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.5.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-05
+**Version**: 1.6.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-12
