@@ -14,11 +14,12 @@ This feature adds no persisted entities and no new domain entity for the catalog
 | `name` | Suggestion title + selected-field display text. |
 | `code` | Suggestion subtitle. |
 | `model` | Suggestion subtitle. |
+| `sku` | Suggestion subtitle (mictlanix/mbe-api#76). |
 | `brand` | Optional suggestion subtitle detail. |
 | `photo` | Resolved thumbnail URL for the suggestion leading image. |
 | `deactivated` | Not filtered on — both pickers surface products in any state. |
 
-> **SKU** is currently absent from this projection (see research §3). It is searchable server-side but not yet shown in the row — tracked via [mictlanix/mbe-api#76](https://github.com/mictlanix/mbe-api/issues/76); add a `sku` field here once that lands and the client is regenerated.
+> **SKU** was initially absent from this projection (see research §3) — tracked via [mictlanix/mbe-api#76](https://github.com/mictlanix/mbe-api/issues/76). It has since landed; the domain `ProductListItem` now carries `sku`, searchable and displayed in the suggestion row alongside code and model.
 
 ### `ProductMergeRequest` (generated DTO, existing)
 

@@ -608,6 +608,72 @@ abstract class AppLocalizations {
   /// **'Inactive'**
   String get statusInactiveBadge;
 
+  /// No description provided for @mergeProductsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Products'**
+  String get mergeProductsTitle;
+
+  /// No description provided for @mergeProductsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge products'**
+  String get mergeProductsTooltip;
+
+  /// No description provided for @mergeProductLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get mergeProductLabel;
+
+  /// No description provided for @duplicatedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicatedLabel;
+
+  /// No description provided for @mergeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get mergeButton;
+
+  /// No description provided for @mergeBackTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get mergeBackTooltip;
+
+  /// No description provided for @mergeBothRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a product and a duplicate to continue.'**
+  String get mergeBothRequiredMessage;
+
+  /// No description provided for @mergeSameProductMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t merge a product with itself.'**
+  String get mergeSameProductMessage;
+
+  /// No description provided for @mergeConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge products permanently?'**
+  String get mergeConfirmTitle;
+
+  /// No description provided for @mergeConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to merge \"{duplicateName}\" into \"{canonicalName}\"? This cannot be undone — \"{duplicateName}\" will be permanently deleted and its history transferred to \"{canonicalName}\".'**
+  String mergeConfirmMessage(String canonicalName, String duplicateName);
+
+  /// No description provided for @mergeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Products merged successfully.'**
+  String get mergeSuccess;
+
   /// No description provided for @editUserTitle.
   ///
   /// In en, this message translates to:

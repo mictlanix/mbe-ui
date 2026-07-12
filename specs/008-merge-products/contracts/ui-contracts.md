@@ -39,7 +39,7 @@ edge-to-edge single fields):
   - `optionsBuilder(query)` → if `query.trim().length < 3` return `const []`; else
     `(await productRepository.list(search: query.trim(), deactivated: null, limit: 15)).items`
   - `displayStringForOption` = product name
-  - `optionImageUrl` = `(p) => p.photo`; `optionSubtitle` = code/model (e.g. `"${p.code} · ${p.model ?? ''}"`) — **SKU pending**: once [mictlanix/mbe-api#76](https://github.com/mictlanix/mbe-api/issues/76) lands and `ProductListItem` carries `sku`, extend this to `"${p.code} · ${p.model ?? ''} · ${p.sku ?? ''}"` (research §3)
+  - `optionImageUrl` = `(p) => p.photo`; `optionSubtitle` = code, model, and SKU joined with " · ", omitting any blank part ([mictlanix/mbe-api#76](https://github.com/mictlanix/mbe-api/issues/76) resolved this — `ProductListItem` now carries `sku`; research §3)
   - `onSelected` = `controller.canonicalSelected`
 - **"Duplicate" picker** (`Key('merge_duplicate_field')`): same config; `label` =
   `l10n.duplicatedLabel` ("Duplicado" / "Duplicate"); `onSelected` = `controller.duplicateSelected`.

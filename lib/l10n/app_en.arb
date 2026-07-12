@@ -266,6 +266,44 @@
   "statusInactiveBadge": "Inactive",
   "@statusInactiveBadge": {},
 
+  "mergeProductsTitle": "Merge Products",
+  "@mergeProductsTitle": {},
+
+  "mergeProductsTooltip": "Merge products",
+  "@mergeProductsTooltip": {},
+
+  "mergeProductLabel": "Product",
+  "@mergeProductLabel": {},
+
+  "duplicatedLabel": "Duplicate",
+  "@duplicatedLabel": {},
+
+  "mergeButton": "Merge",
+  "@mergeButton": {},
+
+  "mergeBackTooltip": "Back",
+  "@mergeBackTooltip": {},
+
+  "mergeBothRequiredMessage": "Select a product and a duplicate to continue.",
+  "@mergeBothRequiredMessage": {},
+
+  "mergeSameProductMessage": "You can't merge a product with itself.",
+  "@mergeSameProductMessage": {},
+
+  "mergeConfirmTitle": "Merge products permanently?",
+  "@mergeConfirmTitle": {},
+
+  "mergeConfirmMessage": "Are you sure you want to merge \"{duplicateName}\" into \"{canonicalName}\"? This cannot be undone — \"{duplicateName}\" will be permanently deleted and its history transferred to \"{canonicalName}\".",
+  "@mergeConfirmMessage": {
+    "placeholders": {
+      "canonicalName": {"type": "String"},
+      "duplicateName": {"type": "String"}
+    }
+  },
+
+  "mergeSuccess": "Products merged successfully.",
+  "@mergeSuccess": {},
+
   "editUserTitle": "Edit User",
   "@editUserTitle": {},
 

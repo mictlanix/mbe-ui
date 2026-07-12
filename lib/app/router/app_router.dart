@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart'
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
@@ -65,6 +66,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ProductDetailScreen(),
       ),
       GoRoute(
+        path: '/products/merge',
+        builder: (context, state) => const MergeProductsScreen(),
+      ),
+      GoRoute(
         path: '/products/:productId',
         builder: (context, state) => ProductDetailScreen(
           productId: int.parse(state.pathParameters['productId']!),
@@ -113,18 +118,30 @@ String? _redirect(Ref ref, GoRouterState state) {
 
   if (state.matchedLocation == '/auth/login') return '/';
 
-  final requiredObject = _routeSystemObject(state.matchedLocation);
-  if (requiredObject != null &&
-      !ref.read(accessControlProvider).can(requiredObject, AccessRight.read)) {
+  final gate = _routeGate(state.matchedLocation);
+  if (gate != null && !ref.read(accessControlProvider).can(gate.object, gate.right)) {
     return '/';
   }
   return null;
 }
 
-/// `SystemObject` (Read) gate for a route, per contracts/routes.md. Returns
-/// `null` for unguarded routes.
-SystemObject? _routeSystemObject(String location) {
-  if (location.startsWith('/users')) return SystemObject.users;
-  if (location.startsWith('/products')) return SystemObject.products;
+/// The `(SystemObject, AccessRight)` gate for a route, per
+/// contracts/routes.md. Returns `null` for unguarded routes. Most routes
+/// gate on `AccessRight.read` (the convention — a route's own screen then
+/// further restricts create/update/delete actions); `/products/merge` is a
+/// deliberate exception, since its only purpose is the create-gated merge
+/// action mbe-api itself enforces (specs/008-merge-products research.md §5,
+/// plan.md §IV design note) — gating it on Read would expose a screen a
+/// Read-only user could never successfully use.
+({SystemObject object, AccessRight right})? _routeGate(String location) {
+  if (location == '/products/merge') {
+    return (object: SystemObject.productsMerge, right: AccessRight.create);
+  }
+  if (location.startsWith('/users')) {
+    return (object: SystemObject.users, right: AccessRight.read);
+  }
+  if (location.startsWith('/products')) {
+    return (object: SystemObject.products, right: AccessRight.read);
+  }
   return null;
 }

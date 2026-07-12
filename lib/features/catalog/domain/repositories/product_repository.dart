@@ -125,6 +125,24 @@ abstract class ProductRepository {
   /// §3, contracts/mbe-api-products-photo.md). Throws `NotFoundError` on
   /// `404`.
   Future<Product> removePhoto({required int productId});
+
+  /// `POST /api/v1/products/merge` (specs/008-merge-products FR-008).
+  /// Merges [duplicateId] into [productId]: mbe-api remaps the duplicate's
+  /// transactional references (sales/purchase order details, inventory
+  /// receipt/issue/transfer details, lot-serial tracking, …) and its labels
+  /// onto the canonical product, deletes the duplicate's price and label
+  /// rows, then permanently deletes the duplicate. Irreversible; there is
+  /// no undo.
+  ///
+  /// Returns normally on `204 No Content`. Throws:
+  /// - `ServerError(statusCode: 400, ...)` if [productId] == [duplicateId]
+  ///   ("Cannot merge a product with itself") — a backstop; the UI blocks
+  ///   this client-side (FR-006).
+  /// - `NotFoundError` on `404` if the canonical or duplicate product no
+  ///   longer exists (FR-011).
+  /// - `ServerError` / `NetworkError` on other backend/transport failures
+  ///   (FR-011) — surfaced with mbe-api's `detail` message where present.
+  Future<void> mergeProducts({required int productId, required int duplicateId});
 }
 
 /// `ListResponse[ProductListItem]` (`items`, `total`) — used by

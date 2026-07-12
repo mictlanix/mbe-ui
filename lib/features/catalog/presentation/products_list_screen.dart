@@ -34,12 +34,20 @@ class ProductsListScreen extends ConsumerWidget {
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.products, AccessRight.create);
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
+    final canMerge = access.can(SystemObject.productsMerge, AccessRight.create);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.productsTitle),
         actions: [
+          if (canMerge)
+            IconButton(
+              key: const Key('merge_products_button'),
+              icon: const Icon(Icons.merge),
+              tooltip: l10n.mergeProductsTooltip,
+              onPressed: () => context.push('/products/merge'),
+            ),
           if (canCreate)
             IconButton(
               key: const Key('new_product_button'),

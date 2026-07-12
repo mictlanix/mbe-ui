@@ -29,10 +29,11 @@ flutter run -d chrome   # or your usual device/flavor
 ## US2 — Search-as-you-type pickers (P2)
 
 4. In "Producto", type 1–2 characters. → No suggestions yet (min-length gate).
-5. Type ≥3 characters of a product's name/code/model/brand. → Suggestions list
-   shows matching products, each with a photo thumbnail + name and code/model.
-6. Type a term that matches only by **SKU**. → The product still appears (SKU is
-   searched server-side), though the row itself shows name/code/model (not SKU).
+5. Type ≥3 characters of a product's name/code/model/brand/SKU. → Suggestions
+   list shows matching products, each with a photo thumbnail + name and
+   code/model/SKU.
+6. Type a term that matches only by **SKU**. → The product appears, and its SKU
+   is visible in the suggestion row (mictlanix/mbe-api#76).
 7. Select a product. → The field shows the product; only one product can occupy
    the field. Clear it and confirm it returns to empty and is searchable again.
 8. Type gibberish that matches nothing. → The picker shows a no-results state, not
@@ -64,13 +65,45 @@ flutter run -d chrome   # or your usual device/flavor
 16. Re-open the Merge screen. → It opens empty (selections were not retained),
     so a second merge is a fresh, deliberate action.
 
-## Automated coverage (for reference)
+## Automated coverage (as implemented)
 
-- **Widget** (`MergeProductsScreen`): picker selection, both-required and
-  self-merge guards, confirm-dialog gate, in-flight disable, success→pop,
-  error→banner with preserved selections. `CatalogEntityPicker`: photo/subtitle
-  option rendering when the new params are provided; unchanged text-only path otherwise.
-- **Unit** (`MergeProductsController`, `ProductRepositoryImpl.mergeProducts`):
-  state transitions and `AppError` mapping (400 self-merge, 404 not-found, other),
-  with the API client mocked.
-- **Integration**: the US1 golden path against a test mbe-api.
+Steps 1–16 above are exercised by the automated suite below rather than a live
+manual run — this repo has no running mbe-api instance or seeded test
+credentials in CI/dev-container contexts, so `test/integration/*` is
+skip-gated on `--dart-define` credentials (matching every other integration
+test in this repo). The widget/unit tests below build real widget trees via
+`flutter_test` and directly assert the same outcomes steps 1–16 describe:
+
+- **Widget** (`test/widget/features/catalog/merge_products_screen_test.dart`):
+  selection → confirm → merge → success SnackBar → navigate to `/products`
+  (step 13–16); in-flight disable (step 13); back affordance without merging;
+  confirm-dialog cancel keeps selections (step 11); both-required and
+  self-merge guards block submit with the right message (steps 9–10); a
+  mocked server rejection surfaces the error banner with both selections
+  preserved (step 12); min-length gate, photo+code/model/SKU suggestions
+  including a deactivated product, no-results state, single-select+clear
+  (steps 4–8).
+- **Widget** (`test/widget/core/widgets/catalog_entity_picker_test.dart`):
+  the `CatalogEntityPicker` photo/subtitle rendering extension in isolation,
+  plus its unchanged text-only path for existing callers.
+- **Widget** (`test/widget/features/catalog/products_list_screen_test.dart`):
+  Merge entry point shown/hidden by `productsMerge`/create (step 1, step 3).
+- **Unit** (`test/unit/app/router/app_router_test.dart`): `/products/merge`
+  reachable with the privilege, redirected to `/` without it (step 2); a
+  regression check that `/users`/`/products` still gate on Read after the
+  routing refactor.
+- **Unit** (`test/unit/features/catalog/merge_products_controller_test.dart`,
+  `.../product_repository_impl_test.dart`): state transitions and `AppError`
+  mapping (400 self-merge, 404 not-found, network), API client mocked.
+- **Integration** (`test/integration/product_merge_flow_test.dart`): the US1
+  golden path (steps 13–14) plus self-merge (400) and not-found (404)
+  scenarios against a real mbe-api — skipped here, runnable with
+  `--dart-define=MBE_MERGE_TEST_USERNAME=... --dart-define=MBE_MERGE_TEST_PASSWORD=...`
+  against a seeded instance.
+
+Full suite: `flutter test` → 271 passed, 33 skipped (pre-existing + this
+feature's integration tests, all requiring a live mbe-api), 0 failed.
+`dart analyze lib test` → 0 issues in this feature's files (1 pre-existing,
+unrelated `info` elsewhere). Step 15 (transactional-reference remapping) is a
+backend guarantee already covered by mbe-api's own test suite, not
+re-verified from the UI.

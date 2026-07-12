@@ -230,6 +230,22 @@ class ProductRepositoryImpl implements ProductRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<void> mergeProducts({
+    required int productId,
+    required int duplicateId,
+  }) async {
+    try {
+      await _api.mergeProductsApiV1ProductsMergePost(
+        productMergeRequest: ProductMergeRequest((b) => b
+          ..productId = productId
+          ..duplicateId = duplicateId),
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
 }
 
 /// Mirrors the generated client's own response-deserialization pattern
