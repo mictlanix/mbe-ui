@@ -4,6 +4,15 @@
   "branch": "007-catalog-ui-improvements-2",
   "selectedAt": "2026-07-05T23:24:48.209Z",
   "currentStep": "specify",
-  "status": "draft",
-  "history": []
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-12T18:27:19.942Z"
+    }
+  ],
+  "telemetryInstanceId": "7f11a83c-07e4-4d13-95d8-2954101cfa37"
 }
