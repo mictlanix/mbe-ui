@@ -21,8 +21,7 @@ final allLabelsProvider = FutureProvider<List<LabelItem>>((ref) async {
 });
 
 class LabelRepositoryImpl implements LabelRepository {
-  LabelRepositoryImpl(Dio dio)
-      : _api = LabelsApi(dio, standardSerializers);
+  LabelRepositoryImpl(Dio dio) : _api = LabelsApi(dio, standardSerializers);
 
   final LabelsApi _api;
 
@@ -39,11 +38,12 @@ class LabelRepositoryImpl implements LabelRepository {
         limit: limit,
       );
       final result = response.data;
+
       if (result == null) throw const AppError.server();
-      return LabelListResult(
-        items: result.items.map(LabelItem.fromResponse).toList(),
-        total: result.total,
-      );
+
+      final labelItemsList = result.items.map(LabelItem.fromResponse).toList();
+      labelItemsList.sort((a, b) => a.name.compareTo(b.name));
+      return LabelListResult(items: labelItemsList, total: result.total);
     } on DioException catch (e) {
       throw _toAppError(e);
     }
