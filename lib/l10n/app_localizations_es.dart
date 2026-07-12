@@ -272,6 +272,43 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statusInactiveBadge => 'Inactivo';
 
   @override
+  String get mergeProductsTitle => 'Fusión de productos';
+
+  @override
+  String get mergeProductsTooltip => 'Fusionar productos';
+
+  @override
+  String get mergeProductLabel => 'Producto';
+
+  @override
+  String get duplicatedLabel => 'Duplicado';
+
+  @override
+  String get mergeButton => 'Fusionar';
+
+  @override
+  String get mergeBackTooltip => 'Regresar';
+
+  @override
+  String get mergeBothRequiredMessage =>
+      'Selecciona un producto y un duplicado para continuar.';
+
+  @override
+  String get mergeSameProductMessage =>
+      'No puedes fusionar un producto consigo mismo.';
+
+  @override
+  String get mergeConfirmTitle => '¿Fusionar productos permanentemente?';
+
+  @override
+  String mergeConfirmMessage(String canonicalName, String duplicateName) {
+    return '¿Está seguro de que desea fusionar \"$duplicateName\" en \"$canonicalName\"? Esta acción no se puede deshacer: \"$duplicateName\" se eliminará por completo y su historial se transferirá a \"$canonicalName\".';
+  }
+
+  @override
+  String get mergeSuccess => 'Productos fusionados correctamente.';
+
+  @override
   String get editUserTitle => 'Editar usuario';
 
   @override

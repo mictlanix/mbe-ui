@@ -172,6 +172,17 @@ Generated DTOs sit in `data/`; map them to immutable domain entities
 (`freezed`) in `domain/` so presentation code isn't coupled to generated/
 API-shaped classes, and spec changes don't ripple directly into the UI.
 
+**Repo boundary**: "co-evolve" means mbe-ui adapts to mbe-api's published
+contract, not that an mbe-ui session edits mbe-api's source directly — even
+though both are commonly checked out side by side locally, they're
+independently owned and released. When a feature needs a backend change
+that doesn't exist yet (a new endpoint, a schema/projection field, etc.),
+file an issue against mbe-api describing the exact change and record it as
+an external dependency in the feature's plan; implement the mbe-ui-side
+consumption once it ships and the client is regenerated. (Prompted by
+`specs/008-merge-products`, where a suggestion-row field the merge picker
+needed — `sku` on the products-list projection — didn't exist yet.)
+
 ### 3.4 Error handling
 
 - Map API errors (validation errors, 4xx/5xx) to a small set of domain error

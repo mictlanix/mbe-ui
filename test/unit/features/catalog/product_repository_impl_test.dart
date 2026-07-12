@@ -637,6 +637,87 @@ void main() {
       );
     });
   });
+
+  group('ProductRepositoryImpl.mergeProducts', () {
+    test('204 completes with no error', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('', 204),
+      );
+
+      await expectLater(
+        repository.mergeProducts(productId: 1, duplicateId: 2),
+        completes,
+      );
+    });
+
+    test('sends product_id and duplicate_id in the request body', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('', 204);
+      });
+
+      await repository.mergeProducts(productId: 1, duplicateId: 2);
+
+      expect(captured!.path, '/api/v1/products/merge');
+      expect(captured!.method, 'POST');
+      final sentBody = captured!.data is String
+          ? jsonDecode(captured!.data as String) as Map<String, Object?>
+          : captured!.data as Map<String, Object?>;
+      expect(sentBody['product_id'], 1);
+      expect(sentBody['duplicate_id'], 2);
+    });
+
+    test('400 self-merge maps to AppError.server', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Cannot merge a product with itself'}),
+          400,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.mergeProducts(productId: 1, duplicateId: 1),
+        throwsA(
+          const AppError.server(
+            statusCode: 400,
+            message: 'Cannot merge a product with itself',
+          ),
+        ),
+      );
+    });
+
+    test('404 maps to AppError.notFound', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Duplicate product not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.mergeProducts(productId: 1, duplicateId: 999),
+        throwsA(const AppError.notFound('Duplicate product not found')),
+      );
+    });
+
+    test('a connection failure maps to AppError.network', () async {
+      final repository = _repositoryWith(
+        (options) async => throw DioException(
+          requestOptions: options,
+          type: DioExceptionType.connectionError,
+          error: 'Connection refused',
+        ),
+      );
+
+      await expectLater(
+        () => repository.mergeProducts(productId: 1, duplicateId: 2),
+        throwsA(isA<NetworkError>()),
+      );
+    });
+  });
 }
 
 Map<String, Object?> _productResponseJson() => {

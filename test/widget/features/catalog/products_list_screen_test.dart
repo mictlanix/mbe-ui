@@ -676,4 +676,35 @@ void main() {
       expect(find.text('/products/1'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'shows the Merge entry point for a user with productsMerge/create '
+    '(specs/008-merge-products FR-012)',
+    (tester) async {
+      const mergeUser = User(
+        userId: 'merger',
+        email: 'merger@example.com',
+        administrator: false,
+        disabled: false,
+        sessionVersion: 1,
+        privileges: [
+          Privilege(systemObject: SystemObject.products, rawValue: 2),
+          Privilege(systemObject: SystemObject.productsMerge, rawValue: 1),
+        ],
+      );
+      await pumpScreen(tester, signedInAs: mergeUser);
+
+      expect(find.byKey(const Key('merge_products_button')), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'hides the Merge entry point for a user without productsMerge/create '
+    '(specs/008-merge-products FR-012)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      expect(find.byKey(const Key('merge_products_button')), findsNothing);
+    },
+  );
 }

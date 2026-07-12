@@ -20,6 +20,7 @@ mixin _$ProductListItem {
   int get productId => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String? get sku => throw _privateConstructorUsedError;
   String? get brand => throw _privateConstructorUsedError;
   String? get model => throw _privateConstructorUsedError;
   String get unitOfMeasurementCode => throw _privateConstructorUsedError;
@@ -50,6 +51,7 @@ abstract class $ProductListItemCopyWith<$Res> {
     int productId,
     String code,
     String name,
+    String? sku,
     String? brand,
     String? model,
     String unitOfMeasurementCode,
@@ -78,6 +80,7 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
     Object? productId = null,
     Object? code = null,
     Object? name = null,
+    Object? sku = freezed,
     Object? brand = freezed,
     Object? model = freezed,
     Object? unitOfMeasurementCode = null,
@@ -100,6 +103,10 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
+            sku: freezed == sku
+                ? _value.sku
+                : sku // ignore: cast_nullable_to_non_nullable
+                      as String?,
             brand: freezed == brand
                 ? _value.brand
                 : brand // ignore: cast_nullable_to_non_nullable
@@ -147,6 +154,7 @@ abstract class _$$ProductListItemImplCopyWith<$Res>
     int productId,
     String code,
     String name,
+    String? sku,
     String? brand,
     String? model,
     String unitOfMeasurementCode,
@@ -174,6 +182,7 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
     Object? productId = null,
     Object? code = null,
     Object? name = null,
+    Object? sku = freezed,
     Object? brand = freezed,
     Object? model = freezed,
     Object? unitOfMeasurementCode = null,
@@ -196,6 +205,10 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
+        sku: freezed == sku
+            ? _value.sku
+            : sku // ignore: cast_nullable_to_non_nullable
+                  as String?,
         brand: freezed == brand
             ? _value.brand
             : brand // ignore: cast_nullable_to_non_nullable
@@ -236,6 +249,7 @@ class _$ProductListItemImpl implements _ProductListItem {
     required this.productId,
     required this.code,
     required this.name,
+    this.sku,
     this.brand,
     this.model,
     required this.unitOfMeasurementCode,
@@ -251,6 +265,8 @@ class _$ProductListItemImpl implements _ProductListItem {
   final String code;
   @override
   final String name;
+  @override
+  final String? sku;
   @override
   final String? brand;
   @override
@@ -272,7 +288,7 @@ class _$ProductListItemImpl implements _ProductListItem {
 
   @override
   String toString() {
-    return 'ProductListItem(productId: $productId, code: $code, name: $name, brand: $brand, model: $model, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, taxRate: $taxRate, deactivated: $deactivated, photo: $photo)';
+    return 'ProductListItem(productId: $productId, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, taxRate: $taxRate, deactivated: $deactivated, photo: $photo)';
   }
 
   @override
@@ -284,6 +300,7 @@ class _$ProductListItemImpl implements _ProductListItem {
                 other.productId == productId) &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.sku, sku) || other.sku == sku) &&
             (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.model, model) || other.model == model) &&
             (identical(other.unitOfMeasurementCode, unitOfMeasurementCode) ||
@@ -302,6 +319,7 @@ class _$ProductListItemImpl implements _ProductListItem {
     productId,
     code,
     name,
+    sku,
     brand,
     model,
     unitOfMeasurementCode,
@@ -328,6 +346,7 @@ abstract class _ProductListItem implements ProductListItem {
     required final int productId,
     required final String code,
     required final String name,
+    final String? sku,
     final String? brand,
     final String? model,
     required final String unitOfMeasurementCode,
@@ -343,6 +362,8 @@ abstract class _ProductListItem implements ProductListItem {
   String get code;
   @override
   String get name;
+  @override
+  String? get sku;
   @override
   String? get brand;
   @override

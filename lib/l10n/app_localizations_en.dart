@@ -272,6 +272,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusInactiveBadge => 'Inactive';
 
   @override
+  String get mergeProductsTitle => 'Merge Products';
+
+  @override
+  String get mergeProductsTooltip => 'Merge products';
+
+  @override
+  String get mergeProductLabel => 'Product';
+
+  @override
+  String get duplicatedLabel => 'Duplicate';
+
+  @override
+  String get mergeButton => 'Merge';
+
+  @override
+  String get mergeBackTooltip => 'Back';
+
+  @override
+  String get mergeBothRequiredMessage =>
+      'Select a product and a duplicate to continue.';
+
+  @override
+  String get mergeSameProductMessage =>
+      'You can\'t merge a product with itself.';
+
+  @override
+  String get mergeConfirmTitle => 'Merge products permanently?';
+
+  @override
+  String mergeConfirmMessage(String canonicalName, String duplicateName) {
+    return 'Are you sure you want to merge \"$duplicateName\" into \"$canonicalName\"? This cannot be undone — \"$duplicateName\" will be permanently deleted and its history transferred to \"$canonicalName\".';
+  }
+
+  @override
+  String get mergeSuccess => 'Products merged successfully.';
+
+  @override
   String get editUserTitle => 'Edit User';
 
   @override

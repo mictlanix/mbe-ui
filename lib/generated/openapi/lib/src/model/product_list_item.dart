@@ -15,6 +15,7 @@ part 'product_list_item.g.dart';
 /// * [productId] 
 /// * [code] 
 /// * [name] 
+/// * [sku] 
 /// * [photo] 
 /// * [brand] 
 /// * [model] 
@@ -31,6 +32,9 @@ abstract class ProductListItem implements Built<ProductListItem, ProductListItem
 
   @BuiltValueField(wireName: r'name')
   String get name;
+
+  @BuiltValueField(wireName: r'sku')
+  String? get sku;
 
   @BuiltValueField(wireName: r'photo')
   String? get photo;
@@ -87,6 +91,11 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
     yield serializers.serialize(
       object.name,
       specifiedType: const FullType(String),
+    );
+    yield r'sku';
+    yield object.sku == null ? null : serializers.serialize(
+      object.sku,
+      specifiedType: const FullType.nullable(String),
     );
     yield r'photo';
     yield object.photo == null ? null : serializers.serialize(
@@ -161,6 +170,14 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
             specifiedType: const FullType(String),
           ) as String;
           result.name = valueDes;
+          break;
+        case r'sku':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.sku = valueDes;
           break;
         case r'photo':
           final valueDes = serializers.deserialize(

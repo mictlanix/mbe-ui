@@ -95,6 +95,18 @@
   "deleteProductConfirmMessage": "¿Está seguro de que desea eliminar permanentemente \"{code}\"? Esta acción no se puede deshacer: el producto y su historial se eliminarán por completo, no solo se ocultarán.",
   "statusInactiveBadge": "Inactivo",
 
+  "mergeProductsTitle": "Fusión de productos",
+  "mergeProductsTooltip": "Fusionar productos",
+  "mergeProductLabel": "Producto",
+  "duplicatedLabel": "Duplicado",
+  "mergeButton": "Fusionar",
+  "mergeBackTooltip": "Regresar",
+  "mergeBothRequiredMessage": "Selecciona un producto y un duplicado para continuar.",
+  "mergeSameProductMessage": "No puedes fusionar un producto consigo mismo.",
+  "mergeConfirmTitle": "¿Fusionar productos permanentemente?",
+  "mergeConfirmMessage": "¿Está seguro de que desea fusionar \"{duplicateName}\" en \"{canonicalName}\"? Esta acción no se puede deshacer: \"{duplicateName}\" se eliminará por completo y su historial se transferirá a \"{canonicalName}\".",
+  "mergeSuccess": "Productos fusionados correctamente.",
+
   "editUserTitle": "Editar usuario",
   "viewUserTitle": "Ver usuario",
   "newUserTitle": "Nuevo usuario",
