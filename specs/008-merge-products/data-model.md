@@ -18,7 +18,7 @@ This feature adds no persisted entities and no new domain entity for the catalog
 | `photo` | Resolved thumbnail URL for the suggestion leading image. |
 | `deactivated` | Not filtered on — both pickers surface products in any state. |
 
-> **SKU** is intentionally absent from this projection (see research §3). It is searchable server-side but not shown in the row.
+> **SKU** is currently absent from this projection (see research §3). It is searchable server-side but not yet shown in the row — tracked via [mictlanix/mbe-api#76](https://github.com/mictlanix/mbe-api/issues/76); add a `sku` field here once that lands and the client is regenerated.
 
 ### `ProductMergeRequest` (generated DTO, existing)
 

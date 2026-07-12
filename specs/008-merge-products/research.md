@@ -18,10 +18,14 @@ All Technical Context unknowns resolved. Decisions below are grounded in the cur
 
 ## 3. Displaying SKU in suggestion rows
 
-- **Decision**: Suggestion rows show the product **photo thumbnail + name + code + model (+ brand)**. SKU is **searchable** (server-side) but **not shown** in the row.
-- **Rationale**: The generated `ProductListItem` projection (`lib/generated/openapi/.../product_list_item.dart`) and the domain `ProductListItem` have **no `sku` field** (only productId, code, name, photo, brand, model, taxRate, deactivated). Showing SKU would require adding it to mbe-api's list projection + OpenAPI + regeneration — out of this feature's scope. The available fields already identify a product unambiguously enough for the merge task (SC-006).
-- **Impact on spec**: FR-003 lists "name/code/model/SKU" for the suggestion row. This is satisfied for name/code/model; SKU display is deferred as a documented projection limitation (searchable, not displayed). If SKU-in-row is later required, it becomes a small mbe-api projection change + regen, not a UI change.
-- **Alternatives considered**: Fetching the full `Product` per suggestion to get SKU — rejected; N detail fetches per keystroke is wasteful and defeats the list projection's purpose.
+- **Decision**: Ship the MVP with suggestion rows showing the product **photo thumbnail + name + code + model (+ brand)**. SKU is **searchable** (server-side, already) but **not yet shown** in the row — filed as an upstream mbe-api request, [mictlanix/mbe-api#76](https://github.com/mictlanix/mbe-api/issues/76), rather than dropped from the requirement.
+- **Rationale**: The generated `ProductListItem` projection (`lib/generated/openapi/.../product_list_item.dart`) and the domain `ProductListItem` have **no `sku` field** (only productId, code, name, photo, brand, model, taxRate, deactivated). Adding it requires an mbe-api schema change (`app/schemas/product.py`'s `ProductListItem`) — outside mbe-ui's repo boundary, so mbe-ui does not patch it directly (constitution §III also forbids hand-editing the generated Dart client to fake the field). FR-003 keeps SKU as a required display field; the available fields (photo/name/code/model) already identify a product well enough for the merge task in the interim.
+- **Impact on spec**: FR-003 and US2's acceptance scenario retain "SKU" in the required display fields; a Clarifications entry and an Assumptions entry both record the dependency on #76. This is tracked in plan.md's Complexity Tracking as a deferred item, not silently dropped.
+- **Follow-up once #76 lands**: re-run `tool/generate_api_client.sh`, add `sku` to the domain `ProductListItem` (`lib/features/catalog/domain/entities/product_list_item.dart`), and pass it into `CatalogEntityPicker`'s `optionSubtitle` alongside code/model (see contracts/ui-contracts.md §1).
+- **Alternatives considered**:
+  - Hand-patching the generated Dart model — rejected; constitution §III forbids hand-editing generated files, and the change would be silently lost on the next real regeneration.
+  - Fetching the full `Product` per suggestion to get SKU — rejected; N detail fetches per keystroke is wasteful and defeats the list projection's purpose.
+  - Dropping SKU from FR-003 entirely (the initially-considered resolution) — rejected on reconsideration; the requirement is legitimate, so the right fix is tracking the upstream dependency, not weakening the spec to match a temporary gap.
 
 ## 4. Photo thumbnails in the picker — extend vs. fork
 
