@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Adaptive Navigation Layout",
   "branch": "010-adaptive-navigation-layout",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-14T15:32:22.531Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-14T15:51:59.926Z"
     }
   ]
 }

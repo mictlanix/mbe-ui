@@ -39,10 +39,12 @@ The app bar exposes exactly one trailing button that represents the currently si
 **Acceptance Scenarios**:
 
 1. **Given** a signed-in user on any authenticated screen, **When** the app bar is shown, **Then** it presents exactly one trailing button representing the current user.
-2. **Given** the user opens that control, **When** the menu appears, **Then** it displays the user's identifying information (display name and/or email) and the current location context: store, point of sale, and cash drawer.
+2. **Given** the user opens that control, **When** the menu appears, **Then** it displays the user's identifying information (display name and/or email) and the current location context — store, point of sale, and cash drawer — shown by their human-readable names (with the store/POS/drawer code where the source provides one).
 3. **Given** the menu is open, **When** the user selects **Change Password**, **Then** the app navigates to the change-password flow.
 4. **Given** the menu is open, **When** the user selects **Logout**, **Then** the user is signed out and returned to the sign-in screen.
 5. **Given** the signed-in user has no assigned location context, **When** the menu is opened, **Then** the location lines are gracefully omitted or shown as empty/placeholder rather than displaying an error.
+6. **Given** a location name is unavailable in the user's profile, **When** the menu is opened, **Then** that line falls back to a labeled identifier — "Store <ID>", "POS <ID>", or "Drawer <ID>" — rather than erroring or blocking the menu.
+7. **Given** a signed-in user without catalog permissions (e.g. a cashier who cannot browse the stores catalog), **When** the menu is opened, **Then** their store/POS/cash-drawer names still display — location names do not depend on catalog access.
 
 ---
 
@@ -87,6 +89,7 @@ On catalog list screens, the actions currently shown as trailing icon buttons in
 - **Very wide displays**: the navigation rail and content area remain balanced (rail does not stretch to consume excessive width).
 - **Missing/broken brand asset**: a configured-but-unloadable brand image falls back to the default placeholder rather than showing a broken-image state.
 - **Long user identity or location strings**: the user menu handles long email/store names without breaking layout (wrap or truncate with reveal).
+- **Location name unavailable**: a store/POS/cash-drawer whose name is not present in the user's profile falls back to a labeled ID line; each line is independent, so a missing name on one does not affect the others.
 - **Active-destination sync**: navigating via in-content links (not the rail/drawer) still updates the active-destination indicator.
 - **Deep-linking / direct URL** to a permitted destination shows the shell with that destination marked active; direct URL to a forbidden destination continues to redirect as it does today.
 
@@ -109,7 +112,7 @@ On catalog list screens, the actions currently shown as trailing icon buttons in
 
 - **FR-009**: The app bar MUST present exactly one trailing control, representing the current user, on authenticated screens.
 - **FR-010**: Activating the user control MUST open a menu that displays the user's identifying information (display name and/or email).
-- **FR-011**: The user menu MUST display the current location context: store, point of sale, and cash drawer, derived from the signed-in user's settings.
+- **FR-011**: The user menu MUST display the current location context — store, point of sale, and cash drawer — from the signed-in user's own profile, as human-readable names (including the record's code where available). The names MUST be available to every signed-in user regardless of their catalog permissions (i.e. sourced from the user's own profile, not from permission-gated catalog lookups). When a name is unavailable, the line MUST fall back to a labeled identifier — "Store <ID>", "POS <ID>", or "Drawer <ID>" — without erroring.
 - **FR-012**: The user menu MUST provide a **Change Password** action that navigates to the existing change-password flow.
 - **FR-013**: The user menu MUST provide a **Logout** action that signs the user out and returns them to the sign-in screen.
 - **FR-014**: When the user has no location context (no store/POS/cash-drawer settings), the menu MUST omit or placeholder those lines without error.
@@ -131,7 +134,7 @@ On catalog list screens, the actions currently shown as trailing icon buttons in
 
 - **Navigation destination**: A reachable area of the app — a label, an icon, a target location, and the access right that gates its visibility. May belong to a group.
 - **Navigation group**: A single-level grouping with a label and an ordered set of destinations; visible only when at least one child is visible.
-- **User location context**: The signed-in user's store, point of sale, and cash drawer identifiers, shown in the user menu (display-only in this feature).
+- **User location context**: The signed-in user's store, point of sale, and cash drawer — each a name (and optional code) carried in the user's own profile, shown read-only in the user menu (no location switching in this feature).
 - **Brand welcome asset**: A per-deployment (flavor) image and/or welcome message shown on Home, with a default placeholder when unset.
 
 ## Success Criteria *(mandatory)*
@@ -151,7 +154,7 @@ On catalog list screens, the actions currently shown as trailing icon buttons in
 - **Tablet threshold**: "Tablet screens or larger" maps to the existing centralized breakpoints — the navigation rail is used at the **Medium** tier and wider (window width ≥ 600), and the navigation drawer is used at the **Compact** tier (width < 600). This can be adjusted if a different rail/drawer cutoff is preferred.
 - **Destination set**: Navigation reflects only currently implemented areas — **Home** plus a **Catalogs** group containing **Users** and **Products** — rather than the full legacy menu (Ventas, Producción, etc.), which is not yet built. New destinations are added to the shell as their features ship.
 - **Grouping example**: The **Catalogs → Users, Products** grouping follows the example in the request; exact group membership/labels can be tuned without changing the shell mechanism.
-- **Location context is display-only**: The user menu shows the current store/point-of-sale/cash-drawer as read-only information (as in the legacy reference). Changing/switching the active location is **out of scope** for this feature.
+- **Location context is display-only, names from own profile**: The user menu shows the current store/point-of-sale/cash-drawer as read-only names read from the signed-in user's own profile (so it works regardless of catalog permissions), with a labeled-ID fallback when a name is unavailable. This depends on the user-profile data carrying those names; where it does not yet, the labeled-ID fallback is shown until it does (tracked as an external dependency in the plan). Changing/switching the active location is **out of scope** for this feature.
 - **Change Password relocation**: Change Password moves from the Home navigation list into the user menu; the underlying change-password screen/flow is unchanged.
 - **Brand assets via flavors**: Per-deployment brand welcome assets are supplied through the project's build-time flavor mechanism (per the constitution's white-labeled design-system principle). This feature consumes that mechanism and provides a default placeholder; defining new customer flavors is out of scope beyond wiring the Home welcome asset and default.
 - **Catalog scope**: The catalogs affected are the existing Products and Users list screens. The relocation pattern is intended to be reused by future catalogs.
