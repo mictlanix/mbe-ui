@@ -127,6 +127,7 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**createProductApiV1ProductsPost**](doc/ProductsApi.md#createproductapiv1productspost) | **POST** /api/v1/products | Create Product
 [*ProductsApi*](doc/ProductsApi.md) | [**deleteProductApiV1ProductsProductIdDelete**](doc/ProductsApi.md#deleteproductapiv1productsproductiddelete) | **DELETE** /api/v1/products/{product_id} | Delete Product
 [*ProductsApi*](doc/ProductsApi.md) | [**getProductApiV1ProductsProductIdGet**](doc/ProductsApi.md#getproductapiv1productsproductidget) | **GET** /api/v1/products/{product_id} | Get Product
+[*ProductsApi*](doc/ProductsApi.md) | [**getProductLabelFacetsApiV1ProductsLabelsFacetsGet**](doc/ProductsApi.md#getproductlabelfacetsapiv1productslabelsfacetsget) | **GET** /api/v1/products/labels/facets | Get Product Label Facets
 [*ProductsApi*](doc/ProductsApi.md) | [**listProductsApiV1ProductsGet**](doc/ProductsApi.md#listproductsapiv1productsget) | **GET** /api/v1/products | List Products
 [*ProductsApi*](doc/ProductsApi.md) | [**mergeProductsApiV1ProductsMergePost**](doc/ProductsApi.md#mergeproductsapiv1productsmergepost) | **POST** /api/v1/products/merge | Merge Products
 [*ProductsApi*](doc/ProductsApi.md) | [**updateProductApiV1ProductsProductIdPut**](doc/ProductsApi.md#updateproductapiv1productsproductidput) | **PUT** /api/v1/products/{product_id} | Update Product
@@ -271,6 +272,7 @@ Class | Method | HTTP request | Description
  - [PrivilegeResponse](doc/PrivilegeResponse.md)
  - [PrivilegeUpdate](doc/PrivilegeUpdate.md)
  - [ProductCreate](doc/ProductCreate.md)
+ - [ProductLabelFacet](doc/ProductLabelFacet.md)
  - [ProductListItem](doc/ProductListItem.md)
  - [ProductMergeRequest](doc/ProductMergeRequest.md)
  - [ProductPriceCreate](doc/ProductPriceCreate.md)

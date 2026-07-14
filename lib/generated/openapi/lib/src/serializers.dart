@@ -82,6 +82,7 @@ import 'package:mbe_api_client/src/model/price_list_update.dart';
 import 'package:mbe_api_client/src/model/privilege_response.dart';
 import 'package:mbe_api_client/src/model/privilege_update.dart';
 import 'package:mbe_api_client/src/model/product_create.dart';
+import 'package:mbe_api_client/src/model/product_label_facet.dart';
 import 'package:mbe_api_client/src/model/product_list_item.dart';
 import 'package:mbe_api_client/src/model/product_merge_request.dart';
 import 'package:mbe_api_client/src/model/product_price_create.dart';
@@ -199,6 +200,7 @@ part 'serializers.g.dart';
   PrivilegeResponse,
   PrivilegeUpdate,
   ProductCreate,
+  ProductLabelFacet,
   ProductListItem,
   ProductMergeRequest,
   ProductPriceCreate,
@@ -253,6 +255,14 @@ Serializers serializers = (_$serializers.toBuilder()
       ..addBuilderFactory(
         const FullType(BuiltMap, [FullType(String), FullType(String)]),
         () => MapBuilder<String, String>(),
+      )
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(ProductLabelFacet)]),
+        () => ListBuilder<ProductLabelFacet>(),
+      )
+      ..addBuilderFactory(
+        const FullType(BuiltList, [FullType(int)]),
+        () => ListBuilder<int>(),
       )
       ..add(const OneOfSerializer())
       ..add(const AnyOfSerializer())

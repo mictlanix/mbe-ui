@@ -13,6 +13,7 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
 import 'package:mbe_api_client/src/model/product_create.dart';
+import 'package:mbe_api_client/src/model/product_label_facet.dart';
 import 'package:mbe_api_client/src/model/product_merge_request.dart';
 import 'package:mbe_api_client/src/model/product_response.dart';
 import 'package:mbe_api_client/src/model/product_update.dart';
@@ -246,6 +247,109 @@ class ProductsApi {
     }
 
     return Response<ProductResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Get Product Label Facets
+  /// 
+  ///
+  /// Parameters:
+  /// * [search] 
+  /// * [label] 
+  /// * [deactivated] 
+  /// * [stockable] 
+  /// * [salable] 
+  /// * [purchasable] 
+  /// * [supplier] 
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [BuiltList<ProductLabelFacet>] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<BuiltList<ProductLabelFacet>>> getProductLabelFacetsApiV1ProductsLabelsFacetsGet({ 
+    String? search,
+    BuiltList<int>? label,
+    bool? deactivated,
+    bool? stockable,
+    bool? salable,
+    bool? purchasable,
+    int? supplier,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/products/labels/facets';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{
+        ...?headers,
+      },
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {
+            'type': 'oauth2',
+            'name': 'OAuth2PasswordBearer',
+          },
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
+      if (label != null) r'label': encodeCollectionQueryParameter<int>(_serializers, label, const FullType(BuiltList, [FullType(int)]), format: ListFormat.multi,),
+      if (deactivated != null) r'deactivated': encodeQueryParameter(_serializers, deactivated, const FullType(bool)),
+      if (stockable != null) r'stockable': encodeQueryParameter(_serializers, stockable, const FullType(bool)),
+      if (salable != null) r'salable': encodeQueryParameter(_serializers, salable, const FullType(bool)),
+      if (purchasable != null) r'purchasable': encodeQueryParameter(_serializers, purchasable, const FullType(bool)),
+      if (supplier != null) r'supplier': encodeQueryParameter(_serializers, supplier, const FullType(int)),
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    BuiltList<ProductLabelFacet>? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : _serializers.deserialize(
+        rawResponse,
+        specifiedType: const FullType(BuiltList, [FullType(ProductLabelFacet)]),
+      ) as BuiltList<ProductLabelFacet>;
+
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<BuiltList<ProductLabelFacet>>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
