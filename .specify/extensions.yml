@@ -1,5 +1,6 @@
 installed:
 - agent-context
+- companion
 - git
 settings:
   auto_execute_hooks: true
@@ -21,6 +22,15 @@ hooks:
     prompt: Commit specification changes?
     description: Auto-commit after specification
     condition: null
+  - extension: companion
+    command: speckit.companion.capture
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.capture?
+    description: Record specify completion (currentStep=specify, status=specified)
+      into .spec-context.json
+    condition: null
   after_plan:
   - extension: agent-context
     command: speckit.agent-context.update
@@ -37,6 +47,14 @@ hooks:
     priority: 10
     prompt: Commit plan changes?
     description: Auto-commit after implementation planning
+    condition: null
+  - extension: companion
+    command: speckit.companion.capture-plan
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.capture-plan?
+    description: Record plan completion (currentStep=plan, status=planned) into .spec-context.json
     condition: null
   before_constitution:
   - extension: git
@@ -146,6 +164,15 @@ hooks:
     prompt: Commit task changes?
     description: Auto-commit after task generation
     condition: null
+  - extension: companion
+    command: speckit.companion.capture-tasks
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.capture-tasks?
+    description: Record tasks completion (currentStep=tasks, status=ready-to-implement)
+      into .spec-context.json
+    condition: null
   after_implement:
   - extension: git
     command: speckit.git.commit
@@ -154,6 +181,15 @@ hooks:
     priority: 10
     prompt: Commit implementation changes?
     description: Auto-commit after implementation
+    condition: null
+  - extension: companion
+    command: speckit.companion.capture-implement
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.capture-implement?
+    description: Per-task journaling on implement (currentStep=implement; status=implemented
+      when all tasks checked)
     condition: null
   after_checklist:
   - extension: git
