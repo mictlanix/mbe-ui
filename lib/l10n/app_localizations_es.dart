@@ -151,6 +151,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsLabelFilter => 'Etiquetas';
 
   @override
+  String get labelUnavailableTooltip => 'Sin productos que coincidan';
+
+  @override
+  String labelWithCount(String name, int count) {
+    return '$name ($count)';
+  }
+
+  @override
   String get filtersButton => 'Filtros';
 
   @override

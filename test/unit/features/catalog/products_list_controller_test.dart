@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
@@ -228,6 +229,82 @@ void main() {
       expect(page.items.map((p) => p.productId), [2]);
       expect(page.pageIndex, 1);
       expect(page.total, 21);
+    });
+  });
+
+  group('productLabelFacetsProvider (spec 009)', () {
+    test('maps the repository response to a label-id -> count map', () async {
+      when(
+        () => repository.productLabelFacets(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: any(named: 'labels'),
+        ),
+      ).thenAnswer(
+        (_) async => const [
+          ProductLabelFacet(labelId: 3, count: 42),
+          ProductLabelFacet(labelId: 7, count: 12),
+        ],
+      );
+
+      final result = await container.read(productLabelFacetsProvider.future);
+
+      expect(result, {3: 42, 7: 12});
+    });
+
+    test('refetches when ProductFilter changes (FR-003)', () async {
+      when(
+        () => repository.productLabelFacets(
+          search: null,
+          deactivated: null,
+          stockable: null,
+          salable: null,
+          purchasable: null,
+          labels: const [],
+        ),
+      ).thenAnswer((_) async => const [ProductLabelFacet(labelId: 1, count: 5)]);
+      final first = await container.read(productLabelFacetsProvider.future);
+      expect(first, {1: 5});
+
+      when(
+        () => repository.productLabelFacets(
+          search: null,
+          deactivated: null,
+          stockable: null,
+          salable: null,
+          purchasable: null,
+          labels: const [1],
+        ),
+      ).thenAnswer(
+        (_) async => const [
+          ProductLabelFacet(labelId: 1, count: 5),
+          ProductLabelFacet(labelId: 2, count: 3),
+        ],
+      );
+      container.read(productFilterControllerProvider.notifier).labelsChanged([1]);
+
+      final second = await container.read(productLabelFacetsProvider.future);
+      expect(second, {1: 5, 2: 3});
+    });
+
+    test('an empty facet response yields an empty map (nothing available)', () async {
+      when(
+        () => repository.productLabelFacets(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: any(named: 'labels'),
+        ),
+      ).thenAnswer((_) async => const []);
+
+      final result = await container.read(productLabelFacetsProvider.future);
+
+      expect(result, isEmpty);
     });
   });
 }

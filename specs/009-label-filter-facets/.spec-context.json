@@ -1,0 +1,18 @@
+{
+  "workflow": "speckit",
+  "specName": "009-label-filter-facets",
+  "branch": "009-label-filter-facets",
+  "selectedAt": "2026-07-14T02:31:26.063Z",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-14T02:52:26.302Z"
+    }
+  ],
+  "telemetryInstanceId": "a5a80627-ae5a-438e-a0a5-197622523847"
+}

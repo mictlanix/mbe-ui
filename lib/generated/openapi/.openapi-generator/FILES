@@ -81,6 +81,7 @@ doc/PriceListsApi.md
 doc/PrivilegeResponse.md
 doc/PrivilegeUpdate.md
 doc/ProductCreate.md
+doc/ProductLabelFacet.md
 doc/ProductListItem.md
 doc/ProductMergeRequest.md
 doc/ProductPriceCreate.md
@@ -237,6 +238,7 @@ lib/src/model/price_list_update.dart
 lib/src/model/privilege_response.dart
 lib/src/model/privilege_update.dart
 lib/src/model/product_create.dart
+lib/src/model/product_label_facet.dart
 lib/src/model/product_list_item.dart
 lib/src/model/product_merge_request.dart
 lib/src/model/product_price_create.dart

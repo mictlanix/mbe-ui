@@ -4,13 +4,15 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide ProductListItem;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    hide ProductLabelFacet, ProductListItem;
 import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 
@@ -242,6 +244,33 @@ class ProductRepositoryImpl implements ProductRepository {
           ..productId = productId
           ..duplicateId = duplicateId),
       );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<List<ProductLabelFacet>> productLabelFacets({
+    String? search,
+    bool? deactivated,
+    bool? stockable,
+    bool? salable,
+    bool? purchasable,
+    List<int> labels = const [],
+  }) async {
+    try {
+      final response =
+          await _api.getProductLabelFacetsApiV1ProductsLabelsFacetsGet(
+        search: search,
+        deactivated: deactivated,
+        stockable: stockable,
+        salable: salable,
+        purchasable: purchasable,
+        label: labels.isEmpty ? null : BuiltList<int>(labels),
+      );
+      final result = response.data;
+      if (result == null) return const [];
+      return result.map(ProductLabelFacet.fromResponse).toList();
     } on DioException catch (e) {
       throw _toAppError(e);
     }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 
 /// Product catalog calls to mbe-api (contracts/mbe-api-products.md). Access
@@ -15,10 +16,12 @@ import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 /// flow (spec.md Clarifications, 2026-07-05).
 abstract class ProductRepository {
   /// `GET /api/v1/products` (FR-001, FR-002). [labels] filters to products
-  /// matching any of the given label ids (FR-008, OR semantics) — mbe-api's
-  /// `label` query param now accepts repeated values
-  /// (`?label=1&label=2`); this previously accepted only a single value
-  /// (research.md §4), resolved server-side 2026-07-05.
+  /// matching **all** of the given label ids (AND / "contains all" semantics) —
+  /// mbe-api's `label` query param accepts repeated values (`?label=1&label=2`)
+  /// and requires a product to carry every one of them (server-side since
+  /// 2026-07-05, `list_products`). Passing multiple labels therefore narrows
+  /// the result set; see [productLabelFacets] for the drawer's availability
+  /// lookup that builds on this (spec 009 FR-001).
   Future<ProductListResult> list({
     String? search,
     bool? deactivated,
@@ -143,6 +146,27 @@ abstract class ProductRepository {
   /// - `ServerError` / `NetworkError` on other backend/transport failures
   ///   (FR-011) — surfaced with mbe-api's `detail` message where present.
   Future<void> mergeProducts({required int productId, required int duplicateId});
+
+  /// `GET /api/v1/products/labels/facets` (spec 009 FR-003, FR-009). Returns,
+  /// for the products matching the same filter as [list] (minus pagination),
+  /// the labels present on at least one matching product with their per-label
+  /// match count — the data that drives the filter drawer's enable/disable of
+  /// label chips. [labels] uses the same AND ("contains all") semantics as
+  /// [list], so the response reflects "labels reachable by narrowing the
+  /// current results further" plus the already-selected labels themselves.
+  ///
+  /// Returns an empty list when no label co-occurs with the filter (e.g. the
+  /// filtered set is empty). Throws the mapped `AppError` on transport/backend
+  /// failure; the presentation-layer provider is responsible for failing open
+  /// (treating an error as "availability unknown" → all chips enabled, FR-010).
+  Future<List<ProductLabelFacet>> productLabelFacets({
+    String? search,
+    bool? deactivated,
+    bool? stockable,
+    bool? salable,
+    bool? purchasable,
+    List<int> labels = const [],
+  });
 }
 
 /// `ListResponse[ProductListItem]` (`items`, `total`) — used by
