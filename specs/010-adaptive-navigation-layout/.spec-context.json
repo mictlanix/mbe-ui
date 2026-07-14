@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Adaptive Navigation Layout",
+  "branch": "010-adaptive-navigation-layout",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-14T15:32:22.531Z"
+    }
+  ]
+}
