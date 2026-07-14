@@ -8,12 +8,14 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// non-interactive (read-only display for users without edit privilege).
 /// Renders nothing when [labels] is empty.
 ///
-/// [availableIds] (spec 009 contracts/ui-contracts.md) optionally narrows
-/// which chips are selectable: a chip is interactive only if it is already
-/// selected (so it can always be deselected) or its id is in [availableIds].
-/// `null` means availability is unknown (loading/error/not applicable) and
-/// every chip stays interactive — callers that omit it (e.g. the product
-/// form) keep today's all-enabled behavior; the products-list filter drawer
+/// [labelCounts] (spec 009 contracts/ui-contracts.md) optionally narrows
+/// which chips are selectable and shows each one's matching-product count:
+/// a chip is interactive only if it is already selected (so it can always be
+/// deselected) or its id is a key in [labelCounts], and its text becomes
+/// "Name (count)" whenever a count is known for it. `null` means availability
+/// is unknown (loading/error/not applicable) and every chip stays interactive
+/// with no count shown — callers that omit it (e.g. the product form) keep
+/// today's all-enabled, count-less behavior; the products-list filter drawer
 /// passes the current facet lookup result.
 class LabelMultiPicker extends StatelessWidget {
   const LabelMultiPicker({
@@ -22,14 +24,14 @@ class LabelMultiPicker extends StatelessWidget {
     required this.selectedIds,
     required this.onChanged,
     this.enabled = true,
-    this.availableIds,
+    this.labelCounts,
   });
 
   final List<LabelItem> labels;
   final List<int> selectedIds;
   final ValueChanged<List<int>> onChanged;
   final bool enabled;
-  final Set<int>? availableIds;
+  final Map<int, int>? labelCounts;
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +42,15 @@ class LabelMultiPicker extends StatelessWidget {
       runSpacing: 4,
       children: labels.map((label) {
         final selected = selectedIds.contains(label.labelId);
-        final available =
-            availableIds == null || availableIds!.contains(label.labelId);
+        final count = labelCounts?[label.labelId];
+        final available = labelCounts == null || count != null;
         final interactive = enabled && (selected || available);
         final chip = FilterChip(
-          label: Text(label.name),
+          label: Text(
+            count == null
+                ? label.name
+                : l10n.labelWithCount(label.name, count),
+          ),
           selected: selected,
           onSelected: interactive
               ? (_) {

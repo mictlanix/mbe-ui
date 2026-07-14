@@ -55,6 +55,7 @@
   "productsPurchasableFilter": "Comprable",
   "productsLabelFilter": "Etiquetas",
   "labelUnavailableTooltip": "Sin productos que coincidan",
+  "labelWithCount": "{name} ({count})",
   "filtersButton": "Filtros",
   "filtersTooltip": "Filtros",
   "clearAllFilters": "Limpiar filtros",

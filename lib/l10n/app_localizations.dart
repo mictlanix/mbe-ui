@@ -380,6 +380,12 @@ abstract class AppLocalizations {
   /// **'No matching products'**
   String get labelUnavailableTooltip;
 
+  /// A label filter chip's text when the matching product count is known
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({count})'**
+  String labelWithCount(String name, int count);
+
   /// Label/title of the catalog filter panel and its trigger button
   ///
   /// In en, this message translates to:

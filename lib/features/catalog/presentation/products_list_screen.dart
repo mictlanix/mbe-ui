@@ -214,8 +214,7 @@ class _ProductFiltersPanel extends ConsumerWidget {
     final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
     // `null` while loading/errored => every chip stays enabled (fail open,
     // spec 009 FR-010) rather than blocking the user on a facet failure.
-    final availableLabelIds =
-        ref.watch(productLabelFacetsProvider).valueOrNull;
+    final labelCounts = ref.watch(productLabelFacetsProvider).valueOrNull;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -263,7 +262,7 @@ class _ProductFiltersPanel extends ConsumerWidget {
             key: const Key('products_filter_label'),
             labels: allLabels,
             selectedIds: filter.labels,
-            availableIds: availableLabelIds,
+            labelCounts: labelCounts,
             onChanged: filterController.labelsChanged,
           ),
         ],

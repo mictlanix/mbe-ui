@@ -15,7 +15,7 @@ void main() {
   Future<void> pumpPicker(
     WidgetTester tester, {
     List<int> selectedIds = const [],
-    Set<int>? availableIds,
+    Map<int, int>? labelCounts,
     ValueChanged<List<int>>? onChanged,
   }) async {
     await tester.pumpWidget(
@@ -26,7 +26,7 @@ void main() {
           body: LabelMultiPicker(
             labels: _labels,
             selectedIds: selectedIds,
-            availableIds: availableIds,
+            labelCounts: labelCounts,
             onChanged: onChanged ?? (_) {},
           ),
         ),
@@ -35,42 +35,65 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  // Chip text may be "Name" or "Name (count)" depending on [labelCounts], so
+  // finders match by the widget's label rather than its exact display text.
+  Finder chipFinder(String labelName) => find.byWidgetPredicate(
+        (w) =>
+            w is FilterChip &&
+            (w.label as Text).data!.startsWith(labelName),
+      );
+
   bool isInteractive(WidgetTester tester, String label) =>
-      tester.widget<FilterChip>(find.widgetWithText(FilterChip, label)).onSelected != null;
+      tester.widget<FilterChip>(chipFinder(label)).onSelected != null;
+
+  String chipText(WidgetTester tester, String label) =>
+      (tester.widget<FilterChip>(chipFinder(label)).label as Text).data!;
 
   testWidgets(
-    'with availableIds == null (unknown/loading/error), every chip stays '
-    'interactive — fail open (spec 009 FR-010)',
+    'with labelCounts == null (unknown/loading/error), every chip stays '
+    'interactive and shows no count — fail open (spec 009 FR-010)',
     (tester) async {
       await pumpPicker(tester);
 
       expect(isInteractive(tester, 'Trupper'), isTrue);
       expect(isInteractive(tester, 'DeWalt'), isTrue);
       expect(isInteractive(tester, 'Makita'), isTrue);
+      expect(chipText(tester, 'Trupper'), 'Trupper');
     },
   );
 
   testWidgets(
-    'a label absent from availableIds is disabled and not selectable '
-    '(FR-004)',
+    'a label absent from labelCounts is disabled, not selectable, and shows '
+    'no count (FR-004)',
     (tester) async {
-      await pumpPicker(tester, availableIds: {1, 2});
+      await pumpPicker(tester, labelCounts: {1: 42, 2: 7});
 
       expect(isInteractive(tester, 'Trupper'), isTrue);
       expect(isInteractive(tester, 'DeWalt'), isTrue);
       expect(isInteractive(tester, 'Makita'), isFalse);
+      expect(chipText(tester, 'Makita'), 'Makita');
     },
   );
 
   testWidgets(
-    'a selected label stays interactive even if not in availableIds, so it '
+    'a label present in labelCounts shows "Name (count)"',
+    (tester) async {
+      await pumpPicker(tester, labelCounts: {1: 42, 2: 7});
+
+      expect(chipText(tester, 'Trupper'), 'Trupper (42)');
+      expect(chipText(tester, 'DeWalt'), 'DeWalt (7)');
+    },
+  );
+
+  testWidgets(
+    'a selected label stays interactive even if not in labelCounts, so it '
     'can be deselected (FR-006)',
     (tester) async {
-      await pumpPicker(tester, selectedIds: [3], availableIds: {1, 2});
+      await pumpPicker(tester, selectedIds: [3], labelCounts: {1: 1, 2: 1});
 
       expect(isInteractive(tester, 'Makita'), isTrue);
       expect(
-        tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Makita')).selected,
+        tester.widget<FilterChip>(chipFinder('Makita')).selected,
         isTrue,
       );
     },
@@ -82,11 +105,11 @@ void main() {
     List<int>? changed;
     await pumpPicker(
       tester,
-      availableIds: {1},
+      labelCounts: {1: 1},
       onChanged: (v) => changed = v,
     );
 
-    await tester.tap(find.widgetWithText(FilterChip, 'Makita'), warnIfMissed: false);
+    await tester.tap(chipFinder('Makita'), warnIfMissed: false);
     await tester.pumpAndSettle();
 
     expect(changed, isNull);
@@ -98,11 +121,11 @@ void main() {
     List<int>? changed;
     await pumpPicker(
       tester,
-      availableIds: {1, 2},
+      labelCounts: {1: 1, 2: 1},
       onChanged: (v) => changed = v,
     );
 
-    await tester.tap(find.widgetWithText(FilterChip, 'DeWalt'));
+    await tester.tap(chipFinder('DeWalt'));
     await tester.pumpAndSettle();
 
     expect(changed, [2]);

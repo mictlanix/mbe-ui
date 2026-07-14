@@ -199,6 +199,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  /// Finds a label [FilterChip] by its label name, tolerant of the "Name
+  /// (count)" suffix `LabelMultiPicker` appends when a facet count is known
+  /// (spec 009) — exact-text finders would break once a count is shown.
+  Finder chipFinder(String labelName) => find.byWidgetPredicate(
+        (w) => w is FilterChip && (w.label as Text).data!.startsWith(labelName),
+      );
+
   testWidgets('shows products with their status (FR-001, FR-002)', (
     tester,
   ) async {
@@ -423,8 +430,8 @@ void main() {
 
       expect(find.byType(DropdownButton<int?>), findsNothing);
       expect(find.byKey(const Key('products_filter_label')), findsOneWidget);
-      expect(find.widgetWithText(FilterChip, 'Clearance'), findsOneWidget);
-      expect(find.widgetWithText(FilterChip, 'Seasonal'), findsOneWidget);
+      expect(chipFinder('Clearance'), findsOneWidget);
+      expect(chipFinder('Seasonal'), findsOneWidget);
     },
   );
 
@@ -480,12 +487,12 @@ void main() {
       );
       await openFilterSheet(tester);
 
-      await tester.tap(find.widgetWithText(FilterChip, 'Clearance'));
+      await tester.tap(chipFinder('Clearance'));
       await tester.pumpAndSettle();
       expect(find.text('SKU-001'), findsOneWidget);
       expect(find.text('SKU-002'), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(FilterChip, 'Seasonal'));
+      await tester.tap(chipFinder('Seasonal'));
       await tester.pumpAndSettle();
 
       verify(
@@ -527,11 +534,11 @@ void main() {
       );
       await openFilterSheet(tester);
 
-      await tester.tap(find.widgetWithText(FilterChip, 'Clearance'));
+      await tester.tap(chipFinder('Clearance'));
       await tester.pumpAndSettle();
       expect(
         tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Clearance'))
+            .widget<FilterChip>(chipFinder('Clearance'))
             .selected,
         isTrue,
       );
@@ -541,7 +548,7 @@ void main() {
 
       expect(
         tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Clearance'))
+            .widget<FilterChip>(chipFinder('Clearance'))
             .selected,
         isFalse,
       );
@@ -550,10 +557,7 @@ void main() {
 
   group('faceted label availability (spec 009)', () {
     bool chipInteractive(WidgetTester tester, String label) =>
-        tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, label))
-            .onSelected !=
-        null;
+        tester.widget<FilterChip>(chipFinder(label)).onSelected != null;
 
     testWidgets(
       'selecting a label disables labels that no longer co-occur, while the '
@@ -587,12 +591,61 @@ void main() {
         );
         await openFilterSheet(tester);
 
-        await tester.tap(find.widgetWithText(FilterChip, 'Trupper'));
+        await tester.tap(chipFinder('Trupper'));
         await tester.pumpAndSettle();
 
         expect(chipInteractive(tester, 'Trupper'), isTrue); // selected
         expect(chipInteractive(tester, 'DeWalt'), isTrue); // available
         expect(chipInteractive(tester, 'Makita'), isFalse); // unavailable
+      },
+    );
+
+    testWidgets(
+      'available label chips show their matching-product count from the '
+      'live facet lookup',
+      (tester) async {
+        const trupper = LabelItem(labelId: 1, name: 'Trupper');
+        const dewalt = LabelItem(labelId: 2, name: 'DeWalt');
+        const makita = LabelItem(labelId: 3, name: 'Makita');
+
+        await pumpScreen(
+          tester,
+          signedInAs: _readOnlyUser,
+          labels: const [trupper, dewalt, makita],
+        );
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: [1],
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            ProductLabelFacet(labelId: 1, count: 42),
+            ProductLabelFacet(labelId: 2, count: 7),
+          ],
+        );
+        await openFilterSheet(tester);
+
+        await tester.tap(chipFinder('Trupper'));
+        await tester.pumpAndSettle();
+
+        expect(
+          (tester.widget<FilterChip>(chipFinder('Trupper')).label as Text).data,
+          'Trupper (42)',
+        );
+        expect(
+          (tester.widget<FilterChip>(chipFinder('DeWalt')).label as Text).data,
+          'DeWalt (7)',
+        );
+        // Disabled/unavailable chips show no count (FR-004).
+        expect(
+          (tester.widget<FilterChip>(chipFinder('Makita')).label as Text).data,
+          'Makita',
+        );
       },
     );
 
@@ -671,13 +724,13 @@ void main() {
         );
         await openFilterSheet(tester);
 
-        await tester.tap(find.widgetWithText(FilterChip, 'Trupper'));
+        await tester.tap(chipFinder('Trupper'));
         await tester.pumpAndSettle();
-        await tester.tap(find.widgetWithText(FilterChip, 'DeWalt'));
+        await tester.tap(chipFinder('DeWalt'));
         await tester.pumpAndSettle();
         expect(chipInteractive(tester, 'Makita'), isFalse);
 
-        await tester.tap(find.widgetWithText(FilterChip, 'DeWalt'));
+        await tester.tap(chipFinder('DeWalt'));
         await tester.pumpAndSettle();
 
         expect(chipInteractive(tester, 'Makita'), isTrue);
@@ -709,7 +762,7 @@ void main() {
         );
         await openFilterSheet(tester);
 
-        await tester.tap(find.widgetWithText(FilterChip, 'Trupper'));
+        await tester.tap(chipFinder('Trupper'));
         await tester.pumpAndSettle();
         expect(chipInteractive(tester, 'Makita'), isFalse);
 

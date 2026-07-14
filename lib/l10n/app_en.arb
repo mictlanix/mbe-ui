@@ -143,6 +143,15 @@
   "labelUnavailableTooltip": "No matching products",
   "@labelUnavailableTooltip": {"description": "Tooltip on a disabled label filter chip that would return no products if selected"},
 
+  "labelWithCount": "{name} ({count})",
+  "@labelWithCount": {
+    "description": "A label filter chip's text when the matching product count is known",
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+
   "filtersButton": "Filters",
   "@filtersButton": {"description": "Label/title of the catalog filter panel and its trigger button"},
 

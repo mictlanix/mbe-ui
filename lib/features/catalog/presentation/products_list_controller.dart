@@ -125,10 +125,11 @@ class ProductsListController extends _$ProductsListController {
   }
 }
 
-/// The set of label ids that appear on at least one product matching the
-/// current [ProductFilter] — i.e. labels that would *further* narrow the
-/// present results under the list's AND semantics (spec 009 FR-003, FR-009).
-/// Drives the filter drawer's per-chip enabled state via `LabelMultiPicker`.
+/// Label id → matching-product count, for every label that appears on at
+/// least one product matching the current [ProductFilter] — i.e. labels that
+/// would *further* narrow the present results under the list's AND semantics
+/// (spec 009 FR-003, FR-009). Drives the filter drawer's per-chip enabled
+/// state and count display via `LabelMultiPicker`.
 ///
 /// `autoDispose`, so the facet lookup fires only while the filter drawer
 /// (`_ProductFiltersPanel`) is watching it, and re-runs on every filter change
@@ -136,7 +137,7 @@ class ProductsListController extends _$ProductsListController {
 /// and treat `null` (loading/error) as "availability unknown" → all chips
 /// enabled, so a facet failure never blocks filtering (FR-010).
 @riverpod
-Future<Set<int>> productLabelFacets(ProductLabelFacetsRef ref) async {
+Future<Map<int, int>> productLabelFacets(ProductLabelFacetsRef ref) async {
   final filter = ref.watch(productFilterControllerProvider);
   final facets = await ref.read(productRepositoryProvider).productLabelFacets(
         search: filter.search.isEmpty ? null : filter.search,
@@ -146,5 +147,5 @@ Future<Set<int>> productLabelFacets(ProductLabelFacetsRef ref) async {
         purchasable: filter.purchasable,
         labels: filter.labels,
       );
-  return facets.map((f) => f.labelId).toSet();
+  return {for (final f in facets) f.labelId: f.count};
 }

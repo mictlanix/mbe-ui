@@ -233,7 +233,7 @@ void main() {
   });
 
   group('productLabelFacetsProvider (spec 009)', () {
-    test('maps the repository response to a label-id set', () async {
+    test('maps the repository response to a label-id -> count map', () async {
       when(
         () => repository.productLabelFacets(
           search: any(named: 'search'),
@@ -252,7 +252,7 @@ void main() {
 
       final result = await container.read(productLabelFacetsProvider.future);
 
-      expect(result, {3, 7});
+      expect(result, {3: 42, 7: 12});
     });
 
     test('refetches when ProductFilter changes (FR-003)', () async {
@@ -267,7 +267,7 @@ void main() {
         ),
       ).thenAnswer((_) async => const [ProductLabelFacet(labelId: 1, count: 5)]);
       final first = await container.read(productLabelFacetsProvider.future);
-      expect(first, {1});
+      expect(first, {1: 5});
 
       when(
         () => repository.productLabelFacets(
@@ -287,10 +287,10 @@ void main() {
       container.read(productFilterControllerProvider.notifier).labelsChanged([1]);
 
       final second = await container.read(productLabelFacetsProvider.future);
-      expect(second, {1, 2});
+      expect(second, {1: 5, 2: 3});
     });
 
-    test('an empty facet response yields an empty set (nothing available)', () async {
+    test('an empty facet response yields an empty map (nothing available)', () async {
       when(
         () => repository.productLabelFacets(
           search: any(named: 'search'),
