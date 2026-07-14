@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-12
 
-**Status**: Draft
+**Status**: Implemented and verified (T001–T021 complete). T019's live integration test and T020's manual quickstart validation both ran against a real mbe-api instance with #78 deployed: `test/integration/product_label_facets_flow_test.dart` passed 3/3 discovering a real co-occurring label pair and cross-checking facet counts against `list()`'s narrowed results; a manual browser walkthrough selecting "PLOMERIA" in the products filter drawer showed "ROTOPLAS" — the one label the live facets endpoint reported as co-occurring — remain enabled while every other label (AKSI, BOSCH, MAKITA, TRUPER, …) rendered disabled, matching the API-level result exactly.
 
 **Input**: User description: "Enhance products' filtering by label. Enable/disable labels on the product filters drawer accordingly after filtering is done. Ex. selecting a label named 'Trupper' should update each label's enabled state based on which other labels can still be applied afterwards."
 

@@ -140,6 +140,9 @@
   "productsLabelFilter": "Labels",
   "@productsLabelFilter": {},
 
+  "labelUnavailableTooltip": "No matching products",
+  "@labelUnavailableTooltip": {"description": "Tooltip on a disabled label filter chip that would return no products if selected"},
+
   "filtersButton": "Filters",
   "@filtersButton": {"description": "Label/title of the catalog filter panel and its trigger button"},
 

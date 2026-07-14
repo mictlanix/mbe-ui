@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
@@ -17,6 +18,7 @@ import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
@@ -85,6 +87,10 @@ void main() {
     required User signedInAs,
     List<ProductListItem> products = _testProducts,
     List<LabelItem> labels = const [],
+    // `null` (default) => every label in [labels] is reported available, so
+    // existing/unrelated tests keep today's all-enabled behavior. Tests
+    // exercising the facet-driven enable/disable pass an explicit list.
+    List<ProductLabelFacet>? labelFacets,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
     when(
@@ -101,6 +107,20 @@ void main() {
     ).thenAnswer(
       (_) async => ProductListResult(items: products, total: products.length),
     );
+    final effectiveFacets = labelFacets ??
+        labels
+            .map((l) => ProductLabelFacet(labelId: l.labelId, count: 1))
+            .toList();
+    when(
+      () => productRepository.productLabelFacets(
+        search: any(named: 'search'),
+        deactivated: any(named: 'deactivated'),
+        stockable: any(named: 'stockable'),
+        salable: any(named: 'salable'),
+        purchasable: any(named: 'purchasable'),
+        labels: any(named: 'labels'),
+      ),
+    ).thenAnswer((_) async => effectiveFacets);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -409,21 +429,62 @@ void main() {
   );
 
   testWidgets(
-    'selecting two labels filters by either and counts 2 toward the badge '
-    '(FR-007, FR-008, FR-009)',
+    'selecting two labels sends both and narrows the list to products '
+    'carrying all of them — AND, not OR (spec 009 FR-001, FR-002; also '
+    'counts 2 toward the badge, FR-008, FR-009)',
     (tester) async {
+      const clearance = LabelItem(labelId: 1, name: 'Clearance');
+      const seasonal = LabelItem(labelId: 2, name: 'Seasonal');
+      final bothProducts = _testProducts; // 2 items with labels [1]
+      final narrowedProduct = [_testProducts.first]; // only 1 has both
+
       await pumpScreen(
         tester,
         signedInAs: _readOnlyUser,
-        labels: const [
-          LabelItem(labelId: 1, name: 'Clearance'),
-          LabelItem(labelId: 2, name: 'Seasonal'),
-        ],
+        labels: const [clearance, seasonal],
+      );
+      // Selecting just Clearance -> both fixture products (server-side AND
+      // with a single label is a no-op narrowing).
+      when(
+        () => productRepository.list(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: [1],
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            ProductListResult(items: bothProducts, total: bothProducts.length),
+      );
+      // Adding Seasonal (AND) -> narrows to the single product with both.
+      when(
+        () => productRepository.list(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: [1, 2],
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => ProductListResult(
+          items: narrowedProduct,
+          total: narrowedProduct.length,
+        ),
       );
       await openFilterSheet(tester);
 
       await tester.tap(find.widgetWithText(FilterChip, 'Clearance'));
       await tester.pumpAndSettle();
+      expect(find.text('SKU-001'), findsOneWidget);
+      expect(find.text('SKU-002'), findsOneWidget);
+
       await tester.tap(find.widgetWithText(FilterChip, 'Seasonal'));
       await tester.pumpAndSettle();
 
@@ -439,6 +500,9 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).called(greaterThanOrEqualTo(1));
+      // Combining labels narrowed the list, it did not broaden it (AND).
+      expect(find.text('SKU-001'), findsOneWidget);
+      expect(find.text('SKU-002'), findsNothing);
 
       final filterBadge = tester.widget<Badge>(
         find.ancestor(
@@ -483,6 +547,180 @@ void main() {
       );
     },
   );
+
+  group('faceted label availability (spec 009)', () {
+    bool chipInteractive(WidgetTester tester, String label) =>
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, label))
+            .onSelected !=
+        null;
+
+    testWidgets(
+      'selecting a label disables labels that no longer co-occur, while the '
+      'selected one and its co-occurring labels stay interactive (FR-003, '
+      'FR-004, FR-006)',
+      (tester) async {
+        const trupper = LabelItem(labelId: 1, name: 'Trupper');
+        const dewalt = LabelItem(labelId: 2, name: 'DeWalt');
+        const makita = LabelItem(labelId: 3, name: 'Makita');
+
+        await pumpScreen(
+          tester,
+          signedInAs: _readOnlyUser,
+          labels: const [trupper, dewalt, makita],
+        );
+        // With Trupper selected, only Trupper+DeWalt co-occur; Makita does not.
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: [1],
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            ProductLabelFacet(labelId: 1, count: 2),
+            ProductLabelFacet(labelId: 2, count: 1),
+          ],
+        );
+        await openFilterSheet(tester);
+
+        await tester.tap(find.widgetWithText(FilterChip, 'Trupper'));
+        await tester.pumpAndSettle();
+
+        expect(chipInteractive(tester, 'Trupper'), isTrue); // selected
+        expect(chipInteractive(tester, 'DeWalt'), isTrue); // available
+        expect(chipInteractive(tester, 'Makita'), isFalse); // unavailable
+      },
+    );
+
+    testWidgets(
+      'while the facet lookup is loading or fails, every label stays '
+      'selectable — fail open (FR-010)',
+      (tester) async {
+        const trupper = LabelItem(labelId: 1, name: 'Trupper');
+        const makita = LabelItem(labelId: 2, name: 'Makita');
+
+        await pumpScreen(
+          tester,
+          signedInAs: _readOnlyUser,
+          labels: const [trupper, makita],
+        );
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: any(named: 'labels'),
+          ),
+        ).thenThrow(const AppError.server());
+        await openFilterSheet(tester);
+
+        expect(chipInteractive(tester, 'Trupper'), isTrue);
+        expect(chipInteractive(tester, 'Makita'), isTrue);
+      },
+    );
+
+    testWidgets(
+      'deselecting a label re-enables labels that co-occur with the '
+      'remaining selection (FR-007)',
+      (tester) async {
+        const trupper = LabelItem(labelId: 1, name: 'Trupper');
+        const dewalt = LabelItem(labelId: 2, name: 'DeWalt');
+        const makita = LabelItem(labelId: 3, name: 'Makita');
+
+        await pumpScreen(
+          tester,
+          signedInAs: _readOnlyUser,
+          labels: const [trupper, dewalt, makita],
+        );
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: [1, 2],
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            ProductLabelFacet(labelId: 1, count: 1),
+            ProductLabelFacet(labelId: 2, count: 1),
+          ],
+        );
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: [1],
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            ProductLabelFacet(labelId: 1, count: 2),
+            ProductLabelFacet(labelId: 2, count: 1),
+            ProductLabelFacet(labelId: 3, count: 1),
+          ],
+        );
+        await openFilterSheet(tester);
+
+        await tester.tap(find.widgetWithText(FilterChip, 'Trupper'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(FilterChip, 'DeWalt'));
+        await tester.pumpAndSettle();
+        expect(chipInteractive(tester, 'Makita'), isFalse);
+
+        await tester.tap(find.widgetWithText(FilterChip, 'DeWalt'));
+        await tester.pumpAndSettle();
+
+        expect(chipInteractive(tester, 'Makita'), isTrue);
+      },
+    );
+
+    testWidgets(
+      'Clear all restores the all-enabled label drawer (FR-008)',
+      (tester) async {
+        const trupper = LabelItem(labelId: 1, name: 'Trupper');
+        const makita = LabelItem(labelId: 2, name: 'Makita');
+
+        await pumpScreen(
+          tester,
+          signedInAs: _readOnlyUser,
+          labels: const [trupper, makita],
+        );
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: [1],
+          ),
+        ).thenAnswer(
+          (_) async => const [ProductLabelFacet(labelId: 1, count: 1)],
+        );
+        await openFilterSheet(tester);
+
+        await tester.tap(find.widgetWithText(FilterChip, 'Trupper'));
+        await tester.pumpAndSettle();
+        expect(chipInteractive(tester, 'Makita'), isFalse);
+
+        await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+        await tester.pumpAndSettle();
+
+        expect(chipInteractive(tester, 'Trupper'), isTrue);
+        expect(chipInteractive(tester, 'Makita'), isTrue);
+      },
+    );
+  });
 
   testWidgets('shows an empty state when there are no matches', (tester) async {
     await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);

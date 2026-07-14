@@ -374,6 +374,12 @@ abstract class AppLocalizations {
   /// **'Labels'**
   String get productsLabelFilter;
 
+  /// Tooltip on a disabled label filter chip that would return no products if selected
+  ///
+  /// In en, this message translates to:
+  /// **'No matching products'**
+  String get labelUnavailableTooltip;
+
   /// Label/title of the catalog filter panel and its trigger button
   ///
   /// In en, this message translates to:

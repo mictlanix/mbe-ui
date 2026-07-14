@@ -124,3 +124,27 @@ class ProductsListController extends _$ProductsListController {
     state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }
+
+/// The set of label ids that appear on at least one product matching the
+/// current [ProductFilter] — i.e. labels that would *further* narrow the
+/// present results under the list's AND semantics (spec 009 FR-003, FR-009).
+/// Drives the filter drawer's per-chip enabled state via `LabelMultiPicker`.
+///
+/// `autoDispose`, so the facet lookup fires only while the filter drawer
+/// (`_ProductFiltersPanel`) is watching it, and re-runs on every filter change
+/// (label/attribute toggle or submitted search). Consumers read `.valueOrNull`
+/// and treat `null` (loading/error) as "availability unknown" → all chips
+/// enabled, so a facet failure never blocks filtering (FR-010).
+@riverpod
+Future<Set<int>> productLabelFacets(ProductLabelFacetsRef ref) async {
+  final filter = ref.watch(productFilterControllerProvider);
+  final facets = await ref.read(productRepositoryProvider).productLabelFacets(
+        search: filter.search.isEmpty ? null : filter.search,
+        deactivated: filter.deactivated,
+        stockable: filter.stockable,
+        salable: filter.salable,
+        purchasable: filter.purchasable,
+        labels: filter.labels,
+      );
+  return facets.map((f) => f.labelId).toSet();
+}

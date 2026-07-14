@@ -54,6 +54,7 @@
   "productsSalableFilter": "Vendible",
   "productsPurchasableFilter": "Comprable",
   "productsLabelFilter": "Etiquetas",
+  "labelUnavailableTooltip": "Sin productos que coincidan",
   "filtersButton": "Filtros",
   "filtersTooltip": "Filtros",
   "clearAllFilters": "Limpiar filtros",

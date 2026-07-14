@@ -638,6 +638,103 @@ void main() {
     });
   });
 
+  group('ProductRepositoryImpl.productLabelFacets', () {
+    test('200 maps rows to ProductLabelFacet entities', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode([
+            {'label_id': 3, 'count': 42},
+            {'label_id': 7, 'count': 12},
+          ]),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final facets = await repository.productLabelFacets();
+
+      expect(facets, hasLength(2));
+      expect(facets[0].labelId, 3);
+      expect(facets[0].count, 42);
+      expect(facets[1].labelId, 7);
+      expect(facets[1].count, 12);
+    });
+
+    test('200 with an empty array returns an empty list', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('[]', 200, headers: _jsonHeaders),
+      );
+
+      final facets = await repository.productLabelFacets();
+
+      expect(facets, isEmpty);
+    });
+
+    test('forwards search/attribute filters and every selected label as a '
+        'repeated query param, without skip/limit', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('[]', 200, headers: _jsonHeaders);
+      });
+
+      await repository.productLabelFacets(
+        search: 'drill',
+        deactivated: false,
+        stockable: true,
+        labels: [1, 2],
+      );
+
+      expect(captured!.path, '/api/v1/products/labels/facets');
+      expect(captured!.queryParameters['search'], 'drill');
+      expect(captured!.queryParameters['deactivated'], false);
+      expect(captured!.queryParameters['stockable'], true);
+      final label = captured!.queryParameters['label'] as ListParam;
+      expect(label.value, [1, 2]);
+      expect(label.format, ListFormat.multi);
+      expect(captured!.queryParameters.containsKey('skip'), isFalse);
+      expect(captured!.queryParameters.containsKey('limit'), isFalse);
+    });
+
+    test('omits the label param when no labels are selected', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('[]', 200, headers: _jsonHeaders);
+      });
+
+      await repository.productLabelFacets();
+
+      expect(captured!.queryParameters.containsKey('label'), isFalse);
+    });
+
+    test('5xx maps to AppError.server', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('', 503),
+      );
+
+      await expectLater(
+        () => repository.productLabelFacets(),
+        throwsA(const AppError.server(statusCode: 503)),
+      );
+    });
+
+    test('a connection failure maps to AppError.network', () async {
+      final repository = _repositoryWith(
+        (options) async => throw DioException(
+          requestOptions: options,
+          type: DioExceptionType.connectionError,
+          error: 'Failed host lookup',
+        ),
+      );
+
+      await expectLater(
+        () => repository.productLabelFacets(),
+        throwsA(isA<NetworkError>()),
+      );
+    });
+  });
+
   group('ProductRepositoryImpl.mergeProducts', () {
     test('204 completes with no error', () async {
       final repository = _repositoryWith(

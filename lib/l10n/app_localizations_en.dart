@@ -151,6 +151,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productsLabelFilter => 'Labels';
 
   @override
+  String get labelUnavailableTooltip => 'No matching products';
+
+  @override
   String get filtersButton => 'Filters';
 
   @override
