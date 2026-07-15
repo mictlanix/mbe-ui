@@ -170,11 +170,59 @@ abstract class AppLocalizations {
   /// **'Change password'**
   String get changePasswordMenuTitle;
 
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mictlanix Business Essentials'**
+  String get appTitle;
+
+  /// No description provided for @homeMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeMenuTitle;
+
+  /// No description provided for @homeWelcomeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get homeWelcomeMessage;
+
+  /// No description provided for @catalogsGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogs'**
+  String get catalogsGroupTitle;
+
   /// No description provided for @usersMenuTitle.
   ///
   /// In en, this message translates to:
   /// **'Users'**
   String get usersMenuTitle;
+
+  /// No description provided for @userMenuLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get userMenuLogout;
+
+  /// No description provided for @userMenuStoreFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Store {id}'**
+  String userMenuStoreFallback(int id);
+
+  /// No description provided for @userMenuPosFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'POS {id}'**
+  String userMenuPosFallback(int id);
+
+  /// No description provided for @userMenuDrawerFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Drawer {id}'**
+  String userMenuDrawerFallback(int id);
 
   /// No description provided for @changePasswordTitle.
   ///

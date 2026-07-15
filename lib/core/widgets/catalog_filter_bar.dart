@@ -12,6 +12,7 @@ class CatalogFilterBar extends StatelessWidget {
     super.key,
     required this.search,
     this.filters = const [],
+    this.actions = const [],
   });
 
   /// The catalog's search control (typically a [CatalogSearchBar]).
@@ -20,8 +21,16 @@ class CatalogFilterBar extends StatelessWidget {
   /// Facet filter widgets (e.g. `FilterChip`s), shown after [search].
   final List<Widget> filters;
 
+  /// Entity actions (e.g. Add, Merge), shown to the right of [filters]
+  /// instead of in the app bar (spec 010 FR-018/019). The Add action is
+  /// passed pre-styled as the primary action by callers.
+  final List<Widget> actions;
+
   @override
   Widget build(BuildContext context) {
+    // Filters first, then entity actions — actions always sit to the right of
+    // the facet controls, in both the single-row and reflowed layouts.
+    final trailing = [...filters, ...actions];
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= LayoutBreakpoints.expanded) {
@@ -29,11 +38,11 @@ class CatalogFilterBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(flex: 2, child: search),
-              if (filters.isNotEmpty) const SizedBox(width: 8),
-              ...filters.map(
-                (filter) => Padding(
+              if (trailing.isNotEmpty) const SizedBox(width: 8),
+              ...trailing.map(
+                (widget) => Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: filter,
+                  child: widget,
                 ),
               ),
             ],
@@ -43,8 +52,9 @@ class CatalogFilterBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             search,
-            if (filters.isNotEmpty) const SizedBox(height: 8),
-            if (filters.isNotEmpty) Wrap(spacing: 8, children: filters),
+            if (trailing.isNotEmpty) const SizedBox(height: 8),
+            if (trailing.isNotEmpty)
+              Wrap(spacing: 8, runSpacing: 8, children: trailing),
           ],
         );
       },

@@ -16,7 +16,16 @@
   "forgotPasswordLink": "¿Olvidaste tu contraseña?",
   "changePasswordMenuTitle": "Cambiar contraseña",
 
+  "appTitle": "Mictlanix Business Essentials",
+  "homeMenuTitle": "Inicio",
+  "homeWelcomeMessage": "Bienvenido",
+  "catalogsGroupTitle": "Catálogos",
   "usersMenuTitle": "Usuarios",
+
+  "userMenuLogout": "Salir",
+  "userMenuStoreFallback": "Store {id}",
+  "userMenuPosFallback": "POS {id}",
+  "userMenuDrawerFallback": "Drawer {id}",
 
   "changePasswordTitle": "Cambiar contraseña",
   "currentPasswordLabel": "Contraseña actual",

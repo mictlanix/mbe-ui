@@ -81,6 +81,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Brand/flavor assets. Ships a default welcome placeholder; per-deployment
+  # flavors add their own welcome asset here and point BRAND_WELCOME_ASSET at
+  # it (spec 010, core/branding).
+  assets:
+    - assets/branding/
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

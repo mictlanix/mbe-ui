@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
+import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
@@ -133,7 +134,8 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const ProductsListScreen(),
+          // The shell owns the Scaffold in the app; the screen is body-only.
+          home: const Scaffold(body: ProductsListScreen()),
         ),
       ),
     );
@@ -167,7 +169,10 @@ void main() {
     final router = GoRouter(
       initialLocation: '/',
       routes: [
-        GoRoute(path: '/', builder: (_, _) => const ProductsListScreen()),
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(body: ProductsListScreen()),
+        ),
         GoRoute(
           path: '/products/:productId',
           builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
@@ -788,6 +793,47 @@ void main() {
 
     expect(find.byKey(const Key('new_product_button')), findsOneWidget);
   });
+
+  testWidgets(
+    'Add and Merge sit beside the search bar (not the app bar), Add primary '
+    '(spec 010 US4)',
+    (tester) async {
+      const mergeUser = User(
+        userId: 'merger',
+        email: 'merger@example.com',
+        administrator: false,
+        disabled: false,
+        sessionVersion: 1,
+        privileges: [
+          Privilege(systemObject: SystemObject.products, rawValue: 3),
+          Privilege(systemObject: SystemObject.productsMerge, rawValue: 1),
+        ],
+      );
+      await pumpScreen(tester, signedInAs: mergeUser);
+
+      // Both live inside the filter bar region; there is no AppBar (shell owns
+      // it). Add is emphasised as the primary (FilledButton) action.
+      expect(find.byType(AppBar), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(CatalogFilterBar),
+          matching: find.byKey(const Key('new_product_button')),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(CatalogFilterBar),
+          matching: find.byKey(const Key('merge_products_button')),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget(find.byKey(const Key('new_product_button'))),
+        isA<FilledButton>(),
+      );
+    },
+  );
 
   testWidgets(
     'hides the New product action for a user without products.create',
