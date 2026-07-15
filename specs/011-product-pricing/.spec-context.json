@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Product Pricing (Price Lists, Product Prices & Exchange Rates)",
   "branch": "011-product-pricing",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-15T03:22:47.543Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-15T03:38:16.385Z"
     }
   ]
 }
