@@ -1,0 +1,246 @@
+# Phase 0 Research: Product Pricing
+
+**Feature**: `011-product-pricing` | **Date**: 2026-07-14 | **Plan**: [plan.md](./plan.md)
+
+All Technical Context unknowns are resolved below. No `NEEDS CLARIFICATION`
+markers remain.
+
+---
+
+## 1. Where do per-product prices live? (spec US2 vs. shipped feature 007)
+
+**Decision**: A **standalone pricing screen** at `/pricing`, gated by
+`SystemObject.pricing` (106). The product detail form is **not** touched.
+
+**Rationale**:
+
+- Feature `007-catalog-ui-improvements-2` deliberately removed the price
+  section from the product form. Its **FR-012** ("The product form MUST NOT
+  display any price-list section or price values") and **FR-013** (the labels
+  control takes that layout position) are shipped requirements, and DESIGN.md
+  §4.3 cites the resulting `switches|labels` band
+  (`product_detail_screen.dart:331`, `_SwitchesLabelsBand`) as the reference
+  implementation of the form-layout principle. Reintroducing prices there
+  would reverse a shipped decision and evict labels from the slot 007 gave
+  them.
+- 007's stated reason for removal was that the price section *"isn't editable
+  and duplicates information better served by labels"* — the "isn't editable"
+  half is now obsolete, but the layout decision stands on its own.
+- The RBAC model independently favors separation: pricing is its own
+  `SystemObject` (`Pricing` = 106, "Price management / pricing tool") distinct
+  from `Products` (0). A user may hold pricing rights without product-edit
+  rights and vice versa; embedding prices in the product form would put two
+  different privilege surfaces on one screen.
+
+**Alternatives considered**:
+
+- *Prices section back on the product form* (supersede 007 FR-012): matches
+  the original feature request most literally and needs no product picker, but
+  reverses a shipped requirement, competes with labels for the layout slot, and
+  mixes two RBAC surfaces on one screen. **Rejected by decision 2026-07-14.**
+- *Both surfaces* (read-only summary on the form + editable `/pricing`):
+  best discoverability, but still violates 007 FR-012 and roughly doubles the
+  surface to build and test for a marginal gain. **Rejected.**
+
+---
+
+## 2. OpenAPI codegen — regenerate or reuse?
+
+**Decision**: **Reuse the committed generated client as-is.** No codegen task
+is planned (decision 2026-07-14).
+
+**Rationale**: `lib/generated/openapi/` already contains
+`price_lists_api.dart`, `product_prices_api.dart`, `exchange_rates_api.dart`
+and the full model set (`PriceListResponse`, `ProductPriceResponse`,
+`ExchangeRateResponse`, their `*Create`/`*Update` variants, and the
+`ListResponse_*` envelopes) — verified present against mbe-api v0.1.0's live
+`/openapi.json` during planning. Constitution §III requires DTOs be generated
+rather than hand-written; it does not require a redundant regeneration when the
+committed client already matches.
+
+**Alternatives considered**:
+
+- *Regenerate unconditionally*: safest against silent drift, but rewrites many
+  generated files and adds review noise. **Rejected.**
+- *Verify-then-regen-if-stale*: middle ground. **Rejected** in favor of the
+  explicit decision to treat the committed client as current.
+
+**Risk accepted**: if mbe-api's pricing schemas change before implementation
+lands, the client is stale. Mitigation: the quickstart's live-backend checks
+exercise every pricing endpoint, so drift surfaces as a concrete failure rather
+than silently.
+
+---
+
+## 3. Money & decimal representation
+
+**Decision**: Model `price`, `lowProfit`, `highProfit`, margins, and `rate` as
+**`String`** in domain entities. Format for display with `intl`
+(`NumberFormat.currency` for money, percent formatting for margins). Never
+parse money into `double`.
+
+**Rationale**:
+
+- mbe-api returns these as JSON strings and the generated **response** DTOs
+  type them as `String` (`ProductPriceResponse.price`, `.lowProfit`,
+  `.highProfit`; `PriceListResponse.highProfitMargin`, `.lowProfitMargin`;
+  `ExchangeRateResponse.rate`). Keeping `String` end-to-end preserves the
+  server's exact decimal scale.
+- Established precedent: `Product.taxRate` is already a `String` through the
+  same pipeline (`product.dart:32`), and no `decimal` package is in
+  `pubspec.yaml`. Introducing one would be a new dependency for no gain.
+- Round-tripping money through IEEE-754 `double` risks scale/rounding drift on
+  values the business treats as exact.
+
+**Alternatives considered**: adding `package:decimal` — rejected, new
+dependency, and the API's string contract already carries exact values.
+
+---
+
+## 4. Writing prices: the `AnyOf` request wrapper
+
+**Decision**: Send the **String** arm of the generated `AnyOf` wrappers:
+
+```dart
+Price((b) => b..anyOf = AnyOf2<num, String>(values: {1: '120.00'}))
+```
+
+**Rationale**: request DTOs are asymmetric with responses — `ProductPriceCreate`
+types `price`/`lowProfit`/`highProfit` as the generated `Price`/`LowProfit`/
+`HighProfit` wrappers (each an `anyOf: [number, string]` per mbe-api's schema),
+while responses are plain `String`. The generated `_$PriceSerializer.serialize`
+delegates to `serializers.serialize(anyOf, ...)` using
+`anyOf.valueTypes`, so it round-trips correctly despite its unused (empty)
+`_serializeProperties` body. `AnyOf2<num, String>` orders types `[num, String]`
+to match the generated `targetType`, so **index `1` is the String arm**.
+Choosing String keeps §3's exactness guarantee.
+
+**Alternatives considered**: sending the `num` arm (index `0`) — rejected, it
+reintroduces float rounding on money for no benefit.
+
+**Risk**: this is the codebase's **first** `one_of`/`AnyOf` construction site
+(`grep` found no existing usage under `lib/features/` or `lib/core/`). The
+serializer path is read here but not yet exercised at runtime, so a repository
+round-trip test against a live mbe-api (quickstart §3) is mandatory before the
+UI is trusted — this is the single highest-risk unknown in the feature.
+
+---
+
+## 5. "No price set" vs. "price is zero"
+
+**Decision**: The pricing screen **left-joins** the full price-list set against
+the product's existing price rows, client-side.
+
+**Rationale**: `GET /api/v1/product-prices?product={id}` returns only rows that
+exist; a list with no row for the product is simply absent from the response.
+Spec FR-008 requires distinguishing "not set" from "0.00". So the controller
+fetches all price lists (`GET /price-lists`) and the product's prices
+(`GET /product-prices?product={id}`), then emits one row per price list with a
+nullable `ProductPrice`:
+
+- `productPriceId == null` → "not set", the save action **creates**
+  (`POST /product-prices`).
+- `productPriceId != null` → editable, the save action **updates**
+  (`PUT /product-prices/{id}`).
+
+Note `ProductPriceResponse.priceList` is a **nested `PriceListResponse`**, not
+an id, so the join key is `priceList.priceListId`.
+
+**Alternatives considered**: relying on the backend to pre-seed a row per list
+(legacy `mbe` did this on product create per `docs/specs/01-master-data.md`) —
+rejected: the UI must not assume seeding it cannot verify, and
+`01-master-data.md` itself notes new price lists do *not* backfill rows onto
+existing products.
+
+---
+
+## 6. Currency reference for exchange rates
+
+**Decision**: Add a hand-written `Currency` enum at
+`lib/core/domain/currency.dart`, mirroring legacy `CurrencyCode`
+(`mbe/docs/constants.md` §CurrencyCode): `mxn(0)`, `usd(1)`, `eur(2)`, with a
+`fromValue(int)` lookup.
+
+**Rationale**:
+
+- Spec FR-018 requires currency **selection**, not free-form numeric entry, but
+  mbe-api exposes `base`/`target` as bare `int` with **no currency schema** —
+  `lib/generated/openapi/lib/src/model/` has no currency model, so there is
+  nothing to generate from.
+- This does **not** violate constitution §III, which forbids hand-written DTOs
+  *for a resource that already has a published schema*. `Currency` is a
+  constant enum, not a DTO, and there is direct precedent:
+  `lib/core/access/system_object.dart` is a hand-written enum mirroring
+  `constants.md` §SystemObjects in exactly this shape.
+- `core/domain/` (not `features/catalog/`) because currency is cross-feature —
+  `Product.currency` is already a raw `int` (`product.dart:35`) that later
+  features (sales, invoicing) will want to render.
+
+**Alternatives considered**:
+
+- *Free-form int field*: violates FR-018. **Rejected.**
+- *File an mbe-api issue for a currency enum*: worth doing eventually, but a
+  blocking upstream dependency for a 3-value legacy constant is
+  disproportionate; §III's repo-boundary rule means we cannot add it ourselves.
+  **Deferred** — noted as a follow-up in plan.md, not a blocker.
+
+**Out of scope**: retrofitting `Product.currency` to the new enum — that's a
+catalog change, not a pricing one.
+
+---
+
+## 7. Navigation & routing placement
+
+**Decision**: Three new top-level routes, each its own
+`StatefulShellRoute` branch, added to the existing `catalogs` nav group:
+
+| Route | Screen | Nav gate |
+|---|---|---|
+| `/price-lists` | price-lists catalog | `priceLists` (5) + `read` |
+| `/pricing` | pricing tool | `pricing` (106) + `read` |
+| `/exchange-rates` | exchange-rates catalog | `exchangeRates` (43) + `read` |
+
+**Rationale**: `lib/core/navigation/nav_destinations.dart` (spec 010) already
+models the tree declaratively — new destinations are added to `kNavigationTree`
+with a `gate`, and `navDestinationsProvider` filters by access automatically
+(the widget never calls `can(...)`). `NavBranch` indices must stay in sync with
+the branch order in `app_router.dart`. All three legacy objects sit in the
+"Master Data" category per `constants.md`, matching the existing `catalogs`
+group; no new group is warranted for three destinations.
+
+**Alternatives considered**: a dedicated "Pricing" nav group — rejected as
+premature for three entries; revisit if the group grows.
+
+---
+
+## 8. Duplicate exchange rate for a date + currency pair
+
+**Decision**: No client-side pre-check. Submit and surface whatever mbe-api
+returns through the shared error mapping.
+
+**Rationale**: mbe-api's OpenAPI spec declares no uniqueness constraint on
+(`date`, `base`, `target`), and the UI cannot know the server's rule. Spec's
+edge case requires only that the outcome be *clear*, not that the client
+predict it. A client-side "does it exist?" probe would be a TOCTOU race and
+would encode a rule we cannot verify.
+
+**Alternatives considered**: pre-flight GET on the pair/date — rejected
+(racy, extra round-trip, guesses at a server rule).
+
+---
+
+## 9. Testing approach
+
+**Decision**: Mirror the catalog feature's existing three-tier split —
+`flutter_test` unit tests with `mocktail` repository fakes, widget tests per
+screen, and one `integration_test` golden path (create price list → price a
+product on it → record an exchange rate) run against a live mbe-api per
+quickstart.md.
+
+**Rationale**: constitution "Development Workflow & Quality Gates" mandates all
+three tiers; `test/unit|widget|integration/features/catalog/` already
+establishes the layout and `mocktail` is already a dev dependency.
+
+**Additional required coverage** (beyond the standard tiers): a repository
+round-trip test proving the §4 `AnyOf` write path actually serializes — the
+feature's highest-risk unknown.

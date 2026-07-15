@@ -29,22 +29,24 @@ A pricing administrator maintains the set of named price lists (e.g. "Retail", "
 
 ---
 
-### User Story 2 - View and edit a product's prices across price lists (Priority: P1)
+### User Story 2 - Price a product across price lists (Priority: P1)
 
-A catalog staff member opens a product and sees its selling price for every price list in one place, alongside the low- and high-profit figures for each. They can set or update the product's price for any list directly from the product's detail/edit screen, so a single product can carry a different price per tier.
+A pricing user opens the dedicated pricing screen, finds a product, and sees its selling price for every price list in one place, alongside the low- and high-profit figures for each. They can set or update the product's price for any list from that screen, so a single product can carry a different price per tier.
 
 **Why this priority**: This is the headline capability the feature exists to deliver — pricing a product per tier. It is where day-to-day pricing work happens and is the reason the mbe-api pricing endpoints were added.
 
-**Independent Test**: Open an existing product's detail screen, confirm the prices sub-panel lists every price list with the product's current price (or a blank/zero when none is set yet), change one list's price, save, reopen the product, and confirm the new price persisted.
+**Independent Test**: Open the pricing screen, select a known product, confirm the panel lists every price list with the product's current price (or a "not set" indication when none exists yet), change one list's price, save, reselect the product, and confirm the new price persisted.
 
 **Acceptance Scenarios**:
 
-1. **Given** a product and one or more price lists exist, **When** a user opens the product's detail screen, **Then** the prices sub-panel shows one row per price list with the product's price, low-profit, and high-profit values for that list.
-2. **Given** a price list for which the product has no price yet, **When** the user views the product, **Then** that list still appears in the sub-panel indicating no price is set, and a user with edit privilege can set one.
-3. **Given** a user with edit privilege, **When** they set or change the product's price for a list and save, **Then** the value is persisted and shown on the next view.
+1. **Given** one or more price lists exist, **When** a user selects a product on the pricing screen, **Then** the panel shows one row per price list with that product's price, low-profit, and high-profit values for the list.
+2. **Given** a price list for which the selected product has no price yet, **When** the user views it, **Then** that list still appears indicating no price is set, and a user with edit privilege can set one.
+3. **Given** a user with edit privilege, **When** they set or change the product's price for a list and save, **Then** the value is persisted and shown when the product is reselected.
 4. **Given** a user enters a price, low-profit, or high-profit value that is not a valid non-negative amount, **When** they try to save, **Then** the invalid field is rejected with a clear message and nothing is saved.
-5. **Given** a user with only read access to the product, **When** they open it, **Then** the prices sub-panel is visible but read-only with no editing controls.
+5. **Given** a user with read but not update access to the pricing tool, **When** they select a product, **Then** prices are visible but read-only with no editing controls.
 6. **Given** a product's prices are being viewed, **When** monetary and margin values are displayed, **Then** they are formatted per the application locale (MXN currency, `es-MX`).
+7. **Given** a user without read access to the pricing tool, **When** they attempt to open the pricing screen, **Then** access is denied (deny-by-default).
+8. **Given** the pricing screen is open with no product selected yet, **When** it renders, **Then** it shows an empty state prompting the user to find a product, not an error.
 
 ---
 
@@ -68,12 +70,13 @@ A pricing/finance administrator records the daily exchange rate between two curr
 
 ### Edge Cases
 
-- **New product, no prices yet**: A product may have no price rows for some or all lists. The prices sub-panel MUST show every current price list, distinguishing "no price set" from "price set to zero".
+- **New product, no prices yet**: A product may have no price rows for some or all lists. The pricing screen MUST show every current price list, distinguishing "no price set" from "price set to zero".
 - **List deleted while a product is priced on it**: If a price list is removed, product prices tied to it become orphaned. The UI relies on the backend's deletion rules (US1 scenario 6) and MUST surface a backend rejection rather than silently losing data.
+- **Product deleted from the catalog**: Deleting a product hard-deletes its price rows (per feature 007's FR-016a). The pricing screen MUST handle a selected product disappearing without leaving stale prices on screen.
 - **Duplicate exchange rate**: Attempting to add a second rate for the same date and currency pair — the UI MUST surface whatever the backend returns (accept, reject, or overwrite) as a clear outcome rather than failing opaquely.
 - **Zero / negative values**: Negative price, margin, or rate values MUST be rejected client-side before submission.
 - **Very small or large decimals**: Margins are decimals (e.g. `0.40` = 40%); rates and prices may carry several decimal places. Display MUST NOT truncate in a way that misrepresents the stored value.
-- **No price lists exist yet**: If there are zero price lists, a product's prices sub-panel MUST render an empty state directing the user to create a price list first, not an error.
+- **No price lists exist yet**: If there are zero price lists, the pricing screen MUST render an empty state directing the user to create a price list first, not an error.
 
 ## Requirements *(mandatory)*
 
@@ -90,12 +93,14 @@ A pricing/finance administrator records the daily exchange rate between two curr
 
 #### Product Prices
 
-- **FR-007**: On a product's detail/edit screen, the system MUST show a prices sub-panel listing every current price list with that product's price, low-profit, and high-profit values for the list.
-- **FR-008**: The sub-panel MUST visually distinguish a list for which no product price exists yet from one whose price is zero.
+- **FR-007**: The system MUST provide a dedicated pricing screen where a user selects a product and sees every current price list with that product's price, low-profit, and high-profit values for the list.
+- **FR-007a**: The product form MUST NOT display prices. Feature `007-catalog-ui-improvements-2`'s FR-012 (no price section on the product form) and FR-013 (labels occupy that layout position) remain in force and are NOT superseded by this feature.
+- **FR-007b**: The pricing screen MUST let the user find a product using the shared product-search/picker pattern already used elsewhere in the catalog.
+- **FR-008**: The pricing screen MUST visually distinguish a list for which no product price exists yet from one whose price is zero.
 - **FR-009**: An authorized user MUST be able to set a product's price (and low/high profit) for a price list that has no existing price row, creating it.
 - **FR-010**: An authorized user MUST be able to update a product's existing price, low-profit, and high-profit for a price list.
 - **FR-011**: Price, low-profit, and high-profit inputs MUST be validated as non-negative monetary amounts before submission.
-- **FR-012**: When the current user lacks edit privilege for pricing, the prices sub-panel MUST render read-only with no create/edit controls, while still displaying values.
+- **FR-012**: When the current user lacks update privilege on the pricing tool, the pricing screen MUST render read-only with no create/edit controls, while still displaying values.
 - **FR-013**: Monetary values MUST be formatted using the application locale and currency (MXN, `es-MX`), not manual string formatting.
 
 #### Exchange Rates
@@ -124,7 +129,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 ### Measurable Outcomes
 
 - **SC-001**: An authorized user can create a new price list and see it in the list in under 30 seconds without leaving the price-lists screen.
-- **SC-002**: From a product's detail screen, a user can see the product's price for every price list at a glance, with 100% of existing price lists represented (including those with no price set).
+- **SC-002**: From the pricing screen, a user can select a product and see its price for every price list at a glance, with 100% of existing price lists represented (including those with no price set).
 - **SC-003**: A user can change a product's price for one price list and confirm the persisted change on reload with no more than one save action.
 - **SC-004**: 100% of pricing create/edit/delete actions are hidden from users lacking the corresponding privilege (no orphaned, non-functional controls).
 - **SC-005**: All monetary and margin values render in MXN/`es-MX` formatting across every pricing surface, with none showing raw unformatted numbers.
@@ -135,7 +140,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 
 - **Reuse of catalog patterns**: This feature reuses the existing shared list/table, filter, pagination, form-grid, currency/date field, and error-display widgets and the established feature-layer structure; it introduces no new cross-cutting UI infrastructure.
 - **Backend is authoritative for cross-entity rules**: Rules such as "a price list cannot be deleted while assigned to a customer" and any auto-seeding of a product-price row per list on product creation are enforced by mbe-api. The UI surfaces the backend's outcome and does not re-implement these rules client-side.
-- **Product-price sub-panel placement**: Product prices are managed from within the existing product detail/edit screen as a sub-panel, not as a standalone top-level catalog screen. A standalone product-prices browser is out of scope for this feature.
+- **Product-price screen placement** (decided 2026-07-14): Product prices are managed on a **standalone pricing screen**, not as a sub-panel on the product detail/edit form. Feature `007-catalog-ui-improvements-2` deliberately removed the price section from the product form (its FR-012/FR-013, with labels taking that layout slot — the `switches|labels` band DESIGN.md §4.3 cites as the reference implementation); this feature honors that decision rather than reversing it. The pricing tool is also a distinct RBAC surface (`Pricing`, 106) from the product catalog (`Products`, 0), so a separate screen matches the privilege model: a user may price products without holding product-edit rights, and vice versa.
 - **RBAC mapping** (from `mbe/docs/constants.md`): the price-lists catalog screen (US1) maps to the `PriceLists` system object (code 5); editing a product's prices (US2) maps to the distinct `Pricing` system object (code 106, "Price management / pricing tool"), **not** the product privilege nor the price-list-catalog privilege; exchange rates (US3) map to the `ExchangeRates` system object (code 43). These map to the standard `AccessRight` bitmask (Read to view, Update/Create/Delete for the corresponding mutations). Presence of each `SystemObject` code in mbe-api's `UserResponse.privileges` is confirmed during planning.
 - **Currency source**: The set of selectable currencies for exchange rates comes from a defined currency reference (enum/constant) shared with the backend; free-form numeric currency codes are not exposed to users.
 - **Margins as decimals**: Profit margins are stored as decimals (e.g. `0.40`) and presented to users as percentages (40%).
@@ -144,7 +149,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 
 ## Dependencies
 
-- **mbe-api pricing endpoints** (v0.1.0): `/api/v1/price-lists`, `/api/v1/product-prices`, `/api/v1/exchange-rates` (full CRUD each). The API client MUST be regenerated from the current OpenAPI spec and mapped to immutable domain entities per the Contract-Driven API Integration principle.
-- **Existing product detail/edit screen** (feature `002-product-catalog`): the prices sub-panel is embedded here.
-- **Existing RBAC session provider**: supplies `can(SystemObject, AccessRight)` for gating.
+- **mbe-api pricing endpoints** (v0.1.0): `/api/v1/price-lists`, `/api/v1/product-prices`, `/api/v1/exchange-rates` (full CRUD each). **Already generated** — `price_lists_api.dart`, `product_prices_api.dart`, `exchange_rates_api.dart` and their models are present in `lib/generated/openapi/`; the committed client is treated as current and no codegen re-run is planned (decided 2026-07-14). These DTOs MUST still be mapped to immutable `freezed` domain entities per the Contract-Driven API Integration principle.
+- **Existing product search/picker**: reused by the pricing screen to select a product.
+- **Existing RBAC session provider**: supplies `can(SystemObject, AccessRight)` for gating. `SystemObject.pricing` (106), `priceLists` (5), and `exchangeRates` (43) are **already defined** in `lib/core/access/system_object.dart` — no RBAC plumbing is added by this feature.
 - **Currency reference/enum**: needed for exchange-rate base/target selection; confirm mbe-api exposes it (or a shared constant) during planning — if absent, file an mbe-api dependency.
