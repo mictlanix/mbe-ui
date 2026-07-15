@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Adaptive Navigation Layout",
   "branch": "010-adaptive-navigation-layout",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-14T17:04:20.323Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-14T17:55:10.647Z"
     }
   ]
 }

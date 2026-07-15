@@ -28,7 +28,7 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 **Purpose**: Bundled assets the feature needs.
 
-- [ ] T001 Add default welcome placeholder `assets/branding/default_welcome.png` and register `assets/branding/` under `flutter/assets` in `pubspec.yaml`; run `flutter pub get`.
+- [X] T001 Add default welcome placeholder `assets/branding/default_welcome.png` and register `assets/branding/` under `flutter/assets` in `pubspec.yaml`; run `flutter pub get`.
 
 ---
 
@@ -38,8 +38,8 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 **⚠️ CRITICAL**: Blocks User Story 1 (and therefore the shell every other story renders in).
 
-- [ ] T002 [P] Create the navigation model — `NavItem` (sealed) with `NavDestination` and `NavGroup` (one-level grouping) — in `lib/core/navigation/nav_destination.dart`, per [data-model.md](./data-model.md).
-- [ ] T003 Create the concrete destination tree (Home + `Catalogs → Users, Products`, each with its `(SystemObject, AccessRight.read)` gate and `branchIndex`) and the access-filtered `navDestinationsProvider` (watches `accessControlProvider`, hides forbidden destinations and empty groups) in `lib/core/navigation/nav_destinations.dart`; run `dart run build_runner build --delete-conflicting-outputs`. Depends on T002.
+- [X] T002 [P] Create the navigation model — `NavItem` (sealed) with `NavDestination` and `NavGroup` (one-level grouping) — in `lib/core/navigation/nav_destination.dart`, per [data-model.md](./data-model.md).
+- [X] T003 Create the concrete destination tree (Home + `Catalogs → Users, Products`, each with its `(SystemObject, AccessRight.read)` gate and `branchIndex`) and the access-filtered `navDestinationsProvider` (watches `accessControlProvider`, hides forbidden destinations and empty groups) in `lib/core/navigation/nav_destinations.dart`; run `dart run build_runner build --delete-conflicting-outputs`. Depends on T002.
 
 **Checkpoint**: Navigation model resolves the correct filtered tree per RBAC — user story work can begin.
 
@@ -53,14 +53,14 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 ### Implementation for User Story 1
 
-- [ ] T004 [US1] Add navigation l10n keys (`homeMenuTitle` "Inicio"/"Home", `catalogsGroupTitle` "Catálogos"/"Catalogs"; reuse existing `usersMenuTitle`, `productsTitle`) in `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; regenerate localizations.
-- [ ] T005 [P] [US1] Implement `AppNavigation` (rail mode ≥ 600 px / `NavigationDrawer` mode < 600 px from the same filtered tree, group section headers, selected-index highlight, `nav_dest_<id>` / `nav_group_<id>` keys) in `lib/core/widgets/app_navigation.dart`, per [contracts/app-navigation.md](./contracts/app-navigation.md). Depends on T003.
-- [ ] T006 [US1] Implement `AppShell` (Scaffold; app-bar title from active destination; Compact drawer + menu button vs. Medium+ persistent rail via `LayoutBreakpoints`; body = `navigationShell`; `goBranch` on select) in `lib/core/widgets/app_shell.dart`, per [contracts/navigation-shell.md](./contracts/navigation-shell.md). Depends on T005.
-- [ ] T007 [US1] Refactor the router to a `StatefulShellRoute.indexedStack` with 3 branches (`/`, `/users`, `/products`) built by `AppShell`, keeping detail/form/merge and all `/auth/*` routes as full-screen sibling routes; preserve existing redirect guard and route gates, in `lib/app/router/app_router.dart`. Depends on T006.
-- [ ] T008 [US1] Convert `HomeScreen`, `UsersListScreen`, `ProductsListScreen` to body-only (remove their own `Scaffold`/`AppBar`; title now supplied by the shell) in `lib/features/home/presentation/home_screen.dart`, `lib/features/auth/presentation/admin/users_list_screen.dart`, `lib/features/catalog/presentation/products_list_screen.dart`. (Catalog app-bar actions are relocated in US4; the temporary body keeps the existing list/table.) Depends on T007.
-- [ ] T009 [P] [US1] Widget test `AppNavigation` (grouped tree both modes; Products hidden without read; Catalogs header hidden when both children hidden; select fires `onDestinationSelected`; selected-index) in `test/widget/core/widgets/app_navigation_test.dart`.
-- [ ] T010 [P] [US1] Widget test `AppShell` (rail ≥ 1000 / drawer @ 500; title tracks active destination; `goBranch` on select) in `test/widget/core/widgets/app_shell_test.dart`.
-- [ ] T011 [US1] Integration test: login → shell shows rail; navigate Home/Users/Products; resize to drawer; `/auth/login` shows no shell, in `test/integration/navigation_shell_flow_test.dart`.
+- [X] T004 [US1] Add navigation l10n keys (`homeMenuTitle` "Inicio"/"Home", `catalogsGroupTitle` "Catálogos"/"Catalogs"; reuse existing `usersMenuTitle`, `productsTitle`) in `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; regenerate localizations.
+- [X] T005 [P] [US1] Implement `AppNavigation` (rail mode ≥ 600 px / `NavigationDrawer` mode < 600 px from the same filtered tree, group section headers, selected-index highlight, `nav_dest_<id>` / `nav_group_<id>` keys) in `lib/core/widgets/app_navigation.dart`, per [contracts/app-navigation.md](./contracts/app-navigation.md). Depends on T003.
+- [X] T006 [US1] Implement `AppShell` (Scaffold; app-bar title from active destination; Compact drawer + menu button vs. Medium+ persistent rail via `LayoutBreakpoints`; body = `navigationShell`; `goBranch` on select) in `lib/core/widgets/app_shell.dart`, per [contracts/navigation-shell.md](./contracts/navigation-shell.md). Depends on T005.
+- [X] T007 [US1] Refactor the router to a `StatefulShellRoute.indexedStack` with 3 branches (`/`, `/users`, `/products`) built by `AppShell`, keeping detail/form/merge and all `/auth/*` routes as full-screen sibling routes; preserve existing redirect guard and route gates, in `lib/app/router/app_router.dart`. Depends on T006.
+- [X] T008 [US1] Convert `HomeScreen`, `UsersListScreen`, `ProductsListScreen` to body-only (remove their own `Scaffold`/`AppBar`; title now supplied by the shell) in `lib/features/home/presentation/home_screen.dart`, `lib/features/auth/presentation/admin/users_list_screen.dart`, `lib/features/catalog/presentation/products_list_screen.dart`. (Catalog app-bar actions are relocated in US4; the temporary body keeps the existing list/table.) Depends on T007.
+- [X] T009 [P] [US1] Widget test `AppNavigation` (grouped tree both modes; Products hidden without read; Catalogs header hidden when both children hidden; select fires `onDestinationSelected`; selected-index) in `test/widget/core/widgets/app_navigation_test.dart`.
+- [X] T010 [P] [US1] Widget test `AppShell` (rail ≥ 1000 / drawer @ 500; title tracks active destination; `goBranch` on select) in `test/widget/core/widgets/app_shell_test.dart`.
+- [X] T011 [US1] Integration test: login → shell shows rail; navigate Home/Users/Products; resize to drawer; `/auth/login` shows no shell, in `test/integration/navigation_shell_flow_test.dart`.
 
 **Checkpoint**: Adaptive grouped navigation works end-to-end — MVP shell is usable.
 
@@ -74,10 +74,10 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Add user-menu l10n keys (`userMenuLogout` "Salir"/"Logout"; fallback labels `userMenuStoreFallback` "Store {id}", `userMenuPosFallback` "POS {id}", `userMenuDrawerFallback` "Drawer {id}"; reuse `changePasswordMenuTitle`) in `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; regenerate localizations.
-- [ ] T013 [US2] Implement `UserMenuButton` (single trigger `user_menu_button`; identity = `user.email`; store/POS/cash-drawer lines from `user.settings` with a display helper that prefers name `name (code)` and falls back to the labeled-ID keys — today ids-only, names arrive with mbe-api#79; omit a line whose id is null; Change Password → `/auth/account/password`; Logout → `signOut()`) in `lib/core/widgets/user_menu_button.dart`, per [contracts/user-menu.md](./contracts/user-menu.md). Add a `// TODO(mbe-api#79)` where names slot in.
-- [ ] T014 [US2] Wire `UserMenuButton` as the sole trailing `AppBar` action in `AppShell` (drawer menu button stays leading on Compact) in `lib/core/widgets/app_shell.dart`. Depends on T013, T006.
-- [ ] T015 [P] [US2] Widget test `UserMenuButton` (one trigger; names shown when settings carry them; labeled-ID fallback when only ids; `settings == null` omits location lines with no error; Change Password pushes route; Logout calls `signOut()`) in `test/widget/core/widgets/user_menu_button_test.dart`.
+- [X] T012 [US2] Add user-menu l10n keys (`userMenuLogout` "Salir"/"Logout"; fallback labels `userMenuStoreFallback` "Store {id}", `userMenuPosFallback` "POS {id}", `userMenuDrawerFallback` "Drawer {id}"; reuse `changePasswordMenuTitle`) in `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; regenerate localizations.
+- [X] T013 [US2] Implement `UserMenuButton` (single trigger `user_menu_button`; identity = `user.email`; store/POS/cash-drawer lines from `user.settings` with a display helper that prefers name `name (code)` and falls back to the labeled-ID keys — today ids-only, names arrive with mbe-api#79; omit a line whose id is null; Change Password → `/auth/account/password`; Logout → `signOut()`) in `lib/core/widgets/user_menu_button.dart`, per [contracts/user-menu.md](./contracts/user-menu.md). Add a `// TODO(mbe-api#79)` where names slot in.
+- [X] T014 [US2] Wire `UserMenuButton` as the sole trailing `AppBar` action in `AppShell` (drawer menu button stays leading on Compact) in `lib/core/widgets/app_shell.dart`. Depends on T013, T006.
+- [X] T015 [P] [US2] Widget test `UserMenuButton` (one trigger; names shown when settings carry them; labeled-ID fallback when only ids; `settings == null` omits location lines with no error; Change Password pushes route; Logout calls `signOut()`) in `test/widget/core/widgets/user_menu_button_test.dart`.
 
 **Checkpoint**: App bar shows exactly one trailing control on every destination (SC-003); location shows fallback labels until mbe-api#79 ships.
 
@@ -91,11 +91,11 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 ### Implementation for User Story 3
 
-- [ ] T016 [P] [US3] Implement `BrandConfig` (freezed; `displayName`, `welcomeAsset?`, `hasWelcomeAsset`; `BrandConfig.fromEnvironment()` from `--dart-define`) and `brandConfigProvider` (`keepAlive`) in `lib/core/branding/brand_config.dart` and `lib/core/branding/brand_config_provider.dart`; run `dart run build_runner build --delete-conflicting-outputs`, per [contracts/brand-config.md](./contracts/brand-config.md).
-- [ ] T017 [US3] Add `homeWelcomeMessage` l10n key (generic default welcome text) in `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; regenerate localizations.
-- [ ] T018 [US3] Implement `HomeWelcome` (branded asset + display name/message when `hasWelcomeAsset`, else default `assets/branding/default_welcome.png` + `homeWelcomeMessage`; `Image.errorBuilder` → placeholder; centered/constrained, no overflow; `home_welcome_default` key) in `lib/features/home/presentation/home_welcome.dart`, per [contracts/home-welcome.md](./contracts/home-welcome.md). Depends on T016, T001.
-- [ ] T019 [US3] Replace the Home body with `HomeWelcome` (remove the old nav `ListTile`s) in `lib/features/home/presentation/home_screen.dart`. Depends on T018, T008.
-- [ ] T020 [P] [US3] Widget test `HomeWelcome` (branded vs default via overridden `brandConfigProvider`; no `ListTile` nav entries; no overflow at 400 & 1400) in `test/widget/features/home_welcome_test.dart`.
+- [X] T016 [P] [US3] Implement `BrandConfig` (freezed; `displayName`, `welcomeAsset?`, `hasWelcomeAsset`; `BrandConfig.fromEnvironment()` from `--dart-define`) and `brandConfigProvider` (`keepAlive`) in `lib/core/branding/brand_config.dart` and `lib/core/branding/brand_config_provider.dart`; run `dart run build_runner build --delete-conflicting-outputs`, per [contracts/brand-config.md](./contracts/brand-config.md).
+- [X] T017 [US3] Add `homeWelcomeMessage` l10n key (generic default welcome text) in `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; regenerate localizations.
+- [X] T018 [US3] Implement `HomeWelcome` (branded asset + display name/message when `hasWelcomeAsset`, else default `assets/branding/default_welcome.png` + `homeWelcomeMessage`; `Image.errorBuilder` → placeholder; centered/constrained, no overflow; `home_welcome_default` key) in `lib/features/home/presentation/home_welcome.dart`, per [contracts/home-welcome.md](./contracts/home-welcome.md). Depends on T016, T001.
+- [X] T019 [US3] Replace the Home body with `HomeWelcome` (remove the old nav `ListTile`s) in `lib/features/home/presentation/home_screen.dart`. Depends on T018, T008.
+- [X] T020 [P] [US3] Widget test `HomeWelcome` (branded vs default via overridden `brandConfigProvider`; no `ListTile` nav entries; no overflow at 400 & 1400) in `test/widget/features/home_welcome_test.dart`.
 
 **Checkpoint**: Home is never blank; branded when configured, placeholder otherwise (SC-005).
 
@@ -109,12 +109,12 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 ### Implementation for User Story 4
 
-- [ ] T021 [US4] Add an optional trailing `actions` slot to `CatalogFilterBar` (rendered right of `filters` in both the single-row ≥ 840 px and reflowed `Wrap` layouts; empty = unchanged) in `lib/core/widgets/catalog_filter_bar.dart`, per [contracts/catalog-action-slot.md](./contracts/catalog-action-slot.md).
-- [ ] T022 [US4] Products list: pass `actions: [if (canMerge) Merge, if (canCreate) Add(primary FilledButton.icon)]` to `CatalogFilterBar` and remove any app-bar actions (keys `merge_products_button`, `new_product_button` preserved) in `lib/features/catalog/presentation/products_list_screen.dart`. Depends on T021, T008.
-- [ ] T023 [US4] Users list: pass `actions: [if (canCreate) Add(primary)]` to `CatalogFilterBar` (key `new_user_button` preserved) in `lib/features/auth/presentation/admin/users_list_screen.dart`. Depends on T021, T008.
-- [ ] T024 [P] [US4] Widget test `CatalogFilterBar` actions slot (actions right of filters at wide width; present, no overflow, at narrow width) in `test/widget/core/widgets/catalog_filter_bar_test.dart`.
-- [ ] T025 [P] [US4] Update products list widget test (Add + Merge found in the filter-bar region not an `AppBar`; Add primary-styled; hidden without create/merge privilege) in `test/widget/features/catalog/products_list_screen_test.dart`.
-- [ ] T026 [P] [US4] Widget test users list Add relocation (Add beside the search bar; hidden without `users.create`) in `test/widget/features/auth/users_list_screen_test.dart`.
+- [X] T021 [US4] Add an optional trailing `actions` slot to `CatalogFilterBar` (rendered right of `filters` in both the single-row ≥ 840 px and reflowed `Wrap` layouts; empty = unchanged) in `lib/core/widgets/catalog_filter_bar.dart`, per [contracts/catalog-action-slot.md](./contracts/catalog-action-slot.md).
+- [X] T022 [US4] Products list: pass `actions: [if (canMerge) Merge, if (canCreate) Add(primary FilledButton.icon)]` to `CatalogFilterBar` and remove any app-bar actions (keys `merge_products_button`, `new_product_button` preserved) in `lib/features/catalog/presentation/products_list_screen.dart`. Depends on T021, T008.
+- [X] T023 [US4] Users list: pass `actions: [if (canCreate) Add(primary)]` to `CatalogFilterBar` (key `new_user_button` preserved) in `lib/features/auth/presentation/admin/users_list_screen.dart`. Depends on T021, T008.
+- [X] T024 [P] [US4] Widget test `CatalogFilterBar` actions slot (actions right of filters at wide width; present, no overflow, at narrow width) in `test/widget/core/widgets/catalog_filter_bar_test.dart`.
+- [X] T025 [P] [US4] Update products list widget test (Add + Merge found in the filter-bar region not an `AppBar`; Add primary-styled; hidden without create/merge privilege) in `test/widget/features/catalog/products_list_screen_test.dart`.
+- [X] T026 [P] [US4] Widget test users list Add relocation (Add beside the search bar; hidden without `users.create`) in `test/widget/features/auth/users_list_screen_test.dart`.
 
 **Checkpoint**: Every catalog shows Add (primary) + Merge beside the search bar, none in the app bar (SC-006).
 
@@ -122,10 +122,10 @@ Single Flutter app: source under `lib/`, tests under `test/`, per [plan.md](./pl
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T027 [P] Run `flutter analyze` (clean) and `dart run build_runner build --delete-conflicting-outputs`.
-- [ ] T028 Run the full `flutter test` suite; fix regressions caused by the shell/body conversion in pre-existing catalog/list/home tests.
-- [ ] T029 Run [quickstart.md](./quickstart.md) manual validation (rail↔drawer at 500/1000/1400 px; single trailing user menu; branded vs default Home; catalog actions beside search) and confirm no app-bar title duplication or horizontal overflow.
-- [ ] T030 Confirm the location fallback behavior against mbe-api#79 (names render once the enriched `/auth/me` ships + client regenerated; until then labeled IDs) — documentation/verification only, no code change now.
+- [X] T027 [P] Run `flutter analyze` (clean) and `dart run build_runner build --delete-conflicting-outputs`.
+- [X] T028 Run the full `flutter test` suite; fix regressions caused by the shell/body conversion in pre-existing catalog/list/home tests.
+- [X] T029 Run [quickstart.md](./quickstart.md) manual validation (rail↔drawer at 500/1000/1400 px; single trailing user menu; branded vs default Home; catalog actions beside search) and confirm no app-bar title duplication or horizontal overflow.
+- [X] T030 Confirm the location fallback behavior against mbe-api#79 (names render once the enriched `/auth/me` ships + client regenerated; until then labeled IDs) — documentation/verification only, no code change now.
 
 ---
 
