@@ -10,14 +10,14 @@ class CatalogFilterBar extends StatelessWidget {
     super.key,
     required this.search,
     this.filters = const [],
-    this.actions = const [], // NEW: entity actions, rendered right of filters
+    this.actions = const [], // NEW: entity actions, rendered between search and filters
   });
 }
 ```
 
 ## Behavior
 
-- `actions` render to the **right** of `filters` (Filters button) in both the single-row layout (≥ 840 px) and the reflowed `Wrap`/`Column` layout (< 840 px), inheriting the existing anti-overflow reflow (FR-021).
+- `actions` render **between** `search` and `filters` (Filters button) — closer to the search box, with Filters last — in both the single-row layout (≥ 840 px) and the reflowed `Wrap`/`Column` layout (< 840 px), inheriting the existing anti-overflow reflow (FR-021).
 - The **Add** action is passed by callers as a **primary**-styled control (e.g. `FilledButton.icon`) — visually distinct from the outlined/icon Filters and secondary actions (FR-019). This contract does not style actions itself; it positions them.
 - Empty `actions` ⇒ unchanged current rendering (existing callers/tests unaffected).
 
@@ -29,6 +29,6 @@ class CatalogFilterBar extends StatelessWidget {
 
 ## Acceptance (widget tests)
 
-1. `catalog_filter_bar_test.dart`: with `actions` non-empty, the actions render to the right of the filters at wide width and remain present (no overflow) at narrow width.
+1. `catalog_filter_bar_test.dart`: with `actions` non-empty, the actions render between the search box and the filters at wide width and remain present (no overflow) at narrow width.
 2. `products_list_screen_test.dart` (edit): `new_product_button` and `merge_products_button` are found **within the filter bar region**, not in an `AppBar`; Add uses the primary style; both hidden when the respective privilege is absent (FR-020).
 3. `users_list_screen_test.dart`: `new_user_button` renders beside the search bar and is hidden without `users.create`.

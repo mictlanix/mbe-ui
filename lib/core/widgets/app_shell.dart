@@ -62,6 +62,9 @@ class _AppShellState extends ConsumerState<AppShell> {
       body: isCompact
           ? widget.navigationShell
           : Row(
+              // Stretch so the rail fills the height and its entries sit at
+              // the top rather than floating vertically centered.
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 AppNavigation(
                   mode: AppNavigationMode.rail,

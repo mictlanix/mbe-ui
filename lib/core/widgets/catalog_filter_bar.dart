@@ -18,19 +18,20 @@ class CatalogFilterBar extends StatelessWidget {
   /// The catalog's search control (typically a [CatalogSearchBar]).
   final Widget search;
 
-  /// Facet filter widgets (e.g. `FilterChip`s), shown after [search].
+  /// Facet filter widgets (e.g. `FilterChip`s), shown after [search] and
+  /// [actions].
   final List<Widget> filters;
 
-  /// Entity actions (e.g. Add, Merge), shown to the right of [filters]
+  /// Entity actions (e.g. Add, Merge), shown between [search] and [filters]
   /// instead of in the app bar (spec 010 FR-018/019). The Add action is
   /// passed pre-styled as the primary action by callers.
   final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
-    // Filters first, then entity actions — actions always sit to the right of
-    // the facet controls, in both the single-row and reflowed layouts.
-    final trailing = [...filters, ...actions];
+    // Entity actions first, then facet filters — actions sit closer to the
+    // search box, filters last, in both the single-row and reflowed layouts.
+    final trailing = [...actions, ...filters];
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= LayoutBreakpoints.expanded) {

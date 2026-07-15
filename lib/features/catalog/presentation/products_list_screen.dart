@@ -52,19 +52,19 @@ class ProductsListScreen extends ConsumerWidget {
               onSubmitted: filterController.searchChanged,
             ),
             actions: [
-              if (canMerge)
-                IconButton.outlined(
-                  key: const Key('merge_products_button'),
-                  icon: const Icon(Icons.merge),
-                  tooltip: l10n.mergeProductsTooltip,
-                  onPressed: () => context.push('/products/merge'),
-                ),
               if (canCreate)
                 FilledButton.icon(
                   key: const Key('new_product_button'),
                   icon: Icon(CatalogAction.create.icon),
                   label: Text(l10n.newProductTooltip),
                   onPressed: () => context.push('/products/new'),
+                ),
+              if (canMerge)
+                IconButton.outlined(
+                  key: const Key('merge_products_button'),
+                  icon: const Icon(Icons.merge),
+                  tooltip: l10n.mergeProductsTooltip,
+                  onPressed: () => context.push('/products/merge'),
                 ),
             ],
             filters: [

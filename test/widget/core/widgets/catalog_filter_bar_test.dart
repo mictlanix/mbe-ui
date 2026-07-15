@@ -60,8 +60,8 @@ void main() {
     expect(find.byType(Wrap), findsNothing);
   });
 
-  testWidgets('entity actions render to the right of the filters on one row '
-      '(spec 010 FR-018)', (tester) async {
+  testWidgets('entity actions render to the left of the filters, between '
+      'search and filters, on one row (spec 010 FR-018)', (tester) async {
     tester.view.physicalSize = const Size(1200, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -76,10 +76,12 @@ void main() {
     );
 
     expect(find.byType(Wrap), findsNothing);
-    // Actions sit to the right of the filters.
-    final filtersX = tester.getTopLeft(find.byKey(const Key('filters'))).dx;
+    // Actions sit between the search box and the filters button.
+    final searchX = tester.getTopLeft(find.byKey(const Key('search'))).dx;
     final addX = tester.getTopLeft(find.byKey(const Key('add'))).dx;
-    expect(addX, greaterThan(filtersX));
+    final filtersX = tester.getTopLeft(find.byKey(const Key('filters'))).dx;
+    expect(addX, greaterThan(searchX));
+    expect(filtersX, greaterThan(addX));
   });
 
   testWidgets('actions remain present, reflowed, at narrow width (FR-021)',
