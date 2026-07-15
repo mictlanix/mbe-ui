@@ -37,149 +37,146 @@ class ProductsListScreen extends ConsumerWidget {
     final canMerge = access.can(SystemObject.productsMerge, AccessRight.create);
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.productsTitle),
-        actions: [
-          if (canMerge)
-            IconButton(
-              key: const Key('merge_products_button'),
-              icon: const Icon(Icons.merge),
-              tooltip: l10n.mergeProductsTooltip,
-              onPressed: () => context.push('/products/merge'),
+    // Body-only: the shell owns the Scaffold/app bar (spec 010 US1). Entity
+    // actions sit beside the search bar, Add emphasised as primary (US4).
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: CatalogFilterBar(
+            search: CatalogSearchBar(
+              key: const Key('products_search_field'),
+              label: l10n.productsSearchLabel,
+              searchTooltip: l10n.searchButtonTooltip,
+              initialValue: filter.search,
+              onSubmitted: filterController.searchChanged,
             ),
-          if (canCreate)
-            IconButton(
-              key: const Key('new_product_button'),
-              icon: Icon(CatalogAction.create.icon),
-              tooltip: l10n.newProductTooltip,
-              onPressed: () => context.push('/products/new'),
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: CatalogFilterBar(
-              search: CatalogSearchBar(
-                key: const Key('products_search_field'),
-                label: l10n.productsSearchLabel,
-                searchTooltip: l10n.searchButtonTooltip,
-                initialValue: filter.search,
-                onSubmitted: filterController.searchChanged,
-              ),
-              filters: [
-                Badge.count(
-                  count: filter.activeFilterCount,
-                  isLabelVisible: filter.hasActiveFilters,
-                  child: IconButton.outlined(
-                    key: const Key('products_filter_button'),
-                    icon: const Icon(Icons.tune),
-                    tooltip: l10n.filtersTooltip,
-                    onPressed: () => showCatalogFilterSheet(
-                      context,
-                      title: l10n.filtersButton,
-                      clearAllLabel: l10n.clearAllFilters,
-                      applyLabel: l10n.applyFilters,
-                      onClearAll: filterController.reset,
-                      builder: (_) => const _ProductFiltersPanel(),
-                    ),
+            actions: [
+              if (canCreate)
+                FilledButton.icon(
+                  key: const Key('new_product_button'),
+                  icon: Icon(CatalogAction.create.icon),
+                  label: Text(l10n.newProductTooltip),
+                  onPressed: () => context.push('/products/new'),
+                ),
+              if (canMerge)
+                IconButton.outlined(
+                  key: const Key('merge_products_button'),
+                  icon: const Icon(Icons.merge),
+                  tooltip: l10n.mergeProductsTooltip,
+                  onPressed: () => context.push('/products/merge'),
+                ),
+            ],
+            filters: [
+              Badge.count(
+                count: filter.activeFilterCount,
+                isLabelVisible: filter.hasActiveFilters,
+                child: IconButton.outlined(
+                  key: const Key('products_filter_button'),
+                  icon: const Icon(Icons.tune),
+                  tooltip: l10n.filtersTooltip,
+                  onPressed: () => showCatalogFilterSheet(
+                    context,
+                    title: l10n.filtersButton,
+                    clearAllLabel: l10n.clearAllFilters,
+                    applyLabel: l10n.applyFilters,
+                    onClearAll: filterController.reset,
+                    builder: (_) => const _ProductFiltersPanel(),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Expanded(
-            child: productsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(l10n.productsLoadError(e))),
-              data: (CatalogPage<ProductListItem> page) => page.items.isEmpty
-                  ? Center(child: Text(l10n.noProductsFound))
-                  : DataTableView<ProductListItem>(
-                      key: const Key('products_table'),
-                      columns: [
-                        DataTableColumn(
-                          label: '',
-                          fixedWidth: 120,
-                          cellBuilder: (context, p) =>
-                              ProductPhoto(photoUrl: p.photo),
-                        ),
-                        DataTableColumn(
-                          label: l10n.columnCode,
-                          fixedWidth: 200,
-                          cellBuilder: (context, p) => Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(p.code),
-                              IconButton(
-                                key: Key('copy_code_button_${p.productId}'),
-                                icon: const Icon(Icons.copy, size: 16),
-                                tooltip: l10n.copyCodeTooltip,
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(
-                                  minWidth: 28,
-                                  minHeight: 28,
-                                ),
-                                onPressed: () => _copyCode(context, p.code, l10n),
-                              ),
-                            ],
-                          ),
-                        ),
-                        DataTableColumn.text(
-                          label: l10n.columnName,
-                          text: (p) => p.name,
-                          size: ColumnSize.L,
-                        ),
-                        DataTableColumn.text(
-                          label: l10n.columnBrand,
-                          text: (p) => p.brand ?? '',
-                          size: ColumnSize.S,
-                        ),
-                        DataTableColumn.text(
-                          label: l10n.columnUnit,
-                          text: (p) => p.unitOfMeasurementName,
-                          size: ColumnSize.M,
-                        ),
-                        DataTableColumn(
-                          label: l10n.columnStatus,
-                          fixedWidth: 130,
-                          cellBuilder: (context, p) => p.deactivated
-                              ? Chip(
-                                  key: const Key('inactive_badge'),
-                                  label: Text(l10n.statusInactiveBadge),
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.errorContainer,
-                                  labelStyle: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onErrorContainer,
-                                  ),
-                                  visualDensity: VisualDensity.compact,
-                                )
-                              : Text(l10n.statusActive),
-                        ),
-                      ],
-                      rows: page.items,
-                      pagination: page,
-                      onPageChanged: (pageIndex) => ref
-                          .read(productsListControllerProvider.notifier)
-                          .goToPage(pageIndex),
-                      onRowTap: (p) =>
-                          context.push('/products/${p.productId}?view=true'),
-                      rowActionsBuilder: (context, p) => buildCatalogRowActions(
-                        editTooltip: l10n.editActionTooltip,
-                        onEdit: canUpdate
-                            ? () => context.push('/products/${p.productId}')
-                            : null,
+        ),
+        Expanded(
+          child: productsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text(l10n.productsLoadError(e))),
+            data: (CatalogPage<ProductListItem> page) => page.items.isEmpty
+                ? Center(child: Text(l10n.noProductsFound))
+                : DataTableView<ProductListItem>(
+                    key: const Key('products_table'),
+                    columns: [
+                      DataTableColumn(
+                        label: '',
+                        fixedWidth: 120,
+                        cellBuilder: (context, p) =>
+                            ProductPhoto(photoUrl: p.photo),
                       ),
+                      DataTableColumn(
+                        label: l10n.columnCode,
+                        fixedWidth: 200,
+                        cellBuilder: (context, p) => Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(p.code),
+                            IconButton(
+                              key: Key('copy_code_button_${p.productId}'),
+                              icon: const Icon(Icons.copy, size: 16),
+                              tooltip: l10n.copyCodeTooltip,
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 28,
+                                minHeight: 28,
+                              ),
+                              onPressed: () => _copyCode(context, p.code, l10n),
+                            ),
+                          ],
+                        ),
+                      ),
+                      DataTableColumn.text(
+                        label: l10n.columnName,
+                        text: (p) => p.name,
+                        size: ColumnSize.L,
+                      ),
+                      DataTableColumn.text(
+                        label: l10n.columnBrand,
+                        text: (p) => p.brand ?? '',
+                        size: ColumnSize.S,
+                      ),
+                      DataTableColumn.text(
+                        label: l10n.columnUnit,
+                        text: (p) => p.unitOfMeasurementName,
+                        size: ColumnSize.M,
+                      ),
+                      DataTableColumn(
+                        label: l10n.columnStatus,
+                        fixedWidth: 130,
+                        cellBuilder: (context, p) => p.deactivated
+                            ? Chip(
+                                key: const Key('inactive_badge'),
+                                label: Text(l10n.statusInactiveBadge),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.errorContainer,
+                                labelStyle: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onErrorContainer,
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              )
+                            : Text(l10n.statusActive),
+                      ),
+                    ],
+                    rows: page.items,
+                    pagination: page,
+                    onPageChanged: (pageIndex) => ref
+                        .read(productsListControllerProvider.notifier)
+                        .goToPage(pageIndex),
+                    onRowTap: (p) =>
+                        context.push('/products/${p.productId}?view=true'),
+                    rowActionsBuilder: (context, p) => buildCatalogRowActions(
+                      editTooltip: l10n.editActionTooltip,
+                      onEdit: canUpdate
+                          ? () => context.push('/products/${p.productId}')
+                          : null,
                     ),
-            ),
+                  ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -192,9 +189,9 @@ class ProductsListScreen extends ConsumerWidget {
   ) async {
     await Clipboard.setData(ClipboardData(text: code));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.codeCopiedMessage)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.codeCopiedMessage)));
   }
 }
 

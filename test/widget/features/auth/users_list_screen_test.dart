@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
+import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
@@ -95,7 +96,8 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const UsersListScreen(),
+          // The shell owns the Scaffold in the app; the screen is body-only.
+          home: const Scaffold(body: UsersListScreen()),
         ),
       ),
     );
@@ -115,7 +117,10 @@ void main() {
     final router = GoRouter(
       initialLocation: '/',
       routes: [
-        GoRoute(path: '/', builder: (_, _) => const UsersListScreen()),
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(body: UsersListScreen()),
+        ),
         GoRoute(
           path: '/users/:userId',
           builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
@@ -156,6 +161,28 @@ void main() {
 
     expect(find.byKey(const Key('new_user_button')), findsOneWidget);
   });
+
+  testWidgets(
+    'the New user action sits beside the search bar as the primary action '
+    '(spec 010 US4)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _adminUser);
+
+      // Emphasised as primary (FilledButton) and rendered inside the filter
+      // bar region, not the app bar (there is no app bar — shell owns it).
+      expect(
+        find.descendant(
+          of: find.byType(CatalogFilterBar),
+          matching: find.byKey(const Key('new_user_button')),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget(find.byKey(const Key('new_user_button'))),
+        isA<FilledButton>(),
+      );
+    },
+  );
 
   testWidgets(
     'hides New user button for user without Users.create permission',

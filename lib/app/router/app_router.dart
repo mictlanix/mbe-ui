@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart'
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
@@ -29,7 +30,40 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: refreshListenable,
     redirect: (context, state) => _redirect(ref, state),
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      // Authenticated destinations live inside the shell: one branch per
+      // top-level destination, so each keeps its own navigation state
+      // (spec 010 US1; research.md §1). Detail/form/merge and /auth/* routes
+      // are top-level siblings below — they render full-screen (no rail).
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/users',
+                builder: (context, state) => const UsersListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/products',
+                builder: (context, state) => const ProductsListScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
       GoRoute(
         path: '/auth/login',
         builder: (context, state) => const LoginScreen(),
@@ -43,10 +77,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
-        path: '/users',
-        builder: (context, state) => const UsersListScreen(),
-      ),
-      GoRoute(
         path: '/users/new',
         builder: (context, state) => const UserDetailScreen(),
       ),
@@ -56,10 +86,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           userId: state.pathParameters['userId'],
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
-      ),
-      GoRoute(
-        path: '/products',
-        builder: (context, state) => const ProductsListScreen(),
       ),
       GoRoute(
         path: '/products/new',
@@ -119,7 +145,8 @@ String? _redirect(Ref ref, GoRouterState state) {
   if (state.matchedLocation == '/auth/login') return '/';
 
   final gate = _routeGate(state.matchedLocation);
-  if (gate != null && !ref.read(accessControlProvider).can(gate.object, gate.right)) {
+  if (gate != null &&
+      !ref.read(accessControlProvider).can(gate.object, gate.right)) {
     return '/';
   }
   return null;

@@ -45,7 +45,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String get changePasswordMenuTitle => 'Cambiar contraseña';
 
   @override
+  String get appTitle => 'Mictlanix Business Essentials';
+
+  @override
+  String get homeMenuTitle => 'Inicio';
+
+  @override
+  String get homeWelcomeMessage => 'Bienvenido';
+
+  @override
+  String get catalogsGroupTitle => 'Catálogos';
+
+  @override
   String get usersMenuTitle => 'Usuarios';
+
+  @override
+  String get userMenuLogout => 'Salir';
+
+  @override
+  String userMenuStoreFallback(int id) {
+    return 'Store $id';
+  }
+
+  @override
+  String userMenuPosFallback(int id) {
+    return 'POS $id';
+  }
+
+  @override
+  String userMenuDrawerFallback(int id) {
+    return 'Drawer $id';
+  }
 
   @override
   String get changePasswordTitle => 'Cambiar contraseña';
