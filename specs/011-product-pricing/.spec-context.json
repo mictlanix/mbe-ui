@@ -3,7 +3,7 @@
   "specName": "Product Pricing (Price Lists, Product Prices & Exchange Rates)",
   "branch": "011-product-pricing",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-18T05:46:42.178Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-18T23:05:54.330Z"
     }
   ]
 }
