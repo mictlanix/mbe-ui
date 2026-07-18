@@ -62,15 +62,6 @@ const List<NavItem> kNavigationTree = [
         gate: (object: SystemObject.priceLists, right: AccessRight.read),
       ),
       NavDestination(
-        id: 'pricing',
-        label: _pricingLabel,
-        icon: Icons.price_change_outlined,
-        selectedIcon: Icons.price_change,
-        route: '/pricing',
-        branchIndex: NavBranch.pricing,
-        gate: (object: SystemObject.pricing, right: AccessRight.read),
-      ),
-      NavDestination(
         id: 'exchange-rates',
         label: _exchangeRatesLabel,
         icon: Icons.currency_exchange_outlined,
@@ -81,11 +72,27 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
+  NavGroup(
+    id: 'sales',
+    label: _salesLabel,
+    children: [
+      NavDestination(
+        id: 'pricing',
+        label: _pricingLabel,
+        icon: Icons.price_change_outlined,
+        selectedIcon: Icons.price_change,
+        route: '/pricing',
+        branchIndex: NavBranch.pricing,
+        gate: (object: SystemObject.pricing, right: AccessRight.read),
+      ),
+    ],
+  ),
 ];
 
 // Label resolvers kept as top-level tear-offs so [kNavigationTree] stays const.
 String _homeLabel(AppLocalizations l10n) => l10n.homeMenuTitle;
 String _catalogsLabel(AppLocalizations l10n) => l10n.catalogsGroupTitle;
+String _salesLabel(AppLocalizations l10n) => l10n.salesGroupTitle;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _productsLabel(AppLocalizations l10n) => l10n.productsTitle;
 String _priceListsLabel(AppLocalizations l10n) => l10n.priceListsMenuTitle;

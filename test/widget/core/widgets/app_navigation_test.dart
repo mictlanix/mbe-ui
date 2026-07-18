@@ -54,6 +54,18 @@ const _pricingOnlyUser = User(
   privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 2)],
 );
 
+/// Only `priceLists` (5) read — Catalogs' Price Lists entry visible, but no
+/// `pricing` privilege means the Sales group must not appear (spec 011,
+/// Pricing→Sales group move).
+const _priceListsOnlyUser = User(
+  userId: 'price-lists-only',
+  email: 'price-lists-only@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.priceLists, rawValue: 2)],
+);
+
 /// No pricing-related privileges at all (spec 011 quickstart §5: "no
 /// privileges → no nav entries").
 const _noPricingUser = User(
@@ -134,25 +146,47 @@ void main() {
     });
 
     testWidgets(
-      '[$mode] pricing without priceLists: Pricing visible, Price Lists '
-      'and Exchange Rates absent (spec 011 T047)',
+      '[$mode] pricing without priceLists: the Sales group (Pricing) is '
+      'visible, Price Lists and Exchange Rates (Catalogs) absent (spec 011 '
+      'T047, updated for the Pricing→Sales group move)',
       (tester) async {
         await pumpNav(tester, user: _pricingOnlyUser, mode: mode);
 
+        expect(find.byKey(const Key('nav_group_sales')), findsOneWidget);
         expect(find.byKey(const Key('nav_dest_pricing')), findsOneWidget);
         expect(find.byKey(const Key('nav_dest_price-lists')), findsNothing);
         expect(find.byKey(const Key('nav_dest_exchange-rates')), findsNothing);
+        // Catalogs itself survives only if another of its children is
+        // visible; here none are, so it must be dropped too (FR-006).
+        expect(find.byKey(const Key('nav_group_catalogs')), findsNothing);
       },
     );
 
-    testWidgets('[$mode] no pricing privileges: none of the three pricing nav '
-        'entries appear (spec 011 T047)', (tester) async {
+    testWidgets('[$mode] no pricing privileges: neither the Sales group nor '
+        'any of the three pricing nav entries appear (spec 011 T047)', (
+      tester,
+    ) async {
       await pumpNav(tester, user: _noPricingUser, mode: mode);
 
+      expect(find.byKey(const Key('nav_group_sales')), findsNothing);
       expect(find.byKey(const Key('nav_dest_price-lists')), findsNothing);
       expect(find.byKey(const Key('nav_dest_pricing')), findsNothing);
       expect(find.byKey(const Key('nav_dest_exchange-rates')), findsNothing);
     });
+
+    testWidgets(
+      '[$mode] a user with only priceLists (no pricing) sees Catalogs but '
+      'not the Sales group — the two groups are independently visible '
+      '(spec 011, Pricing→Sales group move)',
+      (tester) async {
+        await pumpNav(tester, user: _priceListsOnlyUser, mode: mode);
+
+        expect(find.byKey(const Key('nav_group_catalogs')), findsOneWidget);
+        expect(find.byKey(const Key('nav_dest_price-lists')), findsOneWidget);
+        expect(find.byKey(const Key('nav_group_sales')), findsNothing);
+        expect(find.byKey(const Key('nav_dest_pricing')), findsNothing);
+      },
+    );
   }
 
   testWidgets('selecting Products reports its branch index (2)', (

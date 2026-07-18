@@ -99,7 +99,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 - **FR-008**: The pricing screen MUST visually distinguish a list for which no product price exists yet from one whose price is zero.
 - **FR-009**: An authorized user MUST be able to set a product's price (and low/high profit) for a price list that has no existing price row, creating it.
 - **FR-010**: An authorized user MUST be able to update a product's existing price, low-profit, and high-profit for a price list.
-- **FR-011**: Price, low-profit, and high-profit inputs MUST be validated as non-negative monetary amounts before submission.
+- **FR-011**: The price input MUST be validated as a non-negative monetary amount before submission. The low-profit and high-profit inputs are percentage thresholds (not monetary amounts, corrected 2026-07-18 — see Assumptions) and MUST be validated as non-negative decimals before submission, displayed as percentages consistent with FR-006's price-list margins.
 - **FR-012**: When the current user lacks update privilege on the pricing tool, the pricing screen MUST render read-only with no create/edit controls, while still displaying values.
 - **FR-013**: Monetary values MUST be formatted using the application locale and currency (MXN, `es-MX`), not manual string formatting.
 
@@ -121,7 +121,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 ### Key Entities *(include if feature involves data)*
 
 - **Price List**: A named selling tier. Attributes: name (unique, required), high profit margin (decimal markup ceiling), low profit margin (decimal markup floor). Assigned to customers elsewhere in the system; referenced by every product price.
-- **Product Price**: A product's price on one price list. Attributes: the product it belongs to, the price list it applies to, price, low-profit figure, high-profit figure. A product has at most one price per list.
+- **Product Price**: A product's price on one price list. Attributes: the product it belongs to, the price list it applies to, price (monetary), low-profit threshold and high-profit threshold (percentages, mirroring the price list's own margins — corrected 2026-07-18, see Assumptions). A product has at most one price per list.
 - **Exchange Rate**: A currency conversion for a specific date. Attributes: date, base currency, target currency, rate value. Used to convert foreign-currency amounts.
 - **Currency**: The set of currencies the system recognizes, referenced by exchange rates as base and target.
 
@@ -139,6 +139,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 
 ## Assumptions
 
+- **Product-price low/high profit are percentage thresholds, not currency** (corrected 2026-07-18): the original spec (and the shipped UI, until this correction) treated `ProductPrice`'s `lowProfit`/`highProfit` as monetary amounts formatted like `price`. Live verification against a real product's data showed values like `0.00`/`1.00` across every price list — consistent with the legacy system's "low profit threshold"/"high profit threshold" language (`mbe/docs/specs/01-master-data.md`), i.e. the same kind of percentage threshold as `PriceList.highProfitMargin`/`lowProfitMargin` (FR-006), not a dollar figure. The UI now formats them as percentages (FR-011); the underlying `String` representation and API contract are unchanged — this was a display/documentation correction, not a data model change.
 - **Reuse of catalog patterns**: This feature reuses the existing shared list/table, filter, pagination, form-grid, and error-display widgets and the established feature-layer structure. The one exception is date entry: no shared date-picker widget exists in the codebase yet, so exchange-rate date fields call Flutter's built-in `showDatePicker`/`showDateRangePicker` directly rather than introducing a new shared component for two call sites (research.md §10, decided 2026-07-14).
 - **Backend is authoritative for cross-entity rules**: Rules such as "a price list cannot be deleted while assigned to a customer" and any auto-seeding of a product-price row per list on product creation are enforced by mbe-api. The UI surfaces the backend's outcome and does not re-implement these rules client-side.
 - **Product-price screen placement** (decided 2026-07-14): Product prices are managed on a **standalone pricing screen**, not as a sub-panel on the product detail/edit form. Feature `007-catalog-ui-improvements-2` deliberately removed the price section from the product form (its FR-012/FR-013, with labels taking that layout slot — the `switches|labels` band DESIGN.md §4.3 cites as the reference implementation); this feature honors that decision rather than reversing it. The pricing tool is also a distinct RBAC surface (`Pricing`, 106) from the product catalog (`Products`, 0), so a separate screen matches the privilege model: a user may price products without holding product-edit rights, and vice versa.

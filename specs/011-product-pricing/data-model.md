@@ -48,13 +48,16 @@ Maps from `ProductPriceResponse`. One product's price on one price list.
 | `productPriceId` | `int` | `product_price_id` | Identity |
 | `productId` | `int` | `product` | FK → product |
 | `priceList` | `PriceList` | `price_list` | **Nested object**, not an id (research.md §5) |
-| `price` | `String` | `price` | Selling price |
-| `lowProfit` | `String` | `low_profit` | |
-| `highProfit` | `String` | `high_profit` | |
+| `price` | `String` | `price` | Selling price (monetary, formatted as MXN currency) |
+| `lowProfit` | `String` | `low_profit` | Low-profit **threshold** (percentage, like `PriceList.lowProfitMargin` — corrected 2026-07-18; formatted with `PricingFormatters.percent`, not `.currency`) |
+| `highProfit` | `String` | `high_profit` | High-profit **threshold** (percentage; same correction) |
 
 **Validation**: `price`, `lowProfit`, `highProfit` MUST each parse as a
 non-negative decimal (FR-011). Empty is rejected on create (all three are
-required by `ProductPriceCreate`).
+required by `ProductPriceCreate`). `lowProfit`/`highProfit` share the same
+non-negative-decimal rule as `price` even though they're percentages, not
+currency — `PricingValidators.isNonNegativeDecimal` doesn't distinguish the
+two, since both are non-negative decimal strings.
 
 **Write mapping** (research.md §4 — the `AnyOf` String arm):
 

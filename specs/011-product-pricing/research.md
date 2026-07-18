@@ -249,21 +249,35 @@ catalog change, not a pricing one.
 ## 7. Navigation & routing placement
 
 **Decision**: Three new top-level routes, each its own
-`StatefulShellRoute` branch, added to the existing `catalogs` nav group:
+`StatefulShellRoute` branch. `/price-lists` and `/exchange-rates` join the
+existing `catalogs` nav group; `/pricing` gets its own new `sales` group
+(decided 2026-07-18, superseding the original "no new group" call below).
 
-| Route | Screen | Nav gate |
-|---|---|---|
-| `/price-lists` | price-lists catalog | `priceLists` (5) + `read` |
-| `/pricing` | pricing tool | `pricing` (106) + `read` |
-| `/exchange-rates` | exchange-rates catalog | `exchangeRates` (43) + `read` |
+| Route | Screen | Nav group | Nav gate |
+|---|---|---|---|
+| `/price-lists` | price-lists catalog | `catalogs` | `priceLists` (5) + `read` |
+| `/pricing` | pricing tool | `sales` (new) | `pricing` (106) + `read` |
+| `/exchange-rates` | exchange-rates catalog | `catalogs` | `exchangeRates` (43) + `read` |
 
 **Rationale**: `lib/core/navigation/nav_destinations.dart` (spec 010) already
 models the tree declaratively — new destinations are added to `kNavigationTree`
 with a `gate`, and `navDestinationsProvider` filters by access automatically
 (the widget never calls `can(...)`). `NavBranch` indices must stay in sync with
-the branch order in `app_router.dart`. All three legacy objects sit in the
-"Master Data" category per `constants.md`, matching the existing `catalogs`
-group; no new group is warranted for three destinations.
+the branch order in `app_router.dart`. The two catalog-style entities
+(`priceLists`, `exchangeRates`) stay under `catalogs`, matching their "Master
+Data" category in `constants.md`. `pricing` (106) is not itself a catalog —
+it's the operational tool for pricing products day-to-day — so the product
+owner asked for it to sit under a dedicated `sales`-labeled group instead,
+separating "define pricing structure" (catalogs) from "do sales-adjacent
+work" (sales). This is a pure navigation-grouping change: the route, gate,
+and screen are unaffected; `_filterTree`'s existing "drop an empty group"
+behavior (FR-006) applies identically to `sales` as it does to `catalogs`.
+
+**Superseded original rationale** (2026-07-14): "All three legacy objects sit
+in the 'Master Data' category per `constants.md`, matching the existing
+`catalogs` group; no new group is warranted for three destinations." This
+held until the product owner specifically requested `pricing` be separated
+out — the two-group split reads more clearly than optimizing for group count.
 
 **Alternatives considered**: a dedicated "Pricing" nav group — rejected as
 premature for three entries; revisit if the group grows.

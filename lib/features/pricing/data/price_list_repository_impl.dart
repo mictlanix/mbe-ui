@@ -68,10 +68,12 @@ class PriceListRepositoryImpl implements PriceListRepository {
       final response = await _api.createPriceListApiV1PriceListsPost(
         priceListCreate: PriceListCreate((b) {
           b.name = name;
-          if (highProfitMargin != null)
+          if (highProfitMargin != null) {
             _setHighProfitMargin(b.highProfitMargin, highProfitMargin);
-          if (lowProfitMargin != null)
+          }
+          if (lowProfitMargin != null) {
             _setLowProfitMargin(b.lowProfitMargin, lowProfitMargin);
+          }
         }),
       );
       final priceList = response.data;

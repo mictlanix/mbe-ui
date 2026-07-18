@@ -42,6 +42,8 @@
   "@homeWelcomeMessage": {},
   "catalogsGroupTitle": "Catalogs",
   "@catalogsGroupTitle": {},
+  "salesGroupTitle": "Sales",
+  "@salesGroupTitle": {},
   "usersMenuTitle": "Users",
   "@usersMenuTitle": {},
 

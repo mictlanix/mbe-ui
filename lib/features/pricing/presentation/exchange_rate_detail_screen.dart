@@ -219,8 +219,9 @@ class _ExchangeRateDetailScreenState
                 onChanged: !fieldsEnabled
                     ? null
                     : (currency) {
-                        if (currency != null)
+                        if (currency != null) {
                           controller.targetChanged(currency);
+                        }
                       },
               ),
             ),

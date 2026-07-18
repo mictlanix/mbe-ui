@@ -112,7 +112,7 @@ class _PricingTable extends ConsumerWidget {
           cellBuilder: (context, row) => Text(
             row.price == null
                 ? '—'
-                : PricingFormatters.currency(row.price!.lowProfit),
+                : PricingFormatters.percent(row.price!.lowProfit),
           ),
         ),
         DataTableColumn(
@@ -122,7 +122,7 @@ class _PricingTable extends ConsumerWidget {
           cellBuilder: (context, row) => Text(
             row.price == null
                 ? '—'
-                : PricingFormatters.currency(row.price!.highProfit),
+                : PricingFormatters.percent(row.price!.highProfit),
           ),
         ),
         if (canUpdate)

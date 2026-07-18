@@ -24,9 +24,10 @@ enhancement; not in scope.)
 
 ## Navigation
 
-`lib/core/navigation/nav_destinations.dart` — three `NavDestination` entries
-appended to the existing `catalogs` `NavGroup`, and three new `NavBranch`
-indices.
+`lib/core/navigation/nav_destinations.dart` — two `NavDestination` entries
+appended to the existing `catalogs` `NavGroup`, one new destination in a new
+`sales` `NavGroup` (decided 2026-07-18, research.md §7), and three new
+`NavBranch` indices.
 
 ```text
 NavBranch: home(0), users(1), products(2),
@@ -37,16 +38,20 @@ NavBranch: home(0), users(1), products(2),
 > (per the existing comment in `nav_destinations.dart:10-11`). Adding branches
 > means adding them in the same order in both files.
 
-| Destination id | Label (l10n key) | Icon | Route | Gate |
-|---|---|---|---|---|
-| `price-lists` | `priceListsMenuTitle` | `Icons.sell_outlined` / `Icons.sell` | `/price-lists` | `priceLists` + `read` |
-| `pricing` | `pricingMenuTitle` | `Icons.price_change_outlined` / `Icons.price_change` | `/pricing` | `pricing` + `read` |
-| `exchange-rates` | `exchangeRatesMenuTitle` | `Icons.currency_exchange_outlined` / `Icons.currency_exchange` | `/exchange-rates` | `exchangeRates` + `read` |
+| Destination id | Group | Label (l10n key) | Icon | Route | Gate |
+|---|---|---|---|---|---|
+| `price-lists` | `catalogs` | `priceListsMenuTitle` | `Icons.sell_outlined` / `Icons.sell` | `/price-lists` | `priceLists` + `read` |
+| `pricing` | `sales` (new) | `pricingMenuTitle` | `Icons.price_change_outlined` / `Icons.price_change` | `/pricing` | `pricing` + `read` |
+| `exchange-rates` | `catalogs` | `exchangeRatesMenuTitle` | `Icons.currency_exchange_outlined` / `Icons.currency_exchange` | `/exchange-rates` | `exchangeRates` + `read` |
+
+The `sales` group's own label uses l10n key `salesGroupTitle` ("Sales" / "Ventas").
 
 Visibility is resolved by `navDestinationsProvider`'s access filter — the
 `AppNavigation` widget never calls `can(...)` (spec 010 contract). A user with
-none of the three privileges sees no new entries; the `catalogs` group itself
-is dropped only if *all* its children are filtered out.
+none of the three privileges sees no new entries; each group (`catalogs` and
+`sales`) is dropped independently if *all* of its own children are filtered
+out — a user with only `pricing` sees `sales` but not `catalogs`, and vice
+versa (verified in `app_navigation_test.dart`).
 
 ## RBAC gating
 

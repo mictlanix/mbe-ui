@@ -20,6 +20,7 @@
   "homeMenuTitle": "Inicio",
   "homeWelcomeMessage": "Bienvenido",
   "catalogsGroupTitle": "Catálogos",
+  "salesGroupTitle": "Ventas",
   "usersMenuTitle": "Usuarios",
 
   "userMenuLogout": "Salir",

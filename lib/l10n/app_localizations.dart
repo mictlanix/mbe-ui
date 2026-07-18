@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Catalogs'**
   String get catalogsGroupTitle;
 
+  /// No description provided for @salesGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get salesGroupTitle;
+
   /// No description provided for @usersMenuTitle.
   ///
   /// In en, this message translates to:

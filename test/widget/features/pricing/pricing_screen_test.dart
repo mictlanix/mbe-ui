@@ -125,8 +125,8 @@ void main() {
             productId: 1,
             priceList: _retail,
             price: '120.00',
-            lowProfit: '90.00',
-            highProfit: '150.00',
+            lowProfit: '0.10',
+            highProfit: '0.40',
           ),
         ],
       );
@@ -155,6 +155,12 @@ void main() {
       expect(find.text('Wholesale'), findsOneWidget);
       expect(find.byKey(const Key('price_not_set_2')), findsOneWidget);
       expect(find.text(r'$120.00'), findsOneWidget);
+      // Low/high profit are percentage thresholds, not currency (corrected
+      // 2026-07-18 — live verification showed values like 0.00/1.00 across
+      // every list, matching the legacy "profit threshold" semantics
+      // PriceList's own margins already use, FR-006/FR-011).
+      expect(find.text('10%'), findsOneWidget);
+      expect(find.text('40%'), findsOneWidget);
     },
   );
 
