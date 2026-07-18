@@ -516,4 +516,248 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userRecoveryFailedError => 'Failed to generate recovery token.';
+
+  @override
+  String get priceListsMenuTitle => 'Price Lists';
+
+  @override
+  String get pricingMenuTitle => 'Pricing';
+
+  @override
+  String get exchangeRatesMenuTitle => 'Exchange Rates';
+
+  @override
+  String get priceListsSearchLabel => 'Search by name';
+
+  @override
+  String get newPriceListTooltip => 'New price list';
+
+  @override
+  String get noPriceListsFound => 'No price lists found.';
+
+  @override
+  String priceListsLoadError(Object error) {
+    return 'Failed to load price lists: $error';
+  }
+
+  @override
+  String get columnHighProfitMargin => 'High margin';
+
+  @override
+  String get columnLowProfitMargin => 'Low margin';
+
+  @override
+  String get priceListNameLabel => 'Name';
+
+  @override
+  String get priceListHighProfitMarginLabel => 'High profit margin';
+
+  @override
+  String get priceListLowProfitMarginLabel => 'Low profit margin';
+
+  @override
+  String get newPriceListTitle => 'New price list';
+
+  @override
+  String get editPriceListTitle => 'Edit price list';
+
+  @override
+  String get viewPriceListTitle => 'View price list';
+
+  @override
+  String get deletePriceListButton => 'Delete';
+
+  @override
+  String get deletePriceListConfirmTitle => 'Delete price list?';
+
+  @override
+  String deletePriceListConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get priceListNameRequiredError => 'Name is required.';
+
+  @override
+  String get priceListMarginInvalidError =>
+      'Enter a valid non-negative percentage.';
+
+  @override
+  String get priceListLoadFailedError => 'Failed to load price list.';
+
+  @override
+  String get priceListCreateFailedError => 'Failed to create price list.';
+
+  @override
+  String get priceListUpdateFailedError => 'Failed to update price list.';
+
+  @override
+  String get priceListDeleteFailedError => 'Failed to delete price list.';
+
+  @override
+  String get priceListCreatePermissionDeniedError =>
+      'You no longer have permission to create price lists.';
+
+  @override
+  String get priceListUpdatePermissionDeniedError =>
+      'You no longer have permission to edit price lists.';
+
+  @override
+  String get priceListDeletePermissionDeniedError =>
+      'You no longer have permission to delete price lists.';
+
+  @override
+  String get pricingProductPickerLabel => 'Product';
+
+  @override
+  String get pricingSelectProductPrompt =>
+      'Select a product to see and edit its prices.';
+
+  @override
+  String get pricingNoPriceListsEmptyState =>
+      'No price lists exist yet. Create one first.';
+
+  @override
+  String get pricingPriceNotSet => 'Not set';
+
+  @override
+  String pricingLoadError(Object error) {
+    return 'Failed to load prices: $error';
+  }
+
+  @override
+  String get pricingSaveFailedError => 'Failed to save price.';
+
+  @override
+  String get pricingUpdatePermissionDeniedError =>
+      'You no longer have permission to edit prices.';
+
+  @override
+  String get pricingInvalidAmountError => 'Enter a valid non-negative amount.';
+
+  @override
+  String get columnPriceList => 'Price list';
+
+  @override
+  String get columnPrice => 'Price';
+
+  @override
+  String get columnLowProfit => 'Low profit';
+
+  @override
+  String get columnHighProfit => 'High profit';
+
+  @override
+  String get editPriceTooltip => 'Edit price';
+
+  @override
+  String get savePriceTooltip => 'Save';
+
+  @override
+  String get cancelPriceEditTooltip => 'Cancel';
+
+  @override
+  String get newExchangeRateTooltip => 'New exchange rate';
+
+  @override
+  String get noExchangeRatesFound => 'No exchange rates found.';
+
+  @override
+  String exchangeRatesLoadError(Object error) {
+    return 'Failed to load exchange rates: $error';
+  }
+
+  @override
+  String get columnDate => 'Date';
+
+  @override
+  String get columnBaseCurrency => 'Base';
+
+  @override
+  String get columnTargetCurrency => 'Target';
+
+  @override
+  String get columnRate => 'Rate';
+
+  @override
+  String get exchangeRateDateLabel => 'Date';
+
+  @override
+  String get exchangeRateBaseCurrencyLabel => 'Base currency';
+
+  @override
+  String get exchangeRateTargetCurrencyLabel => 'Target currency';
+
+  @override
+  String get exchangeRateRateLabel => 'Rate';
+
+  @override
+  String get newExchangeRateTitle => 'New exchange rate';
+
+  @override
+  String get editExchangeRateTitle => 'Edit exchange rate';
+
+  @override
+  String get viewExchangeRateTitle => 'View exchange rate';
+
+  @override
+  String get deleteExchangeRateButton => 'Delete';
+
+  @override
+  String get deleteExchangeRateConfirmTitle => 'Delete exchange rate?';
+
+  @override
+  String get deleteExchangeRateConfirmMessage =>
+      'This will permanently delete this exchange rate. This cannot be undone.';
+
+  @override
+  String get exchangeRateDateRequiredError => 'Date is required.';
+
+  @override
+  String get exchangeRateRateInvalidError => 'Enter a valid positive rate.';
+
+  @override
+  String get exchangeRateCurrencyRequiredError => 'Select a currency.';
+
+  @override
+  String get exchangeRateLoadFailedError => 'Failed to load exchange rate.';
+
+  @override
+  String get exchangeRateCreateFailedError => 'Failed to create exchange rate.';
+
+  @override
+  String get exchangeRateUpdateFailedError => 'Failed to update exchange rate.';
+
+  @override
+  String get exchangeRateDeleteFailedError => 'Failed to delete exchange rate.';
+
+  @override
+  String get exchangeRateCreatePermissionDeniedError =>
+      'You no longer have permission to create exchange rates.';
+
+  @override
+  String get exchangeRateUpdatePermissionDeniedError =>
+      'You no longer have permission to edit exchange rates.';
+
+  @override
+  String get exchangeRateDeletePermissionDeniedError =>
+      'You no longer have permission to delete exchange rates.';
+
+  @override
+  String get dateRangeFilterLabel => 'Date range';
+
+  @override
+  String get currencyFilterLabel => 'Currency pair';
+
+  @override
+  String get clearDateRangeTooltip => 'Clear date range';
+
+  @override
+  String get currencyMxnLabel => 'MXN — Mexican Peso';
+
+  @override
+  String get currencyUsdLabel => 'USD — US Dollar';
+
+  @override
+  String get currencyEurLabel => 'EUR — Euro';
 }

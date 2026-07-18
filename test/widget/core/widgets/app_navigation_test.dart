@@ -43,6 +43,28 @@ const _noCatalogsUser = User(
   privileges: [],
 );
 
+/// Only `pricing` (106) read — Pricing visible, Price Lists and Exchange
+/// Rates absent (spec 011 quickstart §5, T047: pricing without priceLists).
+const _pricingOnlyUser = User(
+  userId: 'pricing-only',
+  email: 'pricing-only@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 2)],
+);
+
+/// No pricing-related privileges at all (spec 011 quickstart §5: "no
+/// privileges → no nav entries").
+const _noPricingUser = User(
+  userId: 'no-pricing',
+  email: 'no-pricing@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [],
+);
+
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
@@ -56,9 +78,7 @@ void main() {
   }) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          accessControlProvider.overrideWithValue(_accessFor(user)),
-        ],
+        overrides: [accessControlProvider.overrideWithValue(_accessFor(user))],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -80,8 +100,9 @@ void main() {
   }
 
   for (final mode in AppNavigationMode.values) {
-    testWidgets('[$mode] shows Home + grouped Users/Products for a full user',
-        (tester) async {
+    testWidgets('[$mode] shows Home + grouped Users/Products for a full user', (
+      tester,
+    ) async {
       await pumpNav(tester, user: _bothUser, mode: mode);
 
       expect(find.byKey(const Key('nav_dest_home')), findsOneWidget);
@@ -90,8 +111,9 @@ void main() {
       expect(find.byKey(const Key('nav_dest_products')), findsOneWidget);
     });
 
-    testWidgets('[$mode] hides Products for a user without products.read',
-        (tester) async {
+    testWidgets('[$mode] hides Products for a user without products.read', (
+      tester,
+    ) async {
       await pumpNav(tester, user: _usersOnlyUser, mode: mode);
 
       expect(find.byKey(const Key('nav_dest_users')), findsOneWidget);
@@ -100,8 +122,9 @@ void main() {
       expect(find.byKey(const Key('nav_group_catalogs')), findsOneWidget);
     });
 
-    testWidgets('[$mode] hides the empty Catalogs group entirely (FR-006)',
-        (tester) async {
+    testWidgets('[$mode] hides the empty Catalogs group entirely (FR-006)', (
+      tester,
+    ) async {
       await pumpNav(tester, user: _noCatalogsUser, mode: mode);
 
       expect(find.byKey(const Key('nav_dest_home')), findsOneWidget);
@@ -109,22 +132,42 @@ void main() {
       expect(find.byKey(const Key('nav_dest_users')), findsNothing);
       expect(find.byKey(const Key('nav_dest_products')), findsNothing);
     });
+
+    testWidgets(
+      '[$mode] pricing without priceLists: Pricing visible, Price Lists '
+      'and Exchange Rates absent (spec 011 T047)',
+      (tester) async {
+        await pumpNav(tester, user: _pricingOnlyUser, mode: mode);
+
+        expect(find.byKey(const Key('nav_dest_pricing')), findsOneWidget);
+        expect(find.byKey(const Key('nav_dest_price-lists')), findsNothing);
+        expect(find.byKey(const Key('nav_dest_exchange-rates')), findsNothing);
+      },
+    );
+
+    testWidgets('[$mode] no pricing privileges: none of the three pricing nav '
+        'entries appear (spec 011 T047)', (tester) async {
+      await pumpNav(tester, user: _noPricingUser, mode: mode);
+
+      expect(find.byKey(const Key('nav_dest_price-lists')), findsNothing);
+      expect(find.byKey(const Key('nav_dest_pricing')), findsNothing);
+      expect(find.byKey(const Key('nav_dest_exchange-rates')), findsNothing);
+    });
   }
 
-  testWidgets('selecting Products reports its branch index (2)', (tester) async {
+  testWidgets('selecting Products reports its branch index (2)', (
+    tester,
+  ) async {
     int? selected;
-    await pumpNav(
-      tester,
-      user: _bothUser,
-      onSelected: (i) => selected = i,
-    );
+    await pumpNav(tester, user: _bothUser, onSelected: (i) => selected = i);
 
     await tester.tap(find.byKey(const Key('nav_dest_products')));
     expect(selected, 2);
   });
 
-  testWidgets('the active destination renders with its selected icon',
-      (tester) async {
+  testWidgets('the active destination renders with its selected icon', (
+    tester,
+  ) async {
     await pumpNav(tester, user: _bothUser, currentIndex: 2);
 
     // Products is active -> filled icon; Home is not -> outlined icon.

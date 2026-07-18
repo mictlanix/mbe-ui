@@ -17,6 +17,11 @@ import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart'
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/price_list_detail_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
 /// Routes are registered by later phases; this provider gives them a
@@ -62,6 +67,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/price-lists',
+                builder: (context, state) => const PriceListsListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/pricing',
+                builder: (context, state) => const PricingScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/exchange-rates',
+                builder: (context, state) => const ExchangeRatesListScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -99,6 +128,28 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/products/:productId',
         builder: (context, state) => ProductDetailScreen(
           productId: int.parse(state.pathParameters['productId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/price-lists/new',
+        builder: (context, state) => const PriceListDetailScreen(),
+      ),
+      GoRoute(
+        path: '/price-lists/:priceListId',
+        builder: (context, state) => PriceListDetailScreen(
+          priceListId: int.parse(state.pathParameters['priceListId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/exchange-rates/new',
+        builder: (context, state) => const ExchangeRateDetailScreen(),
+      ),
+      GoRoute(
+        path: '/exchange-rates/:exchangeRateId',
+        builder: (context, state) => ExchangeRateDetailScreen(
+          exchangeRateId: int.parse(state.pathParameters['exchangeRateId']!),
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
@@ -169,6 +220,15 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/products')) {
     return (object: SystemObject.products, right: AccessRight.read);
+  }
+  if (location.startsWith('/price-lists')) {
+    return (object: SystemObject.priceLists, right: AccessRight.read);
+  }
+  if (location.startsWith('/pricing')) {
+    return (object: SystemObject.pricing, right: AccessRight.read);
+  }
+  if (location.startsWith('/exchange-rates')) {
+    return (object: SystemObject.exchangeRates, right: AccessRight.read);
   }
   return null;
 }

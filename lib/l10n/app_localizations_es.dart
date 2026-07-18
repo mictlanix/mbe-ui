@@ -520,4 +520,258 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get userRecoveryFailedError =>
       'No se pudo generar el token de recuperación.';
+
+  @override
+  String get priceListsMenuTitle => 'Listas de Precios';
+
+  @override
+  String get pricingMenuTitle => 'Precios';
+
+  @override
+  String get exchangeRatesMenuTitle => 'Tipos de Cambio';
+
+  @override
+  String get priceListsSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get newPriceListTooltip => 'Nueva lista de precios';
+
+  @override
+  String get noPriceListsFound => 'No se encontraron listas de precios.';
+
+  @override
+  String priceListsLoadError(Object error) {
+    return 'No se pudieron cargar las listas de precios: $error';
+  }
+
+  @override
+  String get columnHighProfitMargin => 'Margen alto';
+
+  @override
+  String get columnLowProfitMargin => 'Margen bajo';
+
+  @override
+  String get priceListNameLabel => 'Nombre';
+
+  @override
+  String get priceListHighProfitMarginLabel => 'Margen de utilidad alto';
+
+  @override
+  String get priceListLowProfitMarginLabel => 'Margen de utilidad bajo';
+
+  @override
+  String get newPriceListTitle => 'Nueva lista de precios';
+
+  @override
+  String get editPriceListTitle => 'Editar lista de precios';
+
+  @override
+  String get viewPriceListTitle => 'Ver lista de precios';
+
+  @override
+  String get deletePriceListButton => 'Eliminar';
+
+  @override
+  String get deletePriceListConfirmTitle => '¿Eliminar lista de precios?';
+
+  @override
+  String deletePriceListConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get priceListNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get priceListMarginInvalidError =>
+      'Ingresa un porcentaje válido no negativo.';
+
+  @override
+  String get priceListLoadFailedError =>
+      'No se pudo cargar la lista de precios.';
+
+  @override
+  String get priceListCreateFailedError =>
+      'No se pudo crear la lista de precios.';
+
+  @override
+  String get priceListUpdateFailedError =>
+      'No se pudo actualizar la lista de precios.';
+
+  @override
+  String get priceListDeleteFailedError =>
+      'No se pudo eliminar la lista de precios.';
+
+  @override
+  String get priceListCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear listas de precios.';
+
+  @override
+  String get priceListUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar listas de precios.';
+
+  @override
+  String get priceListDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar listas de precios.';
+
+  @override
+  String get pricingProductPickerLabel => 'Producto';
+
+  @override
+  String get pricingSelectProductPrompt =>
+      'Selecciona un producto para ver y editar sus precios.';
+
+  @override
+  String get pricingNoPriceListsEmptyState =>
+      'Aún no existen listas de precios. Crea una primero.';
+
+  @override
+  String get pricingPriceNotSet => 'Sin definir';
+
+  @override
+  String pricingLoadError(Object error) {
+    return 'No se pudieron cargar los precios: $error';
+  }
+
+  @override
+  String get pricingSaveFailedError => 'No se pudo guardar el precio.';
+
+  @override
+  String get pricingUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar precios.';
+
+  @override
+  String get pricingInvalidAmountError =>
+      'Ingresa un monto válido no negativo.';
+
+  @override
+  String get columnPriceList => 'Lista de precios';
+
+  @override
+  String get columnPrice => 'Precio';
+
+  @override
+  String get columnLowProfit => 'Utilidad baja';
+
+  @override
+  String get columnHighProfit => 'Utilidad alta';
+
+  @override
+  String get editPriceTooltip => 'Editar precio';
+
+  @override
+  String get savePriceTooltip => 'Guardar';
+
+  @override
+  String get cancelPriceEditTooltip => 'Cancelar';
+
+  @override
+  String get newExchangeRateTooltip => 'Nuevo tipo de cambio';
+
+  @override
+  String get noExchangeRatesFound => 'No se encontraron tipos de cambio.';
+
+  @override
+  String exchangeRatesLoadError(Object error) {
+    return 'No se pudieron cargar los tipos de cambio: $error';
+  }
+
+  @override
+  String get columnDate => 'Fecha';
+
+  @override
+  String get columnBaseCurrency => 'Base';
+
+  @override
+  String get columnTargetCurrency => 'Destino';
+
+  @override
+  String get columnRate => 'Tipo de cambio';
+
+  @override
+  String get exchangeRateDateLabel => 'Fecha';
+
+  @override
+  String get exchangeRateBaseCurrencyLabel => 'Moneda base';
+
+  @override
+  String get exchangeRateTargetCurrencyLabel => 'Moneda destino';
+
+  @override
+  String get exchangeRateRateLabel => 'Tipo de cambio';
+
+  @override
+  String get newExchangeRateTitle => 'Nuevo tipo de cambio';
+
+  @override
+  String get editExchangeRateTitle => 'Editar tipo de cambio';
+
+  @override
+  String get viewExchangeRateTitle => 'Ver tipo de cambio';
+
+  @override
+  String get deleteExchangeRateButton => 'Eliminar';
+
+  @override
+  String get deleteExchangeRateConfirmTitle => '¿Eliminar tipo de cambio?';
+
+  @override
+  String get deleteExchangeRateConfirmMessage =>
+      'Esto eliminará permanentemente este tipo de cambio. Esta acción no se puede deshacer.';
+
+  @override
+  String get exchangeRateDateRequiredError => 'La fecha es obligatoria.';
+
+  @override
+  String get exchangeRateRateInvalidError =>
+      'Ingresa un tipo de cambio positivo válido.';
+
+  @override
+  String get exchangeRateCurrencyRequiredError => 'Selecciona una moneda.';
+
+  @override
+  String get exchangeRateLoadFailedError =>
+      'No se pudo cargar el tipo de cambio.';
+
+  @override
+  String get exchangeRateCreateFailedError =>
+      'No se pudo crear el tipo de cambio.';
+
+  @override
+  String get exchangeRateUpdateFailedError =>
+      'No se pudo actualizar el tipo de cambio.';
+
+  @override
+  String get exchangeRateDeleteFailedError =>
+      'No se pudo eliminar el tipo de cambio.';
+
+  @override
+  String get exchangeRateCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear tipos de cambio.';
+
+  @override
+  String get exchangeRateUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar tipos de cambio.';
+
+  @override
+  String get exchangeRateDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar tipos de cambio.';
+
+  @override
+  String get dateRangeFilterLabel => 'Rango de fechas';
+
+  @override
+  String get currencyFilterLabel => 'Par de monedas';
+
+  @override
+  String get clearDateRangeTooltip => 'Limpiar rango de fechas';
+
+  @override
+  String get currencyMxnLabel => 'MXN — Peso Mexicano';
+
+  @override
+  String get currencyUsdLabel => 'USD — Dólar Estadounidense';
+
+  @override
+  String get currencyEurLabel => 'EUR — Euro';
 }

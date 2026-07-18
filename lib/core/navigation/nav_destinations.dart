@@ -14,6 +14,9 @@ class NavBranch {
   static const int home = 0;
   static const int users = 1;
   static const int products = 2;
+  static const int priceLists = 3;
+  static const int pricing = 4;
+  static const int exchangeRates = 5;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -49,6 +52,33 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.products,
         gate: (object: SystemObject.products, right: AccessRight.read),
       ),
+      NavDestination(
+        id: 'price-lists',
+        label: _priceListsLabel,
+        icon: Icons.sell_outlined,
+        selectedIcon: Icons.sell,
+        route: '/price-lists',
+        branchIndex: NavBranch.priceLists,
+        gate: (object: SystemObject.priceLists, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'pricing',
+        label: _pricingLabel,
+        icon: Icons.price_change_outlined,
+        selectedIcon: Icons.price_change,
+        route: '/pricing',
+        branchIndex: NavBranch.pricing,
+        gate: (object: SystemObject.pricing, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'exchange-rates',
+        label: _exchangeRatesLabel,
+        icon: Icons.currency_exchange_outlined,
+        selectedIcon: Icons.currency_exchange,
+        route: '/exchange-rates',
+        branchIndex: NavBranch.exchangeRates,
+        gate: (object: SystemObject.exchangeRates, right: AccessRight.read),
+      ),
     ],
   ),
 ];
@@ -58,6 +88,10 @@ String _homeLabel(AppLocalizations l10n) => l10n.homeMenuTitle;
 String _catalogsLabel(AppLocalizations l10n) => l10n.catalogsGroupTitle;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _productsLabel(AppLocalizations l10n) => l10n.productsTitle;
+String _priceListsLabel(AppLocalizations l10n) => l10n.priceListsMenuTitle;
+String _pricingLabel(AppLocalizations l10n) => l10n.pricingMenuTitle;
+String _exchangeRatesLabel(AppLocalizations l10n) =>
+    l10n.exchangeRatesMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a
