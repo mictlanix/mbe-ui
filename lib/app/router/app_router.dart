@@ -79,16 +79,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/pricing',
-                builder: (context, state) {
-                  final productIdParam = state.uri.queryParameters['productId'];
-                  return PricingScreen(
-                    initialProductId: productIdParam == null
-                        ? null
-                        : int.tryParse(productIdParam),
-                    initialProductDisplayText:
-                        state.uri.queryParameters['productDisplayText'],
-                  );
-                },
+                builder: (context, state) => const PricingScreen(),
               ),
             ],
           ),
@@ -138,6 +129,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ProductDetailScreen(
           productId: int.parse(state.pathParameters['productId']!),
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/products/:productId/pricing',
+        builder: (context, state) => PricingScreen(
+          initialProductId: int.parse(state.pathParameters['productId']!),
+          initialProductDisplayText:
+              state.uri.queryParameters['productDisplayText'],
+          standalone: true,
         ),
       ),
       GoRoute(
@@ -226,6 +226,13 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/users')) {
     return (object: SystemObject.users, right: AccessRight.read);
+  }
+  // Checked before the generic '/products' gate below: this nested route
+  // is the product detail screen's "view pricing" shortcut and must gate on
+  // pricing read access, not products read access (the button that links
+  // here is itself hidden without it — product_detail_screen.dart).
+  if (location.startsWith('/products/') && location.endsWith('/pricing')) {
+    return (object: SystemObject.pricing, right: AccessRight.read);
   }
   if (location.startsWith('/products')) {
     return (object: SystemObject.products, right: AccessRight.read);

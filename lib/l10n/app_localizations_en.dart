@@ -388,9 +388,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewPricingButton => 'View pricing';
 
   @override
-  String get pricingSectionTitle => 'Pricing';
-
-  @override
   String get emailLabel => 'Email';
 
   @override

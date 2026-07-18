@@ -812,12 +812,6 @@ abstract class AppLocalizations {
   /// **'View pricing'**
   String get viewPricingButton;
 
-  /// No description provided for @pricingSectionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pricing'**
-  String get pricingSectionTitle;
-
   /// No description provided for @emailLabel.
   ///
   /// In en, this message translates to:

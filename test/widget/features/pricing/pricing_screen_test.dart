@@ -77,7 +77,13 @@ void main() {
     required User signedInAs,
     int? initialProductId,
     String? initialProductDisplayText,
+    bool standalone = false,
   }) async {
+    final screen = PricingScreen(
+      initialProductId: initialProductId,
+      initialProductDisplayText: initialProductDisplayText,
+      standalone: standalone,
+    );
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -91,12 +97,10 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: PricingScreen(
-              initialProductId: initialProductId,
-              initialProductDisplayText: initialProductDisplayText,
-            ),
-          ),
+          // A standalone PricingScreen supplies its own Scaffold (it's
+          // pushed as a full route, not embedded in the shell's AppBar) —
+          // wrapping it in another one here would just nest Scaffolds.
+          home: standalone ? screen : Scaffold(body: screen),
         ),
       ),
     );
@@ -254,4 +258,50 @@ void main() {
       expect(find.byKey(const Key('price_not_set_1')), findsOneWidget);
     },
   );
+
+  group('standalone mode (product detail "view pricing" shortcut)', () {
+    testWidgets(
+      'hides the product picker and renders its own app bar with a back '
+      'button',
+      (tester) async {
+        when(() => priceListRepository.list(limit: 100)).thenAnswer(
+          (_) async => const PriceListResult(items: [_retail], total: 1),
+        );
+        when(
+          () => productPriceRepository.listByProduct(
+            productId: 1,
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer((_) async => []);
+
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          initialProductId: 1,
+          initialProductDisplayText: 'SKU-1 — Widget',
+          standalone: true,
+        );
+
+        expect(
+          find.byKey(const Key('pricing_product_picker')),
+          findsNothing,
+        );
+        expect(find.byType(AppBar), findsOneWidget);
+        expect(find.text('SKU-1 — Widget'), findsOneWidget);
+        expect(find.text('Retail'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'still shows the product picker in non-standalone (shell branch) mode',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+        expect(
+          find.byKey(const Key('pricing_product_picker')),
+          findsOneWidget,
+        );
+      },
+    );
+  });
 }

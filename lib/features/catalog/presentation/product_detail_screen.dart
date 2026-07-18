@@ -428,11 +428,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   key: const Key('view_pricing_button'),
                   icon: const Icon(Icons.sell_outlined),
                   label: Text(l10n.viewPricingButton),
-                  onPressed: () => context.go(
+                  onPressed: () => context.push(
                     Uri(
-                      path: '/pricing',
+                      path: '/products/${widget.productId}/pricing',
                       queryParameters: {
-                        'productId': '${widget.productId}',
                         'productDisplayText':
                             '${formState.code} — ${formState.name}',
                       },

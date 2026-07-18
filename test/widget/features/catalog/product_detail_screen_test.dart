@@ -910,8 +910,8 @@ void main() {
 
     group('view pricing shortcut', () {
       testWidgets(
-        'shows a "view pricing" section/button under the switches for an '
-        'editable product when the user has pricing read access',
+        'shows a "view pricing" button under the switches for an editable '
+        'product when the user has pricing read access',
         (tester) async {
           when(
             () => productRepository.get(productId: 1),
@@ -923,10 +923,6 @@ void main() {
             productId: 1,
           );
 
-          final l10n = await AppLocalizations.delegate.load(
-            const Locale('en'),
-          );
-          expect(find.text(l10n.pricingSectionTitle), findsOneWidget);
           expect(find.byKey(const Key('view_pricing_button')), findsOneWidget);
         },
       );
@@ -964,7 +960,8 @@ void main() {
       );
 
       testWidgets(
-        'navigates to /pricing with the product preselected on tap',
+        'pushes /products/:productId/pricing as a stacked screen with the '
+        'product preselected on tap',
         (tester) async {
           when(
             () => productRepository.get(productId: 1),
@@ -984,9 +981,9 @@ void main() {
                 ),
               ),
               GoRoute(
-                path: '/pricing',
+                path: '/products/:productId/pricing',
                 builder: (_, state) => Text(
-                  'pricing:${state.uri.queryParameters['productId']}:'
+                  'pricing:${state.pathParameters['productId']}:'
                   '${state.uri.queryParameters['productDisplayText']}',
                 ),
               ),

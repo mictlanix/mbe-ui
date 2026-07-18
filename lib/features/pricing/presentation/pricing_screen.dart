@@ -21,19 +21,23 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// navigable records, so §VI's row-click/Edit-icon contract does not apply
 /// here (spec FR-020a, contracts/routes.md).
 ///
-/// [initialProductId]/[initialProductDisplayText] preselect a product when
-/// arriving from the product detail screen's "view pricing" shortcut
-/// (`/pricing?productId=..&productDisplayText=..`) instead of forcing a
-/// second lookup through the picker.
+/// [standalone] renders this as a pushed, full-screen route (its own
+/// `Scaffold`/`AppBar`/back button) with the product picker hidden and
+/// [initialProductId] locked in, instead of the `/pricing` shell-branch
+/// content — used by the product detail screen's "view pricing" shortcut
+/// (`/products/:productId/pricing`), which arrives already scoped to one
+/// product and has no reason to let it be changed from here.
 class PricingScreen extends ConsumerStatefulWidget {
   const PricingScreen({
     super.key,
     this.initialProductId,
     this.initialProductDisplayText,
+    this.standalone = false,
   });
 
   final int? initialProductId;
   final String? initialProductDisplayText;
+  final bool standalone;
 
   @override
   ConsumerState<PricingScreen> createState() => _PricingScreenState();
@@ -65,30 +69,32 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
     final productRepo = ref.read(productRepositoryProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return Padding(
+    final body = Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 400,
-            child: CatalogEntityPicker<ProductListItem>(
-              key: const Key('pricing_product_picker'),
-              label: l10n.pricingProductPickerLabel,
-              displayStringForOption: (item) => '${item.code} — ${item.name}',
-              optionsBuilder: (query) async {
-                if (query.isEmpty) return const [];
-                final result = await productRepo.list(search: query);
-                return result.items;
-              },
-              onSelected: (item) => controller.selectProduct(
-                productId: item.productId,
-                displayText: '${item.code} — ${item.name}',
+          if (!widget.standalone)
+            SizedBox(
+              width: 400,
+              child: CatalogEntityPicker<ProductListItem>(
+                key: const Key('pricing_product_picker'),
+                label: l10n.pricingProductPickerLabel,
+                displayStringForOption: (item) =>
+                    '${item.code} — ${item.name}',
+                optionsBuilder: (query) async {
+                  if (query.isEmpty) return const [];
+                  final result = await productRepo.list(search: query);
+                  return result.items;
+                },
+                onSelected: (item) => controller.selectProduct(
+                  productId: item.productId,
+                  displayText: '${item.code} — ${item.name}',
+                ),
+                initialDisplayText: state.productDisplayText,
               ),
-              initialDisplayText: state.productDisplayText,
             ),
-          ),
-          const SizedBox(height: 16),
+          if (!widget.standalone) const SizedBox(height: 16),
           Expanded(
             child: state.productId == null
                 ? Center(child: Text(l10n.pricingSelectProductPrompt))
@@ -102,6 +108,15 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
           ),
         ],
       ),
+    );
+
+    if (!widget.standalone) return body;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(state.productDisplayText ?? l10n.pricingMenuTitle),
+      ),
+      body: body,
     );
   }
 }
