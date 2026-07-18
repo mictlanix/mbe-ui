@@ -81,8 +81,10 @@ appear under the *Catalogs* group in the side nav.
 Steps 2.3/2.4 are the **first runtime exercise of `one_of`/`AnyOf`
 serialization in this codebase** (research.md §4 — no prior usage exists under
 `lib/features/` or `lib/core/`). If prices silently fail to save, or save as
-`null`/`0`, suspect the `AnyOf2<num, String>` construction before anything
-else.
+`null`/`0`, suspect the `AnyOf2<String, num>(values: {0: value})` construction
+(String **first** type param, key **0** — the naive `AnyOf2<num, String>` with
+key `1` throws a `RangeError` at runtime; this was caught and corrected during
+US1 implementation, research.md §4) before anything else.
 
 Verify the wire format directly:
 

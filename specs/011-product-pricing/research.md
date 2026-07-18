@@ -99,39 +99,73 @@ dependency, and the API's string contract already carries exact values.
 
 ## 4. Writing prices: the `AnyOf` request wrapper
 
-**Decision**: Send the **String** arm of the generated `AnyOf` wrappers:
+**Decision**: Send the **String** arm of the generated `AnyOf` wrappers using
+`AnyOf2<String, num>` — String as the *first* type parameter — with key `0`:
 
 ```dart
-Price((b) => b..anyOf = AnyOf2<num, String>(values: {1: '120.00'}))
+HighProfitMarginBuilder builder;
+builder.anyOf = AnyOf2<String, num>(values: {0: '0.40'});
 ```
 
-**Rationale**: request DTOs are asymmetric with responses — `ProductPriceCreate`
-types `price`/`lowProfit`/`highProfit` as the generated `Price`/`LowProfit`/
-`HighProfit` wrappers (each an `anyOf: [number, string]` per mbe-api's schema),
-while responses are plain `String`. The generated `_$PriceSerializer.serialize`
-delegates to `serializers.serialize(anyOf, ...)` using
-`anyOf.valueTypes`, so it round-trips correctly despite its unused (empty)
-`_serializeProperties` body. `AnyOf2<num, String>` orders types `[num, String]`
-to match the generated `targetType`, so **index `1` is the String arm**.
-Choosing String keeps §3's exactness guarantee.
+This exactly mirrors the pre-existing `_setTaxRate` helper in
+`product_repository_impl.dart`:
 
-**Alternatives considered**: sending the `num` arm (index `0`) — rejected, it
-reintroduces float rounding on money for no benefit.
+```dart
+void _setTaxRate(TaxRateBuilder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}
+```
 
-**Risk**: this is the codebase's **first** `one_of`/`AnyOf` construction site
-(`grep` found no existing usage under `lib/features/` or `lib/core/`). The
-serializer path is read here but not yet exercised at runtime, so a repository
-round-trip test against a live mbe-api (quickstart §3) is mandatory before the
-UI is trusted — this is the single highest-risk unknown in the feature.
+**⚠️ Corrected 2026-07-17 — the original decision below was wrong.** An
+earlier version of this section read the wrapper's generated `deserialize`
+method (`targetType = FullType(AnyOf, [FullType(num), FullType(String)])`) and
+inferred that construction should mirror that order —
+`AnyOf2<num, String>(values: {1: value})`, String as the *second* parameter at
+key `1`. **This does not work.** Implementing US1's price-list margins against
+that guidance and running the mandatory round-trip test (this section's own
+requirement) immediately failed both plausible-looking forms:
 
-**⚠️ Update DTOs use a *different, separately-generated* wrapper class for the
+- `AnyOf2<num, String>(values: {1: value})` → `RangeError (length): Invalid
+  value: Only valid value is 0: 1`
+- `AnyOf2<num, String>(values: {0: value})` → `type 'String' is not a subtype
+  of type 'num'` (from `NumSerializer`)
+
+**Root cause**: `AnyOfSerializer.serialize` (`package:one_of_serializer`)
+builds its `specifiedType.parameters` from `anyOf.valueTypes` — the *set of
+types for keys actually present in `values`* — not from the wrapper's full
+declared type-parameter list. `_$PriceSerializer.serialize` (and its five
+siblings) construct that `specifiedType` from `anyOf.valueTypes` at
+serialization time, so with exactly one value set, `parameters` always has
+length 1, and the entry must live at key `0`, with `types[0]` matching the
+value's actual runtime type. The deserializer's fixed `[num, String]` order
+governs *reading* incoming JSON (try each type in turn) and has no bearing on
+how a value must be *written* — reading that order into a serialization index
+was the error. Verified directly against `standardSerializers.serialize(...)`
+before landing.
+
+**Alternatives considered**: `AnyOf2<num, String>` in either key configuration
+— both throw, per the traces above. `AnyOf2<String, num>` with key `1` was not
+tried (key `0` is required by the same `valueTypes`-length argument
+regardless of parameter order).
+
+**Risk (materialized)**: this was the codebase's **first** `one_of`/`AnyOf`
+construction site (`grep` found no existing usage under `lib/features/` or
+`lib/core/` — the `_setTaxRate` precedent above existed but its exact index
+convention (`String` first, key `0`) wasn't cross-checked against this
+wrapper's index semantics before writing the original guidance). The mandatory
+round-trip test caught the defect before any UI code depended on it — see
+`price_list_repository_impl_test.dart`'s two `AnyOf write path` tests, and the
+same pattern must be verified again for US2 (`ProductPriceCreate`/`Update`)
+and US3 (`ExchangeRateCreate`/`Update`) since each uses its own generated
+wrapper classes, even though the fix generalizes.
+
+**Update DTOs use a *different, separately-generated* wrapper class for the
 same field** (flagged by `/speckit-analyze`, 2026-07-14, finding U2). The
 openapi-generator could not dedupe the inline `anyOf: [number, string]` schema
 across Create and Update request bodies, so it emitted a second class per
 field, suffixed `1`. Verified against the generated client — each pair has the
-**identical shape** (`AnyOf get anyOf`, same `[String, num]` type order), so
-the exact same construction pattern from this section applies; only the class
-name changes:
+**identical shape** (`AnyOf get anyOf`), so the same `AnyOf2<String, num>`
+construction with key `0` applies; only the class name changes:
 
 | Field | Create-side class | Update-side class |
 |---|---|---|
@@ -143,11 +177,9 @@ name changes:
 | `PriceListCreate.lowProfitMargin` / `PriceListUpdate.lowProfitMargin` | `LowProfitMargin` | `LowProfitMargin1` |
 
 An update, e.g., therefore reads
-`Price1((b) => b..anyOf = AnyOf2<num, String>(values: {1: '120.00'}))` — same
-pattern, different type. Using the Create-side class name in an update path
-(or vice versa) is a compile error, not a silent bug, so this is a one-time
-gotcha rather than a runtime risk — but it is not discoverable from this
-section's example alone, hence documented explicitly here.
+`builder.anyOf = AnyOf2<String, num>(values: {0: '120.00'})` on a `Price1Builder`
+— same pattern, different type. Using the Create-side class name in an update
+path (or vice versa) is a compile error, not a silent bug.
 
 ---
 
