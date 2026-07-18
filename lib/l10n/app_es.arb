@@ -131,6 +131,8 @@
   "cancelButton": "Cancelar",
   "editButton": "Editar",
   "editRecordTooltip": "Cambiar al formulario editable",
+  "viewPricingButton": "Ver precios",
+  "pricingSectionTitle": "Precios",
   "emailLabel": "Correo electrónico",
   "employeeIdLabel": "ID de empleado (opcional)",
   "administratorLabel": "Administrador",

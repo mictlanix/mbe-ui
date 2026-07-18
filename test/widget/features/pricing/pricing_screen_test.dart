@@ -75,6 +75,8 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
+    int? initialProductId,
+    String? initialProductDisplayText,
   }) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -89,7 +91,12 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: PricingScreen()),
+          home: Scaffold(
+            body: PricingScreen(
+              initialProductId: initialProductId,
+              initialProductDisplayText: initialProductDisplayText,
+            ),
+          ),
         ),
       ),
     );
@@ -217,6 +224,34 @@ void main() {
 
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       expect(find.text(l10n.pricingNoPriceListsEmptyState), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'preselects the product and loads its prices when arriving from the '
+    'product detail screen\'s "view pricing" shortcut',
+    (tester) async {
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productPriceRepository.listByProduct(
+          productId: 1,
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer((_) async => []);
+
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+        initialProductDisplayText: 'SKU-1 — Widget',
+      );
+
+      // No manual selection via the picker — the product is preloaded from
+      // the constructor params alone.
+      expect(find.text('Retail'), findsOneWidget);
+      expect(find.byKey(const Key('price_not_set_1')), findsOneWidget);
     },
   );
 }

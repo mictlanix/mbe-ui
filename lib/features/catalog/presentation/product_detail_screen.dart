@@ -100,6 +100,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final hasPhoto =
         formState.pendingPhotoBytes != null ||
         (formState.photo != null && !formState.photoMarkedForRemoval);
+    final canViewPricing =
+        !readOnly &&
+        widget.productId != null &&
+        access.can(SystemObject.pricing, AccessRight.read);
 
     return Scaffold(
       appBar: AppBar(
@@ -110,8 +114,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               key: const Key('edit_product_button'),
               icon: Icon(CatalogAction.edit.icon),
               tooltip: l10n.editRecordTooltip,
-              onPressed: () =>
-                  context.replace('/products/${widget.productId}'),
+              onPressed: () => context.replace('/products/${widget.productId}'),
             ),
         ],
       ),
@@ -418,6 +421,30 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               span: FormGridSpan.full,
               Divider(key: Key('attributes_divider_bottom')),
             ),
+            if (canViewPricing)
+              FormGridChild(
+                span: FormGridSpan.full,
+                OutlinedButton.icon(
+                  key: const Key('view_pricing_button'),
+                  icon: const Icon(Icons.sell_outlined),
+                  label: Text(l10n.viewPricingButton),
+                  onPressed: () => context.go(
+                    Uri(
+                      path: '/pricing',
+                      queryParameters: {
+                        'productId': '${widget.productId}',
+                        'productDisplayText':
+                            '${formState.code} — ${formState.name}',
+                      },
+                    ).toString(),
+                  ),
+                ),
+              ),
+            if (canViewPricing)
+              const FormGridChild(
+                span: FormGridSpan.full,
+                Divider(key: Key('pricing_divider')),
+              ),
             if (canSave)
               FormGridChild(
                 span: FormGridSpan.full,
@@ -448,7 +475,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   ),
                   onPressed: formState.submitting
                       ? null
-                      : () => _confirmDelete(context, controller, formState.code),
+                      : () =>
+                            _confirmDelete(context, controller, formState.code),
                   child: Text(l10n.deleteProductButton),
                 ),
               ),

@@ -78,6 +78,19 @@ const _deleteUser = User(
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 14)],
 );
 
+const _editUserWithPricing = User(
+  userId: 'editor-pricing',
+  email: 'editor-pricing@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [
+    // read (2) + update (4)
+    Privilege(systemObject: SystemObject.products, rawValue: 6),
+    Privilege(systemObject: SystemObject.pricing, rawValue: 2),
+  ],
+);
+
 /// A minimal valid 1x1 PNG, used so a staged-photo preview can actually
 /// decode (mirrors test/integration/product_photo_flow_test.dart).
 final _tinyPngBytes = Uint8List.fromList([
@@ -894,6 +907,127 @@ void main() {
         expect(find.byType(ProductDetailScreen), findsNothing);
       },
     );
+
+    group('view pricing shortcut', () {
+      testWidgets(
+        'shows a "view pricing" section/button under the switches for an '
+        'editable product when the user has pricing read access',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+
+          await pumpScreen(
+            tester,
+            signedInAs: _editUserWithPricing,
+            productId: 1,
+          );
+
+          final l10n = await AppLocalizations.delegate.load(
+            const Locale('en'),
+          );
+          expect(find.text(l10n.pricingSectionTitle), findsOneWidget);
+          expect(find.byKey(const Key('view_pricing_button')), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'hides the "view pricing" button without pricing read access',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+
+          await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'hides the "view pricing" button in read-only view mode, even with '
+        'pricing read access',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+
+          await pumpScreen(
+            tester,
+            signedInAs: _editUserWithPricing,
+            productId: 1,
+            forceReadOnly: true,
+          );
+
+          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'navigates to /pricing with the product preselected on tap',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+          when(() => authRepository.me()).thenAnswer(
+            (_) async => _editUserWithPricing,
+          );
+
+          final router = GoRouter(
+            initialLocation: '/products/1',
+            routes: [
+              GoRoute(path: '/', builder: (_, _) => const SizedBox()),
+              GoRoute(
+                path: '/products/:productId',
+                builder: (_, state) => ProductDetailScreen(
+                  productId: int.parse(state.pathParameters['productId']!),
+                ),
+              ),
+              GoRoute(
+                path: '/pricing',
+                builder: (_, state) => Text(
+                  'pricing:${state.uri.queryParameters['productId']}:'
+                  '${state.uri.queryParameters['productDisplayText']}',
+                ),
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                authRepositoryProvider.overrideWithValue(authRepository),
+                tokenStorageProvider.overrideWithValue(tokenStorage),
+                productRepositoryProvider.overrideWithValue(
+                  productRepository,
+                ),
+                satCatalogRepositoryProvider.overrideWithValue(
+                  satCatalogRepository,
+                ),
+                supplierRepositoryProvider.overrideWithValue(
+                  supplierRepository,
+                ),
+                allLabelsProvider.overrideWith((_) async => []),
+              ],
+              child: MaterialApp.router(
+                routerConfig: router,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.ensureVisible(
+            find.byKey(const Key('view_pricing_button')),
+          );
+          await tester.tap(find.byKey(const Key('view_pricing_button')));
+          await tester.pumpAndSettle();
+
+          expect(find.text('pricing:1:SKU-001 — Widget'), findsOneWidget);
+        },
+      );
+    });
   });
 
   group('responsive form layout (US2)', () {

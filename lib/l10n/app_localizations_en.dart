@@ -385,6 +385,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editRecordTooltip => 'Switch to the editable form';
 
   @override
+  String get viewPricingButton => 'View pricing';
+
+  @override
+  String get pricingSectionTitle => 'Pricing';
+
+  @override
   String get emailLabel => 'Email';
 
   @override

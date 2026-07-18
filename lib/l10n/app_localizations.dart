@@ -806,6 +806,18 @@ abstract class AppLocalizations {
   /// **'Switch to the editable form'**
   String get editRecordTooltip;
 
+  /// No description provided for @viewPricingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View pricing'**
+  String get viewPricingButton;
+
+  /// No description provided for @pricingSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing'**
+  String get pricingSectionTitle;
+
   /// No description provided for @emailLabel.
   ///
   /// In en, this message translates to:

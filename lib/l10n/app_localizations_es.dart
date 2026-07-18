@@ -385,6 +385,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get editRecordTooltip => 'Cambiar al formulario editable';
 
   @override
+  String get viewPricingButton => 'Ver precios';
+
+  @override
+  String get pricingSectionTitle => 'Precios';
+
+  @override
   String get emailLabel => 'Correo electrónico';
 
   @override

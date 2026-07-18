@@ -20,11 +20,44 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// (FR-012). Not a record catalog — rows are inline-editable prices, not
 /// navigable records, so §VI's row-click/Edit-icon contract does not apply
 /// here (spec FR-020a, contracts/routes.md).
-class PricingScreen extends ConsumerWidget {
-  const PricingScreen({super.key});
+///
+/// [initialProductId]/[initialProductDisplayText] preselect a product when
+/// arriving from the product detail screen's "view pricing" shortcut
+/// (`/pricing?productId=..&productDisplayText=..`) instead of forcing a
+/// second lookup through the picker.
+class PricingScreen extends ConsumerStatefulWidget {
+  const PricingScreen({
+    super.key,
+    this.initialProductId,
+    this.initialProductDisplayText,
+  });
+
+  final int? initialProductId;
+  final String? initialProductDisplayText;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PricingScreen> createState() => _PricingScreenState();
+}
+
+class _PricingScreenState extends ConsumerState<PricingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final productId = widget.initialProductId;
+    if (productId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(pricingControllerProvider.notifier)
+            .selectProduct(
+              productId: productId,
+              displayText: widget.initialProductDisplayText ?? '',
+            );
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(pricingControllerProvider);
     final controller = ref.read(pricingControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);

@@ -79,7 +79,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/pricing',
-                builder: (context, state) => const PricingScreen(),
+                builder: (context, state) {
+                  final productIdParam = state.uri.queryParameters['productId'];
+                  return PricingScreen(
+                    initialProductId: productIdParam == null
+                        ? null
+                        : int.tryParse(productIdParam),
+                    initialProductDisplayText:
+                        state.uri.queryParameters['productDisplayText'],
+                  );
+                },
               ),
             ],
           ),
