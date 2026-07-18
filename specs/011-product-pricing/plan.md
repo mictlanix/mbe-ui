@@ -104,8 +104,11 @@ screen, not records with detail pages — there is nothing for a row click to op
 and nothing for an Edit icon to navigate to. The screen still honors every
 applicable §VI rule (shared table, right-aligned numerics, hidden-when-
 unprivileged controls, shared picker). The two genuine catalog screens
-(`/price-lists`, `/exchange-rates`) follow §VI's row contract in full. Read as
-scope, not deviation — no Complexity Tracking entry.
+(`/price-lists`, `/exchange-rates`) follow §VI's row contract in full. This is
+now codified directly in the spec (FR-020/FR-020a, corrected 2026-07-14 per
+`/speckit-analyze` finding I1 — the exemption previously lived only here and
+FR-020 read as if it applied to all three screens). Read as scope, not
+deviation — no Complexity Tracking entry.
 
 **Post-Phase 1 re-check**: ✅ still passing. Phase 1 introduced no new
 dependency, no new RBAC plumbing, no generated-file edits, and no local

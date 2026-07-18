@@ -109,12 +109,13 @@ A pricing/finance administrator records the daily exchange rate between two curr
 - **FR-015**: The exchange-rates screen MUST support filtering by date range and by base/target currency, and MUST paginate.
 - **FR-016**: The system MUST let an authorized user create an exchange rate with a required date, base currency, target currency, and a positive rate value.
 - **FR-017**: The system MUST let an authorized user edit and delete an existing exchange rate.
-- **FR-018**: Currency selection MUST present the currencies the system recognizes rather than free-form numeric entry, and dates MUST use the shared locale-aware date input.
+- **FR-018**: Currency selection MUST present the currencies the system recognizes rather than free-form numeric entry, and dates MUST be entered via a locale-aware date-picker dialog, never free-form text entry.
 
 #### Cross-cutting
 
 - **FR-019**: Every pricing screen and every mutating action (create/edit/delete) MUST be gated by the deny-by-default RBAC privilege model; controls the user lacks privilege for MUST be hidden, not merely disabled.
-- **FR-020**: All pricing list/table screens MUST follow the shared catalog conventions: consistent row hover/borders, right-aligned numeric/currency columns, a single row-level Edit affordance, whole-row click opening a read-only view, and Create as a toolbar-only action.
+- **FR-020**: The price-lists screen and the exchange-rates screen (the feature's two record catalogs) MUST follow the shared catalog conventions in full: consistent row hover/borders, right-aligned numeric/currency columns, a single row-level Edit affordance, whole-row click opening a read-only view, and Create as a toolbar-only action.
+- **FR-020a**: The pricing screen (US2) is exempt from FR-020's row-action and row-click rules. Its rows are inline-editable prices on a tool screen, not navigable records with a detail view to open — there is nothing for a row click to open and nothing for an Edit icon to navigate to. It still follows the shared table's visual conventions (row hover/borders, right-aligned numeric/currency columns) and FR-019's hidden-when-unprivileged rule.
 - **FR-021**: Backend errors (validation, not-found, conflict, server, network) MUST be surfaced through the shared error-display mechanism, not handled ad hoc per screen.
 
 ### Key Entities *(include if feature involves data)*
@@ -138,7 +139,7 @@ A pricing/finance administrator records the daily exchange rate between two curr
 
 ## Assumptions
 
-- **Reuse of catalog patterns**: This feature reuses the existing shared list/table, filter, pagination, form-grid, currency/date field, and error-display widgets and the established feature-layer structure; it introduces no new cross-cutting UI infrastructure.
+- **Reuse of catalog patterns**: This feature reuses the existing shared list/table, filter, pagination, form-grid, and error-display widgets and the established feature-layer structure. The one exception is date entry: no shared date-picker widget exists in the codebase yet, so exchange-rate date fields call Flutter's built-in `showDatePicker`/`showDateRangePicker` directly rather than introducing a new shared component for two call sites (research.md §10, decided 2026-07-14).
 - **Backend is authoritative for cross-entity rules**: Rules such as "a price list cannot be deleted while assigned to a customer" and any auto-seeding of a product-price row per list on product creation are enforced by mbe-api. The UI surfaces the backend's outcome and does not re-implement these rules client-side.
 - **Product-price screen placement** (decided 2026-07-14): Product prices are managed on a **standalone pricing screen**, not as a sub-panel on the product detail/edit form. Feature `007-catalog-ui-improvements-2` deliberately removed the price section from the product form (its FR-012/FR-013, with labels taking that layout slot — the `switches|labels` band DESIGN.md §4.3 cites as the reference implementation); this feature honors that decision rather than reversing it. The pricing tool is also a distinct RBAC surface (`Pricing`, 106) from the product catalog (`Products`, 0), so a separate screen matches the privilege model: a user may price products without holding product-edit rights, and vice versa.
 - **RBAC mapping** (from `mbe/docs/constants.md`): the price-lists catalog screen (US1) maps to the `PriceLists` system object (code 5); editing a product's prices (US2) maps to the distinct `Pricing` system object (code 106, "Price management / pricing tool"), **not** the product privilege nor the price-list-catalog privilege; exchange rates (US3) map to the `ExchangeRates` system object (code 43). These map to the standard `AccessRight` bitmask (Read to view, Update/Create/Delete for the corresponding mutations). Presence of each `SystemObject` code in mbe-api's `UserResponse.privileges` is confirmed during planning.

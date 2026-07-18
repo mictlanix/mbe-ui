@@ -30,7 +30,9 @@ Maps from `PriceListResponse`. A named selling tier.
 **Write mapping**:
 
 - Create → `PriceListCreate { name, highProfitMargin: HighProfitMargin?, lowProfitMargin: LowProfitMargin? }`
-- Update → `PriceListUpdate` (all fields nullable; send only changed fields)
+- Update → `PriceListUpdate` (all fields nullable; send only changed fields).
+  Margins use the **distinct `HighProfitMargin1`/`LowProfitMargin1`** wrapper
+  classes, not the create-side `HighProfitMargin`/`LowProfitMargin` (research.md §4)
 
 **Display**: margins render as percentages (`0.40` → `40%`) per FR-006; the
 stored decimal is never shown raw.
@@ -59,7 +61,9 @@ required by `ProductPriceCreate`).
 - Create → `ProductPriceCreate { product: int, priceList: int, price: Price, lowProfit: LowProfit, highProfit: HighProfit }`
 - Update → `ProductPriceUpdate { price?, lowProfit?, highProfit? }` — note the
   update DTO carries **no** `product`/`priceList`: a price row cannot be moved
-  between products or lists, only revalued.
+  between products or lists, only revalued. Its `AnyOf` fields use the
+  **distinct `Price1`/`LowProfit1`/`HighProfit1`** wrapper classes, not the
+  create-side `Price`/`LowProfit`/`HighProfit` (research.md §4)
 
 ---
 
@@ -111,7 +115,8 @@ API's currency set is not schema-constrained (research.md §6).
 **Write mapping**:
 
 - Create → `ExchangeRateCreate { date, rate: Rate, base: int, target: int }`
-- Update → `ExchangeRateUpdate` (all nullable)
+- Update → `ExchangeRateUpdate` (all nullable). `rate` uses the **distinct
+  `Rate1`** wrapper class, not the create-side `Rate` (research.md §4)
 
 ---
 

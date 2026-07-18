@@ -124,6 +124,31 @@ serializer path is read here but not yet exercised at runtime, so a repository
 round-trip test against a live mbe-api (quickstart §3) is mandatory before the
 UI is trusted — this is the single highest-risk unknown in the feature.
 
+**⚠️ Update DTOs use a *different, separately-generated* wrapper class for the
+same field** (flagged by `/speckit-analyze`, 2026-07-14, finding U2). The
+openapi-generator could not dedupe the inline `anyOf: [number, string]` schema
+across Create and Update request bodies, so it emitted a second class per
+field, suffixed `1`. Verified against the generated client — each pair has the
+**identical shape** (`AnyOf get anyOf`, same `[String, num]` type order), so
+the exact same construction pattern from this section applies; only the class
+name changes:
+
+| Field | Create-side class | Update-side class |
+|---|---|---|
+| `ProductPriceCreate.price` / `ProductPriceUpdate.price` | `Price` | `Price1` |
+| `.lowProfit` | `LowProfit` | `LowProfit1` |
+| `.highProfit` | `HighProfit` | `HighProfit1` |
+| `ExchangeRateCreate.rate` / `ExchangeRateUpdate.rate` | `Rate` | `Rate1` |
+| `PriceListCreate.highProfitMargin` / `PriceListUpdate.highProfitMargin` | `HighProfitMargin` | `HighProfitMargin1` |
+| `PriceListCreate.lowProfitMargin` / `PriceListUpdate.lowProfitMargin` | `LowProfitMargin` | `LowProfitMargin1` |
+
+An update, e.g., therefore reads
+`Price1((b) => b..anyOf = AnyOf2<num, String>(values: {1: '120.00'}))` — same
+pattern, different type. Using the Create-side class name in an update path
+(or vice versa) is a compile error, not a silent bug, so this is a one-time
+gotcha rather than a runtime risk — but it is not discoverable from this
+section's example alone, hence documented explicitly here.
+
 ---
 
 ## 5. "No price set" vs. "price is zero"
@@ -244,3 +269,27 @@ establishes the layout and `mocktail` is already a dev dependency.
 **Additional required coverage** (beyond the standard tiers): a repository
 round-trip test proving the §4 `AnyOf` write path actually serializes — the
 feature's highest-risk unknown.
+
+---
+
+## 10. Date input for exchange rates
+
+**Decision**: Use Flutter's built-in `showDatePicker` (single date, the
+exchange-rate form) and `showDateRangePicker` (date-range filter, the
+exchange-rates list) directly. **No new shared `core/widgets/` date component
+is introduced.**
+
+**Rationale**: `grep` confirms no date-picker/date-field widget exists
+anywhere in `lib/core/widgets/` or `lib/features/catalog/` today — FR-018 and
+the original tasks.md wording incorrectly assumed a "shared locale-aware date
+input" already existed for reuse (flagged by `/speckit-analyze`, 2026-07-14,
+finding U1). `showDatePicker`/`showDateRangePicker` are already locale-aware
+through the app's configured `MaterialLocalizations` (es-MX,
+`flutter_localizations`, constitution §V) with zero extra setup, and this
+feature has exactly two call sites — one single-date field, one range filter —
+not enough repetition to justify a new shared abstraction under constitution
+§VI's "implemented once" guidance.
+
+**Alternatives considered**: build a new `core/widgets/date_field.dart` (+ a
+range variant) — rejected as premature for two call sites; revisit if a third
+pricing-adjacent date input appears in a future feature.

@@ -138,9 +138,15 @@ research.md §1) — a price section reappearing there is a regression.
 
 ```bash
 flutter analyze
-flutter test                                   # unit + widget
-flutter test integration_test/                 # needs mbe-api running
+flutter test                                   # unit + widget (test/integration/ too, if mbe-api is up)
+flutter test test/integration/pricing_flow_test.dart   # golden path only, needs mbe-api running
 ```
+
+> This repo has no top-level `integration_test/` directory — all tests, including
+> the golden-path integration test, live under `test/` (tasks.md T045). Plain
+> `flutter test` already recurses into `test/integration/`, so it will attempt
+> the golden path too; run it only when mbe-api is reachable, or target the file
+> directly as shown above.
 
 Expected coverage (constitution "Development Workflow & Quality Gates"):
 
