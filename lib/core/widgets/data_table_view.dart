@@ -178,6 +178,12 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         initialFirstRowIndex: pagination.pageIndex * pagination.pageSize,
         onPageChanged: (firstRowIndex) =>
             widget.onPageChanged!(firstRowIndex ~/ pagination.pageSize),
+        // Otherwise a result set smaller than one page (e.g. 3 price lists
+        // on a 20-row page) renders 17 invisible blank rows, leaving a large
+        // empty gap below the real data — this is what made a short
+        // catalog's table look like it had "extra padding" compared to a
+        // longer one that always fills its page.
+        renderEmptyRowsInTheEnd: false,
       );
     }
 
@@ -190,12 +196,23 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
       }
     }
 
-    return DataTable2(
-      showCheckboxColumn: false,
-      sortColumnIndex: _sortColumnIndex,
-      sortAscending: _sortAscending,
-      columns: _buildColumns(sortable: true),
-      rows: [for (final item in rows) _buildRow(item)],
+    // `PaginatedDataTable2` wraps itself in a `Card` by default
+    // (`wrapInCard: true`), giving every paginated catalog table a
+    // consistent surface/elevation and internal padding. Plain `DataTable2`
+    // has no such option, so a non-paginated table (e.g. the pricing tool's
+    // per-product price grid, which has no meaningful "page 2") would
+    // otherwise look inconsistent with the rest of the app — matched here
+    // explicitly so all catalog/list tables render identically regardless
+    // of whether they paginate (constitution §VI: implemented once, shared).
+    return Card(
+      semanticContainer: false,
+      child: DataTable2(
+        showCheckboxColumn: false,
+        sortColumnIndex: _sortColumnIndex,
+        sortAscending: _sortAscending,
+        columns: _buildColumns(sortable: true),
+        rows: [for (final item in rows) _buildRow(item)],
+      ),
     );
   }
 }

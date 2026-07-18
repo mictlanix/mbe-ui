@@ -78,15 +78,92 @@ const _deleteUser = User(
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 14)],
 );
 
+const _editUserWithPricing = User(
+  userId: 'editor-pricing',
+  email: 'editor-pricing@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [
+    // read (2) + update (4)
+    Privilege(systemObject: SystemObject.products, rawValue: 6),
+    Privilege(systemObject: SystemObject.pricing, rawValue: 2),
+  ],
+);
+
 /// A minimal valid 1x1 PNG, used so a staged-photo preview can actually
 /// decode (mirrors test/integration/product_photo_flow_test.dart).
 final _tinyPngBytes = Uint8List.fromList([
-  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
-  0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
-  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
-  0x0D, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x64, 0x60, 0x60, 0x60,
-  0x00, 0x00, 0x00, 0x05, 0x00, 0x01, 0x5D, 0x4C, 0x8F, 0x0C, 0x00, 0x00,
-  0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x48,
+  0x44,
+  0x52,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x08,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+  0x1F,
+  0x15,
+  0xC4,
+  0x89,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x44,
+  0x41,
+  0x54,
+  0x78,
+  0x9C,
+  0x63,
+  0x64,
+  0x60,
+  0x60,
+  0x60,
+  0x00,
+  0x00,
+  0x00,
+  0x05,
+  0x00,
+  0x01,
+  0x5D,
+  0x4C,
+  0x8F,
+  0x0C,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x49,
+  0x45,
+  0x4E,
+  0x44,
+  0xAE,
+  0x42,
+  0x60,
+  0x82,
 ]);
 
 Product _product() => Product(
@@ -535,10 +612,7 @@ void main() {
         await tester.enterText(find.byKey(const Key('sku_field')), 'SKU-XYZ');
         await tester.pump();
 
-        expect(
-          container.read(productFormControllerProvider).sku,
-          'SKU-XYZ',
-        );
+        expect(container.read(productFormControllerProvider).sku, 'SKU-XYZ');
       },
     );
 
@@ -709,22 +783,16 @@ void main() {
       ).called(1);
     });
 
-    testWidgets(
-      'shows no delete icon in the app bar (FR-014)',
-      (tester) async {
-        when(
-          () => productRepository.get(productId: 1),
-        ).thenAnswer((_) async => _product());
+    testWidgets('shows no delete icon in the app bar (FR-014)', (tester) async {
+      when(
+        () => productRepository.get(productId: 1),
+      ).thenAnswer((_) async => _product());
 
-        await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
+      await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 
-        expect(
-          find.byKey(const Key('deactivate_product_button')),
-          findsNothing,
-        );
-        expect(find.byIcon(Icons.block), findsNothing);
-      },
-    );
+      expect(find.byKey(const Key('deactivate_product_button')), findsNothing);
+      expect(find.byIcon(Icons.block), findsNothing);
+    });
 
     testWidgets(
       'shows a warning-styled Delete button below Save for a user with '
@@ -764,10 +832,7 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _editUser, productId: 1);
 
-        expect(
-          find.byKey(const Key('delete_product_button')),
-          findsNothing,
-        );
+        expect(find.byKey(const Key('delete_product_button')), findsNothing);
       },
     );
 
@@ -781,24 +846,15 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 
-        expect(
-          find.byKey(const Key('delete_product_button')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('delete_product_button')), findsOneWidget);
       },
     );
 
-    testWidgets(
-      'hides the Delete button in create mode',
-      (tester) async {
-        await pumpScreen(tester, signedInAs: _deleteUser);
+    testWidgets('hides the Delete button in create mode', (tester) async {
+      await pumpScreen(tester, signedInAs: _deleteUser);
 
-        expect(
-          find.byKey(const Key('delete_product_button')),
-          findsNothing,
-        );
-      },
-    );
+      expect(find.byKey(const Key('delete_product_button')), findsNothing);
+    });
 
     testWidgets(
       'confirmation dialog communicates the deletion is permanent (FR-016)',
@@ -816,10 +872,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Delete product permanently?'), findsOneWidget);
-        expect(
-          find.textContaining('cannot be undone'),
-          findsOneWidget,
-        );
+        expect(find.textContaining('cannot be undone'), findsOneWidget);
       },
     );
 
@@ -854,6 +907,124 @@ void main() {
         expect(find.byType(ProductDetailScreen), findsNothing);
       },
     );
+
+    group('view pricing shortcut', () {
+      testWidgets(
+        'shows a "view pricing" button under the switches for an editable '
+        'product when the user has pricing read access',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+
+          await pumpScreen(
+            tester,
+            signedInAs: _editUserWithPricing,
+            productId: 1,
+          );
+
+          expect(find.byKey(const Key('view_pricing_button')), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'hides the "view pricing" button without pricing read access',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+
+          await pumpScreen(tester, signedInAs: _editUser, productId: 1);
+
+          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'hides the "view pricing" button in read-only view mode, even with '
+        'pricing read access',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+
+          await pumpScreen(
+            tester,
+            signedInAs: _editUserWithPricing,
+            productId: 1,
+            forceReadOnly: true,
+          );
+
+          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'pushes /products/:productId/pricing as a stacked screen with the '
+        'product preselected on tap',
+        (tester) async {
+          when(
+            () => productRepository.get(productId: 1),
+          ).thenAnswer((_) async => _product());
+          when(() => authRepository.me()).thenAnswer(
+            (_) async => _editUserWithPricing,
+          );
+
+          final router = GoRouter(
+            initialLocation: '/products/1',
+            routes: [
+              GoRoute(path: '/', builder: (_, _) => const SizedBox()),
+              GoRoute(
+                path: '/products/:productId',
+                builder: (_, state) => ProductDetailScreen(
+                  productId: int.parse(state.pathParameters['productId']!),
+                ),
+              ),
+              GoRoute(
+                path: '/products/:productId/pricing',
+                builder: (_, state) => Text(
+                  'pricing:${state.pathParameters['productId']}:'
+                  '${state.uri.queryParameters['productDisplayText']}',
+                ),
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                authRepositoryProvider.overrideWithValue(authRepository),
+                tokenStorageProvider.overrideWithValue(tokenStorage),
+                productRepositoryProvider.overrideWithValue(
+                  productRepository,
+                ),
+                satCatalogRepositoryProvider.overrideWithValue(
+                  satCatalogRepository,
+                ),
+                supplierRepositoryProvider.overrideWithValue(
+                  supplierRepository,
+                ),
+                allLabelsProvider.overrideWith((_) async => []),
+              ],
+              child: MaterialApp.router(
+                routerConfig: router,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.ensureVisible(
+            find.byKey(const Key('view_pricing_button')),
+          );
+          await tester.tap(find.byKey(const Key('view_pricing_button')));
+          await tester.pumpAndSettle();
+
+          expect(find.text('pricing:1:SKU-001 — Widget'), findsOneWidget);
+        },
+      );
+    });
   });
 
   group('responsive form layout (US2)', () {
@@ -923,24 +1094,21 @@ void main() {
       },
     );
 
-    testWidgets(
-      'never renders a price-list section (FR-012)',
-      (tester) async {
-        when(
-          () => productRepository.get(productId: 1),
-        ).thenAnswer((_) async => _product());
+    testWidgets('never renders a price-list section (FR-012)', (tester) async {
+      when(
+        () => productRepository.get(productId: 1),
+      ).thenAnswer((_) async => _product());
 
-        await pumpScreen(
-          tester,
-          signedInAs: _editUser,
-          productId: 1,
-          labels: const [LabelItem(labelId: 1, name: 'Clearance')],
-        );
+      await pumpScreen(
+        tester,
+        signedInAs: _editUser,
+        productId: 1,
+        labels: const [LabelItem(labelId: 1, name: 'Clearance')],
+      );
 
-        expect(find.text('Prices'), findsNothing);
-        expect(find.byKey(const Key('label_multi_picker')), findsOneWidget);
-      },
-    );
+      expect(find.text('Prices'), findsNothing);
+      expect(find.byKey(const Key('label_multi_picker')), findsOneWidget);
+    });
 
     testWidgets(
       'stacks fields into a single column on a narrow viewport (FR-009)',
@@ -1065,6 +1233,43 @@ void main() {
             .getTopLeft(find.byKey(const Key('replace_photo_button')))
             .dy;
         expect(replaceTop, greaterThan(photoBottom));
+      },
+    );
+  });
+
+  group('regression guard: spec 011 must not reintroduce prices (FR-007a)', () {
+    testWidgets(
+      'the product form shows no price section or price values anywhere, '
+      'and labels still occupy the switches|labels band (007 FR-012/FR-013; '
+      'spec 011 FR-007a, research.md §1)',
+      (tester) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
+
+        await pumpScreen(
+          tester,
+          signedInAs: _editUser,
+          productId: 1,
+          labels: const [LabelItem(labelId: 1, name: 'Fragile')],
+        );
+
+        // No price-related field, column, or currency text anywhere on the
+        // form — spec 011's pricing tool lives on its own /pricing screen,
+        // not here (research.md §1, decided 2026-07-14).
+        expect(find.textContaining(RegExp(r'[Pp]rice')), findsNothing);
+        expect(find.byKey(const Key('price_field')), findsNothing);
+        expect(find.byKey(const Key('high_profit_margin_field')), findsNothing);
+        expect(find.byKey(const Key('low_profit_margin_field')), findsNothing);
+
+        // The switches|labels band (007's replacement for the old price
+        // section) is intact: the labels control renders in that band.
+        expect(find.byKey(const Key('attributes_divider_top')), findsOneWidget);
+        expect(find.byKey(const Key('label_multi_picker')), findsOneWidget);
+        expect(
+          find.byKey(const Key('attributes_divider_bottom')),
+          findsOneWidget,
+        );
       },
     );
   });

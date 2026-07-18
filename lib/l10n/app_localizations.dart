@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Catalogs'**
   String get catalogsGroupTitle;
 
+  /// No description provided for @salesGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get salesGroupTitle;
+
   /// No description provided for @usersMenuTitle.
   ///
   /// In en, this message translates to:
@@ -800,6 +806,12 @@ abstract class AppLocalizations {
   /// **'Switch to the editable form'**
   String get editRecordTooltip;
 
+  /// No description provided for @viewPricingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View pricing'**
+  String get viewPricingButton;
+
   /// No description provided for @emailLabel.
   ///
   /// In en, this message translates to:
@@ -1051,6 +1063,456 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to generate recovery token.'**
   String get userRecoveryFailedError;
+
+  /// No description provided for @priceListsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Lists'**
+  String get priceListsMenuTitle;
+
+  /// No description provided for @pricingMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing'**
+  String get pricingMenuTitle;
+
+  /// No description provided for @exchangeRatesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rates'**
+  String get exchangeRatesMenuTitle;
+
+  /// No description provided for @priceListsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get priceListsSearchLabel;
+
+  /// No description provided for @newPriceListTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New price list'**
+  String get newPriceListTooltip;
+
+  /// No description provided for @noPriceListsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No price lists found.'**
+  String get noPriceListsFound;
+
+  /// No description provided for @priceListsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load price lists: {error}'**
+  String priceListsLoadError(Object error);
+
+  /// No description provided for @columnHighProfitMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'High margin'**
+  String get columnHighProfitMargin;
+
+  /// No description provided for @columnLowProfitMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'Low margin'**
+  String get columnLowProfitMargin;
+
+  /// No description provided for @priceListNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get priceListNameLabel;
+
+  /// No description provided for @priceListHighProfitMarginLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'High profit margin'**
+  String get priceListHighProfitMarginLabel;
+
+  /// No description provided for @priceListLowProfitMarginLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Low profit margin'**
+  String get priceListLowProfitMarginLabel;
+
+  /// No description provided for @newPriceListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New price list'**
+  String get newPriceListTitle;
+
+  /// No description provided for @editPriceListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit price list'**
+  String get editPriceListTitle;
+
+  /// No description provided for @viewPriceListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View price list'**
+  String get viewPriceListTitle;
+
+  /// No description provided for @deletePriceListButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deletePriceListButton;
+
+  /// No description provided for @deletePriceListConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete price list?'**
+  String get deletePriceListConfirmTitle;
+
+  /// No description provided for @deletePriceListConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deletePriceListConfirmMessage(String name);
+
+  /// No description provided for @priceListNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get priceListNameRequiredError;
+
+  /// No description provided for @priceListMarginInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative percentage.'**
+  String get priceListMarginInvalidError;
+
+  /// No description provided for @priceListLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load price list.'**
+  String get priceListLoadFailedError;
+
+  /// No description provided for @priceListCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create price list.'**
+  String get priceListCreateFailedError;
+
+  /// No description provided for @priceListUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update price list.'**
+  String get priceListUpdateFailedError;
+
+  /// No description provided for @priceListDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete price list.'**
+  String get priceListDeleteFailedError;
+
+  /// No description provided for @priceListCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create price lists.'**
+  String get priceListCreatePermissionDeniedError;
+
+  /// No description provided for @priceListUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit price lists.'**
+  String get priceListUpdatePermissionDeniedError;
+
+  /// No description provided for @priceListDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete price lists.'**
+  String get priceListDeletePermissionDeniedError;
+
+  /// No description provided for @pricingProductPickerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get pricingProductPickerLabel;
+
+  /// No description provided for @pricingSelectProductPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a product to see and edit its prices.'**
+  String get pricingSelectProductPrompt;
+
+  /// No description provided for @pricingNoPriceListsEmptyState.
+  ///
+  /// In en, this message translates to:
+  /// **'No price lists exist yet. Create one first.'**
+  String get pricingNoPriceListsEmptyState;
+
+  /// No description provided for @pricingPriceNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get pricingPriceNotSet;
+
+  /// No description provided for @pricingLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load prices: {error}'**
+  String pricingLoadError(Object error);
+
+  /// No description provided for @pricingSaveFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save price.'**
+  String get pricingSaveFailedError;
+
+  /// No description provided for @pricingUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit prices.'**
+  String get pricingUpdatePermissionDeniedError;
+
+  /// No description provided for @pricingInvalidAmountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative amount.'**
+  String get pricingInvalidAmountError;
+
+  /// No description provided for @columnPriceList.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list'**
+  String get columnPriceList;
+
+  /// No description provided for @columnPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get columnPrice;
+
+  /// No description provided for @columnLowProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Low profit'**
+  String get columnLowProfit;
+
+  /// No description provided for @columnHighProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'High profit'**
+  String get columnHighProfit;
+
+  /// No description provided for @editPriceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit price'**
+  String get editPriceTooltip;
+
+  /// No description provided for @savePriceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get savePriceTooltip;
+
+  /// No description provided for @cancelPriceEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelPriceEditTooltip;
+
+  /// No description provided for @newExchangeRateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New exchange rate'**
+  String get newExchangeRateTooltip;
+
+  /// No description provided for @noExchangeRatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No exchange rates found.'**
+  String get noExchangeRatesFound;
+
+  /// No description provided for @exchangeRatesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load exchange rates: {error}'**
+  String exchangeRatesLoadError(Object error);
+
+  /// No description provided for @columnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get columnDate;
+
+  /// No description provided for @columnBaseCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Base'**
+  String get columnBaseCurrency;
+
+  /// No description provided for @columnTargetCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get columnTargetCurrency;
+
+  /// No description provided for @columnRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get columnRate;
+
+  /// No description provided for @exchangeRateDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get exchangeRateDateLabel;
+
+  /// No description provided for @exchangeRateBaseCurrencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Base currency'**
+  String get exchangeRateBaseCurrencyLabel;
+
+  /// No description provided for @exchangeRateTargetCurrencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target currency'**
+  String get exchangeRateTargetCurrencyLabel;
+
+  /// No description provided for @exchangeRateRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get exchangeRateRateLabel;
+
+  /// No description provided for @newExchangeRateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New exchange rate'**
+  String get newExchangeRateTitle;
+
+  /// No description provided for @editExchangeRateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit exchange rate'**
+  String get editExchangeRateTitle;
+
+  /// No description provided for @viewExchangeRateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View exchange rate'**
+  String get viewExchangeRateTitle;
+
+  /// No description provided for @deleteExchangeRateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteExchangeRateButton;
+
+  /// No description provided for @deleteExchangeRateConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete exchange rate?'**
+  String get deleteExchangeRateConfirmTitle;
+
+  /// No description provided for @deleteExchangeRateConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete this exchange rate. This cannot be undone.'**
+  String get deleteExchangeRateConfirmMessage;
+
+  /// No description provided for @exchangeRateDateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Date is required.'**
+  String get exchangeRateDateRequiredError;
+
+  /// No description provided for @exchangeRateRateInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid positive rate.'**
+  String get exchangeRateRateInvalidError;
+
+  /// No description provided for @exchangeRateCurrencyRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a currency.'**
+  String get exchangeRateCurrencyRequiredError;
+
+  /// No description provided for @exchangeRateLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load exchange rate.'**
+  String get exchangeRateLoadFailedError;
+
+  /// No description provided for @exchangeRateCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create exchange rate.'**
+  String get exchangeRateCreateFailedError;
+
+  /// No description provided for @exchangeRateUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update exchange rate.'**
+  String get exchangeRateUpdateFailedError;
+
+  /// No description provided for @exchangeRateDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete exchange rate.'**
+  String get exchangeRateDeleteFailedError;
+
+  /// No description provided for @exchangeRateCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create exchange rates.'**
+  String get exchangeRateCreatePermissionDeniedError;
+
+  /// No description provided for @exchangeRateUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit exchange rates.'**
+  String get exchangeRateUpdatePermissionDeniedError;
+
+  /// No description provided for @exchangeRateDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete exchange rates.'**
+  String get exchangeRateDeletePermissionDeniedError;
+
+  /// No description provided for @dateRangeFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get dateRangeFilterLabel;
+
+  /// No description provided for @currencyFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency pair'**
+  String get currencyFilterLabel;
+
+  /// No description provided for @clearDateRangeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date range'**
+  String get clearDateRangeTooltip;
+
+  /// No description provided for @currencyMxnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MXN — Mexican Peso'**
+  String get currencyMxnLabel;
+
+  /// No description provided for @currencyUsdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'USD — US Dollar'**
+  String get currencyUsdLabel;
+
+  /// No description provided for @currencyEurLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EUR — Euro'**
+  String get currencyEurLabel;
 }
 
 class _AppLocalizationsDelegate
