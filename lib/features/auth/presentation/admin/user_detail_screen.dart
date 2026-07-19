@@ -85,24 +85,6 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
               tooltip: l10n.editRecordTooltip,
               onPressed: () => context.replace('/users/${widget.userId}'),
             ),
-          if (_isEdit && canUpdate && !widget.forceReadOnly)
-            IconButton(
-              key: const Key('recover_password_button'),
-              icon: const Icon(Icons.lock_reset),
-              tooltip: l10n.recoverPasswordTooltip,
-              onPressed: formState.submitting
-                  ? null
-                  : () => controller.recoverPassword(widget.userId!),
-            ),
-          if (canDelete)
-            IconButton(
-              key: const Key('delete_user_button'),
-              icon: const Icon(Icons.delete_outline),
-              tooltip: l10n.deleteUserTooltip,
-              onPressed: formState.submitting
-                  ? null
-                  : () => _confirmDelete(context, controller),
-            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -230,6 +212,31 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                         )
                       : Text(l10n.saveButton),
                 ),
+              if (_isEdit && canUpdate && !widget.forceReadOnly) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  key: const Key('recover_password_button'),
+                  icon: const Icon(Icons.lock_reset),
+                  label: Text(l10n.recoverPasswordTooltip),
+                  onPressed: formState.submitting
+                      ? null
+                      : () => controller.recoverPassword(widget.userId!),
+                ),
+              ],
+              if (canDelete) ...[
+                const SizedBox(height: 12),
+                FilledButton(
+                  key: const Key('delete_user_button'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    foregroundColor: Theme.of(context).colorScheme.onError,
+                  ),
+                  onPressed: formState.submitting
+                      ? null
+                      : () => _confirmDelete(context, controller),
+                  child: Text(l10n.deleteUserTooltip),
+                ),
+              ],
             ],
           ),
         ),

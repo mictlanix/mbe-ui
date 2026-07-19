@@ -40,6 +40,16 @@ const _editUser = User(
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 6)],
 );
 
+const _fullAccessUser = User(
+  userId: 'admin',
+  email: 'admin@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  // read (2) + update (4) + delete (8)
+  privileges: [Privilege(systemObject: SystemObject.users, rawValue: 14)],
+);
+
 const _targetUser = User(
   userId: 'jdoe',
   email: 'jdoe@example.com',
@@ -134,6 +144,67 @@ void main() {
       expect(find.text('Edit User'), findsOneWidget);
       expect(find.text('View User'), findsNothing);
       expect(find.byKey(const Key('edit_user_button')), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'shows Recover password and Delete as buttons below Save, not in the '
+    'app bar, in the editable case for a user with delete rights',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser, userId: 'jdoe');
+
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byKey(const Key('recover_password_button')),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byKey(const Key('delete_user_button')),
+        ),
+        findsNothing,
+      );
+
+      // Both render as full labeled buttons, below Save.
+      expect(find.byKey(const Key('recover_password_button')), findsOneWidget);
+      expect(find.byKey(const Key('delete_user_button')), findsOneWidget);
+      expect(
+        tester.widget(find.byKey(const Key('recover_password_button'))),
+        isA<OutlinedButton>(),
+      );
+      expect(
+        tester.widget(find.byKey(const Key('delete_user_button'))),
+        isA<FilledButton>(),
+      );
+
+      final saveY = tester.getTopLeft(find.byKey(const Key('save_button'))).dy;
+      final recoverY = tester
+          .getTopLeft(find.byKey(const Key('recover_password_button')))
+          .dy;
+      final deleteY =
+          tester.getTopLeft(find.byKey(const Key('delete_user_button'))).dy;
+      expect(recoverY, greaterThan(saveY));
+      expect(deleteY, greaterThan(recoverY));
+    },
+  );
+
+  testWidgets(
+    'hides Recover password and Delete for a user without update/delete '
+    'rights (read-only view)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _editUser,
+        userId: 'jdoe',
+        forceReadOnly: true,
+      );
+
+      expect(find.byKey(const Key('recover_password_button')), findsNothing);
+      expect(find.byKey(const Key('delete_user_button')), findsNothing);
     },
   );
 }
