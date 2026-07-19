@@ -105,7 +105,7 @@ class EmployeesListScreen extends ConsumerWidget {
                       ),
                       DataTableColumn(
                         label: l10n.activeLabel,
-                        fixedWidth: 100,
+                        size: ColumnSize.S,
                         cellBuilder: (context, e) => Text(
                           e.active
                               ? l10n.statusActive
