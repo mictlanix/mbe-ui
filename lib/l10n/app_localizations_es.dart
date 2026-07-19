@@ -1072,4 +1072,96 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get employeeEnrollNumberInvalidError =>
       'Ingresa un número entero no negativo válido.';
+
+  @override
+  String get priceListFieldLabel => 'Lista de precios';
+
+  @override
+  String get noneAssignedLabel => 'Ninguno asignado';
+
+  @override
+  String get shippingLabel => 'Envío';
+
+  @override
+  String get shippingRequiredDocumentLabel => 'El envío requiere documento';
+
+  @override
+  String get columnSalesperson => 'Vendedor';
+
+  @override
+  String get customersSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newCustomerTooltip => 'Nuevo cliente';
+
+  @override
+  String get noCustomersFound => 'No se encontraron clientes.';
+
+  @override
+  String customersLoadError(Object error) {
+    return 'No se pudieron cargar los clientes: $error';
+  }
+
+  @override
+  String get customersActiveFilter => 'Activo';
+
+  @override
+  String get customersPriceListFilterLabel => 'Lista de precios';
+
+  @override
+  String get customersSalespersonFilterLabel => 'Vendedor';
+
+  @override
+  String get newCustomerTitle => 'Nuevo cliente';
+
+  @override
+  String get editCustomerTitle => 'Editar cliente';
+
+  @override
+  String get viewCustomerTitle => 'Ver cliente';
+
+  @override
+  String get deleteCustomerButton => 'Eliminar cliente';
+
+  @override
+  String get deleteCustomerConfirmTitle => '¿Eliminar cliente?';
+
+  @override
+  String deleteCustomerConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get customerLoadFailedError => 'No se pudo cargar el cliente.';
+
+  @override
+  String get customerCreateFailedError => 'No se pudo crear el cliente.';
+
+  @override
+  String get customerUpdateFailedError => 'No se pudo actualizar el cliente.';
+
+  @override
+  String get customerDeleteFailedError => 'No se pudo eliminar el cliente.';
+
+  @override
+  String get customerCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear clientes.';
+
+  @override
+  String get customerUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar clientes.';
+
+  @override
+  String get customerDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar clientes.';
+
+  @override
+  String get customerCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get customerNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get customerPriceListRequiredError =>
+      'La lista de precios es obligatoria.';
 }

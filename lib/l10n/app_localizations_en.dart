@@ -1056,4 +1056,95 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get employeeEnrollNumberInvalidError =>
       'Enter a valid non-negative whole number.';
+
+  @override
+  String get priceListFieldLabel => 'Price list';
+
+  @override
+  String get noneAssignedLabel => 'None assigned';
+
+  @override
+  String get shippingLabel => 'Shipping';
+
+  @override
+  String get shippingRequiredDocumentLabel => 'Shipping requires document';
+
+  @override
+  String get columnSalesperson => 'Salesperson';
+
+  @override
+  String get customersSearchLabel => 'Search by code or name';
+
+  @override
+  String get newCustomerTooltip => 'New customer';
+
+  @override
+  String get noCustomersFound => 'No customers found.';
+
+  @override
+  String customersLoadError(Object error) {
+    return 'Failed to load customers: $error';
+  }
+
+  @override
+  String get customersActiveFilter => 'Active';
+
+  @override
+  String get customersPriceListFilterLabel => 'Price list';
+
+  @override
+  String get customersSalespersonFilterLabel => 'Salesperson';
+
+  @override
+  String get newCustomerTitle => 'New customer';
+
+  @override
+  String get editCustomerTitle => 'Edit customer';
+
+  @override
+  String get viewCustomerTitle => 'View customer';
+
+  @override
+  String get deleteCustomerButton => 'Delete customer';
+
+  @override
+  String get deleteCustomerConfirmTitle => 'Delete customer?';
+
+  @override
+  String deleteCustomerConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get customerLoadFailedError => 'Failed to load customer.';
+
+  @override
+  String get customerCreateFailedError => 'Failed to create customer.';
+
+  @override
+  String get customerUpdateFailedError => 'Failed to update customer.';
+
+  @override
+  String get customerDeleteFailedError => 'Failed to delete customer.';
+
+  @override
+  String get customerCreatePermissionDeniedError =>
+      'You no longer have permission to create customers.';
+
+  @override
+  String get customerUpdatePermissionDeniedError =>
+      'You no longer have permission to edit customers.';
+
+  @override
+  String get customerDeletePermissionDeniedError =>
+      'You no longer have permission to delete customers.';
+
+  @override
+  String get customerCodeRequiredError => 'Code is required.';
+
+  @override
+  String get customerNameRequiredError => 'Name is required.';
+
+  @override
+  String get customerPriceListRequiredError => 'Price list is required.';
 }

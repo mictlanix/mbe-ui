@@ -13,6 +13,8 @@ import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employee_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
@@ -125,6 +127,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/customers',
+                builder: (context, state) => const CustomersListScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -229,6 +239,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
+      GoRoute(
+        path: '/customers/new',
+        builder: (context, state) => const CustomerDetailScreen(),
+      ),
+      GoRoute(
+        path: '/customers/:customerId',
+        builder: (context, state) => CustomerDetailScreen(
+          customerId: int.parse(state.pathParameters['customerId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
     ],
   );
 });
@@ -321,6 +342,9 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/employees')) {
     return (object: SystemObject.employees, right: AccessRight.read);
+  }
+  if (location.startsWith('/customers')) {
+    return (object: SystemObject.customers, right: AccessRight.read);
   }
   return null;
 }

@@ -2047,6 +2047,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid non-negative whole number.'**
   String get employeeEnrollNumberInvalidError;
+
+  /// No description provided for @priceListFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list'**
+  String get priceListFieldLabel;
+
+  /// No description provided for @noneAssignedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'None assigned'**
+  String get noneAssignedLabel;
+
+  /// No description provided for @shippingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping'**
+  String get shippingLabel;
+
+  /// No description provided for @shippingRequiredDocumentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping requires document'**
+  String get shippingRequiredDocumentLabel;
+
+  /// No description provided for @columnSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'Salesperson'**
+  String get columnSalesperson;
+
+  /// No description provided for @customersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get customersSearchLabel;
+
+  /// No description provided for @newCustomerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New customer'**
+  String get newCustomerTooltip;
+
+  /// No description provided for @noCustomersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers found.'**
+  String get noCustomersFound;
+
+  /// No description provided for @customersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load customers: {error}'**
+  String customersLoadError(Object error);
+
+  /// No description provided for @customersActiveFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get customersActiveFilter;
+
+  /// No description provided for @customersPriceListFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list'**
+  String get customersPriceListFilterLabel;
+
+  /// No description provided for @customersSalespersonFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Salesperson'**
+  String get customersSalespersonFilterLabel;
+
+  /// No description provided for @newCustomerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New customer'**
+  String get newCustomerTitle;
+
+  /// No description provided for @editCustomerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit customer'**
+  String get editCustomerTitle;
+
+  /// No description provided for @viewCustomerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View customer'**
+  String get viewCustomerTitle;
+
+  /// No description provided for @deleteCustomerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete customer'**
+  String get deleteCustomerButton;
+
+  /// No description provided for @deleteCustomerConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete customer?'**
+  String get deleteCustomerConfirmTitle;
+
+  /// No description provided for @deleteCustomerConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteCustomerConfirmMessage(String name);
+
+  /// No description provided for @customerLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load customer.'**
+  String get customerLoadFailedError;
+
+  /// No description provided for @customerCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create customer.'**
+  String get customerCreateFailedError;
+
+  /// No description provided for @customerUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update customer.'**
+  String get customerUpdateFailedError;
+
+  /// No description provided for @customerDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete customer.'**
+  String get customerDeleteFailedError;
+
+  /// No description provided for @customerCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create customers.'**
+  String get customerCreatePermissionDeniedError;
+
+  /// No description provided for @customerUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit customers.'**
+  String get customerUpdatePermissionDeniedError;
+
+  /// No description provided for @customerDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete customers.'**
+  String get customerDeletePermissionDeniedError;
+
+  /// No description provided for @customerCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get customerCodeRequiredError;
+
+  /// No description provided for @customerNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get customerNameRequiredError;
+
+  /// No description provided for @customerPriceListRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list is required.'**
+  String get customerPriceListRequiredError;
 }
 
 class _AppLocalizationsDelegate
