@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Catalog Master Entities (Customers, Employees, Suppliers, Labels, Taxpayer Recipients)",
+  "branch": "012-catalog-master-entities",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-19T12:42:54.794Z"
+    }
+  ]
+}
