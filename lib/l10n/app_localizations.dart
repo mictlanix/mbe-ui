@@ -833,7 +833,7 @@ abstract class AppLocalizations {
   /// No description provided for @employeeIdLabel.
   ///
   /// In en, this message translates to:
-  /// **'Employee ID (optional)'**
+  /// **'Employee (optional)'**
   String get employeeIdLabel;
 
   /// No description provided for @administratorLabel.

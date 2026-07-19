@@ -397,7 +397,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get emailLabel => 'Correo electrónico';
 
   @override
-  String get employeeIdLabel => 'ID de empleado (opcional)';
+  String get employeeIdLabel => 'Empleado (opcional)';
 
   @override
   String get administratorLabel => 'Administrador';

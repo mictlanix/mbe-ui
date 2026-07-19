@@ -379,7 +379,7 @@
   "emailLabel": "Email",
   "@emailLabel": {},
 
-  "employeeIdLabel": "Employee ID (optional)",
+  "employeeIdLabel": "Employee (optional)",
   "@employeeIdLabel": {},
 
   "administratorLabel": "Administrator",
