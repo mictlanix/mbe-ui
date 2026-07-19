@@ -60,9 +60,10 @@ class UserMenuButton extends ConsumerWidget {
   }
 
   /// The store / POS / cash-drawer lines. A line is omitted when its id is
-  /// null (FR-014); when the id is present it shows the labeled-ID fallback
-  /// until `/auth/me` carries resolved names (mbe-api#79), at which point the
-  /// helper below prefers the name (FR-011).
+  /// null (FR-014); when the id is present it shows the resolved name — the
+  /// store's `name`, or `name (code)` for POS/cash-drawer — now that
+  /// `/auth/me` carries it (mbe-api#79), falling back to a labeled id if the
+  /// name is unset (FR-011).
   List<Widget> _locationLines(
     BuildContext context,
     AppLocalizations l10n,
@@ -74,31 +75,59 @@ class UserMenuButton extends ConsumerWidget {
     final pos = settings.pointSaleId;
     final drawer = settings.cashDrawerId;
     if (store != null) {
-      lines.add(_infoLine(
-        context,
-        const Key('user_menu_store'),
-        // TODO(mbe-api#79): prefer settings.storeName ("name (code)") once
-        // /auth/me carries it; fall back to the labeled id below.
-        l10n.userMenuStoreFallback(store),
-      ));
+      lines.add(
+        _infoLine(
+          context,
+          const Key('user_menu_store'),
+          _displayLine(
+            name: settings.storeName,
+            code: settings.storeCode,
+            fallback: () => l10n.userMenuStoreFallback(store),
+          ),
+        ),
+      );
     }
     if (pos != null) {
-      lines.add(_infoLine(
-        context,
-        const Key('user_menu_pos'),
-        // TODO(mbe-api#79): prefer settings.pointSaleName ("name (code)").
-        l10n.userMenuPosFallback(pos),
-      ));
+      lines.add(
+        _infoLine(
+          context,
+          const Key('user_menu_pos'),
+          _displayLine(
+            name: settings.pointSaleName,
+            code: settings.pointSaleCode,
+            fallback: () => l10n.userMenuPosFallback(pos),
+          ),
+        ),
+      );
     }
     if (drawer != null) {
-      lines.add(_infoLine(
-        context,
-        const Key('user_menu_cash_drawer'),
-        // TODO(mbe-api#79): prefer settings.cashDrawerName ("name (code)").
-        l10n.userMenuDrawerFallback(drawer),
-      ));
+      lines.add(
+        _infoLine(
+          context,
+          const Key('user_menu_cash_drawer'),
+          _displayLine(
+            name: settings.cashDrawerName,
+            code: settings.cashDrawerCode,
+            fallback: () => l10n.userMenuDrawerFallback(drawer),
+          ),
+        ),
+      );
     }
     return lines;
+  }
+
+  /// `name (code)` when both are present, `name` alone when there's no code,
+  /// or the labeled-id [fallback] when the name hasn't been resolved
+  /// (data-model.md "UserSettings" display rule).
+  String _displayLine({
+    required String? name,
+    required String? code,
+    required String Function() fallback,
+  }) {
+    if (name == null || name.isEmpty) return fallback();
+    if (code == null || code.isEmpty) return name;
+    // return '$name ($code)';
+    return name;
   }
 
   Widget _infoLine(BuildContext context, Key key, String text) {
@@ -108,8 +137,8 @@ class UserMenuButton extends ConsumerWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }

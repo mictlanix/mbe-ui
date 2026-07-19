@@ -24,7 +24,28 @@ const _userWithSettings = User(
   disabled: false,
   sessionVersion: 1,
   privileges: [],
+  // Ids only, no resolved names — the labeled-ID fallback path (FR-011).
   settings: UserSettings(storeId: 51, pointSaleId: 18, cashDrawerId: 14),
+);
+
+const _userWithResolvedNames = User(
+  userId: 'admin',
+  email: 'eddy@mictlanix.com',
+  administrator: true,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [],
+  // /auth/me now resolves names (mbe-api#79).
+  settings: UserSettings(
+    storeId: 51,
+    storeName: 'CASA MAESTRA ZUMPANGO',
+    pointSaleId: 18,
+    pointSaleCode: '01',
+    pointSaleName: 'PV ZUMPANGO',
+    cashDrawerId: 14,
+    cashDrawerCode: '01',
+    cashDrawerName: 'CC ZUMPANGO',
+  ),
 );
 
 const _userNoSettings = User(
@@ -96,7 +117,7 @@ void main() {
   });
 
   testWidgets('shows identity + the three location lines as labeled-ID '
-      'fallbacks (FR-010/FR-011)', (tester) async {
+      'fallbacks when names are unresolved (FR-011)', (tester) async {
     await pumpMenu(tester, user: _userWithSettings);
     await openMenu(tester);
 
@@ -105,6 +126,20 @@ void main() {
     expect(find.text('Store 51'), findsOneWidget);
     expect(find.text('POS 18'), findsOneWidget);
     expect(find.text('Drawer 14'), findsOneWidget);
+  });
+
+  testWidgets('shows resolved store/POS/cash-drawer names — store as name, '
+      'POS/drawer as "name (code)" — once /auth/me resolves them '
+      '(mbe-api#79, FR-011)', (tester) async {
+    await pumpMenu(tester, user: _userWithResolvedNames);
+    await openMenu(tester);
+
+    expect(find.text('eddy@mictlanix.com'), findsOneWidget);
+    expect(find.text('CASA MAESTRA ZUMPANGO'), findsOneWidget);
+    expect(find.text('PV ZUMPANGO (01)'), findsOneWidget);
+    expect(find.text('CC ZUMPANGO (01)'), findsOneWidget);
+    // The labeled-ID fallback is not shown once names resolve.
+    expect(find.text('Store 51'), findsNothing);
   });
 
   testWidgets('omits location lines when the user has no settings (FR-014)',

@@ -18,8 +18,14 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$UserSettings {
   int? get storeId => throw _privateConstructorUsedError;
+  String? get storeCode => throw _privateConstructorUsedError;
+  String? get storeName => throw _privateConstructorUsedError;
   int? get pointSaleId => throw _privateConstructorUsedError;
+  String? get pointSaleCode => throw _privateConstructorUsedError;
+  String? get pointSaleName => throw _privateConstructorUsedError;
   int? get cashDrawerId => throw _privateConstructorUsedError;
+  String? get cashDrawerCode => throw _privateConstructorUsedError;
+  String? get cashDrawerName => throw _privateConstructorUsedError;
 
   /// Create a copy of UserSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +41,17 @@ abstract class $UserSettingsCopyWith<$Res> {
     $Res Function(UserSettings) then,
   ) = _$UserSettingsCopyWithImpl<$Res, UserSettings>;
   @useResult
-  $Res call({int? storeId, int? pointSaleId, int? cashDrawerId});
+  $Res call({
+    int? storeId,
+    String? storeCode,
+    String? storeName,
+    int? pointSaleId,
+    String? pointSaleCode,
+    String? pointSaleName,
+    int? cashDrawerId,
+    String? cashDrawerCode,
+    String? cashDrawerName,
+  });
 }
 
 /// @nodoc
@@ -54,8 +70,14 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
   @override
   $Res call({
     Object? storeId = freezed,
+    Object? storeCode = freezed,
+    Object? storeName = freezed,
     Object? pointSaleId = freezed,
+    Object? pointSaleCode = freezed,
+    Object? pointSaleName = freezed,
     Object? cashDrawerId = freezed,
+    Object? cashDrawerCode = freezed,
+    Object? cashDrawerName = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -63,14 +85,38 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
                 ? _value.storeId
                 : storeId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            storeCode: freezed == storeCode
+                ? _value.storeCode
+                : storeCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            storeName: freezed == storeName
+                ? _value.storeName
+                : storeName // ignore: cast_nullable_to_non_nullable
+                      as String?,
             pointSaleId: freezed == pointSaleId
                 ? _value.pointSaleId
                 : pointSaleId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            pointSaleCode: freezed == pointSaleCode
+                ? _value.pointSaleCode
+                : pointSaleCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            pointSaleName: freezed == pointSaleName
+                ? _value.pointSaleName
+                : pointSaleName // ignore: cast_nullable_to_non_nullable
+                      as String?,
             cashDrawerId: freezed == cashDrawerId
                 ? _value.cashDrawerId
                 : cashDrawerId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            cashDrawerCode: freezed == cashDrawerCode
+                ? _value.cashDrawerCode
+                : cashDrawerCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            cashDrawerName: freezed == cashDrawerName
+                ? _value.cashDrawerName
+                : cashDrawerName // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -86,7 +132,17 @@ abstract class _$$UserSettingsImplCopyWith<$Res>
   ) = __$$UserSettingsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? storeId, int? pointSaleId, int? cashDrawerId});
+  $Res call({
+    int? storeId,
+    String? storeCode,
+    String? storeName,
+    int? pointSaleId,
+    String? pointSaleCode,
+    String? pointSaleName,
+    int? cashDrawerId,
+    String? cashDrawerCode,
+    String? cashDrawerName,
+  });
 }
 
 /// @nodoc
@@ -104,8 +160,14 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? storeId = freezed,
+    Object? storeCode = freezed,
+    Object? storeName = freezed,
     Object? pointSaleId = freezed,
+    Object? pointSaleCode = freezed,
+    Object? pointSaleName = freezed,
     Object? cashDrawerId = freezed,
+    Object? cashDrawerCode = freezed,
+    Object? cashDrawerName = freezed,
   }) {
     return _then(
       _$UserSettingsImpl(
@@ -113,14 +175,38 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
             ? _value.storeId
             : storeId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        storeCode: freezed == storeCode
+            ? _value.storeCode
+            : storeCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        storeName: freezed == storeName
+            ? _value.storeName
+            : storeName // ignore: cast_nullable_to_non_nullable
+                  as String?,
         pointSaleId: freezed == pointSaleId
             ? _value.pointSaleId
             : pointSaleId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        pointSaleCode: freezed == pointSaleCode
+            ? _value.pointSaleCode
+            : pointSaleCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        pointSaleName: freezed == pointSaleName
+            ? _value.pointSaleName
+            : pointSaleName // ignore: cast_nullable_to_non_nullable
+                  as String?,
         cashDrawerId: freezed == cashDrawerId
             ? _value.cashDrawerId
             : cashDrawerId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        cashDrawerCode: freezed == cashDrawerCode
+            ? _value.cashDrawerCode
+            : cashDrawerCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        cashDrawerName: freezed == cashDrawerName
+            ? _value.cashDrawerName
+            : cashDrawerName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -129,19 +215,40 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$UserSettingsImpl extends _UserSettings {
-  const _$UserSettingsImpl({this.storeId, this.pointSaleId, this.cashDrawerId})
-    : super._();
+  const _$UserSettingsImpl({
+    this.storeId,
+    this.storeCode,
+    this.storeName,
+    this.pointSaleId,
+    this.pointSaleCode,
+    this.pointSaleName,
+    this.cashDrawerId,
+    this.cashDrawerCode,
+    this.cashDrawerName,
+  }) : super._();
 
   @override
   final int? storeId;
   @override
+  final String? storeCode;
+  @override
+  final String? storeName;
+  @override
   final int? pointSaleId;
   @override
+  final String? pointSaleCode;
+  @override
+  final String? pointSaleName;
+  @override
   final int? cashDrawerId;
+  @override
+  final String? cashDrawerCode;
+  @override
+  final String? cashDrawerName;
 
   @override
   String toString() {
-    return 'UserSettings(storeId: $storeId, pointSaleId: $pointSaleId, cashDrawerId: $cashDrawerId)';
+    return 'UserSettings(storeId: $storeId, storeCode: $storeCode, storeName: $storeName, pointSaleId: $pointSaleId, pointSaleCode: $pointSaleCode, pointSaleName: $pointSaleName, cashDrawerId: $cashDrawerId, cashDrawerCode: $cashDrawerCode, cashDrawerName: $cashDrawerName)';
   }
 
   @override
@@ -150,15 +257,37 @@ class _$UserSettingsImpl extends _UserSettings {
         (other.runtimeType == runtimeType &&
             other is _$UserSettingsImpl &&
             (identical(other.storeId, storeId) || other.storeId == storeId) &&
+            (identical(other.storeCode, storeCode) ||
+                other.storeCode == storeCode) &&
+            (identical(other.storeName, storeName) ||
+                other.storeName == storeName) &&
             (identical(other.pointSaleId, pointSaleId) ||
                 other.pointSaleId == pointSaleId) &&
+            (identical(other.pointSaleCode, pointSaleCode) ||
+                other.pointSaleCode == pointSaleCode) &&
+            (identical(other.pointSaleName, pointSaleName) ||
+                other.pointSaleName == pointSaleName) &&
             (identical(other.cashDrawerId, cashDrawerId) ||
-                other.cashDrawerId == cashDrawerId));
+                other.cashDrawerId == cashDrawerId) &&
+            (identical(other.cashDrawerCode, cashDrawerCode) ||
+                other.cashDrawerCode == cashDrawerCode) &&
+            (identical(other.cashDrawerName, cashDrawerName) ||
+                other.cashDrawerName == cashDrawerName));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, storeId, pointSaleId, cashDrawerId);
+  int get hashCode => Object.hash(
+    runtimeType,
+    storeId,
+    storeCode,
+    storeName,
+    pointSaleId,
+    pointSaleCode,
+    pointSaleName,
+    cashDrawerId,
+    cashDrawerCode,
+    cashDrawerName,
+  );
 
   /// Create a copy of UserSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -172,17 +301,35 @@ class _$UserSettingsImpl extends _UserSettings {
 abstract class _UserSettings extends UserSettings {
   const factory _UserSettings({
     final int? storeId,
+    final String? storeCode,
+    final String? storeName,
     final int? pointSaleId,
+    final String? pointSaleCode,
+    final String? pointSaleName,
     final int? cashDrawerId,
+    final String? cashDrawerCode,
+    final String? cashDrawerName,
   }) = _$UserSettingsImpl;
   const _UserSettings._() : super._();
 
   @override
   int? get storeId;
   @override
+  String? get storeCode;
+  @override
+  String? get storeName;
+  @override
   int? get pointSaleId;
   @override
+  String? get pointSaleCode;
+  @override
+  String? get pointSaleName;
+  @override
   int? get cashDrawerId;
+  @override
+  String? get cashDrawerCode;
+  @override
+  String? get cashDrawerName;
 
   /// Create a copy of UserSettings
   /// with the given fields replaced by the non-null parameter values.

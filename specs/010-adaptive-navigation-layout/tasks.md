@@ -184,4 +184,5 @@ Foundation → US1 (shell, MVP) → US2 (user menu) → US4 (catalog actions) �
 - `[P]` = different files, no incomplete-task dependency.
 - Run `build_runner` after any freezed/riverpod change (T003, T013 via provider, T016).
 - External dependency: **mbe-api#79** (enrich `/auth/me` settings with location names) — non-blocking; menu ships with labeled-ID fallback.
+  - **Resolved**: mbe-api#79 shipped (`UserSettingsResponse` gained `store_name`/`store_code`, `point_sale_name`/`point_sale_code`, `cash_drawer_name`/`cash_drawer_code`). Client regenerated; `UserSettings` (`core/access/user_settings.dart`) and `UserMenuButton` (`core/widgets/user_menu_button.dart`) now display resolved names (`name (code)` for POS/cash-drawer), falling back to the labeled-ID text only when a name is still absent.
 - Commit after each task or logical group; stop at any checkpoint to validate a story independently.
