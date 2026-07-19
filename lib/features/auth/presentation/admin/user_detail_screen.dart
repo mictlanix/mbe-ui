@@ -187,6 +187,8 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 onChanged: fieldsEnabled ? controller.disabledChanged : null,
               ),
               const SizedBox(height: 16),
+              const Divider(key: Key('permissions_divider')),
+              const SizedBox(height: 16),
               Text(
                 l10n.permissionsLabel,
                 style: Theme.of(context).textTheme.titleMedium,

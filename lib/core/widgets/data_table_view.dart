@@ -14,6 +14,7 @@ class DataTableColumn<T> {
     this.numeric = false,
     this.size = ColumnSize.M,
     this.fixedWidth,
+    this.headerTooltip,
   });
 
   /// Convenience for a plain-text cell: wraps [text] in an ellipsis-on-
@@ -61,6 +62,11 @@ class DataTableColumn<T> {
   /// code or status badge) that shouldn't grow with the table's relative
   /// `size` distribution. Takes precedence over [size] when set.
   final double? fixedWidth;
+
+  /// Optional hover tooltip for the column header — for a header
+  /// abbreviated to save width (e.g. a single-letter column) that still
+  /// needs its full meaning available on hover.
+  final String? headerTooltip;
 }
 
 /// Shared sortable/paginated data table for list screens (constitution
@@ -126,7 +132,12 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     return [
       for (final column in widget.columns)
         DataColumn2(
-          label: Text(column.label),
+          label: column.headerTooltip == null
+              ? Text(column.label)
+              : Tooltip(
+                  message: column.headerTooltip,
+                  child: Text(column.label),
+                ),
           numeric: column.numeric,
           size: column.size,
           fixedWidth: column.fixedWidth,
