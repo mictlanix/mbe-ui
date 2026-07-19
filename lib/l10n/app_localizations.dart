@@ -1525,6 +1525,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EUR — Euro'**
   String get currencyEurLabel;
+
+  /// No description provided for @suppliersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get suppliersMenuTitle;
+
+  /// No description provided for @labelsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get labelsMenuTitle;
+
+  /// No description provided for @employeesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees'**
+  String get employeesMenuTitle;
+
+  /// No description provided for @customersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get customersMenuTitle;
+
+  /// No description provided for @taxpayerRecipientsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer Recipients'**
+  String get taxpayerRecipientsMenuTitle;
+
+  /// No description provided for @zoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone'**
+  String get zoneLabel;
+
+  /// No description provided for @creditLimitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit limit'**
+  String get creditLimitLabel;
+
+  /// No description provided for @creditDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit days'**
+  String get creditDaysLabel;
+
+  /// No description provided for @creditLimitInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative amount.'**
+  String get creditLimitInvalidError;
+
+  /// No description provided for @creditDaysInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative whole number.'**
+  String get creditDaysInvalidError;
 }
 
 class _AppLocalizationsDelegate

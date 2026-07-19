@@ -258,5 +258,17 @@
 
   "currencyMxnLabel": "MXN — Peso Mexicano",
   "currencyUsdLabel": "USD — Dólar Estadounidense",
-  "currencyEurLabel": "EUR — Euro"
+  "currencyEurLabel": "EUR — Euro",
+
+  "suppliersMenuTitle": "Proveedores",
+  "labelsMenuTitle": "Etiquetas",
+  "employeesMenuTitle": "Empleados",
+  "customersMenuTitle": "Clientes",
+  "taxpayerRecipientsMenuTitle": "Receptores Fiscales",
+
+  "zoneLabel": "Zona",
+  "creditLimitLabel": "Límite de crédito",
+  "creditDaysLabel": "Días de crédito",
+  "creditLimitInvalidError": "Ingresa un monto válido no negativo.",
+  "creditDaysInvalidError": "Ingresa un número entero no negativo válido."
 }

@@ -772,4 +772,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currencyEurLabel => 'EUR — Euro';
+
+  @override
+  String get suppliersMenuTitle => 'Suppliers';
+
+  @override
+  String get labelsMenuTitle => 'Labels';
+
+  @override
+  String get employeesMenuTitle => 'Employees';
+
+  @override
+  String get customersMenuTitle => 'Customers';
+
+  @override
+  String get taxpayerRecipientsMenuTitle => 'Taxpayer Recipients';
+
+  @override
+  String get zoneLabel => 'Zone';
+
+  @override
+  String get creditLimitLabel => 'Credit limit';
+
+  @override
+  String get creditDaysLabel => 'Credit days';
+
+  @override
+  String get creditLimitInvalidError => 'Enter a valid non-negative amount.';
+
+  @override
+  String get creditDaysInvalidError =>
+      'Enter a valid non-negative whole number.';
 }

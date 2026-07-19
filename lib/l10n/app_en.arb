@@ -667,5 +667,27 @@
   "currencyUsdLabel": "USD — US Dollar",
   "@currencyUsdLabel": {},
   "currencyEurLabel": "EUR — Euro",
-  "@currencyEurLabel": {}
+  "@currencyEurLabel": {},
+
+  "suppliersMenuTitle": "Suppliers",
+  "@suppliersMenuTitle": {},
+  "labelsMenuTitle": "Labels",
+  "@labelsMenuTitle": {},
+  "employeesMenuTitle": "Employees",
+  "@employeesMenuTitle": {},
+  "customersMenuTitle": "Customers",
+  "@customersMenuTitle": {},
+  "taxpayerRecipientsMenuTitle": "Taxpayer Recipients",
+  "@taxpayerRecipientsMenuTitle": {},
+
+  "zoneLabel": "Zone",
+  "@zoneLabel": {},
+  "creditLimitLabel": "Credit limit",
+  "@creditLimitLabel": {},
+  "creditDaysLabel": "Credit days",
+  "@creditDaysLabel": {},
+  "creditLimitInvalidError": "Enter a valid non-negative amount.",
+  "@creditLimitInvalidError": {},
+  "creditDaysInvalidError": "Enter a valid non-negative whole number.",
+  "@creditDaysInvalidError": {}
 }
