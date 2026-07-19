@@ -12,13 +12,14 @@ part 'exchange_rate_response.g.dart';
 /// ExchangeRateResponse
 ///
 /// Properties:
-/// * [exchangeRateId] 
-/// * [date] 
-/// * [rate] 
-/// * [base_] 
-/// * [target] 
+/// * [exchangeRateId]
+/// * [date]
+/// * [rate]
+/// * [base_]
+/// * [target]
 @BuiltValue()
-abstract class ExchangeRateResponse implements Built<ExchangeRateResponse, ExchangeRateResponseBuilder> {
+abstract class ExchangeRateResponse
+    implements Built<ExchangeRateResponse, ExchangeRateResponseBuilder> {
   @BuiltValueField(wireName: r'exchange_rate_id')
   int get exchangeRateId;
 
@@ -36,18 +37,24 @@ abstract class ExchangeRateResponse implements Built<ExchangeRateResponse, Excha
 
   ExchangeRateResponse._();
 
-  factory ExchangeRateResponse([void updates(ExchangeRateResponseBuilder b)]) = _$ExchangeRateResponse;
+  factory ExchangeRateResponse([void updates(ExchangeRateResponseBuilder b)]) =
+      _$ExchangeRateResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ExchangeRateResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ExchangeRateResponse> get serializer => _$ExchangeRateResponseSerializer();
+  static Serializer<ExchangeRateResponse> get serializer =>
+      _$ExchangeRateResponseSerializer();
 }
 
-class _$ExchangeRateResponseSerializer implements PrimitiveSerializer<ExchangeRateResponse> {
+class _$ExchangeRateResponseSerializer
+    implements PrimitiveSerializer<ExchangeRateResponse> {
   @override
-  final Iterable<Type> types = const [ExchangeRateResponse, _$ExchangeRateResponse];
+  final Iterable<Type> types = const [
+    ExchangeRateResponse,
+    _$ExchangeRateResponse,
+  ];
 
   @override
   final String wireName = r'ExchangeRateResponse';
@@ -90,7 +97,11 @@ class _$ExchangeRateResponseSerializer implements PrimitiveSerializer<ExchangeRa
     ExchangeRateResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -106,38 +117,39 @@ class _$ExchangeRateResponseSerializer implements PrimitiveSerializer<ExchangeRa
       final value = serializedList[i + 1];
       switch (key) {
         case r'exchange_rate_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.exchangeRateId = valueDes;
           break;
         case r'date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Date),
+                  )
+                  as Date;
           result.date = valueDes;
           break;
         case r'rate':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.rate = valueDes;
           break;
         case r'base':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.base_ = valueDes;
           break;
         case r'target':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.target = valueDes;
           break;
         default:
@@ -168,4 +180,3 @@ class _$ExchangeRateResponseSerializer implements PrimitiveSerializer<ExchangeRa
     return result.build();
   }
 }
-

@@ -11,13 +11,14 @@ part 'user_list_item.g.dart';
 /// UserListItem
 ///
 /// Properties:
-/// * [userId] 
-/// * [email] 
-/// * [employeeId] 
-/// * [administrator] 
-/// * [disabled] 
+/// * [userId]
+/// * [email]
+/// * [employeeId]
+/// * [administrator]
+/// * [disabled]
 @BuiltValue()
-abstract class UserListItem implements Built<UserListItem, UserListItemBuilder> {
+abstract class UserListItem
+    implements Built<UserListItem, UserListItemBuilder> {
   @BuiltValueField(wireName: r'user_id')
   String get userId;
 
@@ -67,10 +68,12 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
       specifiedType: const FullType(String),
     );
     yield r'employee_id';
-    yield object.employeeId == null ? null : serializers.serialize(
-      object.employeeId,
-      specifiedType: const FullType.nullable(int),
-    );
+    yield object.employeeId == null
+        ? null
+        : serializers.serialize(
+            object.employeeId,
+            specifiedType: const FullType.nullable(int),
+          );
     yield r'administrator';
     yield serializers.serialize(
       object.administrator,
@@ -89,7 +92,11 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
     UserListItem object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -105,39 +112,49 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'user_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.userId = valueDes;
           break;
         case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.email = valueDes;
           break;
         case r'employee_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.employeeId = valueDes;
           break;
         case r'administrator':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.administrator = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.disabled = valueDes;
           break;
         default:
@@ -168,4 +185,3 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
     return result.build();
   }
 }
-

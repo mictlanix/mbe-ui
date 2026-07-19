@@ -282,10 +282,7 @@ void main() {
           standalone: true,
         );
 
-        expect(
-          find.byKey(const Key('pricing_product_picker')),
-          findsNothing,
-        );
+        expect(find.byKey(const Key('pricing_product_picker')), findsNothing);
         expect(find.byType(AppBar), findsOneWidget);
         expect(find.text('SKU-1 — Widget'), findsOneWidget);
         expect(find.text('Retail'), findsOneWidget);
@@ -297,10 +294,7 @@ void main() {
       (tester) async {
         await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-        expect(
-          find.byKey(const Key('pricing_product_picker')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('pricing_product_picker')), findsOneWidget);
       },
     );
   });

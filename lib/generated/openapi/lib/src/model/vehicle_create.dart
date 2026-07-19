@@ -11,13 +11,14 @@ part 'vehicle_create.g.dart';
 /// VehicleCreate
 ///
 /// Properties:
-/// * [licensePlate] 
-/// * [name] 
-/// * [nickname] 
-/// * [tonsCapacity] 
-/// * [active] 
+/// * [licensePlate]
+/// * [name]
+/// * [nickname]
+/// * [tonsCapacity]
+/// * [active]
 @BuiltValue()
-abstract class VehicleCreate implements Built<VehicleCreate, VehicleCreateBuilder> {
+abstract class VehicleCreate
+    implements Built<VehicleCreate, VehicleCreateBuilder> {
   @BuiltValueField(wireName: r'license_plate')
   String get licensePlate;
 
@@ -35,14 +36,15 @@ abstract class VehicleCreate implements Built<VehicleCreate, VehicleCreateBuilde
 
   VehicleCreate._();
 
-  factory VehicleCreate([void updates(VehicleCreateBuilder b)]) = _$VehicleCreate;
+  factory VehicleCreate([void updates(VehicleCreateBuilder b)]) =
+      _$VehicleCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(VehicleCreateBuilder b) => b
-      ..active = true;
+  static void _defaults(VehicleCreateBuilder b) => b..active = true;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<VehicleCreate> get serializer => _$VehicleCreateSerializer();
+  static Serializer<VehicleCreate> get serializer =>
+      _$VehicleCreateSerializer();
 }
 
 class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
@@ -92,7 +94,11 @@ class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
     VehicleCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -108,38 +114,45 @@ class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'license_plate':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.licensePlate = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'nickname':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.nickname = valueDes;
           break;
         case r'tons_capacity':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.tonsCapacity = valueDes;
           break;
         case r'active':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.active = valueDes;
           break;
         default:
@@ -170,4 +183,3 @@ class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
     return result.build();
   }
 }
-

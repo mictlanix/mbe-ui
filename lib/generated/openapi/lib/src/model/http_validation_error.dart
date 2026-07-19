@@ -13,26 +13,33 @@ part 'http_validation_error.g.dart';
 /// HTTPValidationError
 ///
 /// Properties:
-/// * [detail] 
+/// * [detail]
 @BuiltValue()
-abstract class HTTPValidationError implements Built<HTTPValidationError, HTTPValidationErrorBuilder> {
+abstract class HTTPValidationError
+    implements Built<HTTPValidationError, HTTPValidationErrorBuilder> {
   @BuiltValueField(wireName: r'detail')
   BuiltList<ValidationError>? get detail;
 
   HTTPValidationError._();
 
-  factory HTTPValidationError([void updates(HTTPValidationErrorBuilder b)]) = _$HTTPValidationError;
+  factory HTTPValidationError([void updates(HTTPValidationErrorBuilder b)]) =
+      _$HTTPValidationError;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(HTTPValidationErrorBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<HTTPValidationError> get serializer => _$HTTPValidationErrorSerializer();
+  static Serializer<HTTPValidationError> get serializer =>
+      _$HTTPValidationErrorSerializer();
 }
 
-class _$HTTPValidationErrorSerializer implements PrimitiveSerializer<HTTPValidationError> {
+class _$HTTPValidationErrorSerializer
+    implements PrimitiveSerializer<HTTPValidationError> {
   @override
-  final Iterable<Type> types = const [HTTPValidationError, _$HTTPValidationError];
+  final Iterable<Type> types = const [
+    HTTPValidationError,
+    _$HTTPValidationError,
+  ];
 
   @override
   final String wireName = r'HTTPValidationError';
@@ -57,7 +64,11 @@ class _$HTTPValidationErrorSerializer implements PrimitiveSerializer<HTTPValidat
     HTTPValidationError object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -73,10 +84,14 @@ class _$HTTPValidationErrorSerializer implements PrimitiveSerializer<HTTPValidat
       final value = serializedList[i + 1];
       switch (key) {
         case r'detail':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(ValidationError)]),
-          ) as BuiltList<ValidationError>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(ValidationError),
+                    ]),
+                  )
+                  as BuiltList<ValidationError>;
           result.detail.replace(valueDes);
           break;
         default:
@@ -107,4 +122,3 @@ class _$HTTPValidationErrorSerializer implements PrimitiveSerializer<HTTPValidat
     return result.build();
   }
 }
-

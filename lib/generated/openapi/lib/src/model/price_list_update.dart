@@ -13,11 +13,12 @@ part 'price_list_update.g.dart';
 /// PriceListUpdate
 ///
 /// Properties:
-/// * [name] 
-/// * [highProfitMargin] 
-/// * [lowProfitMargin] 
+/// * [name]
+/// * [highProfitMargin]
+/// * [lowProfitMargin]
 @BuiltValue()
-abstract class PriceListUpdate implements Built<PriceListUpdate, PriceListUpdateBuilder> {
+abstract class PriceListUpdate
+    implements Built<PriceListUpdate, PriceListUpdateBuilder> {
   @BuiltValueField(wireName: r'name')
   String? get name;
 
@@ -29,16 +30,19 @@ abstract class PriceListUpdate implements Built<PriceListUpdate, PriceListUpdate
 
   PriceListUpdate._();
 
-  factory PriceListUpdate([void updates(PriceListUpdateBuilder b)]) = _$PriceListUpdate;
+  factory PriceListUpdate([void updates(PriceListUpdateBuilder b)]) =
+      _$PriceListUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(PriceListUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<PriceListUpdate> get serializer => _$PriceListUpdateSerializer();
+  static Serializer<PriceListUpdate> get serializer =>
+      _$PriceListUpdateSerializer();
 }
 
-class _$PriceListUpdateSerializer implements PrimitiveSerializer<PriceListUpdate> {
+class _$PriceListUpdateSerializer
+    implements PrimitiveSerializer<PriceListUpdate> {
   @override
   final Iterable<Type> types = const [PriceListUpdate, _$PriceListUpdate];
 
@@ -79,7 +83,11 @@ class _$PriceListUpdateSerializer implements PrimitiveSerializer<PriceListUpdate
     PriceListUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -95,26 +103,32 @@ class _$PriceListUpdateSerializer implements PrimitiveSerializer<PriceListUpdate
       final value = serializedList[i + 1];
       switch (key) {
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'high_profit_margin':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(HighProfitMargin1),
-          ) as HighProfitMargin1?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(HighProfitMargin1),
+                  )
+                  as HighProfitMargin1?;
           if (valueDes == null) continue;
           result.highProfitMargin.replace(valueDes);
           break;
         case r'low_profit_margin':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(LowProfitMargin1),
-          ) as LowProfitMargin1?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(LowProfitMargin1),
+                  )
+                  as LowProfitMargin1?;
           if (valueDes == null) continue;
           result.lowProfitMargin.replace(valueDes);
           break;
@@ -146,4 +160,3 @@ class _$PriceListUpdateSerializer implements PrimitiveSerializer<PriceListUpdate
     return result.build();
   }
 }
-

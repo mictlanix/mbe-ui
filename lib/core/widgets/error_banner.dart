@@ -25,7 +25,10 @@ class ErrorBanner extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.error_outline, color: theme.colorScheme.onErrorContainer),
+            Icon(
+              Icons.error_outline,
+              color: theme.colorScheme.onErrorContainer,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -34,14 +37,19 @@ class ErrorBanner extends StatelessWidget {
                   for (final message in messages)
                     Text(
                       message,
-                      style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                      style: TextStyle(
+                        color: theme.colorScheme.onErrorContainer,
+                      ),
                     ),
                 ],
               ),
             ),
             if (onDismiss != null)
               IconButton(
-                icon: Icon(Icons.close, color: theme.colorScheme.onErrorContainer),
+                icon: Icon(
+                  Icons.close,
+                  color: theme.colorScheme.onErrorContainer,
+                ),
                 onPressed: onDismiss,
               ),
           ],
@@ -57,8 +65,12 @@ class ErrorBanner extends StatelessWidget {
       ValidationError() => const ['Please correct the highlighted fields.'],
       AuthError() => const ['Invalid username or password.'],
       NotFoundError() => const ['The requested item was not found.'],
-      ServerError() => const ['Something went wrong on the server. Please try again later.'],
-      NetworkError() => const ['Could not reach the server. Check your connection and try again.'],
+      ServerError() => const [
+        'Something went wrong on the server. Please try again later.',
+      ],
+      NetworkError() => const [
+        'Could not reach the server. Check your connection and try again.',
+      ],
     };
   }
 }

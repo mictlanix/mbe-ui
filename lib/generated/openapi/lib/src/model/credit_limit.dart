@@ -38,8 +38,7 @@ class _$CreditLimitSerializer implements PrimitiveSerializer<CreditLimit> {
     Serializers serializers,
     CreditLimit object, {
     FullType specifiedType = FullType.unspecified,
-  }) sync* {
-  }
+  }) sync* {}
 
   @override
   Object serialize(
@@ -48,7 +47,13 @@ class _$CreditLimitSerializer implements PrimitiveSerializer<CreditLimit> {
     FullType specifiedType = FullType.unspecified,
   }) {
     final anyOf = object.anyOf;
-    return serializers.serialize(anyOf, specifiedType: FullType(AnyOf, anyOf.valueTypes.map((type) => FullType(type)).toList()))!;
+    return serializers.serialize(
+      anyOf,
+      specifiedType: FullType(
+        AnyOf,
+        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+      ),
+    )!;
   }
 
   @override
@@ -59,10 +64,11 @@ class _$CreditLimitSerializer implements PrimitiveSerializer<CreditLimit> {
   }) {
     final result = CreditLimitBuilder();
     Object? anyOfDataSrc;
-    final targetType = const FullType(AnyOf, [FullType(num), FullType(String), ]);
+    final targetType = const FullType(AnyOf, [FullType(num), FullType(String)]);
     anyOfDataSrc = serialized;
-    result.anyOf = serializers.deserialize(anyOfDataSrc, specifiedType: targetType) as AnyOf;
+    result.anyOf =
+        serializers.deserialize(anyOfDataSrc, specifiedType: targetType)
+            as AnyOf;
     return result.build();
   }
 }
-

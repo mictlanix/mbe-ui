@@ -120,7 +120,8 @@ void main() {
     ).thenAnswer(
       (_) async => ProductListResult(items: products, total: products.length),
     );
-    final effectiveFacets = labelFacets ??
+    final effectiveFacets =
+        labelFacets ??
         labels
             .map((l) => ProductLabelFacet(labelId: l.labelId, count: 1))
             .toList();
@@ -224,8 +225,8 @@ void main() {
   /// (count)" suffix `LabelMultiPicker` appends when a facet count is known
   /// (spec 009) — exact-text finders would break once a count is shown.
   Finder chipFinder(String labelName) => find.byWidgetPredicate(
-        (w) => w is FilterChip && (w.label as Text).data!.startsWith(labelName),
-      );
+    (w) => w is FilterChip && (w.label as Text).data!.startsWith(labelName),
+  );
 
   testWidgets('shows products with their status (FR-001, FR-002)', (
     tester,
@@ -435,26 +436,23 @@ void main() {
     },
   );
 
-  testWidgets(
-    'the label filter is multi-select, not a single-choice dropdown '
-    '(FR-007)',
-    (tester) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _readOnlyUser,
-        labels: const [
-          LabelItem(labelId: 1, name: 'Clearance'),
-          LabelItem(labelId: 2, name: 'Seasonal'),
-        ],
-      );
-      await openFilterSheet(tester);
+  testWidgets('the label filter is multi-select, not a single-choice dropdown '
+      '(FR-007)', (tester) async {
+    await pumpScreen(
+      tester,
+      signedInAs: _readOnlyUser,
+      labels: const [
+        LabelItem(labelId: 1, name: 'Clearance'),
+        LabelItem(labelId: 2, name: 'Seasonal'),
+      ],
+    );
+    await openFilterSheet(tester);
 
-      expect(find.byType(DropdownButton<int?>), findsNothing);
-      expect(find.byKey(const Key('products_filter_label')), findsOneWidget);
-      expect(chipFinder('Clearance'), findsOneWidget);
-      expect(chipFinder('Seasonal'), findsOneWidget);
-    },
-  );
+    expect(find.byType(DropdownButton<int?>), findsNothing);
+    expect(find.byKey(const Key('products_filter_label')), findsOneWidget);
+    expect(chipFinder('Clearance'), findsOneWidget);
+    expect(chipFinder('Seasonal'), findsOneWidget);
+  });
 
   testWidgets(
     'selecting two labels sends both and narrows the list to products '
@@ -538,10 +536,7 @@ void main() {
           matching: find.byType(Badge),
         ),
       );
-      expect(
-        filterBadge.label,
-        isA<Text>().having((t) => t.data, 'data', '2'),
-      );
+      expect(filterBadge.label, isA<Text>().having((t) => t.data, 'data', '2'));
     },
   );
 
@@ -558,9 +553,7 @@ void main() {
       await tester.tap(chipFinder('Clearance'));
       await tester.pumpAndSettle();
       expect(
-        tester
-            .widget<FilterChip>(chipFinder('Clearance'))
-            .selected,
+        tester.widget<FilterChip>(chipFinder('Clearance')).selected,
         isTrue,
       );
 
@@ -568,9 +561,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        tester
-            .widget<FilterChip>(chipFinder('Clearance'))
-            .selected,
+        tester.widget<FilterChip>(chipFinder('Clearance')).selected,
         isFalse,
       );
     },
@@ -670,130 +661,123 @@ void main() {
       },
     );
 
-    testWidgets(
-      'while the facet lookup is loading or fails, every label stays '
-      'selectable — fail open (FR-010)',
-      (tester) async {
-        const trupper = LabelItem(labelId: 1, name: 'Trupper');
-        const makita = LabelItem(labelId: 2, name: 'Makita');
+    testWidgets('while the facet lookup is loading or fails, every label stays '
+        'selectable — fail open (FR-010)', (tester) async {
+      const trupper = LabelItem(labelId: 1, name: 'Trupper');
+      const makita = LabelItem(labelId: 2, name: 'Makita');
 
-        await pumpScreen(
-          tester,
-          signedInAs: _readOnlyUser,
-          labels: const [trupper, makita],
-        );
-        when(
-          () => productRepository.productLabelFacets(
-            search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
-            stockable: any(named: 'stockable'),
-            salable: any(named: 'salable'),
-            purchasable: any(named: 'purchasable'),
-            labels: any(named: 'labels'),
-          ),
-        ).thenThrow(const AppError.server());
-        await openFilterSheet(tester);
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        labels: const [trupper, makita],
+      );
+      when(
+        () => productRepository.productLabelFacets(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: any(named: 'labels'),
+        ),
+      ).thenThrow(const AppError.server());
+      await openFilterSheet(tester);
 
-        expect(chipInteractive(tester, 'Trupper'), isTrue);
-        expect(chipInteractive(tester, 'Makita'), isTrue);
-      },
-    );
+      expect(chipInteractive(tester, 'Trupper'), isTrue);
+      expect(chipInteractive(tester, 'Makita'), isTrue);
+    });
 
-    testWidgets(
-      'deselecting a label re-enables labels that co-occur with the '
-      'remaining selection (FR-007)',
-      (tester) async {
-        const trupper = LabelItem(labelId: 1, name: 'Trupper');
-        const dewalt = LabelItem(labelId: 2, name: 'DeWalt');
-        const makita = LabelItem(labelId: 3, name: 'Makita');
+    testWidgets('deselecting a label re-enables labels that co-occur with the '
+        'remaining selection (FR-007)', (tester) async {
+      const trupper = LabelItem(labelId: 1, name: 'Trupper');
+      const dewalt = LabelItem(labelId: 2, name: 'DeWalt');
+      const makita = LabelItem(labelId: 3, name: 'Makita');
 
-        await pumpScreen(
-          tester,
-          signedInAs: _readOnlyUser,
-          labels: const [trupper, dewalt, makita],
-        );
-        when(
-          () => productRepository.productLabelFacets(
-            search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
-            stockable: any(named: 'stockable'),
-            salable: any(named: 'salable'),
-            purchasable: any(named: 'purchasable'),
-            labels: [1, 2],
-          ),
-        ).thenAnswer(
-          (_) async => const [
-            ProductLabelFacet(labelId: 1, count: 1),
-            ProductLabelFacet(labelId: 2, count: 1),
-          ],
-        );
-        when(
-          () => productRepository.productLabelFacets(
-            search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
-            stockable: any(named: 'stockable'),
-            salable: any(named: 'salable'),
-            purchasable: any(named: 'purchasable'),
-            labels: [1],
-          ),
-        ).thenAnswer(
-          (_) async => const [
-            ProductLabelFacet(labelId: 1, count: 2),
-            ProductLabelFacet(labelId: 2, count: 1),
-            ProductLabelFacet(labelId: 3, count: 1),
-          ],
-        );
-        await openFilterSheet(tester);
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        labels: const [trupper, dewalt, makita],
+      );
+      when(
+        () => productRepository.productLabelFacets(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: [1, 2],
+        ),
+      ).thenAnswer(
+        (_) async => const [
+          ProductLabelFacet(labelId: 1, count: 1),
+          ProductLabelFacet(labelId: 2, count: 1),
+        ],
+      );
+      when(
+        () => productRepository.productLabelFacets(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: [1],
+        ),
+      ).thenAnswer(
+        (_) async => const [
+          ProductLabelFacet(labelId: 1, count: 2),
+          ProductLabelFacet(labelId: 2, count: 1),
+          ProductLabelFacet(labelId: 3, count: 1),
+        ],
+      );
+      await openFilterSheet(tester);
 
-        await tester.tap(chipFinder('Trupper'));
-        await tester.pumpAndSettle();
-        await tester.tap(chipFinder('DeWalt'));
-        await tester.pumpAndSettle();
-        expect(chipInteractive(tester, 'Makita'), isFalse);
+      await tester.tap(chipFinder('Trupper'));
+      await tester.pumpAndSettle();
+      await tester.tap(chipFinder('DeWalt'));
+      await tester.pumpAndSettle();
+      expect(chipInteractive(tester, 'Makita'), isFalse);
 
-        await tester.tap(chipFinder('DeWalt'));
-        await tester.pumpAndSettle();
+      await tester.tap(chipFinder('DeWalt'));
+      await tester.pumpAndSettle();
 
-        expect(chipInteractive(tester, 'Makita'), isTrue);
-      },
-    );
+      expect(chipInteractive(tester, 'Makita'), isTrue);
+    });
 
-    testWidgets(
-      'Clear all restores the all-enabled label drawer (FR-008)',
-      (tester) async {
-        const trupper = LabelItem(labelId: 1, name: 'Trupper');
-        const makita = LabelItem(labelId: 2, name: 'Makita');
+    testWidgets('Clear all restores the all-enabled label drawer (FR-008)', (
+      tester,
+    ) async {
+      const trupper = LabelItem(labelId: 1, name: 'Trupper');
+      const makita = LabelItem(labelId: 2, name: 'Makita');
 
-        await pumpScreen(
-          tester,
-          signedInAs: _readOnlyUser,
-          labels: const [trupper, makita],
-        );
-        when(
-          () => productRepository.productLabelFacets(
-            search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
-            stockable: any(named: 'stockable'),
-            salable: any(named: 'salable'),
-            purchasable: any(named: 'purchasable'),
-            labels: [1],
-          ),
-        ).thenAnswer(
-          (_) async => const [ProductLabelFacet(labelId: 1, count: 1)],
-        );
-        await openFilterSheet(tester);
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        labels: const [trupper, makita],
+      );
+      when(
+        () => productRepository.productLabelFacets(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: [1],
+        ),
+      ).thenAnswer(
+        (_) async => const [ProductLabelFacet(labelId: 1, count: 1)],
+      );
+      await openFilterSheet(tester);
 
-        await tester.tap(chipFinder('Trupper'));
-        await tester.pumpAndSettle();
-        expect(chipInteractive(tester, 'Makita'), isFalse);
+      await tester.tap(chipFinder('Trupper'));
+      await tester.pumpAndSettle();
+      expect(chipInteractive(tester, 'Makita'), isFalse);
 
-        await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+      await tester.pumpAndSettle();
 
-        expect(chipInteractive(tester, 'Trupper'), isTrue);
-        expect(chipInteractive(tester, 'Makita'), isTrue);
-      },
-    );
+      expect(chipInteractive(tester, 'Trupper'), isTrue);
+      expect(chipInteractive(tester, 'Makita'), isTrue);
+    });
   });
 
   testWidgets('shows an empty state when there are no matches', (tester) async {
@@ -860,49 +844,45 @@ void main() {
     },
   );
 
-  testWidgets(
-    'shows only the Edit row action for a user with update rights '
-    '(FR-001, FR-002)',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser);
+  testWidgets('shows only the Edit row action for a user with update rights '
+      '(FR-001, FR-002)', (tester) async {
+    await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
-      final icons = tester
-          .widgetList<IconButton>(
-            find.descendant(
-              of: find.byKey(const Key('products_table')),
-              matching: find.byType(IconButton),
-            ),
-          )
-          .map((b) => (b.icon as Icon).icon)
-          .where(rowActionIcons.contains)
-          .toList();
+    final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
+    final icons = tester
+        .widgetList<IconButton>(
+          find.descendant(
+            of: find.byKey(const Key('products_table')),
+            matching: find.byType(IconButton),
+          ),
+        )
+        .map((b) => (b.icon as Icon).icon)
+        .where(rowActionIcons.contains)
+        .toList();
 
-      // One Edit icon per row (both rows), never a Delete icon.
-      expect(icons, [Icons.edit_outlined, Icons.edit_outlined]);
-    },
-  );
+    // One Edit icon per row (both rows), never a Delete icon.
+    expect(icons, [Icons.edit_outlined, Icons.edit_outlined]);
+  });
 
-  testWidgets(
-    'omits the Edit row action for a read-only user (FR-004)',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _readOnlyUser);
+  testWidgets('omits the Edit row action for a read-only user (FR-004)', (
+    tester,
+  ) async {
+    await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
-      final icons = tester
-          .widgetList<IconButton>(
-            find.descendant(
-              of: find.byKey(const Key('products_table')),
-              matching: find.byType(IconButton),
-            ),
-          )
-          .map((b) => (b.icon as Icon).icon)
-          .where(rowActionIcons.contains)
-          .toList();
+    final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
+    final icons = tester
+        .widgetList<IconButton>(
+          find.descendant(
+            of: find.byKey(const Key('products_table')),
+            matching: find.byType(IconButton),
+          ),
+        )
+        .map((b) => (b.icon as Icon).icon)
+        .where(rowActionIcons.contains)
+        .toList();
 
-      expect(icons, isEmpty);
-    },
-  );
+    expect(icons, isEmpty);
+  });
 
   testWidgets(
     'shows a "view pricing" row action beside Edit for a user with pricing '
@@ -942,24 +922,21 @@ void main() {
     },
   );
 
-  testWidgets(
-    'no column is frozen/pinned (FR-001)',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _readOnlyUser);
+  testWidgets('no column is frozen/pinned (FR-001)', (tester) async {
+    await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-      expect(
-        tester
-            .widget<DataTable2>(
-              find.descendant(
-                of: find.byKey(const Key('products_table')),
-                matching: find.byType(DataTable2),
-              ),
-            )
-            .fixedLeftColumns,
-        0,
-      );
-    },
-  );
+    expect(
+      tester
+          .widget<DataTable2>(
+            find.descendant(
+              of: find.byKey(const Key('products_table')),
+              matching: find.byType(DataTable2),
+            ),
+          )
+          .fixedLeftColumns,
+      0,
+    );
+  });
 
   testWidgets(
     'shows the photo as the first column with a blank header (FR-019)',
@@ -1056,17 +1033,16 @@ void main() {
     },
   );
 
-  testWidgets(
-    'the Edit row action opens the product editable form (FR-004)',
-    (tester) async {
-      await pumpScreenWithRouter(tester, signedInAs: _fullAccessUser);
+  testWidgets('the Edit row action opens the product editable form (FR-004)', (
+    tester,
+  ) async {
+    await pumpScreenWithRouter(tester, signedInAs: _fullAccessUser);
 
-      await tester.tap(find.byIcon(Icons.edit_outlined).first);
-      await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.edit_outlined).first);
+    await tester.pumpAndSettle();
 
-      expect(find.text('/products/1'), findsOneWidget);
-    },
-  );
+    expect(find.text('/products/1'), findsOneWidget);
+  });
 
   testWidgets(
     'the "view pricing" row action pushes /products/:productId/pricing with '
@@ -1082,9 +1058,9 @@ void main() {
 
       final matches = tester.widgetList<Text>(find.byType(Text));
       expect(
-        matches.map((t) => t.data).where(
-              (d) => d != null && d.startsWith('/products/1/pricing?'),
-            ),
+        matches
+            .map((t) => t.data)
+            .where((d) => d != null && d.startsWith('/products/1/pricing?')),
         hasLength(1),
       );
       final destination = matches

@@ -11,10 +11,15 @@ part 'recover_password_admin_response.g.dart';
 /// Returned to admin after triggering a password recovery for a user.
 ///
 /// Properties:
-/// * [recoveryToken] 
-/// * [expiresAt] 
+/// * [recoveryToken]
+/// * [expiresAt]
 @BuiltValue()
-abstract class RecoverPasswordAdminResponse implements Built<RecoverPasswordAdminResponse, RecoverPasswordAdminResponseBuilder> {
+abstract class RecoverPasswordAdminResponse
+    implements
+        Built<
+          RecoverPasswordAdminResponse,
+          RecoverPasswordAdminResponseBuilder
+        > {
   @BuiltValueField(wireName: r'recovery_token')
   String get recoveryToken;
 
@@ -23,18 +28,25 @@ abstract class RecoverPasswordAdminResponse implements Built<RecoverPasswordAdmi
 
   RecoverPasswordAdminResponse._();
 
-  factory RecoverPasswordAdminResponse([void updates(RecoverPasswordAdminResponseBuilder b)]) = _$RecoverPasswordAdminResponse;
+  factory RecoverPasswordAdminResponse([
+    void updates(RecoverPasswordAdminResponseBuilder b),
+  ]) = _$RecoverPasswordAdminResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(RecoverPasswordAdminResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<RecoverPasswordAdminResponse> get serializer => _$RecoverPasswordAdminResponseSerializer();
+  static Serializer<RecoverPasswordAdminResponse> get serializer =>
+      _$RecoverPasswordAdminResponseSerializer();
 }
 
-class _$RecoverPasswordAdminResponseSerializer implements PrimitiveSerializer<RecoverPasswordAdminResponse> {
+class _$RecoverPasswordAdminResponseSerializer
+    implements PrimitiveSerializer<RecoverPasswordAdminResponse> {
   @override
-  final Iterable<Type> types = const [RecoverPasswordAdminResponse, _$RecoverPasswordAdminResponse];
+  final Iterable<Type> types = const [
+    RecoverPasswordAdminResponse,
+    _$RecoverPasswordAdminResponse,
+  ];
 
   @override
   final String wireName = r'RecoverPasswordAdminResponse';
@@ -62,7 +74,11 @@ class _$RecoverPasswordAdminResponseSerializer implements PrimitiveSerializer<Re
     RecoverPasswordAdminResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -78,17 +94,21 @@ class _$RecoverPasswordAdminResponseSerializer implements PrimitiveSerializer<Re
       final value = serializedList[i + 1];
       switch (key) {
         case r'recovery_token':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.recoveryToken = valueDes;
           break;
         case r'expires_at':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.expiresAt = valueDes;
           break;
         default:
@@ -119,4 +139,3 @@ class _$RecoverPasswordAdminResponseSerializer implements PrimitiveSerializer<Re
     return result.build();
   }
 }
-

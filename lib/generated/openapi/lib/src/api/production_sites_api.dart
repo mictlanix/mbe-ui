@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/production_site_response.dart';
 import 'package:mbe_api_client/src/model/production_site_update.dart';
 
 class ProductionSitesApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class ProductionSitesApi {
   const ProductionSitesApi(this._dio, this._serializers);
 
   /// Create Production Site
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productionSiteCreate] 
+  /// * [productionSiteCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,8 @@ class ProductionSitesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ProductionSiteResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ProductionSiteResponse>> createProductionSiteApiV1ProductionSitesPost({ 
+  Future<Response<ProductionSiteResponse>>
+  createProductionSiteApiV1ProductionSitesPost({
     required ProductionSiteCreate productionSiteCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +49,10 @@ class ProductionSitesApi {
     final _path = r'/api/v1/production-sites';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -69,14 +64,13 @@ class ProductionSitesApi {
 
     try {
       const _type = FullType(ProductionSiteCreate);
-      _bodyData = _serializers.serialize(productionSiteCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        productionSiteCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +90,13 @@ class ProductionSitesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ProductionSiteResponse),
-      ) as ProductionSiteResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ProductionSiteResponse),
+                )
+                as ProductionSiteResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +120,10 @@ class ProductionSitesApi {
   }
 
   /// Delete Production Site
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productionSiteId] 
+  /// * [productionSiteId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +133,8 @@ class ProductionSitesApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteProductionSiteApiV1ProductionSitesProductionSiteIdDelete({ 
+  Future<Response<void>>
+  deleteProductionSiteApiV1ProductionSitesProductionSiteIdDelete({
     required int productionSiteId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +143,22 @@ class ProductionSitesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/production-sites/{production_site_id}'.replaceAll('{' r'production_site_id' '}', encodeQueryParameter(_serializers, productionSiteId, const FullType(int)).toString());
+    final _path = r'/api/v1/production-sites/{production_site_id}'.replaceAll(
+      '{'
+      r'production_site_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        productionSiteId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +177,10 @@ class ProductionSitesApi {
   }
 
   /// Get Production Site
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productionSiteId] 
+  /// * [productionSiteId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +190,8 @@ class ProductionSitesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ProductionSiteResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ProductionSiteResponse>> getProductionSiteApiV1ProductionSitesProductionSiteIdGet({ 
+  Future<Response<ProductionSiteResponse>>
+  getProductionSiteApiV1ProductionSitesProductionSiteIdGet({
     required int productionSiteId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +200,22 @@ class ProductionSitesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/production-sites/{production_site_id}'.replaceAll('{' r'production_site_id' '}', encodeQueryParameter(_serializers, productionSiteId, const FullType(int)).toString());
+    final _path = r'/api/v1/production-sites/{production_site_id}'.replaceAll(
+      '{'
+      r'production_site_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        productionSiteId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +234,13 @@ class ProductionSitesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ProductionSiteResponse),
-      ) as ProductionSiteResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ProductionSiteResponse),
+                )
+                as ProductionSiteResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,12 +264,12 @@ class ProductionSitesApi {
   }
 
   /// List Production Sites
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [store] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [store]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -271,7 +279,8 @@ class ProductionSitesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseProductionSiteResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseProductionSiteResponse>> listProductionSitesApiV1ProductionSitesGet({ 
+  Future<Response<ListResponseProductionSiteResponse>>
+  listProductionSitesApiV1ProductionSitesGet({
     int? store,
     int? skip = 0,
     int? limit = 20,
@@ -285,15 +294,10 @@ class ProductionSitesApi {
     final _path = r'/api/v1/production-sites';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -301,9 +305,20 @@ class ProductionSitesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (store != null) r'store': encodeQueryParameter(_serializers, store, const FullType(int)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (store != null)
+        r'store': encodeQueryParameter(
+          _serializers,
+          store,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -319,11 +334,15 @@ class ProductionSitesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseProductionSiteResponse),
-      ) as ListResponseProductionSiteResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponseProductionSiteResponse,
+                  ),
+                )
+                as ListResponseProductionSiteResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -347,11 +366,11 @@ class ProductionSitesApi {
   }
 
   /// Update Production Site
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productionSiteId] 
-  /// * [productionSiteUpdate] 
+  /// * [productionSiteId]
+  /// * [productionSiteUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -361,7 +380,8 @@ class ProductionSitesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ProductionSiteResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ProductionSiteResponse>> updateProductionSiteApiV1ProductionSitesProductionSiteIdPut({ 
+  Future<Response<ProductionSiteResponse>>
+  updateProductionSiteApiV1ProductionSitesProductionSiteIdPut({
     required int productionSiteId,
     required ProductionSiteUpdate productionSiteUpdate,
     CancelToken? cancelToken,
@@ -371,18 +391,22 @@ class ProductionSitesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/production-sites/{production_site_id}'.replaceAll('{' r'production_site_id' '}', encodeQueryParameter(_serializers, productionSiteId, const FullType(int)).toString());
+    final _path = r'/api/v1/production-sites/{production_site_id}'.replaceAll(
+      '{'
+      r'production_site_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        productionSiteId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -394,14 +418,13 @@ class ProductionSitesApi {
 
     try {
       const _type = FullType(ProductionSiteUpdate);
-      _bodyData = _serializers.serialize(productionSiteUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        productionSiteUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -421,11 +444,13 @@ class ProductionSitesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ProductionSiteResponse),
-      ) as ProductionSiteResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ProductionSiteResponse),
+                )
+                as ProductionSiteResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -447,5 +472,4 @@ class ProductionSitesApi {
       extra: _response.extra,
     );
   }
-
 }

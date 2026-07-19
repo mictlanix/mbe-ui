@@ -969,9 +969,9 @@ void main() {
           when(
             () => productRepository.get(productId: 1),
           ).thenAnswer((_) async => _product());
-          when(() => authRepository.me()).thenAnswer(
-            (_) async => _editUserWithPricing,
-          );
+          when(
+            () => authRepository.me(),
+          ).thenAnswer((_) async => _editUserWithPricing);
 
           final router = GoRouter(
             initialLocation: '/products/1',
@@ -998,9 +998,7 @@ void main() {
               overrides: [
                 authRepositoryProvider.overrideWithValue(authRepository),
                 tokenStorageProvider.overrideWithValue(tokenStorage),
-                productRepositoryProvider.overrideWithValue(
-                  productRepository,
-                ),
+                productRepositoryProvider.overrideWithValue(productRepository),
                 satCatalogRepositoryProvider.overrideWithValue(
                   satCatalogRepository,
                 ),

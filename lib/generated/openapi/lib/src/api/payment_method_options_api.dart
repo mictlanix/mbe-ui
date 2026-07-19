@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_update.dart';
 
 class PaymentMethodOptionsApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class PaymentMethodOptionsApi {
   const PaymentMethodOptionsApi(this._dio, this._serializers);
 
   /// Create Payment Method Option
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [paymentMethodOptionCreate] 
+  /// * [paymentMethodOptionCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,8 @@ class PaymentMethodOptionsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentMethodOptionResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentMethodOptionResponse>> createPaymentMethodOptionApiV1PaymentMethodOptionsPost({ 
+  Future<Response<PaymentMethodOptionResponse>>
+  createPaymentMethodOptionApiV1PaymentMethodOptionsPost({
     required PaymentMethodOptionCreate paymentMethodOptionCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +49,10 @@ class PaymentMethodOptionsApi {
     final _path = r'/api/v1/payment-method-options';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -69,14 +64,13 @@ class PaymentMethodOptionsApi {
 
     try {
       const _type = FullType(PaymentMethodOptionCreate);
-      _bodyData = _serializers.serialize(paymentMethodOptionCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        paymentMethodOptionCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +90,13 @@ class PaymentMethodOptionsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(PaymentMethodOptionResponse),
-      ) as PaymentMethodOptionResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(PaymentMethodOptionResponse),
+                )
+                as PaymentMethodOptionResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +120,10 @@ class PaymentMethodOptionsApi {
   }
 
   /// Delete Payment Method Option
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [paymentMethodOptionId] 
+  /// * [paymentMethodOptionId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +133,8 @@ class PaymentMethodOptionsApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deletePaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdDelete({ 
+  Future<Response<void>>
+  deletePaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdDelete({
     required int paymentMethodOptionId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +143,23 @@ class PaymentMethodOptionsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/payment-method-options/{payment_method_option_id}'.replaceAll('{' r'payment_method_option_id' '}', encodeQueryParameter(_serializers, paymentMethodOptionId, const FullType(int)).toString());
+    final _path = r'/api/v1/payment-method-options/{payment_method_option_id}'
+        .replaceAll(
+          '{'
+          r'payment_method_option_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            paymentMethodOptionId,
+            const FullType(int),
+          ).toString(),
+        );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +178,10 @@ class PaymentMethodOptionsApi {
   }
 
   /// Get Payment Method Option
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [paymentMethodOptionId] 
+  /// * [paymentMethodOptionId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +191,8 @@ class PaymentMethodOptionsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentMethodOptionResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentMethodOptionResponse>> getPaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdGet({ 
+  Future<Response<PaymentMethodOptionResponse>>
+  getPaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdGet({
     required int paymentMethodOptionId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +201,23 @@ class PaymentMethodOptionsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/payment-method-options/{payment_method_option_id}'.replaceAll('{' r'payment_method_option_id' '}', encodeQueryParameter(_serializers, paymentMethodOptionId, const FullType(int)).toString());
+    final _path = r'/api/v1/payment-method-options/{payment_method_option_id}'
+        .replaceAll(
+          '{'
+          r'payment_method_option_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            paymentMethodOptionId,
+            const FullType(int),
+          ).toString(),
+        );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +236,13 @@ class PaymentMethodOptionsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(PaymentMethodOptionResponse),
-      ) as PaymentMethodOptionResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(PaymentMethodOptionResponse),
+                )
+                as PaymentMethodOptionResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,12 +266,12 @@ class PaymentMethodOptionsApi {
   }
 
   /// List Payment Method Options
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [store] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [store]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -271,7 +281,8 @@ class PaymentMethodOptionsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponsePaymentMethodOptionResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponsePaymentMethodOptionResponse>> listPaymentMethodOptionsApiV1PaymentMethodOptionsGet({ 
+  Future<Response<ListResponsePaymentMethodOptionResponse>>
+  listPaymentMethodOptionsApiV1PaymentMethodOptionsGet({
     int? store,
     int? skip = 0,
     int? limit = 20,
@@ -285,15 +296,10 @@ class PaymentMethodOptionsApi {
     final _path = r'/api/v1/payment-method-options';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -301,9 +307,20 @@ class PaymentMethodOptionsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (store != null) r'store': encodeQueryParameter(_serializers, store, const FullType(int)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (store != null)
+        r'store': encodeQueryParameter(
+          _serializers,
+          store,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -319,11 +336,15 @@ class PaymentMethodOptionsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponsePaymentMethodOptionResponse),
-      ) as ListResponsePaymentMethodOptionResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponsePaymentMethodOptionResponse,
+                  ),
+                )
+                as ListResponsePaymentMethodOptionResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -347,11 +368,11 @@ class PaymentMethodOptionsApi {
   }
 
   /// Update Payment Method Option
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [paymentMethodOptionId] 
-  /// * [paymentMethodOptionUpdate] 
+  /// * [paymentMethodOptionId]
+  /// * [paymentMethodOptionUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -361,7 +382,8 @@ class PaymentMethodOptionsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [PaymentMethodOptionResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PaymentMethodOptionResponse>> updatePaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdPut({ 
+  Future<Response<PaymentMethodOptionResponse>>
+  updatePaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdPut({
     required int paymentMethodOptionId,
     required PaymentMethodOptionUpdate paymentMethodOptionUpdate,
     CancelToken? cancelToken,
@@ -371,18 +393,23 @@ class PaymentMethodOptionsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/payment-method-options/{payment_method_option_id}'.replaceAll('{' r'payment_method_option_id' '}', encodeQueryParameter(_serializers, paymentMethodOptionId, const FullType(int)).toString());
+    final _path = r'/api/v1/payment-method-options/{payment_method_option_id}'
+        .replaceAll(
+          '{'
+          r'payment_method_option_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            paymentMethodOptionId,
+            const FullType(int),
+          ).toString(),
+        );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -394,14 +421,13 @@ class PaymentMethodOptionsApi {
 
     try {
       const _type = FullType(PaymentMethodOptionUpdate);
-      _bodyData = _serializers.serialize(paymentMethodOptionUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        paymentMethodOptionUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -421,11 +447,13 @@ class PaymentMethodOptionsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(PaymentMethodOptionResponse),
-      ) as PaymentMethodOptionResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(PaymentMethodOptionResponse),
+                )
+                as PaymentMethodOptionResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -447,5 +475,4 @@ class PaymentMethodOptionsApi {
       extra: _response.extra,
     );
   }
-
 }

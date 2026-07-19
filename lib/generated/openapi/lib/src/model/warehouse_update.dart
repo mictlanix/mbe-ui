@@ -11,13 +11,14 @@ part 'warehouse_update.g.dart';
 /// WarehouseUpdate
 ///
 /// Properties:
-/// * [store] 
-/// * [code] 
-/// * [name] 
-/// * [comment] 
-/// * [disabled] 
+/// * [store]
+/// * [code]
+/// * [name]
+/// * [comment]
+/// * [disabled]
 @BuiltValue()
-abstract class WarehouseUpdate implements Built<WarehouseUpdate, WarehouseUpdateBuilder> {
+abstract class WarehouseUpdate
+    implements Built<WarehouseUpdate, WarehouseUpdateBuilder> {
   @BuiltValueField(wireName: r'store')
   int? get store;
 
@@ -35,16 +36,19 @@ abstract class WarehouseUpdate implements Built<WarehouseUpdate, WarehouseUpdate
 
   WarehouseUpdate._();
 
-  factory WarehouseUpdate([void updates(WarehouseUpdateBuilder b)]) = _$WarehouseUpdate;
+  factory WarehouseUpdate([void updates(WarehouseUpdateBuilder b)]) =
+      _$WarehouseUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(WarehouseUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<WarehouseUpdate> get serializer => _$WarehouseUpdateSerializer();
+  static Serializer<WarehouseUpdate> get serializer =>
+      _$WarehouseUpdateSerializer();
 }
 
-class _$WarehouseUpdateSerializer implements PrimitiveSerializer<WarehouseUpdate> {
+class _$WarehouseUpdateSerializer
+    implements PrimitiveSerializer<WarehouseUpdate> {
   @override
   final Iterable<Type> types = const [WarehouseUpdate, _$WarehouseUpdate];
 
@@ -99,7 +103,11 @@ class _$WarehouseUpdateSerializer implements PrimitiveSerializer<WarehouseUpdate
     WarehouseUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -115,42 +123,52 @@ class _$WarehouseUpdateSerializer implements PrimitiveSerializer<WarehouseUpdate
       final value = serializedList[i + 1];
       switch (key) {
         case r'store':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.store = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -182,4 +200,3 @@ class _$WarehouseUpdateSerializer implements PrimitiveSerializer<WarehouseUpdate
     return result.build();
   }
 }
-

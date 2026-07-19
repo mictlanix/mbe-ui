@@ -13,10 +13,15 @@ part 'list_response_employee_response.g.dart';
 /// ListResponseEmployeeResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponseEmployeeResponse implements Built<ListResponseEmployeeResponse, ListResponseEmployeeResponseBuilder> {
+abstract class ListResponseEmployeeResponse
+    implements
+        Built<
+          ListResponseEmployeeResponse,
+          ListResponseEmployeeResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<EmployeeResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponseEmployeeResponse implements Built<ListResponseEmploye
 
   ListResponseEmployeeResponse._();
 
-  factory ListResponseEmployeeResponse([void updates(ListResponseEmployeeResponseBuilder b)]) = _$ListResponseEmployeeResponse;
+  factory ListResponseEmployeeResponse([
+    void updates(ListResponseEmployeeResponseBuilder b),
+  ]) = _$ListResponseEmployeeResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponseEmployeeResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseEmployeeResponse> get serializer => _$ListResponseEmployeeResponseSerializer();
+  static Serializer<ListResponseEmployeeResponse> get serializer =>
+      _$ListResponseEmployeeResponseSerializer();
 }
 
-class _$ListResponseEmployeeResponseSerializer implements PrimitiveSerializer<ListResponseEmployeeResponse> {
+class _$ListResponseEmployeeResponseSerializer
+    implements PrimitiveSerializer<ListResponseEmployeeResponse> {
   @override
-  final Iterable<Type> types = const [ListResponseEmployeeResponse, _$ListResponseEmployeeResponse];
+  final Iterable<Type> types = const [
+    ListResponseEmployeeResponse,
+    _$ListResponseEmployeeResponse,
+  ];
 
   @override
   final String wireName = r'ListResponseEmployeeResponse';
@@ -64,7 +76,11 @@ class _$ListResponseEmployeeResponseSerializer implements PrimitiveSerializer<Li
     ListResponseEmployeeResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +96,20 @@ class _$ListResponseEmployeeResponseSerializer implements PrimitiveSerializer<Li
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(EmployeeResponse)]),
-          ) as BuiltList<EmployeeResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(EmployeeResponse),
+                    ]),
+                  )
+                  as BuiltList<EmployeeResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +140,3 @@ class _$ListResponseEmployeeResponseSerializer implements PrimitiveSerializer<Li
     return result.build();
   }
 }
-

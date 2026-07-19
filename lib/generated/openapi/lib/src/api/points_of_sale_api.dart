@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/point_sale_response.dart';
 import 'package:mbe_api_client/src/model/point_sale_update.dart';
 
 class PointsOfSaleApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class PointsOfSaleApi {
   const PointsOfSaleApi(this._dio, this._serializers);
 
   /// Create Point Of Sale
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [pointSaleCreate] 
+  /// * [pointSaleCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,7 @@ class PointsOfSaleApi {
   ///
   /// Returns a [Future] containing a [Response] with a [PointSaleResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PointSaleResponse>> createPointOfSaleApiV1PointsOfSalePost({ 
+  Future<Response<PointSaleResponse>> createPointOfSaleApiV1PointsOfSalePost({
     required PointSaleCreate pointSaleCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +48,10 @@ class PointsOfSaleApi {
     final _path = r'/api/v1/points-of-sale';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -70,13 +64,9 @@ class PointsOfSaleApi {
     try {
       const _type = FullType(PointSaleCreate);
       _bodyData = _serializers.serialize(pointSaleCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +86,13 @@ class PointsOfSaleApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(PointSaleResponse),
-      ) as PointSaleResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(PointSaleResponse),
+                )
+                as PointSaleResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +116,10 @@ class PointsOfSaleApi {
   }
 
   /// Delete Point Of Sale
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [pointSaleId] 
+  /// * [pointSaleId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +129,7 @@ class PointsOfSaleApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deletePointOfSaleApiV1PointsOfSalePointSaleIdDelete({ 
+  Future<Response<void>> deletePointOfSaleApiV1PointsOfSalePointSaleIdDelete({
     required int pointSaleId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +138,22 @@ class PointsOfSaleApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/points-of-sale/{point_sale_id}'.replaceAll('{' r'point_sale_id' '}', encodeQueryParameter(_serializers, pointSaleId, const FullType(int)).toString());
+    final _path = r'/api/v1/points-of-sale/{point_sale_id}'.replaceAll(
+      '{'
+      r'point_sale_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        pointSaleId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +172,10 @@ class PointsOfSaleApi {
   }
 
   /// Get Point Of Sale
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [pointSaleId] 
+  /// * [pointSaleId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +185,8 @@ class PointsOfSaleApi {
   ///
   /// Returns a [Future] containing a [Response] with a [PointSaleResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PointSaleResponse>> getPointOfSaleApiV1PointsOfSalePointSaleIdGet({ 
+  Future<Response<PointSaleResponse>>
+  getPointOfSaleApiV1PointsOfSalePointSaleIdGet({
     required int pointSaleId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +195,22 @@ class PointsOfSaleApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/points-of-sale/{point_sale_id}'.replaceAll('{' r'point_sale_id' '}', encodeQueryParameter(_serializers, pointSaleId, const FullType(int)).toString());
+    final _path = r'/api/v1/points-of-sale/{point_sale_id}'.replaceAll(
+      '{'
+      r'point_sale_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        pointSaleId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +229,13 @@ class PointsOfSaleApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(PointSaleResponse),
-      ) as PointSaleResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(PointSaleResponse),
+                )
+                as PointSaleResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,13 +259,13 @@ class PointsOfSaleApi {
   }
 
   /// List Points Of Sale
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [store] 
-  /// * [warehouse] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [store]
+  /// * [warehouse]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -272,7 +275,8 @@ class PointsOfSaleApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponsePointSaleResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponsePointSaleResponse>> listPointsOfSaleApiV1PointsOfSaleGet({ 
+  Future<Response<ListResponsePointSaleResponse>>
+  listPointsOfSaleApiV1PointsOfSaleGet({
     int? store,
     int? warehouse,
     int? skip = 0,
@@ -287,15 +291,10 @@ class PointsOfSaleApi {
     final _path = r'/api/v1/points-of-sale';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -303,10 +302,26 @@ class PointsOfSaleApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (store != null) r'store': encodeQueryParameter(_serializers, store, const FullType(int)),
-      if (warehouse != null) r'warehouse': encodeQueryParameter(_serializers, warehouse, const FullType(int)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (store != null)
+        r'store': encodeQueryParameter(
+          _serializers,
+          store,
+          const FullType(int),
+        ),
+      if (warehouse != null)
+        r'warehouse': encodeQueryParameter(
+          _serializers,
+          warehouse,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -322,11 +337,13 @@ class PointsOfSaleApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponsePointSaleResponse),
-      ) as ListResponsePointSaleResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponsePointSaleResponse),
+                )
+                as ListResponsePointSaleResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -350,11 +367,11 @@ class PointsOfSaleApi {
   }
 
   /// Update Point Of Sale
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [pointSaleId] 
-  /// * [pointSaleUpdate] 
+  /// * [pointSaleId]
+  /// * [pointSaleUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -364,7 +381,8 @@ class PointsOfSaleApi {
   ///
   /// Returns a [Future] containing a [Response] with a [PointSaleResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<PointSaleResponse>> updatePointOfSaleApiV1PointsOfSalePointSaleIdPut({ 
+  Future<Response<PointSaleResponse>>
+  updatePointOfSaleApiV1PointsOfSalePointSaleIdPut({
     required int pointSaleId,
     required PointSaleUpdate pointSaleUpdate,
     CancelToken? cancelToken,
@@ -374,18 +392,22 @@ class PointsOfSaleApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/points-of-sale/{point_sale_id}'.replaceAll('{' r'point_sale_id' '}', encodeQueryParameter(_serializers, pointSaleId, const FullType(int)).toString());
+    final _path = r'/api/v1/points-of-sale/{point_sale_id}'.replaceAll(
+      '{'
+      r'point_sale_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        pointSaleId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -398,13 +420,9 @@ class PointsOfSaleApi {
     try {
       const _type = FullType(PointSaleUpdate);
       _bodyData = _serializers.serialize(pointSaleUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -424,11 +442,13 @@ class PointsOfSaleApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(PointSaleResponse),
-      ) as PointSaleResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(PointSaleResponse),
+                )
+                as PointSaleResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -450,5 +470,4 @@ class PointsOfSaleApi {
       extra: _response.extra,
     );
   }
-
 }

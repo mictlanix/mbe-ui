@@ -12,7 +12,8 @@ part 'credit_limit1.g.dart';
 
 /// CreditLimit1
 @BuiltValue()
-abstract class CreditLimit1 implements Built<CreditLimit1, CreditLimit1Builder> {
+abstract class CreditLimit1
+    implements Built<CreditLimit1, CreditLimit1Builder> {
   /// Any Of [String], [num]
   AnyOf get anyOf;
 
@@ -38,8 +39,7 @@ class _$CreditLimit1Serializer implements PrimitiveSerializer<CreditLimit1> {
     Serializers serializers,
     CreditLimit1 object, {
     FullType specifiedType = FullType.unspecified,
-  }) sync* {
-  }
+  }) sync* {}
 
   @override
   Object serialize(
@@ -48,7 +48,13 @@ class _$CreditLimit1Serializer implements PrimitiveSerializer<CreditLimit1> {
     FullType specifiedType = FullType.unspecified,
   }) {
     final anyOf = object.anyOf;
-    return serializers.serialize(anyOf, specifiedType: FullType(AnyOf, anyOf.valueTypes.map((type) => FullType(type)).toList()))!;
+    return serializers.serialize(
+      anyOf,
+      specifiedType: FullType(
+        AnyOf,
+        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+      ),
+    )!;
   }
 
   @override
@@ -59,10 +65,11 @@ class _$CreditLimit1Serializer implements PrimitiveSerializer<CreditLimit1> {
   }) {
     final result = CreditLimit1Builder();
     Object? anyOfDataSrc;
-    final targetType = const FullType(AnyOf, [FullType(num), FullType(String), ]);
+    final targetType = const FullType(AnyOf, [FullType(num), FullType(String)]);
     anyOfDataSrc = serialized;
-    result.anyOf = serializers.deserialize(anyOfDataSrc, specifiedType: targetType) as AnyOf;
+    result.anyOf =
+        serializers.deserialize(anyOfDataSrc, specifiedType: targetType)
+            as AnyOf;
     return result.build();
   }
 }
-

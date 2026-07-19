@@ -12,14 +12,15 @@ part 'product_price_response.g.dart';
 /// ProductPriceResponse
 ///
 /// Properties:
-/// * [productPriceId] 
-/// * [product] 
-/// * [priceList] 
-/// * [price] 
-/// * [lowProfit] 
-/// * [highProfit] 
+/// * [productPriceId]
+/// * [product]
+/// * [priceList]
+/// * [price]
+/// * [lowProfit]
+/// * [highProfit]
 @BuiltValue()
-abstract class ProductPriceResponse implements Built<ProductPriceResponse, ProductPriceResponseBuilder> {
+abstract class ProductPriceResponse
+    implements Built<ProductPriceResponse, ProductPriceResponseBuilder> {
   @BuiltValueField(wireName: r'product_price_id')
   int get productPriceId;
 
@@ -40,18 +41,24 @@ abstract class ProductPriceResponse implements Built<ProductPriceResponse, Produ
 
   ProductPriceResponse._();
 
-  factory ProductPriceResponse([void updates(ProductPriceResponseBuilder b)]) = _$ProductPriceResponse;
+  factory ProductPriceResponse([void updates(ProductPriceResponseBuilder b)]) =
+      _$ProductPriceResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ProductPriceResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ProductPriceResponse> get serializer => _$ProductPriceResponseSerializer();
+  static Serializer<ProductPriceResponse> get serializer =>
+      _$ProductPriceResponseSerializer();
 }
 
-class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPriceResponse> {
+class _$ProductPriceResponseSerializer
+    implements PrimitiveSerializer<ProductPriceResponse> {
   @override
-  final Iterable<Type> types = const [ProductPriceResponse, _$ProductPriceResponse];
+  final Iterable<Type> types = const [
+    ProductPriceResponse,
+    _$ProductPriceResponse,
+  ];
 
   @override
   final String wireName = r'ProductPriceResponse';
@@ -99,7 +106,11 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
     ProductPriceResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -115,45 +126,51 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
       final value = serializedList[i + 1];
       switch (key) {
         case r'product_price_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.productPriceId = valueDes;
           break;
         case r'product':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.product = valueDes;
           break;
         case r'price_list':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(PriceListResponse),
-          ) as PriceListResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(PriceListResponse),
+                  )
+                  as PriceListResponse;
           result.priceList.replace(valueDes);
           break;
         case r'price':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.price = valueDes;
           break;
         case r'low_profit':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.lowProfit = valueDes;
           break;
         case r'high_profit':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.highProfit = valueDes;
           break;
         default:
@@ -184,4 +201,3 @@ class _$ProductPriceResponseSerializer implements PrimitiveSerializer<ProductPri
     return result.build();
   }
 }
-

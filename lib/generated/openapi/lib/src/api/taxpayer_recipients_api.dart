@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/taxpayer_recipient_response.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_update.dart';
 
 class TaxpayerRecipientsApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class TaxpayerRecipientsApi {
   const TaxpayerRecipientsApi(this._dio, this._serializers);
 
   /// Create Taxpayer Recipient
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [taxpayerRecipientCreate] 
+  /// * [taxpayerRecipientCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,8 @@ class TaxpayerRecipientsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [TaxpayerRecipientResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<TaxpayerRecipientResponse>> createTaxpayerRecipientApiV1TaxpayerRecipientsPost({ 
+  Future<Response<TaxpayerRecipientResponse>>
+  createTaxpayerRecipientApiV1TaxpayerRecipientsPost({
     required TaxpayerRecipientCreate taxpayerRecipientCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +49,10 @@ class TaxpayerRecipientsApi {
     final _path = r'/api/v1/taxpayer-recipients';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -69,14 +64,13 @@ class TaxpayerRecipientsApi {
 
     try {
       const _type = FullType(TaxpayerRecipientCreate);
-      _bodyData = _serializers.serialize(taxpayerRecipientCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        taxpayerRecipientCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +90,13 @@ class TaxpayerRecipientsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TaxpayerRecipientResponse),
-      ) as TaxpayerRecipientResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(TaxpayerRecipientResponse),
+                )
+                as TaxpayerRecipientResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +120,10 @@ class TaxpayerRecipientsApi {
   }
 
   /// Delete Taxpayer Recipient
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [rfc] 
+  /// * [rfc]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +133,8 @@ class TaxpayerRecipientsApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteTaxpayerRecipientApiV1TaxpayerRecipientsRfcDelete({ 
+  Future<Response<void>>
+  deleteTaxpayerRecipientApiV1TaxpayerRecipientsRfcDelete({
     required String rfc,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +143,22 @@ class TaxpayerRecipientsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/taxpayer-recipients/{rfc}'.replaceAll('{' r'rfc' '}', encodeQueryParameter(_serializers, rfc, const FullType(String)).toString());
+    final _path = r'/api/v1/taxpayer-recipients/{rfc}'.replaceAll(
+      '{'
+      r'rfc'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        rfc,
+        const FullType(String),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +177,10 @@ class TaxpayerRecipientsApi {
   }
 
   /// Get Taxpayer Recipient
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [rfc] 
+  /// * [rfc]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +190,8 @@ class TaxpayerRecipientsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [TaxpayerRecipientResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<TaxpayerRecipientResponse>> getTaxpayerRecipientApiV1TaxpayerRecipientsRfcGet({ 
+  Future<Response<TaxpayerRecipientResponse>>
+  getTaxpayerRecipientApiV1TaxpayerRecipientsRfcGet({
     required String rfc,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +200,22 @@ class TaxpayerRecipientsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/taxpayer-recipients/{rfc}'.replaceAll('{' r'rfc' '}', encodeQueryParameter(_serializers, rfc, const FullType(String)).toString());
+    final _path = r'/api/v1/taxpayer-recipients/{rfc}'.replaceAll(
+      '{'
+      r'rfc'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        rfc,
+        const FullType(String),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +234,13 @@ class TaxpayerRecipientsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TaxpayerRecipientResponse),
-      ) as TaxpayerRecipientResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(TaxpayerRecipientResponse),
+                )
+                as TaxpayerRecipientResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,12 +264,12 @@ class TaxpayerRecipientsApi {
   }
 
   /// List Taxpayer Recipients
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -271,7 +279,8 @@ class TaxpayerRecipientsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseTaxpayerRecipientResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseTaxpayerRecipientResponse>> listTaxpayerRecipientsApiV1TaxpayerRecipientsGet({ 
+  Future<Response<ListResponseTaxpayerRecipientResponse>>
+  listTaxpayerRecipientsApiV1TaxpayerRecipientsGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -285,15 +294,10 @@ class TaxpayerRecipientsApi {
     final _path = r'/api/v1/taxpayer-recipients';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -301,9 +305,20 @@ class TaxpayerRecipientsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -319,11 +334,15 @@ class TaxpayerRecipientsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseTaxpayerRecipientResponse),
-      ) as ListResponseTaxpayerRecipientResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponseTaxpayerRecipientResponse,
+                  ),
+                )
+                as ListResponseTaxpayerRecipientResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -347,11 +366,11 @@ class TaxpayerRecipientsApi {
   }
 
   /// Update Taxpayer Recipient
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [rfc] 
-  /// * [taxpayerRecipientUpdate] 
+  /// * [rfc]
+  /// * [taxpayerRecipientUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -361,7 +380,8 @@ class TaxpayerRecipientsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [TaxpayerRecipientResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<TaxpayerRecipientResponse>> updateTaxpayerRecipientApiV1TaxpayerRecipientsRfcPut({ 
+  Future<Response<TaxpayerRecipientResponse>>
+  updateTaxpayerRecipientApiV1TaxpayerRecipientsRfcPut({
     required String rfc,
     required TaxpayerRecipientUpdate taxpayerRecipientUpdate,
     CancelToken? cancelToken,
@@ -371,18 +391,22 @@ class TaxpayerRecipientsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/taxpayer-recipients/{rfc}'.replaceAll('{' r'rfc' '}', encodeQueryParameter(_serializers, rfc, const FullType(String)).toString());
+    final _path = r'/api/v1/taxpayer-recipients/{rfc}'.replaceAll(
+      '{'
+      r'rfc'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        rfc,
+        const FullType(String),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -394,14 +418,13 @@ class TaxpayerRecipientsApi {
 
     try {
       const _type = FullType(TaxpayerRecipientUpdate);
-      _bodyData = _serializers.serialize(taxpayerRecipientUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        taxpayerRecipientUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -421,11 +444,13 @@ class TaxpayerRecipientsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TaxpayerRecipientResponse),
-      ) as TaxpayerRecipientResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(TaxpayerRecipientResponse),
+                )
+                as TaxpayerRecipientResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -447,5 +472,4 @@ class TaxpayerRecipientsApi {
       extra: _response.extra,
     );
   }
-
 }

@@ -14,10 +14,8 @@ part 'product_label_facet.freezed.dart';
 /// hides the generated type in the data layer).
 @freezed
 class ProductLabelFacet with _$ProductLabelFacet {
-  const factory ProductLabelFacet({
-    required int labelId,
-    required int count,
-  }) = _ProductLabelFacet;
+  const factory ProductLabelFacet({required int labelId, required int count}) =
+      _ProductLabelFacet;
 
   factory ProductLabelFacet.fromResponse(api.ProductLabelFacet r) =>
       ProductLabelFacet(labelId: r.labelId, count: r.count);

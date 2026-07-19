@@ -8,13 +8,9 @@ part 'product_label.freezed.dart';
 /// via [ProductFormState.labelIds] on create/update.
 @freezed
 class ProductLabel with _$ProductLabel {
-  const factory ProductLabel({
-    required int labelId,
-    required String name,
-  }) = _ProductLabel;
+  const factory ProductLabel({required int labelId, required String name}) =
+      _ProductLabel;
 
-  factory ProductLabel.fromResponse(LabelResponse r) => ProductLabel(
-        labelId: r.labelId,
-        name: r.name,
-      );
+  factory ProductLabel.fromResponse(LabelResponse r) =>
+      ProductLabel(labelId: r.labelId, name: r.name);
 }

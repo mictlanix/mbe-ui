@@ -12,13 +12,15 @@ part 'taxpayer_recipient_response.g.dart';
 /// TaxpayerRecipientResponse
 ///
 /// Properties:
-/// * [taxpayerRecipientId] 
-/// * [name] 
-/// * [email] 
-/// * [postalCode] 
-/// * [regime] 
+/// * [taxpayerRecipientId]
+/// * [name]
+/// * [email]
+/// * [postalCode]
+/// * [regime]
 @BuiltValue()
-abstract class TaxpayerRecipientResponse implements Built<TaxpayerRecipientResponse, TaxpayerRecipientResponseBuilder> {
+abstract class TaxpayerRecipientResponse
+    implements
+        Built<TaxpayerRecipientResponse, TaxpayerRecipientResponseBuilder> {
   @BuiltValueField(wireName: r'taxpayer_recipient_id')
   String get taxpayerRecipientId;
 
@@ -36,18 +38,25 @@ abstract class TaxpayerRecipientResponse implements Built<TaxpayerRecipientRespo
 
   TaxpayerRecipientResponse._();
 
-  factory TaxpayerRecipientResponse([void updates(TaxpayerRecipientResponseBuilder b)]) = _$TaxpayerRecipientResponse;
+  factory TaxpayerRecipientResponse([
+    void updates(TaxpayerRecipientResponseBuilder b),
+  ]) = _$TaxpayerRecipientResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(TaxpayerRecipientResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<TaxpayerRecipientResponse> get serializer => _$TaxpayerRecipientResponseSerializer();
+  static Serializer<TaxpayerRecipientResponse> get serializer =>
+      _$TaxpayerRecipientResponseSerializer();
 }
 
-class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<TaxpayerRecipientResponse> {
+class _$TaxpayerRecipientResponseSerializer
+    implements PrimitiveSerializer<TaxpayerRecipientResponse> {
   @override
-  final Iterable<Type> types = const [TaxpayerRecipientResponse, _$TaxpayerRecipientResponse];
+  final Iterable<Type> types = const [
+    TaxpayerRecipientResponse,
+    _$TaxpayerRecipientResponse,
+  ];
 
   @override
   final String wireName = r'TaxpayerRecipientResponse';
@@ -63,25 +72,31 @@ class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<Taxpa
       specifiedType: const FullType(String),
     );
     yield r'name';
-    yield object.name == null ? null : serializers.serialize(
-      object.name,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.name == null
+        ? null
+        : serializers.serialize(
+            object.name,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'email';
     yield serializers.serialize(
       object.email,
       specifiedType: const FullType(String),
     );
     yield r'postal_code';
-    yield object.postalCode == null ? null : serializers.serialize(
-      object.postalCode,
-      specifiedType: const FullType.nullable(SatCatalogResponse),
-    );
+    yield object.postalCode == null
+        ? null
+        : serializers.serialize(
+            object.postalCode,
+            specifiedType: const FullType.nullable(SatCatalogResponse),
+          );
     yield r'regime';
-    yield object.regime == null ? null : serializers.serialize(
-      object.regime,
-      specifiedType: const FullType.nullable(SatCatalogResponse),
-    );
+    yield object.regime == null
+        ? null
+        : serializers.serialize(
+            object.regime,
+            specifiedType: const FullType.nullable(SatCatalogResponse),
+          );
   }
 
   @override
@@ -90,7 +105,11 @@ class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<Taxpa
     TaxpayerRecipientResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -106,40 +125,50 @@ class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<Taxpa
       final value = serializedList[i + 1];
       switch (key) {
         case r'taxpayer_recipient_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.taxpayerRecipientId = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.email = valueDes;
           break;
         case r'postal_code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(SatCatalogResponse),
-          ) as SatCatalogResponse?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(SatCatalogResponse),
+                  )
+                  as SatCatalogResponse?;
           if (valueDes == null) continue;
           result.postalCode.replace(valueDes);
           break;
         case r'regime':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(SatCatalogResponse),
-          ) as SatCatalogResponse?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(SatCatalogResponse),
+                  )
+                  as SatCatalogResponse?;
           if (valueDes == null) continue;
           result.regime.replace(valueDes);
           break;
@@ -171,4 +200,3 @@ class _$TaxpayerRecipientResponseSerializer implements PrimitiveSerializer<Taxpa
     return result.build();
   }
 }
-

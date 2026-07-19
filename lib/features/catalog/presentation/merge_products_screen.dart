@@ -79,8 +79,7 @@ class MergeProductsScreen extends ConsumerWidget {
                 key: const Key('merge_canonical_field'),
                 label: l10n.mergeProductLabel,
                 displayStringForOption: (item) => item.name,
-                optionsBuilder: (query) =>
-                    _search(productRepository, query),
+                optionsBuilder: (query) => _search(productRepository, query),
                 onSelected: controller.canonicalSelected,
                 optionImageUrl: (item) => item.photo,
                 optionSubtitle: _optionSubtitle,
@@ -92,8 +91,7 @@ class MergeProductsScreen extends ConsumerWidget {
                 key: const Key('merge_duplicate_field'),
                 label: l10n.duplicatedLabel,
                 displayStringForOption: (item) => item.name,
-                optionsBuilder: (query) =>
-                    _search(productRepository, query),
+                optionsBuilder: (query) => _search(productRepository, query),
                 onSelected: controller.duplicateSelected,
                 optionImageUrl: (item) => item.photo,
                 optionSubtitle: _optionSubtitle,
@@ -105,9 +103,7 @@ class MergeProductsScreen extends ConsumerWidget {
                 Text(
                   _localizeValidation(l10n, code),
                   key: const Key('merge_validation_message'),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             FormGridChild(

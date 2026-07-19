@@ -48,8 +48,9 @@ void main() {
     test('canonicalSelected/duplicateSelected set the fields', () {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
 
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_duplicate);
@@ -62,8 +63,9 @@ void main() {
     test('canonicalCleared/duplicateCleared reset the fields', () {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
 
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_duplicate);
@@ -89,8 +91,9 @@ void main() {
     test('cannot submit with only one selection', () {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
 
       controller.canonicalSelected(_canonical);
 
@@ -102,8 +105,9 @@ void main() {
     test('cannot submit when both selections are the same product', () {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
 
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_canonical);
@@ -116,8 +120,9 @@ void main() {
     test('can submit with two distinct selections', () {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
 
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_duplicate);
@@ -139,8 +144,9 @@ void main() {
       ).thenAnswer((_) async {});
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_duplicate);
 
@@ -154,34 +160,39 @@ void main() {
       expect(state.submission.isLoading, isFalse);
     });
 
-    test('preserves both selections and surfaces the error on failure', () async {
-      when(
-        () => repository.mergeProducts(
-          productId: any(named: 'productId'),
-          duplicateId: any(named: 'duplicateId'),
-        ),
-      ).thenThrow(const AppError.notFound('Duplicate product not found'));
-      final container = _containerWith(repository);
-      addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
-      controller.canonicalSelected(_canonical);
-      controller.duplicateSelected(_duplicate);
+    test(
+      'preserves both selections and surfaces the error on failure',
+      () async {
+        when(
+          () => repository.mergeProducts(
+            productId: any(named: 'productId'),
+            duplicateId: any(named: 'duplicateId'),
+          ),
+        ).thenThrow(const AppError.notFound('Duplicate product not found'));
+        final container = _containerWith(repository);
+        addTearDown(container.dispose);
+        final controller = container.read(
+          mergeProductsControllerProvider.notifier,
+        );
+        controller.canonicalSelected(_canonical);
+        controller.duplicateSelected(_duplicate);
 
-      await controller.submit();
+        await controller.submit();
 
-      final state = container.read(mergeProductsControllerProvider);
-      expect(state.canonical, _canonical);
-      expect(state.duplicate, _duplicate);
-      expect(state.submission.hasError, isTrue);
-      expect(state.submission.error, isA<NotFoundError>());
-    });
+        final state = container.read(mergeProductsControllerProvider);
+        expect(state.canonical, _canonical);
+        expect(state.duplicate, _duplicate);
+        expect(state.submission.hasError, isTrue);
+        expect(state.submission.error, isA<NotFoundError>());
+      },
+    );
 
     test('no-ops when canSubmit is false (e.g. missing selection)', () async {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
-      final controller =
-          container.read(mergeProductsControllerProvider.notifier);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
       controller.canonicalSelected(_canonical);
 
       await controller.submit();

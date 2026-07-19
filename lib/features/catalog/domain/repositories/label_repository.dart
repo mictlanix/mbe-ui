@@ -4,11 +4,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 /// form and the label filter on the products list (data-model.md
 /// "LabelRepository", contracts/mbe-api-master-data-pickers.md).
 abstract class LabelRepository {
-  Future<LabelListResult> list({
-    String? search,
-    int skip = 0,
-    int limit = 100,
-  });
+  Future<LabelListResult> list({String? search, int skip = 0, int limit = 100});
 }
 
 class LabelListResult {

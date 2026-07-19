@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:mbe_api_client/src/model/product_price_update.dart';
 
 class ProductPricesApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class ProductPricesApi {
   const ProductPricesApi(this._dio, this._serializers);
 
   /// Create Product Price
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productPriceCreate] 
+  /// * [productPriceCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,8 @@ class ProductPricesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ProductPriceResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ProductPriceResponse>> createProductPriceApiV1ProductPricesPost({ 
+  Future<Response<ProductPriceResponse>>
+  createProductPriceApiV1ProductPricesPost({
     required ProductPriceCreate productPriceCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +49,10 @@ class ProductPricesApi {
     final _path = r'/api/v1/product-prices';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -69,14 +64,13 @@ class ProductPricesApi {
 
     try {
       const _type = FullType(ProductPriceCreate);
-      _bodyData = _serializers.serialize(productPriceCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        productPriceCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +90,13 @@ class ProductPricesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ProductPriceResponse),
-      ) as ProductPriceResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ProductPriceResponse),
+                )
+                as ProductPriceResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +120,10 @@ class ProductPricesApi {
   }
 
   /// Delete Product Price
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productPriceId] 
+  /// * [productPriceId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +133,8 @@ class ProductPricesApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteProductPriceApiV1ProductPricesProductPriceIdDelete({ 
+  Future<Response<void>>
+  deleteProductPriceApiV1ProductPricesProductPriceIdDelete({
     required int productPriceId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +143,22 @@ class ProductPricesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/product-prices/{product_price_id}'.replaceAll('{' r'product_price_id' '}', encodeQueryParameter(_serializers, productPriceId, const FullType(int)).toString());
+    final _path = r'/api/v1/product-prices/{product_price_id}'.replaceAll(
+      '{'
+      r'product_price_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        productPriceId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +177,10 @@ class ProductPricesApi {
   }
 
   /// Get Product Price
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productPriceId] 
+  /// * [productPriceId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +190,8 @@ class ProductPricesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ProductPriceResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ProductPriceResponse>> getProductPriceApiV1ProductPricesProductPriceIdGet({ 
+  Future<Response<ProductPriceResponse>>
+  getProductPriceApiV1ProductPricesProductPriceIdGet({
     required int productPriceId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +200,22 @@ class ProductPricesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/product-prices/{product_price_id}'.replaceAll('{' r'product_price_id' '}', encodeQueryParameter(_serializers, productPriceId, const FullType(int)).toString());
+    final _path = r'/api/v1/product-prices/{product_price_id}'.replaceAll(
+      '{'
+      r'product_price_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        productPriceId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +234,13 @@ class ProductPricesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ProductPriceResponse),
-      ) as ProductPriceResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ProductPriceResponse),
+                )
+                as ProductPriceResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,13 +264,13 @@ class ProductPricesApi {
   }
 
   /// List Product Prices
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [product] 
-  /// * [priceList] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [product]
+  /// * [priceList]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -272,7 +280,8 @@ class ProductPricesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseProductPriceResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseProductPriceResponse>> listProductPricesApiV1ProductPricesGet({ 
+  Future<Response<ListResponseProductPriceResponse>>
+  listProductPricesApiV1ProductPricesGet({
     int? product,
     int? priceList,
     int? skip = 0,
@@ -287,15 +296,10 @@ class ProductPricesApi {
     final _path = r'/api/v1/product-prices';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -303,10 +307,26 @@ class ProductPricesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (product != null) r'product': encodeQueryParameter(_serializers, product, const FullType(int)),
-      if (priceList != null) r'price_list': encodeQueryParameter(_serializers, priceList, const FullType(int)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (product != null)
+        r'product': encodeQueryParameter(
+          _serializers,
+          product,
+          const FullType(int),
+        ),
+      if (priceList != null)
+        r'price_list': encodeQueryParameter(
+          _serializers,
+          priceList,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -322,11 +342,15 @@ class ProductPricesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseProductPriceResponse),
-      ) as ListResponseProductPriceResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponseProductPriceResponse,
+                  ),
+                )
+                as ListResponseProductPriceResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -350,11 +374,11 @@ class ProductPricesApi {
   }
 
   /// Update Product Price
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [productPriceId] 
-  /// * [productPriceUpdate] 
+  /// * [productPriceId]
+  /// * [productPriceUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -364,7 +388,8 @@ class ProductPricesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ProductPriceResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ProductPriceResponse>> updateProductPriceApiV1ProductPricesProductPriceIdPut({ 
+  Future<Response<ProductPriceResponse>>
+  updateProductPriceApiV1ProductPricesProductPriceIdPut({
     required int productPriceId,
     required ProductPriceUpdate productPriceUpdate,
     CancelToken? cancelToken,
@@ -374,18 +399,22 @@ class ProductPricesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/product-prices/{product_price_id}'.replaceAll('{' r'product_price_id' '}', encodeQueryParameter(_serializers, productPriceId, const FullType(int)).toString());
+    final _path = r'/api/v1/product-prices/{product_price_id}'.replaceAll(
+      '{'
+      r'product_price_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        productPriceId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -397,14 +426,13 @@ class ProductPricesApi {
 
     try {
       const _type = FullType(ProductPriceUpdate);
-      _bodyData = _serializers.serialize(productPriceUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        productPriceUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -424,11 +452,13 @@ class ProductPricesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ProductPriceResponse),
-      ) as ProductPriceResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ProductPriceResponse),
+                )
+                as ProductPriceResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -450,5 +480,4 @@ class ProductPricesApi {
       extra: _response.extra,
     );
   }
-
 }

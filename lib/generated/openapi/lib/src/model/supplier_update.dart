@@ -12,14 +12,15 @@ part 'supplier_update.g.dart';
 /// SupplierUpdate
 ///
 /// Properties:
-/// * [code] 
-/// * [name] 
-/// * [zone] 
-/// * [creditLimit] 
-/// * [creditDays] 
-/// * [comment] 
+/// * [code]
+/// * [name]
+/// * [zone]
+/// * [creditLimit]
+/// * [creditDays]
+/// * [comment]
 @BuiltValue()
-abstract class SupplierUpdate implements Built<SupplierUpdate, SupplierUpdateBuilder> {
+abstract class SupplierUpdate
+    implements Built<SupplierUpdate, SupplierUpdateBuilder> {
   @BuiltValueField(wireName: r'code')
   String? get code;
 
@@ -40,16 +41,19 @@ abstract class SupplierUpdate implements Built<SupplierUpdate, SupplierUpdateBui
 
   SupplierUpdate._();
 
-  factory SupplierUpdate([void updates(SupplierUpdateBuilder b)]) = _$SupplierUpdate;
+  factory SupplierUpdate([void updates(SupplierUpdateBuilder b)]) =
+      _$SupplierUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(SupplierUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<SupplierUpdate> get serializer => _$SupplierUpdateSerializer();
+  static Serializer<SupplierUpdate> get serializer =>
+      _$SupplierUpdateSerializer();
 }
 
-class _$SupplierUpdateSerializer implements PrimitiveSerializer<SupplierUpdate> {
+class _$SupplierUpdateSerializer
+    implements PrimitiveSerializer<SupplierUpdate> {
   @override
   final Iterable<Type> types = const [SupplierUpdate, _$SupplierUpdate];
 
@@ -111,7 +115,11 @@ class _$SupplierUpdateSerializer implements PrimitiveSerializer<SupplierUpdate> 
     SupplierUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -127,50 +135,62 @@ class _$SupplierUpdateSerializer implements PrimitiveSerializer<SupplierUpdate> 
       final value = serializedList[i + 1];
       switch (key) {
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'zone':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.zone = valueDes;
           break;
         case r'credit_limit':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(CreditLimit1),
-          ) as CreditLimit1?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(CreditLimit1),
+                  )
+                  as CreditLimit1?;
           if (valueDes == null) continue;
           result.creditLimit.replace(valueDes);
           break;
         case r'credit_days':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.creditDays = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -202,4 +222,3 @@ class _$SupplierUpdateSerializer implements PrimitiveSerializer<SupplierUpdate> 
     return result.build();
   }
 }
-

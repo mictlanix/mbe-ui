@@ -11,11 +11,12 @@ part 'expense_response.g.dart';
 /// ExpenseResponse
 ///
 /// Properties:
-/// * [expenseId] 
-/// * [expense] 
-/// * [comment] 
+/// * [expenseId]
+/// * [expense]
+/// * [comment]
 @BuiltValue()
-abstract class ExpenseResponse implements Built<ExpenseResponse, ExpenseResponseBuilder> {
+abstract class ExpenseResponse
+    implements Built<ExpenseResponse, ExpenseResponseBuilder> {
   @BuiltValueField(wireName: r'expense_id')
   int get expenseId;
 
@@ -27,16 +28,19 @@ abstract class ExpenseResponse implements Built<ExpenseResponse, ExpenseResponse
 
   ExpenseResponse._();
 
-  factory ExpenseResponse([void updates(ExpenseResponseBuilder b)]) = _$ExpenseResponse;
+  factory ExpenseResponse([void updates(ExpenseResponseBuilder b)]) =
+      _$ExpenseResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ExpenseResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ExpenseResponse> get serializer => _$ExpenseResponseSerializer();
+  static Serializer<ExpenseResponse> get serializer =>
+      _$ExpenseResponseSerializer();
 }
 
-class _$ExpenseResponseSerializer implements PrimitiveSerializer<ExpenseResponse> {
+class _$ExpenseResponseSerializer
+    implements PrimitiveSerializer<ExpenseResponse> {
   @override
   final Iterable<Type> types = const [ExpenseResponse, _$ExpenseResponse];
 
@@ -59,10 +63,12 @@ class _$ExpenseResponseSerializer implements PrimitiveSerializer<ExpenseResponse
       specifiedType: const FullType(String),
     );
     yield r'comment';
-    yield object.comment == null ? null : serializers.serialize(
-      object.comment,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.comment == null
+        ? null
+        : serializers.serialize(
+            object.comment,
+            specifiedType: const FullType.nullable(String),
+          );
   }
 
   @override
@@ -71,7 +77,11 @@ class _$ExpenseResponseSerializer implements PrimitiveSerializer<ExpenseResponse
     ExpenseResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -87,24 +97,27 @@ class _$ExpenseResponseSerializer implements PrimitiveSerializer<ExpenseResponse
       final value = serializedList[i + 1];
       switch (key) {
         case r'expense_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.expenseId = valueDes;
           break;
         case r'expense':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.expense = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -136,4 +149,3 @@ class _$ExpenseResponseSerializer implements PrimitiveSerializer<ExpenseResponse
     return result.build();
   }
 }
-

@@ -11,8 +11,8 @@ part 'label_create.g.dart';
 /// LabelCreate
 ///
 /// Properties:
-/// * [name] 
-/// * [comment] 
+/// * [name]
+/// * [comment]
 @BuiltValue()
 abstract class LabelCreate implements Built<LabelCreate, LabelCreateBuilder> {
   @BuiltValueField(wireName: r'name')
@@ -64,7 +64,11 @@ class _$LabelCreateSerializer implements PrimitiveSerializer<LabelCreate> {
     LabelCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +84,21 @@ class _$LabelCreateSerializer implements PrimitiveSerializer<LabelCreate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -122,4 +130,3 @@ class _$LabelCreateSerializer implements PrimitiveSerializer<LabelCreate> {
     return result.build();
   }
 }
-

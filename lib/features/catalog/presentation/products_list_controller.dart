@@ -139,7 +139,9 @@ class ProductsListController extends _$ProductsListController {
 @riverpod
 Future<Map<int, int>> productLabelFacets(ProductLabelFacetsRef ref) async {
   final filter = ref.watch(productFilterControllerProvider);
-  final facets = await ref.read(productRepositoryProvider).productLabelFacets(
+  final facets = await ref
+      .read(productRepositoryProvider)
+      .productLabelFacets(
         search: filter.search.isEmpty ? null : filter.search,
         deactivated: filter.deactivated,
         stockable: filter.stockable,

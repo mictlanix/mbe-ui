@@ -11,10 +11,11 @@ part 'product_merge_request.g.dart';
 /// ProductMergeRequest
 ///
 /// Properties:
-/// * [productId] 
-/// * [duplicateId] 
+/// * [productId]
+/// * [duplicateId]
 @BuiltValue()
-abstract class ProductMergeRequest implements Built<ProductMergeRequest, ProductMergeRequestBuilder> {
+abstract class ProductMergeRequest
+    implements Built<ProductMergeRequest, ProductMergeRequestBuilder> {
   @BuiltValueField(wireName: r'product_id')
   int get productId;
 
@@ -23,18 +24,24 @@ abstract class ProductMergeRequest implements Built<ProductMergeRequest, Product
 
   ProductMergeRequest._();
 
-  factory ProductMergeRequest([void updates(ProductMergeRequestBuilder b)]) = _$ProductMergeRequest;
+  factory ProductMergeRequest([void updates(ProductMergeRequestBuilder b)]) =
+      _$ProductMergeRequest;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ProductMergeRequestBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ProductMergeRequest> get serializer => _$ProductMergeRequestSerializer();
+  static Serializer<ProductMergeRequest> get serializer =>
+      _$ProductMergeRequestSerializer();
 }
 
-class _$ProductMergeRequestSerializer implements PrimitiveSerializer<ProductMergeRequest> {
+class _$ProductMergeRequestSerializer
+    implements PrimitiveSerializer<ProductMergeRequest> {
   @override
-  final Iterable<Type> types = const [ProductMergeRequest, _$ProductMergeRequest];
+  final Iterable<Type> types = const [
+    ProductMergeRequest,
+    _$ProductMergeRequest,
+  ];
 
   @override
   final String wireName = r'ProductMergeRequest';
@@ -62,7 +69,11 @@ class _$ProductMergeRequestSerializer implements PrimitiveSerializer<ProductMerg
     ProductMergeRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -78,17 +89,15 @@ class _$ProductMergeRequestSerializer implements PrimitiveSerializer<ProductMerg
       final value = serializedList[i + 1];
       switch (key) {
         case r'product_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.productId = valueDes;
           break;
         case r'duplicate_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.duplicateId = valueDes;
           break;
         default:
@@ -119,4 +128,3 @@ class _$ProductMergeRequestSerializer implements PrimitiveSerializer<ProductMerg
     return result.build();
   }
 }
-

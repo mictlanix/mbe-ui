@@ -92,10 +92,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: UserDetailScreen(
-            userId: userId,
-            forceReadOnly: forceReadOnly,
-          ),
+          home: UserDetailScreen(userId: userId, forceReadOnly: forceReadOnly),
         ),
       ),
     );
@@ -129,23 +126,22 @@ void main() {
       expect(find.text('View User'), findsOneWidget);
       expect(find.byKey(const Key('edit_user_button')), findsOneWidget);
       expect(
-        tester.widget<TextFormField>(find.byKey(const Key('email_field'))).enabled,
+        tester
+            .widget<TextFormField>(find.byKey(const Key('email_field')))
+            .enabled,
         isFalse,
       );
     },
   );
 
-  testWidgets(
-    'titles the app bar "Edit User" with no Edit affordance in the '
-    'ordinary editable case (FR-005, FR-006)',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _editUser, userId: 'jdoe');
+  testWidgets('titles the app bar "Edit User" with no Edit affordance in the '
+      'ordinary editable case (FR-005, FR-006)', (tester) async {
+    await pumpScreen(tester, signedInAs: _editUser, userId: 'jdoe');
 
-      expect(find.text('Edit User'), findsOneWidget);
-      expect(find.text('View User'), findsNothing);
-      expect(find.byKey(const Key('edit_user_button')), findsNothing);
-    },
-  );
+    expect(find.text('Edit User'), findsOneWidget);
+    expect(find.text('View User'), findsNothing);
+    expect(find.byKey(const Key('edit_user_button')), findsNothing);
+  });
 
   testWidgets(
     'shows Recover password and Delete as buttons below Save, not in the '
@@ -185,8 +181,9 @@ void main() {
       final recoverY = tester
           .getTopLeft(find.byKey(const Key('recover_password_button')))
           .dy;
-      final deleteY =
-          tester.getTopLeft(find.byKey(const Key('delete_user_button'))).dy;
+      final deleteY = tester
+          .getTopLeft(find.byKey(const Key('delete_user_button')))
+          .dy;
       expect(recoverY, greaterThan(saveY));
       expect(deleteY, greaterThan(recoverY));
     },

@@ -55,18 +55,22 @@ class ProductFormState with _$ProductFormState {
     String? model,
     String? barCode,
     String? location,
+
     /// The product's currently-saved photo URL (FR-001), loaded via
     /// [loadForEdit]. `null` in create mode until a photo is staged
     /// (data-model.md "ProductFormState").
     String? photo,
+
     /// In-memory bytes of a newly-picked image file, staged but not yet
     /// uploaded (FR-010 — applies only on save). `null` if nothing has been
     /// picked since the form was opened/loaded (data-model.md
     /// "ProductFormState").
     Uint8List? pendingPhotoBytes,
+
     /// Original filename of [pendingPhotoBytes], used only for the
     /// upload's multipart filename.
     String? pendingPhotoFilename,
+
     /// `true` if the user chose "remove photo" since the form was
     /// opened/loaded, and no new photo has been picked since. Mutually
     /// exclusive with a non-null [pendingPhotoBytes].
@@ -90,11 +94,13 @@ class ProductFormState with _$ProductFormState {
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
+
     /// `true` after a successful hard [ProductFormController.delete] call
     /// (FR-016a) — the screen pops back to the list on this, mirroring
     /// [saved].
     @Default(false) bool deleted,
     String? error,
+
     /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
     /// string on a `404`/`5xx`), shown alongside the localized [error]
     /// message since it can't be localized client-side. `null` for
@@ -112,18 +118,18 @@ class ProductFormController extends _$ProductFormController {
   ProductFormState build() => const ProductFormState();
 
   void codeChanged(String v) => state = state.copyWith(
-        code: v,
-        error: null,
-        errorDetail: null,
-        fieldErrors: const {},
-      );
+    code: v,
+    error: null,
+    errorDetail: null,
+    fieldErrors: const {},
+  );
 
   void nameChanged(String v) => state = state.copyWith(
-        name: v,
-        error: null,
-        errorDetail: null,
-        fieldErrors: const {},
-      );
+    name: v,
+    error: null,
+    errorDetail: null,
+    fieldErrors: const {},
+  );
 
   void skuChanged(String v) => state = state.copyWith(sku: v);
 
@@ -131,37 +137,37 @@ class ProductFormController extends _$ProductFormController {
   void modelChanged(String v) => state = state.copyWith(model: v);
 
   void barCodeChanged(String v) => state = state.copyWith(
-        barCode: v,
-        error: null,
-        errorDetail: null,
-        fieldErrors: const {},
-      );
+    barCode: v,
+    error: null,
+    errorDetail: null,
+    fieldErrors: const {},
+  );
 
   void locationChanged(String v) => state = state.copyWith(location: v);
 
   void supplierSelected(SupplierListItem? item) => state = state.copyWith(
-        supplierId: item?.supplierId,
-        supplierName: item?.name,
-      );
+    supplierId: item?.supplierId,
+    supplierName: item?.name,
+  );
 
   void unitSelected(SatCatalogItem item) => state = state.copyWith(
-        unitOfMeasurementCode: item.code,
-        unitOfMeasurementDisplayText: item.description != null
-            ? '${item.code} — ${item.description}'
-            : item.code,
-        fieldErrors: Map.of(state.fieldErrors)..remove('unitOfMeasurementCode'),
-        error: null,
-        errorDetail: null,
-      );
+    unitOfMeasurementCode: item.code,
+    unitOfMeasurementDisplayText: item.description != null
+        ? '${item.code} — ${item.description}'
+        : item.code,
+    fieldErrors: Map.of(state.fieldErrors)..remove('unitOfMeasurementCode'),
+    error: null,
+    errorDetail: null,
+  );
 
   void satKeySelected(SatCatalogItem? item) => state = state.copyWith(
-        satKeyCode: item?.code,
-        satKeyDisplayText: item != null
-            ? (item.description != null
-                ? '${item.code} — ${item.description}'
-                : item.code)
-            : null,
-      );
+    satKeyCode: item?.code,
+    satKeyDisplayText: item != null
+        ? (item.description != null
+              ? '${item.code} — ${item.description}'
+              : item.code)
+        : null,
+  );
 
   void labelToggled(int labelId) {
     final updated = List<int>.from(state.labelIds);
@@ -195,13 +201,19 @@ class ProductFormController extends _$ProductFormController {
     final lower = filename.toLowerCase();
     if (!_validPhotoExtensions.any(lower.endsWith)) {
       state = state.copyWith(
-        fieldErrors: {...state.fieldErrors, 'photo': ProductFormErrorCode.photoInvalidType},
+        fieldErrors: {
+          ...state.fieldErrors,
+          'photo': ProductFormErrorCode.photoInvalidType,
+        },
       );
       return;
     }
     if (bytes.length > _maxPhotoBytes) {
       state = state.copyWith(
-        fieldErrors: {...state.fieldErrors, 'photo': ProductFormErrorCode.photoTooLarge},
+        fieldErrors: {
+          ...state.fieldErrors,
+          'photo': ProductFormErrorCode.photoTooLarge,
+        },
       );
       return;
     }
@@ -236,7 +248,9 @@ class ProductFormController extends _$ProductFormController {
   Future<void> loadForEdit(int productId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
     try {
-      final product = await ref.read(productRepositoryProvider).get(productId: productId);
+      final product = await ref
+          .read(productRepositoryProvider)
+          .get(productId: productId);
       state = ProductFormState(
         productId: product.productId,
         code: product.code,
@@ -253,7 +267,7 @@ class ProductFormController extends _$ProductFormController {
         satKeyCode: product.satKeyCode,
         satKeyDisplayText: product.satKeyCode != null
             ? '${product.satKeyCode}'
-                '${product.satKeyDescription != null ? ' — ${product.satKeyDescription}' : ''}'
+                  '${product.satKeyDescription != null ? ' — ${product.satKeyDescription}' : ''}'
             : null,
         supplierId: product.supplierId,
         supplierName: product.supplierName,
@@ -316,7 +330,11 @@ class ProductFormController extends _$ProductFormController {
   Future<void> submitCreate() async {
     final fieldErrors = _validate();
     if (fieldErrors.isNotEmpty) {
-      state = state.copyWith(fieldErrors: fieldErrors, error: null, errorDetail: null);
+      state = state.copyWith(
+        fieldErrors: fieldErrors,
+        error: null,
+        errorDetail: null,
+      );
       return;
     }
 
@@ -337,7 +355,9 @@ class ProductFormController extends _$ProductFormController {
       fieldErrors: const {},
     );
     try {
-      final product = await ref.read(productRepositoryProvider).create(
+      final product = await ref
+          .read(productRepositoryProvider)
+          .create(
             code: state.code,
             name: state.name,
             unitOfMeasurement: state.unitOfMeasurementCode,
@@ -364,7 +384,9 @@ class ProductFormController extends _$ProductFormController {
       final pendingBytes = state.pendingPhotoBytes;
       if (pendingBytes != null) {
         try {
-          final withPhoto = await ref.read(productRepositoryProvider).uploadPhoto(
+          final withPhoto = await ref
+              .read(productRepositoryProvider)
+              .uploadPhoto(
                 productId: product.productId,
                 bytes: pendingBytes,
                 filename: state.pendingPhotoFilename!,
@@ -414,7 +436,11 @@ class ProductFormController extends _$ProductFormController {
 
     final fieldErrors = _validate();
     if (fieldErrors.isNotEmpty) {
-      state = state.copyWith(fieldErrors: fieldErrors, error: null, errorDetail: null);
+      state = state.copyWith(
+        fieldErrors: fieldErrors,
+        error: null,
+        errorDetail: null,
+      );
       return;
     }
 
@@ -435,7 +461,9 @@ class ProductFormController extends _$ProductFormController {
       fieldErrors: const {},
     );
     try {
-      await ref.read(productRepositoryProvider).update(
+      await ref
+          .read(productRepositoryProvider)
+          .update(
             productId: productId,
             code: state.code,
             name: state.name,
@@ -463,7 +491,9 @@ class ProductFormController extends _$ProductFormController {
       final pendingBytes = state.pendingPhotoBytes;
       if (pendingBytes != null) {
         try {
-          final withPhoto = await ref.read(productRepositoryProvider).uploadPhoto(
+          final withPhoto = await ref
+              .read(productRepositoryProvider)
+              .uploadPhoto(
                 productId: productId,
                 bytes: pendingBytes,
                 filename: state.pendingPhotoFilename!,
@@ -485,8 +515,9 @@ class ProductFormController extends _$ProductFormController {
           );
         }
       } else if (state.photoMarkedForRemoval) {
-        final withoutPhoto =
-            await ref.read(productRepositoryProvider).removePhoto(productId: productId);
+        final withoutPhoto = await ref
+            .read(productRepositoryProvider)
+            .removePhoto(productId: productId);
         ref.invalidate(productsListControllerProvider);
         state = state.copyWith(
           submitting: false,
@@ -559,7 +590,10 @@ String? _orNull(String? value) =>
 /// server-only rejections (e.g. a concurrent duplicate-code race) render
 /// through the same field-error UI as client-side ones (FR-014).
 Map<String, String> _fieldErrorsFromServer(ValidationError error) {
-  const keyMap = {'bar_code': 'barCode', 'unit_of_measurement': 'unitOfMeasurementCode'};
+  const keyMap = {
+    'bar_code': 'barCode',
+    'unit_of_measurement': 'unitOfMeasurementCode',
+  };
   final result = <String, String>{};
   for (final fieldError in error.errors) {
     final locKey = fieldError.loc.isNotEmpty ? fieldError.loc.last : 'error';

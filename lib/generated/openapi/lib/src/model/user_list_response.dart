@@ -13,10 +13,11 @@ part 'user_list_response.g.dart';
 /// UserListResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class UserListResponse implements Built<UserListResponse, UserListResponseBuilder> {
+abstract class UserListResponse
+    implements Built<UserListResponse, UserListResponseBuilder> {
   @BuiltValueField(wireName: r'items')
   BuiltList<UserListItem> get items;
 
@@ -25,16 +26,19 @@ abstract class UserListResponse implements Built<UserListResponse, UserListRespo
 
   UserListResponse._();
 
-  factory UserListResponse([void updates(UserListResponseBuilder b)]) = _$UserListResponse;
+  factory UserListResponse([void updates(UserListResponseBuilder b)]) =
+      _$UserListResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(UserListResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<UserListResponse> get serializer => _$UserListResponseSerializer();
+  static Serializer<UserListResponse> get serializer =>
+      _$UserListResponseSerializer();
 }
 
-class _$UserListResponseSerializer implements PrimitiveSerializer<UserListResponse> {
+class _$UserListResponseSerializer
+    implements PrimitiveSerializer<UserListResponse> {
   @override
   final Iterable<Type> types = const [UserListResponse, _$UserListResponse];
 
@@ -64,7 +68,11 @@ class _$UserListResponseSerializer implements PrimitiveSerializer<UserListRespon
     UserListResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +88,20 @@ class _$UserListResponseSerializer implements PrimitiveSerializer<UserListRespon
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(UserListItem)]),
-          ) as BuiltList<UserListItem>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(UserListItem),
+                    ]),
+                  )
+                  as BuiltList<UserListItem>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +132,3 @@ class _$UserListResponseSerializer implements PrimitiveSerializer<UserListRespon
     return result.build();
   }
 }
-

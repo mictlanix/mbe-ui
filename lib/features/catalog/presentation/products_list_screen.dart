@@ -183,8 +183,7 @@ class ProductsListScreen extends ConsumerWidget {
                               Uri(
                                 path: '/products/${p.productId}/pricing',
                                 queryParameters: {
-                                  'productDisplayText':
-                                      '${p.code} — ${p.name}',
+                                  'productDisplayText': '${p.code} — ${p.name}',
                                 },
                               ).toString(),
                             ),

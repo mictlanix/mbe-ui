@@ -11,10 +11,11 @@ part 'confirm_recovery_request.g.dart';
 /// ConfirmRecoveryRequest
 ///
 /// Properties:
-/// * [recoveryToken] 
-/// * [newPassword] 
+/// * [recoveryToken]
+/// * [newPassword]
 @BuiltValue()
-abstract class ConfirmRecoveryRequest implements Built<ConfirmRecoveryRequest, ConfirmRecoveryRequestBuilder> {
+abstract class ConfirmRecoveryRequest
+    implements Built<ConfirmRecoveryRequest, ConfirmRecoveryRequestBuilder> {
   @BuiltValueField(wireName: r'recovery_token')
   String get recoveryToken;
 
@@ -23,18 +24,25 @@ abstract class ConfirmRecoveryRequest implements Built<ConfirmRecoveryRequest, C
 
   ConfirmRecoveryRequest._();
 
-  factory ConfirmRecoveryRequest([void updates(ConfirmRecoveryRequestBuilder b)]) = _$ConfirmRecoveryRequest;
+  factory ConfirmRecoveryRequest([
+    void updates(ConfirmRecoveryRequestBuilder b),
+  ]) = _$ConfirmRecoveryRequest;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ConfirmRecoveryRequestBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ConfirmRecoveryRequest> get serializer => _$ConfirmRecoveryRequestSerializer();
+  static Serializer<ConfirmRecoveryRequest> get serializer =>
+      _$ConfirmRecoveryRequestSerializer();
 }
 
-class _$ConfirmRecoveryRequestSerializer implements PrimitiveSerializer<ConfirmRecoveryRequest> {
+class _$ConfirmRecoveryRequestSerializer
+    implements PrimitiveSerializer<ConfirmRecoveryRequest> {
   @override
-  final Iterable<Type> types = const [ConfirmRecoveryRequest, _$ConfirmRecoveryRequest];
+  final Iterable<Type> types = const [
+    ConfirmRecoveryRequest,
+    _$ConfirmRecoveryRequest,
+  ];
 
   @override
   final String wireName = r'ConfirmRecoveryRequest';
@@ -62,7 +70,11 @@ class _$ConfirmRecoveryRequestSerializer implements PrimitiveSerializer<ConfirmR
     ConfirmRecoveryRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -78,17 +90,21 @@ class _$ConfirmRecoveryRequestSerializer implements PrimitiveSerializer<ConfirmR
       final value = serializedList[i + 1];
       switch (key) {
         case r'recovery_token':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.recoveryToken = valueDes;
           break;
         case r'new_password':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.newPassword = valueDes;
           break;
         default:
@@ -119,4 +135,3 @@ class _$ConfirmRecoveryRequestSerializer implements PrimitiveSerializer<ConfirmR
     return result.build();
   }
 }
-

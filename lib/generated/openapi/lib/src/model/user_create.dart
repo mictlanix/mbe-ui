@@ -11,12 +11,12 @@ part 'user_create.g.dart';
 /// UserCreate
 ///
 /// Properties:
-/// * [userId] 
-/// * [password] 
-/// * [email] 
-/// * [employeeId] 
-/// * [administrator] 
-/// * [disabled] 
+/// * [userId]
+/// * [password]
+/// * [email]
+/// * [employeeId]
+/// * [administrator]
+/// * [disabled]
 @BuiltValue()
 abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   @BuiltValueField(wireName: r'user_id')
@@ -43,8 +43,8 @@ abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(UserCreateBuilder b) => b
-      ..administrator = false
-      ..disabled = false;
+    ..administrator = false
+    ..disabled = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<UserCreate> get serializer => _$UserCreateSerializer();
@@ -106,7 +106,11 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
     UserCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -122,46 +126,58 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'user_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.userId = valueDes;
           break;
         case r'password':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.password = valueDes;
           break;
         case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.email = valueDes;
           break;
         case r'employee_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.employeeId = valueDes;
           break;
         case r'administrator':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.administrator = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.disabled = valueDes;
           break;
         default:
@@ -192,4 +208,3 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
     return result.build();
   }
 }
-

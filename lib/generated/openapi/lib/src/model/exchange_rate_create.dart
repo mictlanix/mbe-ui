@@ -13,12 +13,13 @@ part 'exchange_rate_create.g.dart';
 /// ExchangeRateCreate
 ///
 /// Properties:
-/// * [date] 
-/// * [rate] 
-/// * [base_] 
-/// * [target] 
+/// * [date]
+/// * [rate]
+/// * [base_]
+/// * [target]
 @BuiltValue()
-abstract class ExchangeRateCreate implements Built<ExchangeRateCreate, ExchangeRateCreateBuilder> {
+abstract class ExchangeRateCreate
+    implements Built<ExchangeRateCreate, ExchangeRateCreateBuilder> {
   @BuiltValueField(wireName: r'date')
   Date get date;
 
@@ -33,16 +34,19 @@ abstract class ExchangeRateCreate implements Built<ExchangeRateCreate, ExchangeR
 
   ExchangeRateCreate._();
 
-  factory ExchangeRateCreate([void updates(ExchangeRateCreateBuilder b)]) = _$ExchangeRateCreate;
+  factory ExchangeRateCreate([void updates(ExchangeRateCreateBuilder b)]) =
+      _$ExchangeRateCreate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ExchangeRateCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ExchangeRateCreate> get serializer => _$ExchangeRateCreateSerializer();
+  static Serializer<ExchangeRateCreate> get serializer =>
+      _$ExchangeRateCreateSerializer();
 }
 
-class _$ExchangeRateCreateSerializer implements PrimitiveSerializer<ExchangeRateCreate> {
+class _$ExchangeRateCreateSerializer
+    implements PrimitiveSerializer<ExchangeRateCreate> {
   @override
   final Iterable<Type> types = const [ExchangeRateCreate, _$ExchangeRateCreate];
 
@@ -82,7 +86,11 @@ class _$ExchangeRateCreateSerializer implements PrimitiveSerializer<ExchangeRate
     ExchangeRateCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -98,31 +106,33 @@ class _$ExchangeRateCreateSerializer implements PrimitiveSerializer<ExchangeRate
       final value = serializedList[i + 1];
       switch (key) {
         case r'date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Date),
+                  )
+                  as Date;
           result.date = valueDes;
           break;
         case r'rate':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Rate),
-          ) as Rate;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Rate),
+                  )
+                  as Rate;
           result.rate.replace(valueDes);
           break;
         case r'base':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.base_ = valueDes;
           break;
         case r'target':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.target = valueDes;
           break;
         default:
@@ -153,4 +163,3 @@ class _$ExchangeRateCreateSerializer implements PrimitiveSerializer<ExchangeRate
     return result.build();
   }
 }
-

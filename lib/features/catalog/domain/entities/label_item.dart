@@ -7,13 +7,9 @@ part 'label_item.freezed.dart';
 /// dropdown on the products list (data-model.md "LabelItem").
 @freezed
 class LabelItem with _$LabelItem {
-  const factory LabelItem({
-    required int labelId,
-    required String name,
-  }) = _LabelItem;
+  const factory LabelItem({required int labelId, required String name}) =
+      _LabelItem;
 
-  factory LabelItem.fromResponse(LabelResponse r) => LabelItem(
-        labelId: r.labelId,
-        name: r.name,
-      );
+  factory LabelItem.fromResponse(LabelResponse r) =>
+      LabelItem(labelId: r.labelId, name: r.name);
 }

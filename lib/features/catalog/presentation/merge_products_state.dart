@@ -14,13 +14,16 @@ class MergeProductsState with _$MergeProductsState {
   const factory MergeProductsState({
     /// The "Product" selection — kept after a merge. `null` until chosen.
     ProductListItem? canonical,
+
     /// The "Duplicate" selection — removed after a merge. `null` until
     /// chosen.
     ProductListItem? duplicate,
+
     /// `AsyncData` (idle/success), `AsyncLoading` (in-flight), or
     /// `AsyncError(AppError)` (failed) — drives the in-flight lock (FR-009)
     /// and the error banner (FR-011).
     @Default(AsyncValue<void>.data(null)) AsyncValue<void> submission,
+
     /// `true` after a successful [MergeProductsController.submit] call —
     /// the screen confirms and returns to the list on this, mirroring
     /// `ProductFormState.saved`/`deleted`'s one-shot-flag convention (a
@@ -41,8 +44,7 @@ class MergeProductsState with _$MergeProductsState {
 
   /// FR-005, FR-006, FR-009: both selected, distinct, and not already
   /// submitting.
-  bool get canSubmit =>
-      bothSelected && !isSameProduct && !submission.isLoading;
+  bool get canSubmit => bothSelected && !isSameProduct && !submission.isLoading;
 
   /// A code identifying which client-side guard is blocking submission, or
   /// `null` when none applies. Localized in the UI layer (no

@@ -13,10 +13,15 @@ part 'list_response_exchange_rate_response.g.dart';
 /// ListResponseExchangeRateResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponseExchangeRateResponse implements Built<ListResponseExchangeRateResponse, ListResponseExchangeRateResponseBuilder> {
+abstract class ListResponseExchangeRateResponse
+    implements
+        Built<
+          ListResponseExchangeRateResponse,
+          ListResponseExchangeRateResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<ExchangeRateResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponseExchangeRateResponse implements Built<ListResponseExc
 
   ListResponseExchangeRateResponse._();
 
-  factory ListResponseExchangeRateResponse([void updates(ListResponseExchangeRateResponseBuilder b)]) = _$ListResponseExchangeRateResponse;
+  factory ListResponseExchangeRateResponse([
+    void updates(ListResponseExchangeRateResponseBuilder b),
+  ]) = _$ListResponseExchangeRateResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponseExchangeRateResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseExchangeRateResponse> get serializer => _$ListResponseExchangeRateResponseSerializer();
+  static Serializer<ListResponseExchangeRateResponse> get serializer =>
+      _$ListResponseExchangeRateResponseSerializer();
 }
 
-class _$ListResponseExchangeRateResponseSerializer implements PrimitiveSerializer<ListResponseExchangeRateResponse> {
+class _$ListResponseExchangeRateResponseSerializer
+    implements PrimitiveSerializer<ListResponseExchangeRateResponse> {
   @override
-  final Iterable<Type> types = const [ListResponseExchangeRateResponse, _$ListResponseExchangeRateResponse];
+  final Iterable<Type> types = const [
+    ListResponseExchangeRateResponse,
+    _$ListResponseExchangeRateResponse,
+  ];
 
   @override
   final String wireName = r'ListResponseExchangeRateResponse';
@@ -49,7 +61,9 @@ class _$ListResponseExchangeRateResponseSerializer implements PrimitiveSerialize
     yield r'items';
     yield serializers.serialize(
       object.items,
-      specifiedType: const FullType(BuiltList, [FullType(ExchangeRateResponse)]),
+      specifiedType: const FullType(BuiltList, [
+        FullType(ExchangeRateResponse),
+      ]),
     );
     yield r'total';
     yield serializers.serialize(
@@ -64,7 +78,11 @@ class _$ListResponseExchangeRateResponseSerializer implements PrimitiveSerialize
     ListResponseExchangeRateResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +98,20 @@ class _$ListResponseExchangeRateResponseSerializer implements PrimitiveSerialize
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(ExchangeRateResponse)]),
-          ) as BuiltList<ExchangeRateResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(ExchangeRateResponse),
+                    ]),
+                  )
+                  as BuiltList<ExchangeRateResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +142,3 @@ class _$ListResponseExchangeRateResponseSerializer implements PrimitiveSerialize
     return result.build();
   }
 }
-

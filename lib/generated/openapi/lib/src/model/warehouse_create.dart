@@ -11,13 +11,14 @@ part 'warehouse_create.g.dart';
 /// WarehouseCreate
 ///
 /// Properties:
-/// * [store] 
-/// * [code] 
-/// * [name] 
-/// * [comment] 
-/// * [disabled] 
+/// * [store]
+/// * [code]
+/// * [name]
+/// * [comment]
+/// * [disabled]
 @BuiltValue()
-abstract class WarehouseCreate implements Built<WarehouseCreate, WarehouseCreateBuilder> {
+abstract class WarehouseCreate
+    implements Built<WarehouseCreate, WarehouseCreateBuilder> {
   @BuiltValueField(wireName: r'store')
   int get store;
 
@@ -35,16 +36,19 @@ abstract class WarehouseCreate implements Built<WarehouseCreate, WarehouseCreate
 
   WarehouseCreate._();
 
-  factory WarehouseCreate([void updates(WarehouseCreateBuilder b)]) = _$WarehouseCreate;
+  factory WarehouseCreate([void updates(WarehouseCreateBuilder b)]) =
+      _$WarehouseCreate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(WarehouseCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<WarehouseCreate> get serializer => _$WarehouseCreateSerializer();
+  static Serializer<WarehouseCreate> get serializer =>
+      _$WarehouseCreateSerializer();
 }
 
-class _$WarehouseCreateSerializer implements PrimitiveSerializer<WarehouseCreate> {
+class _$WarehouseCreateSerializer
+    implements PrimitiveSerializer<WarehouseCreate> {
   @override
   final Iterable<Type> types = const [WarehouseCreate, _$WarehouseCreate];
 
@@ -93,7 +97,11 @@ class _$WarehouseCreateSerializer implements PrimitiveSerializer<WarehouseCreate
     WarehouseCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -109,39 +117,46 @@ class _$WarehouseCreateSerializer implements PrimitiveSerializer<WarehouseCreate
       final value = serializedList[i + 1];
       switch (key) {
         case r'store':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.store = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -173,4 +188,3 @@ class _$WarehouseCreateSerializer implements PrimitiveSerializer<WarehouseCreate
     return result.build();
   }
 }
-

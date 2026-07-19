@@ -11,17 +11,18 @@ part 'user_settings_response.g.dart';
 /// UserSettingsResponse
 ///
 /// Properties:
-/// * [storeId] 
-/// * [storeCode] 
-/// * [storeName] 
-/// * [pointSaleId] 
-/// * [pointSaleCode] 
-/// * [pointSaleName] 
-/// * [cashDrawerId] 
-/// * [cashDrawerCode] 
-/// * [cashDrawerName] 
+/// * [storeId]
+/// * [storeCode]
+/// * [storeName]
+/// * [pointSaleId]
+/// * [pointSaleCode]
+/// * [pointSaleName]
+/// * [cashDrawerId]
+/// * [cashDrawerCode]
+/// * [cashDrawerName]
 @BuiltValue()
-abstract class UserSettingsResponse implements Built<UserSettingsResponse, UserSettingsResponseBuilder> {
+abstract class UserSettingsResponse
+    implements Built<UserSettingsResponse, UserSettingsResponseBuilder> {
   @BuiltValueField(wireName: r'store_id')
   int? get storeId;
 
@@ -51,18 +52,24 @@ abstract class UserSettingsResponse implements Built<UserSettingsResponse, UserS
 
   UserSettingsResponse._();
 
-  factory UserSettingsResponse([void updates(UserSettingsResponseBuilder b)]) = _$UserSettingsResponse;
+  factory UserSettingsResponse([void updates(UserSettingsResponseBuilder b)]) =
+      _$UserSettingsResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(UserSettingsResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<UserSettingsResponse> get serializer => _$UserSettingsResponseSerializer();
+  static Serializer<UserSettingsResponse> get serializer =>
+      _$UserSettingsResponseSerializer();
 }
 
-class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettingsResponse> {
+class _$UserSettingsResponseSerializer
+    implements PrimitiveSerializer<UserSettingsResponse> {
   @override
-  final Iterable<Type> types = const [UserSettingsResponse, _$UserSettingsResponse];
+  final Iterable<Type> types = const [
+    UserSettingsResponse,
+    _$UserSettingsResponse,
+  ];
 
   @override
   final String wireName = r'UserSettingsResponse';
@@ -73,10 +80,12 @@ class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettin
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     yield r'store_id';
-    yield object.storeId == null ? null : serializers.serialize(
-      object.storeId,
-      specifiedType: const FullType.nullable(int),
-    );
+    yield object.storeId == null
+        ? null
+        : serializers.serialize(
+            object.storeId,
+            specifiedType: const FullType.nullable(int),
+          );
     if (object.storeCode != null) {
       yield r'store_code';
       yield serializers.serialize(
@@ -92,10 +101,12 @@ class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettin
       );
     }
     yield r'point_sale_id';
-    yield object.pointSaleId == null ? null : serializers.serialize(
-      object.pointSaleId,
-      specifiedType: const FullType.nullable(int),
-    );
+    yield object.pointSaleId == null
+        ? null
+        : serializers.serialize(
+            object.pointSaleId,
+            specifiedType: const FullType.nullable(int),
+          );
     if (object.pointSaleCode != null) {
       yield r'point_sale_code';
       yield serializers.serialize(
@@ -111,10 +122,12 @@ class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettin
       );
     }
     yield r'cash_drawer_id';
-    yield object.cashDrawerId == null ? null : serializers.serialize(
-      object.cashDrawerId,
-      specifiedType: const FullType.nullable(int),
-    );
+    yield object.cashDrawerId == null
+        ? null
+        : serializers.serialize(
+            object.cashDrawerId,
+            specifiedType: const FullType.nullable(int),
+          );
     if (object.cashDrawerCode != null) {
       yield r'cash_drawer_code';
       yield serializers.serialize(
@@ -137,7 +150,11 @@ class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettin
     UserSettingsResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -153,74 +170,92 @@ class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettin
       final value = serializedList[i + 1];
       switch (key) {
         case r'store_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.storeId = valueDes;
           break;
         case r'store_code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.storeCode = valueDes;
           break;
         case r'store_name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.storeName = valueDes;
           break;
         case r'point_sale_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.pointSaleId = valueDes;
           break;
         case r'point_sale_code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.pointSaleCode = valueDes;
           break;
         case r'point_sale_name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.pointSaleName = valueDes;
           break;
         case r'cash_drawer_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.cashDrawerId = valueDes;
           break;
         case r'cash_drawer_code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.cashDrawerCode = valueDes;
           break;
         case r'cash_drawer_name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.cashDrawerName = valueDes;
           break;
@@ -252,4 +287,3 @@ class _$UserSettingsResponseSerializer implements PrimitiveSerializer<UserSettin
     return result.build();
   }
 }
-

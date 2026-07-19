@@ -13,17 +13,18 @@ part 'customer_list_item.g.dart';
 /// CustomerListItem
 ///
 /// Properties:
-/// * [customerId] 
-/// * [code] 
-/// * [name] 
-/// * [zone] 
-/// * [creditLimit] 
-/// * [creditDays] 
-/// * [priceList] 
-/// * [salesperson] 
-/// * [disabled] 
+/// * [customerId]
+/// * [code]
+/// * [name]
+/// * [zone]
+/// * [creditLimit]
+/// * [creditDays]
+/// * [priceList]
+/// * [salesperson]
+/// * [disabled]
 @BuiltValue()
-abstract class CustomerListItem implements Built<CustomerListItem, CustomerListItemBuilder> {
+abstract class CustomerListItem
+    implements Built<CustomerListItem, CustomerListItemBuilder> {
   @BuiltValueField(wireName: r'customer_id')
   int get customerId;
 
@@ -53,16 +54,19 @@ abstract class CustomerListItem implements Built<CustomerListItem, CustomerListI
 
   CustomerListItem._();
 
-  factory CustomerListItem([void updates(CustomerListItemBuilder b)]) = _$CustomerListItem;
+  factory CustomerListItem([void updates(CustomerListItemBuilder b)]) =
+      _$CustomerListItem;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(CustomerListItemBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CustomerListItem> get serializer => _$CustomerListItemSerializer();
+  static Serializer<CustomerListItem> get serializer =>
+      _$CustomerListItemSerializer();
 }
 
-class _$CustomerListItemSerializer implements PrimitiveSerializer<CustomerListItem> {
+class _$CustomerListItemSerializer
+    implements PrimitiveSerializer<CustomerListItem> {
   @override
   final Iterable<Type> types = const [CustomerListItem, _$CustomerListItem];
 
@@ -90,10 +94,12 @@ class _$CustomerListItemSerializer implements PrimitiveSerializer<CustomerListIt
       specifiedType: const FullType(String),
     );
     yield r'zone';
-    yield object.zone == null ? null : serializers.serialize(
-      object.zone,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.zone == null
+        ? null
+        : serializers.serialize(
+            object.zone,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'credit_limit';
     yield serializers.serialize(
       object.creditLimit,
@@ -110,15 +116,19 @@ class _$CustomerListItemSerializer implements PrimitiveSerializer<CustomerListIt
       specifiedType: const FullType(PriceListResponse),
     );
     yield r'salesperson';
-    yield object.salesperson == null ? null : serializers.serialize(
-      object.salesperson,
-      specifiedType: const FullType.nullable(EmployeeResponse),
-    );
+    yield object.salesperson == null
+        ? null
+        : serializers.serialize(
+            object.salesperson,
+            specifiedType: const FullType.nullable(EmployeeResponse),
+          );
     yield r'disabled';
-    yield object.disabled == null ? null : serializers.serialize(
-      object.disabled,
-      specifiedType: const FullType.nullable(bool),
-    );
+    yield object.disabled == null
+        ? null
+        : serializers.serialize(
+            object.disabled,
+            specifiedType: const FullType.nullable(bool),
+          );
   }
 
   @override
@@ -127,7 +137,11 @@ class _$CustomerListItemSerializer implements PrimitiveSerializer<CustomerListIt
     CustomerListItem object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -143,68 +157,80 @@ class _$CustomerListItemSerializer implements PrimitiveSerializer<CustomerListIt
       final value = serializedList[i + 1];
       switch (key) {
         case r'customer_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.customerId = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'zone':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.zone = valueDes;
           break;
         case r'credit_limit':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.creditLimit = valueDes;
           break;
         case r'credit_days':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.creditDays = valueDes;
           break;
         case r'price_list':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(PriceListResponse),
-          ) as PriceListResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(PriceListResponse),
+                  )
+                  as PriceListResponse;
           result.priceList.replace(valueDes);
           break;
         case r'salesperson':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(EmployeeResponse),
-          ) as EmployeeResponse?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(EmployeeResponse),
+                  )
+                  as EmployeeResponse?;
           if (valueDes == null) continue;
           result.salesperson.replace(valueDes);
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -236,4 +262,3 @@ class _$CustomerListItemSerializer implements PrimitiveSerializer<CustomerListIt
     return result.build();
   }
 }
-

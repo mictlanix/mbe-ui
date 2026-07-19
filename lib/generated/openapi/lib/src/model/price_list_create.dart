@@ -13,11 +13,12 @@ part 'price_list_create.g.dart';
 /// PriceListCreate
 ///
 /// Properties:
-/// * [name] 
-/// * [highProfitMargin] 
-/// * [lowProfitMargin] 
+/// * [name]
+/// * [highProfitMargin]
+/// * [lowProfitMargin]
 @BuiltValue()
-abstract class PriceListCreate implements Built<PriceListCreate, PriceListCreateBuilder> {
+abstract class PriceListCreate
+    implements Built<PriceListCreate, PriceListCreateBuilder> {
   @BuiltValueField(wireName: r'name')
   String get name;
 
@@ -29,16 +30,19 @@ abstract class PriceListCreate implements Built<PriceListCreate, PriceListCreate
 
   PriceListCreate._();
 
-  factory PriceListCreate([void updates(PriceListCreateBuilder b)]) = _$PriceListCreate;
+  factory PriceListCreate([void updates(PriceListCreateBuilder b)]) =
+      _$PriceListCreate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(PriceListCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<PriceListCreate> get serializer => _$PriceListCreateSerializer();
+  static Serializer<PriceListCreate> get serializer =>
+      _$PriceListCreateSerializer();
 }
 
-class _$PriceListCreateSerializer implements PrimitiveSerializer<PriceListCreate> {
+class _$PriceListCreateSerializer
+    implements PrimitiveSerializer<PriceListCreate> {
   @override
   final Iterable<Type> types = const [PriceListCreate, _$PriceListCreate];
 
@@ -77,7 +81,11 @@ class _$PriceListCreateSerializer implements PrimitiveSerializer<PriceListCreate
     PriceListCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -93,24 +101,30 @@ class _$PriceListCreateSerializer implements PrimitiveSerializer<PriceListCreate
       final value = serializedList[i + 1];
       switch (key) {
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'high_profit_margin':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(HighProfitMargin),
-          ) as HighProfitMargin;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(HighProfitMargin),
+                  )
+                  as HighProfitMargin;
           result.highProfitMargin.replace(valueDes);
           break;
         case r'low_profit_margin':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(LowProfitMargin),
-          ) as LowProfitMargin;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(LowProfitMargin),
+                  )
+                  as LowProfitMargin;
           result.lowProfitMargin.replace(valueDes);
           break;
         default:
@@ -141,4 +155,3 @@ class _$PriceListCreateSerializer implements PrimitiveSerializer<PriceListCreate
     return result.build();
   }
 }
-

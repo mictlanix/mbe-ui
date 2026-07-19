@@ -8,38 +8,39 @@ void main() {
     double width, {
     List<Widget> filters = const [],
     List<Widget> actions = const [],
-  }) =>
-      MaterialApp(
-        home: Scaffold(
-          body: SizedBox(
-            width: width,
-            child: CatalogFilterBar(
-              search: const TextField(key: Key('search')),
-              filters: filters,
-              actions: actions,
-            ),
-          ),
+  }) => MaterialApp(
+    home: Scaffold(
+      body: SizedBox(
+        width: width,
+        child: CatalogFilterBar(
+          search: const TextField(key: Key('search')),
+          filters: filters,
+          actions: actions,
         ),
-      );
+      ),
+    ),
+  );
 
   testWidgets(
-      'lays out search + filters on one Row at >= 840px width (FR-009)',
-      (tester) async {
-    tester.view.physicalSize = const Size(1200, 800);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+    'lays out search + filters on one Row at >= 840px width (FR-009)',
+    (tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(
-      wrap(900, filters: [Text('Filter A'), Text('Filter B')]),
-    );
+      await tester.pumpWidget(
+        wrap(900, filters: [Text('Filter A'), Text('Filter B')]),
+      );
 
-    expect(find.byType(Row), findsWidgets);
-    expect(find.byType(Wrap), findsNothing);
-  });
+      expect(find.byType(Row), findsWidgets);
+      expect(find.byType(Wrap), findsNothing);
+    },
+  );
 
-  testWidgets('reflows search + filters into a Wrap below 840px width',
-      (tester) async {
+  testWidgets('reflows search + filters into a Wrap below 840px width', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrap(600, filters: [Text('Filter A'), Text('Filter B')]),
     );
@@ -84,8 +85,9 @@ void main() {
     expect(filtersX, greaterThan(addX));
   });
 
-  testWidgets('actions remain present, reflowed, at narrow width (FR-021)',
-      (tester) async {
+  testWidgets('actions remain present, reflowed, at narrow width (FR-021)', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       wrap(
         600,

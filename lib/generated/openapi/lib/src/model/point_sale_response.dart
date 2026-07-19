@@ -13,15 +13,16 @@ part 'point_sale_response.g.dart';
 /// PointSaleResponse
 ///
 /// Properties:
-/// * [pointSaleId] 
-/// * [store] 
-/// * [code] 
-/// * [name] 
-/// * [warehouse] 
-/// * [comment] 
-/// * [disabled] 
+/// * [pointSaleId]
+/// * [store]
+/// * [code]
+/// * [name]
+/// * [warehouse]
+/// * [comment]
+/// * [disabled]
 @BuiltValue()
-abstract class PointSaleResponse implements Built<PointSaleResponse, PointSaleResponseBuilder> {
+abstract class PointSaleResponse
+    implements Built<PointSaleResponse, PointSaleResponseBuilder> {
   @BuiltValueField(wireName: r'point_sale_id')
   int get pointSaleId;
 
@@ -45,16 +46,19 @@ abstract class PointSaleResponse implements Built<PointSaleResponse, PointSaleRe
 
   PointSaleResponse._();
 
-  factory PointSaleResponse([void updates(PointSaleResponseBuilder b)]) = _$PointSaleResponse;
+  factory PointSaleResponse([void updates(PointSaleResponseBuilder b)]) =
+      _$PointSaleResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(PointSaleResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<PointSaleResponse> get serializer => _$PointSaleResponseSerializer();
+  static Serializer<PointSaleResponse> get serializer =>
+      _$PointSaleResponseSerializer();
 }
 
-class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResponse> {
+class _$PointSaleResponseSerializer
+    implements PrimitiveSerializer<PointSaleResponse> {
   @override
   final Iterable<Type> types = const [PointSaleResponse, _$PointSaleResponse];
 
@@ -92,15 +96,19 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
       specifiedType: const FullType(WarehouseSummary),
     );
     yield r'comment';
-    yield object.comment == null ? null : serializers.serialize(
-      object.comment,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.comment == null
+        ? null
+        : serializers.serialize(
+            object.comment,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'disabled';
-    yield object.disabled == null ? null : serializers.serialize(
-      object.disabled,
-      specifiedType: const FullType.nullable(bool),
-    );
+    yield object.disabled == null
+        ? null
+        : serializers.serialize(
+            object.disabled,
+            specifiedType: const FullType.nullable(bool),
+          );
   }
 
   @override
@@ -109,7 +117,11 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
     PointSaleResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -125,53 +137,64 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
       final value = serializedList[i + 1];
       switch (key) {
         case r'point_sale_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.pointSaleId = valueDes;
           break;
         case r'store':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(StoreSummary),
-          ) as StoreSummary;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(StoreSummary),
+                  )
+                  as StoreSummary;
           result.store.replace(valueDes);
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'warehouse':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(WarehouseSummary),
-          ) as WarehouseSummary;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(WarehouseSummary),
+                  )
+                  as WarehouseSummary;
           result.warehouse.replace(valueDes);
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -203,4 +226,3 @@ class _$PointSaleResponseSerializer implements PrimitiveSerializer<PointSaleResp
     return result.build();
   }
 }
-

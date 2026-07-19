@@ -33,7 +33,9 @@ class AuthNotifier extends _$AuthNotifier {
       return AuthState.authenticated(token: token, user: user);
     } on AppError {
       await tokenStorage.clear();
-      return const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid);
+      return const AuthState.unauthenticated(
+        reason: SignOutReason.sessionInvalid,
+      );
     }
   }
 
@@ -41,26 +43,36 @@ class AuthNotifier extends _$AuthNotifier {
   /// via `GET /api/v1/auth/me` (FR-001). On `401`/`422`, transitions to
   /// `unauthenticated(reason: invalidCredentials)` with FR-008's generic
   /// error — the caller does not see which field was wrong.
-  Future<void> signIn({required String username, required String password}) async {
+  Future<void> signIn({
+    required String username,
+    required String password,
+  }) async {
     state = const AsyncData(AuthState.authenticating());
 
     final tokenStorage = ref.read(tokenStorageProvider);
     final repository = ref.read(authRepositoryProvider);
     try {
-      final token = await repository.login(username: username, password: password);
+      final token = await repository.login(
+        username: username,
+        password: password,
+      );
       await tokenStorage.write(token);
       final user = await repository.me();
       state = AsyncData(AuthState.authenticated(token: token, user: user));
     } on AppError {
       await tokenStorage.clear();
-      state = const AsyncData(AuthState.unauthenticated(reason: SignOutReason.invalidCredentials));
+      state = const AsyncData(
+        AuthState.unauthenticated(reason: SignOutReason.invalidCredentials),
+      );
     }
   }
 
   /// User-initiated sign out (FR-004).
   Future<void> signOut() async {
     await ref.read(tokenStorageProvider).clear();
-    state = const AsyncData(AuthState.unauthenticated(reason: SignOutReason.signedOut));
+    state = const AsyncData(
+      AuthState.unauthenticated(reason: SignOutReason.signedOut),
+    );
   }
 
   /// Called by [AuthInterceptor] when any request returns `401` (FR-003,
@@ -68,7 +80,9 @@ class AuthNotifier extends _$AuthNotifier {
   /// server-side.
   void handleSessionInvalid() {
     unawaited(ref.read(tokenStorageProvider).clear());
-    state = const AsyncData(AuthState.unauthenticated(reason: SignOutReason.sessionInvalid));
+    state = const AsyncData(
+      AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),
+    );
   }
 
   /// Updates the in-memory [User] when an administrator edits their own
@@ -79,6 +93,8 @@ class AuthNotifier extends _$AuthNotifier {
     final current = state.valueOrNull;
     if (current is! AuthAuthenticated) return;
     if (current.user.userId != updated.userId) return;
-    state = AsyncData(AuthState.authenticated(token: current.token, user: updated));
+    state = AsyncData(
+      AuthState.authenticated(token: current.token, user: updated),
+    );
   }
 }

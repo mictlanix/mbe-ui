@@ -80,8 +80,7 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
               child: CatalogEntityPicker<ProductListItem>(
                 key: const Key('pricing_product_picker'),
                 label: l10n.pricingProductPickerLabel,
-                displayStringForOption: (item) =>
-                    '${item.code} — ${item.name}',
+                displayStringForOption: (item) => '${item.code} — ${item.name}',
                 optionsBuilder: (query) async {
                   if (query.isEmpty) return const [];
                   final result = await productRepo.list(search: query);

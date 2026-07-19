@@ -12,18 +12,19 @@ part 'product_list_item.g.dart';
 /// ProductListItem
 ///
 /// Properties:
-/// * [productId] 
-/// * [code] 
-/// * [name] 
-/// * [sku] 
-/// * [photo] 
-/// * [brand] 
-/// * [model] 
-/// * [unitOfMeasurement] 
-/// * [taxRate] 
-/// * [deactivated] 
+/// * [productId]
+/// * [code]
+/// * [name]
+/// * [sku]
+/// * [photo]
+/// * [brand]
+/// * [model]
+/// * [unitOfMeasurement]
+/// * [taxRate]
+/// * [deactivated]
 @BuiltValue()
-abstract class ProductListItem implements Built<ProductListItem, ProductListItemBuilder> {
+abstract class ProductListItem
+    implements Built<ProductListItem, ProductListItemBuilder> {
   @BuiltValueField(wireName: r'product_id')
   int get productId;
 
@@ -56,16 +57,19 @@ abstract class ProductListItem implements Built<ProductListItem, ProductListItem
 
   ProductListItem._();
 
-  factory ProductListItem([void updates(ProductListItemBuilder b)]) = _$ProductListItem;
+  factory ProductListItem([void updates(ProductListItemBuilder b)]) =
+      _$ProductListItem;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ProductListItemBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ProductListItem> get serializer => _$ProductListItemSerializer();
+  static Serializer<ProductListItem> get serializer =>
+      _$ProductListItemSerializer();
 }
 
-class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem> {
+class _$ProductListItemSerializer
+    implements PrimitiveSerializer<ProductListItem> {
   @override
   final Iterable<Type> types = const [ProductListItem, _$ProductListItem];
 
@@ -93,25 +97,33 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
       specifiedType: const FullType(String),
     );
     yield r'sku';
-    yield object.sku == null ? null : serializers.serialize(
-      object.sku,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.sku == null
+        ? null
+        : serializers.serialize(
+            object.sku,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'photo';
-    yield object.photo == null ? null : serializers.serialize(
-      object.photo,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.photo == null
+        ? null
+        : serializers.serialize(
+            object.photo,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'brand';
-    yield object.brand == null ? null : serializers.serialize(
-      object.brand,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.brand == null
+        ? null
+        : serializers.serialize(
+            object.brand,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'model';
-    yield object.model == null ? null : serializers.serialize(
-      object.model,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.model == null
+        ? null
+        : serializers.serialize(
+            object.model,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'unit_of_measurement';
     yield serializers.serialize(
       object.unitOfMeasurement,
@@ -135,7 +147,11 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
     ProductListItem object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -151,77 +167,94 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
       final value = serializedList[i + 1];
       switch (key) {
         case r'product_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.productId = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'sku':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.sku = valueDes;
           break;
         case r'photo':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.photo = valueDes;
           break;
         case r'brand':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.brand = valueDes;
           break;
         case r'model':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.model = valueDes;
           break;
         case r'unit_of_measurement':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(SatUnitOfMeasurementResponse),
-          ) as SatUnitOfMeasurementResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(SatUnitOfMeasurementResponse),
+                  )
+                  as SatUnitOfMeasurementResponse;
           result.unitOfMeasurement.replace(valueDes);
           break;
         case r'tax_rate':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.taxRate = valueDes;
           break;
         case r'deactivated':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.deactivated = valueDes;
           break;
         default:
@@ -252,4 +285,3 @@ class _$ProductListItemSerializer implements PrimitiveSerializer<ProductListItem
     return result.build();
   }
 }
-

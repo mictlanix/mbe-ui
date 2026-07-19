@@ -11,14 +11,15 @@ part 'privilege_response.g.dart';
 /// PrivilegeResponse
 ///
 /// Properties:
-/// * [systemObject] 
-/// * [privileges] 
-/// * [allowCreate] 
-/// * [allowRead] 
-/// * [allowUpdate] 
-/// * [allowDelete] 
+/// * [systemObject]
+/// * [privileges]
+/// * [allowCreate]
+/// * [allowRead]
+/// * [allowUpdate]
+/// * [allowDelete]
 @BuiltValue()
-abstract class PrivilegeResponse implements Built<PrivilegeResponse, PrivilegeResponseBuilder> {
+abstract class PrivilegeResponse
+    implements Built<PrivilegeResponse, PrivilegeResponseBuilder> {
   @BuiltValueField(wireName: r'system_object')
   int get systemObject;
 
@@ -39,16 +40,19 @@ abstract class PrivilegeResponse implements Built<PrivilegeResponse, PrivilegeRe
 
   PrivilegeResponse._();
 
-  factory PrivilegeResponse([void updates(PrivilegeResponseBuilder b)]) = _$PrivilegeResponse;
+  factory PrivilegeResponse([void updates(PrivilegeResponseBuilder b)]) =
+      _$PrivilegeResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(PrivilegeResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<PrivilegeResponse> get serializer => _$PrivilegeResponseSerializer();
+  static Serializer<PrivilegeResponse> get serializer =>
+      _$PrivilegeResponseSerializer();
 }
 
-class _$PrivilegeResponseSerializer implements PrimitiveSerializer<PrivilegeResponse> {
+class _$PrivilegeResponseSerializer
+    implements PrimitiveSerializer<PrivilegeResponse> {
   @override
   final Iterable<Type> types = const [PrivilegeResponse, _$PrivilegeResponse];
 
@@ -98,7 +102,11 @@ class _$PrivilegeResponseSerializer implements PrimitiveSerializer<PrivilegeResp
     PrivilegeResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -114,45 +122,51 @@ class _$PrivilegeResponseSerializer implements PrimitiveSerializer<PrivilegeResp
       final value = serializedList[i + 1];
       switch (key) {
         case r'system_object':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.systemObject = valueDes;
           break;
         case r'privileges':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.privileges = valueDes;
           break;
         case r'allow_create':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.allowCreate = valueDes;
           break;
         case r'allow_read':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.allowRead = valueDes;
           break;
         case r'allow_update':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.allowUpdate = valueDes;
           break;
         case r'allow_delete':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.allowDelete = valueDes;
           break;
         default:
@@ -183,4 +197,3 @@ class _$PrivilegeResponseSerializer implements PrimitiveSerializer<PrivilegeResp
     return result.build();
   }
 }
-

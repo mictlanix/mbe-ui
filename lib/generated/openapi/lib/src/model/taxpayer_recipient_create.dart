@@ -11,13 +11,14 @@ part 'taxpayer_recipient_create.g.dart';
 /// TaxpayerRecipientCreate
 ///
 /// Properties:
-/// * [taxpayerRecipientId] 
-/// * [name] 
-/// * [email] 
-/// * [postalCode] 
-/// * [regime] 
+/// * [taxpayerRecipientId]
+/// * [name]
+/// * [email]
+/// * [postalCode]
+/// * [regime]
 @BuiltValue()
-abstract class TaxpayerRecipientCreate implements Built<TaxpayerRecipientCreate, TaxpayerRecipientCreateBuilder> {
+abstract class TaxpayerRecipientCreate
+    implements Built<TaxpayerRecipientCreate, TaxpayerRecipientCreateBuilder> {
   @BuiltValueField(wireName: r'taxpayer_recipient_id')
   String get taxpayerRecipientId;
 
@@ -35,18 +36,25 @@ abstract class TaxpayerRecipientCreate implements Built<TaxpayerRecipientCreate,
 
   TaxpayerRecipientCreate._();
 
-  factory TaxpayerRecipientCreate([void updates(TaxpayerRecipientCreateBuilder b)]) = _$TaxpayerRecipientCreate;
+  factory TaxpayerRecipientCreate([
+    void updates(TaxpayerRecipientCreateBuilder b),
+  ]) = _$TaxpayerRecipientCreate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(TaxpayerRecipientCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<TaxpayerRecipientCreate> get serializer => _$TaxpayerRecipientCreateSerializer();
+  static Serializer<TaxpayerRecipientCreate> get serializer =>
+      _$TaxpayerRecipientCreateSerializer();
 }
 
-class _$TaxpayerRecipientCreateSerializer implements PrimitiveSerializer<TaxpayerRecipientCreate> {
+class _$TaxpayerRecipientCreateSerializer
+    implements PrimitiveSerializer<TaxpayerRecipientCreate> {
   @override
-  final Iterable<Type> types = const [TaxpayerRecipientCreate, _$TaxpayerRecipientCreate];
+  final Iterable<Type> types = const [
+    TaxpayerRecipientCreate,
+    _$TaxpayerRecipientCreate,
+  ];
 
   @override
   final String wireName = r'TaxpayerRecipientCreate';
@@ -95,7 +103,11 @@ class _$TaxpayerRecipientCreateSerializer implements PrimitiveSerializer<Taxpaye
     TaxpayerRecipientCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -111,40 +123,50 @@ class _$TaxpayerRecipientCreateSerializer implements PrimitiveSerializer<Taxpaye
       final value = serializedList[i + 1];
       switch (key) {
         case r'taxpayer_recipient_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.taxpayerRecipientId = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.email = valueDes;
           break;
         case r'postal_code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.postalCode = valueDes;
           break;
         case r'regime':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.regime = valueDes;
           break;
@@ -176,4 +198,3 @@ class _$TaxpayerRecipientCreateSerializer implements PrimitiveSerializer<Taxpaye
     return result.build();
   }
 }
-

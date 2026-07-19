@@ -14,7 +14,7 @@ final satCatalogRepositoryProvider = Provider<SatCatalogRepository>((ref) {
 
 class SatCatalogRepositoryImpl implements SatCatalogRepository {
   SatCatalogRepositoryImpl(Dio dio)
-      : _api = SatCatalogsApi(dio, standardSerializers);
+    : _api = SatCatalogsApi(dio, standardSerializers);
 
   final SatCatalogsApi _api;
 
@@ -25,11 +25,12 @@ class SatCatalogRepositoryImpl implements SatCatalogRepository {
     int limit = 20,
   }) async {
     try {
-      final response = await _api.listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet(
-        search: search,
-        skip: skip,
-        limit: limit,
-      );
+      final response = await _api
+          .listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet(
+            search: search,
+            skip: skip,
+            limit: limit,
+          );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return SatCatalogListResult(

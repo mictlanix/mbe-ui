@@ -13,10 +13,15 @@ part 'list_response_product_price_response.g.dart';
 /// ListResponseProductPriceResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponseProductPriceResponse implements Built<ListResponseProductPriceResponse, ListResponseProductPriceResponseBuilder> {
+abstract class ListResponseProductPriceResponse
+    implements
+        Built<
+          ListResponseProductPriceResponse,
+          ListResponseProductPriceResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<ProductPriceResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponseProductPriceResponse implements Built<ListResponsePro
 
   ListResponseProductPriceResponse._();
 
-  factory ListResponseProductPriceResponse([void updates(ListResponseProductPriceResponseBuilder b)]) = _$ListResponseProductPriceResponse;
+  factory ListResponseProductPriceResponse([
+    void updates(ListResponseProductPriceResponseBuilder b),
+  ]) = _$ListResponseProductPriceResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponseProductPriceResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseProductPriceResponse> get serializer => _$ListResponseProductPriceResponseSerializer();
+  static Serializer<ListResponseProductPriceResponse> get serializer =>
+      _$ListResponseProductPriceResponseSerializer();
 }
 
-class _$ListResponseProductPriceResponseSerializer implements PrimitiveSerializer<ListResponseProductPriceResponse> {
+class _$ListResponseProductPriceResponseSerializer
+    implements PrimitiveSerializer<ListResponseProductPriceResponse> {
   @override
-  final Iterable<Type> types = const [ListResponseProductPriceResponse, _$ListResponseProductPriceResponse];
+  final Iterable<Type> types = const [
+    ListResponseProductPriceResponse,
+    _$ListResponseProductPriceResponse,
+  ];
 
   @override
   final String wireName = r'ListResponseProductPriceResponse';
@@ -49,7 +61,9 @@ class _$ListResponseProductPriceResponseSerializer implements PrimitiveSerialize
     yield r'items';
     yield serializers.serialize(
       object.items,
-      specifiedType: const FullType(BuiltList, [FullType(ProductPriceResponse)]),
+      specifiedType: const FullType(BuiltList, [
+        FullType(ProductPriceResponse),
+      ]),
     );
     yield r'total';
     yield serializers.serialize(
@@ -64,7 +78,11 @@ class _$ListResponseProductPriceResponseSerializer implements PrimitiveSerialize
     ListResponseProductPriceResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +98,20 @@ class _$ListResponseProductPriceResponseSerializer implements PrimitiveSerialize
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(ProductPriceResponse)]),
-          ) as BuiltList<ProductPriceResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(ProductPriceResponse),
+                    ]),
+                  )
+                  as BuiltList<ProductPriceResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +142,3 @@ class _$ListResponseProductPriceResponseSerializer implements PrimitiveSerialize
     return result.build();
   }
 }
-

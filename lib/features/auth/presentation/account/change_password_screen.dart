@@ -55,25 +55,29 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                         TextFormField(
                           key: const Key('current_password_field'),
                           decoration: InputDecoration(
-                              labelText: l10n.currentPasswordLabel),
+                            labelText: l10n.currentPasswordLabel,
+                          ),
                           obscureText: true,
                           textInputAction: TextInputAction.next,
                           enabled: !formState.submitting,
                           onChanged: controller.oldPasswordChanged,
-                          validator: (v) =>
-                              (v == null || v.isEmpty) ? l10n.fieldRequired : null,
+                          validator: (v) => (v == null || v.isEmpty)
+                              ? l10n.fieldRequired
+                              : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           key: const Key('new_password_field'),
-                          decoration:
-                              InputDecoration(labelText: l10n.newPasswordLabel),
+                          decoration: InputDecoration(
+                            labelText: l10n.newPasswordLabel,
+                          ),
                           obscureText: true,
                           textInputAction: TextInputAction.done,
                           enabled: !formState.submitting,
                           onChanged: controller.newPasswordChanged,
                           validator: (v) {
-                            if (v == null || v.isEmpty) return l10n.fieldRequired;
+                            if (v == null || v.isEmpty)
+                              return l10n.fieldRequired;
                             if (v.length < 6) return l10n.fieldMinLength6;
                             return null;
                           },
@@ -89,7 +93,8 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
-                                      strokeWidth: 2),
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : Text(l10n.changePasswordButton),
                         ),
@@ -119,14 +124,18 @@ class _SuccessView extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.check_circle_outline,
-            color: Theme.of(context).colorScheme.primary, size: 64),
+        Icon(
+          Icons.check_circle_outline,
+          color: Theme.of(context).colorScheme.primary,
+          size: 64,
+        ),
         const SizedBox(height: 16),
         Text(AppLocalizations.of(context)!.passwordChangedSuccess),
         const SizedBox(height: 24),
         TextButton(
-            onPressed: onBack,
-            child: Text(AppLocalizations.of(context)!.backButton)),
+          onPressed: onBack,
+          child: Text(AppLocalizations.of(context)!.backButton),
+        ),
       ],
     );
   }

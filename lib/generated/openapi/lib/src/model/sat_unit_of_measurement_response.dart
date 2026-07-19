@@ -11,12 +11,17 @@ part 'sat_unit_of_measurement_response.g.dart';
 /// Full sat_unit_of_measurement record, used when embedding it as a product's unit_of_measurement FK (as opposed to the generic id/description shape used by the standalone /api/v1/sat/units-of-measurement endpoints).
 ///
 /// Properties:
-/// * [id] 
-/// * [name] 
-/// * [description] 
-/// * [symbol] 
+/// * [id]
+/// * [name]
+/// * [description]
+/// * [symbol]
 @BuiltValue()
-abstract class SatUnitOfMeasurementResponse implements Built<SatUnitOfMeasurementResponse, SatUnitOfMeasurementResponseBuilder> {
+abstract class SatUnitOfMeasurementResponse
+    implements
+        Built<
+          SatUnitOfMeasurementResponse,
+          SatUnitOfMeasurementResponseBuilder
+        > {
   @BuiltValueField(wireName: r'id')
   String get id;
 
@@ -31,18 +36,25 @@ abstract class SatUnitOfMeasurementResponse implements Built<SatUnitOfMeasuremen
 
   SatUnitOfMeasurementResponse._();
 
-  factory SatUnitOfMeasurementResponse([void updates(SatUnitOfMeasurementResponseBuilder b)]) = _$SatUnitOfMeasurementResponse;
+  factory SatUnitOfMeasurementResponse([
+    void updates(SatUnitOfMeasurementResponseBuilder b),
+  ]) = _$SatUnitOfMeasurementResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(SatUnitOfMeasurementResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<SatUnitOfMeasurementResponse> get serializer => _$SatUnitOfMeasurementResponseSerializer();
+  static Serializer<SatUnitOfMeasurementResponse> get serializer =>
+      _$SatUnitOfMeasurementResponseSerializer();
 }
 
-class _$SatUnitOfMeasurementResponseSerializer implements PrimitiveSerializer<SatUnitOfMeasurementResponse> {
+class _$SatUnitOfMeasurementResponseSerializer
+    implements PrimitiveSerializer<SatUnitOfMeasurementResponse> {
   @override
-  final Iterable<Type> types = const [SatUnitOfMeasurementResponse, _$SatUnitOfMeasurementResponse];
+  final Iterable<Type> types = const [
+    SatUnitOfMeasurementResponse,
+    _$SatUnitOfMeasurementResponse,
+  ];
 
   @override
   final String wireName = r'SatUnitOfMeasurementResponse';
@@ -84,7 +96,11 @@ class _$SatUnitOfMeasurementResponseSerializer implements PrimitiveSerializer<Sa
     SatUnitOfMeasurementResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -100,32 +116,40 @@ class _$SatUnitOfMeasurementResponseSerializer implements PrimitiveSerializer<Sa
       final value = serializedList[i + 1];
       switch (key) {
         case r'id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.id = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'description':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.description = valueDes;
           break;
         case r'symbol':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.symbol = valueDes;
           break;
@@ -157,4 +181,3 @@ class _$SatUnitOfMeasurementResponseSerializer implements PrimitiveSerializer<Sa
     return result.build();
   }
 }
-

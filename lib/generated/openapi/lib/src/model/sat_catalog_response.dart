@@ -11,10 +11,11 @@ part 'sat_catalog_response.g.dart';
 /// SatCatalogResponse
 ///
 /// Properties:
-/// * [id] 
-/// * [description] 
+/// * [id]
+/// * [description]
 @BuiltValue()
-abstract class SatCatalogResponse implements Built<SatCatalogResponse, SatCatalogResponseBuilder> {
+abstract class SatCatalogResponse
+    implements Built<SatCatalogResponse, SatCatalogResponseBuilder> {
   @BuiltValueField(wireName: r'id')
   String get id;
 
@@ -23,16 +24,19 @@ abstract class SatCatalogResponse implements Built<SatCatalogResponse, SatCatalo
 
   SatCatalogResponse._();
 
-  factory SatCatalogResponse([void updates(SatCatalogResponseBuilder b)]) = _$SatCatalogResponse;
+  factory SatCatalogResponse([void updates(SatCatalogResponseBuilder b)]) =
+      _$SatCatalogResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(SatCatalogResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<SatCatalogResponse> get serializer => _$SatCatalogResponseSerializer();
+  static Serializer<SatCatalogResponse> get serializer =>
+      _$SatCatalogResponseSerializer();
 }
 
-class _$SatCatalogResponseSerializer implements PrimitiveSerializer<SatCatalogResponse> {
+class _$SatCatalogResponseSerializer
+    implements PrimitiveSerializer<SatCatalogResponse> {
   @override
   final Iterable<Type> types = const [SatCatalogResponse, _$SatCatalogResponse];
 
@@ -64,7 +68,11 @@ class _$SatCatalogResponseSerializer implements PrimitiveSerializer<SatCatalogRe
     SatCatalogResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +88,21 @@ class _$SatCatalogResponseSerializer implements PrimitiveSerializer<SatCatalogRe
       final value = serializedList[i + 1];
       switch (key) {
         case r'id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.id = valueDes;
           break;
         case r'description':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.description = valueDes;
           break;
@@ -122,4 +134,3 @@ class _$SatCatalogResponseSerializer implements PrimitiveSerializer<SatCatalogRe
     return result.build();
   }
 }
-

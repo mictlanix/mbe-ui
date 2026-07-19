@@ -53,7 +53,9 @@ void main() {
       expect(token, isNotEmpty);
 
       final user = await repository.me();
-      final access = AccessControlService(AuthState.authenticated(token: token, user: user));
+      final access = AccessControlService(
+        AuthState.authenticated(token: token, user: user),
+      );
 
       expect(access.isAuthenticated, isTrue);
       expect(access.isAdministrator, isTrue); // FR-006
@@ -66,7 +68,10 @@ void main() {
     'scenario 2: an incorrect password yields a single generic error (FR-008)',
     () async {
       await expectLater(
-        () => repository.login(username: 'does-not-exist', password: 'wrong-password'),
+        () => repository.login(
+          username: 'does-not-exist',
+          password: 'wrong-password',
+        ),
         throwsA(anyOf(isA<AuthError>(), isA<ValidationError>())),
       );
     },
@@ -80,7 +85,9 @@ void main() {
         password: _testPassword,
       );
       final user = await repository.me();
-      final access = AccessControlService(AuthState.authenticated(token: token, user: user));
+      final access = AccessControlService(
+        AuthState.authenticated(token: token, user: user),
+      );
 
       expect(access.isAuthenticated, isTrue);
       expect(access.isAdministrator, isFalse);
@@ -99,7 +106,9 @@ void main() {
         password: _adminPassword,
       );
       final user = await repository.me();
-      final access = AccessControlService(AuthState.authenticated(token: token, user: user));
+      final access = AccessControlService(
+        AuthState.authenticated(token: token, user: user),
+      );
 
       for (final object in SystemObject.values) {
         for (final right in AccessRight.values) {

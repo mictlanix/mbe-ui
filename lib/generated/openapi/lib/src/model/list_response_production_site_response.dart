@@ -13,10 +13,15 @@ part 'list_response_production_site_response.g.dart';
 /// ListResponseProductionSiteResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponseProductionSiteResponse implements Built<ListResponseProductionSiteResponse, ListResponseProductionSiteResponseBuilder> {
+abstract class ListResponseProductionSiteResponse
+    implements
+        Built<
+          ListResponseProductionSiteResponse,
+          ListResponseProductionSiteResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<ProductionSiteResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponseProductionSiteResponse implements Built<ListResponseP
 
   ListResponseProductionSiteResponse._();
 
-  factory ListResponseProductionSiteResponse([void updates(ListResponseProductionSiteResponseBuilder b)]) = _$ListResponseProductionSiteResponse;
+  factory ListResponseProductionSiteResponse([
+    void updates(ListResponseProductionSiteResponseBuilder b),
+  ]) = _$ListResponseProductionSiteResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponseProductionSiteResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseProductionSiteResponse> get serializer => _$ListResponseProductionSiteResponseSerializer();
+  static Serializer<ListResponseProductionSiteResponse> get serializer =>
+      _$ListResponseProductionSiteResponseSerializer();
 }
 
-class _$ListResponseProductionSiteResponseSerializer implements PrimitiveSerializer<ListResponseProductionSiteResponse> {
+class _$ListResponseProductionSiteResponseSerializer
+    implements PrimitiveSerializer<ListResponseProductionSiteResponse> {
   @override
-  final Iterable<Type> types = const [ListResponseProductionSiteResponse, _$ListResponseProductionSiteResponse];
+  final Iterable<Type> types = const [
+    ListResponseProductionSiteResponse,
+    _$ListResponseProductionSiteResponse,
+  ];
 
   @override
   final String wireName = r'ListResponseProductionSiteResponse';
@@ -49,7 +61,9 @@ class _$ListResponseProductionSiteResponseSerializer implements PrimitiveSeriali
     yield r'items';
     yield serializers.serialize(
       object.items,
-      specifiedType: const FullType(BuiltList, [FullType(ProductionSiteResponse)]),
+      specifiedType: const FullType(BuiltList, [
+        FullType(ProductionSiteResponse),
+      ]),
     );
     yield r'total';
     yield serializers.serialize(
@@ -64,7 +78,11 @@ class _$ListResponseProductionSiteResponseSerializer implements PrimitiveSeriali
     ListResponseProductionSiteResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +98,20 @@ class _$ListResponseProductionSiteResponseSerializer implements PrimitiveSeriali
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(ProductionSiteResponse)]),
-          ) as BuiltList<ProductionSiteResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(ProductionSiteResponse),
+                    ]),
+                  )
+                  as BuiltList<ProductionSiteResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +142,3 @@ class _$ListResponseProductionSiteResponseSerializer implements PrimitiveSeriali
     return result.build();
   }
 }
-

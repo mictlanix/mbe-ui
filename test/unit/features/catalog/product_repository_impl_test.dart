@@ -24,7 +24,12 @@ void main() {
                 'name': 'Widget',
                 'brand': 'Acme',
                 'model': null,
-                'unit_of_measurement': {'id': 'PCE', 'name': 'Piece', 'description': null, 'symbol': null},
+                'unit_of_measurement': {
+                  'id': 'PCE',
+                  'name': 'Piece',
+                  'description': null,
+                  'symbol': null,
+                },
                 'tax_rate': '0.16',
                 'deactivated': false,
               },
@@ -339,31 +344,28 @@ void main() {
       );
     });
 
-    test(
-      'a referential-integrity rejection surfaces the server message '
-      '(FR-016b)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode({
-              'detail': 'Product is referenced by existing sales orders',
-            }),
-            400,
-            headers: _jsonHeaders,
-          ),
-        );
+    test('a referential-integrity rejection surfaces the server message '
+        '(FR-016b)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': 'Product is referenced by existing sales orders',
+          }),
+          400,
+          headers: _jsonHeaders,
+        ),
+      );
 
-        await expectLater(
-          () => repository.delete(productId: 1),
-          throwsA(
-            const AppError.server(
-              statusCode: 400,
-              message: 'Product is referenced by existing sales orders',
-            ),
+      await expectLater(
+        () => repository.delete(productId: 1),
+        throwsA(
+          const AppError.server(
+            statusCode: 400,
+            message: 'Product is referenced by existing sales orders',
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
 
     test('a connection failure maps to AppError.network', () async {
       final repository = _repositoryWith(
@@ -391,7 +393,10 @@ void main() {
         ),
       );
 
-      final product = await repository.update(productId: 1, name: 'Updated Widget');
+      final product = await repository.update(
+        productId: 1,
+        name: 'Updated Widget',
+      );
 
       expect(product.name, 'Updated Widget');
     });
@@ -579,8 +584,7 @@ void main() {
   });
 
   group('ProductRepositoryImpl.removePhoto', () {
-    test('200 sends {"photo": null} and returns the updated Product',
-        () async {
+    test('200 sends {"photo": null} and returns the updated Product', () async {
       late Object? sentData;
       late String sentPath;
       late String sentMethod;
@@ -662,7 +666,8 @@ void main() {
 
     test('200 with an empty array returns an empty list', () async {
       final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString('[]', 200, headers: _jsonHeaders),
+        (options) async =>
+            ResponseBody.fromString('[]', 200, headers: _jsonHeaders),
       );
 
       final facets = await repository.productLabelFacets();
@@ -818,33 +823,38 @@ void main() {
 }
 
 Map<String, Object?> _productResponseJson() => {
-      'product_id': 1,
-      'code': 'SKU-001',
-      'name': 'Widget',
-      'photo': null,
-      'sku': null,
-      'brand': 'Acme',
-      'model': null,
-      'bar_code': null,
-      'location': null,
-      'unit_of_measurement': {'id': 'PCE', 'name': 'Piece', 'description': null, 'symbol': null},
-      'key': null,
-      'tax_rate': '0.16',
-      'tax_included': false,
-      'price_type': 0,
-      'currency': 0,
-      'min_order_qty': 1,
-      'supplier': null,
-      'stockable': true,
-      'perishable': false,
-      'seriable': false,
-      'purchasable': true,
-      'salable': true,
-      'invoiceable': true,
-      'stock_verification': true,
-      'deactivated': false,
-      'comment': null,
-    };
+  'product_id': 1,
+  'code': 'SKU-001',
+  'name': 'Widget',
+  'photo': null,
+  'sku': null,
+  'brand': 'Acme',
+  'model': null,
+  'bar_code': null,
+  'location': null,
+  'unit_of_measurement': {
+    'id': 'PCE',
+    'name': 'Piece',
+    'description': null,
+    'symbol': null,
+  },
+  'key': null,
+  'tax_rate': '0.16',
+  'tax_included': false,
+  'price_type': 0,
+  'currency': 0,
+  'min_order_qty': 1,
+  'supplier': null,
+  'stockable': true,
+  'perishable': false,
+  'seriable': false,
+  'purchasable': true,
+  'salable': true,
+  'invoiceable': true,
+  'stock_verification': true,
+  'deactivated': false,
+  'comment': null,
+};
 
 ProductRepositoryImpl _repositoryWith(
   Future<ResponseBody> Function(RequestOptions options) handler,
@@ -864,8 +874,7 @@ class _FakeHttpClientAdapter implements HttpClientAdapter {
     RequestOptions options,
     Stream<Uint8List>? requestStream,
     Future<void>? cancelFuture,
-  ) =>
-      _handler(options);
+  ) => _handler(options);
 
   @override
   void close({bool force = false}) {}

@@ -56,8 +56,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textInputAction: TextInputAction.next,
                     enabled: !formState.submitting,
                     onChanged: controller.usernameChanged,
-                    validator: (value) =>
-                        (value == null || value.isEmpty) ? l10n.fieldRequired : null,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? l10n.fieldRequired
+                        : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -68,13 +69,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textInputAction: TextInputAction.done,
                     enabled: !formState.submitting,
                     onChanged: controller.passwordChanged,
-                    validator: (value) =>
-                        (value == null || value.isEmpty) ? l10n.fieldRequired : null,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? l10n.fieldRequired
+                        : null,
                     onFieldSubmitted: (_) => _submit(controller),
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
-                    onPressed: formState.submitting ? null : () => _submit(controller),
+                    onPressed: formState.submitting
+                        ? null
+                        : () => _submit(controller),
                     child: formState.submitting
                         ? const SizedBox(
                             width: 20,

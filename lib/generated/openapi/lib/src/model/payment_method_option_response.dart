@@ -13,17 +13,19 @@ part 'payment_method_option_response.g.dart';
 /// PaymentMethodOptionResponse
 ///
 /// Properties:
-/// * [paymentMethodOptionId] 
-/// * [store] 
-/// * [warehouse] 
-/// * [name] 
-/// * [numberOfPayments] 
-/// * [displayOnTicket] 
-/// * [paymentMethod] 
-/// * [commission] 
-/// * [enabled] 
+/// * [paymentMethodOptionId]
+/// * [store]
+/// * [warehouse]
+/// * [name]
+/// * [numberOfPayments]
+/// * [displayOnTicket]
+/// * [paymentMethod]
+/// * [commission]
+/// * [enabled]
 @BuiltValue()
-abstract class PaymentMethodOptionResponse implements Built<PaymentMethodOptionResponse, PaymentMethodOptionResponseBuilder> {
+abstract class PaymentMethodOptionResponse
+    implements
+        Built<PaymentMethodOptionResponse, PaymentMethodOptionResponseBuilder> {
   @BuiltValueField(wireName: r'payment_method_option_id')
   int get paymentMethodOptionId;
 
@@ -53,18 +55,25 @@ abstract class PaymentMethodOptionResponse implements Built<PaymentMethodOptionR
 
   PaymentMethodOptionResponse._();
 
-  factory PaymentMethodOptionResponse([void updates(PaymentMethodOptionResponseBuilder b)]) = _$PaymentMethodOptionResponse;
+  factory PaymentMethodOptionResponse([
+    void updates(PaymentMethodOptionResponseBuilder b),
+  ]) = _$PaymentMethodOptionResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(PaymentMethodOptionResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<PaymentMethodOptionResponse> get serializer => _$PaymentMethodOptionResponseSerializer();
+  static Serializer<PaymentMethodOptionResponse> get serializer =>
+      _$PaymentMethodOptionResponseSerializer();
 }
 
-class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<PaymentMethodOptionResponse> {
+class _$PaymentMethodOptionResponseSerializer
+    implements PrimitiveSerializer<PaymentMethodOptionResponse> {
   @override
-  final Iterable<Type> types = const [PaymentMethodOptionResponse, _$PaymentMethodOptionResponse];
+  final Iterable<Type> types = const [
+    PaymentMethodOptionResponse,
+    _$PaymentMethodOptionResponse,
+  ];
 
   @override
   final String wireName = r'PaymentMethodOptionResponse';
@@ -85,10 +94,12 @@ class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<Pay
       specifiedType: const FullType(StoreSummary),
     );
     yield r'warehouse';
-    yield object.warehouse == null ? null : serializers.serialize(
-      object.warehouse,
-      specifiedType: const FullType.nullable(WarehouseSummary),
-    );
+    yield object.warehouse == null
+        ? null
+        : serializers.serialize(
+            object.warehouse,
+            specifiedType: const FullType.nullable(WarehouseSummary),
+          );
     yield r'name';
     yield serializers.serialize(
       object.name,
@@ -127,7 +138,11 @@ class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<Pay
     PaymentMethodOptionResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -143,67 +158,76 @@ class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<Pay
       final value = serializedList[i + 1];
       switch (key) {
         case r'payment_method_option_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.paymentMethodOptionId = valueDes;
           break;
         case r'store':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(StoreSummary),
-          ) as StoreSummary;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(StoreSummary),
+                  )
+                  as StoreSummary;
           result.store.replace(valueDes);
           break;
         case r'warehouse':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(WarehouseSummary),
-          ) as WarehouseSummary?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(WarehouseSummary),
+                  )
+                  as WarehouseSummary?;
           if (valueDes == null) continue;
           result.warehouse.replace(valueDes);
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'number_of_payments':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.numberOfPayments = valueDes;
           break;
         case r'display_on_ticket':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.displayOnTicket = valueDes;
           break;
         case r'payment_method':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.paymentMethod = valueDes;
           break;
         case r'commission':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.commission = valueDes;
           break;
         case r'enabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.enabled = valueDes;
           break;
         default:
@@ -234,4 +258,3 @@ class _$PaymentMethodOptionResponseSerializer implements PrimitiveSerializer<Pay
     return result.build();
   }
 }
-

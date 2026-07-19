@@ -13,10 +13,15 @@ part 'list_response_payment_method_option_response.g.dart';
 /// ListResponsePaymentMethodOptionResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponsePaymentMethodOptionResponse implements Built<ListResponsePaymentMethodOptionResponse, ListResponsePaymentMethodOptionResponseBuilder> {
+abstract class ListResponsePaymentMethodOptionResponse
+    implements
+        Built<
+          ListResponsePaymentMethodOptionResponse,
+          ListResponsePaymentMethodOptionResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<PaymentMethodOptionResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponsePaymentMethodOptionResponse implements Built<ListResp
 
   ListResponsePaymentMethodOptionResponse._();
 
-  factory ListResponsePaymentMethodOptionResponse([void updates(ListResponsePaymentMethodOptionResponseBuilder b)]) = _$ListResponsePaymentMethodOptionResponse;
+  factory ListResponsePaymentMethodOptionResponse([
+    void updates(ListResponsePaymentMethodOptionResponseBuilder b),
+  ]) = _$ListResponsePaymentMethodOptionResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponsePaymentMethodOptionResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponsePaymentMethodOptionResponse> get serializer => _$ListResponsePaymentMethodOptionResponseSerializer();
+  static Serializer<ListResponsePaymentMethodOptionResponse> get serializer =>
+      _$ListResponsePaymentMethodOptionResponseSerializer();
 }
 
-class _$ListResponsePaymentMethodOptionResponseSerializer implements PrimitiveSerializer<ListResponsePaymentMethodOptionResponse> {
+class _$ListResponsePaymentMethodOptionResponseSerializer
+    implements PrimitiveSerializer<ListResponsePaymentMethodOptionResponse> {
   @override
-  final Iterable<Type> types = const [ListResponsePaymentMethodOptionResponse, _$ListResponsePaymentMethodOptionResponse];
+  final Iterable<Type> types = const [
+    ListResponsePaymentMethodOptionResponse,
+    _$ListResponsePaymentMethodOptionResponse,
+  ];
 
   @override
   final String wireName = r'ListResponsePaymentMethodOptionResponse';
@@ -49,7 +61,9 @@ class _$ListResponsePaymentMethodOptionResponseSerializer implements PrimitiveSe
     yield r'items';
     yield serializers.serialize(
       object.items,
-      specifiedType: const FullType(BuiltList, [FullType(PaymentMethodOptionResponse)]),
+      specifiedType: const FullType(BuiltList, [
+        FullType(PaymentMethodOptionResponse),
+      ]),
     );
     yield r'total';
     yield serializers.serialize(
@@ -64,7 +78,11 @@ class _$ListResponsePaymentMethodOptionResponseSerializer implements PrimitiveSe
     ListResponsePaymentMethodOptionResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +98,20 @@ class _$ListResponsePaymentMethodOptionResponseSerializer implements PrimitiveSe
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(PaymentMethodOptionResponse)]),
-          ) as BuiltList<PaymentMethodOptionResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(PaymentMethodOptionResponse),
+                    ]),
+                  )
+                  as BuiltList<PaymentMethodOptionResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +142,3 @@ class _$ListResponsePaymentMethodOptionResponseSerializer implements PrimitiveSe
     return result.build();
   }
 }
-

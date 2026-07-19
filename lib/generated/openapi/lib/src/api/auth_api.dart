@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/token_response.dart';
 import 'package:mbe_api_client/src/model/user_response.dart';
 
 class AuthApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -27,7 +26,7 @@ class AuthApi {
   /// Change the authenticated user&#39;s own password (requires old password verification).
   ///
   /// Parameters:
-  /// * [changePasswordRequest] 
+  /// * [changePasswordRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,7 @@ class AuthApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> changePasswordApiV1AuthChangePasswordPost({ 
+  Future<Response<void>> changePasswordApiV1AuthChangePasswordPost({
     required ChangePasswordRequest changePasswordRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +48,10 @@ class AuthApi {
     final _path = r'/api/v1/auth/change-password';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -69,14 +63,13 @@ class AuthApi {
 
     try {
       const _type = FullType(ChangePasswordRequest);
-      _bodyData = _serializers.serialize(changePasswordRequest, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        changePasswordRequest,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -99,7 +92,7 @@ class AuthApi {
   /// Complete an admin-triggered password recovery using a signed recovery token.
   ///
   /// Parameters:
-  /// * [confirmRecoveryRequest] 
+  /// * [confirmRecoveryRequest]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -109,7 +102,7 @@ class AuthApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> confirmRecoveryApiV1AuthRecoverPost({ 
+  Future<Response<void>> confirmRecoveryApiV1AuthRecoverPost({
     required ConfirmRecoveryRequest confirmRecoveryRequest,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -121,13 +114,8 @@ class AuthApi {
     final _path = r'/api/v1/auth/recover';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
-      extra: <String, dynamic>{
-        'secure': <Map<String, String>>[],
-        ...?extra,
-      },
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
       contentType: 'application/json',
       validateStatus: validateStatus,
     );
@@ -136,14 +124,13 @@ class AuthApi {
 
     try {
       const _type = FullType(ConfirmRecoveryRequest);
-      _bodyData = _serializers.serialize(confirmRecoveryRequest, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        confirmRecoveryRequest,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -175,7 +162,7 @@ class AuthApi {
   ///
   /// Returns a [Future] containing a [Response] with a [UserResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<UserResponse>> getMeApiV1AuthMeGet({ 
+  Future<Response<UserResponse>> getMeApiV1AuthMeGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -186,15 +173,10 @@ class AuthApi {
     final _path = r'/api/v1/auth/me';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -213,11 +195,13 @@ class AuthApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(UserResponse),
-      ) as UserResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(UserResponse),
+                )
+                as UserResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -241,15 +225,15 @@ class AuthApi {
   }
 
   /// Login
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [username] 
-  /// * [password] 
-  /// * [grantType] 
-  /// * [scope] 
-  /// * [clientId] 
-  /// * [clientSecret] 
+  /// * [username]
+  /// * [password]
+  /// * [grantType]
+  /// * [scope]
+  /// * [clientId]
+  /// * [clientSecret]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -259,7 +243,7 @@ class AuthApi {
   ///
   /// Returns a [Future] containing a [Response] with a [TokenResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<TokenResponse>> loginApiV1AuthLoginPost({ 
+  Future<Response<TokenResponse>> loginApiV1AuthLoginPost({
     required String username,
     required String password,
     String? grantType,
@@ -276,13 +260,8 @@ class AuthApi {
     final _path = r'/api/v1/auth/login';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
-      extra: <String, dynamic>{
-        'secure': <Map<String, String>>[],
-        ...?extra,
-      },
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
       contentType: 'application/x-www-form-urlencoded',
       validateStatus: validateStatus,
     );
@@ -291,20 +270,41 @@ class AuthApi {
 
     try {
       _bodyData = <String, dynamic>{
-        r'grant_type': encodeQueryParameter(_serializers, grantType, const FullType(String)),
-        r'username': encodeQueryParameter(_serializers, username, const FullType(String)),
-        r'password': encodeQueryParameter(_serializers, password, const FullType(String)),
-        if (scope != null) r'scope': encodeQueryParameter(_serializers, scope, const FullType(String)),
-        r'client_id': encodeQueryParameter(_serializers, clientId, const FullType(String)),
-        r'client_secret': encodeQueryParameter(_serializers, clientSecret, const FullType(String)),
-      };
-
-    } catch(error, stackTrace) {
-      throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
+        r'grant_type': encodeQueryParameter(
+          _serializers,
+          grantType,
+          const FullType(String),
         ),
+        r'username': encodeQueryParameter(
+          _serializers,
+          username,
+          const FullType(String),
+        ),
+        r'password': encodeQueryParameter(
+          _serializers,
+          password,
+          const FullType(String),
+        ),
+        if (scope != null)
+          r'scope': encodeQueryParameter(
+            _serializers,
+            scope,
+            const FullType(String),
+          ),
+        r'client_id': encodeQueryParameter(
+          _serializers,
+          clientId,
+          const FullType(String),
+        ),
+        r'client_secret': encodeQueryParameter(
+          _serializers,
+          clientSecret,
+          const FullType(String),
+        ),
+      };
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -324,11 +324,13 @@ class AuthApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(TokenResponse),
-      ) as TokenResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(TokenResponse),
+                )
+                as TokenResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -350,5 +352,4 @@ class AuthApi {
       extra: _response.extra,
     );
   }
-
 }

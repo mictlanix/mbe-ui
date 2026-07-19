@@ -11,13 +11,14 @@ part 'vehicle_update.g.dart';
 /// VehicleUpdate
 ///
 /// Properties:
-/// * [licensePlate] 
-/// * [name] 
-/// * [nickname] 
-/// * [tonsCapacity] 
-/// * [active] 
+/// * [licensePlate]
+/// * [name]
+/// * [nickname]
+/// * [tonsCapacity]
+/// * [active]
 @BuiltValue()
-abstract class VehicleUpdate implements Built<VehicleUpdate, VehicleUpdateBuilder> {
+abstract class VehicleUpdate
+    implements Built<VehicleUpdate, VehicleUpdateBuilder> {
   @BuiltValueField(wireName: r'license_plate')
   String? get licensePlate;
 
@@ -35,13 +36,15 @@ abstract class VehicleUpdate implements Built<VehicleUpdate, VehicleUpdateBuilde
 
   VehicleUpdate._();
 
-  factory VehicleUpdate([void updates(VehicleUpdateBuilder b)]) = _$VehicleUpdate;
+  factory VehicleUpdate([void updates(VehicleUpdateBuilder b)]) =
+      _$VehicleUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(VehicleUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<VehicleUpdate> get serializer => _$VehicleUpdateSerializer();
+  static Serializer<VehicleUpdate> get serializer =>
+      _$VehicleUpdateSerializer();
 }
 
 class _$VehicleUpdateSerializer implements PrimitiveSerializer<VehicleUpdate> {
@@ -99,7 +102,11 @@ class _$VehicleUpdateSerializer implements PrimitiveSerializer<VehicleUpdate> {
     VehicleUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -115,42 +122,52 @@ class _$VehicleUpdateSerializer implements PrimitiveSerializer<VehicleUpdate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'license_plate':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.licensePlate = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'nickname':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.nickname = valueDes;
           break;
         case r'tons_capacity':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.tonsCapacity = valueDes;
           break;
         case r'active':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.active = valueDes;
           break;
@@ -182,4 +199,3 @@ class _$VehicleUpdateSerializer implements PrimitiveSerializer<VehicleUpdate> {
     return result.build();
   }
 }
-

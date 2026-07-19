@@ -7,20 +7,17 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 
 void main() {
   List<DataTableColumn<int>> columns() => [
-        DataTableColumn<int>.text(label: 'ID', text: (i) => 'ID-$i'),
-        DataTableColumn<int>.text(label: 'A', text: (i) => 'a' * 40),
-        DataTableColumn<int>.text(label: 'B', text: (i) => 'b' * 40),
-      ];
+    DataTableColumn<int>.text(label: 'ID', text: (i) => 'ID-$i'),
+    DataTableColumn<int>.text(label: 'A', text: (i) => 'a' * 40),
+    DataTableColumn<int>.text(label: 'B', text: (i) => 'b' * 40),
+  ];
 
   testWidgets('never pins a column during horizontal scroll, unpaginated '
       '(FR-001)', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: DataTableView<int>(
-            columns: columns(),
-            rows: const [1, 2, 3],
-          ),
+          body: DataTableView<int>(columns: columns(), rows: const [1, 2, 3]),
         ),
       ),
     );

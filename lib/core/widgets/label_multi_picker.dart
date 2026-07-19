@@ -47,9 +47,7 @@ class LabelMultiPicker extends StatelessWidget {
         final interactive = enabled && (selected || available);
         final chip = FilterChip(
           label: Text(
-            count == null
-                ? label.name
-                : l10n.labelWithCount(label.name, count),
+            count == null ? label.name : l10n.labelWithCount(label.name, count),
           ),
           selected: selected,
           onSelected: interactive

@@ -11,8 +11,8 @@ part 'label_update.g.dart';
 /// LabelUpdate
 ///
 /// Properties:
-/// * [name] 
-/// * [comment] 
+/// * [name]
+/// * [comment]
 @BuiltValue()
 abstract class LabelUpdate implements Built<LabelUpdate, LabelUpdateBuilder> {
   @BuiltValueField(wireName: r'name')
@@ -66,7 +66,11 @@ class _$LabelUpdateSerializer implements PrimitiveSerializer<LabelUpdate> {
     LabelUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -82,18 +86,22 @@ class _$LabelUpdateSerializer implements PrimitiveSerializer<LabelUpdate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -125,4 +133,3 @@ class _$LabelUpdateSerializer implements PrimitiveSerializer<LabelUpdate> {
     return result.build();
   }
 }
-

@@ -11,14 +11,15 @@ part 'warehouse_summary.g.dart';
 /// Flat Warehouse representation used when embedded as another resource's FK.
 ///
 /// Properties:
-/// * [warehouseId] 
-/// * [store] 
-/// * [code] 
-/// * [name] 
-/// * [comment] 
-/// * [disabled] 
+/// * [warehouseId]
+/// * [store]
+/// * [code]
+/// * [name]
+/// * [comment]
+/// * [disabled]
 @BuiltValue()
-abstract class WarehouseSummary implements Built<WarehouseSummary, WarehouseSummaryBuilder> {
+abstract class WarehouseSummary
+    implements Built<WarehouseSummary, WarehouseSummaryBuilder> {
   @BuiltValueField(wireName: r'warehouse_id')
   int get warehouseId;
 
@@ -39,16 +40,19 @@ abstract class WarehouseSummary implements Built<WarehouseSummary, WarehouseSumm
 
   WarehouseSummary._();
 
-  factory WarehouseSummary([void updates(WarehouseSummaryBuilder b)]) = _$WarehouseSummary;
+  factory WarehouseSummary([void updates(WarehouseSummaryBuilder b)]) =
+      _$WarehouseSummary;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(WarehouseSummaryBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<WarehouseSummary> get serializer => _$WarehouseSummarySerializer();
+  static Serializer<WarehouseSummary> get serializer =>
+      _$WarehouseSummarySerializer();
 }
 
-class _$WarehouseSummarySerializer implements PrimitiveSerializer<WarehouseSummary> {
+class _$WarehouseSummarySerializer
+    implements PrimitiveSerializer<WarehouseSummary> {
   @override
   final Iterable<Type> types = const [WarehouseSummary, _$WarehouseSummary];
 
@@ -81,15 +85,19 @@ class _$WarehouseSummarySerializer implements PrimitiveSerializer<WarehouseSumma
       specifiedType: const FullType(String),
     );
     yield r'comment';
-    yield object.comment == null ? null : serializers.serialize(
-      object.comment,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.comment == null
+        ? null
+        : serializers.serialize(
+            object.comment,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'disabled';
-    yield object.disabled == null ? null : serializers.serialize(
-      object.disabled,
-      specifiedType: const FullType.nullable(bool),
-    );
+    yield object.disabled == null
+        ? null
+        : serializers.serialize(
+            object.disabled,
+            specifiedType: const FullType.nullable(bool),
+          );
   }
 
   @override
@@ -98,7 +106,11 @@ class _$WarehouseSummarySerializer implements PrimitiveSerializer<WarehouseSumma
     WarehouseSummary object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -114,46 +126,52 @@ class _$WarehouseSummarySerializer implements PrimitiveSerializer<WarehouseSumma
       final value = serializedList[i + 1];
       switch (key) {
         case r'warehouse_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.warehouseId = valueDes;
           break;
         case r'store':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.store = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -185,4 +203,3 @@ class _$WarehouseSummarySerializer implements PrimitiveSerializer<WarehouseSumma
     return result.build();
   }
 }
-

@@ -11,10 +11,11 @@ part 'privilege_update.g.dart';
 /// PrivilegeUpdate
 ///
 /// Properties:
-/// * [systemObject] 
-/// * [privileges] 
+/// * [systemObject]
+/// * [privileges]
 @BuiltValue()
-abstract class PrivilegeUpdate implements Built<PrivilegeUpdate, PrivilegeUpdateBuilder> {
+abstract class PrivilegeUpdate
+    implements Built<PrivilegeUpdate, PrivilegeUpdateBuilder> {
   @BuiltValueField(wireName: r'system_object')
   int get systemObject;
 
@@ -23,16 +24,19 @@ abstract class PrivilegeUpdate implements Built<PrivilegeUpdate, PrivilegeUpdate
 
   PrivilegeUpdate._();
 
-  factory PrivilegeUpdate([void updates(PrivilegeUpdateBuilder b)]) = _$PrivilegeUpdate;
+  factory PrivilegeUpdate([void updates(PrivilegeUpdateBuilder b)]) =
+      _$PrivilegeUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(PrivilegeUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<PrivilegeUpdate> get serializer => _$PrivilegeUpdateSerializer();
+  static Serializer<PrivilegeUpdate> get serializer =>
+      _$PrivilegeUpdateSerializer();
 }
 
-class _$PrivilegeUpdateSerializer implements PrimitiveSerializer<PrivilegeUpdate> {
+class _$PrivilegeUpdateSerializer
+    implements PrimitiveSerializer<PrivilegeUpdate> {
   @override
   final Iterable<Type> types = const [PrivilegeUpdate, _$PrivilegeUpdate];
 
@@ -62,7 +66,11 @@ class _$PrivilegeUpdateSerializer implements PrimitiveSerializer<PrivilegeUpdate
     PrivilegeUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -78,17 +86,15 @@ class _$PrivilegeUpdateSerializer implements PrimitiveSerializer<PrivilegeUpdate
       final value = serializedList[i + 1];
       switch (key) {
         case r'system_object':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.systemObject = valueDes;
           break;
         case r'privileges':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.privileges = valueDes;
           break;
         default:
@@ -119,4 +125,3 @@ class _$PrivilegeUpdateSerializer implements PrimitiveSerializer<PrivilegeUpdate
     return result.build();
   }
 }
-

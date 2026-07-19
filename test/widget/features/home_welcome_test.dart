@@ -31,8 +31,9 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('branded deployment shows the configured display name',
-      (tester) async {
+  testWidgets('branded deployment shows the configured display name', (
+    tester,
+  ) async {
     await pumpWelcome(
       tester,
       brand: const BrandConfig(
@@ -46,8 +47,9 @@ void main() {
     expect(find.byKey(const Key('home_welcome_default')), findsNothing);
   });
 
-  testWidgets('unbranded deployment shows the default placeholder + message',
-      (tester) async {
+  testWidgets('unbranded deployment shows the default placeholder + message', (
+    tester,
+  ) async {
     await pumpWelcome(
       tester,
       brand: const BrandConfig(displayName: 'Mictlanix Business Essentials'),
@@ -57,8 +59,9 @@ void main() {
     expect(find.text('Welcome'), findsOneWidget);
   });
 
-  testWidgets('renders no navigation list (regression: old Home nav)',
-      (tester) async {
+  testWidgets('renders no navigation list (regression: old Home nav)', (
+    tester,
+  ) async {
     await pumpWelcome(
       tester,
       brand: const BrandConfig(displayName: 'Mictlanix Business Essentials'),
@@ -67,8 +70,9 @@ void main() {
     expect(find.byType(ListTile), findsNothing);
   });
 
-  testWidgets('renders without overflow at narrow and wide widths',
-      (tester) async {
+  testWidgets('renders without overflow at narrow and wide widths', (
+    tester,
+  ) async {
     await pumpWelcome(
       tester,
       brand: const BrandConfig(displayName: 'Mictlanix Business Essentials'),

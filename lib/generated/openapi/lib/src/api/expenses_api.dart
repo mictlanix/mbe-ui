@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_expense_response.dart';
 
 class ExpensesApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class ExpensesApi {
   const ExpensesApi(this._dio, this._serializers);
 
   /// Create Expense
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [expenseCreate] 
+  /// * [expenseCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,7 @@ class ExpensesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ExpenseResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ExpenseResponse>> createExpenseApiV1ExpensesPost({ 
+  Future<Response<ExpenseResponse>> createExpenseApiV1ExpensesPost({
     required ExpenseCreate expenseCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +48,10 @@ class ExpensesApi {
     final _path = r'/api/v1/expenses';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -70,13 +64,9 @@ class ExpensesApi {
     try {
       const _type = FullType(ExpenseCreate);
       _bodyData = _serializers.serialize(expenseCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +86,13 @@ class ExpensesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ExpenseResponse),
-      ) as ExpenseResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ExpenseResponse),
+                )
+                as ExpenseResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +116,10 @@ class ExpensesApi {
   }
 
   /// Delete Expense
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [expenseId] 
+  /// * [expenseId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +129,7 @@ class ExpensesApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteExpenseApiV1ExpensesExpenseIdDelete({ 
+  Future<Response<void>> deleteExpenseApiV1ExpensesExpenseIdDelete({
     required int expenseId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +138,22 @@ class ExpensesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/expenses/{expense_id}'.replaceAll('{' r'expense_id' '}', encodeQueryParameter(_serializers, expenseId, const FullType(int)).toString());
+    final _path = r'/api/v1/expenses/{expense_id}'.replaceAll(
+      '{'
+      r'expense_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        expenseId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +172,10 @@ class ExpensesApi {
   }
 
   /// Get Expense
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [expenseId] 
+  /// * [expenseId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +185,7 @@ class ExpensesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ExpenseResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ExpenseResponse>> getExpenseApiV1ExpensesExpenseIdGet({ 
+  Future<Response<ExpenseResponse>> getExpenseApiV1ExpensesExpenseIdGet({
     required int expenseId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +194,22 @@ class ExpensesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/expenses/{expense_id}'.replaceAll('{' r'expense_id' '}', encodeQueryParameter(_serializers, expenseId, const FullType(int)).toString());
+    final _path = r'/api/v1/expenses/{expense_id}'.replaceAll(
+      '{'
+      r'expense_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        expenseId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +228,13 @@ class ExpensesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ExpenseResponse),
-      ) as ExpenseResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ExpenseResponse),
+                )
+                as ExpenseResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,11 +258,11 @@ class ExpensesApi {
   }
 
   /// List Expenses
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [skip] 
-  /// * [limit] 
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -270,7 +272,7 @@ class ExpensesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseExpenseResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseExpenseResponse>> listExpensesApiV1ExpensesGet({ 
+  Future<Response<ListResponseExpenseResponse>> listExpensesApiV1ExpensesGet({
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -283,15 +285,10 @@ class ExpensesApi {
     final _path = r'/api/v1/expenses';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -299,8 +296,14 @@ class ExpensesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -316,11 +319,13 @@ class ExpensesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseExpenseResponse),
-      ) as ListResponseExpenseResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseExpenseResponse),
+                )
+                as ListResponseExpenseResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -344,11 +349,11 @@ class ExpensesApi {
   }
 
   /// Update Expense
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [expenseId] 
-  /// * [expenseUpdate] 
+  /// * [expenseId]
+  /// * [expenseUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -358,7 +363,7 @@ class ExpensesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ExpenseResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ExpenseResponse>> updateExpenseApiV1ExpensesExpenseIdPut({ 
+  Future<Response<ExpenseResponse>> updateExpenseApiV1ExpensesExpenseIdPut({
     required int expenseId,
     required ExpenseUpdate expenseUpdate,
     CancelToken? cancelToken,
@@ -368,18 +373,22 @@ class ExpensesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/expenses/{expense_id}'.replaceAll('{' r'expense_id' '}', encodeQueryParameter(_serializers, expenseId, const FullType(int)).toString());
+    final _path = r'/api/v1/expenses/{expense_id}'.replaceAll(
+      '{'
+      r'expense_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        expenseId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -392,13 +401,9 @@ class ExpensesApi {
     try {
       const _type = FullType(ExpenseUpdate);
       _bodyData = _serializers.serialize(expenseUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -418,11 +423,13 @@ class ExpensesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ExpenseResponse),
-      ) as ExpenseResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ExpenseResponse),
+                )
+                as ExpenseResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -444,5 +451,4 @@ class ExpensesApi {
       extra: _response.extra,
     );
   }
-
 }

@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
 
 class EmployeesApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class EmployeesApi {
   const EmployeesApi(this._dio, this._serializers);
 
   /// Create Employee
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [employeeCreate] 
+  /// * [employeeCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,7 @@ class EmployeesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [EmployeeResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<EmployeeResponse>> createEmployeeApiV1EmployeesPost({ 
+  Future<Response<EmployeeResponse>> createEmployeeApiV1EmployeesPost({
     required EmployeeCreate employeeCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +48,10 @@ class EmployeesApi {
     final _path = r'/api/v1/employees';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -70,13 +64,9 @@ class EmployeesApi {
     try {
       const _type = FullType(EmployeeCreate);
       _bodyData = _serializers.serialize(employeeCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +86,13 @@ class EmployeesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(EmployeeResponse),
-      ) as EmployeeResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(EmployeeResponse),
+                )
+                as EmployeeResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +116,10 @@ class EmployeesApi {
   }
 
   /// Delete Employee
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [employeeId] 
+  /// * [employeeId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +129,7 @@ class EmployeesApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteEmployeeApiV1EmployeesEmployeeIdDelete({ 
+  Future<Response<void>> deleteEmployeeApiV1EmployeesEmployeeIdDelete({
     required int employeeId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +138,22 @@ class EmployeesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/employees/{employee_id}'.replaceAll('{' r'employee_id' '}', encodeQueryParameter(_serializers, employeeId, const FullType(int)).toString());
+    final _path = r'/api/v1/employees/{employee_id}'.replaceAll(
+      '{'
+      r'employee_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        employeeId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +172,10 @@ class EmployeesApi {
   }
 
   /// Get Employee
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [employeeId] 
+  /// * [employeeId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +185,7 @@ class EmployeesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [EmployeeResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<EmployeeResponse>> getEmployeeApiV1EmployeesEmployeeIdGet({ 
+  Future<Response<EmployeeResponse>> getEmployeeApiV1EmployeesEmployeeIdGet({
     required int employeeId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +194,22 @@ class EmployeesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/employees/{employee_id}'.replaceAll('{' r'employee_id' '}', encodeQueryParameter(_serializers, employeeId, const FullType(int)).toString());
+    final _path = r'/api/v1/employees/{employee_id}'.replaceAll(
+      '{'
+      r'employee_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        employeeId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +228,13 @@ class EmployeesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(EmployeeResponse),
-      ) as EmployeeResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(EmployeeResponse),
+                )
+                as EmployeeResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,14 +258,14 @@ class EmployeesApi {
   }
 
   /// List Employees
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [active] 
-  /// * [salesPerson] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [active]
+  /// * [salesPerson]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -273,7 +275,8 @@ class EmployeesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseEmployeeResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseEmployeeResponse>> listEmployeesApiV1EmployeesGet({ 
+  Future<Response<ListResponseEmployeeResponse>>
+  listEmployeesApiV1EmployeesGet({
     String? search,
     bool? active,
     bool? salesPerson,
@@ -289,15 +292,10 @@ class EmployeesApi {
     final _path = r'/api/v1/employees';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -305,11 +303,32 @@ class EmployeesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (active != null) r'active': encodeQueryParameter(_serializers, active, const FullType(bool)),
-      if (salesPerson != null) r'sales_person': encodeQueryParameter(_serializers, salesPerson, const FullType(bool)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (active != null)
+        r'active': encodeQueryParameter(
+          _serializers,
+          active,
+          const FullType(bool),
+        ),
+      if (salesPerson != null)
+        r'sales_person': encodeQueryParameter(
+          _serializers,
+          salesPerson,
+          const FullType(bool),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -325,11 +344,13 @@ class EmployeesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseEmployeeResponse),
-      ) as ListResponseEmployeeResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseEmployeeResponse),
+                )
+                as ListResponseEmployeeResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -353,11 +374,11 @@ class EmployeesApi {
   }
 
   /// Update Employee
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [employeeId] 
-  /// * [employeeUpdate] 
+  /// * [employeeId]
+  /// * [employeeUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -367,7 +388,7 @@ class EmployeesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [EmployeeResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<EmployeeResponse>> updateEmployeeApiV1EmployeesEmployeeIdPut({ 
+  Future<Response<EmployeeResponse>> updateEmployeeApiV1EmployeesEmployeeIdPut({
     required int employeeId,
     required EmployeeUpdate employeeUpdate,
     CancelToken? cancelToken,
@@ -377,18 +398,22 @@ class EmployeesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/employees/{employee_id}'.replaceAll('{' r'employee_id' '}', encodeQueryParameter(_serializers, employeeId, const FullType(int)).toString());
+    final _path = r'/api/v1/employees/{employee_id}'.replaceAll(
+      '{'
+      r'employee_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        employeeId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -401,13 +426,9 @@ class EmployeesApi {
     try {
       const _type = FullType(EmployeeUpdate);
       _bodyData = _serializers.serialize(employeeUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -427,11 +448,13 @@ class EmployeesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(EmployeeResponse),
-      ) as EmployeeResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(EmployeeResponse),
+                )
+                as EmployeeResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -453,5 +476,4 @@ class EmployeesApi {
       extra: _response.extra,
     );
   }
-
 }

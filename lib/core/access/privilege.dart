@@ -38,8 +38,10 @@ class Privilege with _$Privilege {
   bool has(AccessRight right) => rawValue & right.value != 0;
 
   PrivilegeUpdate toUpdate() {
-    return PrivilegeUpdate((b) => b
-      ..systemObject = systemObject.value
-      ..privileges = rawValue);
+    return PrivilegeUpdate(
+      (b) => b
+        ..systemObject = systemObject.value
+        ..privileges = rawValue,
+    );
   }
 }

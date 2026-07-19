@@ -36,7 +36,9 @@ class MergeProductsController extends _$MergeProductsController {
 
     state = state.copyWith(submission: const AsyncValue.loading());
     try {
-      await ref.read(productRepositoryProvider).mergeProducts(
+      await ref
+          .read(productRepositoryProvider)
+          .mergeProducts(
             productId: canonical.productId,
             duplicateId: duplicate.productId,
           );
@@ -45,9 +47,7 @@ class MergeProductsController extends _$MergeProductsController {
         merged: true,
       );
     } on AppError catch (e, stackTrace) {
-      state = state.copyWith(
-        submission: AsyncValue.error(e, stackTrace),
-      );
+      state = state.copyWith(submission: AsyncValue.error(e, stackTrace));
     }
   }
 }

@@ -21,6 +21,7 @@ class ProductListItem with _$ProductListItem {
     required String unitOfMeasurementName,
     required String taxRate,
     required bool deactivated,
+
     /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
     /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
     /// way the detail endpoint always has).

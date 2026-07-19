@@ -12,22 +12,26 @@ part 'low_profit_margin1.g.dart';
 
 /// LowProfitMargin1
 @BuiltValue()
-abstract class LowProfitMargin1 implements Built<LowProfitMargin1, LowProfitMargin1Builder> {
+abstract class LowProfitMargin1
+    implements Built<LowProfitMargin1, LowProfitMargin1Builder> {
   /// Any Of [String], [num]
   AnyOf get anyOf;
 
   LowProfitMargin1._();
 
-  factory LowProfitMargin1([void updates(LowProfitMargin1Builder b)]) = _$LowProfitMargin1;
+  factory LowProfitMargin1([void updates(LowProfitMargin1Builder b)]) =
+      _$LowProfitMargin1;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(LowProfitMargin1Builder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<LowProfitMargin1> get serializer => _$LowProfitMargin1Serializer();
+  static Serializer<LowProfitMargin1> get serializer =>
+      _$LowProfitMargin1Serializer();
 }
 
-class _$LowProfitMargin1Serializer implements PrimitiveSerializer<LowProfitMargin1> {
+class _$LowProfitMargin1Serializer
+    implements PrimitiveSerializer<LowProfitMargin1> {
   @override
   final Iterable<Type> types = const [LowProfitMargin1, _$LowProfitMargin1];
 
@@ -38,8 +42,7 @@ class _$LowProfitMargin1Serializer implements PrimitiveSerializer<LowProfitMargi
     Serializers serializers,
     LowProfitMargin1 object, {
     FullType specifiedType = FullType.unspecified,
-  }) sync* {
-  }
+  }) sync* {}
 
   @override
   Object serialize(
@@ -48,7 +51,13 @@ class _$LowProfitMargin1Serializer implements PrimitiveSerializer<LowProfitMargi
     FullType specifiedType = FullType.unspecified,
   }) {
     final anyOf = object.anyOf;
-    return serializers.serialize(anyOf, specifiedType: FullType(AnyOf, anyOf.valueTypes.map((type) => FullType(type)).toList()))!;
+    return serializers.serialize(
+      anyOf,
+      specifiedType: FullType(
+        AnyOf,
+        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+      ),
+    )!;
   }
 
   @override
@@ -59,10 +68,11 @@ class _$LowProfitMargin1Serializer implements PrimitiveSerializer<LowProfitMargi
   }) {
     final result = LowProfitMargin1Builder();
     Object? anyOfDataSrc;
-    final targetType = const FullType(AnyOf, [FullType(num), FullType(String), ]);
+    final targetType = const FullType(AnyOf, [FullType(num), FullType(String)]);
     anyOfDataSrc = serialized;
-    result.anyOf = serializers.deserialize(anyOfDataSrc, specifiedType: targetType) as AnyOf;
+    result.anyOf =
+        serializers.deserialize(anyOfDataSrc, specifiedType: targetType)
+            as AnyOf;
     return result.build();
   }
 }
-

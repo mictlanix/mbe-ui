@@ -11,13 +11,14 @@ part 'cash_drawer_create.g.dart';
 /// CashDrawerCreate
 ///
 /// Properties:
-/// * [store] 
-/// * [code] 
-/// * [name] 
-/// * [comment] 
-/// * [disabled] 
+/// * [store]
+/// * [code]
+/// * [name]
+/// * [comment]
+/// * [disabled]
 @BuiltValue()
-abstract class CashDrawerCreate implements Built<CashDrawerCreate, CashDrawerCreateBuilder> {
+abstract class CashDrawerCreate
+    implements Built<CashDrawerCreate, CashDrawerCreateBuilder> {
   @BuiltValueField(wireName: r'store')
   int get store;
 
@@ -35,16 +36,19 @@ abstract class CashDrawerCreate implements Built<CashDrawerCreate, CashDrawerCre
 
   CashDrawerCreate._();
 
-  factory CashDrawerCreate([void updates(CashDrawerCreateBuilder b)]) = _$CashDrawerCreate;
+  factory CashDrawerCreate([void updates(CashDrawerCreateBuilder b)]) =
+      _$CashDrawerCreate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(CashDrawerCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<CashDrawerCreate> get serializer => _$CashDrawerCreateSerializer();
+  static Serializer<CashDrawerCreate> get serializer =>
+      _$CashDrawerCreateSerializer();
 }
 
-class _$CashDrawerCreateSerializer implements PrimitiveSerializer<CashDrawerCreate> {
+class _$CashDrawerCreateSerializer
+    implements PrimitiveSerializer<CashDrawerCreate> {
   @override
   final Iterable<Type> types = const [CashDrawerCreate, _$CashDrawerCreate];
 
@@ -93,7 +97,11 @@ class _$CashDrawerCreateSerializer implements PrimitiveSerializer<CashDrawerCrea
     CashDrawerCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -109,39 +117,46 @@ class _$CashDrawerCreateSerializer implements PrimitiveSerializer<CashDrawerCrea
       final value = serializedList[i + 1];
       switch (key) {
         case r'store':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.store = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -173,4 +188,3 @@ class _$CashDrawerCreateSerializer implements PrimitiveSerializer<CashDrawerCrea
     return result.build();
   }
 }
-

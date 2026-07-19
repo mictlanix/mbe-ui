@@ -11,10 +11,11 @@ part 'expense_update.g.dart';
 /// ExpenseUpdate
 ///
 /// Properties:
-/// * [name] 
-/// * [comment] 
+/// * [name]
+/// * [comment]
 @BuiltValue()
-abstract class ExpenseUpdate implements Built<ExpenseUpdate, ExpenseUpdateBuilder> {
+abstract class ExpenseUpdate
+    implements Built<ExpenseUpdate, ExpenseUpdateBuilder> {
   @BuiltValueField(wireName: r'name')
   String? get name;
 
@@ -23,13 +24,15 @@ abstract class ExpenseUpdate implements Built<ExpenseUpdate, ExpenseUpdateBuilde
 
   ExpenseUpdate._();
 
-  factory ExpenseUpdate([void updates(ExpenseUpdateBuilder b)]) = _$ExpenseUpdate;
+  factory ExpenseUpdate([void updates(ExpenseUpdateBuilder b)]) =
+      _$ExpenseUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ExpenseUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ExpenseUpdate> get serializer => _$ExpenseUpdateSerializer();
+  static Serializer<ExpenseUpdate> get serializer =>
+      _$ExpenseUpdateSerializer();
 }
 
 class _$ExpenseUpdateSerializer implements PrimitiveSerializer<ExpenseUpdate> {
@@ -66,7 +69,11 @@ class _$ExpenseUpdateSerializer implements PrimitiveSerializer<ExpenseUpdate> {
     ExpenseUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -82,18 +89,22 @@ class _$ExpenseUpdateSerializer implements PrimitiveSerializer<ExpenseUpdate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -125,4 +136,3 @@ class _$ExpenseUpdateSerializer implements PrimitiveSerializer<ExpenseUpdate> {
     return result.build();
   }
 }
-

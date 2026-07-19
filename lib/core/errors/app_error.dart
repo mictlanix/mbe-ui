@@ -17,7 +17,8 @@ sealed class AppError with _$AppError {
   const factory AppError.notFound([String? message]) = NotFoundError;
 
   /// `5xx`.
-  const factory AppError.server({int? statusCode, String? message}) = ServerError;
+  const factory AppError.server({int? statusCode, String? message}) =
+      ServerError;
 
   /// Connection/timeout failure before a response is received.
   const factory AppError.network([String? message]) = NetworkError;
@@ -40,10 +41,10 @@ extension AppErrorServerMessage on AppError {
   /// [ValidationError] (its field-level messages are surfaced separately)
   /// and for errors the server sent without a `detail` string.
   String? get serverMessage => switch (this) {
-        AuthError(message: final m) => m,
-        NotFoundError(message: final m) => m,
-        ServerError(message: final m) => m,
-        NetworkError(message: final m) => m,
-        ValidationError() => null,
-      };
+    AuthError(message: final m) => m,
+    NotFoundError(message: final m) => m,
+    ServerError(message: final m) => m,
+    NetworkError(message: final m) => m,
+    ValidationError() => null,
+  };
 }

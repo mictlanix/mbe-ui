@@ -11,11 +11,12 @@ part 'user_settings_update.g.dart';
 /// UserSettingsUpdate
 ///
 /// Properties:
-/// * [storeId] 
-/// * [pointSaleId] 
-/// * [cashDrawerId] 
+/// * [storeId]
+/// * [pointSaleId]
+/// * [cashDrawerId]
 @BuiltValue()
-abstract class UserSettingsUpdate implements Built<UserSettingsUpdate, UserSettingsUpdateBuilder> {
+abstract class UserSettingsUpdate
+    implements Built<UserSettingsUpdate, UserSettingsUpdateBuilder> {
   @BuiltValueField(wireName: r'store_id')
   int? get storeId;
 
@@ -27,16 +28,19 @@ abstract class UserSettingsUpdate implements Built<UserSettingsUpdate, UserSetti
 
   UserSettingsUpdate._();
 
-  factory UserSettingsUpdate([void updates(UserSettingsUpdateBuilder b)]) = _$UserSettingsUpdate;
+  factory UserSettingsUpdate([void updates(UserSettingsUpdateBuilder b)]) =
+      _$UserSettingsUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(UserSettingsUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<UserSettingsUpdate> get serializer => _$UserSettingsUpdateSerializer();
+  static Serializer<UserSettingsUpdate> get serializer =>
+      _$UserSettingsUpdateSerializer();
 }
 
-class _$UserSettingsUpdateSerializer implements PrimitiveSerializer<UserSettingsUpdate> {
+class _$UserSettingsUpdateSerializer
+    implements PrimitiveSerializer<UserSettingsUpdate> {
   @override
   final Iterable<Type> types = const [UserSettingsUpdate, _$UserSettingsUpdate];
 
@@ -77,7 +81,11 @@ class _$UserSettingsUpdateSerializer implements PrimitiveSerializer<UserSettings
     UserSettingsUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -93,26 +101,32 @@ class _$UserSettingsUpdateSerializer implements PrimitiveSerializer<UserSettings
       final value = serializedList[i + 1];
       switch (key) {
         case r'store_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.storeId = valueDes;
           break;
         case r'point_sale_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.pointSaleId = valueDes;
           break;
         case r'cash_drawer_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.cashDrawerId = valueDes;
           break;
@@ -144,4 +158,3 @@ class _$UserSettingsUpdateSerializer implements PrimitiveSerializer<UserSettings
     return result.build();
   }
 }
-

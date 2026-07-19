@@ -282,26 +282,25 @@ void main() {
     },
   );
 
-  testWidgets(
-    'omits the Edit row action for a read-only user (FR-004)',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _limitedUser);
+  testWidgets('omits the Edit row action for a read-only user (FR-004)', (
+    tester,
+  ) async {
+    await pumpScreen(tester, signedInAs: _limitedUser);
 
-      final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
-      final icons = tester
-          .widgetList<IconButton>(
-            find.descendant(
-              of: find.byKey(const Key('users_table')),
-              matching: find.byType(IconButton),
-            ),
-          )
-          .map((b) => (b.icon as Icon).icon)
-          .where(rowActionIcons.contains)
-          .toList();
+    final rowActionIcons = {Icons.edit_outlined, Icons.delete_outline};
+    final icons = tester
+        .widgetList<IconButton>(
+          find.descendant(
+            of: find.byKey(const Key('users_table')),
+            matching: find.byType(IconButton),
+          ),
+        )
+        .map((b) => (b.icon as Icon).icon)
+        .where(rowActionIcons.contains)
+        .toList();
 
-      expect(icons, isEmpty);
-    },
-  );
+    expect(icons, isEmpty);
+  });
 
   testWidgets(
     'tapping a row opens the user read-only, not the editable form (FR-003)',
@@ -315,15 +314,14 @@ void main() {
     },
   );
 
-  testWidgets(
-    'the Edit row action opens the user editable form (FR-004)',
-    (tester) async {
-      await pumpScreenWithRouter(tester, signedInAs: _adminUser);
+  testWidgets('the Edit row action opens the user editable form (FR-004)', (
+    tester,
+  ) async {
+    await pumpScreenWithRouter(tester, signedInAs: _adminUser);
 
-      await tester.tap(find.byIcon(Icons.edit_outlined).first);
-      await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.edit_outlined).first);
+    await tester.pumpAndSettle();
 
-      expect(find.text('/users/admin'), findsOneWidget);
-    },
-  );
+    expect(find.text('/users/admin'), findsOneWidget);
+  });
 }

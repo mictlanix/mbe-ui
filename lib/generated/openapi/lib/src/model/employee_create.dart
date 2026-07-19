@@ -12,20 +12,21 @@ part 'employee_create.g.dart';
 /// EmployeeCreate
 ///
 /// Properties:
-/// * [firstName] 
-/// * [lastName] 
-/// * [nickname] 
-/// * [gender] 
-/// * [birthday] 
-/// * [taxpayerId] 
-/// * [salesPerson] 
-/// * [active] 
-/// * [personalId] 
-/// * [startJobDate] 
-/// * [enrollNumber] 
-/// * [comment] 
+/// * [firstName]
+/// * [lastName]
+/// * [nickname]
+/// * [gender]
+/// * [birthday]
+/// * [taxpayerId]
+/// * [salesPerson]
+/// * [active]
+/// * [personalId]
+/// * [startJobDate]
+/// * [enrollNumber]
+/// * [comment]
 @BuiltValue()
-abstract class EmployeeCreate implements Built<EmployeeCreate, EmployeeCreateBuilder> {
+abstract class EmployeeCreate
+    implements Built<EmployeeCreate, EmployeeCreateBuilder> {
   @BuiltValueField(wireName: r'first_name')
   String get firstName;
 
@@ -64,18 +65,21 @@ abstract class EmployeeCreate implements Built<EmployeeCreate, EmployeeCreateBui
 
   EmployeeCreate._();
 
-  factory EmployeeCreate([void updates(EmployeeCreateBuilder b)]) = _$EmployeeCreate;
+  factory EmployeeCreate([void updates(EmployeeCreateBuilder b)]) =
+      _$EmployeeCreate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(EmployeeCreateBuilder b) => b
-      ..salesPerson = false
-      ..active = true;
+    ..salesPerson = false
+    ..active = true;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<EmployeeCreate> get serializer => _$EmployeeCreateSerializer();
+  static Serializer<EmployeeCreate> get serializer =>
+      _$EmployeeCreateSerializer();
 }
 
-class _$EmployeeCreateSerializer implements PrimitiveSerializer<EmployeeCreate> {
+class _$EmployeeCreateSerializer
+    implements PrimitiveSerializer<EmployeeCreate> {
   @override
   final Iterable<Type> types = const [EmployeeCreate, _$EmployeeCreate];
 
@@ -167,7 +171,11 @@ class _$EmployeeCreateSerializer implements PrimitiveSerializer<EmployeeCreate> 
     EmployeeCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -183,90 +191,111 @@ class _$EmployeeCreateSerializer implements PrimitiveSerializer<EmployeeCreate> 
       final value = serializedList[i + 1];
       switch (key) {
         case r'first_name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.firstName = valueDes;
           break;
         case r'last_name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.lastName = valueDes;
           break;
         case r'nickname':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.nickname = valueDes;
           break;
         case r'gender':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.gender = valueDes;
           break;
         case r'birthday':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Date),
+                  )
+                  as Date;
           result.birthday = valueDes;
           break;
         case r'taxpayer_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.taxpayerId = valueDes;
           break;
         case r'sales_person':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.salesPerson = valueDes;
           break;
         case r'active':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.active = valueDes;
           break;
         case r'personal_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.personalId = valueDes;
           break;
         case r'start_job_date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Date),
+                  )
+                  as Date;
           result.startJobDate = valueDes;
           break;
         case r'enroll_number':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.enrollNumber = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -298,4 +327,3 @@ class _$EmployeeCreateSerializer implements PrimitiveSerializer<EmployeeCreate> 
     return result.build();
   }
 }
-

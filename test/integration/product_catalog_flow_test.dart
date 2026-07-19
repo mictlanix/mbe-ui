@@ -31,8 +31,9 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 const _testUsername = String.fromEnvironment('MBE_TEST_USERNAME');
 const _testPassword = String.fromEnvironment('MBE_TEST_PASSWORD');
 const _knownProductCode = String.fromEnvironment('MBE_KNOWN_PRODUCT_CODE');
-const _knownProductNamePart =
-    String.fromEnvironment('MBE_KNOWN_PRODUCT_NAME_PART');
+const _knownProductNamePart = String.fromEnvironment(
+  'MBE_KNOWN_PRODUCT_NAME_PART',
+);
 const _createUsername = String.fromEnvironment('MBE_CREATE_TEST_USERNAME');
 const _createPassword = String.fromEnvironment('MBE_CREATE_TEST_PASSWORD');
 
@@ -56,10 +57,9 @@ void main() {
     String password,
   ) async {
     final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
-    final token = await AuthRepositoryImpl(dio).login(
-      username: username,
-      password: password,
-    );
+    final token = await AuthRepositoryImpl(
+      dio,
+    ).login(username: username, password: password);
     dio.options.headers['Authorization'] = 'Bearer $token';
     return ProductRepositoryImpl(dio);
   }
@@ -81,12 +81,15 @@ void main() {
   test(
     'scenario 2: a partial name search finds matching products',
     () async {
-      final result =
-          await productRepository.list(search: _knownProductNamePart);
+      final result = await productRepository.list(
+        search: _knownProductNamePart,
+      );
 
       expect(
         result.items.any(
-          (p) => p.name.toLowerCase().contains(_knownProductNamePart.toLowerCase()),
+          (p) => p.name.toLowerCase().contains(
+            _knownProductNamePart.toLowerCase(),
+          ),
         ),
         isTrue,
       );
@@ -113,30 +116,26 @@ void main() {
     skip: !_hasTestCredentials,
   );
 
-  test(
-    'US2 scenario 1: a valid create appears in the catalog as active '
-    '(FR-003, FR-015, SC-002)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _createUsername,
-        _createPassword,
-      );
-      final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
+  test('US2 scenario 1: a valid create appears in the catalog as active '
+      '(FR-003, FR-015, SC-002)', () async {
+    final repo = await authenticatedProductRepository(
+      _createUsername,
+      _createPassword,
+    );
+    final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
 
-      final created = await repo.create(
-        code: code,
-        name: 'Integration Test Widget',
-        unitOfMeasurement: 'PCE',
-      );
+    final created = await repo.create(
+      code: code,
+      name: 'Integration Test Widget',
+      unitOfMeasurement: 'PCE',
+    );
 
-      expect(created.code, code);
-      expect(created.deactivated, isFalse);
+    expect(created.code, code);
+    expect(created.deactivated, isFalse);
 
-      final fetched = await repo.get(productId: created.productId);
-      expect(fetched.code, code);
-    },
-    skip: !_hasCreateCredentials,
-  );
+    final fetched = await repo.get(productId: created.productId);
+    expect(fetched.code, code);
+  }, skip: !_hasCreateCredentials);
 
   test(
     'US2 scenario 2: a duplicate code is rejected (FR-004)',
@@ -185,35 +184,31 @@ void main() {
     skip: !_hasCreateCredentials,
   );
 
-  test(
-    'US3 scenario 1: editing a name/tax rate persists and is reflected on '
-    'a fresh get() (FR-009)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _createUsername,
-        _createPassword,
-      );
-      final created = await repo.create(
-        code: 'IT-${DateTime.now().millisecondsSinceEpoch}',
-        name: 'Integration Test Widget',
-        unitOfMeasurement: 'PCE',
-        taxRate: '0.16',
-      );
+  test('US3 scenario 1: editing a name/tax rate persists and is reflected on '
+      'a fresh get() (FR-009)', () async {
+    final repo = await authenticatedProductRepository(
+      _createUsername,
+      _createPassword,
+    );
+    final created = await repo.create(
+      code: 'IT-${DateTime.now().millisecondsSinceEpoch}',
+      name: 'Integration Test Widget',
+      unitOfMeasurement: 'PCE',
+      taxRate: '0.16',
+    );
 
-      final updated = await repo.update(
-        productId: created.productId,
-        name: 'Integration Test Widget Updated',
-        taxRate: '0',
-      );
+    final updated = await repo.update(
+      productId: created.productId,
+      name: 'Integration Test Widget Updated',
+      taxRate: '0',
+    );
 
-      expect(updated.name, 'Integration Test Widget Updated');
-      expect(updated.taxRate, '0');
+    expect(updated.name, 'Integration Test Widget Updated');
+    expect(updated.taxRate, '0');
 
-      final fetched = await repo.get(productId: created.productId);
-      expect(fetched.name, 'Integration Test Widget Updated');
-    },
-    skip: !_hasCreateCredentials,
-  );
+    final fetched = await repo.get(productId: created.productId);
+    expect(fetched.name, 'Integration Test Widget Updated');
+  }, skip: !_hasCreateCredentials);
 
   test(
     'US3 scenario 2: renaming to an existing code is rejected (FR-004)',
@@ -242,90 +237,78 @@ void main() {
     skip: !_hasCreateCredentials,
   );
 
-  test(
-    'US3 scenario 3: a user without products.update privilege is denied '
-    '(FR-012, FR-013)',
-    () async {
-      final token = await authRepository.login(
-        username: _testUsername,
-        password: _testPassword,
-      );
-      final user = await authRepository.me();
-      final access = AccessControlService(
-        AuthState.authenticated(token: token, user: user),
-      );
+  test('US3 scenario 3: a user without products.update privilege is denied '
+      '(FR-012, FR-013)', () async {
+    final token = await authRepository.login(
+      username: _testUsername,
+      password: _testPassword,
+    );
+    final user = await authRepository.me();
+    final access = AccessControlService(
+      AuthState.authenticated(token: token, user: user),
+    );
 
-      expect(access.can(SystemObject.products, AccessRight.update), isFalse);
-    },
-    skip: !_hasTestCredentials,
-  );
+    expect(access.can(SystemObject.products, AccessRight.update), isFalse);
+  }, skip: !_hasTestCredentials);
 
-  test(
-    'US4 scenario 1: deactivating excludes a product from the default '
-    '(active-only) list (FR-010, FR-011, SC-005)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _createUsername,
-        _createPassword,
-      );
-      final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
-      final created = await repo.create(
-        code: code,
-        name: 'Integration Test Widget',
-        unitOfMeasurement: 'PCE',
-      );
+  test('US4 scenario 1: deactivating excludes a product from the default '
+      '(active-only) list (FR-010, FR-011, SC-005)', () async {
+    final repo = await authenticatedProductRepository(
+      _createUsername,
+      _createPassword,
+    );
+    final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
+    final created = await repo.create(
+      code: code,
+      name: 'Integration Test Widget',
+      unitOfMeasurement: 'PCE',
+    );
 
-      final deactivated = await repo.update(
-        productId: created.productId,
-        deactivated: true,
-      );
-      expect(deactivated.deactivated, isTrue);
+    final deactivated = await repo.update(
+      productId: created.productId,
+      deactivated: true,
+    );
+    expect(deactivated.deactivated, isTrue);
 
-      final activeOnly = await repo.list(search: code, deactivated: false);
-      expect(activeOnly.items.any((p) => p.productId == created.productId), isFalse);
-    },
-    skip: !_hasCreateCredentials,
-  );
+    final activeOnly = await repo.list(search: code, deactivated: false);
+    expect(
+      activeOnly.items.any((p) => p.productId == created.productId),
+      isFalse,
+    );
+  }, skip: !_hasCreateCredentials);
 
-  test(
-    'US4 scenario 2: a deactivated product is still found with the '
-    '"include disabled" filter, marked inactive (FR-011)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _createUsername,
-        _createPassword,
-      );
-      final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
-      final created = await repo.create(
-        code: code,
-        name: 'Integration Test Widget',
-        unitOfMeasurement: 'PCE',
-      );
-      await repo.update(productId: created.productId, deactivated: true);
+  test('US4 scenario 2: a deactivated product is still found with the '
+      '"include disabled" filter, marked inactive (FR-011)', () async {
+    final repo = await authenticatedProductRepository(
+      _createUsername,
+      _createPassword,
+    );
+    final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
+    final created = await repo.create(
+      code: code,
+      name: 'Integration Test Widget',
+      unitOfMeasurement: 'PCE',
+    );
+    await repo.update(productId: created.productId, deactivated: true);
 
-      final includeDisabled = await repo.list(search: code);
-      final found = includeDisabled.items
-          .singleWhere((p) => p.productId == created.productId);
-      expect(found.deactivated, isTrue);
-    },
-    skip: !_hasCreateCredentials,
-  );
+    final includeDisabled = await repo.list(search: code);
+    final found = includeDisabled.items.singleWhere(
+      (p) => p.productId == created.productId,
+    );
+    expect(found.deactivated, isTrue);
+  }, skip: !_hasCreateCredentials);
 
-  test(
-    'US4 scenario 4: a user without products.delete privilege is denied '
-    '(FR-012)',
-    () async {
-      final token = await authRepository.login(
-        username: _testUsername,
-        password: _testPassword,
-      );
-      final user = await authRepository.me();
-      final access = AccessControlService(
-        AuthState.authenticated(token: token, user: user),
-      );
+  test('US4 scenario 4: a user without products.delete privilege is denied '
+      '(FR-012)', () async {
+    final token = await authRepository.login(
+      username: _testUsername,
+      password: _testPassword,
+    );
+    final user = await authRepository.me();
+    final access = AccessControlService(
+      AuthState.authenticated(token: token, user: user),
+    );
 
-      expect(access.can(SystemObject.products, AccessRight.delete), isFalse);
-    },
-    skip: !_hasTestCredentials,
-  );
+    expect(access.can(SystemObject.products, AccessRight.delete), isFalse);
+  }, skip: !_hasTestCredentials);
 }

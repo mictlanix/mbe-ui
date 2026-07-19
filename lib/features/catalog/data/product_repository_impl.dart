@@ -24,8 +24,8 @@ final productRepositoryProvider = Provider<ProductRepository>((ref) {
 /// (contracts/mbe-api-products.md).
 class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(Dio dio)
-      : _dio = dio,
-        _api = ProductsApi(dio, standardSerializers);
+    : _dio = dio,
+      _api = ProductsApi(dio, standardSerializers);
 
   final Dio _dio;
   final ProductsApi _api;
@@ -176,7 +176,8 @@ class ProductRepositoryImpl implements ProductRepository {
         productUpdate: ProductUpdate((b) {
           if (code != null) b.code = code;
           if (name != null) b.name = name;
-          if (unitOfMeasurement != null) b.unitOfMeasurement = unitOfMeasurement;
+          if (unitOfMeasurement != null)
+            b.unitOfMeasurement = unitOfMeasurement;
           if (sku != null) b.sku = sku;
           if (brand != null) b.brand = brand;
           if (model != null) b.model = model;
@@ -244,9 +245,11 @@ class ProductRepositoryImpl implements ProductRepository {
   }) async {
     try {
       await _api.mergeProductsApiV1ProductsMergePost(
-        productMergeRequest: ProductMergeRequest((b) => b
-          ..productId = productId
-          ..duplicateId = duplicateId),
+        productMergeRequest: ProductMergeRequest(
+          (b) => b
+            ..productId = productId
+            ..duplicateId = duplicateId,
+        ),
       );
     } on DioException catch (e) {
       throw _toAppError(e);
@@ -263,15 +266,15 @@ class ProductRepositoryImpl implements ProductRepository {
     List<int> labels = const [],
   }) async {
     try {
-      final response =
-          await _api.getProductLabelFacetsApiV1ProductsLabelsFacetsGet(
-        search: search,
-        deactivated: deactivated,
-        stockable: stockable,
-        salable: salable,
-        purchasable: purchasable,
-        label: labels.isEmpty ? null : BuiltList<int>(labels),
-      );
+      final response = await _api
+          .getProductLabelFacetsApiV1ProductsLabelsFacetsGet(
+            search: search,
+            deactivated: deactivated,
+            stockable: stockable,
+            salable: salable,
+            purchasable: purchasable,
+            label: labels.isEmpty ? null : BuiltList<int>(labels),
+          );
       final result = response.data;
       if (result == null) return const [];
       return result.map(ProductLabelFacet.fromResponse).toList();
@@ -289,9 +292,10 @@ ProductResponse _deserializeProductResponse(Response<Object?> response) {
   final raw = response.data;
   if (raw == null) throw const AppError.server();
   return standardSerializers.deserialize(
-    raw,
-    specifiedType: const FullType(ProductResponse),
-  ) as ProductResponse;
+        raw,
+        specifiedType: const FullType(ProductResponse),
+      )
+      as ProductResponse;
 }
 
 /// `tax_rate` is `anyOf: [string, number]` in mbe-api's OpenAPI schema

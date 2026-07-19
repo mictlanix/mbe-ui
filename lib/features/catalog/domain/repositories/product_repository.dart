@@ -147,7 +147,10 @@ abstract class ProductRepository {
   ///   longer exists (FR-011).
   /// - `ServerError` / `NetworkError` on other backend/transport failures
   ///   (FR-011) — surfaced with mbe-api's `detail` message where present.
-  Future<void> mergeProducts({required int productId, required int duplicateId});
+  Future<void> mergeProducts({
+    required int productId,
+    required int duplicateId,
+  });
 
   /// `GET /api/v1/products/labels/facets` (spec 009 FR-003, FR-009). Returns,
   /// for the products matching the same filter as [list] (minus pagination),

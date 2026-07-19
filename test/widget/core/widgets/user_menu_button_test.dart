@@ -110,11 +110,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('renders exactly one trailing trigger for an authenticated user',
-      (tester) async {
-    await pumpMenu(tester, user: _userWithSettings);
-    expect(find.byKey(const Key('user_menu_button')), findsOneWidget);
-  });
+  testWidgets(
+    'renders exactly one trailing trigger for an authenticated user',
+    (tester) async {
+      await pumpMenu(tester, user: _userWithSettings);
+      expect(find.byKey(const Key('user_menu_button')), findsOneWidget);
+    },
+  );
 
   testWidgets('shows identity + the three location lines as labeled-ID '
       'fallbacks when names are unresolved (FR-011)', (tester) async {
@@ -142,8 +144,9 @@ void main() {
     expect(find.text('Store 51'), findsNothing);
   });
 
-  testWidgets('omits location lines when the user has no settings (FR-014)',
-      (tester) async {
+  testWidgets('omits location lines when the user has no settings (FR-014)', (
+    tester,
+  ) async {
     await pumpMenu(tester, user: _userNoSettings);
     await openMenu(tester);
 
@@ -156,16 +159,18 @@ void main() {
     expect(find.byKey(const Key('user_menu_logout')), findsOneWidget);
   });
 
-  testWidgets('Change Password navigates to the change-password flow (FR-012)',
-      (tester) async {
-    await pumpMenu(tester, user: _userWithSettings);
-    await openMenu(tester);
+  testWidgets(
+    'Change Password navigates to the change-password flow (FR-012)',
+    (tester) async {
+      await pumpMenu(tester, user: _userWithSettings);
+      await openMenu(tester);
 
-    await tester.tap(find.byKey(const Key('user_menu_change_password')));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('user_menu_change_password')));
+      await tester.pumpAndSettle();
 
-    expect(find.text('CHANGE PW SCREEN'), findsOneWidget);
-  });
+      expect(find.text('CHANGE PW SCREEN'), findsOneWidget);
+    },
+  );
 
   testWidgets('Logout signs the user out (FR-013)', (tester) async {
     await pumpMenu(tester, user: _userWithSettings);

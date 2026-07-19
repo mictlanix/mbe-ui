@@ -51,43 +51,62 @@ void main() {
     await tester.pump();
 
     expect(find.text('Required'), findsNWidgets(2));
-    verifyNever(() => authRepository.changePassword(
-          oldPassword: any(named: 'oldPassword'),
-          newPassword: any(named: 'newPassword'),
-        ));
+    verifyNever(
+      () => authRepository.changePassword(
+        oldPassword: any(named: 'oldPassword'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    );
   });
 
   testWidgets('shows error when new password is too short', (tester) async {
     await pumpScreen(tester);
 
     await tester.enterText(
-        find.byKey(const Key('current_password_field')), 'old123');
+      find.byKey(const Key('current_password_field')),
+      'old123',
+    );
     await tester.enterText(find.byKey(const Key('new_password_field')), 'abc');
     await tester.tap(find.widgetWithText(FilledButton, 'Change password'));
     await tester.pump();
 
     expect(find.text('Must be at least 6 characters'), findsOneWidget);
-    verifyNever(() => authRepository.changePassword(
-          oldPassword: any(named: 'oldPassword'),
-          newPassword: any(named: 'newPassword'),
-        ));
+    verifyNever(
+      () => authRepository.changePassword(
+        oldPassword: any(named: 'oldPassword'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    );
   });
 
-  testWidgets('shows server error message on wrong current password (FR-009)',
-      (tester) async {
-    when(() => authRepository.changePassword(
-          oldPassword: any(named: 'oldPassword'),
-          newPassword: any(named: 'newPassword'),
-        )).thenThrow(const AppError.validation([
-      FieldError(loc: ['body', 'old_password'], msg: 'Incorrect password', type: 'value_error'),
-    ]));
+  testWidgets('shows server error message on wrong current password (FR-009)', (
+    tester,
+  ) async {
+    when(
+      () => authRepository.changePassword(
+        oldPassword: any(named: 'oldPassword'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    ).thenThrow(
+      const AppError.validation([
+        FieldError(
+          loc: ['body', 'old_password'],
+          msg: 'Incorrect password',
+          type: 'value_error',
+        ),
+      ]),
+    );
 
     await pumpScreen(tester);
 
     await tester.enterText(
-        find.byKey(const Key('current_password_field')), 'wrong');
+      find.byKey(const Key('current_password_field')),
+      'wrong',
+    );
     await tester.enterText(
-        find.byKey(const Key('new_password_field')), 'newpass1');
+      find.byKey(const Key('new_password_field')),
+      'newpass1',
+    );
     await tester.tap(find.widgetWithText(FilledButton, 'Change password'));
     await tester.pump();
     await tester.pump();
@@ -95,18 +114,26 @@ void main() {
     expect(find.text('Incorrect password'), findsOneWidget);
   });
 
-  testWidgets('shows success view on successful password change', (tester) async {
-    when(() => authRepository.changePassword(
-          oldPassword: any(named: 'oldPassword'),
-          newPassword: any(named: 'newPassword'),
-        )).thenAnswer((_) async {});
+  testWidgets('shows success view on successful password change', (
+    tester,
+  ) async {
+    when(
+      () => authRepository.changePassword(
+        oldPassword: any(named: 'oldPassword'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    ).thenAnswer((_) async {});
 
     await pumpScreen(tester);
 
     await tester.enterText(
-        find.byKey(const Key('current_password_field')), 'old123');
+      find.byKey(const Key('current_password_field')),
+      'old123',
+    );
     await tester.enterText(
-        find.byKey(const Key('new_password_field')), 'new123pass');
+      find.byKey(const Key('new_password_field')),
+      'new123pass',
+    );
     await tester.tap(find.widgetWithText(FilledButton, 'Change password'));
     await tester.pump();
     await tester.pump();

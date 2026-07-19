@@ -14,12 +14,12 @@ part 'user_update.g.dart';
 /// UserUpdate
 ///
 /// Properties:
-/// * [email] 
-/// * [employeeId] 
-/// * [administrator] 
-/// * [disabled] 
-/// * [privileges] 
-/// * [settings] 
+/// * [email]
+/// * [employeeId]
+/// * [administrator]
+/// * [disabled]
+/// * [privileges]
+/// * [settings]
 @BuiltValue()
 abstract class UserUpdate implements Built<UserUpdate, UserUpdateBuilder> {
   @BuiltValueField(wireName: r'email')
@@ -95,7 +95,9 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
       yield r'privileges';
       yield serializers.serialize(
         object.privileges,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(PrivilegeUpdate)]),
+        specifiedType: const FullType.nullable(BuiltList, [
+          FullType(PrivilegeUpdate),
+        ]),
       );
     }
     if (object.settings != null) {
@@ -113,7 +115,11 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
     UserUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -129,50 +135,64 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.email = valueDes;
           break;
         case r'employee_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.employeeId = valueDes;
           break;
         case r'administrator':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.administrator = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
         case r'privileges':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(PrivilegeUpdate)]),
-          ) as BuiltList<PrivilegeUpdate>?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(PrivilegeUpdate),
+                    ]),
+                  )
+                  as BuiltList<PrivilegeUpdate>?;
           if (valueDes == null) continue;
           result.privileges.replace(valueDes);
           break;
         case r'settings':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(UserSettingsUpdate),
-          ) as UserSettingsUpdate?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(UserSettingsUpdate),
+                  )
+                  as UserSettingsUpdate?;
           if (valueDes == null) continue;
           result.settings.replace(valueDes);
           break;
@@ -204,4 +224,3 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
     return result.build();
   }
 }
-

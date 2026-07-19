@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/store_response.dart';
 import 'package:mbe_api_client/src/model/store_update.dart';
 
 class StoresApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class StoresApi {
   const StoresApi(this._dio, this._serializers);
 
   /// Create Store
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [storeCreate] 
+  /// * [storeCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,7 @@ class StoresApi {
   ///
   /// Returns a [Future] containing a [Response] with a [StoreResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<StoreResponse>> createStoreApiV1StoresPost({ 
+  Future<Response<StoreResponse>> createStoreApiV1StoresPost({
     required StoreCreate storeCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +48,10 @@ class StoresApi {
     final _path = r'/api/v1/stores';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -70,13 +64,9 @@ class StoresApi {
     try {
       const _type = FullType(StoreCreate);
       _bodyData = _serializers.serialize(storeCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +86,13 @@ class StoresApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(StoreResponse),
-      ) as StoreResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(StoreResponse),
+                )
+                as StoreResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +116,10 @@ class StoresApi {
   }
 
   /// Delete Store
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [storeId] 
+  /// * [storeId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +129,7 @@ class StoresApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteStoreApiV1StoresStoreIdDelete({ 
+  Future<Response<void>> deleteStoreApiV1StoresStoreIdDelete({
     required int storeId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +138,22 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores/{store_id}'.replaceAll('{' r'store_id' '}', encodeQueryParameter(_serializers, storeId, const FullType(int)).toString());
+    final _path = r'/api/v1/stores/{store_id}'.replaceAll(
+      '{'
+      r'store_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        storeId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +172,10 @@ class StoresApi {
   }
 
   /// Get Store
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [storeId] 
+  /// * [storeId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +185,7 @@ class StoresApi {
   ///
   /// Returns a [Future] containing a [Response] with a [StoreResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<StoreResponse>> getStoreApiV1StoresStoreIdGet({ 
+  Future<Response<StoreResponse>> getStoreApiV1StoresStoreIdGet({
     required int storeId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +194,22 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores/{store_id}'.replaceAll('{' r'store_id' '}', encodeQueryParameter(_serializers, storeId, const FullType(int)).toString());
+    final _path = r'/api/v1/stores/{store_id}'.replaceAll(
+      '{'
+      r'store_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        storeId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +228,13 @@ class StoresApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(StoreResponse),
-      ) as StoreResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(StoreResponse),
+                )
+                as StoreResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,11 +258,11 @@ class StoresApi {
   }
 
   /// List Stores
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [skip] 
-  /// * [limit] 
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -270,7 +272,7 @@ class StoresApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseStoreResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseStoreResponse>> listStoresApiV1StoresGet({ 
+  Future<Response<ListResponseStoreResponse>> listStoresApiV1StoresGet({
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -283,15 +285,10 @@ class StoresApi {
     final _path = r'/api/v1/stores';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -299,8 +296,14 @@ class StoresApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -316,11 +319,13 @@ class StoresApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseStoreResponse),
-      ) as ListResponseStoreResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseStoreResponse),
+                )
+                as ListResponseStoreResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -344,11 +349,11 @@ class StoresApi {
   }
 
   /// Update Store
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [storeId] 
-  /// * [storeUpdate] 
+  /// * [storeId]
+  /// * [storeUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -358,7 +363,7 @@ class StoresApi {
   ///
   /// Returns a [Future] containing a [Response] with a [StoreResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<StoreResponse>> updateStoreApiV1StoresStoreIdPut({ 
+  Future<Response<StoreResponse>> updateStoreApiV1StoresStoreIdPut({
     required int storeId,
     required StoreUpdate storeUpdate,
     CancelToken? cancelToken,
@@ -368,18 +373,22 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores/{store_id}'.replaceAll('{' r'store_id' '}', encodeQueryParameter(_serializers, storeId, const FullType(int)).toString());
+    final _path = r'/api/v1/stores/{store_id}'.replaceAll(
+      '{'
+      r'store_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        storeId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -392,13 +401,9 @@ class StoresApi {
     try {
       const _type = FullType(StoreUpdate);
       _bodyData = _serializers.serialize(storeUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -418,11 +423,13 @@ class StoresApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(StoreResponse),
-      ) as StoreResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(StoreResponse),
+                )
+                as StoreResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -444,5 +451,4 @@ class StoresApi {
       extra: _response.extra,
     );
   }
-
 }

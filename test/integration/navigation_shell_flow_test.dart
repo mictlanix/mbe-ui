@@ -52,24 +52,28 @@ void main() {
   });
 
   Future<void> pumpApp(WidgetTester tester) async {
-    when(() => productRepository.list(
-          search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
-          stockable: any(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          labels: any(named: 'labels'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        )).thenAnswer((_) async => const ProductListResult(items: [], total: 0));
-    when(() => productRepository.productLabelFacets(
-          search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
-          stockable: any(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          labels: any(named: 'labels'),
-        )).thenAnswer((_) async => const []);
+    when(
+      () => productRepository.list(
+        search: any(named: 'search'),
+        deactivated: any(named: 'deactivated'),
+        stockable: any(named: 'stockable'),
+        salable: any(named: 'salable'),
+        purchasable: any(named: 'purchasable'),
+        labels: any(named: 'labels'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const ProductListResult(items: [], total: 0));
+    when(
+      () => productRepository.productLabelFacets(
+        search: any(named: 'search'),
+        deactivated: any(named: 'deactivated'),
+        stockable: any(named: 'stockable'),
+        salable: any(named: 'salable'),
+        purchasable: any(named: 'purchasable'),
+        labels: any(named: 'labels'),
+      ),
+    ).thenAnswer((_) async => const []);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -103,8 +107,9 @@ void main() {
     expect(find.byType(ProductsListScreen), findsOneWidget);
   });
 
-  testWidgets('narrowing the window moves navigation into a drawer',
-      (tester) async {
+  testWidgets('narrowing the window moves navigation into a drawer', (
+    tester,
+  ) async {
     when(() => tokenStorage.read()).thenAnswer((_) async => 'token');
     when(() => authRepository.me()).thenAnswer((_) async => _bothUser);
     tester.view.physicalSize = const Size(500, 900);
@@ -120,8 +125,9 @@ void main() {
     expect(find.byKey(const Key('nav_dest_home')), findsOneWidget);
   });
 
-  testWidgets('an unauthenticated user sees the login screen, not the shell',
-      (tester) async {
+  testWidgets('an unauthenticated user sees the login screen, not the shell', (
+    tester,
+  ) async {
     when(() => tokenStorage.read()).thenAnswer((_) async => null);
 
     await pumpApp(tester);

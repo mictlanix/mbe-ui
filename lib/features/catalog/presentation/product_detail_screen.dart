@@ -326,8 +326,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 onChanged: !fieldsEnabled
                     ? null
                     : (currency) {
-                        if (currency != null)
+                        if (currency != null) {
                           controller.currencyChanged(currency);
+                        }
                       },
               ),
             ),

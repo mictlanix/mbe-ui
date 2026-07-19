@@ -11,7 +11,6 @@ import 'package:dio/dio.dart';
 import 'package:built_collection/built_collection.dart';
 
 class HealthApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -19,7 +18,7 @@ class HealthApi {
   const HealthApi(this._dio, this._serializers);
 
   /// Health Check
-  /// 
+  ///
   ///
   /// Parameters:
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -31,7 +30,7 @@ class HealthApi {
   ///
   /// Returns a [Future] containing a [Response] with a [BuiltMap<String, String>] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<BuiltMap<String, String>>> healthCheckApiV1HealthGet({ 
+  Future<Response<BuiltMap<String, String>>> healthCheckApiV1HealthGet({
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -42,13 +41,8 @@ class HealthApi {
     final _path = r'/api/v1/health';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
-      extra: <String, dynamic>{
-        'secure': <Map<String, String>>[],
-        ...?extra,
-      },
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{'secure': <Map<String, String>>[], ...?extra},
       validateStatus: validateStatus,
     );
 
@@ -64,11 +58,16 @@ class HealthApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(BuiltMap, [FullType(String), FullType(String)]),
-      ) as BuiltMap<String, String>;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(BuiltMap, [
+                    FullType(String),
+                    FullType(String),
+                  ]),
+                )
+                as BuiltMap<String, String>;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -90,5 +89,4 @@ class HealthApi {
       extra: _response.extra,
     );
   }
-
 }

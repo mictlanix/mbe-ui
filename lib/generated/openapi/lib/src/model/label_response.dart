@@ -11,11 +11,12 @@ part 'label_response.g.dart';
 /// LabelResponse
 ///
 /// Properties:
-/// * [labelId] 
-/// * [name] 
-/// * [comment] 
+/// * [labelId]
+/// * [name]
+/// * [comment]
 @BuiltValue()
-abstract class LabelResponse implements Built<LabelResponse, LabelResponseBuilder> {
+abstract class LabelResponse
+    implements Built<LabelResponse, LabelResponseBuilder> {
   @BuiltValueField(wireName: r'label_id')
   int get labelId;
 
@@ -27,13 +28,15 @@ abstract class LabelResponse implements Built<LabelResponse, LabelResponseBuilde
 
   LabelResponse._();
 
-  factory LabelResponse([void updates(LabelResponseBuilder b)]) = _$LabelResponse;
+  factory LabelResponse([void updates(LabelResponseBuilder b)]) =
+      _$LabelResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(LabelResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<LabelResponse> get serializer => _$LabelResponseSerializer();
+  static Serializer<LabelResponse> get serializer =>
+      _$LabelResponseSerializer();
 }
 
 class _$LabelResponseSerializer implements PrimitiveSerializer<LabelResponse> {
@@ -59,10 +62,12 @@ class _$LabelResponseSerializer implements PrimitiveSerializer<LabelResponse> {
       specifiedType: const FullType(String),
     );
     yield r'comment';
-    yield object.comment == null ? null : serializers.serialize(
-      object.comment,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.comment == null
+        ? null
+        : serializers.serialize(
+            object.comment,
+            specifiedType: const FullType.nullable(String),
+          );
   }
 
   @override
@@ -71,7 +76,11 @@ class _$LabelResponseSerializer implements PrimitiveSerializer<LabelResponse> {
     LabelResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -87,24 +96,27 @@ class _$LabelResponseSerializer implements PrimitiveSerializer<LabelResponse> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'label_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.labelId = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'comment':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
@@ -136,4 +148,3 @@ class _$LabelResponseSerializer implements PrimitiveSerializer<LabelResponse> {
     return result.build();
   }
 }
-

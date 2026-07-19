@@ -11,14 +11,15 @@ part 'vehicle_response.g.dart';
 /// VehicleResponse
 ///
 /// Properties:
-/// * [vehicleId] 
-/// * [licensePlate] 
-/// * [name] 
-/// * [nickname] 
-/// * [tonsCapacity] 
-/// * [active] 
+/// * [vehicleId]
+/// * [licensePlate]
+/// * [name]
+/// * [nickname]
+/// * [tonsCapacity]
+/// * [active]
 @BuiltValue()
-abstract class VehicleResponse implements Built<VehicleResponse, VehicleResponseBuilder> {
+abstract class VehicleResponse
+    implements Built<VehicleResponse, VehicleResponseBuilder> {
   @BuiltValueField(wireName: r'vehicle_id')
   int get vehicleId;
 
@@ -39,16 +40,19 @@ abstract class VehicleResponse implements Built<VehicleResponse, VehicleResponse
 
   VehicleResponse._();
 
-  factory VehicleResponse([void updates(VehicleResponseBuilder b)]) = _$VehicleResponse;
+  factory VehicleResponse([void updates(VehicleResponseBuilder b)]) =
+      _$VehicleResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(VehicleResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<VehicleResponse> get serializer => _$VehicleResponseSerializer();
+  static Serializer<VehicleResponse> get serializer =>
+      _$VehicleResponseSerializer();
 }
 
-class _$VehicleResponseSerializer implements PrimitiveSerializer<VehicleResponse> {
+class _$VehicleResponseSerializer
+    implements PrimitiveSerializer<VehicleResponse> {
   @override
   final Iterable<Type> types = const [VehicleResponse, _$VehicleResponse];
 
@@ -98,7 +102,11 @@ class _$VehicleResponseSerializer implements PrimitiveSerializer<VehicleResponse
     VehicleResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -114,45 +122,51 @@ class _$VehicleResponseSerializer implements PrimitiveSerializer<VehicleResponse
       final value = serializedList[i + 1];
       switch (key) {
         case r'vehicle_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.vehicleId = valueDes;
           break;
         case r'license_plate':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.licensePlate = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'nickname':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.nickname = valueDes;
           break;
         case r'tons_capacity':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.tonsCapacity = valueDes;
           break;
         case r'active':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.active = valueDes;
           break;
         default:
@@ -183,4 +197,3 @@ class _$VehicleResponseSerializer implements PrimitiveSerializer<VehicleResponse
     return result.build();
   }
 }
-

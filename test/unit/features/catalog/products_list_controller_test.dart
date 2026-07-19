@@ -265,7 +265,9 @@ void main() {
           purchasable: null,
           labels: const [],
         ),
-      ).thenAnswer((_) async => const [ProductLabelFacet(labelId: 1, count: 5)]);
+      ).thenAnswer(
+        (_) async => const [ProductLabelFacet(labelId: 1, count: 5)],
+      );
       final first = await container.read(productLabelFacetsProvider.future);
       expect(first, {1: 5});
 
@@ -284,27 +286,32 @@ void main() {
           ProductLabelFacet(labelId: 2, count: 3),
         ],
       );
-      container.read(productFilterControllerProvider.notifier).labelsChanged([1]);
+      container.read(productFilterControllerProvider.notifier).labelsChanged([
+        1,
+      ]);
 
       final second = await container.read(productLabelFacetsProvider.future);
       expect(second, {1: 5, 2: 3});
     });
 
-    test('an empty facet response yields an empty map (nothing available)', () async {
-      when(
-        () => repository.productLabelFacets(
-          search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
-          stockable: any(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          labels: any(named: 'labels'),
-        ),
-      ).thenAnswer((_) async => const []);
+    test(
+      'an empty facet response yields an empty map (nothing available)',
+      () async {
+        when(
+          () => repository.productLabelFacets(
+            search: any(named: 'search'),
+            deactivated: any(named: 'deactivated'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: any(named: 'labels'),
+          ),
+        ).thenAnswer((_) async => const []);
 
-      final result = await container.read(productLabelFacetsProvider.future);
+        final result = await container.read(productLabelFacetsProvider.future);
 
-      expect(result, isEmpty);
-    });
+        expect(result, isEmpty);
+      },
+    );
   });
 }

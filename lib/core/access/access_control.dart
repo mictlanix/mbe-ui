@@ -44,7 +44,8 @@ class AccessControlService {
 }
 
 final accessControlProvider = Provider<AccessControlService>((ref) {
-  final authState = ref.watch(authNotifierProvider).valueOrNull ??
+  final authState =
+      ref.watch(authNotifierProvider).valueOrNull ??
       const AuthState.unauthenticated();
   return AccessControlService(authState);
 });

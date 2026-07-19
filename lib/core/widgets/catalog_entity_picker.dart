@@ -50,8 +50,7 @@ class CatalogEntityPicker<T extends Object> extends StatefulWidget {
   final String? Function(T)? optionSubtitle;
 
   @override
-  State<CatalogEntityPicker<T>> createState() =>
-      _CatalogEntityPickerState<T>();
+  State<CatalogEntityPicker<T>> createState() => _CatalogEntityPickerState<T>();
 }
 
 class _CatalogEntityPickerState<T extends Object>
@@ -84,8 +83,9 @@ class _CatalogEntityPickerState<T extends Object>
         _debounce = Timer(const Duration(milliseconds: 300), () async {
           if (!completer.isCompleted) {
             try {
-              final results =
-                  await widget.optionsBuilder(textEditingValue.text);
+              final results = await widget.optionsBuilder(
+                textEditingValue.text,
+              );
               if (!completer.isCompleted) completer.complete(results);
             } catch (_) {
               if (!completer.isCompleted) completer.complete(const []);

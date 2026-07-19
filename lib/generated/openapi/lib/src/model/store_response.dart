@@ -12,18 +12,19 @@ part 'store_response.g.dart';
 /// StoreResponse
 ///
 /// Properties:
-/// * [storeId] 
-/// * [code] 
-/// * [name] 
-/// * [location] 
-/// * [address] 
-/// * [taxpayer] 
-/// * [logo] 
-/// * [receiptMessage] 
-/// * [defaultBatch] 
-/// * [disabled] 
+/// * [storeId]
+/// * [code]
+/// * [name]
+/// * [location]
+/// * [address]
+/// * [taxpayer]
+/// * [logo]
+/// * [receiptMessage]
+/// * [defaultBatch]
+/// * [disabled]
 @BuiltValue()
-abstract class StoreResponse implements Built<StoreResponse, StoreResponseBuilder> {
+abstract class StoreResponse
+    implements Built<StoreResponse, StoreResponseBuilder> {
   @BuiltValueField(wireName: r'store_id')
   int get storeId;
 
@@ -56,13 +57,15 @@ abstract class StoreResponse implements Built<StoreResponse, StoreResponseBuilde
 
   StoreResponse._();
 
-  factory StoreResponse([void updates(StoreResponseBuilder b)]) = _$StoreResponse;
+  factory StoreResponse([void updates(StoreResponseBuilder b)]) =
+      _$StoreResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(StoreResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<StoreResponse> get serializer => _$StoreResponseSerializer();
+  static Serializer<StoreResponse> get serializer =>
+      _$StoreResponseSerializer();
 }
 
 class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
@@ -113,20 +116,26 @@ class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
       specifiedType: const FullType(String),
     );
     yield r'receipt_message';
-    yield object.receiptMessage == null ? null : serializers.serialize(
-      object.receiptMessage,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.receiptMessage == null
+        ? null
+        : serializers.serialize(
+            object.receiptMessage,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'default_batch';
-    yield object.defaultBatch == null ? null : serializers.serialize(
-      object.defaultBatch,
-      specifiedType: const FullType.nullable(String),
-    );
+    yield object.defaultBatch == null
+        ? null
+        : serializers.serialize(
+            object.defaultBatch,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'disabled';
-    yield object.disabled == null ? null : serializers.serialize(
-      object.disabled,
-      specifiedType: const FullType.nullable(bool),
-    );
+    yield object.disabled == null
+        ? null
+        : serializers.serialize(
+            object.disabled,
+            specifiedType: const FullType.nullable(bool),
+          );
   }
 
   @override
@@ -135,7 +144,11 @@ class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
     StoreResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -151,75 +164,89 @@ class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'store_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.storeId = valueDes;
           break;
         case r'code':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.name = valueDes;
           break;
         case r'location':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(SatCatalogResponse),
-          ) as SatCatalogResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(SatCatalogResponse),
+                  )
+                  as SatCatalogResponse;
           result.location.replace(valueDes);
           break;
         case r'address':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.address = valueDes;
           break;
         case r'taxpayer':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.taxpayer = valueDes;
           break;
         case r'logo':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.logo = valueDes;
           break;
         case r'receipt_message':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.receiptMessage = valueDes;
           break;
         case r'default_batch':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.defaultBatch = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.disabled = valueDes;
           break;
@@ -251,4 +278,3 @@ class _$StoreResponseSerializer implements PrimitiveSerializer<StoreResponse> {
     return result.build();
   }
 }
-

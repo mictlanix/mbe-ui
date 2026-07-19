@@ -13,10 +13,15 @@ part 'list_response_cash_drawer_response.g.dart';
 /// ListResponseCashDrawerResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponseCashDrawerResponse implements Built<ListResponseCashDrawerResponse, ListResponseCashDrawerResponseBuilder> {
+abstract class ListResponseCashDrawerResponse
+    implements
+        Built<
+          ListResponseCashDrawerResponse,
+          ListResponseCashDrawerResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<CashDrawerResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponseCashDrawerResponse implements Built<ListResponseCashD
 
   ListResponseCashDrawerResponse._();
 
-  factory ListResponseCashDrawerResponse([void updates(ListResponseCashDrawerResponseBuilder b)]) = _$ListResponseCashDrawerResponse;
+  factory ListResponseCashDrawerResponse([
+    void updates(ListResponseCashDrawerResponseBuilder b),
+  ]) = _$ListResponseCashDrawerResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponseCashDrawerResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseCashDrawerResponse> get serializer => _$ListResponseCashDrawerResponseSerializer();
+  static Serializer<ListResponseCashDrawerResponse> get serializer =>
+      _$ListResponseCashDrawerResponseSerializer();
 }
 
-class _$ListResponseCashDrawerResponseSerializer implements PrimitiveSerializer<ListResponseCashDrawerResponse> {
+class _$ListResponseCashDrawerResponseSerializer
+    implements PrimitiveSerializer<ListResponseCashDrawerResponse> {
   @override
-  final Iterable<Type> types = const [ListResponseCashDrawerResponse, _$ListResponseCashDrawerResponse];
+  final Iterable<Type> types = const [
+    ListResponseCashDrawerResponse,
+    _$ListResponseCashDrawerResponse,
+  ];
 
   @override
   final String wireName = r'ListResponseCashDrawerResponse';
@@ -64,7 +76,11 @@ class _$ListResponseCashDrawerResponseSerializer implements PrimitiveSerializer<
     ListResponseCashDrawerResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +96,20 @@ class _$ListResponseCashDrawerResponseSerializer implements PrimitiveSerializer<
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(CashDrawerResponse)]),
-          ) as BuiltList<CashDrawerResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(CashDrawerResponse),
+                    ]),
+                  )
+                  as BuiltList<CashDrawerResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +140,3 @@ class _$ListResponseCashDrawerResponseSerializer implements PrimitiveSerializer<
     return result.build();
   }
 }
-

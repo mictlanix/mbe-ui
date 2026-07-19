@@ -14,7 +14,6 @@ import 'package:mbe_api_client/src/model/list_response_sat_catalog_response.dart
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 
 class SatCatalogsApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -22,10 +21,10 @@ class SatCatalogsApi {
   const SatCatalogsApi(this._dio, this._serializers);
 
   /// Get Cfdi Usages
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -35,7 +34,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getCfdiUsagesApiV1SatCfdiUsagesIdGet({ 
+  Future<Response<SatCatalogResponse>> getCfdiUsagesApiV1SatCfdiUsagesIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -44,18 +43,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/cfdi-usages/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/cfdi-usages/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -74,11 +73,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -102,10 +103,10 @@ class SatCatalogsApi {
   }
 
   /// Get Cfdi Usages
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -115,7 +116,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getCfdiUsagesApiV1SatCfdiUsagesIdGet_1({ 
+  Future<Response<SatCatalogResponse>> getCfdiUsagesApiV1SatCfdiUsagesIdGet_1({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -124,18 +125,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/cfdi-usages/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/cfdi-usages/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -154,11 +155,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -182,10 +185,10 @@ class SatCatalogsApi {
   }
 
   /// Get Countries
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -195,7 +198,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getCountriesApiV1SatCountriesIdGet({ 
+  Future<Response<SatCatalogResponse>> getCountriesApiV1SatCountriesIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -204,18 +207,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/countries/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/countries/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -234,11 +237,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -262,10 +267,10 @@ class SatCatalogsApi {
   }
 
   /// Get Countries
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -275,7 +280,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getCountriesApiV1SatCountriesIdGet_2({ 
+  Future<Response<SatCatalogResponse>> getCountriesApiV1SatCountriesIdGet_2({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -284,18 +289,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/countries/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/countries/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -314,11 +319,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -342,10 +349,10 @@ class SatCatalogsApi {
   }
 
   /// Get Currencies
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -355,7 +362,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getCurrenciesApiV1SatCurrenciesIdGet({ 
+  Future<Response<SatCatalogResponse>> getCurrenciesApiV1SatCurrenciesIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -364,18 +371,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/currencies/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/currencies/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -394,11 +401,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -422,10 +431,10 @@ class SatCatalogsApi {
   }
 
   /// Get Currencies
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -435,7 +444,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getCurrenciesApiV1SatCurrenciesIdGet_3({ 
+  Future<Response<SatCatalogResponse>> getCurrenciesApiV1SatCurrenciesIdGet_3({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -444,18 +453,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/currencies/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/currencies/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -474,11 +483,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -502,10 +513,10 @@ class SatCatalogsApi {
   }
 
   /// Get Postal Codes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -515,7 +526,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getPostalCodesApiV1SatPostalCodesIdGet({ 
+  Future<Response<SatCatalogResponse>> getPostalCodesApiV1SatPostalCodesIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -524,18 +535,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/postal-codes/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/postal-codes/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -554,11 +565,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -582,10 +595,10 @@ class SatCatalogsApi {
   }
 
   /// Get Postal Codes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -595,7 +608,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getPostalCodesApiV1SatPostalCodesIdGet_4({ 
+  Future<Response<SatCatalogResponse>>
+  getPostalCodesApiV1SatPostalCodesIdGet_4({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -604,18 +618,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/postal-codes/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/postal-codes/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -634,11 +648,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -662,10 +678,10 @@ class SatCatalogsApi {
   }
 
   /// Get Product Services
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -675,7 +691,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getProductServicesApiV1SatProductServicesIdGet({ 
+  Future<Response<SatCatalogResponse>>
+  getProductServicesApiV1SatProductServicesIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -684,18 +701,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/product-services/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/product-services/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -714,11 +731,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -742,10 +761,10 @@ class SatCatalogsApi {
   }
 
   /// Get Product Services
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -755,7 +774,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getProductServicesApiV1SatProductServicesIdGet_5({ 
+  Future<Response<SatCatalogResponse>>
+  getProductServicesApiV1SatProductServicesIdGet_5({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -764,18 +784,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/product-services/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/product-services/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -794,11 +814,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -822,10 +844,10 @@ class SatCatalogsApi {
   }
 
   /// Get Reason Cancellations
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -835,7 +857,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getReasonCancellationsApiV1SatReasonCancellationsIdGet({ 
+  Future<Response<SatCatalogResponse>>
+  getReasonCancellationsApiV1SatReasonCancellationsIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -844,18 +867,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/reason-cancellations/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/reason-cancellations/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -874,11 +897,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -902,10 +927,10 @@ class SatCatalogsApi {
   }
 
   /// Get Reason Cancellations
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -915,7 +940,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getReasonCancellationsApiV1SatReasonCancellationsIdGet_6({ 
+  Future<Response<SatCatalogResponse>>
+  getReasonCancellationsApiV1SatReasonCancellationsIdGet_6({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -924,18 +950,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/reason-cancellations/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/reason-cancellations/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -954,11 +980,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -982,10 +1010,10 @@ class SatCatalogsApi {
   }
 
   /// Get Tax Regimes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -995,7 +1023,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getTaxRegimesApiV1SatTaxRegimesIdGet({ 
+  Future<Response<SatCatalogResponse>> getTaxRegimesApiV1SatTaxRegimesIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1004,18 +1032,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/tax-regimes/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/tax-regimes/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1034,11 +1062,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1062,10 +1092,10 @@ class SatCatalogsApi {
   }
 
   /// Get Tax Regimes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1075,7 +1105,7 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getTaxRegimesApiV1SatTaxRegimesIdGet_7({ 
+  Future<Response<SatCatalogResponse>> getTaxRegimesApiV1SatTaxRegimesIdGet_7({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1084,18 +1114,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/tax-regimes/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/tax-regimes/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1114,11 +1144,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1142,10 +1174,10 @@ class SatCatalogsApi {
   }
 
   /// Get Units Of Measurement
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1155,7 +1187,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getUnitsOfMeasurementApiV1SatUnitsOfMeasurementIdGet({ 
+  Future<Response<SatCatalogResponse>>
+  getUnitsOfMeasurementApiV1SatUnitsOfMeasurementIdGet({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1164,18 +1197,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/units-of-measurement/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/units-of-measurement/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1194,11 +1227,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1222,10 +1257,10 @@ class SatCatalogsApi {
   }
 
   /// Get Units Of Measurement
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [id] 
+  /// * [id]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1235,7 +1270,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [SatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<SatCatalogResponse>> getUnitsOfMeasurementApiV1SatUnitsOfMeasurementIdGet_8({ 
+  Future<Response<SatCatalogResponse>>
+  getUnitsOfMeasurementApiV1SatUnitsOfMeasurementIdGet_8({
     required String id,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -1244,18 +1280,18 @@ class SatCatalogsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/sat/units-of-measurement/{id}'.replaceAll('{' r'id' '}', encodeQueryParameter(_serializers, id, const FullType(String)).toString());
+    final _path = r'/api/v1/sat/units-of-measurement/{id}'.replaceAll(
+      '{'
+      r'id'
+      '}',
+      encodeQueryParameter(_serializers, id, const FullType(String)).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1274,11 +1310,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(SatCatalogResponse),
-      ) as SatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(SatCatalogResponse),
+                )
+                as SatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1302,12 +1340,12 @@ class SatCatalogsApi {
   }
 
   /// List Cfdi Usages
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1317,7 +1355,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listCfdiUsagesApiV1SatCfdiUsagesGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listCfdiUsagesApiV1SatCfdiUsagesGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1331,15 +1370,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/cfdi-usages';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1347,9 +1381,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1365,11 +1410,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1393,12 +1440,12 @@ class SatCatalogsApi {
   }
 
   /// List Cfdi Usages
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1408,7 +1455,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listCfdiUsagesApiV1SatCfdiUsagesGet_9({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listCfdiUsagesApiV1SatCfdiUsagesGet_9({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1422,15 +1470,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/cfdi-usages';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1438,9 +1481,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1456,11 +1510,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1484,12 +1540,12 @@ class SatCatalogsApi {
   }
 
   /// List Countries
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1499,7 +1555,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listCountriesApiV1SatCountriesGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listCountriesApiV1SatCountriesGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1513,15 +1570,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/countries';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1529,9 +1581,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1547,11 +1610,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1575,12 +1640,12 @@ class SatCatalogsApi {
   }
 
   /// List Countries
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1590,7 +1655,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listCountriesApiV1SatCountriesGet_10({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listCountriesApiV1SatCountriesGet_10({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1604,15 +1670,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/countries';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1620,9 +1681,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1638,11 +1710,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1666,12 +1740,12 @@ class SatCatalogsApi {
   }
 
   /// List Currencies
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1681,7 +1755,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listCurrenciesApiV1SatCurrenciesGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listCurrenciesApiV1SatCurrenciesGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1695,15 +1770,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/currencies';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1711,9 +1781,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1729,11 +1810,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1757,12 +1840,12 @@ class SatCatalogsApi {
   }
 
   /// List Currencies
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1772,7 +1855,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listCurrenciesApiV1SatCurrenciesGet_11({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listCurrenciesApiV1SatCurrenciesGet_11({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1786,15 +1870,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/currencies';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1802,9 +1881,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1820,11 +1910,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1848,12 +1940,12 @@ class SatCatalogsApi {
   }
 
   /// List Postal Codes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1863,7 +1955,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listPostalCodesApiV1SatPostalCodesGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listPostalCodesApiV1SatPostalCodesGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1877,15 +1970,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/postal-codes';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1893,9 +1981,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -1911,11 +2010,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -1939,12 +2040,12 @@ class SatCatalogsApi {
   }
 
   /// List Postal Codes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -1954,7 +2055,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listPostalCodesApiV1SatPostalCodesGet_12({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listPostalCodesApiV1SatPostalCodesGet_12({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -1968,15 +2070,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/postal-codes';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -1984,9 +2081,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2002,11 +2110,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2030,12 +2140,12 @@ class SatCatalogsApi {
   }
 
   /// List Product Services
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2045,7 +2155,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listProductServicesApiV1SatProductServicesGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listProductServicesApiV1SatProductServicesGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2059,15 +2170,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/product-services';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2075,9 +2181,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2093,11 +2210,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2121,12 +2240,12 @@ class SatCatalogsApi {
   }
 
   /// List Product Services
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2136,7 +2255,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listProductServicesApiV1SatProductServicesGet_13({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listProductServicesApiV1SatProductServicesGet_13({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2150,15 +2270,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/product-services';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2166,9 +2281,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2184,11 +2310,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2212,12 +2340,12 @@ class SatCatalogsApi {
   }
 
   /// List Reason Cancellations
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2227,7 +2355,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listReasonCancellationsApiV1SatReasonCancellationsGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listReasonCancellationsApiV1SatReasonCancellationsGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2241,15 +2370,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/reason-cancellations';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2257,9 +2381,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2275,11 +2410,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2303,12 +2440,12 @@ class SatCatalogsApi {
   }
 
   /// List Reason Cancellations
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2318,7 +2455,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listReasonCancellationsApiV1SatReasonCancellationsGet_14({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listReasonCancellationsApiV1SatReasonCancellationsGet_14({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2332,15 +2470,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/reason-cancellations';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2348,9 +2481,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2366,11 +2510,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2394,12 +2540,12 @@ class SatCatalogsApi {
   }
 
   /// List Tax Regimes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2409,7 +2555,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listTaxRegimesApiV1SatTaxRegimesGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listTaxRegimesApiV1SatTaxRegimesGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2423,15 +2570,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/tax-regimes';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2439,9 +2581,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2457,11 +2610,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2485,12 +2640,12 @@ class SatCatalogsApi {
   }
 
   /// List Tax Regimes
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2500,7 +2655,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listTaxRegimesApiV1SatTaxRegimesGet_15({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listTaxRegimesApiV1SatTaxRegimesGet_15({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2514,15 +2670,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/tax-regimes';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2530,9 +2681,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2548,11 +2710,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2576,12 +2740,12 @@ class SatCatalogsApi {
   }
 
   /// List Units Of Measurement
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2591,7 +2755,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2605,15 +2770,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/units-of-measurement';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2621,9 +2781,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2639,11 +2810,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2667,12 +2840,12 @@ class SatCatalogsApi {
   }
 
   /// List Units Of Measurement
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -2682,7 +2855,8 @@ class SatCatalogsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseSatCatalogResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseSatCatalogResponse>> listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_16({ 
+  Future<Response<ListResponseSatCatalogResponse>>
+  listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_16({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -2696,15 +2870,10 @@ class SatCatalogsApi {
     final _path = r'/api/v1/sat/units-of-measurement';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -2712,9 +2881,20 @@ class SatCatalogsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -2730,11 +2910,13 @@ class SatCatalogsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseSatCatalogResponse),
-      ) as ListResponseSatCatalogResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseSatCatalogResponse),
+                )
+                as ListResponseSatCatalogResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -2756,5 +2938,4 @@ class SatCatalogsApi {
       extra: _response.extra,
     );
   }
-
 }

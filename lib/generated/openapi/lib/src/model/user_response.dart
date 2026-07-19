@@ -14,16 +14,17 @@ part 'user_response.g.dart';
 /// UserResponse
 ///
 /// Properties:
-/// * [userId] 
-/// * [email] 
-/// * [employeeId] 
-/// * [administrator] 
-/// * [disabled] 
-/// * [sessionVersion] 
-/// * [settings] 
-/// * [privileges] 
+/// * [userId]
+/// * [email]
+/// * [employeeId]
+/// * [administrator]
+/// * [disabled]
+/// * [sessionVersion]
+/// * [settings]
+/// * [privileges]
 @BuiltValue()
-abstract class UserResponse implements Built<UserResponse, UserResponseBuilder> {
+abstract class UserResponse
+    implements Built<UserResponse, UserResponseBuilder> {
   @BuiltValueField(wireName: r'user_id')
   String get userId;
 
@@ -82,10 +83,12 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
       specifiedType: const FullType(String),
     );
     yield r'employee_id';
-    yield object.employeeId == null ? null : serializers.serialize(
-      object.employeeId,
-      specifiedType: const FullType.nullable(int),
-    );
+    yield object.employeeId == null
+        ? null
+        : serializers.serialize(
+            object.employeeId,
+            specifiedType: const FullType.nullable(int),
+          );
     yield r'administrator';
     yield serializers.serialize(
       object.administrator,
@@ -102,10 +105,12 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
       specifiedType: const FullType(int),
     );
     yield r'settings';
-    yield object.settings == null ? null : serializers.serialize(
-      object.settings,
-      specifiedType: const FullType.nullable(UserSettingsResponse),
-    );
+    yield object.settings == null
+        ? null
+        : serializers.serialize(
+            object.settings,
+            specifiedType: const FullType.nullable(UserSettingsResponse),
+          );
     yield r'privileges';
     yield serializers.serialize(
       object.privileges,
@@ -119,7 +124,11 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
     UserResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -135,61 +144,78 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
       final value = serializedList[i + 1];
       switch (key) {
         case r'user_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.userId = valueDes;
           break;
         case r'email':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.email = valueDes;
           break;
         case r'employee_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.employeeId = valueDes;
           break;
         case r'administrator':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.administrator = valueDes;
           break;
         case r'disabled':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.disabled = valueDes;
           break;
         case r'session_version':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.sessionVersion = valueDes;
           break;
         case r'settings':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(UserSettingsResponse),
-          ) as UserSettingsResponse?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(
+                      UserSettingsResponse,
+                    ),
+                  )
+                  as UserSettingsResponse?;
           if (valueDes == null) continue;
           result.settings.replace(valueDes);
           break;
         case r'privileges':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(PrivilegeResponse)]),
-          ) as BuiltList<PrivilegeResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(PrivilegeResponse),
+                    ]),
+                  )
+                  as BuiltList<PrivilegeResponse>;
           result.privileges.replace(valueDes);
           break;
         default:
@@ -220,4 +246,3 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
     return result.build();
   }
 }
-

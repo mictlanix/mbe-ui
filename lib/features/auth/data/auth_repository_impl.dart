@@ -21,7 +21,10 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthApi _api;
 
   @override
-  Future<String> login({required String username, required String password}) async {
+  Future<String> login({
+    required String username,
+    required String password,
+  }) async {
     try {
       final response = await _api.loginApiV1AuthLoginPost(
         username: username,
@@ -58,9 +61,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       await _api.changePasswordApiV1AuthChangePasswordPost(
-        changePasswordRequest: ChangePasswordRequest((b) => b
-          ..oldPassword = oldPassword
-          ..newPassword = newPassword),
+        changePasswordRequest: ChangePasswordRequest(
+          (b) => b
+            ..oldPassword = oldPassword
+            ..newPassword = newPassword,
+        ),
       );
     } on DioException catch (e) {
       throw _toAppError(e);
@@ -74,9 +79,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       await _api.confirmRecoveryApiV1AuthRecoverPost(
-        confirmRecoveryRequest: ConfirmRecoveryRequest((b) => b
-          ..recoveryToken = recoveryToken
-          ..newPassword = newPassword),
+        confirmRecoveryRequest: ConfirmRecoveryRequest(
+          (b) => b
+            ..recoveryToken = recoveryToken
+            ..newPassword = newPassword,
+        ),
       );
     } on DioException catch (e) {
       throw _toAppError(e);

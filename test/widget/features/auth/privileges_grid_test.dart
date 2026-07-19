@@ -18,10 +18,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
-            child: PrivilegesGrid(
-              privileges: privileges,
-              onChanged: onChanged,
-            ),
+            child: PrivilegesGrid(privileges: privileges, onChanged: onChanged),
           ),
         ),
       ),
@@ -48,9 +45,12 @@ void main() {
 
   testWidgets('checked boxes reflect privilege rawValue', (tester) async {
     // rawValue 2 = read only
-    await pumpGrid(tester, privileges: [
-      const Privilege(systemObject: SystemObject.products, rawValue: 2),
-    ]);
+    await pumpGrid(
+      tester,
+      privileges: [
+        const Privilege(systemObject: SystemObject.products, rawValue: 2),
+      ],
+    );
 
     // Find all checkboxes — checkboxes for the products row: C=false,
     // R=true, U=false, D=false. We can't easily find the exact row
@@ -62,8 +62,9 @@ void main() {
     expect(values.any((v) => v == false), isTrue);
   });
 
-  testWidgets('toggling a checkbox calls onChanged with updated rawValue',
-      (tester) async {
+  testWidgets('toggling a checkbox calls onChanged with updated rawValue', (
+    tester,
+  ) async {
     SystemObject? changedObj;
     int? changedRaw;
 
@@ -93,8 +94,9 @@ void main() {
     expect(changedRaw! > 0, isTrue);
   });
 
-  testWidgets('read-only when onChanged is null — checkboxes disabled',
-      (tester) async {
+  testWidgets('read-only when onChanged is null — checkboxes disabled', (
+    tester,
+  ) async {
     await pumpGrid(
       tester,
       privileges: [
@@ -147,9 +149,7 @@ void main() {
           .getBottomLeft(find.byKey(const Key('privileges_table')))
           .dy;
       final lastRowCheckboxBottom = tester
-          .getBottomLeft(
-            find.byKey(const Key('privilege_pointsOfSale_delete')),
-          )
+          .getBottomLeft(find.byKey(const Key('privilege_pointsOfSale_delete')))
           .dy;
 
       expect(find.text('pointsOfSale'), findsOneWidget);

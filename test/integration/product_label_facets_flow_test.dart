@@ -42,105 +42,91 @@ void main() {
 
   setUp(() async {
     final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
-    final token = await AuthRepositoryImpl(dio).login(
-      username: _adminUsername,
-      password: _adminPassword,
-    );
+    final token = await AuthRepositoryImpl(
+      dio,
+    ).login(username: _adminUsername, password: _adminPassword);
     dio.options.headers['Authorization'] = 'Bearer $token';
     productRepository = ProductRepositoryImpl(dio);
   });
 
-  test(
-    'productLabelFacets() with no filter reports every label present in the '
-    'catalog with a positive count (FR-009 baseline)',
-    () async {
-      final facets = await productRepository.productLabelFacets();
+  test('productLabelFacets() with no filter reports every label present in the '
+      'catalog with a positive count (FR-009 baseline)', () async {
+    final facets = await productRepository.productLabelFacets();
 
-      expect(facets, isNotEmpty, reason: 'expected a non-empty seeded catalog');
-      expect(facets.every((f) => f.count > 0), isTrue);
-    },
-    skip: !_hasAdminCredentials,
-  );
+    expect(facets, isNotEmpty, reason: 'expected a non-empty seeded catalog');
+    expect(facets.every((f) => f.count > 0), isTrue);
+  }, skip: !_hasAdminCredentials);
 
-  test(
-    'a label absent from productLabelFacets(labels: [primary]) narrows '
-    'list() to zero results when combined with it — the guarantee that '
-    'lets the UI safely disable it (FR-004)',
-    () async {
-      final baseline = await productRepository.productLabelFacets();
-      final primary = baseline.reduce((a, b) => a.count >= b.count ? a : b);
+  test('a label absent from productLabelFacets(labels: [primary]) narrows '
+      'list() to zero results when combined with it — the guarantee that '
+      'lets the UI safely disable it (FR-004)', () async {
+    final baseline = await productRepository.productLabelFacets();
+    final primary = baseline.reduce((a, b) => a.count >= b.count ? a : b);
 
-      final coOccurring = await productRepository.productLabelFacets(
-        labels: [primary.labelId],
+    final coOccurring = await productRepository.productLabelFacets(
+      labels: [primary.labelId],
+    );
+    final coOccurringIds = coOccurring.map((f) => f.labelId).toSet();
+    final nonCoOccurring = baseline.firstWhere(
+      (f) =>
+          f.labelId != primary.labelId && !coOccurringIds.contains(f.labelId),
+      orElse: () => const ProductLabelFacet(labelId: -1, count: 0),
+    );
+
+    if (nonCoOccurring.labelId == -1) {
+      markTestSkipped(
+        'no non-co-occurring label pair found in the seeded catalog',
       );
-      final coOccurringIds = coOccurring.map((f) => f.labelId).toSet();
-      final nonCoOccurring = baseline.firstWhere(
-        (f) => f.labelId != primary.labelId && !coOccurringIds.contains(f.labelId),
-        orElse: () => const ProductLabelFacet(labelId: -1, count: 0),
+      return;
+    }
+
+    final narrowed = await productRepository.list(
+      labels: [primary.labelId, nonCoOccurring.labelId],
+    );
+
+    expect(
+      narrowed.total,
+      0,
+      reason:
+          'label ${nonCoOccurring.labelId} was absent from the facets for '
+          'label ${primary.labelId}, so combining them should yield no '
+          'products (AND semantics)',
+    );
+  }, skip: !_hasAdminCredentials);
+
+  test('a label present in productLabelFacets(labels: [primary]) narrows '
+      'list() to exactly the reported count — facets and list() agree '
+      '(FR-001, FR-002, FR-005, FR-009)', () async {
+    final baseline = await productRepository.productLabelFacets();
+    final primary = baseline.reduce((a, b) => a.count >= b.count ? a : b);
+
+    final coOccurring = await productRepository.productLabelFacets(
+      labels: [primary.labelId],
+    );
+    final secondary = coOccurring.firstWhere(
+      (f) => f.labelId != primary.labelId,
+      orElse: () => const ProductLabelFacet(labelId: -1, count: 0),
+    );
+
+    if (secondary.labelId == -1) {
+      markTestSkipped(
+        'the highest-count label has no co-occurring label in the seeded '
+        'catalog to narrow against',
       );
+      return;
+    }
 
-      if (nonCoOccurring.labelId == -1) {
-        markTestSkipped(
-          'no non-co-occurring label pair found in the seeded catalog',
-        );
-        return;
-      }
+    final primaryOnly = await productRepository.list(labels: [primary.labelId]);
+    final narrowed = await productRepository.list(
+      labels: [primary.labelId, secondary.labelId],
+    );
 
-      final narrowed = await productRepository.list(
-        labels: [primary.labelId, nonCoOccurring.labelId],
-      );
-
-      expect(
-        narrowed.total,
-        0,
-        reason:
-            'label ${nonCoOccurring.labelId} was absent from the facets for '
-            'label ${primary.labelId}, so combining them should yield no '
-            'products (AND semantics)',
-      );
-    },
-    skip: !_hasAdminCredentials,
-  );
-
-  test(
-    'a label present in productLabelFacets(labels: [primary]) narrows '
-    'list() to exactly the reported count — facets and list() agree '
-    '(FR-001, FR-002, FR-005, FR-009)',
-    () async {
-      final baseline = await productRepository.productLabelFacets();
-      final primary = baseline.reduce((a, b) => a.count >= b.count ? a : b);
-
-      final coOccurring = await productRepository.productLabelFacets(
-        labels: [primary.labelId],
-      );
-      final secondary = coOccurring.firstWhere(
-        (f) => f.labelId != primary.labelId,
-        orElse: () => const ProductLabelFacet(labelId: -1, count: 0),
-      );
-
-      if (secondary.labelId == -1) {
-        markTestSkipped(
-          'the highest-count label has no co-occurring label in the seeded '
-          'catalog to narrow against',
-        );
-        return;
-      }
-
-      final primaryOnly = await productRepository.list(
-        labels: [primary.labelId],
-      );
-      final narrowed = await productRepository.list(
-        labels: [primary.labelId, secondary.labelId],
-      );
-
-      // AND narrows, never broadens.
-      expect(narrowed.total, lessThanOrEqualTo(primaryOnly.total));
-      // Selecting an "available" (facet-reported) label never empties the
-      // list — the no-dead-end guarantee (FR-005).
-      expect(narrowed.total, greaterThan(0));
-      // The facet's reported count matches the real narrowed result exactly.
-      expect(narrowed.total, secondary.count);
-    },
-    skip: !_hasAdminCredentials,
-  );
+    // AND narrows, never broadens.
+    expect(narrowed.total, lessThanOrEqualTo(primaryOnly.total));
+    // Selecting an "available" (facet-reported) label never empties the
+    // list — the no-dead-end guarantee (FR-005).
+    expect(narrowed.total, greaterThan(0));
+    // The facet's reported count matches the real narrowed result exactly.
+    expect(narrowed.total, secondary.count);
+  }, skip: !_hasAdminCredentials);
 }

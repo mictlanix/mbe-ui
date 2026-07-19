@@ -43,13 +43,13 @@ class LoginController extends _$LoginController {
 
     state = state.copyWith(submitting: true, error: null);
 
-    await ref.read(authNotifierProvider.notifier).signIn(
-      username: state.username,
-      password: state.password,
-    );
+    await ref
+        .read(authNotifierProvider.notifier)
+        .signIn(username: state.username, password: state.password);
 
     final authState = ref.read(authNotifierProvider).valueOrNull;
-    final invalidCredentials = authState is AuthUnauthenticated &&
+    final invalidCredentials =
+        authState is AuthUnauthenticated &&
         authState.reason == SignOutReason.invalidCredentials;
 
     state = state.copyWith(

@@ -11,10 +11,11 @@ part 'product_label_facet.g.dart';
 /// ProductLabelFacet
 ///
 /// Properties:
-/// * [labelId] 
-/// * [count] 
+/// * [labelId]
+/// * [count]
 @BuiltValue()
-abstract class ProductLabelFacet implements Built<ProductLabelFacet, ProductLabelFacetBuilder> {
+abstract class ProductLabelFacet
+    implements Built<ProductLabelFacet, ProductLabelFacetBuilder> {
   @BuiltValueField(wireName: r'label_id')
   int get labelId;
 
@@ -23,16 +24,19 @@ abstract class ProductLabelFacet implements Built<ProductLabelFacet, ProductLabe
 
   ProductLabelFacet._();
 
-  factory ProductLabelFacet([void updates(ProductLabelFacetBuilder b)]) = _$ProductLabelFacet;
+  factory ProductLabelFacet([void updates(ProductLabelFacetBuilder b)]) =
+      _$ProductLabelFacet;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ProductLabelFacetBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ProductLabelFacet> get serializer => _$ProductLabelFacetSerializer();
+  static Serializer<ProductLabelFacet> get serializer =>
+      _$ProductLabelFacetSerializer();
 }
 
-class _$ProductLabelFacetSerializer implements PrimitiveSerializer<ProductLabelFacet> {
+class _$ProductLabelFacetSerializer
+    implements PrimitiveSerializer<ProductLabelFacet> {
   @override
   final Iterable<Type> types = const [ProductLabelFacet, _$ProductLabelFacet];
 
@@ -62,7 +66,11 @@ class _$ProductLabelFacetSerializer implements PrimitiveSerializer<ProductLabelF
     ProductLabelFacet object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -78,17 +86,15 @@ class _$ProductLabelFacetSerializer implements PrimitiveSerializer<ProductLabelF
       final value = serializedList[i + 1];
       switch (key) {
         case r'label_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.labelId = valueDes;
           break;
         case r'count':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.count = valueDes;
           break;
         default:
@@ -119,4 +125,3 @@ class _$ProductLabelFacetSerializer implements PrimitiveSerializer<ProductLabelF
     return result.build();
   }
 }
-

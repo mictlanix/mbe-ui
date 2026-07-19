@@ -38,13 +38,17 @@ class ChangePasswordController extends _$ChangePasswordController {
       return;
     }
     if (state.newPassword.length < 6) {
-      state = state.copyWith(error: 'New password must be at least 6 characters.');
+      state = state.copyWith(
+        error: 'New password must be at least 6 characters.',
+      );
       return;
     }
 
     state = state.copyWith(submitting: true, error: null);
     try {
-      await ref.read(authRepositoryProvider).changePassword(
+      await ref
+          .read(authRepositoryProvider)
+          .changePassword(
             oldPassword: state.oldPassword,
             newPassword: state.newPassword,
           );
@@ -89,13 +93,17 @@ class RecoveryController extends _$RecoveryController {
       return;
     }
     if (state.newPassword.length < 6) {
-      state = state.copyWith(error: 'New password must be at least 6 characters.');
+      state = state.copyWith(
+        error: 'New password must be at least 6 characters.',
+      );
       return;
     }
 
     state = state.copyWith(submitting: true, error: null);
     try {
-      await ref.read(authRepositoryProvider).recoverConfirm(
+      await ref
+          .read(authRepositoryProvider)
+          .recoverConfirm(
             recoveryToken: state.recoveryToken,
             newPassword: state.newPassword,
           );

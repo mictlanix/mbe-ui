@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/vehicle_operator_response.dart';
 import 'package:mbe_api_client/src/model/vehicle_operator_update.dart';
 
 class VehicleOperatorsApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class VehicleOperatorsApi {
   const VehicleOperatorsApi(this._dio, this._serializers);
 
   /// Create Vehicle Operator
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [vehicleOperatorCreate] 
+  /// * [vehicleOperatorCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,8 @@ class VehicleOperatorsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [VehicleOperatorResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<VehicleOperatorResponse>> createVehicleOperatorApiV1VehicleOperatorsPost({ 
+  Future<Response<VehicleOperatorResponse>>
+  createVehicleOperatorApiV1VehicleOperatorsPost({
     required VehicleOperatorCreate vehicleOperatorCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +49,10 @@ class VehicleOperatorsApi {
     final _path = r'/api/v1/vehicle-operators';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -69,14 +64,13 @@ class VehicleOperatorsApi {
 
     try {
       const _type = FullType(VehicleOperatorCreate);
-      _bodyData = _serializers.serialize(vehicleOperatorCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        vehicleOperatorCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +90,13 @@ class VehicleOperatorsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(VehicleOperatorResponse),
-      ) as VehicleOperatorResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(VehicleOperatorResponse),
+                )
+                as VehicleOperatorResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +120,10 @@ class VehicleOperatorsApi {
   }
 
   /// Delete Vehicle Operator
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [vehicleOperatorId] 
+  /// * [vehicleOperatorId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +133,8 @@ class VehicleOperatorsApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdDelete({ 
+  Future<Response<void>>
+  deleteVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdDelete({
     required int vehicleOperatorId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +143,22 @@ class VehicleOperatorsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/vehicle-operators/{vehicle_operator_id}'.replaceAll('{' r'vehicle_operator_id' '}', encodeQueryParameter(_serializers, vehicleOperatorId, const FullType(int)).toString());
+    final _path = r'/api/v1/vehicle-operators/{vehicle_operator_id}'.replaceAll(
+      '{'
+      r'vehicle_operator_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        vehicleOperatorId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +177,10 @@ class VehicleOperatorsApi {
   }
 
   /// Get Vehicle Operator
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [vehicleOperatorId] 
+  /// * [vehicleOperatorId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +190,8 @@ class VehicleOperatorsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [VehicleOperatorResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<VehicleOperatorResponse>> getVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdGet({ 
+  Future<Response<VehicleOperatorResponse>>
+  getVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdGet({
     required int vehicleOperatorId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +200,22 @@ class VehicleOperatorsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/vehicle-operators/{vehicle_operator_id}'.replaceAll('{' r'vehicle_operator_id' '}', encodeQueryParameter(_serializers, vehicleOperatorId, const FullType(int)).toString());
+    final _path = r'/api/v1/vehicle-operators/{vehicle_operator_id}'.replaceAll(
+      '{'
+      r'vehicle_operator_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        vehicleOperatorId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +234,13 @@ class VehicleOperatorsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(VehicleOperatorResponse),
-      ) as VehicleOperatorResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(VehicleOperatorResponse),
+                )
+                as VehicleOperatorResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,12 +264,12 @@ class VehicleOperatorsApi {
   }
 
   /// List Vehicle Operators
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [employee] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [employee]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -271,7 +279,8 @@ class VehicleOperatorsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseVehicleOperatorResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseVehicleOperatorResponse>> listVehicleOperatorsApiV1VehicleOperatorsGet({ 
+  Future<Response<ListResponseVehicleOperatorResponse>>
+  listVehicleOperatorsApiV1VehicleOperatorsGet({
     int? employee,
     int? skip = 0,
     int? limit = 20,
@@ -285,15 +294,10 @@ class VehicleOperatorsApi {
     final _path = r'/api/v1/vehicle-operators';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -301,9 +305,20 @@ class VehicleOperatorsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (employee != null) r'employee': encodeQueryParameter(_serializers, employee, const FullType(int)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (employee != null)
+        r'employee': encodeQueryParameter(
+          _serializers,
+          employee,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -319,11 +334,15 @@ class VehicleOperatorsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseVehicleOperatorResponse),
-      ) as ListResponseVehicleOperatorResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponseVehicleOperatorResponse,
+                  ),
+                )
+                as ListResponseVehicleOperatorResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -347,11 +366,11 @@ class VehicleOperatorsApi {
   }
 
   /// Update Vehicle Operator
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [vehicleOperatorId] 
-  /// * [vehicleOperatorUpdate] 
+  /// * [vehicleOperatorId]
+  /// * [vehicleOperatorUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -361,7 +380,8 @@ class VehicleOperatorsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [VehicleOperatorResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<VehicleOperatorResponse>> updateVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdPut({ 
+  Future<Response<VehicleOperatorResponse>>
+  updateVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdPut({
     required int vehicleOperatorId,
     required VehicleOperatorUpdate vehicleOperatorUpdate,
     CancelToken? cancelToken,
@@ -371,18 +391,22 @@ class VehicleOperatorsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/vehicle-operators/{vehicle_operator_id}'.replaceAll('{' r'vehicle_operator_id' '}', encodeQueryParameter(_serializers, vehicleOperatorId, const FullType(int)).toString());
+    final _path = r'/api/v1/vehicle-operators/{vehicle_operator_id}'.replaceAll(
+      '{'
+      r'vehicle_operator_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        vehicleOperatorId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -394,14 +418,13 @@ class VehicleOperatorsApi {
 
     try {
       const _type = FullType(VehicleOperatorUpdate);
-      _bodyData = _serializers.serialize(vehicleOperatorUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        vehicleOperatorUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -421,11 +444,13 @@ class VehicleOperatorsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(VehicleOperatorResponse),
-      ) as VehicleOperatorResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(VehicleOperatorResponse),
+                )
+                as VehicleOperatorResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -447,5 +472,4 @@ class VehicleOperatorsApi {
       extra: _response.extra,
     );
   }
-
 }

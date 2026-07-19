@@ -19,7 +19,10 @@ class AuthInterceptor extends Interceptor {
   void Function()? onUnauthorized;
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final token = await _tokenStorage.read();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
@@ -72,17 +75,14 @@ List<FieldError> _fieldErrorsFrom(Object? data) {
   if (data is! Map) return const [];
   final detail = data['detail'];
   if (detail is! List) return const [];
-  return detail
-      .whereType<Map>()
-      .map((entry) {
-        final loc = (entry['loc'] as List? ?? const [])
-            .map((segment) => segment.toString())
-            .toList();
-        return FieldError(
-          loc: loc,
-          msg: entry['msg']?.toString() ?? '',
-          type: entry['type']?.toString() ?? '',
-        );
-      })
-      .toList();
+  return detail.whereType<Map>().map((entry) {
+    final loc = (entry['loc'] as List? ?? const [])
+        .map((segment) => segment.toString())
+        .toList();
+    return FieldError(
+      loc: loc,
+      msg: entry['msg']?.toString() ?? '',
+      type: entry['type']?.toString() ?? '',
+    );
+  }).toList();
 }

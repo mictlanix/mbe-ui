@@ -10,13 +10,9 @@ part 'sat_catalog_item.freezed.dart';
 /// and symbol) is only available embedded in a `ProductResponse`.
 @freezed
 class SatCatalogItem with _$SatCatalogItem {
-  const factory SatCatalogItem({
-    required String code,
-    String? description,
-  }) = _SatCatalogItem;
+  const factory SatCatalogItem({required String code, String? description}) =
+      _SatCatalogItem;
 
-  factory SatCatalogItem.fromResponse(SatCatalogResponse r) => SatCatalogItem(
-        code: r.id,
-        description: r.description,
-      );
+  factory SatCatalogItem.fromResponse(SatCatalogResponse r) =>
+      SatCatalogItem(code: r.id, description: r.description);
 }

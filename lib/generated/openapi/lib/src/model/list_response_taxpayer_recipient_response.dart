@@ -13,10 +13,15 @@ part 'list_response_taxpayer_recipient_response.g.dart';
 /// ListResponseTaxpayerRecipientResponse
 ///
 /// Properties:
-/// * [items] 
-/// * [total] 
+/// * [items]
+/// * [total]
 @BuiltValue()
-abstract class ListResponseTaxpayerRecipientResponse implements Built<ListResponseTaxpayerRecipientResponse, ListResponseTaxpayerRecipientResponseBuilder> {
+abstract class ListResponseTaxpayerRecipientResponse
+    implements
+        Built<
+          ListResponseTaxpayerRecipientResponse,
+          ListResponseTaxpayerRecipientResponseBuilder
+        > {
   @BuiltValueField(wireName: r'items')
   BuiltList<TaxpayerRecipientResponse> get items;
 
@@ -25,18 +30,25 @@ abstract class ListResponseTaxpayerRecipientResponse implements Built<ListRespon
 
   ListResponseTaxpayerRecipientResponse._();
 
-  factory ListResponseTaxpayerRecipientResponse([void updates(ListResponseTaxpayerRecipientResponseBuilder b)]) = _$ListResponseTaxpayerRecipientResponse;
+  factory ListResponseTaxpayerRecipientResponse([
+    void updates(ListResponseTaxpayerRecipientResponseBuilder b),
+  ]) = _$ListResponseTaxpayerRecipientResponse;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ListResponseTaxpayerRecipientResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseTaxpayerRecipientResponse> get serializer => _$ListResponseTaxpayerRecipientResponseSerializer();
+  static Serializer<ListResponseTaxpayerRecipientResponse> get serializer =>
+      _$ListResponseTaxpayerRecipientResponseSerializer();
 }
 
-class _$ListResponseTaxpayerRecipientResponseSerializer implements PrimitiveSerializer<ListResponseTaxpayerRecipientResponse> {
+class _$ListResponseTaxpayerRecipientResponseSerializer
+    implements PrimitiveSerializer<ListResponseTaxpayerRecipientResponse> {
   @override
-  final Iterable<Type> types = const [ListResponseTaxpayerRecipientResponse, _$ListResponseTaxpayerRecipientResponse];
+  final Iterable<Type> types = const [
+    ListResponseTaxpayerRecipientResponse,
+    _$ListResponseTaxpayerRecipientResponse,
+  ];
 
   @override
   final String wireName = r'ListResponseTaxpayerRecipientResponse';
@@ -49,7 +61,9 @@ class _$ListResponseTaxpayerRecipientResponseSerializer implements PrimitiveSeri
     yield r'items';
     yield serializers.serialize(
       object.items,
-      specifiedType: const FullType(BuiltList, [FullType(TaxpayerRecipientResponse)]),
+      specifiedType: const FullType(BuiltList, [
+        FullType(TaxpayerRecipientResponse),
+      ]),
     );
     yield r'total';
     yield serializers.serialize(
@@ -64,7 +78,11 @@ class _$ListResponseTaxpayerRecipientResponseSerializer implements PrimitiveSeri
     ListResponseTaxpayerRecipientResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -80,17 +98,20 @@ class _$ListResponseTaxpayerRecipientResponseSerializer implements PrimitiveSeri
       final value = serializedList[i + 1];
       switch (key) {
         case r'items':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(TaxpayerRecipientResponse)]),
-          ) as BuiltList<TaxpayerRecipientResponse>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(TaxpayerRecipientResponse),
+                    ]),
+                  )
+                  as BuiltList<TaxpayerRecipientResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.total = valueDes;
           break;
         default:
@@ -121,4 +142,3 @@ class _$ListResponseTaxpayerRecipientResponseSerializer implements PrimitiveSeri
     return result.build();
   }
 }
-

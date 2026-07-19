@@ -13,9 +13,6 @@ class SupplierListItem with _$SupplierListItem {
     required String name,
   }) = _SupplierListItem;
 
-  factory SupplierListItem.fromResponse(SupplierResponse r) => SupplierListItem(
-        supplierId: r.supplierId,
-        code: r.code,
-        name: r.name,
-      );
+  factory SupplierListItem.fromResponse(SupplierResponse r) =>
+      SupplierListItem(supplierId: r.supplierId, code: r.code, name: r.name);
 }

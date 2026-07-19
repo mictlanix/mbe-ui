@@ -12,15 +12,16 @@ part 'vehicle_operator_update.g.dart';
 /// VehicleOperatorUpdate
 ///
 /// Properties:
-/// * [driver] 
-/// * [licenseType] 
-/// * [driverLicenseNumber] 
-/// * [issueDate] 
-/// * [expirationDate] 
-/// * [issuingLocation] 
-/// * [active] 
+/// * [driver]
+/// * [licenseType]
+/// * [driverLicenseNumber]
+/// * [issueDate]
+/// * [expirationDate]
+/// * [issuingLocation]
+/// * [active]
 @BuiltValue()
-abstract class VehicleOperatorUpdate implements Built<VehicleOperatorUpdate, VehicleOperatorUpdateBuilder> {
+abstract class VehicleOperatorUpdate
+    implements Built<VehicleOperatorUpdate, VehicleOperatorUpdateBuilder> {
   @BuiltValueField(wireName: r'driver')
   int? get driver;
 
@@ -44,18 +45,25 @@ abstract class VehicleOperatorUpdate implements Built<VehicleOperatorUpdate, Veh
 
   VehicleOperatorUpdate._();
 
-  factory VehicleOperatorUpdate([void updates(VehicleOperatorUpdateBuilder b)]) = _$VehicleOperatorUpdate;
+  factory VehicleOperatorUpdate([
+    void updates(VehicleOperatorUpdateBuilder b),
+  ]) = _$VehicleOperatorUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(VehicleOperatorUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<VehicleOperatorUpdate> get serializer => _$VehicleOperatorUpdateSerializer();
+  static Serializer<VehicleOperatorUpdate> get serializer =>
+      _$VehicleOperatorUpdateSerializer();
 }
 
-class _$VehicleOperatorUpdateSerializer implements PrimitiveSerializer<VehicleOperatorUpdate> {
+class _$VehicleOperatorUpdateSerializer
+    implements PrimitiveSerializer<VehicleOperatorUpdate> {
   @override
-  final Iterable<Type> types = const [VehicleOperatorUpdate, _$VehicleOperatorUpdate];
+  final Iterable<Type> types = const [
+    VehicleOperatorUpdate,
+    _$VehicleOperatorUpdate,
+  ];
 
   @override
   final String wireName = r'VehicleOperatorUpdate';
@@ -122,7 +130,11 @@ class _$VehicleOperatorUpdateSerializer implements PrimitiveSerializer<VehicleOp
     VehicleOperatorUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -138,58 +150,72 @@ class _$VehicleOperatorUpdateSerializer implements PrimitiveSerializer<VehicleOp
       final value = serializedList[i + 1];
       switch (key) {
         case r'driver':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(int),
-          ) as int?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
           if (valueDes == null) continue;
           result.driver = valueDes;
           break;
         case r'license_type':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.licenseType = valueDes;
           break;
         case r'driver_license_number':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.driverLicenseNumber = valueDes;
           break;
         case r'issue_date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(Date),
-          ) as Date?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(Date),
+                  )
+                  as Date?;
           if (valueDes == null) continue;
           result.issueDate = valueDes;
           break;
         case r'expiration_date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(Date),
-          ) as Date?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(Date),
+                  )
+                  as Date?;
           if (valueDes == null) continue;
           result.expirationDate = valueDes;
           break;
         case r'issuing_location':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
           if (valueDes == null) continue;
           result.issuingLocation = valueDes;
           break;
         case r'active':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(bool),
-          ) as bool?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
           if (valueDes == null) continue;
           result.active = valueDes;
           break;
@@ -221,4 +247,3 @@ class _$VehicleOperatorUpdateSerializer implements PrimitiveSerializer<VehicleOp
     return result.build();
   }
 }
-

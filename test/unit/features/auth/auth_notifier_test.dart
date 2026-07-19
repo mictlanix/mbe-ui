@@ -53,91 +53,122 @@ void main() {
     verifyNever(() => authRepository.me());
   });
 
-  test('app-start restore: valid token restores an authenticated session', () async {
-    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
-    when(() => authRepository.me()).thenAnswer((_) async => testUser);
+  test(
+    'app-start restore: valid token restores an authenticated session',
+    () async {
+      when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+      when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-    final state = await container.read(authNotifierProvider.future);
+      final state = await container.read(authNotifierProvider.future);
 
-    expect(state, const AuthState.authenticated(token: 'token123', user: testUser));
-  });
+      expect(
+        state,
+        const AuthState.authenticated(token: 'token123', user: testUser),
+      );
+    },
+  );
 
-  test('app-start restore: invalid token clears storage and reports sessionInvalid', () async {
-    when(() => tokenStorage.read()).thenAnswer((_) async => 'stale-token');
-    when(() => authRepository.me()).thenThrow(const AppError.auth());
+  test(
+    'app-start restore: invalid token clears storage and reports sessionInvalid',
+    () async {
+      when(() => tokenStorage.read()).thenAnswer((_) async => 'stale-token');
+      when(() => authRepository.me()).thenThrow(const AppError.auth());
 
-    final state = await container.read(authNotifierProvider.future);
+      final state = await container.read(authNotifierProvider.future);
 
-    expect(
-      state,
-      const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),
-    );
-    verify(() => tokenStorage.clear()).called(1);
-  });
+      expect(
+        state,
+        const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),
+      );
+      verify(() => tokenStorage.clear()).called(1);
+    },
+  );
 
-  test('signIn success transitions to authenticated and persists the token', () async {
-    when(() => tokenStorage.read()).thenAnswer((_) async => null);
-    when(() => authRepository.login(
+  test(
+    'signIn success transitions to authenticated and persists the token',
+    () async {
+      when(() => tokenStorage.read()).thenAnswer((_) async => null);
+      when(
+        () => authRepository.login(
           username: any(named: 'username'),
           password: any(named: 'password'),
-        )).thenAnswer((_) async => 'new-token');
-    when(() => authRepository.me()).thenAnswer((_) async => testUser);
+        ),
+      ).thenAnswer((_) async => 'new-token');
+      when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-    await container.read(authNotifierProvider.future);
-    await container.read(authNotifierProvider.notifier).signIn(
-      username: 'jdoe',
-      password: 'secret',
-    );
+      await container.read(authNotifierProvider.future);
+      await container
+          .read(authNotifierProvider.notifier)
+          .signIn(username: 'jdoe', password: 'secret');
 
-    final state = container.read(authNotifierProvider).value;
-    expect(state, const AuthState.authenticated(token: 'new-token', user: testUser));
-    verify(() => tokenStorage.write('new-token')).called(1);
-  });
+      final state = container.read(authNotifierProvider).value;
+      expect(
+        state,
+        const AuthState.authenticated(token: 'new-token', user: testUser),
+      );
+      verify(() => tokenStorage.write('new-token')).called(1);
+    },
+  );
 
-  test('signIn failure transitions to unauthenticated(invalidCredentials)', () async {
-    when(() => tokenStorage.read()).thenAnswer((_) async => null);
-    when(() => authRepository.login(
+  test(
+    'signIn failure transitions to unauthenticated(invalidCredentials)',
+    () async {
+      when(() => tokenStorage.read()).thenAnswer((_) async => null);
+      when(
+        () => authRepository.login(
           username: any(named: 'username'),
           password: any(named: 'password'),
-        )).thenThrow(const AppError.auth());
+        ),
+      ).thenThrow(const AppError.auth());
 
-    await container.read(authNotifierProvider.future);
-    await container.read(authNotifierProvider.notifier).signIn(
-      username: 'jdoe',
-      password: 'wrong',
-    );
+      await container.read(authNotifierProvider.future);
+      await container
+          .read(authNotifierProvider.notifier)
+          .signIn(username: 'jdoe', password: 'wrong');
 
-    final state = container.read(authNotifierProvider).value;
-    expect(
-      state,
-      const AuthState.unauthenticated(reason: SignOutReason.invalidCredentials),
-    );
-  });
+      final state = container.read(authNotifierProvider).value;
+      expect(
+        state,
+        const AuthState.unauthenticated(
+          reason: SignOutReason.invalidCredentials,
+        ),
+      );
+    },
+  );
 
-  test('signOut clears the token and transitions to unauthenticated(signedOut)', () async {
-    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
-    when(() => authRepository.me()).thenAnswer((_) async => testUser);
+  test(
+    'signOut clears the token and transitions to unauthenticated(signedOut)',
+    () async {
+      when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+      when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-    await container.read(authNotifierProvider.future);
-    await container.read(authNotifierProvider.notifier).signOut();
+      await container.read(authNotifierProvider.future);
+      await container.read(authNotifierProvider.notifier).signOut();
 
-    final state = container.read(authNotifierProvider).value;
-    expect(state, const AuthState.unauthenticated(reason: SignOutReason.signedOut));
-    verify(() => tokenStorage.clear()).called(1);
-  });
+      final state = container.read(authNotifierProvider).value;
+      expect(
+        state,
+        const AuthState.unauthenticated(reason: SignOutReason.signedOut),
+      );
+      verify(() => tokenStorage.clear()).called(1);
+    },
+  );
 
-  test('a 401 on any request transitions to unauthenticated(sessionInvalid)', () async {
-    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
-    when(() => authRepository.me()).thenAnswer((_) async => testUser);
+  test(
+    'a 401 on any request transitions to unauthenticated(sessionInvalid)',
+    () async {
+      when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+      when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-    await container.read(authNotifierProvider.future);
-    container.read(authNotifierProvider.notifier).handleSessionInvalid();
+      await container.read(authNotifierProvider.future);
+      container.read(authNotifierProvider.notifier).handleSessionInvalid();
 
-    final state = container.read(authNotifierProvider).value;
-    expect(
-      state,
-      const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),
-    );
-    verify(() => tokenStorage.clear()).called(1);
-  });
+      final state = container.read(authNotifierProvider).value;
+      expect(
+        state,
+        const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),
+      );
+      verify(() => tokenStorage.clear()).called(1);
+    },
+  );
 }

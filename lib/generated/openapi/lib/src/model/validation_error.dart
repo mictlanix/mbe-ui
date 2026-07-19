@@ -14,13 +14,14 @@ part 'validation_error.g.dart';
 /// ValidationError
 ///
 /// Properties:
-/// * [loc] 
-/// * [msg] 
-/// * [type] 
-/// * [input] 
-/// * [ctx] 
+/// * [loc]
+/// * [msg]
+/// * [type]
+/// * [input]
+/// * [ctx]
 @BuiltValue()
-abstract class ValidationError implements Built<ValidationError, ValidationErrorBuilder> {
+abstract class ValidationError
+    implements Built<ValidationError, ValidationErrorBuilder> {
   @BuiltValueField(wireName: r'loc')
   BuiltList<LocationInner> get loc;
 
@@ -38,16 +39,19 @@ abstract class ValidationError implements Built<ValidationError, ValidationError
 
   ValidationError._();
 
-  factory ValidationError([void updates(ValidationErrorBuilder b)]) = _$ValidationError;
+  factory ValidationError([void updates(ValidationErrorBuilder b)]) =
+      _$ValidationError;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(ValidationErrorBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ValidationError> get serializer => _$ValidationErrorSerializer();
+  static Serializer<ValidationError> get serializer =>
+      _$ValidationErrorSerializer();
 }
 
-class _$ValidationErrorSerializer implements PrimitiveSerializer<ValidationError> {
+class _$ValidationErrorSerializer
+    implements PrimitiveSerializer<ValidationError> {
   @override
   final Iterable<Type> types = const [ValidationError, _$ValidationError];
 
@@ -96,7 +100,11 @@ class _$ValidationErrorSerializer implements PrimitiveSerializer<ValidationError
     ValidationError object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -112,39 +120,51 @@ class _$ValidationErrorSerializer implements PrimitiveSerializer<ValidationError
       final value = serializedList[i + 1];
       switch (key) {
         case r'loc':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(LocationInner)]),
-          ) as BuiltList<LocationInner>;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(LocationInner),
+                    ]),
+                  )
+                  as BuiltList<LocationInner>;
           result.loc.replace(valueDes);
           break;
         case r'msg':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.msg = valueDes;
           break;
         case r'type':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.type = valueDes;
           break;
         case r'input':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(JsonObject),
+                  )
+                  as JsonObject?;
           if (valueDes == null) continue;
           result.input = valueDes;
           break;
         case r'ctx':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(JsonObject),
-          ) as JsonObject;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(JsonObject),
+                  )
+                  as JsonObject;
           result.ctx = valueDes;
           break;
         default:
@@ -175,4 +195,3 @@ class _$ValidationErrorSerializer implements PrimitiveSerializer<ValidationError
     return result.build();
   }
 }
-

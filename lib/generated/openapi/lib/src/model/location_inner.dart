@@ -12,19 +12,22 @@ part 'location_inner.g.dart';
 
 /// LocationInner
 @BuiltValue()
-abstract class LocationInner implements Built<LocationInner, LocationInnerBuilder> {
+abstract class LocationInner
+    implements Built<LocationInner, LocationInnerBuilder> {
   /// Any Of [String], [int]
   AnyOf get anyOf;
 
   LocationInner._();
 
-  factory LocationInner([void updates(LocationInnerBuilder b)]) = _$LocationInner;
+  factory LocationInner([void updates(LocationInnerBuilder b)]) =
+      _$LocationInner;
 
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(LocationInnerBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<LocationInner> get serializer => _$LocationInnerSerializer();
+  static Serializer<LocationInner> get serializer =>
+      _$LocationInnerSerializer();
 }
 
 class _$LocationInnerSerializer implements PrimitiveSerializer<LocationInner> {
@@ -38,8 +41,7 @@ class _$LocationInnerSerializer implements PrimitiveSerializer<LocationInner> {
     Serializers serializers,
     LocationInner object, {
     FullType specifiedType = FullType.unspecified,
-  }) sync* {
-  }
+  }) sync* {}
 
   @override
   Object serialize(
@@ -48,7 +50,13 @@ class _$LocationInnerSerializer implements PrimitiveSerializer<LocationInner> {
     FullType specifiedType = FullType.unspecified,
   }) {
     final anyOf = object.anyOf;
-    return serializers.serialize(anyOf, specifiedType: FullType(AnyOf, anyOf.valueTypes.map((type) => FullType(type)).toList()))!;
+    return serializers.serialize(
+      anyOf,
+      specifiedType: FullType(
+        AnyOf,
+        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+      ),
+    )!;
   }
 
   @override
@@ -59,10 +67,11 @@ class _$LocationInnerSerializer implements PrimitiveSerializer<LocationInner> {
   }) {
     final result = LocationInnerBuilder();
     Object? anyOfDataSrc;
-    final targetType = const FullType(AnyOf, [FullType(String), FullType(int), ]);
+    final targetType = const FullType(AnyOf, [FullType(String), FullType(int)]);
     anyOfDataSrc = serialized;
-    result.anyOf = serializers.deserialize(anyOfDataSrc, specifiedType: targetType) as AnyOf;
+    result.anyOf =
+        serializers.deserialize(anyOfDataSrc, specifiedType: targetType)
+            as AnyOf;
     return result.build();
   }
 }
-

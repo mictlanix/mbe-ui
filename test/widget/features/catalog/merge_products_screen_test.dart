@@ -181,30 +181,27 @@ void main() {
     },
   );
 
-  testWidgets(
-    'cancelling the confirm dialog performs no merge and keeps both '
-    'selections',
-    (tester) async {
-      final container = await pumpScreen(tester);
-      select(container);
-      await tester.pumpAndSettle();
+  testWidgets('cancelling the confirm dialog performs no merge and keeps both '
+      'selections', (tester) async {
+    final container = await pumpScreen(tester);
+    select(container);
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('merge_submit_button')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('merge_confirm_cancel_button')));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('merge_submit_button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('merge_confirm_cancel_button')));
+    await tester.pumpAndSettle();
 
-      verifyNever(
-        () => productRepository.mergeProducts(
-          productId: any(named: 'productId'),
-          duplicateId: any(named: 'duplicateId'),
-        ),
-      );
-      final state = container.read(mergeProductsControllerProvider);
-      expect(state.canonical, _canonical);
-      expect(state.duplicate, _duplicate);
-    },
-  );
+    verifyNever(
+      () => productRepository.mergeProducts(
+        productId: any(named: 'productId'),
+        duplicateId: any(named: 'duplicateId'),
+      ),
+    );
+    final state = container.read(mergeProductsControllerProvider);
+    expect(state.canonical, _canonical);
+    expect(state.duplicate, _duplicate);
+  });
 
   group('client-side guards (US3)', () {
     testWidgets(
@@ -217,7 +214,10 @@ void main() {
           find.byKey(const Key('merge_submit_button')),
         );
         expect(button.onPressed, isNull);
-        expect(find.byKey(const Key('merge_validation_message')), findsOneWidget);
+        expect(
+          find.byKey(const Key('merge_validation_message')),
+          findsOneWidget,
+        );
         expect(
           find.text('Select a product and a duplicate to continue.'),
           findsOneWidget,
@@ -230,8 +230,9 @@ void main() {
       'both fields hold the same product (FR-006)',
       (tester) async {
         final container = await pumpScreen(tester);
-        final controller =
-            container.read(mergeProductsControllerProvider.notifier);
+        final controller = container.read(
+          mergeProductsControllerProvider.notifier,
+        );
         controller.canonicalSelected(_canonical);
         controller.duplicateSelected(_canonical);
         await tester.pumpAndSettle();
@@ -267,10 +268,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byKey(const Key('merge_error_banner')), findsOneWidget);
-        expect(
-          find.text('The requested item was not found.'),
-          findsOneWidget,
-        );
+        expect(find.text('The requested item was not found.'), findsOneWidget);
         final state = container.read(mergeProductsControllerProvider);
         expect(state.canonical, _canonical);
         expect(state.duplicate, _duplicate);
@@ -280,7 +278,11 @@ void main() {
   });
 
   group('search-as-you-type (US2)', () {
-    Future<void> typeAndSettle(WidgetTester tester, Key field, String text) async {
+    Future<void> typeAndSettle(
+      WidgetTester tester,
+      Key field,
+      String text,
+    ) async {
       await tester.enterText(
         find.descendant(
           of: find.byKey(field),
@@ -293,26 +295,21 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets(
-      'a query under 3 characters does not call the repository',
-      (tester) async {
-        await pumpScreen(tester);
+    testWidgets('a query under 3 characters does not call the repository', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
 
-        await typeAndSettle(
-          tester,
-          const Key('merge_canonical_field'),
-          'wi',
-        );
+      await typeAndSettle(tester, const Key('merge_canonical_field'), 'wi');
 
-        verifyNever(
-          () => productRepository.list(
-            search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
-            limit: any(named: 'limit'),
-          ),
-        );
-      },
-    );
+      verifyNever(
+        () => productRepository.list(
+          search: any(named: 'search'),
+          deactivated: any(named: 'deactivated'),
+          limit: any(named: 'limit'),
+        ),
+      );
+    });
 
     testWidgets(
       'a query of 3+ characters searches with deactivated: null and shows '

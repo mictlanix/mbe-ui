@@ -13,21 +13,22 @@ part 'vehicle_operator_response.g.dart';
 /// VehicleOperatorResponse
 ///
 /// Properties:
-/// * [vehicleOperatorId] 
-/// * [driver] 
-/// * [licenseType] 
-/// * [driverLicenseNumber] 
-/// * [issueDate] 
-/// * [expirationDate] 
-/// * [issuingLocation] 
-/// * [creationTime] 
-/// * [modificationTime] 
-/// * [creator] 
-/// * [updater] 
-/// * [active] 
-/// * [daysUntilExpiry] 
+/// * [vehicleOperatorId]
+/// * [driver]
+/// * [licenseType]
+/// * [driverLicenseNumber]
+/// * [issueDate]
+/// * [expirationDate]
+/// * [issuingLocation]
+/// * [creationTime]
+/// * [modificationTime]
+/// * [creator]
+/// * [updater]
+/// * [active]
+/// * [daysUntilExpiry]
 @BuiltValue()
-abstract class VehicleOperatorResponse implements Built<VehicleOperatorResponse, VehicleOperatorResponseBuilder> {
+abstract class VehicleOperatorResponse
+    implements Built<VehicleOperatorResponse, VehicleOperatorResponseBuilder> {
   @BuiltValueField(wireName: r'vehicle_operator_id')
   int get vehicleOperatorId;
 
@@ -69,19 +70,26 @@ abstract class VehicleOperatorResponse implements Built<VehicleOperatorResponse,
 
   VehicleOperatorResponse._();
 
-  factory VehicleOperatorResponse([void updates(VehicleOperatorResponseBuilder b)]) = _$VehicleOperatorResponse;
+  factory VehicleOperatorResponse([
+    void updates(VehicleOperatorResponseBuilder b),
+  ]) = _$VehicleOperatorResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(VehicleOperatorResponseBuilder b) => b
-      ..daysUntilExpiry = 0;
+  static void _defaults(VehicleOperatorResponseBuilder b) =>
+      b..daysUntilExpiry = 0;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<VehicleOperatorResponse> get serializer => _$VehicleOperatorResponseSerializer();
+  static Serializer<VehicleOperatorResponse> get serializer =>
+      _$VehicleOperatorResponseSerializer();
 }
 
-class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<VehicleOperatorResponse> {
+class _$VehicleOperatorResponseSerializer
+    implements PrimitiveSerializer<VehicleOperatorResponse> {
   @override
-  final Iterable<Type> types = const [VehicleOperatorResponse, _$VehicleOperatorResponse];
+  final Iterable<Type> types = const [
+    VehicleOperatorResponse,
+    _$VehicleOperatorResponse,
+  ];
 
   @override
   final String wireName = r'VehicleOperatorResponse';
@@ -166,7 +174,11 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
     VehicleOperatorResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
   }
 
   void _deserializeProperties(
@@ -182,94 +194,114 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
       final value = serializedList[i + 1];
       switch (key) {
         case r'vehicle_operator_id':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.vehicleOperatorId = valueDes;
           break;
         case r'driver':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(EmployeeResponse),
-          ) as EmployeeResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(EmployeeResponse),
+                  )
+                  as EmployeeResponse;
           result.driver.replace(valueDes);
           break;
         case r'license_type':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.licenseType = valueDes;
           break;
         case r'driver_license_number':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.driverLicenseNumber = valueDes;
           break;
         case r'issue_date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Date),
+                  )
+                  as Date;
           result.issueDate = valueDes;
           break;
         case r'expiration_date':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(Date),
-          ) as Date;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(Date),
+                  )
+                  as Date;
           result.expirationDate = valueDes;
           break;
         case r'issuing_location':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
           result.issuingLocation = valueDes;
           break;
         case r'creation_time':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(DateTime),
-          ) as DateTime;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(DateTime),
+                  )
+                  as DateTime;
           result.creationTime = valueDes;
           break;
         case r'modification_time':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(DateTime),
-          ) as DateTime;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(DateTime),
+                  )
+                  as DateTime;
           result.modificationTime = valueDes;
           break;
         case r'creator':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(EmployeeResponse),
-          ) as EmployeeResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(EmployeeResponse),
+                  )
+                  as EmployeeResponse;
           result.creator.replace(valueDes);
           break;
         case r'updater':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(EmployeeResponse),
-          ) as EmployeeResponse;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(EmployeeResponse),
+                  )
+                  as EmployeeResponse;
           result.updater.replace(valueDes);
           break;
         case r'active':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
           result.active = valueDes;
           break;
         case r'days_until_expiry':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.daysUntilExpiry = valueDes;
           break;
         default:
@@ -300,4 +332,3 @@ class _$VehicleOperatorResponseSerializer implements PrimitiveSerializer<Vehicle
     return result.build();
   }
 }
-

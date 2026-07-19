@@ -38,10 +38,8 @@ void main() {
   // Chip text may be "Name" or "Name (count)" depending on [labelCounts], so
   // finders match by the widget's label rather than its exact display text.
   Finder chipFinder(String labelName) => find.byWidgetPredicate(
-        (w) =>
-            w is FilterChip &&
-            (w.label as Text).data!.startsWith(labelName),
-      );
+    (w) => w is FilterChip && (w.label as Text).data!.startsWith(labelName),
+  );
 
   bool isInteractive(WidgetTester tester, String label) =>
       tester.widget<FilterChip>(chipFinder(label)).onSelected != null;
@@ -75,15 +73,14 @@ void main() {
     },
   );
 
-  testWidgets(
-    'a label present in labelCounts shows "Name (count)"',
-    (tester) async {
-      await pumpPicker(tester, labelCounts: {1: 42, 2: 7});
+  testWidgets('a label present in labelCounts shows "Name (count)"', (
+    tester,
+  ) async {
+    await pumpPicker(tester, labelCounts: {1: 42, 2: 7});
 
-      expect(chipText(tester, 'Trupper'), 'Trupper (42)');
-      expect(chipText(tester, 'DeWalt'), 'DeWalt (7)');
-    },
-  );
+    expect(chipText(tester, 'Trupper'), 'Trupper (42)');
+    expect(chipText(tester, 'DeWalt'), 'DeWalt (7)');
+  });
 
   testWidgets(
     'a selected label stays interactive even if not in labelCounts, so it '
@@ -92,10 +89,7 @@ void main() {
       await pumpPicker(tester, selectedIds: [3], labelCounts: {1: 1, 2: 1});
 
       expect(isInteractive(tester, 'Makita'), isTrue);
-      expect(
-        tester.widget<FilterChip>(chipFinder('Makita')).selected,
-        isTrue,
-      );
+      expect(tester.widget<FilterChip>(chipFinder('Makita')).selected, isTrue);
     },
   );
 

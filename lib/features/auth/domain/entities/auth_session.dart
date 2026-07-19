@@ -31,7 +31,8 @@ enum SignOutReason {
 @freezed
 sealed class AuthState with _$AuthState {
   /// No valid session. `reason` is `null` if the user has never signed in.
-  const factory AuthState.unauthenticated({SignOutReason? reason}) = AuthUnauthenticated;
+  const factory AuthState.unauthenticated({SignOutReason? reason}) =
+      AuthUnauthenticated;
 
   /// Login request in flight (FR-001 acceptance scenario 1).
   const factory AuthState.authenticating() = AuthAuthenticating;

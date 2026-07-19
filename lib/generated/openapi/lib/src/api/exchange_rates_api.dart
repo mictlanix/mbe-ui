@@ -17,7 +17,6 @@ import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_exchange_rate_response.dart';
 
 class ExchangeRatesApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -25,10 +24,10 @@ class ExchangeRatesApi {
   const ExchangeRatesApi(this._dio, this._serializers);
 
   /// Create Exchange Rate
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [exchangeRateCreate] 
+  /// * [exchangeRateCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -38,7 +37,8 @@ class ExchangeRatesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ExchangeRateResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ExchangeRateResponse>> createExchangeRateApiV1ExchangeRatesPost({ 
+  Future<Response<ExchangeRateResponse>>
+  createExchangeRateApiV1ExchangeRatesPost({
     required ExchangeRateCreate exchangeRateCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -50,15 +50,10 @@ class ExchangeRatesApi {
     final _path = r'/api/v1/exchange-rates';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -70,14 +65,13 @@ class ExchangeRatesApi {
 
     try {
       const _type = FullType(ExchangeRateCreate);
-      _bodyData = _serializers.serialize(exchangeRateCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        exchangeRateCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -97,11 +91,13 @@ class ExchangeRatesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ExchangeRateResponse),
-      ) as ExchangeRateResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ExchangeRateResponse),
+                )
+                as ExchangeRateResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -125,10 +121,10 @@ class ExchangeRatesApi {
   }
 
   /// Delete Exchange Rate
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [exchangeRateId] 
+  /// * [exchangeRateId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -138,7 +134,8 @@ class ExchangeRatesApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteExchangeRateApiV1ExchangeRatesExchangeRateIdDelete({ 
+  Future<Response<void>>
+  deleteExchangeRateApiV1ExchangeRatesExchangeRateIdDelete({
     required int exchangeRateId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -147,18 +144,22 @@ class ExchangeRatesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/exchange-rates/{exchange_rate_id}'.replaceAll('{' r'exchange_rate_id' '}', encodeQueryParameter(_serializers, exchangeRateId, const FullType(int)).toString());
+    final _path = r'/api/v1/exchange-rates/{exchange_rate_id}'.replaceAll(
+      '{'
+      r'exchange_rate_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        exchangeRateId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -177,10 +178,10 @@ class ExchangeRatesApi {
   }
 
   /// Get Exchange Rate
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [exchangeRateId] 
+  /// * [exchangeRateId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -190,7 +191,8 @@ class ExchangeRatesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ExchangeRateResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ExchangeRateResponse>> getExchangeRateApiV1ExchangeRatesExchangeRateIdGet({ 
+  Future<Response<ExchangeRateResponse>>
+  getExchangeRateApiV1ExchangeRatesExchangeRateIdGet({
     required int exchangeRateId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -199,18 +201,22 @@ class ExchangeRatesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/exchange-rates/{exchange_rate_id}'.replaceAll('{' r'exchange_rate_id' '}', encodeQueryParameter(_serializers, exchangeRateId, const FullType(int)).toString());
+    final _path = r'/api/v1/exchange-rates/{exchange_rate_id}'.replaceAll(
+      '{'
+      r'exchange_rate_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        exchangeRateId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -229,11 +235,13 @@ class ExchangeRatesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ExchangeRateResponse),
-      ) as ExchangeRateResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ExchangeRateResponse),
+                )
+                as ExchangeRateResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -257,15 +265,15 @@ class ExchangeRatesApi {
   }
 
   /// List Exchange Rates
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [dateFrom] 
-  /// * [dateTo] 
-  /// * [base_] 
-  /// * [target] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [dateFrom]
+  /// * [dateTo]
+  /// * [base_]
+  /// * [target]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -275,7 +283,8 @@ class ExchangeRatesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseExchangeRateResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseExchangeRateResponse>> listExchangeRatesApiV1ExchangeRatesGet({ 
+  Future<Response<ListResponseExchangeRateResponse>>
+  listExchangeRatesApiV1ExchangeRatesGet({
     Date? dateFrom,
     Date? dateTo,
     int? base_,
@@ -292,15 +301,10 @@ class ExchangeRatesApi {
     final _path = r'/api/v1/exchange-rates';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -308,12 +312,34 @@ class ExchangeRatesApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (dateFrom != null) r'date_from': encodeQueryParameter(_serializers, dateFrom, const FullType(Date)),
-      if (dateTo != null) r'date_to': encodeQueryParameter(_serializers, dateTo, const FullType(Date)),
-      if (base_ != null) r'base': encodeQueryParameter(_serializers, base_, const FullType(int)),
-      if (target != null) r'target': encodeQueryParameter(_serializers, target, const FullType(int)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (dateFrom != null)
+        r'date_from': encodeQueryParameter(
+          _serializers,
+          dateFrom,
+          const FullType(Date),
+        ),
+      if (dateTo != null)
+        r'date_to': encodeQueryParameter(
+          _serializers,
+          dateTo,
+          const FullType(Date),
+        ),
+      if (base_ != null)
+        r'base': encodeQueryParameter(_serializers, base_, const FullType(int)),
+      if (target != null)
+        r'target': encodeQueryParameter(
+          _serializers,
+          target,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -329,11 +355,15 @@ class ExchangeRatesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseExchangeRateResponse),
-      ) as ListResponseExchangeRateResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponseExchangeRateResponse,
+                  ),
+                )
+                as ListResponseExchangeRateResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -357,11 +387,11 @@ class ExchangeRatesApi {
   }
 
   /// Update Exchange Rate
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [exchangeRateId] 
-  /// * [exchangeRateUpdate] 
+  /// * [exchangeRateId]
+  /// * [exchangeRateUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -371,7 +401,8 @@ class ExchangeRatesApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ExchangeRateResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ExchangeRateResponse>> updateExchangeRateApiV1ExchangeRatesExchangeRateIdPut({ 
+  Future<Response<ExchangeRateResponse>>
+  updateExchangeRateApiV1ExchangeRatesExchangeRateIdPut({
     required int exchangeRateId,
     required ExchangeRateUpdate exchangeRateUpdate,
     CancelToken? cancelToken,
@@ -381,18 +412,22 @@ class ExchangeRatesApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/exchange-rates/{exchange_rate_id}'.replaceAll('{' r'exchange_rate_id' '}', encodeQueryParameter(_serializers, exchangeRateId, const FullType(int)).toString());
+    final _path = r'/api/v1/exchange-rates/{exchange_rate_id}'.replaceAll(
+      '{'
+      r'exchange_rate_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        exchangeRateId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -404,14 +439,13 @@ class ExchangeRatesApi {
 
     try {
       const _type = FullType(ExchangeRateUpdate);
-      _bodyData = _serializers.serialize(exchangeRateUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+      _bodyData = _serializers.serialize(
+        exchangeRateUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -431,11 +465,13 @@ class ExchangeRatesApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ExchangeRateResponse),
-      ) as ExchangeRateResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ExchangeRateResponse),
+                )
+                as ExchangeRateResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -457,5 +493,4 @@ class ExchangeRatesApi {
       extra: _response.extra,
     );
   }
-
 }

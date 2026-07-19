@@ -14,7 +14,7 @@ final supplierRepositoryProvider = Provider<SupplierRepository>((ref) {
 
 class SupplierRepositoryImpl implements SupplierRepository {
   SupplierRepositoryImpl(Dio dio)
-      : _api = SuppliersApi(dio, standardSerializers);
+    : _api = SuppliersApi(dio, standardSerializers);
 
   final SuppliersApi _api;
 

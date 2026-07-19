@@ -16,7 +16,6 @@ import 'package:mbe_api_client/src/model/label_update.dart';
 import 'package:mbe_api_client/src/model/list_response_label_response.dart';
 
 class LabelsApi {
-
   final Dio _dio;
 
   final Serializers _serializers;
@@ -24,10 +23,10 @@ class LabelsApi {
   const LabelsApi(this._dio, this._serializers);
 
   /// Create Label
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [labelCreate] 
+  /// * [labelCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -37,7 +36,7 @@ class LabelsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [LabelResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<LabelResponse>> createLabelApiV1LabelsPost({ 
+  Future<Response<LabelResponse>> createLabelApiV1LabelsPost({
     required LabelCreate labelCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -49,15 +48,10 @@ class LabelsApi {
     final _path = r'/api/v1/labels';
     final _options = Options(
       method: r'POST',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -70,13 +64,9 @@ class LabelsApi {
     try {
       const _type = FullType(LabelCreate);
       _bodyData = _serializers.serialize(labelCreate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -96,11 +86,13 @@ class LabelsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(LabelResponse),
-      ) as LabelResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(LabelResponse),
+                )
+                as LabelResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -124,10 +116,10 @@ class LabelsApi {
   }
 
   /// Delete Label
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [labelId] 
+  /// * [labelId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -137,7 +129,7 @@ class LabelsApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteLabelApiV1LabelsLabelIdDelete({ 
+  Future<Response<void>> deleteLabelApiV1LabelsLabelIdDelete({
     required int labelId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -146,18 +138,22 @@ class LabelsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/labels/{label_id}'.replaceAll('{' r'label_id' '}', encodeQueryParameter(_serializers, labelId, const FullType(int)).toString());
+    final _path = r'/api/v1/labels/{label_id}'.replaceAll(
+      '{'
+      r'label_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        labelId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'DELETE',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -176,10 +172,10 @@ class LabelsApi {
   }
 
   /// Get Label
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [labelId] 
+  /// * [labelId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -189,7 +185,7 @@ class LabelsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [LabelResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<LabelResponse>> getLabelApiV1LabelsLabelIdGet({ 
+  Future<Response<LabelResponse>> getLabelApiV1LabelsLabelIdGet({
     required int labelId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -198,18 +194,22 @@ class LabelsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/labels/{label_id}'.replaceAll('{' r'label_id' '}', encodeQueryParameter(_serializers, labelId, const FullType(int)).toString());
+    final _path = r'/api/v1/labels/{label_id}'.replaceAll(
+      '{'
+      r'label_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        labelId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -228,11 +228,13 @@ class LabelsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(LabelResponse),
-      ) as LabelResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(LabelResponse),
+                )
+                as LabelResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -256,12 +258,12 @@ class LabelsApi {
   }
 
   /// List Labels
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [search] 
-  /// * [skip] 
-  /// * [limit] 
+  /// * [search]
+  /// * [skip]
+  /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -271,7 +273,7 @@ class LabelsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [ListResponseLabelResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseLabelResponse>> listLabelsApiV1LabelsGet({ 
+  Future<Response<ListResponseLabelResponse>> listLabelsApiV1LabelsGet({
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -285,15 +287,10 @@ class LabelsApi {
     final _path = r'/api/v1/labels';
     final _options = Options(
       method: r'GET',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -301,9 +298,20 @@ class LabelsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (search != null) r'search': encodeQueryParameter(_serializers, search, const FullType(String)),
-      if (skip != null) r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
-      if (limit != null) r'limit': encodeQueryParameter(_serializers, limit, const FullType(int)),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
     };
 
     final _response = await _dio.request<Object>(
@@ -319,11 +327,13 @@ class LabelsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(ListResponseLabelResponse),
-      ) as ListResponseLabelResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(ListResponseLabelResponse),
+                )
+                as ListResponseLabelResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -347,11 +357,11 @@ class LabelsApi {
   }
 
   /// Update Label
-  /// 
+  ///
   ///
   /// Parameters:
-  /// * [labelId] 
-  /// * [labelUpdate] 
+  /// * [labelId]
+  /// * [labelUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -361,7 +371,7 @@ class LabelsApi {
   ///
   /// Returns a [Future] containing a [Response] with a [LabelResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<LabelResponse>> updateLabelApiV1LabelsLabelIdPut({ 
+  Future<Response<LabelResponse>> updateLabelApiV1LabelsLabelIdPut({
     required int labelId,
     required LabelUpdate labelUpdate,
     CancelToken? cancelToken,
@@ -371,18 +381,22 @@ class LabelsApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/labels/{label_id}'.replaceAll('{' r'label_id' '}', encodeQueryParameter(_serializers, labelId, const FullType(int)).toString());
+    final _path = r'/api/v1/labels/{label_id}'.replaceAll(
+      '{'
+      r'label_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        labelId,
+        const FullType(int),
+      ).toString(),
+    );
     final _options = Options(
       method: r'PUT',
-      headers: <String, dynamic>{
-        ...?headers,
-      },
+      headers: <String, dynamic>{...?headers},
       extra: <String, dynamic>{
         'secure': <Map<String, String>>[
-          {
-            'type': 'oauth2',
-            'name': 'OAuth2PasswordBearer',
-          },
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
         ],
         ...?extra,
       },
@@ -395,13 +409,9 @@ class LabelsApi {
     try {
       const _type = FullType(LabelUpdate);
       _bodyData = _serializers.serialize(labelUpdate, specifiedType: _type);
-
-    } catch(error, stackTrace) {
+    } catch (error, stackTrace) {
       throw DioException(
-         requestOptions: _options.compose(
-          _dio.options,
-          _path,
-        ),
+        requestOptions: _options.compose(_dio.options, _path),
         type: DioExceptionType.unknown,
         error: error,
         stackTrace: stackTrace,
@@ -421,11 +431,13 @@ class LabelsApi {
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : _serializers.deserialize(
-        rawResponse,
-        specifiedType: const FullType(LabelResponse),
-      ) as LabelResponse;
-
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(LabelResponse),
+                )
+                as LabelResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -447,5 +459,4 @@ class LabelsApi {
       extra: _response.extra,
     );
   }
-
 }

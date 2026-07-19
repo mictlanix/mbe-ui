@@ -45,29 +45,43 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('shows a required-field error for each empty field', (tester) async {
+  testWidgets('shows a required-field error for each empty field', (
+    tester,
+  ) async {
     await pumpLoginScreen(tester);
 
     await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
     await tester.pump();
 
     expect(find.text('Required'), findsNWidgets(2));
-    verifyNever(() => authRepository.login(
-          username: any(named: 'username'),
-          password: any(named: 'password'),
-        ));
+    verifyNever(
+      () => authRepository.login(
+        username: any(named: 'username'),
+        password: any(named: 'password'),
+      ),
+    );
   });
 
-  testWidgets('shows a single generic error on invalid credentials (FR-008)', (tester) async {
-    when(() => authRepository.login(
-          username: any(named: 'username'),
-          password: any(named: 'password'),
-        )).thenThrow(const AppError.auth());
+  testWidgets('shows a single generic error on invalid credentials (FR-008)', (
+    tester,
+  ) async {
+    when(
+      () => authRepository.login(
+        username: any(named: 'username'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(const AppError.auth());
 
     await pumpLoginScreen(tester);
 
-    await tester.enterText(find.byKey(const Key('login_username_field')), 'jdoe');
-    await tester.enterText(find.byKey(const Key('login_password_field')), 'wrong');
+    await tester.enterText(
+      find.byKey(const Key('login_username_field')),
+      'jdoe',
+    );
+    await tester.enterText(
+      find.byKey(const Key('login_password_field')),
+      'wrong',
+    );
     await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
     await tester.pump();
     await tester.pump();
@@ -77,17 +91,31 @@ void main() {
   });
 
   testWidgets('shows the same generic error on a 422 response', (tester) async {
-    when(() => authRepository.login(
-          username: any(named: 'username'),
-          password: any(named: 'password'),
-        )).thenThrow(const AppError.validation([
-          FieldError(loc: ['body', 'username'], msg: 'field required', type: 'missing'),
-        ]));
+    when(
+      () => authRepository.login(
+        username: any(named: 'username'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(
+      const AppError.validation([
+        FieldError(
+          loc: ['body', 'username'],
+          msg: 'field required',
+          type: 'missing',
+        ),
+      ]),
+    );
 
     await pumpLoginScreen(tester);
 
-    await tester.enterText(find.byKey(const Key('login_username_field')), 'jdoe');
-    await tester.enterText(find.byKey(const Key('login_password_field')), 'wrong');
+    await tester.enterText(
+      find.byKey(const Key('login_username_field')),
+      'jdoe',
+    );
+    await tester.enterText(
+      find.byKey(const Key('login_password_field')),
+      'wrong',
+    );
     await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
     await tester.pump();
     await tester.pump();

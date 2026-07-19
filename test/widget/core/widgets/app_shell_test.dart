@@ -28,28 +28,37 @@ AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
 GoRouter _shellRouter() => GoRouter(
-      initialLocation: '/',
-      routes: [
-        StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) =>
-              AppShell(navigationShell: navigationShell),
-          branches: [
-            StatefulShellBranch(routes: [
-              GoRoute(path: '/', builder: (_, _) => const Text('HOME BODY')),
-            ]),
-            StatefulShellBranch(routes: [
-              GoRoute(
-                  path: '/users', builder: (_, _) => const Text('USERS BODY')),
-            ]),
-            StatefulShellBranch(routes: [
-              GoRoute(
-                  path: '/products',
-                  builder: (_, _) => const Text('PRODUCTS BODY')),
-            ]),
+  initialLocation: '/',
+  routes: [
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          AppShell(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(path: '/', builder: (_, _) => const Text('HOME BODY')),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/users',
+              builder: (_, _) => const Text('USERS BODY'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/products',
+              builder: (_, _) => const Text('PRODUCTS BODY'),
+            ),
           ],
         ),
       ],
-    );
+    ),
+  ],
+);
 
 Future<void> _pumpShell(WidgetTester tester, {required Size size}) async {
   tester.view.physicalSize = size;
@@ -58,7 +67,9 @@ Future<void> _pumpShell(WidgetTester tester, {required Size size}) async {
 
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [accessControlProvider.overrideWithValue(_accessFor(_bothUser))],
+      overrides: [
+        accessControlProvider.overrideWithValue(_accessFor(_bothUser)),
+      ],
       child: MaterialApp.router(
         locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -83,8 +94,9 @@ void main() {
     expect(find.text('HOME BODY'), findsOneWidget);
   });
 
-  testWidgets('at narrow width navigation lives behind a drawer menu button',
-      (tester) async {
+  testWidgets('at narrow width navigation lives behind a drawer menu button', (
+    tester,
+  ) async {
     await _pumpShell(tester, size: const Size(500, 900));
 
     // Not persistently on screen.
@@ -96,7 +108,9 @@ void main() {
     expect(find.byKey(const Key('nav_dest_products')), findsOneWidget);
   });
 
-  testWidgets('the app-bar title tracks the active destination', (tester) async {
+  testWidgets('the app-bar title tracks the active destination', (
+    tester,
+  ) async {
     await _pumpShell(tester, size: const Size(1200, 800));
 
     final title = find.descendant(
@@ -115,8 +129,9 @@ void main() {
     expect(find.text('PRODUCTS BODY'), findsOneWidget);
   });
 
-  testWidgets('selecting a rail destination switches the branch (goBranch)',
-      (tester) async {
+  testWidgets('selecting a rail destination switches the branch (goBranch)', (
+    tester,
+  ) async {
     await _pumpShell(tester, size: const Size(1200, 800));
 
     expect(find.text('HOME BODY'), findsOneWidget);

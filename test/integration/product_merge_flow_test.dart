@@ -31,10 +31,9 @@ void main() {
     String password,
   ) async {
     final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
-    final token = await AuthRepositoryImpl(dio).login(
-      username: username,
-      password: password,
-    );
+    final token = await AuthRepositoryImpl(
+      dio,
+    ).login(username: username, password: password);
     dio.options.headers['Authorization'] = 'Bearer $token';
     return ProductRepositoryImpl(dio);
   }
@@ -76,33 +75,29 @@ void main() {
     skip: !_hasMergeCredentials,
   );
 
-  test(
-    'self-merge is rejected with a 400, leaving the product in place '
-    '(FR-006 backstop)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _mergeUsername,
-        _mergePassword,
-      );
-      final product = await repo.create(
-        code: 'IT-MERGE-SELF-${DateTime.now().millisecondsSinceEpoch}',
-        name: 'Integration Test Merge Self',
-        unitOfMeasurement: 'PCE',
-      );
+  test('self-merge is rejected with a 400, leaving the product in place '
+      '(FR-006 backstop)', () async {
+    final repo = await authenticatedProductRepository(
+      _mergeUsername,
+      _mergePassword,
+    );
+    final product = await repo.create(
+      code: 'IT-MERGE-SELF-${DateTime.now().millisecondsSinceEpoch}',
+      name: 'Integration Test Merge Self',
+      unitOfMeasurement: 'PCE',
+    );
 
-      await expectLater(
-        () => repo.mergeProducts(
-          productId: product.productId,
-          duplicateId: product.productId,
-        ),
-        throwsA(isA<ServerError>()),
-      );
+    await expectLater(
+      () => repo.mergeProducts(
+        productId: product.productId,
+        duplicateId: product.productId,
+      ),
+      throwsA(isA<ServerError>()),
+    );
 
-      final stillThere = await repo.get(productId: product.productId);
-      expect(stillThere.productId, product.productId);
-    },
-    skip: !_hasMergeCredentials,
-  );
+    final stillThere = await repo.get(productId: product.productId);
+    expect(stillThere.productId, product.productId);
+  }, skip: !_hasMergeCredentials);
 
   test(
     'merging against a non-existent duplicate returns 404 (FR-011)',

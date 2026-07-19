@@ -63,24 +63,28 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             TextFormField(
                               key: const Key('recovery_token_field'),
                               decoration: InputDecoration(
-                                  labelText: l10n.recoveryTokenLabel),
+                                labelText: l10n.recoveryTokenLabel,
+                              ),
                               textInputAction: TextInputAction.next,
                               enabled: !formState.submitting,
                               onChanged: controller.recoveryTokenChanged,
-                              validator: (v) =>
-                                  (v == null || v.isEmpty) ? l10n.fieldRequired : null,
+                              validator: (v) => (v == null || v.isEmpty)
+                                  ? l10n.fieldRequired
+                                  : null,
                             ),
                             const SizedBox(height: 12),
                             TextFormField(
                               key: const Key('new_password_field'),
                               decoration: InputDecoration(
-                                  labelText: l10n.newPasswordLabel),
+                                labelText: l10n.newPasswordLabel,
+                              ),
                               obscureText: true,
                               textInputAction: TextInputAction.done,
                               enabled: !formState.submitting,
                               onChanged: controller.newPasswordChanged,
                               validator: (v) {
-                                if (v == null || v.isEmpty) return l10n.fieldRequired;
+                                if (v == null || v.isEmpty)
+                                  return l10n.fieldRequired;
                                 if (v.length < 6) return l10n.fieldMinLength6;
                                 return null;
                               },
@@ -96,7 +100,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
-                                          strokeWidth: 2),
+                                        strokeWidth: 2,
+                                      ),
                                     )
                                   : Text(l10n.setNewPasswordButton),
                             ),
@@ -137,8 +142,11 @@ class _SuccessView extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.check_circle_outline,
-            color: Theme.of(context).colorScheme.primary, size: 64),
+        Icon(
+          Icons.check_circle_outline,
+          color: Theme.of(context).colorScheme.primary,
+          size: 64,
+        ),
         const SizedBox(height: 16),
         Text(AppLocalizations.of(context)!.passwordResetSuccess),
       ],

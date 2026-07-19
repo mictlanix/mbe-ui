@@ -150,63 +150,65 @@ void main() {
     return GoRouterTestHandle(router);
   }
 
-  group('/products/merge — productsMerge/create gate (specs/008-merge-products)', () {
-    testWidgets(
-      'a user with productsMerge/create reaches /products/merge',
-      (tester) async {
+  group(
+    '/products/merge — productsMerge/create gate (specs/008-merge-products)',
+    () {
+      testWidgets('a user with productsMerge/create reaches /products/merge', (
+        tester,
+      ) async {
         final handle = await pumpAt(tester, _mergeUser, '/products/merge');
         expect(handle.router.state.uri.path, '/products/merge');
-      },
-    );
+      });
 
-    testWidgets(
-      'a user without productsMerge/create is redirected to / (FR-012, '
-      'deny-by-default)',
-      (tester) async {
-        final handle = await pumpAt(tester, _noMergeUser, '/products/merge');
-        expect(handle.router.state.uri.path, '/');
-      },
-    );
+      testWidgets(
+        'a user without productsMerge/create is redirected to / (FR-012, '
+        'deny-by-default)',
+        (tester) async {
+          final handle = await pumpAt(tester, _noMergeUser, '/products/merge');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
 
-    testWidgets(
-      'a user with no privileges at all is redirected to /',
-      (tester) async {
+      testWidgets('a user with no privileges at all is redirected to /', (
+        tester,
+      ) async {
         final handle = await pumpAt(tester, _noAccessUser, '/products/merge');
         expect(handle.router.state.uri.path, '/');
-      },
-    );
-  });
+      });
+    },
+  );
 
-  group('regression: existing routes still gate on Read (post-T023 refactor)', () {
-    testWidgets('a read-only user still reaches /products', (tester) async {
-      final handle = await pumpAt(tester, _readOnlyUser, '/products');
-      expect(handle.router.state.uri.path, '/products');
-    });
+  group(
+    'regression: existing routes still gate on Read (post-T023 refactor)',
+    () {
+      testWidgets('a read-only user still reaches /products', (tester) async {
+        final handle = await pumpAt(tester, _readOnlyUser, '/products');
+        expect(handle.router.state.uri.path, '/products');
+      });
 
-    testWidgets(
-      'a user without products/read is redirected away from /products',
-      (tester) async {
-        final handle = await pumpAt(tester, _noAccessUser, '/products');
-        expect(handle.router.state.uri.path, '/');
-      },
-    );
+      testWidgets(
+        'a user without products/read is redirected away from /products',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/products');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
 
-    testWidgets(
-      'a user with users/read still reaches /users',
-      (tester) async {
+      testWidgets('a user with users/read still reaches /users', (
+        tester,
+      ) async {
         final handle = await pumpAt(tester, _noMergeUser, '/users');
         expect(handle.router.state.uri.path, '/users');
-      },
-    );
+      });
 
-    testWidgets(
-      'a user without users/read is redirected away from /users',
-      (tester) async {
+      testWidgets('a user without users/read is redirected away from /users', (
+        tester,
+      ) async {
         final handle = await pumpAt(tester, _noAccessUser, '/users');
         expect(handle.router.state.uri.path, '/');
-      },
-    );
-  });
+      });
+    },
+  );
 }
 
 /// Thin wrapper so `pumpAt`'s return type stays self-describing at call
