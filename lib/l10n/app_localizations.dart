@@ -1525,6 +1525,840 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EUR — Euro'**
   String get currencyEurLabel;
+
+  /// No description provided for @suppliersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get suppliersMenuTitle;
+
+  /// No description provided for @labelsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get labelsMenuTitle;
+
+  /// No description provided for @employeesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Employees'**
+  String get employeesMenuTitle;
+
+  /// No description provided for @customersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get customersMenuTitle;
+
+  /// No description provided for @taxpayerRecipientsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer Recipients'**
+  String get taxpayerRecipientsMenuTitle;
+
+  /// No description provided for @zoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone'**
+  String get zoneLabel;
+
+  /// No description provided for @creditLimitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit limit'**
+  String get creditLimitLabel;
+
+  /// No description provided for @creditDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit days'**
+  String get creditDaysLabel;
+
+  /// No description provided for @creditLimitInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative amount.'**
+  String get creditLimitInvalidError;
+
+  /// No description provided for @creditDaysInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative whole number.'**
+  String get creditDaysInvalidError;
+
+  /// No description provided for @suppliersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get suppliersSearchLabel;
+
+  /// No description provided for @newSupplierTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New supplier'**
+  String get newSupplierTooltip;
+
+  /// No description provided for @noSuppliersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No suppliers found.'**
+  String get noSuppliersFound;
+
+  /// No description provided for @suppliersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load suppliers: {error}'**
+  String suppliersLoadError(Object error);
+
+  /// No description provided for @newSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New supplier'**
+  String get newSupplierTitle;
+
+  /// No description provided for @editSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit supplier'**
+  String get editSupplierTitle;
+
+  /// No description provided for @viewSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View supplier'**
+  String get viewSupplierTitle;
+
+  /// No description provided for @deleteSupplierButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete supplier'**
+  String get deleteSupplierButton;
+
+  /// No description provided for @deleteSupplierConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete supplier?'**
+  String get deleteSupplierConfirmTitle;
+
+  /// No description provided for @deleteSupplierConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteSupplierConfirmMessage(String name);
+
+  /// No description provided for @supplierLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load supplier.'**
+  String get supplierLoadFailedError;
+
+  /// No description provided for @supplierCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create supplier.'**
+  String get supplierCreateFailedError;
+
+  /// No description provided for @supplierUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update supplier.'**
+  String get supplierUpdateFailedError;
+
+  /// No description provided for @supplierDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete supplier.'**
+  String get supplierDeleteFailedError;
+
+  /// No description provided for @supplierCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create suppliers.'**
+  String get supplierCreatePermissionDeniedError;
+
+  /// No description provided for @supplierUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit suppliers.'**
+  String get supplierUpdatePermissionDeniedError;
+
+  /// No description provided for @supplierDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete suppliers.'**
+  String get supplierDeletePermissionDeniedError;
+
+  /// No description provided for @supplierCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get supplierCodeRequiredError;
+
+  /// No description provided for @supplierNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get supplierNameRequiredError;
+
+  /// No description provided for @labelsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get labelsSearchLabel;
+
+  /// No description provided for @newLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New label'**
+  String get newLabelTooltip;
+
+  /// No description provided for @noLabelsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No labels found.'**
+  String get noLabelsFound;
+
+  /// No description provided for @labelsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load labels: {error}'**
+  String labelsLoadError(Object error);
+
+  /// No description provided for @newLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New label'**
+  String get newLabelTitle;
+
+  /// No description provided for @editLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit label'**
+  String get editLabelTitle;
+
+  /// No description provided for @viewLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View label'**
+  String get viewLabelTitle;
+
+  /// No description provided for @deleteLabelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete label'**
+  String get deleteLabelButton;
+
+  /// No description provided for @deleteLabelConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete label?'**
+  String get deleteLabelConfirmTitle;
+
+  /// No description provided for @deleteLabelConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteLabelConfirmMessage(String name);
+
+  /// No description provided for @labelLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load label.'**
+  String get labelLoadFailedError;
+
+  /// No description provided for @labelCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create label.'**
+  String get labelCreateFailedError;
+
+  /// No description provided for @labelUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update label.'**
+  String get labelUpdateFailedError;
+
+  /// No description provided for @labelDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete label.'**
+  String get labelDeleteFailedError;
+
+  /// No description provided for @labelCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create labels.'**
+  String get labelCreatePermissionDeniedError;
+
+  /// No description provided for @labelUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit labels.'**
+  String get labelUpdatePermissionDeniedError;
+
+  /// No description provided for @labelDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete labels.'**
+  String get labelDeletePermissionDeniedError;
+
+  /// No description provided for @labelNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get labelNameRequiredError;
+
+  /// No description provided for @genderFemaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemaleLabel;
+
+  /// No description provided for @genderMaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMaleLabel;
+
+  /// No description provided for @genderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get genderLabel;
+
+  /// No description provided for @firstNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get firstNameLabel;
+
+  /// No description provided for @lastNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get lastNameLabel;
+
+  /// No description provided for @nicknameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname'**
+  String get nicknameLabel;
+
+  /// No description provided for @birthdayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get birthdayLabel;
+
+  /// No description provided for @taxpayerIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer ID (RFC)'**
+  String get taxpayerIdLabel;
+
+  /// No description provided for @salesPersonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales person'**
+  String get salesPersonLabel;
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLabel;
+
+  /// No description provided for @personalIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal ID'**
+  String get personalIdLabel;
+
+  /// No description provided for @startJobDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get startJobDateLabel;
+
+  /// No description provided for @enrollNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enrollment number'**
+  String get enrollNumberLabel;
+
+  /// No description provided for @columnFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get columnFullName;
+
+  /// No description provided for @employeesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or nickname'**
+  String get employeesSearchLabel;
+
+  /// No description provided for @newEmployeeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New employee'**
+  String get newEmployeeTooltip;
+
+  /// No description provided for @noEmployeesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No employees found.'**
+  String get noEmployeesFound;
+
+  /// No description provided for @employeesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load employees: {error}'**
+  String employeesLoadError(Object error);
+
+  /// No description provided for @employeesActiveFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get employeesActiveFilter;
+
+  /// No description provided for @employeesSalesPersonFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales person'**
+  String get employeesSalesPersonFilter;
+
+  /// No description provided for @newEmployeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New employee'**
+  String get newEmployeeTitle;
+
+  /// No description provided for @editEmployeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit employee'**
+  String get editEmployeeTitle;
+
+  /// No description provided for @viewEmployeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View employee'**
+  String get viewEmployeeTitle;
+
+  /// No description provided for @deleteEmployeeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete employee'**
+  String get deleteEmployeeButton;
+
+  /// No description provided for @deleteEmployeeConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete employee?'**
+  String get deleteEmployeeConfirmTitle;
+
+  /// No description provided for @deleteEmployeeConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteEmployeeConfirmMessage(String name);
+
+  /// No description provided for @employeeLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load employee.'**
+  String get employeeLoadFailedError;
+
+  /// No description provided for @employeeCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create employee.'**
+  String get employeeCreateFailedError;
+
+  /// No description provided for @employeeUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update employee.'**
+  String get employeeUpdateFailedError;
+
+  /// No description provided for @employeeDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete employee.'**
+  String get employeeDeleteFailedError;
+
+  /// No description provided for @employeeCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create employees.'**
+  String get employeeCreatePermissionDeniedError;
+
+  /// No description provided for @employeeUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit employees.'**
+  String get employeeUpdatePermissionDeniedError;
+
+  /// No description provided for @employeeDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete employees.'**
+  String get employeeDeletePermissionDeniedError;
+
+  /// No description provided for @employeeFirstNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'First name is required.'**
+  String get employeeFirstNameRequiredError;
+
+  /// No description provided for @employeeLastNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name is required.'**
+  String get employeeLastNameRequiredError;
+
+  /// No description provided for @employeeNicknameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname is required.'**
+  String get employeeNicknameRequiredError;
+
+  /// No description provided for @employeeGenderRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender is required.'**
+  String get employeeGenderRequiredError;
+
+  /// No description provided for @employeeBirthdayRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday is required.'**
+  String get employeeBirthdayRequiredError;
+
+  /// No description provided for @employeeStartJobDateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date is required.'**
+  String get employeeStartJobDateRequiredError;
+
+  /// No description provided for @employeeEnrollNumberInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative whole number.'**
+  String get employeeEnrollNumberInvalidError;
+
+  /// No description provided for @priceListFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list'**
+  String get priceListFieldLabel;
+
+  /// No description provided for @noneAssignedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'None assigned'**
+  String get noneAssignedLabel;
+
+  /// No description provided for @shippingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping'**
+  String get shippingLabel;
+
+  /// No description provided for @shippingRequiredDocumentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping requires document'**
+  String get shippingRequiredDocumentLabel;
+
+  /// No description provided for @columnSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'Salesperson'**
+  String get columnSalesperson;
+
+  /// No description provided for @customersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get customersSearchLabel;
+
+  /// No description provided for @newCustomerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New customer'**
+  String get newCustomerTooltip;
+
+  /// No description provided for @noCustomersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers found.'**
+  String get noCustomersFound;
+
+  /// No description provided for @customersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load customers: {error}'**
+  String customersLoadError(Object error);
+
+  /// No description provided for @customersActiveFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get customersActiveFilter;
+
+  /// No description provided for @customersPriceListFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list'**
+  String get customersPriceListFilterLabel;
+
+  /// No description provided for @customersSalespersonFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Salesperson'**
+  String get customersSalespersonFilterLabel;
+
+  /// No description provided for @newCustomerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New customer'**
+  String get newCustomerTitle;
+
+  /// No description provided for @editCustomerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit customer'**
+  String get editCustomerTitle;
+
+  /// No description provided for @viewCustomerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View customer'**
+  String get viewCustomerTitle;
+
+  /// No description provided for @deleteCustomerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete customer'**
+  String get deleteCustomerButton;
+
+  /// No description provided for @deleteCustomerConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete customer?'**
+  String get deleteCustomerConfirmTitle;
+
+  /// No description provided for @deleteCustomerConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteCustomerConfirmMessage(String name);
+
+  /// No description provided for @customerLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load customer.'**
+  String get customerLoadFailedError;
+
+  /// No description provided for @customerCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create customer.'**
+  String get customerCreateFailedError;
+
+  /// No description provided for @customerUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update customer.'**
+  String get customerUpdateFailedError;
+
+  /// No description provided for @customerDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete customer.'**
+  String get customerDeleteFailedError;
+
+  /// No description provided for @customerCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create customers.'**
+  String get customerCreatePermissionDeniedError;
+
+  /// No description provided for @customerUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit customers.'**
+  String get customerUpdatePermissionDeniedError;
+
+  /// No description provided for @customerDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete customers.'**
+  String get customerDeletePermissionDeniedError;
+
+  /// No description provided for @customerCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get customerCodeRequiredError;
+
+  /// No description provided for @customerNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get customerNameRequiredError;
+
+  /// No description provided for @customerPriceListRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list is required.'**
+  String get customerPriceListRequiredError;
+
+  /// No description provided for @taxpayerRecipientIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ID (RFC)'**
+  String get taxpayerRecipientIdLabel;
+
+  /// No description provided for @postalCodeFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get postalCodeFieldLabel;
+
+  /// No description provided for @regimeFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax regime'**
+  String get regimeFieldLabel;
+
+  /// No description provided for @unresolvedFallbackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unresolvedFallbackLabel;
+
+  /// No description provided for @taxpayerRecipientsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or email'**
+  String get taxpayerRecipientsSearchLabel;
+
+  /// No description provided for @newTaxpayerRecipientTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New taxpayer recipient'**
+  String get newTaxpayerRecipientTooltip;
+
+  /// No description provided for @noTaxpayerRecipientsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No taxpayer recipients found.'**
+  String get noTaxpayerRecipientsFound;
+
+  /// No description provided for @taxpayerRecipientsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load taxpayer recipients: {error}'**
+  String taxpayerRecipientsLoadError(Object error);
+
+  /// No description provided for @newTaxpayerRecipientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New taxpayer recipient'**
+  String get newTaxpayerRecipientTitle;
+
+  /// No description provided for @editTaxpayerRecipientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit taxpayer recipient'**
+  String get editTaxpayerRecipientTitle;
+
+  /// No description provided for @viewTaxpayerRecipientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View taxpayer recipient'**
+  String get viewTaxpayerRecipientTitle;
+
+  /// No description provided for @deleteTaxpayerRecipientButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete taxpayer recipient'**
+  String get deleteTaxpayerRecipientButton;
+
+  /// No description provided for @deleteTaxpayerRecipientConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete taxpayer recipient?'**
+  String get deleteTaxpayerRecipientConfirmTitle;
+
+  /// No description provided for @deleteTaxpayerRecipientConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteTaxpayerRecipientConfirmMessage(String name);
+
+  /// No description provided for @taxpayerRecipientLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load taxpayer recipient.'**
+  String get taxpayerRecipientLoadFailedError;
+
+  /// No description provided for @taxpayerRecipientCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create taxpayer recipient.'**
+  String get taxpayerRecipientCreateFailedError;
+
+  /// No description provided for @taxpayerRecipientUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update taxpayer recipient.'**
+  String get taxpayerRecipientUpdateFailedError;
+
+  /// No description provided for @taxpayerRecipientDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete taxpayer recipient.'**
+  String get taxpayerRecipientDeleteFailedError;
+
+  /// No description provided for @taxpayerRecipientCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create taxpayer recipients.'**
+  String get taxpayerRecipientCreatePermissionDeniedError;
+
+  /// No description provided for @taxpayerRecipientUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit taxpayer recipients.'**
+  String get taxpayerRecipientUpdatePermissionDeniedError;
+
+  /// No description provided for @taxpayerRecipientDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete taxpayer recipients.'**
+  String get taxpayerRecipientDeletePermissionDeniedError;
+
+  /// No description provided for @taxpayerRecipientIdRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ID is required.'**
+  String get taxpayerRecipientIdRequiredError;
+
+  /// No description provided for @taxpayerRecipientNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get taxpayerRecipientNameRequiredError;
+
+  /// No description provided for @taxpayerRecipientEmailRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required.'**
+  String get taxpayerRecipientEmailRequiredError;
 }
 
 class _AppLocalizationsDelegate

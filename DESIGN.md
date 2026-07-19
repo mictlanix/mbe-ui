@@ -323,6 +323,26 @@ never actually the default. Defaulting row-click to read-only, and shrinking
 the row's icon surface to just Edit, makes the safe path the path of least
 resistance while keeping editing and deletion one deliberate step away.
 
+### 4.2.2 Screen-level actions — buttons in the body, not AppBar icons
+
+**Decision** (constitution §VI, amended 2026-07-19): `AppBar.actions` is
+reserved for exactly one thing — the read-only-to-edit toggle from §4.2.1
+(and, optionally, a detail screen's own delete action, per the Users admin
+screen precedent). Every other screen-level action — Create, a bulk
+operation like Merge, or a shortcut into a related feature's own screen —
+is a `FilledButton`/`OutlinedButton` in the screen body: beside the search
+bar via `CatalogFilterBar`'s `actions` slot on list screens (as
+`products_list_screen.dart` already does for Create and Merge), or in the
+form body on detail screens.
+
+**Rationale**: specs/011-product-pricing initially added a "view pricing"
+shortcut to the product detail screen's `AppBar.actions` before it was
+corrected to a products-list row action instead. Without a codified rule,
+each new cross-feature shortcut risked landing back on the AppBar by default
+since that's where the one legitimate icon action already lives. Naming the
+AppBar as reserved, and the button-in-body placement as the default for
+everything else, avoids re-litigating this per feature.
+
 ### 4.3 Shared component library
 
 Build a small `core/widgets/` library early for things every module needs:

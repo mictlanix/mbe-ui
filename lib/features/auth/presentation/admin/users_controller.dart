@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 
 part 'users_controller.freezed.dart';
 part 'users_controller.g.dart';
@@ -58,6 +59,13 @@ class UserFormState with _$UserFormState {
     @Default('') String password,
     @Default('') String email,
     int? employeeId,
+
+    /// The selected employee's display name, shown in the employee picker.
+    /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
+    /// since `UserResponse.employeeId` is a bare id with no expansion) and
+    /// set directly by [UserFormController.employeeSelected] when the user
+    /// picks a new one.
+    @Default('') String employeeDisplayText,
     @Default(false) bool administrator,
     @Default(false) bool disabled,
     @Default(<Privilege>[]) List<Privilege> privileges,
@@ -135,14 +143,31 @@ class UserFormController extends _$UserFormController {
   @override
   UserFormState build() => const UserFormState();
 
-  /// Populates the form from an existing user (edit mode).
+  /// Populates the form from an existing user (edit mode). If an
+  /// `employeeId` is set, resolves it to a display name for the employee
+  /// picker via a lookup — `UserResponse.employeeId` is a bare id with no
+  /// server-side expansion. A stale/orphaned id (the referenced employee no
+  /// longer exists) falls back to a raw `#id` label rather than failing the
+  /// whole load.
   Future<void> loadUser(String userId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
     try {
       final user = await ref.read(userRepositoryProvider).get(userId: userId);
+      var employeeDisplayText = '';
+      if (user.employeeId != null) {
+        try {
+          final employee = await ref
+              .read(employeeRepositoryProvider)
+              .get(employeeId: user.employeeId!);
+          employeeDisplayText = '${employee.firstName} ${employee.lastName}';
+        } on AppError {
+          employeeDisplayText = '#${user.employeeId}';
+        }
+      }
       state = UserFormState(
         email: user.email,
         employeeId: user.employeeId,
+        employeeDisplayText: employeeDisplayText,
         administrator: user.administrator,
         disabled: user.disabled,
         privileges: user.privileges,
@@ -164,9 +189,12 @@ class UserFormController extends _$UserFormController {
   void emailChanged(String v) =>
       state = state.copyWith(email: v, error: null, errorDetail: null);
 
-  void employeeIdChanged(String v) {
+  /// Sets the employee picked from the `CatalogEntityPicker` (or clears the
+  /// assignment when [id] is `null`).
+  void employeeSelected(int? id, String displayText) {
     state = state.copyWith(
-      employeeId: int.tryParse(v),
+      employeeId: id,
+      employeeDisplayText: displayText,
       error: null,
       errorDetail: null,
     );

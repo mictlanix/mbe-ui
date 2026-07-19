@@ -1,0 +1,44 @@
+{
+  "workflow": "speckit",
+  "specName": "Catalog Master Entities (Customers, Employees, Suppliers, Labels, Taxpayer Recipients)",
+  "branch": "012-catalog-master-entities",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-19T12:42:54.794Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-19T12:58:34.542Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-19T13:16:41.445Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "user",
+      "at": "2026-07-19T18:34:40.838Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-19T18:35:15.807Z"
+    }
+  ]
+}

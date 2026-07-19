@@ -786,4 +786,467 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get currencyEurLabel => 'EUR — Euro';
+
+  @override
+  String get suppliersMenuTitle => 'Proveedores';
+
+  @override
+  String get labelsMenuTitle => 'Etiquetas';
+
+  @override
+  String get employeesMenuTitle => 'Empleados';
+
+  @override
+  String get customersMenuTitle => 'Clientes';
+
+  @override
+  String get taxpayerRecipientsMenuTitle => 'Receptores Fiscales';
+
+  @override
+  String get zoneLabel => 'Zona';
+
+  @override
+  String get creditLimitLabel => 'Límite de crédito';
+
+  @override
+  String get creditDaysLabel => 'Días de crédito';
+
+  @override
+  String get creditLimitInvalidError => 'Ingresa un monto válido no negativo.';
+
+  @override
+  String get creditDaysInvalidError =>
+      'Ingresa un número entero no negativo válido.';
+
+  @override
+  String get suppliersSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newSupplierTooltip => 'Nuevo proveedor';
+
+  @override
+  String get noSuppliersFound => 'No se encontraron proveedores.';
+
+  @override
+  String suppliersLoadError(Object error) {
+    return 'No se pudieron cargar los proveedores: $error';
+  }
+
+  @override
+  String get newSupplierTitle => 'Nuevo proveedor';
+
+  @override
+  String get editSupplierTitle => 'Editar proveedor';
+
+  @override
+  String get viewSupplierTitle => 'Ver proveedor';
+
+  @override
+  String get deleteSupplierButton => 'Eliminar proveedor';
+
+  @override
+  String get deleteSupplierConfirmTitle => '¿Eliminar proveedor?';
+
+  @override
+  String deleteSupplierConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get supplierLoadFailedError => 'No se pudo cargar el proveedor.';
+
+  @override
+  String get supplierCreateFailedError => 'No se pudo crear el proveedor.';
+
+  @override
+  String get supplierUpdateFailedError => 'No se pudo actualizar el proveedor.';
+
+  @override
+  String get supplierDeleteFailedError => 'No se pudo eliminar el proveedor.';
+
+  @override
+  String get supplierCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear proveedores.';
+
+  @override
+  String get supplierUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar proveedores.';
+
+  @override
+  String get supplierDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar proveedores.';
+
+  @override
+  String get supplierCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get supplierNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get labelsSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get newLabelTooltip => 'Nueva etiqueta';
+
+  @override
+  String get noLabelsFound => 'No se encontraron etiquetas.';
+
+  @override
+  String labelsLoadError(Object error) {
+    return 'No se pudieron cargar las etiquetas: $error';
+  }
+
+  @override
+  String get newLabelTitle => 'Nueva etiqueta';
+
+  @override
+  String get editLabelTitle => 'Editar etiqueta';
+
+  @override
+  String get viewLabelTitle => 'Ver etiqueta';
+
+  @override
+  String get deleteLabelButton => 'Eliminar etiqueta';
+
+  @override
+  String get deleteLabelConfirmTitle => '¿Eliminar etiqueta?';
+
+  @override
+  String deleteLabelConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get labelLoadFailedError => 'No se pudo cargar la etiqueta.';
+
+  @override
+  String get labelCreateFailedError => 'No se pudo crear la etiqueta.';
+
+  @override
+  String get labelUpdateFailedError => 'No se pudo actualizar la etiqueta.';
+
+  @override
+  String get labelDeleteFailedError => 'No se pudo eliminar la etiqueta.';
+
+  @override
+  String get labelCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear etiquetas.';
+
+  @override
+  String get labelUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar etiquetas.';
+
+  @override
+  String get labelDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar etiquetas.';
+
+  @override
+  String get labelNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get genderFemaleLabel => 'Femenino';
+
+  @override
+  String get genderMaleLabel => 'Masculino';
+
+  @override
+  String get genderLabel => 'Género';
+
+  @override
+  String get firstNameLabel => 'Nombre(s)';
+
+  @override
+  String get lastNameLabel => 'Apellidos';
+
+  @override
+  String get nicknameLabel => 'Nombre preferido';
+
+  @override
+  String get birthdayLabel => 'Fecha de nacimiento';
+
+  @override
+  String get taxpayerIdLabel => 'RFC';
+
+  @override
+  String get salesPersonLabel => 'Vendedor';
+
+  @override
+  String get activeLabel => 'Activo';
+
+  @override
+  String get personalIdLabel => 'CURP';
+
+  @override
+  String get startJobDateLabel => 'Fecha de ingreso';
+
+  @override
+  String get enrollNumberLabel => 'Número de empleado';
+
+  @override
+  String get columnFullName => 'Nombre';
+
+  @override
+  String get employeesSearchLabel => 'Buscar por nombre o apodo';
+
+  @override
+  String get newEmployeeTooltip => 'Nuevo empleado';
+
+  @override
+  String get noEmployeesFound => 'No se encontraron empleados.';
+
+  @override
+  String employeesLoadError(Object error) {
+    return 'No se pudieron cargar los empleados: $error';
+  }
+
+  @override
+  String get employeesActiveFilter => 'Activo';
+
+  @override
+  String get employeesSalesPersonFilter => 'Vendedor';
+
+  @override
+  String get newEmployeeTitle => 'Nuevo empleado';
+
+  @override
+  String get editEmployeeTitle => 'Editar empleado';
+
+  @override
+  String get viewEmployeeTitle => 'Ver empleado';
+
+  @override
+  String get deleteEmployeeButton => 'Eliminar empleado';
+
+  @override
+  String get deleteEmployeeConfirmTitle => '¿Eliminar empleado?';
+
+  @override
+  String deleteEmployeeConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get employeeLoadFailedError => 'No se pudo cargar el empleado.';
+
+  @override
+  String get employeeCreateFailedError => 'No se pudo crear el empleado.';
+
+  @override
+  String get employeeUpdateFailedError => 'No se pudo actualizar el empleado.';
+
+  @override
+  String get employeeDeleteFailedError => 'No se pudo eliminar el empleado.';
+
+  @override
+  String get employeeCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear empleados.';
+
+  @override
+  String get employeeUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar empleados.';
+
+  @override
+  String get employeeDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar empleados.';
+
+  @override
+  String get employeeFirstNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get employeeLastNameRequiredError => 'Los apellidos son obligatorios.';
+
+  @override
+  String get employeeNicknameRequiredError => 'El apodo es obligatorio.';
+
+  @override
+  String get employeeGenderRequiredError => 'El género es obligatorio.';
+
+  @override
+  String get employeeBirthdayRequiredError =>
+      'La fecha de nacimiento es obligatoria.';
+
+  @override
+  String get employeeStartJobDateRequiredError =>
+      'La fecha de ingreso es obligatoria.';
+
+  @override
+  String get employeeEnrollNumberInvalidError =>
+      'Ingresa un número entero no negativo válido.';
+
+  @override
+  String get priceListFieldLabel => 'Lista de precios';
+
+  @override
+  String get noneAssignedLabel => 'Ninguno asignado';
+
+  @override
+  String get shippingLabel => 'Envío';
+
+  @override
+  String get shippingRequiredDocumentLabel => 'El envío requiere documento';
+
+  @override
+  String get columnSalesperson => 'Vendedor';
+
+  @override
+  String get customersSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newCustomerTooltip => 'Nuevo cliente';
+
+  @override
+  String get noCustomersFound => 'No se encontraron clientes.';
+
+  @override
+  String customersLoadError(Object error) {
+    return 'No se pudieron cargar los clientes: $error';
+  }
+
+  @override
+  String get customersActiveFilter => 'Activo';
+
+  @override
+  String get customersPriceListFilterLabel => 'Lista de precios';
+
+  @override
+  String get customersSalespersonFilterLabel => 'Vendedor';
+
+  @override
+  String get newCustomerTitle => 'Nuevo cliente';
+
+  @override
+  String get editCustomerTitle => 'Editar cliente';
+
+  @override
+  String get viewCustomerTitle => 'Ver cliente';
+
+  @override
+  String get deleteCustomerButton => 'Eliminar cliente';
+
+  @override
+  String get deleteCustomerConfirmTitle => '¿Eliminar cliente?';
+
+  @override
+  String deleteCustomerConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get customerLoadFailedError => 'No se pudo cargar el cliente.';
+
+  @override
+  String get customerCreateFailedError => 'No se pudo crear el cliente.';
+
+  @override
+  String get customerUpdateFailedError => 'No se pudo actualizar el cliente.';
+
+  @override
+  String get customerDeleteFailedError => 'No se pudo eliminar el cliente.';
+
+  @override
+  String get customerCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear clientes.';
+
+  @override
+  String get customerUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar clientes.';
+
+  @override
+  String get customerDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar clientes.';
+
+  @override
+  String get customerCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get customerNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get customerPriceListRequiredError =>
+      'La lista de precios es obligatoria.';
+
+  @override
+  String get taxpayerRecipientIdLabel => 'RFC';
+
+  @override
+  String get postalCodeFieldLabel => 'Código postal';
+
+  @override
+  String get regimeFieldLabel => 'Régimen fiscal';
+
+  @override
+  String get unresolvedFallbackLabel => 'Desconocido';
+
+  @override
+  String get taxpayerRecipientsSearchLabel => 'Buscar por nombre o correo';
+
+  @override
+  String get newTaxpayerRecipientTooltip => 'Nuevo receptor fiscal';
+
+  @override
+  String get noTaxpayerRecipientsFound =>
+      'No se encontraron receptores fiscales.';
+
+  @override
+  String taxpayerRecipientsLoadError(Object error) {
+    return 'No se pudieron cargar los receptores fiscales: $error';
+  }
+
+  @override
+  String get newTaxpayerRecipientTitle => 'Nuevo receptor fiscal';
+
+  @override
+  String get editTaxpayerRecipientTitle => 'Editar receptor fiscal';
+
+  @override
+  String get viewTaxpayerRecipientTitle => 'Ver receptor fiscal';
+
+  @override
+  String get deleteTaxpayerRecipientButton => 'Eliminar receptor fiscal';
+
+  @override
+  String get deleteTaxpayerRecipientConfirmTitle =>
+      '¿Eliminar receptor fiscal?';
+
+  @override
+  String deleteTaxpayerRecipientConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get taxpayerRecipientLoadFailedError =>
+      'No se pudo cargar el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientCreateFailedError =>
+      'No se pudo crear el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientUpdateFailedError =>
+      'No se pudo actualizar el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientDeleteFailedError =>
+      'No se pudo eliminar el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear receptores fiscales.';
+
+  @override
+  String get taxpayerRecipientUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar receptores fiscales.';
+
+  @override
+  String get taxpayerRecipientDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar receptores fiscales.';
+
+  @override
+  String get taxpayerRecipientIdRequiredError => 'El RFC es obligatorio.';
+
+  @override
+  String get taxpayerRecipientNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get taxpayerRecipientEmailRequiredError => 'El correo es obligatorio.';
 }

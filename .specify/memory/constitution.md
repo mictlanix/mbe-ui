@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.7.0
+Version change: 1.0.0 → 1.8.0
 Modified principles:
   - III. Contract-Driven API Integration — materially expanded with an
     explicit repo-boundary rule: mbe-ui MUST NOT directly edit mbe-api's (or
@@ -38,7 +38,15 @@ Modified principles:
     into a single overflow/kebab menu rather than stacking more row icons —
     prompted by a genuine need for a cross-feature shortcut (products list
     row → that product's pricing screen) that the strict single-action rule
-    had no room for [1.7.0]
+    had no room for [1.7.0], then further expanded to restrict `AppBar.actions`
+    to just the already-codified read-only-to-edit toggle (plus the optional
+    detail-screen delete action): every other screen-level action — including
+    a shortcut into a related feature's own screen — MUST be a
+    `FilledButton`/`OutlinedButton` in the screen body instead, matching the
+    toolbar pattern already used for Create/Merge on
+    `products_list_screen.dart` — prompted by specs/011-product-pricing
+    initially placing a "view pricing" shortcut as a product-detail AppBar
+    icon before it was corrected to a products-list row action [1.8.0]
 Added sections: none (redefinition of an existing principle's operative
   rule, not a new principle)
 Removed sections: none
@@ -258,6 +266,16 @@ multi-column forms.
   scanability or reclaims otherwise-wasted vertical space, and naturally
   related blocks SHOULD be paired side by side (a two-column band) on wide
   tiers rather than each stacked full-width.
+- `AppBar.actions` MUST be reserved for the single read-only-to-edit toggle
+  affordance already codified above (and, where applicable, the record's own
+  delete action per the detail-screen delete rule above). Every other
+  screen-level action — creating a record, a shortcut into a related
+  record's own screen, a bulk operation, or any other entity-level command —
+  MUST be rendered as a `FilledButton`/`OutlinedButton` (with `.icon` where a
+  leading icon helps) placed in the screen body: beside the search bar via
+  `CatalogFilterBar`'s `actions` slot on list screens, or in the form body on
+  detail screens. A module MUST NOT add a new `AppBar` icon action as a
+  shortcut to another feature's screen.
 
 **Rationale**: avoids four slightly-different implementations across
 sales/inventory/invoicing/accounting and keeps a future mobile tier viable
@@ -267,7 +285,13 @@ codifies the shared table contract so future features inherit it by
 construction instead of
 each one being corrected after the fact. The truncation rule follows
 standard ellipsis UX guidance: always give users a way to recover the full
-text, and never hide information they need to act.
+text, and never hide information they need to act. The `AppBar.actions` rule
+was added after specs/011-product-pricing initially placed a "view pricing"
+shortcut as a product-detail-screen AppBar icon before it was corrected to a
+products-list row action — codifying the correction (matching how the
+`FilledButton`/`OutlinedButton` toolbar pattern was already used for Create/
+Merge on `products_list_screen.dart`) so the same mistake isn't repeated per
+module.
 
 ### VII. Online-Only, Server-Rendered Documents
 
@@ -330,4 +354,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.7.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-18
+**Version**: 1.8.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-19

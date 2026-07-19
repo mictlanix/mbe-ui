@@ -772,4 +772,463 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currencyEurLabel => 'EUR — Euro';
+
+  @override
+  String get suppliersMenuTitle => 'Suppliers';
+
+  @override
+  String get labelsMenuTitle => 'Labels';
+
+  @override
+  String get employeesMenuTitle => 'Employees';
+
+  @override
+  String get customersMenuTitle => 'Customers';
+
+  @override
+  String get taxpayerRecipientsMenuTitle => 'Taxpayer Recipients';
+
+  @override
+  String get zoneLabel => 'Zone';
+
+  @override
+  String get creditLimitLabel => 'Credit limit';
+
+  @override
+  String get creditDaysLabel => 'Credit days';
+
+  @override
+  String get creditLimitInvalidError => 'Enter a valid non-negative amount.';
+
+  @override
+  String get creditDaysInvalidError =>
+      'Enter a valid non-negative whole number.';
+
+  @override
+  String get suppliersSearchLabel => 'Search by code or name';
+
+  @override
+  String get newSupplierTooltip => 'New supplier';
+
+  @override
+  String get noSuppliersFound => 'No suppliers found.';
+
+  @override
+  String suppliersLoadError(Object error) {
+    return 'Failed to load suppliers: $error';
+  }
+
+  @override
+  String get newSupplierTitle => 'New supplier';
+
+  @override
+  String get editSupplierTitle => 'Edit supplier';
+
+  @override
+  String get viewSupplierTitle => 'View supplier';
+
+  @override
+  String get deleteSupplierButton => 'Delete supplier';
+
+  @override
+  String get deleteSupplierConfirmTitle => 'Delete supplier?';
+
+  @override
+  String deleteSupplierConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get supplierLoadFailedError => 'Failed to load supplier.';
+
+  @override
+  String get supplierCreateFailedError => 'Failed to create supplier.';
+
+  @override
+  String get supplierUpdateFailedError => 'Failed to update supplier.';
+
+  @override
+  String get supplierDeleteFailedError => 'Failed to delete supplier.';
+
+  @override
+  String get supplierCreatePermissionDeniedError =>
+      'You no longer have permission to create suppliers.';
+
+  @override
+  String get supplierUpdatePermissionDeniedError =>
+      'You no longer have permission to edit suppliers.';
+
+  @override
+  String get supplierDeletePermissionDeniedError =>
+      'You no longer have permission to delete suppliers.';
+
+  @override
+  String get supplierCodeRequiredError => 'Code is required.';
+
+  @override
+  String get supplierNameRequiredError => 'Name is required.';
+
+  @override
+  String get labelsSearchLabel => 'Search by name';
+
+  @override
+  String get newLabelTooltip => 'New label';
+
+  @override
+  String get noLabelsFound => 'No labels found.';
+
+  @override
+  String labelsLoadError(Object error) {
+    return 'Failed to load labels: $error';
+  }
+
+  @override
+  String get newLabelTitle => 'New label';
+
+  @override
+  String get editLabelTitle => 'Edit label';
+
+  @override
+  String get viewLabelTitle => 'View label';
+
+  @override
+  String get deleteLabelButton => 'Delete label';
+
+  @override
+  String get deleteLabelConfirmTitle => 'Delete label?';
+
+  @override
+  String deleteLabelConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get labelLoadFailedError => 'Failed to load label.';
+
+  @override
+  String get labelCreateFailedError => 'Failed to create label.';
+
+  @override
+  String get labelUpdateFailedError => 'Failed to update label.';
+
+  @override
+  String get labelDeleteFailedError => 'Failed to delete label.';
+
+  @override
+  String get labelCreatePermissionDeniedError =>
+      'You no longer have permission to create labels.';
+
+  @override
+  String get labelUpdatePermissionDeniedError =>
+      'You no longer have permission to edit labels.';
+
+  @override
+  String get labelDeletePermissionDeniedError =>
+      'You no longer have permission to delete labels.';
+
+  @override
+  String get labelNameRequiredError => 'Name is required.';
+
+  @override
+  String get genderFemaleLabel => 'Female';
+
+  @override
+  String get genderMaleLabel => 'Male';
+
+  @override
+  String get genderLabel => 'Gender';
+
+  @override
+  String get firstNameLabel => 'First name';
+
+  @override
+  String get lastNameLabel => 'Last name';
+
+  @override
+  String get nicknameLabel => 'Nickname';
+
+  @override
+  String get birthdayLabel => 'Birthday';
+
+  @override
+  String get taxpayerIdLabel => 'Taxpayer ID (RFC)';
+
+  @override
+  String get salesPersonLabel => 'Sales person';
+
+  @override
+  String get activeLabel => 'Active';
+
+  @override
+  String get personalIdLabel => 'Personal ID';
+
+  @override
+  String get startJobDateLabel => 'Start date';
+
+  @override
+  String get enrollNumberLabel => 'Enrollment number';
+
+  @override
+  String get columnFullName => 'Name';
+
+  @override
+  String get employeesSearchLabel => 'Search by name or nickname';
+
+  @override
+  String get newEmployeeTooltip => 'New employee';
+
+  @override
+  String get noEmployeesFound => 'No employees found.';
+
+  @override
+  String employeesLoadError(Object error) {
+    return 'Failed to load employees: $error';
+  }
+
+  @override
+  String get employeesActiveFilter => 'Active';
+
+  @override
+  String get employeesSalesPersonFilter => 'Sales person';
+
+  @override
+  String get newEmployeeTitle => 'New employee';
+
+  @override
+  String get editEmployeeTitle => 'Edit employee';
+
+  @override
+  String get viewEmployeeTitle => 'View employee';
+
+  @override
+  String get deleteEmployeeButton => 'Delete employee';
+
+  @override
+  String get deleteEmployeeConfirmTitle => 'Delete employee?';
+
+  @override
+  String deleteEmployeeConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get employeeLoadFailedError => 'Failed to load employee.';
+
+  @override
+  String get employeeCreateFailedError => 'Failed to create employee.';
+
+  @override
+  String get employeeUpdateFailedError => 'Failed to update employee.';
+
+  @override
+  String get employeeDeleteFailedError => 'Failed to delete employee.';
+
+  @override
+  String get employeeCreatePermissionDeniedError =>
+      'You no longer have permission to create employees.';
+
+  @override
+  String get employeeUpdatePermissionDeniedError =>
+      'You no longer have permission to edit employees.';
+
+  @override
+  String get employeeDeletePermissionDeniedError =>
+      'You no longer have permission to delete employees.';
+
+  @override
+  String get employeeFirstNameRequiredError => 'First name is required.';
+
+  @override
+  String get employeeLastNameRequiredError => 'Last name is required.';
+
+  @override
+  String get employeeNicknameRequiredError => 'Nickname is required.';
+
+  @override
+  String get employeeGenderRequiredError => 'Gender is required.';
+
+  @override
+  String get employeeBirthdayRequiredError => 'Birthday is required.';
+
+  @override
+  String get employeeStartJobDateRequiredError => 'Start date is required.';
+
+  @override
+  String get employeeEnrollNumberInvalidError =>
+      'Enter a valid non-negative whole number.';
+
+  @override
+  String get priceListFieldLabel => 'Price list';
+
+  @override
+  String get noneAssignedLabel => 'None assigned';
+
+  @override
+  String get shippingLabel => 'Shipping';
+
+  @override
+  String get shippingRequiredDocumentLabel => 'Shipping requires document';
+
+  @override
+  String get columnSalesperson => 'Salesperson';
+
+  @override
+  String get customersSearchLabel => 'Search by code or name';
+
+  @override
+  String get newCustomerTooltip => 'New customer';
+
+  @override
+  String get noCustomersFound => 'No customers found.';
+
+  @override
+  String customersLoadError(Object error) {
+    return 'Failed to load customers: $error';
+  }
+
+  @override
+  String get customersActiveFilter => 'Active';
+
+  @override
+  String get customersPriceListFilterLabel => 'Price list';
+
+  @override
+  String get customersSalespersonFilterLabel => 'Salesperson';
+
+  @override
+  String get newCustomerTitle => 'New customer';
+
+  @override
+  String get editCustomerTitle => 'Edit customer';
+
+  @override
+  String get viewCustomerTitle => 'View customer';
+
+  @override
+  String get deleteCustomerButton => 'Delete customer';
+
+  @override
+  String get deleteCustomerConfirmTitle => 'Delete customer?';
+
+  @override
+  String deleteCustomerConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get customerLoadFailedError => 'Failed to load customer.';
+
+  @override
+  String get customerCreateFailedError => 'Failed to create customer.';
+
+  @override
+  String get customerUpdateFailedError => 'Failed to update customer.';
+
+  @override
+  String get customerDeleteFailedError => 'Failed to delete customer.';
+
+  @override
+  String get customerCreatePermissionDeniedError =>
+      'You no longer have permission to create customers.';
+
+  @override
+  String get customerUpdatePermissionDeniedError =>
+      'You no longer have permission to edit customers.';
+
+  @override
+  String get customerDeletePermissionDeniedError =>
+      'You no longer have permission to delete customers.';
+
+  @override
+  String get customerCodeRequiredError => 'Code is required.';
+
+  @override
+  String get customerNameRequiredError => 'Name is required.';
+
+  @override
+  String get customerPriceListRequiredError => 'Price list is required.';
+
+  @override
+  String get taxpayerRecipientIdLabel => 'Tax ID (RFC)';
+
+  @override
+  String get postalCodeFieldLabel => 'Postal code';
+
+  @override
+  String get regimeFieldLabel => 'Tax regime';
+
+  @override
+  String get unresolvedFallbackLabel => 'Unknown';
+
+  @override
+  String get taxpayerRecipientsSearchLabel => 'Search by name or email';
+
+  @override
+  String get newTaxpayerRecipientTooltip => 'New taxpayer recipient';
+
+  @override
+  String get noTaxpayerRecipientsFound => 'No taxpayer recipients found.';
+
+  @override
+  String taxpayerRecipientsLoadError(Object error) {
+    return 'Failed to load taxpayer recipients: $error';
+  }
+
+  @override
+  String get newTaxpayerRecipientTitle => 'New taxpayer recipient';
+
+  @override
+  String get editTaxpayerRecipientTitle => 'Edit taxpayer recipient';
+
+  @override
+  String get viewTaxpayerRecipientTitle => 'View taxpayer recipient';
+
+  @override
+  String get deleteTaxpayerRecipientButton => 'Delete taxpayer recipient';
+
+  @override
+  String get deleteTaxpayerRecipientConfirmTitle =>
+      'Delete taxpayer recipient?';
+
+  @override
+  String deleteTaxpayerRecipientConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get taxpayerRecipientLoadFailedError =>
+      'Failed to load taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientCreateFailedError =>
+      'Failed to create taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientUpdateFailedError =>
+      'Failed to update taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientDeleteFailedError =>
+      'Failed to delete taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientCreatePermissionDeniedError =>
+      'You no longer have permission to create taxpayer recipients.';
+
+  @override
+  String get taxpayerRecipientUpdatePermissionDeniedError =>
+      'You no longer have permission to edit taxpayer recipients.';
+
+  @override
+  String get taxpayerRecipientDeletePermissionDeniedError =>
+      'You no longer have permission to delete taxpayer recipients.';
+
+  @override
+  String get taxpayerRecipientIdRequiredError => 'Tax ID is required.';
+
+  @override
+  String get taxpayerRecipientNameRequiredError => 'Name is required.';
+
+  @override
+  String get taxpayerRecipientEmailRequiredError => 'Email is required.';
 }

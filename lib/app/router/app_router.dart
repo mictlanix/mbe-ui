@@ -13,9 +13,19 @@ import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/employee_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/labels_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/suppliers_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -91,6 +101,51 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // Branch index is positional (contracts/routes.md §1, spec 012):
+          // each new branch below is appended at the next available index,
+          // in build order (Suppliers→Labels→Employees→Customers→
+          // TaxpayerRecipients), not a pre-reserved slot.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/suppliers',
+                builder: (context, state) => const SuppliersListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/labels',
+                builder: (context, state) => const LabelsListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/employees',
+                builder: (context, state) => const EmployeesListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/customers',
+                builder: (context, state) => const CustomersListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/taxpayer-recipients',
+                builder: (context, state) =>
+                    const TaxpayerRecipientsListScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -159,6 +214,63 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/exchange-rates/:exchangeRateId',
         builder: (context, state) => ExchangeRateDetailScreen(
           exchangeRateId: int.parse(state.pathParameters['exchangeRateId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/suppliers/new',
+        builder: (context, state) => const SupplierDetailScreen(),
+      ),
+      GoRoute(
+        path: '/suppliers/:supplierId',
+        builder: (context, state) => SupplierDetailScreen(
+          supplierId: int.parse(state.pathParameters['supplierId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/labels/new',
+        builder: (context, state) => const LabelDetailScreen(),
+      ),
+      GoRoute(
+        path: '/labels/:labelId',
+        builder: (context, state) => LabelDetailScreen(
+          labelId: int.parse(state.pathParameters['labelId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/employees/new',
+        builder: (context, state) => const EmployeeDetailScreen(),
+      ),
+      GoRoute(
+        path: '/employees/:employeeId',
+        builder: (context, state) => EmployeeDetailScreen(
+          employeeId: int.parse(state.pathParameters['employeeId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/customers/new',
+        builder: (context, state) => const CustomerDetailScreen(),
+      ),
+      GoRoute(
+        path: '/customers/:customerId',
+        builder: (context, state) => CustomerDetailScreen(
+          customerId: int.parse(state.pathParameters['customerId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/taxpayer-recipients/new',
+        builder: (context, state) => const TaxpayerRecipientDetailScreen(),
+      ),
+      GoRoute(
+        // String path param — taxpayerRecipientId is a client-supplied RFC,
+        // not a server-assigned int (research.md §9); no int.parse here.
+        path: '/taxpayer-recipients/:taxpayerRecipientId',
+        builder: (context, state) => TaxpayerRecipientDetailScreen(
+          taxpayerRecipientId: state.pathParameters['taxpayerRecipientId'],
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
@@ -245,6 +357,21 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/exchange-rates')) {
     return (object: SystemObject.exchangeRates, right: AccessRight.read);
+  }
+  if (location.startsWith('/suppliers')) {
+    return (object: SystemObject.suppliers, right: AccessRight.read);
+  }
+  if (location.startsWith('/labels')) {
+    return (object: SystemObject.labels, right: AccessRight.read);
+  }
+  if (location.startsWith('/employees')) {
+    return (object: SystemObject.employees, right: AccessRight.read);
+  }
+  if (location.startsWith('/customers')) {
+    return (object: SystemObject.customers, right: AccessRight.read);
+  }
+  if (location.startsWith('/taxpayer-recipients')) {
+    return (object: SystemObject.taxpayerRecipients, right: AccessRight.read);
   }
   return null;
 }

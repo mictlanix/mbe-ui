@@ -154,6 +154,13 @@ mixin _$UserFormState {
   String get password => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   int? get employeeId => throw _privateConstructorUsedError;
+
+  /// The selected employee's display name, shown in the employee picker.
+  /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
+  /// since `UserResponse.employeeId` is a bare id with no expansion) and
+  /// set directly by [UserFormController.employeeSelected] when the user
+  /// picks a new one.
+  String get employeeDisplayText => throw _privateConstructorUsedError;
   bool get administrator => throw _privateConstructorUsedError;
   bool get disabled => throw _privateConstructorUsedError;
   List<Privilege> get privileges => throw _privateConstructorUsedError;
@@ -192,6 +199,7 @@ abstract class $UserFormStateCopyWith<$Res> {
     String password,
     String email,
     int? employeeId,
+    String employeeDisplayText,
     bool administrator,
     bool disabled,
     List<Privilege> privileges,
@@ -228,6 +236,7 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
     Object? password = null,
     Object? email = null,
     Object? employeeId = freezed,
+    Object? employeeDisplayText = null,
     Object? administrator = null,
     Object? disabled = null,
     Object? privileges = null,
@@ -259,6 +268,10 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
                 ? _value.employeeId
                 : employeeId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            employeeDisplayText: null == employeeDisplayText
+                ? _value.employeeDisplayText
+                : employeeDisplayText // ignore: cast_nullable_to_non_nullable
+                      as String,
             administrator: null == administrator
                 ? _value.administrator
                 : administrator // ignore: cast_nullable_to_non_nullable
@@ -341,6 +354,7 @@ abstract class _$$UserFormStateImplCopyWith<$Res>
     String password,
     String email,
     int? employeeId,
+    String employeeDisplayText,
     bool administrator,
     bool disabled,
     List<Privilege> privileges,
@@ -377,6 +391,7 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
     Object? password = null,
     Object? email = null,
     Object? employeeId = freezed,
+    Object? employeeDisplayText = null,
     Object? administrator = null,
     Object? disabled = null,
     Object? privileges = null,
@@ -408,6 +423,10 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
             ? _value.employeeId
             : employeeId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        employeeDisplayText: null == employeeDisplayText
+            ? _value.employeeDisplayText
+            : employeeDisplayText // ignore: cast_nullable_to_non_nullable
+                  as String,
         administrator: null == administrator
             ? _value.administrator
             : administrator // ignore: cast_nullable_to_non_nullable
@@ -469,6 +488,7 @@ class _$UserFormStateImpl implements _UserFormState {
     this.password = '',
     this.email = '',
     this.employeeId,
+    this.employeeDisplayText = '',
     this.administrator = false,
     this.disabled = false,
     final List<Privilege> privileges = const <Privilege>[],
@@ -494,6 +514,15 @@ class _$UserFormStateImpl implements _UserFormState {
   final String email;
   @override
   final int? employeeId;
+
+  /// The selected employee's display name, shown in the employee picker.
+  /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
+  /// since `UserResponse.employeeId` is a bare id with no expansion) and
+  /// set directly by [UserFormController.employeeSelected] when the user
+  /// picks a new one.
+  @override
+  @JsonKey()
+  final String employeeDisplayText;
   @override
   @JsonKey()
   final bool administrator;
@@ -540,7 +569,7 @@ class _$UserFormStateImpl implements _UserFormState {
 
   @override
   String toString() {
-    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
+    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, employeeDisplayText: $employeeDisplayText, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
   }
 
   @override
@@ -554,6 +583,8 @@ class _$UserFormStateImpl implements _UserFormState {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.employeeId, employeeId) ||
                 other.employeeId == employeeId) &&
+            (identical(other.employeeDisplayText, employeeDisplayText) ||
+                other.employeeDisplayText == employeeDisplayText) &&
             (identical(other.administrator, administrator) ||
                 other.administrator == administrator) &&
             (identical(other.disabled, disabled) ||
@@ -585,6 +616,7 @@ class _$UserFormStateImpl implements _UserFormState {
     password,
     email,
     employeeId,
+    employeeDisplayText,
     administrator,
     disabled,
     const DeepCollectionEquality().hash(_privileges),
@@ -614,6 +646,7 @@ abstract class _UserFormState implements UserFormState {
     final String password,
     final String email,
     final int? employeeId,
+    final String employeeDisplayText,
     final bool administrator,
     final bool disabled,
     final List<Privilege> privileges,
@@ -636,6 +669,14 @@ abstract class _UserFormState implements UserFormState {
   String get email;
   @override
   int? get employeeId;
+
+  /// The selected employee's display name, shown in the employee picker.
+  /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
+  /// since `UserResponse.employeeId` is a bare id with no expansion) and
+  /// set directly by [UserFormController.employeeSelected] when the user
+  /// picks a new one.
+  @override
+  String get employeeDisplayText;
   @override
   bool get administrator;
   @override

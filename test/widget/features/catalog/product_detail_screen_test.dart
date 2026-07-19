@@ -25,6 +25,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
@@ -347,6 +348,36 @@ void main() {
     expect(find.byKey(const Key('bar_code_field')), findsOneWidget);
     expect(find.byKey(const Key('save_button')), findsOneWidget);
   });
+
+  testWidgets(
+    'the supplier picker still searches via SupplierRepository.list() after '
+    'Suppliers was promoted to a full CRUD catalog (spec 012 regression '
+    'guard, SC-005)',
+    (tester) async {
+      when(
+        () => supplierRepository.list(
+          search: 'Acme',
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => const SupplierListResult(
+          items: [
+            SupplierListItem(supplierId: 1, code: 'SUP-001', name: 'Acme Corp'),
+          ],
+          total: 1,
+        ),
+      );
+
+      await pumpScreen(tester, signedInAs: _createUser);
+
+      expect(find.byKey(const Key('supplier_field')), findsOneWidget);
+      await tester.enterText(find.byKey(const Key('supplier_field')), 'Acme');
+      await tester.pumpAndSettle(const Duration(milliseconds: 400));
+
+      expect(find.text('SUP-001 — Acme Corp'), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'shows field-level validation errors and does not submit (FR-006, FR-014)',
@@ -912,119 +943,22 @@ void main() {
     );
 
     group('view pricing shortcut', () {
-      testWidgets(
-        'shows a "view pricing" button under the switches for an editable '
-        'product when the user has pricing read access',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
+      testWidgets('regression guard: the product detail form no longer shows a '
+          '"view pricing" shortcut button, even with pricing read access', (
+        tester,
+      ) async {
+        when(
+          () => productRepository.get(productId: 1),
+        ).thenAnswer((_) async => _product());
 
-          await pumpScreen(
-            tester,
-            signedInAs: _editUserWithPricing,
-            productId: 1,
-          );
+        await pumpScreen(
+          tester,
+          signedInAs: _editUserWithPricing,
+          productId: 1,
+        );
 
-          expect(find.byKey(const Key('view_pricing_button')), findsOneWidget);
-        },
-      );
-
-      testWidgets(
-        'hides the "view pricing" button without pricing read access',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
-
-          await pumpScreen(tester, signedInAs: _editUser, productId: 1);
-
-          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
-        },
-      );
-
-      testWidgets(
-        'hides the "view pricing" button in read-only view mode, even with '
-        'pricing read access',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
-
-          await pumpScreen(
-            tester,
-            signedInAs: _editUserWithPricing,
-            productId: 1,
-            forceReadOnly: true,
-          );
-
-          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
-        },
-      );
-
-      testWidgets(
-        'pushes /products/:productId/pricing as a stacked screen with the '
-        'product preselected on tap',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
-          when(
-            () => authRepository.me(),
-          ).thenAnswer((_) async => _editUserWithPricing);
-
-          final router = GoRouter(
-            initialLocation: '/products/1',
-            routes: [
-              GoRoute(path: '/', builder: (_, _) => const SizedBox()),
-              GoRoute(
-                path: '/products/:productId',
-                builder: (_, state) => ProductDetailScreen(
-                  productId: int.parse(state.pathParameters['productId']!),
-                ),
-              ),
-              GoRoute(
-                path: '/products/:productId/pricing',
-                builder: (_, state) => Text(
-                  'pricing:${state.pathParameters['productId']}:'
-                  '${state.uri.queryParameters['productDisplayText']}',
-                ),
-              ),
-            ],
-          );
-
-          await tester.pumpWidget(
-            ProviderScope(
-              overrides: [
-                authRepositoryProvider.overrideWithValue(authRepository),
-                tokenStorageProvider.overrideWithValue(tokenStorage),
-                productRepositoryProvider.overrideWithValue(productRepository),
-                satCatalogRepositoryProvider.overrideWithValue(
-                  satCatalogRepository,
-                ),
-                supplierRepositoryProvider.overrideWithValue(
-                  supplierRepository,
-                ),
-                allLabelsProvider.overrideWith((_) async => []),
-              ],
-              child: MaterialApp.router(
-                routerConfig: router,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-              ),
-            ),
-          );
-          await tester.pumpAndSettle();
-
-          await tester.ensureVisible(
-            find.byKey(const Key('view_pricing_button')),
-          );
-          await tester.tap(find.byKey(const Key('view_pricing_button')));
-          await tester.pumpAndSettle();
-
-          expect(find.text('pricing:1:SKU-001 — Widget'), findsOneWidget);
-        },
-      );
+        expect(find.byKey(const Key('view_pricing_button')), findsNothing);
+      });
     });
   });
 

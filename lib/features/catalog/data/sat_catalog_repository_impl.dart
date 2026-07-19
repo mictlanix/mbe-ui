@@ -64,6 +64,52 @@ class SatCatalogRepositoryImpl implements SatCatalogRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<SatCatalogListResult> listPostalCodes({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _api.listPostalCodesApiV1SatPostalCodesGet(
+        search: search,
+        skip: skip,
+        limit: limit,
+      );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return SatCatalogListResult(
+        items: result.items.map(SatCatalogItem.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<SatCatalogListResult> listTaxRegimes({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _api.listTaxRegimesApiV1SatTaxRegimesGet(
+        search: search,
+        skip: skip,
+        limit: limit,
+      );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return SatCatalogListResult(
+        items: result.items.map(SatCatalogItem.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
 }
 
 AppError _toAppError(DioException error) {

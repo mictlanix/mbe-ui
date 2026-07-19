@@ -17,6 +17,11 @@ class NavBranch {
   static const int priceLists = 3;
   static const int pricing = 4;
   static const int exchangeRates = 5;
+  static const int suppliers = 6;
+  static const int labels = 7;
+  static const int employees = 8;
+  static const int customers = 9;
+  static const int taxpayerRecipients = 10;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -70,6 +75,54 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.exchangeRates,
         gate: (object: SystemObject.exchangeRates, right: AccessRight.read),
       ),
+      NavDestination(
+        id: 'suppliers',
+        label: _suppliersLabel,
+        icon: Icons.local_shipping_outlined,
+        selectedIcon: Icons.local_shipping,
+        route: '/suppliers',
+        branchIndex: NavBranch.suppliers,
+        gate: (object: SystemObject.suppliers, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'labels',
+        label: _labelsLabel,
+        icon: Icons.label_outline,
+        selectedIcon: Icons.label,
+        route: '/labels',
+        branchIndex: NavBranch.labels,
+        gate: (object: SystemObject.labels, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'employees',
+        label: _employeesLabel,
+        icon: Icons.badge_outlined,
+        selectedIcon: Icons.badge,
+        route: '/employees',
+        branchIndex: NavBranch.employees,
+        gate: (object: SystemObject.employees, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'customers',
+        label: _customersLabel,
+        icon: Icons.people_alt_outlined,
+        selectedIcon: Icons.people_alt,
+        route: '/customers',
+        branchIndex: NavBranch.customers,
+        gate: (object: SystemObject.customers, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'taxpayer-recipients',
+        label: _taxpayerRecipientsLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/taxpayer-recipients',
+        branchIndex: NavBranch.taxpayerRecipients,
+        gate: (
+          object: SystemObject.taxpayerRecipients,
+          right: AccessRight.read,
+        ),
+      ),
     ],
   ),
   NavGroup(
@@ -99,6 +152,12 @@ String _priceListsLabel(AppLocalizations l10n) => l10n.priceListsMenuTitle;
 String _pricingLabel(AppLocalizations l10n) => l10n.pricingMenuTitle;
 String _exchangeRatesLabel(AppLocalizations l10n) =>
     l10n.exchangeRatesMenuTitle;
+String _suppliersLabel(AppLocalizations l10n) => l10n.suppliersMenuTitle;
+String _labelsLabel(AppLocalizations l10n) => l10n.labelsMenuTitle;
+String _employeesLabel(AppLocalizations l10n) => l10n.employeesMenuTitle;
+String _customersLabel(AppLocalizations l10n) => l10n.customersMenuTitle;
+String _taxpayerRecipientsLabel(AppLocalizations l10n) =>
+    l10n.taxpayerRecipientsMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a
