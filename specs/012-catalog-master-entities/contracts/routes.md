@@ -10,19 +10,28 @@ order in `app_router.dart` MUST match the `NavBranch` index order in
 
 Five new `StatefulShellBranch`es are appended to the existing indexed-stack
 shell. Current branches are home(0), users(1), products(2), priceLists(3),
-pricing(4), exchangeRates(5). The new branches continue the sequence:
+pricing(4), exchangeRates(5). **Branch index is positional** —
+`StatefulShellRoute.indexedStack`'s `branches:` is a literal ordered list, so a
+branch's index is simply its position in that list at the moment it's added,
+not an arbitrary label. The order below is therefore fixed to **tasks.md's
+build order** (Suppliers→Labels→Employees→Customers→TaxpayerRecipients, per
+the spec's story priorities), so each story can add its branch at the next
+available position without reshuffling earlier ones (corrected 2026-07-19,
+`/speckit-analyze` finding I1 — the original table used a different,
+unrelated order that didn't match the build sequence):
 
-| New branch index | Route | List screen |
-|---|---|---|
-| 6 | `/customers` | `CustomersListScreen` |
-| 7 | `/employees` | `EmployeesListScreen` |
-| 8 | `/suppliers` | `SuppliersListScreen` |
-| 9 | `/labels` | `LabelsListScreen` |
-| 10 | `/taxpayer-recipients` | `TaxpayerRecipientsListScreen` |
+| New branch index | Route | List screen | Story |
+|---|---|---|---|
+| 6 | `/suppliers` | `SuppliersListScreen` | US1 |
+| 7 | `/labels` | `LabelsListScreen` | US2 |
+| 8 | `/employees` | `EmployeesListScreen` | US3 |
+| 9 | `/customers` | `CustomersListScreen` | US4 |
+| 10 | `/taxpayer-recipients` | `TaxpayerRecipientsListScreen` | US5 |
 
-> Order within the group is a presentation choice; whatever order is chosen here
-> MUST be replicated identically in `NavBranch` and `kNavigationTree`. The table
-> above is the canonical order for this feature.
+> This order MUST be replicated identically in `NavBranch` and
+> `kNavigationTree` (`nav_destinations.dart:10-11`'s invariant), and each
+> story's router-wiring task MUST append its branch at the position shown
+> here, in build order — not skip ahead to a "reserved" future index.
 
 ## 2. Top-level detail/form sub-routes (siblings, full-screen, no rail)
 
@@ -79,14 +88,14 @@ users/products/price-lists/exchange-rates), each `gate`d on read:
 
 | id | label key | route | branchIndex | icon (outlined/filled) |
 |---|---|---|---|---|
-| customers | `customersMenuTitle` | `/customers` | `NavBranch.customers` (6) | `people_alt_outlined` / `people_alt` |
-| employees | `employeesMenuTitle` | `/employees` | `NavBranch.employees` (7) | `badge_outlined` / `badge` |
-| suppliers | `suppliersMenuTitle` | `/suppliers` | `NavBranch.suppliers` (8) | `local_shipping_outlined` / `local_shipping` |
-| labels | `labelsMenuTitle` | `/labels` | `NavBranch.labels` (9) | `label_outline` / `label` |
+| suppliers | `suppliersMenuTitle` | `/suppliers` | `NavBranch.suppliers` (6) | `local_shipping_outlined` / `local_shipping` |
+| labels | `labelsMenuTitle` | `/labels` | `NavBranch.labels` (7) | `label_outline` / `label` |
+| employees | `employeesMenuTitle` | `/employees` | `NavBranch.employees` (8) | `badge_outlined` / `badge` |
+| customers | `customersMenuTitle` | `/customers` | `NavBranch.customers` (9) | `people_alt_outlined` / `people_alt` |
 | taxpayer-recipients | `taxpayerRecipientsMenuTitle` | `/taxpayer-recipients` | `NavBranch.taxpayerRecipients` (10) | `receipt_long_outlined` / `receipt_long` |
 
 Add matching `NavBranch` constants (6–10) and top-level label tear-offs
-(`_customersLabel`, etc.), keeping `kNavigationTree` `const`. The existing
+(`_suppliersLabel`, etc.), keeping `kNavigationTree` `const`. The existing
 `navDestinationsProvider` filter hides any destination the user cannot read and
 drops an empty group — no change needed there.
 

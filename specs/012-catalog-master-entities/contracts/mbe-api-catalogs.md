@@ -64,6 +64,11 @@ query params mbe-ui consumes. **No codegen re-run and no generated-file edits**
 - `birthday`/`startJobDate` are `Date` (y/m/d) → `DateTime` in domain, entered
   via `showDatePicker` (research.md §8).
 - List facets: `active`, `salesPerson` (both nullable bool) → filter drawer.
+- **`disabled` is deliberately not mapped or exposed** (corrected 2026-07-19,
+  `/speckit-analyze` finding U1): it duplicates `active` with no documented
+  distinction. mbe-ui reads/writes `active` only; a candidate mbe-api issue
+  requests the field be removed or the distinction documented (plan.md
+  Follow-ups, data-model.md §3).
 
 ## 4. Customers — `CustomersApi` (RBAC `customers(2)`)
 

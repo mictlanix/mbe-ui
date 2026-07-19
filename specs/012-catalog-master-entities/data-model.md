@@ -95,16 +95,23 @@ the picker/filter type. The detail screen needs `comment` too.
 | startJobDate | DateTime | required; `Date` on the wire |
 | enrollNumber | int? | |
 | comment | String? | |
-| disabled | bool | read; edit via `EmployeeUpdate.disabled` |
+
+> **`EmployeeResponse.disabled`/`EmployeeUpdate.disabled` are deliberately NOT
+> mapped** (corrected 2026-07-19, `/speckit-analyze` finding U1): the backend
+> carries this alongside `active` with no documented distinction between the
+> two. Rather than surface a second, seemingly-redundant toggle, this feature
+> manages only `active`. A candidate mbe-api issue is filed requesting the
+> field be removed or the distinction documented (plan.md Follow-ups).
 
 - `EmployeeListItem` (for the Customer salesperson picker + the Employees list):
   `{ employeeId, fullName (firstName + lastName), nickname, active, salesPerson }`.
   Picker `displayStringForOption` → `"$fullName ($nickname)"`.
 - `Employee.fromResponse(EmployeeResponse)` maps `Date`→`DateTime` and
-  `int`→`Gender` via `Gender.fromValue`.
+  `int`→`Gender` via `Gender.fromValue`; `disabled` is read but discarded.
 - Create sends `EmployeeCreate` (firstName/lastName/nickname/gender/birthday/
-  startJobDate required); update sends `EmployeeUpdate` (all optional, plus
-  `disabled`). `Date` built from `DateTime` (y/m/d).
+  startJobDate required); update sends `EmployeeUpdate` (all optional).
+  `EmployeeUpdate.disabled` is never set (left at its default). `Date` built
+  from `DateTime` (y/m/d).
 
 ### Validation (`employee_form_controller.dart`)
 - firstName, lastName, nickname: required, non-empty.

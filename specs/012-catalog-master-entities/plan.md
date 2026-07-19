@@ -260,6 +260,17 @@ component unmodified.
   from specs/011).
 - **Possible enhancement**: retrofit the product form's supplier picker to link
   into the new Supplier detail screen once both exist.
+- **Candidate mbe-api issue** (added 2026-07-19, `/speckit-analyze` finding U1):
+  `EmployeeResponse`/`EmployeeUpdate.disabled` duplicates `active` with no
+  documented distinction between the two. Request either removing the
+  redundant field or documenting how it differs from `active`. mbe-ui does not
+  surface or write `disabled` for Employee pending this (data-model.md §3).
+- **Candidate mbe-api issue** (added 2026-07-19, `/speckit-analyze` finding I3):
+  annotate/clarify the `Customer.disabled` field naming — it's the negation of
+  the "active" framing used elsewhere (e.g. `Employee.active`,
+  `Product.deactivated`'s UI framing), which risks client-side polarity bugs.
+  Request either a naming pass for consistency or explicit documentation of the
+  intended polarity per entity.
 
 ## Complexity Tracking
 

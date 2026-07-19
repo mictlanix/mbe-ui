@@ -26,7 +26,7 @@ A user with the appropriate privilege needs to see the full list of suppliers, s
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with read privilege on suppliers, **When** they open the Suppliers catalog, **Then** they see a paginated, searchable list of all suppliers with their code, name, and status.
+1. **Given** a user with read privilege on suppliers, **When** they open the Suppliers catalog, **Then** they see a paginated, searchable list of all suppliers with their code and name.
 2. **Given** a user with create privilege, **When** they fill in the required supplier fields and save, **Then** a new supplier appears in the list.
 3. **Given** a user with update privilege viewing a supplier, **When** they edit any field and save, **Then** the change is reflected on the list and detail screen.
 4. **Given** a user with delete privilege viewing a supplier's detail screen, **When** they confirm deletion, **Then** the supplier no longer appears in the catalog.
@@ -136,7 +136,7 @@ A user with the appropriate privilege needs to see the full list of taxpayer rec
 **Suppliers (User Story 1)**
 
 - **FR-010**: The Suppliers catalog MUST support creating, viewing, editing, and deleting a supplier with fields: code, name, zone, credit limit, credit days, and comment.
-- **FR-011**: Code and name MUST be required on create; a supplier's code MUST be validated the same way the Products catalog validates uniqueness/format expectations for equivalent fields (surfaced as a field-level error, not a crash).
+- **FR-011**: Code and name MUST be required on create.
 
 **Labels (User Story 2)**
 
@@ -199,3 +199,5 @@ A user with the appropriate privilege needs to see the full list of taxpayer rec
 - Bulk import/export (e.g. CSV) for any of these five catalogs is out of scope; each record is created/edited one at a time, consistent with every existing catalog in the app.
 - Money-shaped fields (credit limit on Suppliers and Customers) follow the same display/edit conventions already established for monetary values elsewhere in the app (e.g. price-list amounts) — never manually formatted, always locale-aware.
 - "Zone" on Suppliers/Customers remains a free-text field with no master-data catalog behind it, consistent with how "brand"/"model" remain free-text on products.
+- **Employee's `disabled` field is intentionally not exposed in the UI** (corrected 2026-07-19, `/speckit-analyze` finding U1): the backend's `EmployeeResponse`/`EmployeeUpdate` carry a `disabled` flag alongside `active` with no documented distinction between the two. Rather than surface a second, seemingly-redundant toggle with no clear meaning, this feature manages only `active` and leaves `disabled` unmapped; a candidate mbe-api issue is filed requesting the redundant field be removed (or the distinction documented) — see plan.md Follow-ups.
+- **Customer's status field is named `disabled`, not `active`** (corrected 2026-07-19, `/speckit-analyze` finding I3): FR-022/US4's "active/inactive" filter language describes the user-facing framing (an "Active" filter chip), but the underlying field the UI reads/writes is `disabled` — the negation. This is intentional (it matches the wire field), not an error to fix client-side; a candidate mbe-api issue is filed requesting the naming inconsistency (`Customer.disabled` vs. `Employee.active`) be annotated/documented upstream — see plan.md Follow-ups.
