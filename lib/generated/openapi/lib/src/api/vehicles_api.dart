@@ -261,6 +261,7 @@ class VehiclesApi {
   ///
   ///
   /// Parameters:
+  /// * [search]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -273,6 +274,7 @@ class VehiclesApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseVehicleResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseVehicleResponse>> listVehiclesApiV1VehiclesGet({
+    String? search,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -296,6 +298,12 @@ class VehiclesApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null)

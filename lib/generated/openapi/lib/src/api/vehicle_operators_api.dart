@@ -267,6 +267,7 @@ class VehicleOperatorsApi {
   ///
   ///
   /// Parameters:
+  /// * [search]
   /// * [employee]
   /// * [skip]
   /// * [limit]
@@ -281,6 +282,7 @@ class VehicleOperatorsApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseVehicleOperatorResponse>>
   listVehicleOperatorsApiV1VehicleOperatorsGet({
+    String? search,
     int? employee,
     int? skip = 0,
     int? limit = 20,
@@ -305,6 +307,12 @@ class VehicleOperatorsApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
       if (employee != null)
         r'employee': encodeQueryParameter(
           _serializers,
