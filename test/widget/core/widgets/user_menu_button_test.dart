@@ -130,16 +130,17 @@ void main() {
     expect(find.text('Drawer 14'), findsOneWidget);
   });
 
-  testWidgets('shows resolved store/POS/cash-drawer names — store as name, '
-      'POS/drawer as "name (code)" — once /auth/me resolves them '
-      '(mbe-api#79, FR-011)', (tester) async {
+  testWidgets('shows resolved store/POS/cash-drawer names — name only, no '
+      'code suffix — once /auth/me resolves them (mbe-api#79, FR-011)', (
+    tester,
+  ) async {
     await pumpMenu(tester, user: _userWithResolvedNames);
     await openMenu(tester);
 
     expect(find.text('eddy@mictlanix.com'), findsOneWidget);
     expect(find.text('CASA MAESTRA ZUMPANGO'), findsOneWidget);
-    expect(find.text('PV ZUMPANGO (01)'), findsOneWidget);
-    expect(find.text('CC ZUMPANGO (01)'), findsOneWidget);
+    expect(find.text('PV ZUMPANGO'), findsOneWidget);
+    expect(find.text('CC ZUMPANGO'), findsOneWidget);
     // The labeled-ID fallback is not shown once names resolve.
     expect(find.text('Store 51'), findsNothing);
   });

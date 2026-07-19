@@ -942,4 +942,134 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get labelNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get genderFemaleLabel => 'Femenino';
+
+  @override
+  String get genderMaleLabel => 'Masculino';
+
+  @override
+  String get genderLabel => 'Género';
+
+  @override
+  String get firstNameLabel => 'Nombre(s)';
+
+  @override
+  String get lastNameLabel => 'Apellidos';
+
+  @override
+  String get nicknameLabel => 'Apodo';
+
+  @override
+  String get birthdayLabel => 'Fecha de nacimiento';
+
+  @override
+  String get taxpayerIdLabel => 'RFC';
+
+  @override
+  String get salesPersonLabel => 'Vendedor';
+
+  @override
+  String get activeLabel => 'Activo';
+
+  @override
+  String get personalIdLabel => 'CURP';
+
+  @override
+  String get startJobDateLabel => 'Fecha de ingreso';
+
+  @override
+  String get enrollNumberLabel => 'Número de empleado';
+
+  @override
+  String get columnFullName => 'Nombre';
+
+  @override
+  String get employeesSearchLabel => 'Buscar por nombre o apodo';
+
+  @override
+  String get newEmployeeTooltip => 'Nuevo empleado';
+
+  @override
+  String get noEmployeesFound => 'No se encontraron empleados.';
+
+  @override
+  String employeesLoadError(Object error) {
+    return 'No se pudieron cargar los empleados: $error';
+  }
+
+  @override
+  String get employeesActiveFilter => 'Activo';
+
+  @override
+  String get employeesSalesPersonFilter => 'Vendedor';
+
+  @override
+  String get newEmployeeTitle => 'Nuevo empleado';
+
+  @override
+  String get editEmployeeTitle => 'Editar empleado';
+
+  @override
+  String get viewEmployeeTitle => 'Ver empleado';
+
+  @override
+  String get deleteEmployeeButton => 'Eliminar empleado';
+
+  @override
+  String get deleteEmployeeConfirmTitle => '¿Eliminar empleado?';
+
+  @override
+  String deleteEmployeeConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get employeeLoadFailedError => 'No se pudo cargar el empleado.';
+
+  @override
+  String get employeeCreateFailedError => 'No se pudo crear el empleado.';
+
+  @override
+  String get employeeUpdateFailedError => 'No se pudo actualizar el empleado.';
+
+  @override
+  String get employeeDeleteFailedError => 'No se pudo eliminar el empleado.';
+
+  @override
+  String get employeeCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear empleados.';
+
+  @override
+  String get employeeUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar empleados.';
+
+  @override
+  String get employeeDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar empleados.';
+
+  @override
+  String get employeeFirstNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get employeeLastNameRequiredError => 'Los apellidos son obligatorios.';
+
+  @override
+  String get employeeNicknameRequiredError => 'El apodo es obligatorio.';
+
+  @override
+  String get employeeGenderRequiredError => 'El género es obligatorio.';
+
+  @override
+  String get employeeBirthdayRequiredError =>
+      'La fecha de nacimiento es obligatoria.';
+
+  @override
+  String get employeeStartJobDateRequiredError =>
+      'La fecha de ingreso es obligatoria.';
+
+  @override
+  String get employeeEnrollNumberInvalidError =>
+      'Ingresa un número entero no negativo válido.';
 }

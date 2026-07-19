@@ -1807,6 +1807,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name is required.'**
   String get labelNameRequiredError;
+
+  /// No description provided for @genderFemaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemaleLabel;
+
+  /// No description provided for @genderMaleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMaleLabel;
+
+  /// No description provided for @genderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get genderLabel;
+
+  /// No description provided for @firstNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get firstNameLabel;
+
+  /// No description provided for @lastNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get lastNameLabel;
+
+  /// No description provided for @nicknameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname'**
+  String get nicknameLabel;
+
+  /// No description provided for @birthdayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get birthdayLabel;
+
+  /// No description provided for @taxpayerIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer ID (RFC)'**
+  String get taxpayerIdLabel;
+
+  /// No description provided for @salesPersonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales person'**
+  String get salesPersonLabel;
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLabel;
+
+  /// No description provided for @personalIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal ID'**
+  String get personalIdLabel;
+
+  /// No description provided for @startJobDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get startJobDateLabel;
+
+  /// No description provided for @enrollNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enrollment number'**
+  String get enrollNumberLabel;
+
+  /// No description provided for @columnFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get columnFullName;
+
+  /// No description provided for @employeesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or nickname'**
+  String get employeesSearchLabel;
+
+  /// No description provided for @newEmployeeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New employee'**
+  String get newEmployeeTooltip;
+
+  /// No description provided for @noEmployeesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No employees found.'**
+  String get noEmployeesFound;
+
+  /// No description provided for @employeesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load employees: {error}'**
+  String employeesLoadError(Object error);
+
+  /// No description provided for @employeesActiveFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get employeesActiveFilter;
+
+  /// No description provided for @employeesSalesPersonFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales person'**
+  String get employeesSalesPersonFilter;
+
+  /// No description provided for @newEmployeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New employee'**
+  String get newEmployeeTitle;
+
+  /// No description provided for @editEmployeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit employee'**
+  String get editEmployeeTitle;
+
+  /// No description provided for @viewEmployeeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View employee'**
+  String get viewEmployeeTitle;
+
+  /// No description provided for @deleteEmployeeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete employee'**
+  String get deleteEmployeeButton;
+
+  /// No description provided for @deleteEmployeeConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete employee?'**
+  String get deleteEmployeeConfirmTitle;
+
+  /// No description provided for @deleteEmployeeConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteEmployeeConfirmMessage(String name);
+
+  /// No description provided for @employeeLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load employee.'**
+  String get employeeLoadFailedError;
+
+  /// No description provided for @employeeCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create employee.'**
+  String get employeeCreateFailedError;
+
+  /// No description provided for @employeeUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update employee.'**
+  String get employeeUpdateFailedError;
+
+  /// No description provided for @employeeDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete employee.'**
+  String get employeeDeleteFailedError;
+
+  /// No description provided for @employeeCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create employees.'**
+  String get employeeCreatePermissionDeniedError;
+
+  /// No description provided for @employeeUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit employees.'**
+  String get employeeUpdatePermissionDeniedError;
+
+  /// No description provided for @employeeDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete employees.'**
+  String get employeeDeletePermissionDeniedError;
+
+  /// No description provided for @employeeFirstNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'First name is required.'**
+  String get employeeFirstNameRequiredError;
+
+  /// No description provided for @employeeLastNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name is required.'**
+  String get employeeLastNameRequiredError;
+
+  /// No description provided for @employeeNicknameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname is required.'**
+  String get employeeNicknameRequiredError;
+
+  /// No description provided for @employeeGenderRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender is required.'**
+  String get employeeGenderRequiredError;
+
+  /// No description provided for @employeeBirthdayRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday is required.'**
+  String get employeeBirthdayRequiredError;
+
+  /// No description provided for @employeeStartJobDateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date is required.'**
+  String get employeeStartJobDateRequiredError;
+
+  /// No description provided for @employeeEnrollNumberInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative whole number.'**
+  String get employeeEnrollNumberInvalidError;
 }
 
 class _AppLocalizationsDelegate

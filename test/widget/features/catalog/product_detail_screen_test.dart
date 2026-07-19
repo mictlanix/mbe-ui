@@ -913,8 +913,8 @@ void main() {
 
     group('view pricing shortcut', () {
       testWidgets(
-        'shows a "view pricing" button under the switches for an editable '
-        'product when the user has pricing read access',
+        'regression guard: the product detail form no longer shows a '
+        '"view pricing" shortcut button, even with pricing read access',
         (tester) async {
           when(
             () => productRepository.get(productId: 1),
@@ -926,103 +926,7 @@ void main() {
             productId: 1,
           );
 
-          expect(find.byKey(const Key('view_pricing_button')), findsOneWidget);
-        },
-      );
-
-      testWidgets(
-        'hides the "view pricing" button without pricing read access',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
-
-          await pumpScreen(tester, signedInAs: _editUser, productId: 1);
-
           expect(find.byKey(const Key('view_pricing_button')), findsNothing);
-        },
-      );
-
-      testWidgets(
-        'hides the "view pricing" button in read-only view mode, even with '
-        'pricing read access',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
-
-          await pumpScreen(
-            tester,
-            signedInAs: _editUserWithPricing,
-            productId: 1,
-            forceReadOnly: true,
-          );
-
-          expect(find.byKey(const Key('view_pricing_button')), findsNothing);
-        },
-      );
-
-      testWidgets(
-        'pushes /products/:productId/pricing as a stacked screen with the '
-        'product preselected on tap',
-        (tester) async {
-          when(
-            () => productRepository.get(productId: 1),
-          ).thenAnswer((_) async => _product());
-          when(
-            () => authRepository.me(),
-          ).thenAnswer((_) async => _editUserWithPricing);
-
-          final router = GoRouter(
-            initialLocation: '/products/1',
-            routes: [
-              GoRoute(path: '/', builder: (_, _) => const SizedBox()),
-              GoRoute(
-                path: '/products/:productId',
-                builder: (_, state) => ProductDetailScreen(
-                  productId: int.parse(state.pathParameters['productId']!),
-                ),
-              ),
-              GoRoute(
-                path: '/products/:productId/pricing',
-                builder: (_, state) => Text(
-                  'pricing:${state.pathParameters['productId']}:'
-                  '${state.uri.queryParameters['productDisplayText']}',
-                ),
-              ),
-            ],
-          );
-
-          await tester.pumpWidget(
-            ProviderScope(
-              overrides: [
-                authRepositoryProvider.overrideWithValue(authRepository),
-                tokenStorageProvider.overrideWithValue(tokenStorage),
-                productRepositoryProvider.overrideWithValue(productRepository),
-                satCatalogRepositoryProvider.overrideWithValue(
-                  satCatalogRepository,
-                ),
-                supplierRepositoryProvider.overrideWithValue(
-                  supplierRepository,
-                ),
-                allLabelsProvider.overrideWith((_) async => []),
-              ],
-              child: MaterialApp.router(
-                routerConfig: router,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-              ),
-            ),
-          );
-          await tester.pumpAndSettle();
-
-          await tester.ensureVisible(
-            find.byKey(const Key('view_pricing_button')),
-          );
-          await tester.tap(find.byKey(const Key('view_pricing_button')));
-          await tester.pumpAndSettle();
-
-          expect(find.text('pricing:1:SKU-001 — Widget'), findsOneWidget);
         },
       );
     });

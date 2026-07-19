@@ -928,4 +928,132 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelNameRequiredError => 'Name is required.';
+
+  @override
+  String get genderFemaleLabel => 'Female';
+
+  @override
+  String get genderMaleLabel => 'Male';
+
+  @override
+  String get genderLabel => 'Gender';
+
+  @override
+  String get firstNameLabel => 'First name';
+
+  @override
+  String get lastNameLabel => 'Last name';
+
+  @override
+  String get nicknameLabel => 'Nickname';
+
+  @override
+  String get birthdayLabel => 'Birthday';
+
+  @override
+  String get taxpayerIdLabel => 'Taxpayer ID (RFC)';
+
+  @override
+  String get salesPersonLabel => 'Sales person';
+
+  @override
+  String get activeLabel => 'Active';
+
+  @override
+  String get personalIdLabel => 'Personal ID';
+
+  @override
+  String get startJobDateLabel => 'Start date';
+
+  @override
+  String get enrollNumberLabel => 'Enrollment number';
+
+  @override
+  String get columnFullName => 'Name';
+
+  @override
+  String get employeesSearchLabel => 'Search by name or nickname';
+
+  @override
+  String get newEmployeeTooltip => 'New employee';
+
+  @override
+  String get noEmployeesFound => 'No employees found.';
+
+  @override
+  String employeesLoadError(Object error) {
+    return 'Failed to load employees: $error';
+  }
+
+  @override
+  String get employeesActiveFilter => 'Active';
+
+  @override
+  String get employeesSalesPersonFilter => 'Sales person';
+
+  @override
+  String get newEmployeeTitle => 'New employee';
+
+  @override
+  String get editEmployeeTitle => 'Edit employee';
+
+  @override
+  String get viewEmployeeTitle => 'View employee';
+
+  @override
+  String get deleteEmployeeButton => 'Delete employee';
+
+  @override
+  String get deleteEmployeeConfirmTitle => 'Delete employee?';
+
+  @override
+  String deleteEmployeeConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get employeeLoadFailedError => 'Failed to load employee.';
+
+  @override
+  String get employeeCreateFailedError => 'Failed to create employee.';
+
+  @override
+  String get employeeUpdateFailedError => 'Failed to update employee.';
+
+  @override
+  String get employeeDeleteFailedError => 'Failed to delete employee.';
+
+  @override
+  String get employeeCreatePermissionDeniedError =>
+      'You no longer have permission to create employees.';
+
+  @override
+  String get employeeUpdatePermissionDeniedError =>
+      'You no longer have permission to edit employees.';
+
+  @override
+  String get employeeDeletePermissionDeniedError =>
+      'You no longer have permission to delete employees.';
+
+  @override
+  String get employeeFirstNameRequiredError => 'First name is required.';
+
+  @override
+  String get employeeLastNameRequiredError => 'Last name is required.';
+
+  @override
+  String get employeeNicknameRequiredError => 'Nickname is required.';
+
+  @override
+  String get employeeGenderRequiredError => 'Gender is required.';
+
+  @override
+  String get employeeBirthdayRequiredError => 'Birthday is required.';
+
+  @override
+  String get employeeStartJobDateRequiredError => 'Start date is required.';
+
+  @override
+  String get employeeEnrollNumberInvalidError =>
+      'Enter a valid non-negative whole number.';
 }
