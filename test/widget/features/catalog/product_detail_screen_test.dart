@@ -414,6 +414,7 @@ void main() {
         invoiceable: any(named: 'invoiceable'),
         supplier: any(named: 'supplier'),
         key: any(named: 'key'),
+        currency: any(named: 'currency'),
         labels: any(named: 'labels'),
       ),
     ).thenThrow(
@@ -744,6 +745,7 @@ void main() {
           invoiceable: any(named: 'invoiceable'),
           supplier: any(named: 'supplier'),
           key: any(named: 'key'),
+          currency: any(named: 'currency'),
           labels: any(named: 'labels'),
         ),
       ).thenAnswer((_) async => _product());
@@ -778,6 +780,7 @@ void main() {
           invoiceable: any(named: 'invoiceable'),
           supplier: any(named: 'supplier'),
           key: any(named: 'key'),
+          currency: any(named: 'currency'),
           labels: any(named: 'labels'),
         ),
       ).called(1);

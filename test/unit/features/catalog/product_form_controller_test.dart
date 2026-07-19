@@ -201,6 +201,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).thenAnswer((_) async => _product());
 
       final container = _containerFor(_createUser, repository);
@@ -239,6 +240,7 @@ void main() {
             purchasable: true,
             salable: true,
             invoiceable: false,
+            currency: 0,
           )).thenAnswer((_) async => _product());
 
       final container = _containerFor(_createUser, repository);
@@ -275,6 +277,7 @@ void main() {
             purchasable: true,
             salable: true,
             invoiceable: false,
+            currency: 0,
           )).called(1);
     });
 
@@ -296,6 +299,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).thenAnswer((_) async => _product());
 
       final container = _containerFor(_createUser, repository);
@@ -326,6 +330,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).called(1);
     });
 
@@ -347,6 +352,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).thenAnswer((_) async => _product());
       when(() => repository.uploadPhoto(
             productId: 1,
@@ -394,6 +400,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).thenAnswer((_) async => _product());
       when(() => repository.uploadPhoto(
             productId: 1,
@@ -455,6 +462,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).thenThrow(const AppError.validation([
         FieldError(loc: ['body', 'code'], msg: 'Code already in use', type: 'value_error'),
       ]));
@@ -491,6 +499,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
           )).thenThrow(const AppError.validation([
         FieldError(
           loc: ['body', 'bar_code'],
@@ -719,6 +728,7 @@ void main() {
             purchasable: false,
             salable: false,
             invoiceable: false,
+            currency: 0,
             supplier: null,
             key: null,
             labels: const [],
@@ -752,6 +762,7 @@ void main() {
             purchasable: false,
             salable: false,
             invoiceable: false,
+            currency: 0,
             supplier: null,
             key: null,
             labels: const [],
@@ -780,6 +791,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
             supplier: any(named: 'supplier'),
             key: any(named: 'key'),
             labels: any(named: 'labels'),
@@ -811,6 +823,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
             supplier: any(named: 'supplier'),
             key: any(named: 'key'),
             labels: any(named: 'labels'),
@@ -837,6 +850,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
             supplier: any(named: 'supplier'),
             key: any(named: 'key'),
             labels: any(named: 'labels'),
@@ -889,6 +903,7 @@ void main() {
             purchasable: any(named: 'purchasable'),
             salable: any(named: 'salable'),
             invoiceable: any(named: 'invoiceable'),
+            currency: any(named: 'currency'),
             supplier: any(named: 'supplier'),
             key: any(named: 'key'),
             labels: any(named: 'labels'),
@@ -957,6 +972,7 @@ void main() {
             purchasable: false,
             salable: false,
             invoiceable: false,
+            currency: 0,
             supplier: null,
             key: null,
             labels: const [],

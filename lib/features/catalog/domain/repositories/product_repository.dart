@@ -66,6 +66,7 @@ abstract class ProductRepository {
     bool invoiceable = false,
     int? supplier,
     String? key,
+    int? currency,
     List<int> labels = const [],
   });
 
@@ -105,6 +106,7 @@ abstract class ProductRepository {
     bool? deactivated,
     int? supplier,
     String? key,
+    int? currency,
     List<int>? labels,
   });
 

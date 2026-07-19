@@ -257,6 +257,9 @@
   "taxRateLabel": "Tax Rate",
   "@taxRateLabel": {},
 
+  "currencyLabel": "Currency",
+  "@currencyLabel": {},
+
   "commentLabel": "Notes",
   "@commentLabel": {},
 

@@ -94,6 +94,7 @@
   "barCodeLabel": "Código de barras",
   "locationLabel": "Ubicación",
   "taxRateLabel": "Tasa de impuesto",
+  "currencyLabel": "Moneda",
   "commentLabel": "Notas",
   "stockableLabel": "Almacenable",
   "perishableLabel": "Perecedero",

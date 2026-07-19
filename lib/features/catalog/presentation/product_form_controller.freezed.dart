@@ -53,6 +53,7 @@ mixin _$ProductFormState {
   String? get supplierName => throw _privateConstructorUsedError;
   List<int> get labelIds => throw _privateConstructorUsedError;
   String? get taxRate => throw _privateConstructorUsedError;
+  Currency get currency => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   bool get stockable => throw _privateConstructorUsedError;
   bool get perishable => throw _privateConstructorUsedError;
@@ -112,6 +113,7 @@ abstract class $ProductFormStateCopyWith<$Res> {
     String? supplierName,
     List<int> labelIds,
     String? taxRate,
+    Currency currency,
     String? comment,
     bool stockable,
     bool perishable,
@@ -164,6 +166,7 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
     Object? supplierName = freezed,
     Object? labelIds = null,
     Object? taxRate = freezed,
+    Object? currency = null,
     Object? comment = freezed,
     Object? stockable = null,
     Object? perishable = null,
@@ -261,6 +264,10 @@ class _$ProductFormStateCopyWithImpl<$Res, $Val extends ProductFormState>
                 ? _value.taxRate
                 : taxRate // ignore: cast_nullable_to_non_nullable
                       as String?,
+            currency: null == currency
+                ? _value.currency
+                : currency // ignore: cast_nullable_to_non_nullable
+                      as Currency,
             comment: freezed == comment
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
@@ -353,6 +360,7 @@ abstract class _$$ProductFormStateImplCopyWith<$Res>
     String? supplierName,
     List<int> labelIds,
     String? taxRate,
+    Currency currency,
     String? comment,
     bool stockable,
     bool perishable,
@@ -404,6 +412,7 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
     Object? supplierName = freezed,
     Object? labelIds = null,
     Object? taxRate = freezed,
+    Object? currency = null,
     Object? comment = freezed,
     Object? stockable = null,
     Object? perishable = null,
@@ -501,6 +510,10 @@ class __$$ProductFormStateImplCopyWithImpl<$Res>
             ? _value.taxRate
             : taxRate // ignore: cast_nullable_to_non_nullable
                   as String?,
+        currency: null == currency
+            ? _value.currency
+            : currency // ignore: cast_nullable_to_non_nullable
+                  as Currency,
         comment: freezed == comment
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
@@ -586,6 +599,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
     this.supplierName,
     final List<int> labelIds = const <int>[],
     this.taxRate,
+    this.currency = Currency.mxn,
     this.comment,
     this.stockable = false,
     this.perishable = false,
@@ -673,6 +687,9 @@ class _$ProductFormStateImpl implements _ProductFormState {
   @override
   final String? taxRate;
   @override
+  @JsonKey()
+  final Currency currency;
+  @override
   final String? comment;
   @override
   @JsonKey()
@@ -728,7 +745,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
 
   @override
   String toString() {
-    return 'ProductFormState(productId: $productId, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementDisplayText: $unitOfMeasurementDisplayText, satKeyCode: $satKeyCode, satKeyDisplayText: $satKeyDisplayText, supplierId: $supplierId, supplierName: $supplierName, labelIds: $labelIds, taxRate: $taxRate, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'ProductFormState(productId: $productId, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, photo: $photo, pendingPhotoBytes: $pendingPhotoBytes, pendingPhotoFilename: $pendingPhotoFilename, photoMarkedForRemoval: $photoMarkedForRemoval, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementDisplayText: $unitOfMeasurementDisplayText, satKeyCode: $satKeyCode, satKeyDisplayText: $satKeyDisplayText, supplierId: $supplierId, supplierName: $supplierName, labelIds: $labelIds, taxRate: $taxRate, currency: $currency, comment: $comment, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -773,6 +790,8 @@ class _$ProductFormStateImpl implements _ProductFormState {
                 other.supplierName == supplierName) &&
             const DeepCollectionEquality().equals(other._labelIds, _labelIds) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency) &&
             (identical(other.comment, comment) || other.comment == comment) &&
             (identical(other.stockable, stockable) ||
                 other.stockable == stockable) &&
@@ -822,6 +841,7 @@ class _$ProductFormStateImpl implements _ProductFormState {
     supplierName,
     const DeepCollectionEquality().hash(_labelIds),
     taxRate,
+    currency,
     comment,
     stockable,
     perishable,
@@ -872,6 +892,7 @@ abstract class _ProductFormState implements ProductFormState {
     final String? supplierName,
     final List<int> labelIds,
     final String? taxRate,
+    final Currency currency,
     final String? comment,
     final bool stockable,
     final bool perishable,
@@ -944,6 +965,8 @@ abstract class _ProductFormState implements ProductFormState {
   List<int> get labelIds;
   @override
   String? get taxRate;
+  @override
+  Currency get currency;
   @override
   String? get comment;
   @override

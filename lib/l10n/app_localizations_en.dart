@@ -275,6 +275,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taxRateLabel => 'Tax Rate';
 
   @override
+  String get currencyLabel => 'Currency';
+
+  @override
   String get commentLabel => 'Notes';
 
   @override

@@ -6,6 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
@@ -78,6 +79,7 @@ class ProductFormState with _$ProductFormState {
     String? supplierName,
     @Default(<int>[]) List<int> labelIds,
     String? taxRate,
+    @Default(Currency.mxn) Currency currency,
     String? comment,
     @Default(false) bool stockable,
     @Default(false) bool perishable,
@@ -172,6 +174,7 @@ class ProductFormController extends _$ProductFormController {
   }
 
   void taxRateChanged(String v) => state = state.copyWith(taxRate: v);
+  void currencyChanged(Currency v) => state = state.copyWith(currency: v);
   void commentChanged(String v) => state = state.copyWith(comment: v);
 
   void stockableChanged(bool v) => state = state.copyWith(stockable: v);
@@ -263,6 +266,7 @@ class ProductFormController extends _$ProductFormController {
         purchasable: product.purchasable,
         salable: product.salable,
         invoiceable: product.invoiceable,
+        currency: Currency.fromValue(product.currency) ?? Currency.mxn,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -352,6 +356,7 @@ class ProductFormController extends _$ProductFormController {
             invoiceable: state.invoiceable,
             supplier: state.supplierId,
             key: state.satKeyCode,
+            currency: state.currency.value,
             labels: state.labelIds,
           );
       ref.invalidate(productsListControllerProvider);
@@ -450,6 +455,7 @@ class ProductFormController extends _$ProductFormController {
             invoiceable: state.invoiceable,
             supplier: state.supplierId,
             key: state.satKeyCode,
+            currency: state.currency.value,
             labels: state.labelIds,
           );
       ref.invalidate(productsListControllerProvider);

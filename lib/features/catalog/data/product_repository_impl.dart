@@ -108,6 +108,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool invoiceable = false,
     int? supplier,
     String? key,
+    int? currency,
     List<int> labels = const [],
   }) async {
     try {
@@ -130,7 +131,8 @@ class ProductRepositoryImpl implements ProductRepository {
             ..salable = salable
             ..invoiceable = invoiceable
             ..supplier = supplier
-            ..key = key;
+            ..key = key
+            ..currency = currency;
           if (taxRate != null) _setTaxRate(b.taxRate, taxRate);
           b.labels.replace(labels);
         }),
@@ -165,6 +167,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? deactivated,
     int? supplier,
     String? key,
+    int? currency,
     List<int>? labels,
   }) async {
     try {
@@ -189,6 +192,7 @@ class ProductRepositoryImpl implements ProductRepository {
           if (deactivated != null) b.deactivated = deactivated;
           if (supplier != null) b.supplier = supplier;
           if (key != null) b.key = key;
+          if (currency != null) b.currency = currency;
           if (taxRate != null) _setTaxRate(b.taxRate, taxRate);
           if (labels != null) b.labels.replace(labels);
         }),

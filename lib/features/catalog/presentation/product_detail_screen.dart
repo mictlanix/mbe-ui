@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
@@ -312,6 +313,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 decoration: InputDecoration(labelText: l10n.taxRateLabel),
                 enabled: fieldsEnabled,
                 onChanged: controller.taxRateChanged,
+              ),
+            ),
+            FormGridChild(
+              DropdownButtonFormField<Currency>(
+                key: const Key('currency_field'),
+                initialValue: formState.currency,
+                decoration: InputDecoration(labelText: l10n.currencyLabel),
+                items: [
+                  for (final currency in Currency.values)
+                    DropdownMenuItem(
+                      value: currency,
+                      child: Text(_currencyLabel(l10n, currency)),
+                    ),
+                ],
+                onChanged: !fieldsEnabled
+                    ? null
+                    : (currency) {
+                        if (currency != null) controller.currencyChanged(currency);
+                      },
               ),
             ),
             FormGridChild(
@@ -693,6 +713,13 @@ class _PhotoSection extends StatelessWidget {
     );
   }
 }
+
+String _currencyLabel(AppLocalizations l10n, Currency currency) =>
+    switch (currency) {
+      Currency.mxn => l10n.currencyMxnLabel,
+      Currency.usd => l10n.currencyUsdLabel,
+      Currency.eur => l10n.currencyEurLabel,
+    };
 
 /// Localizes a [ProductFormErrorCode] for [ProductFormState.error].
 /// Falls back to the raw value for codes this UI doesn't recognize (e.g.

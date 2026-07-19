@@ -602,6 +602,12 @@ abstract class AppLocalizations {
   /// **'Tax Rate'**
   String get taxRateLabel;
 
+  /// No description provided for @currencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currencyLabel;
+
   /// No description provided for @commentLabel.
   ///
   /// In en, this message translates to:
