@@ -7,9 +7,12 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
+import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Create / edit screen for a single user account (FR-012/FR-013/FR-014).
@@ -57,6 +60,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final fieldsEnabled = !formState.submitting && !readOnly;
     final l10n = AppLocalizations.of(context)!;
+    final employeeRepo = ref.read(employeeRepositoryProvider);
     final title = readOnly
         ? l10n.viewUserTitle
         : (_isEdit ? l10n.editUserTitle : l10n.newUserTitle);
@@ -163,13 +167,20 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                     : null,
               ),
               const SizedBox(height: 12),
-              TextFormField(
+              CatalogEntityPicker<EmployeeListItem>(
                 key: const Key('employee_id_field'),
-                initialValue: formState.employeeId?.toString() ?? '',
-                decoration: InputDecoration(labelText: l10n.employeeIdLabel),
-                keyboardType: TextInputType.number,
+                label: l10n.employeeIdLabel,
+                displayStringForOption: (e) => e.fullName,
+                optionsBuilder: (query) async {
+                  final result = await employeeRepo.list(
+                    search: query.isEmpty ? null : query,
+                  );
+                  return result.items;
+                },
+                onSelected: (e) =>
+                    controller.employeeSelected(e.employeeId, e.fullName),
+                initialDisplayText: formState.employeeDisplayText,
                 enabled: fieldsEnabled,
-                onChanged: controller.employeeIdChanged,
               ),
               const SizedBox(height: 12),
               SwitchListTile(

@@ -6,6 +6,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/domain/gender.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
@@ -13,6 +15,10 @@ import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
@@ -20,6 +26,8 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 class MockTokenStorage extends Mock implements TokenStorage {}
 
 class MockUserRepository extends Mock implements UserRepository {}
+
+class MockEmployeeRepository extends Mock implements EmployeeRepository {}
 
 const _readOnlyUser = User(
   userId: 'reader',
@@ -59,15 +67,39 @@ const _targetUser = User(
   privileges: [],
 );
 
+const _targetUserWithEmployee = User(
+  userId: 'jdoe',
+  email: 'jdoe@example.com',
+  employeeId: 7,
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [],
+);
+
+final _employee = Employee(
+  employeeId: 7,
+  firstName: 'Jane',
+  lastName: 'Doe',
+  nickname: 'Janie',
+  gender: Gender.female,
+  birthday: DateTime(1990, 1, 1),
+  salesPerson: true,
+  active: true,
+  startJobDate: DateTime(2020, 1, 1),
+);
+
 void main() {
   late MockAuthRepository authRepository;
   late MockTokenStorage tokenStorage;
   late MockUserRepository userRepository;
+  late MockEmployeeRepository employeeRepository;
 
   setUp(() {
     authRepository = MockAuthRepository();
     tokenStorage = MockTokenStorage();
     userRepository = MockUserRepository();
+    employeeRepository = MockEmployeeRepository();
     when(() => tokenStorage.read()).thenAnswer((_) async => 'test-token');
     when(
       () => userRepository.get(userId: any(named: 'userId')),
@@ -88,6 +120,7 @@ void main() {
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
           userRepositoryProvider.overrideWithValue(userRepository),
+          employeeRepositoryProvider.overrideWithValue(employeeRepository),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -204,4 +237,75 @@ void main() {
       expect(find.byKey(const Key('delete_user_button')), findsNothing);
     },
   );
+
+  group('employee picker', () {
+    testWidgets('renders an enabled autocomplete field in the editable case', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _editUser, userId: 'jdoe');
+
+      expect(find.byKey(const Key('employee_id_field')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('employee_id_field')),
+          matching: find.byType(Autocomplete<EmployeeListItem>),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('resolves the assigned employeeId to a display name via lookup '
+        '(UserResponse.employeeId has no server-side expansion)', (
+      tester,
+    ) async {
+      when(
+        () => userRepository.get(userId: any(named: 'userId')),
+      ).thenAnswer((_) async => _targetUserWithEmployee);
+      when(
+        () => employeeRepository.get(employeeId: 7),
+      ).thenAnswer((_) async => _employee);
+
+      await pumpScreen(
+        tester,
+        signedInAs: _editUser,
+        userId: 'jdoe',
+        forceReadOnly: true,
+      );
+
+      final field = tester.widget<TextFormField>(
+        find.descendant(
+          of: find.byKey(const Key('employee_id_field')),
+          matching: find.byType(TextFormField),
+        ),
+      );
+      expect(field.initialValue, 'Jane Doe');
+    });
+
+    testWidgets(
+      'falls back to "#id" when the assigned employeeId is stale/orphaned',
+      (tester) async {
+        when(
+          () => userRepository.get(userId: any(named: 'userId')),
+        ).thenAnswer((_) async => _targetUserWithEmployee);
+        when(
+          () => employeeRepository.get(employeeId: 7),
+        ).thenThrow(const NotFoundError());
+
+        await pumpScreen(
+          tester,
+          signedInAs: _editUser,
+          userId: 'jdoe',
+          forceReadOnly: true,
+        );
+
+        final field = tester.widget<TextFormField>(
+          find.descendant(
+            of: find.byKey(const Key('employee_id_field')),
+            matching: find.byType(TextFormField),
+          ),
+        );
+        expect(field.initialValue, '#7');
+      },
+    );
+  });
 }
