@@ -4,11 +4,12 @@
 
 All three endpoint families already exist in the committed generated client
 (`lib/generated/openapi/`); this contract records the exact methods, DTOs, and
-query params mbe-ui consumes. **No codegen re-run and no generated-file edits**
-for the CRUD surface (research.md §2). A single upstream gap — the missing
-`search` query param — is filed as mbe-api issues #82/#83/#84 and consumed once
-each ships and the client is regenerated (research.md §8). All routes are under
-`OAuth2PasswordBearer` (the shared `dio` auth interceptor attaches the token).
+query params mbe-ui consumes. **No generated-file edits** (research.md §2). The
+one former gap — the missing `search` query param — was filed as mbe-api issues
+#82/#83/#84 and has since **shipped upstream and been regenerated into the
+client**, so `search` is now present on all three list methods (research.md §8).
+All routes are under `OAuth2PasswordBearer` (the shared `dio` auth interceptor
+attaches the token).
 
 ---
 
@@ -16,7 +17,7 @@ each ships and the client is regenerated (research.md §8). All routes are under
 
 | Op | Method | Returns |
 |---|---|---|
-| list | `listExpensesApiV1ExpensesGet({skip, limit})` — **`search` pending #82** | `ListResponseExpenseResponse` |
+| list | `listExpensesApiV1ExpensesGet({search, skip, limit})` — **`search` shipped (#82)** | `ListResponseExpenseResponse` |
 | get | `getExpenseApiV1ExpensesExpenseIdGet(expenseId)` | `ExpenseResponse` |
 | create | `createExpenseApiV1ExpensesPost(expenseCreate)` | `ExpenseResponse` |
 | update | `updateExpenseApiV1ExpensesExpenseIdPut(expenseId, expenseUpdate)` | `ExpenseResponse` |
@@ -26,14 +27,14 @@ each ships and the client is regenerated (research.md §8). All routes are under
   → domain `Expense.name = r.expense` (data-model.md §1).
 - `ExpenseCreate`: `name` required; `comment` optional.
 - `ExpenseUpdate`: `name?`, `comment?` — all optional.
-- List currently has **only** `skip`/`limit` → search box wired to the pending
-  `search` param (#82); **no** filter drawer.
+- List exposes `search` + `skip`/`limit` → search box wired to the server-side
+  `search` param (#82, shipped); **no** filter drawer.
 
 ## 2. Vehicles — `VehiclesApi` (RBAC `vehicle(88)`)
 
 | Op | Method | Returns |
 |---|---|---|
-| list | `listVehiclesApiV1VehiclesGet({skip, limit})` — **`search` pending #83** | `ListResponseVehicleResponse` |
+| list | `listVehiclesApiV1VehiclesGet({search, skip, limit})` — **`search` shipped (#83)** | `ListResponseVehicleResponse` |
 | get | `getVehicleApiV1VehiclesVehicleIdGet(vehicleId)` | `VehicleResponse` |
 | create | `createVehicleApiV1VehiclesPost(vehicleCreate)` | `VehicleResponse` |
 | update | `updateVehicleApiV1VehiclesVehicleIdPut(vehicleId, vehicleUpdate)` | `VehicleResponse` |
@@ -44,14 +45,14 @@ each ships and the client is regenerated (research.md §8). All routes are under
 - `VehicleCreate`: `licensePlate`, `name`, `nickname`, `tonsCapacity` required;
   `active?` optional (default true UI-side).
 - `VehicleUpdate`: all optional.
-- List currently has **only** `skip`/`limit` → search box wired to the pending
-  `search` param (#83); **no** filter drawer.
+- List exposes `search` + `skip`/`limit` → search box wired to the server-side
+  `search` param (#83, shipped); **no** filter drawer.
 
 ## 3. Vehicle Operators — `VehicleOperatorsApi` (RBAC `vehicleOperators(89)`)
 
 | Op | Method | Returns |
 |---|---|---|
-| list | `listVehicleOperatorsApiV1VehicleOperatorsGet({employee, skip, limit})` — **`search` pending #84** | `ListResponseVehicleOperatorResponse` |
+| list | `listVehicleOperatorsApiV1VehicleOperatorsGet({search, employee, skip, limit})` — **`search` shipped (#84)** | `ListResponseVehicleOperatorResponse` |
 | get | `getVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdGet(vehicleOperatorId)` | `VehicleOperatorResponse` |
 | create | `createVehicleOperatorApiV1VehicleOperatorsPost(vehicleOperatorCreate)` | `VehicleOperatorResponse` |
 | update | `updateVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdPut(vehicleOperatorId, vehicleOperatorUpdate)` | `VehicleOperatorResponse` |
@@ -66,9 +67,9 @@ each ships and the client is regenerated (research.md §8). All routes are under
   `issueDate(Date)`, `expirationDate(Date)`, `issuingLocation` required;
   `active?` optional.
 - `VehicleOperatorUpdate`: all optional; `driver` is `int?`.
-- List has an `employee` facet (→ domain `driverId`) beyond skip/limit → **ships
-  a driver filter drawer** (research.md §6), plus the search box wired to the
-  pending `search` param (#84).
+- List has an `employee` facet (→ domain `driverId`) plus `search` beyond
+  skip/limit → **ships a driver filter drawer** (research.md §6) and the search
+  box wired to the server-side `search` param (#84, shipped).
 - `driver` arrives **pre-expanded** as `EmployeeResponse` on list + detail — no
   N+1 lookup; render `firstName + lastName`, fallback label if unresolvable
   (FR-017).
@@ -77,24 +78,23 @@ each ships and the client is regenerated (research.md §8). All routes are under
 
 ---
 
-## 4. External dependency — the `search` query param (mbe-api #82/#83/#84)
+## 4. External dependency — the `search` query param (mbe-api #82/#83/#84) *(RESOLVED)*
 
 Per constitution §III, mbe-ui MUST NOT edit mbe-api. The three list endpoints
-lack a free-text `search` param that §VI requires the UI to expose. Issues filed
-2026-07-19:
+originally lacked the free-text `search` param that §VI requires the UI to
+expose, so issues were filed 2026-07-19:
 
-| Endpoint | Issue | Match semantics requested |
-|---|---|---|
-| `GET /api/v1/expenses` | [mictlanix/mbe-api#82](https://github.com/mictlanix/mbe-api/issues/82) | expense name |
-| `GET /api/v1/vehicles` | [mictlanix/mbe-api#83](https://github.com/mictlanix/mbe-api/issues/83) | license plate / name / nickname |
-| `GET /api/v1/vehicle-operators` | [mictlanix/mbe-api#84](https://github.com/mictlanix/mbe-api/issues/84) | driver name / license number |
+| Endpoint | Issue | Match semantics | Status |
+|---|---|---|---|
+| `GET /api/v1/expenses` | [mictlanix/mbe-api#82](https://github.com/mictlanix/mbe-api/issues/82) | expense name | ✅ shipped |
+| `GET /api/v1/vehicles` | [mictlanix/mbe-api#83](https://github.com/mictlanix/mbe-api/issues/83) | license plate / name / nickname | ✅ shipped |
+| `GET /api/v1/vehicle-operators` | [mictlanix/mbe-api#84](https://github.com/mictlanix/mbe-api/issues/84) | driver name / license number | ✅ shipped |
 
 Each mirrors the existing `search` on `customers`/`employees`/`suppliers`.
-**mbe-ui consumption path once shipped**: re-run codegen → the generated `list…`
-methods gain `String? search` → the repository impls already forward the
-declared `search` argument → no screen/controller change. Until then, the
-repository interface carries `search` and the impl forwards it to a client that
-does not yet accept it (dropped/no-op), so the UI compiles and the box renders.
+**Resolved**: mbe-api shipped all three and codegen was re-run — the generated
+`list…` methods now carry `String? search`, and the repository impls forward the
+declared `search` argument straight through, with no screen/controller change
+from the original design. The GitHub issues can be closed.
 
 ## 5. Not consumed / out of scope
 

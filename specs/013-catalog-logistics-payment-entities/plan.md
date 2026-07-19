@@ -52,13 +52,15 @@ Planning decisions that shape the work:
    the response. The list/detail render it directly, deriving a fallback from
    `expirationDate` only if the server omits it — no client-side business logic
    of record (research.md §7).
-6. **Search depends on an upstream mbe-api change (filed).** None of the three
-   list endpoints expose a `search` query param today; issues are filed
-   (mictlanix/mbe-api#82 Expenses, #83 Vehicles, #84 Vehicle Operators) and the
-   UI is built against that expected parameter. Until each ships and the client
-   is regenerated, the repository passes `search` through a thin seam that the
-   regenerated client will satisfy; the search box renders regardless
-   (constitution §VI), consistent with the spec-012 catalogs (research.md §8).
+6. **Search is now server-side (upstream dependency resolved).** The three list
+   endpoints originally lacked a `search` query param; issues were filed
+   (mictlanix/mbe-api#82 Expenses, #83 Vehicles, #84 Vehicle Operators). **mbe-api
+   has since shipped `search` on all three and the generated client was
+   regenerated to include it** — the `list…Get` methods now accept `String?
+   search` (Vehicles/Expenses: `search, skip, limit`; Vehicle Operators:
+   `search, employee, skip, limit`). The repository forwards `search` straight
+   through; the search box is fully functional, consistent with the spec-012
+   catalogs (research.md §8).
 
 Consequently this feature modifies only `app_router.dart`,
 `nav_destinations.dart`, and the `.arb` files; everything else is new files
@@ -100,8 +102,9 @@ N+1 per-row lookup (research.md §4). The driver picker debounces search at
 gating only, consistent with the posture products/pricing/spec-012 already
 record. Dates (Vehicle Operator `issueDate`/`expirationDate`) use the generated
 `Date` value type and are entered via `showDatePicker` (research.md §5).
-Free-text search on all three list screens depends on an upstream mbe-api
-`search` param not yet shipped (external dependency, filed — research.md §8).
+Free-text search on all three list screens is server-side via the `search` param
+now present on every list endpoint (upstream dependency resolved and regenerated
+into the client — research.md §8).
 
 **Scale/Scope**: 6 screens (3 list + 3 detail), ~3 list controllers + 3 form
 controllers + 1 filter controller (Vehicle Operators), 3 new repositories
@@ -117,19 +120,18 @@ additions.
 |---|---|---|
 | I. Feature-First Layered Architecture | ✅ PASS | Extends `lib/features/catalog/{data,domain,presentation}` with one sub-tree per entity; `presentation` imports only `domain`; `data` implements `domain` repository interfaces. No shared-kernel addition needed. |
 | II. Riverpod for State & DI | ✅ PASS | Each entity gets `Notifier`-based list + form controllers exposing `AsyncValue`; Vehicle Operators adds a filter `Notifier`. All three repositories exposed as providers for test overrides. |
-| III. Contract-Driven API Integration | ✅ PASS | Consumes the already-generated `Expenses`/`Vehicles`/`VehicleOperators` APIs; **no hand-written DTOs**; generated files not edited. Errors map to shared error types via `ErrorBanner`. The one backend gap (missing `search` param) is **not** patched in mbe-api from this session — it is filed as issues #82/#83/#84 and recorded as an external dependency (research.md §8, Risks), exactly as §III requires. |
+| III. Contract-Driven API Integration | ✅ PASS | Consumes the already-generated `Expenses`/`Vehicles`/`VehicleOperators` APIs; **no hand-written DTOs**; generated files not edited. Errors map to shared error types via `ErrorBanner`. The one former backend gap (missing `search` param) was handled per §III — filed as issues #82/#83/#84 against mbe-api rather than patched from this session — and has since shipped upstream and been regenerated into the client (research.md §8). |
 | IV. Deny-by-Default RBAC | ✅ PASS | Reuses `accessControlProvider.can(...)` with the three pre-existing `SystemObject`s; routes gated via `_routeGate` in `app_router.dart`, nav via `navDestinationsProvider`'s filter, actions hidden (not disabled) without privilege. |
 | V. Material 3 White-Labeled Design System | ✅ PASS | No new theming. Date rendering via `intl` (`es-MX`) through `PricingFormatters.date` — never manual formatting. New l10n keys added to both `.arb` files. |
-| VI. Desktop/Web-First, Compact-Ready Layout | ✅ PASS | All three list screens reuse `DataTableView`, `CatalogPagination`, `CatalogFilterBar`/`CatalogSearchBar`; single Edit row action via `catalog_action_icons`; row-click → read-only view; toolbar `FilledButton` Create; delete-in-form-body. Detail forms use `ResponsiveFormGrid`. Vehicle Operators adds a `CatalogFilterSheet` driver drawer (it has a `driver` facet); Expenses and Vehicles are search-only (no backend facet) so ship no drawer — explicitly allowed by §VI. Every screen ships the search box even though the backend param is pending (§VI's "MUST NOT ship search-less"), wired to the filed upstream param. `AppBar.actions` carries only the read-only→edit toggle. |
+| VI. Desktop/Web-First, Compact-Ready Layout | ✅ PASS | All three list screens reuse `DataTableView`, `CatalogPagination`, `CatalogFilterBar`/`CatalogSearchBar`; single Edit row action via `catalog_action_icons`; row-click → read-only view; toolbar `FilledButton` Create; delete-in-form-body. Detail forms use `ResponsiveFormGrid`. Vehicle Operators adds a `CatalogFilterSheet` driver drawer (it has a `driver` facet); Expenses and Vehicles are search-only (no backend facet) so ship no drawer — explicitly allowed by §VI. Every screen ships the search box (§VI's "MUST NOT ship search-less"), wired to the now-available server-side `search` param. `AppBar.actions` carries only the read-only→edit toggle. |
 | VII. Online-Only, Server-Rendered Documents | ✅ PASS | No local persistence, no caching, no document generation. |
 
-**On §VI and the search-pending screens**: §VI requires every catalog/list
-screen to ship a search box and MUST NOT ship search-less. All three screens
-ship the box. Because the backend param is not yet live, the box's *results*
-depend on mictlanix/mbe-api#82/#83/#84 landing; this is a functional dependency
-on an upstream change (tracked), not a §VI deviation — the required affordance
-is present from day one, consistent with the spec-012 catalogs which the box is
-copied from.
+**On §VI and search**: §VI requires every catalog/list screen to ship a search
+box and MUST NOT ship search-less. All three screens ship the box, wired to the
+server-side `search` param now present on every list endpoint (mbe-api#82/#83/#84
+shipped and regenerated into the client). No deviation and no longer a pending
+dependency — the box is fully functional, consistent with the spec-012 catalogs
+which the box is copied from.
 
 **On §VI and the search-only catalogs**: Expenses and Vehicles expose no facet
 (status/category/type) on their list endpoints, so they ship the required
@@ -153,7 +155,7 @@ specs/013-catalog-logistics-payment-entities/
 ├── data-model.md                 # Phase 1 output
 ├── quickstart.md                 # Phase 1 output
 ├── contracts/                    # Phase 1 output
-│   ├── mbe-api-catalogs.md        # endpoint/DTO contract per entity + the search-param dependency
+│   ├── mbe-api-catalogs.md        # endpoint/DTO contract per entity + the (resolved) search-param dependency
 │   └── routes.md                  # routes, nav, RBAC gating
 ├── checklists/
 │   └── requirements.md           # spec quality checklist (already created)
@@ -197,7 +199,7 @@ lib/
             ├── vehicle_operators_list_screen.dart + vehicle_operators_list_controller.dart (+ filter controller)
             └── vehicle_operator_detail_screen.dart + vehicle_operator_form_controller.dart
 
-lib/generated/openapi/                   # UNCHANGED for CRUD; REGENERATED later once #82/#83/#84 add `search` (research.md §8)
+lib/generated/openapi/                   # REGENERATED — #82/#83/#84 added `search` to all three list endpoints (research.md §8); not hand-edited
 
 test/
 ├── unit/features/catalog/               # mapping (driver FK expansion, Date round-trip, daysUntilExpiry fallback), validators
@@ -218,7 +220,7 @@ and `employeeRepositoryProvider`) unmodified.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| **Missing `search` param upstream** — all three list endpoints lack a `search` query param today; the UI is built against a not-yet-shipped mbe-api change. | If the issues (#82/#83/#84) are not merged, the search box renders but returns unfiltered/paginated results only, weakening findability until then. | Issues filed on mbe-api (#82 Expenses, #83 Vehicles, #84 Vehicle Operators) per §III. The repository exposes a `search` seam so no UI rework is needed once the client is regenerated; the box ships regardless (§VI). Never patch mbe-api from this session (research.md §8, contracts/mbe-api-catalogs.md). |
+| **`search` param upstream** *(RESOLVED 2026-07-19)* — all three list endpoints originally lacked a `search` query param. | None remaining. Was: weakened findability until the backend shipped. | Handled per §III: issues filed on mbe-api (#82 Expenses, #83 Vehicles, #84 Vehicle Operators) rather than patched from this session; mbe-api has since shipped `search` on all three and the client was regenerated to include it, so the search box is fully functional with no UI rework (research.md §8, contracts/mbe-api-catalogs.md). |
 | **Driver FK-expansion assumption** — Vehicle Operator list/detail render the driver by name, assuming the response pre-expands `driver` as an `EmployeeResponse`. | If the field returned a bare id, the screen would show a raw number or fail. | The generated `VehicleOperatorResponse` types `driver` as `EmployeeResponse` — confirmed expanded (research.md §4). An unresolvable/orphaned driver renders a fallback label, never crashes (spec FR-017, Edge Cases). |
 | **`daysUntilExpiry` nullability** — the field is `int?`; a null would blank the expiry indicator. | A missing indicator hides an expired-license signal. | Display the server value when present; otherwise derive `expirationDate − today` client-side as a fallback so the indicator is always shown (research.md §7, spec SC-003). |
 | **Date `Date`↔`DateTime` mapping** — issue/expiration dates cross the generated `Date` value type. | A wrong conversion could off-by-one or drop a date. | Reuse the exact `DateTimeToDate.toDate()` / `Date.toDateTime()` extensions and `showDatePicker` call-site the Employee form already uses; unit-test the round-trip (research.md §5). |
@@ -227,11 +229,12 @@ and `employeeRepositoryProvider`) unmodified.
 
 ## Follow-ups (not blocking)
 
-- **External dependency (filed 2026-07-19)**: mictlanix/mbe-api#82, #83, #84 —
+- **External dependency (RESOLVED 2026-07-19)**: mictlanix/mbe-api#82, #83, #84 —
   add a `search` query param to `GET /api/v1/expenses`, `GET /api/v1/vehicles`,
   and `GET /api/v1/vehicle-operators` respectively, matching the semantics of
-  the existing `search` on customers/employees/suppliers. Once each merges,
-  re-run codegen and the search box becomes fully functional with no UI change.
+  the existing `search` on customers/employees/suppliers. **Shipped upstream and
+  regenerated into the client** — the `list…Get` methods now accept `String?
+  search`; no further action needed. (The three GitHub issues can be closed.)
 - **Deferred (explicitly out of scope)**: the **Payment Method Options**
   catalog (originally User Story 4) — deferred because its required store and
   warehouse pickers may be invalidated by an upcoming broader "facilities" API
@@ -246,7 +249,7 @@ and `employeeRepositoryProvider`) unmodified.
 ## Complexity Tracking
 
 *No constitution violations — this section is intentionally empty.* The two
-notes under Constitution Check (search-pending screens and search-only catalogs
-under §VI) are scope clarifications with precedent from spec 012, not deviations
-requiring justification. The missing `search` param is an external dependency
-recorded per §III, not a complexity deviation.
+notes under Constitution Check (search and search-only catalogs under §VI) are
+scope clarifications with precedent from spec 012, not deviations requiring
+justification. The former missing `search` param was an external dependency
+recorded per §III (now resolved upstream), not a complexity deviation.

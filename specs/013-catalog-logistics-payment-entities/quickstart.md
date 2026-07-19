@@ -43,7 +43,7 @@ This is the integration flow in
 
 1. **Expenses** (User Story 1 — no dependency).
    - Go to **Expenses** (`/expenses`). Confirm the list paginates and the search
-     box is present. (Search *results* depend on mbe-api#82 — see note below.)
+     box filters server-side by expense name.
    - Create an expense: enter a **name**, optional **comment**. Save.
    - Confirm it appears; row-click opens it read-only; the AppBar edit toggle
      switches to the editable form; edit the comment and save.
@@ -78,18 +78,18 @@ This is the integration flow in
 - Sign in as a user with read but **not** update on `vehicle(88)` → the Vehicles
   list shows no Edit row icon and the detail screen shows no edit toggle / delete.
 
-## Note on search (external dependency)
+## Note on search (dependency resolved)
 
-The search box renders on all three screens (constitution §VI). Its *results*
-become live once mbe-api ships the `search` param and the client is regenerated:
+The search box renders on all three screens (constitution §VI) and filters
+server-side. The `search` param dependency has shipped upstream and been
+regenerated into the client:
 
-- Expenses → [mictlanix/mbe-api#82](https://github.com/mictlanix/mbe-api/issues/82)
-- Vehicles → [mictlanix/mbe-api#83](https://github.com/mictlanix/mbe-api/issues/83)
-- Vehicle Operators → [mictlanix/mbe-api#84](https://github.com/mictlanix/mbe-api/issues/84)
+- Expenses → [mictlanix/mbe-api#82](https://github.com/mictlanix/mbe-api/issues/82) ✅
+- Vehicles → [mictlanix/mbe-api#83](https://github.com/mictlanix/mbe-api/issues/83) ✅
+- Vehicle Operators → [mictlanix/mbe-api#84](https://github.com/mictlanix/mbe-api/issues/84) ✅
 
-Until then, validate findability via pagination and (for operators) the driver
-filter. No UI change is needed when the param lands — re-run codegen and the box
-filters server-side.
+Validate findability directly via the search box (and, for operators, the driver
+filter combined with search).
 
 ## Expected outcomes
 

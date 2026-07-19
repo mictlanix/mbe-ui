@@ -144,27 +144,34 @@ field — rejected; the server value is authoritative and may account for
 business calendar rules the client does not know. Never compute a fallback —
 rejected; would blank the indicator on null and fail SC-003.
 
-## §8 — Search: external dependency on mbe-api
+## §8 — Search: external dependency on mbe-api *(RESOLVED)*
 
 **Decision**: File mbe-api issues for a `search` param on all three endpoints,
-build the UI against that expected param, and ship the search box now.
+build the UI against that expected param, and ship the search box now. **Status:
+resolved — mbe-api shipped the param and the client was regenerated.**
 
-**Rationale**: None of `listExpenses…Get`, `listVehicles…Get`,
-`listVehicleOperators…Get` currently accepts a `search` query param (verified —
-only `skip`/`limit`, plus `employee` on Vehicle Operators and `store` on the
-deferred PMO). The spec-012 catalogs (`customers`/`employees`/`suppliers`) each
-expose `search`, establishing both the precedent and the contract. Per §III,
-mbe-ui MUST NOT patch mbe-api from this session; instead issues are filed:
+**Rationale**: Originally none of `listExpenses…Get`, `listVehicles…Get`,
+`listVehicleOperators…Get` accepted a `search` query param (only `skip`/`limit`,
+plus `employee` on Vehicle Operators and `store` on the deferred PMO). The
+spec-012 catalogs (`customers`/`employees`/`suppliers`) each expose `search`,
+establishing both the precedent and the contract. Per §III, mbe-ui did NOT patch
+mbe-api; issues were filed:
 
 - **mictlanix/mbe-api#82** — `search` on `GET /api/v1/expenses` (matches expense name)
 - **mictlanix/mbe-api#83** — `search` on `GET /api/v1/vehicles` (matches plate/name/nickname)
 - **mictlanix/mbe-api#84** — `search` on `GET /api/v1/vehicle-operators` (matches driver name/license number)
 
-The repository interfaces declare `String? search` now. Until the client is
-regenerated to carry the param, the impl either passes it to a client that
-ignores it (no error) or omits it; either way the UI compiles and the search box
-renders (§VI "MUST NOT ship search-less"). Once each issue merges and codegen
-re-runs, the param flows through with zero UI change.
+**Update 2026-07-19**: mbe-api has shipped `search` on all three endpoints and
+the generated client was regenerated. Verified in
+`lib/generated/openapi/lib/src/api/`:
+
+- `listExpensesApiV1ExpensesGet({String? search, int? skip, int? limit})`
+- `listVehiclesApiV1VehiclesGet({String? search, int? skip, int? limit})`
+- `listVehicleOperatorsApiV1VehicleOperatorsGet({String? search, int? employee, int? skip, int? limit})`
+
+The repository interfaces declare `String? search`; the impls forward it straight
+to these methods. The search box is fully functional server-side with zero UI
+change from the original design. The three GitHub issues can be closed.
 
 **Alternatives considered**:
 - *Client-side contains-filter over the loaded page* — rejected as the primary

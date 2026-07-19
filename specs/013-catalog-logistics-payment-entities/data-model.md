@@ -47,7 +47,8 @@ Future<Expense> create({ required String name, String? comment });
 Future<Expense> update({ required int expenseId, String? name, String? comment });
 Future<void> delete({ required int expenseId });
 ```
-`search` is declared now against the pending mbe-api#82 param (research.md §8).
+`search` maps to the server-side `search` param now present on the endpoint
+(mbe-api#82 shipped, regenerated into the client — research.md §8).
 
 ---
 
@@ -90,7 +91,8 @@ Future<Vehicle> update({ required int vehicleId, String? licensePlate,
     String? name, String? nickname, int? tonsCapacity, bool? active });
 Future<void> delete({ required int vehicleId });
 ```
-`search` is declared now against the pending mbe-api#83 param.
+`search` maps to the server-side `search` param now present on the endpoint
+(mbe-api#83 shipped, regenerated into the client).
 
 ---
 
@@ -155,8 +157,9 @@ Future<VehicleOperator> update({ required int vehicleOperatorId, int? driverId,
     DateTime? expirationDate, String? issuingLocation, bool? active });
 Future<void> delete({ required int vehicleOperatorId });
 ```
-`search` is declared now against the pending mbe-api#84 param; `driverId` maps
-to the already-present `employee` query param (research.md §6).
+`search` maps to the server-side `search` param now present on the endpoint
+(mbe-api#84 shipped, regenerated into the client); `driverId` maps to the
+`employee` query param (research.md §6).
 
 **Date mapping** (impl): `issueDate`/`expirationDate` cross the generated `Date`
 type via `..issueDate = issueDate.toDate()` on write and `r.issueDate.toDateTime()`
