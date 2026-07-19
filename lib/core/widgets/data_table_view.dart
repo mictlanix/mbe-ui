@@ -78,7 +78,7 @@ class DataTableColumn<T> {
 /// trailing row actions (e.g. view/edit/delete), which callers gate with
 /// `AccessControlService.can()`.
 class DataTableView<T> extends StatefulWidget {
-  DataTableView({
+  const DataTableView({
     super.key,
     required this.columns,
     required this.rows,

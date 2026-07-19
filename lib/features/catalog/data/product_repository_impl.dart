@@ -176,8 +176,9 @@ class ProductRepositoryImpl implements ProductRepository {
         productUpdate: ProductUpdate((b) {
           if (code != null) b.code = code;
           if (name != null) b.name = name;
-          if (unitOfMeasurement != null)
+          if (unitOfMeasurement != null) {
             b.unitOfMeasurement = unitOfMeasurement;
+          }
           if (sku != null) b.sku = sku;
           if (brand != null) b.brand = brand;
           if (model != null) b.model = model;

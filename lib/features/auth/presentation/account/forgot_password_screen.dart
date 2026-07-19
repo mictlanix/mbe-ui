@@ -83,8 +83,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                               enabled: !formState.submitting,
                               onChanged: controller.newPasswordChanged,
                               validator: (v) {
-                                if (v == null || v.isEmpty)
+                                if (v == null || v.isEmpty) {
                                   return l10n.fieldRequired;
+                                }
                                 if (v.length < 6) return l10n.fieldMinLength6;
                                 return null;
                               },
