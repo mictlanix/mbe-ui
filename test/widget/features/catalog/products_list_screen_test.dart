@@ -49,6 +49,18 @@ const _fullAccessUser = User(
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 15)],
 );
 
+const _fullAccessUserWithPricing = User(
+  userId: 'editor-pricing',
+  email: 'editor-pricing@example.com',
+  administrator: false,
+  disabled: false,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.products, rawValue: 15),
+    Privilege(systemObject: SystemObject.pricing, rawValue: 2),
+  ],
+);
+
 const _testProducts = [
   ProductListItem(
     productId: 1,
@@ -175,6 +187,10 @@ void main() {
         ),
         GoRoute(
           path: '/products/:productId',
+          builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
+        ),
+        GoRoute(
+          path: '/products/:productId/pricing',
           builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
         ),
       ],
@@ -889,6 +905,44 @@ void main() {
   );
 
   testWidgets(
+    'shows a "view pricing" row action beside Edit for a user with pricing '
+    'read access (constitution §VI, v1.7.0)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUserWithPricing);
+
+      final icons = tester
+          .widgetList<IconButton>(
+            find.descendant(
+              of: find.byKey(const Key('products_table')),
+              matching: find.byType(IconButton),
+            ),
+          )
+          .map((b) => (b.icon as Icon).icon)
+          .where({Icons.edit_outlined, Icons.sell_outlined}.contains)
+          .toList();
+
+      // Edit then View pricing, one row apart, for each of the two rows —
+      // still at most two direct row icons, no overflow menu needed.
+      expect(icons, [
+        Icons.edit_outlined,
+        Icons.sell_outlined,
+        Icons.edit_outlined,
+        Icons.sell_outlined,
+      ]);
+      expect(find.byType(PopupMenuButton<VoidCallback>), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'omits the "view pricing" row action without pricing read access',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      expect(find.byIcon(Icons.sell_outlined), findsNothing);
+    },
+  );
+
+  testWidgets(
     'no column is frozen/pinned (FR-001)',
     (tester) async {
       await pumpScreen(tester, signedInAs: _readOnlyUser);
@@ -1011,6 +1065,35 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('/products/1'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'the "view pricing" row action pushes /products/:productId/pricing with '
+    'the product preselected',
+    (tester) async {
+      await pumpScreenWithRouter(
+        tester,
+        signedInAs: _fullAccessUserWithPricing,
+      );
+
+      await tester.tap(find.byIcon(Icons.sell_outlined).first);
+      await tester.pumpAndSettle();
+
+      final matches = tester.widgetList<Text>(find.byType(Text));
+      expect(
+        matches.map((t) => t.data).where(
+              (d) => d != null && d.startsWith('/products/1/pricing?'),
+            ),
+        hasLength(1),
+      );
+      final destination = matches
+          .map((t) => t.data!)
+          .firstWhere((d) => d.startsWith('/products/1/pricing?'));
+      expect(
+        Uri.parse(destination).queryParameters['productDisplayText'],
+        'SKU-001 — Widget',
+      );
     },
   );
 

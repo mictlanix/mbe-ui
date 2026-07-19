@@ -24,6 +24,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteActionTooltip => 'Eliminar';
 
   @override
+  String get moreActionsTooltip => 'Más acciones';
+
+  @override
   String get searchButtonTooltip => 'Buscar';
 
   @override

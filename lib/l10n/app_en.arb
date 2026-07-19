@@ -13,6 +13,8 @@
   "@editActionTooltip": {},
   "deleteActionTooltip": "Delete",
   "@deleteActionTooltip": {},
+  "moreActionsTooltip": "More actions",
+  "@moreActionsTooltip": {},
   "searchButtonTooltip": "Search",
   "@searchButtonTooltip": {},
 

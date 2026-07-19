@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.6.0
+Version change: 1.0.0 → 1.7.0
 Modified principles:
   - III. Contract-Driven API Integration — materially expanded with an
     explicit repo-boundary rule: mbe-ui MUST NOT directly edit mbe-api's (or
@@ -31,7 +31,14 @@ Modified principles:
     off the row entirely onto the record's own detail screen — reflecting
     usage feedback that three row icons and a frozen identity column added
     friction without reducing accidental-edit risk, and that a stray click
-    should default to safe (read-only), not to a mutable form [1.5.0]
+    should default to safe (read-only), not to a mutable form [1.5.0], then
+    the "exactly one row action, Edit" rule was relaxed to allow **at most
+    one** additional direct-icon row action beyond Edit (e.g. a shortcut
+    into a related record), with any further actions required to collapse
+    into a single overflow/kebab menu rather than stacking more row icons —
+    prompted by a genuine need for a cross-feature shortcut (products list
+    row → that product's pricing screen) that the strict single-action rule
+    had no room for [1.7.0]
 Added sections: none (redefinition of an existing principle's operative
   rule, not a new principle)
 Removed sections: none
@@ -190,12 +197,22 @@ multi-column forms.
   filter controls) using the shared filter pattern from `core/widgets/`. A
   catalog MUST NOT ship search-less, even if pagination alone could make
   it "usable."
-- Every catalog/list screen's row MUST expose exactly one row-level
-  action, Edit, using one fixed icon sourced from `core/widgets/`. A
-  module MUST NOT invent its own icon for Edit, MUST NOT add other
-  row-level action icons (no per-row View or Delete icon), and MUST NOT
-  render the Edit icon for a user lacking the RBAC update privilege (see
-  Principle IV) rather than disabling/hiding it inconsistently.
+- Every catalog/list screen's row MUST expose Edit as its primary
+  row-level action, using one fixed icon sourced from `core/widgets/`. A
+  module MUST NOT invent its own icon for Edit, and MUST NOT render the
+  Edit icon for a user lacking the RBAC update privilege (see Principle
+  IV) rather than disabling/hiding it inconsistently.
+- A row MAY expose **at most one** additional row-level action beyond
+  Edit, rendered as its own direct icon — e.g. a shortcut into a related
+  record's own screen. This is not a loophole for a per-row View or
+  Delete icon: those remain banned outright, governed by the read-only
+  row-click and detail-screen-delete rules below. If a screen has a
+  genuine need for more than one additional action, those additional
+  actions MUST be collapsed behind a single overflow ("kebab") menu icon
+  instead of adding more direct row icons — a row MUST show at most two
+  icons total (Edit, plus either one direct action or one overflow menu).
+  This action set MUST be built with the shared `core/widgets/`
+  row-actions component, not reimplemented per module.
 - Clicking anywhere on a row (outside the Edit icon) MUST open that
   record's detail screen in **read-only** mode — the same form Edit
   opens, rendered non-editable — never the editable form. This is the
@@ -313,4 +330,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.6.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-12
+**Version**: 1.7.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-18

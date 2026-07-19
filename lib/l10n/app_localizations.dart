@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get deleteActionTooltip;
 
+  /// No description provided for @moreActionsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get moreActionsTooltip;
+
   /// No description provided for @searchButtonTooltip.
   ///
   /// In en, this message translates to:

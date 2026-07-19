@@ -101,10 +101,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final hasPhoto =
         formState.pendingPhotoBytes != null ||
         (formState.photo != null && !formState.photoMarkedForRemoval);
-    final canViewPricing =
-        !readOnly &&
-        widget.productId != null &&
-        access.can(SystemObject.pricing, AccessRight.read);
+    // final canViewPricing =
+    //     !readOnly &&
+    //     widget.productId != null &&
+    //     access.can(SystemObject.pricing, AccessRight.read);
 
     return Scaffold(
       appBar: AppBar(
@@ -330,7 +330,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 onChanged: !fieldsEnabled
                     ? null
                     : (currency) {
-                        if (currency != null) controller.currencyChanged(currency);
+                        if (currency != null)
+                          controller.currencyChanged(currency);
                       },
               ),
             ),
@@ -441,29 +442,29 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               span: FormGridSpan.full,
               Divider(key: Key('attributes_divider_bottom')),
             ),
-            if (canViewPricing)
-              FormGridChild(
-                span: FormGridSpan.full,
-                OutlinedButton.icon(
-                  key: const Key('view_pricing_button'),
-                  icon: const Icon(Icons.sell_outlined),
-                  label: Text(l10n.viewPricingButton),
-                  onPressed: () => context.push(
-                    Uri(
-                      path: '/products/${widget.productId}/pricing',
-                      queryParameters: {
-                        'productDisplayText':
-                            '${formState.code} — ${formState.name}',
-                      },
-                    ).toString(),
-                  ),
-                ),
-              ),
-            if (canViewPricing)
-              const FormGridChild(
-                span: FormGridSpan.full,
-                Divider(key: Key('pricing_divider')),
-              ),
+            // if (canViewPricing)
+            //   FormGridChild(
+            //     span: FormGridSpan.full,
+            //     OutlinedButton.icon(
+            //       key: const Key('view_pricing_button'),
+            //       icon: const Icon(Icons.sell_outlined),
+            //       label: Text(l10n.viewPricingButton),
+            //       onPressed: () => context.push(
+            //         Uri(
+            //           path: '/products/${widget.productId}/pricing',
+            //           queryParameters: {
+            //             'productDisplayText':
+            //                 '${formState.code} — ${formState.name}',
+            //           },
+            //         ).toString(),
+            //       ),
+            //     ),
+            //   ),
+            // if (canViewPricing)
+            //   const FormGridChild(
+            //     span: FormGridSpan.full,
+            //     Divider(key: Key('pricing_divider')),
+            //   ),
             if (canSave)
               FormGridChild(
                 span: FormGridSpan.full,

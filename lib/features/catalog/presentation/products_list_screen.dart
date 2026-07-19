@@ -35,6 +35,7 @@ class ProductsListScreen extends ConsumerWidget {
     final canCreate = access.can(SystemObject.products, AccessRight.create);
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
     final canMerge = access.can(SystemObject.productsMerge, AccessRight.create);
+    final canViewPricing = access.can(SystemObject.pricing, AccessRight.read);
     final l10n = AppLocalizations.of(context)!;
 
     // Body-only: the shell owns the Scaffold/app bar (spec 010 US1). Entity
@@ -172,6 +173,23 @@ class ProductsListScreen extends ConsumerWidget {
                       onEdit: canUpdate
                           ? () => context.push('/products/${p.productId}')
                           : null,
+                      extraActions: [
+                        if (canViewPricing)
+                          CatalogRowAction(
+                            key: Key('view_pricing_button_${p.productId}'),
+                            icon: Icons.sell_outlined,
+                            tooltip: l10n.viewPricingButton,
+                            onPressed: () => context.push(
+                              Uri(
+                                path: '/products/${p.productId}/pricing',
+                                queryParameters: {
+                                  'productDisplayText':
+                                      '${p.code} — ${p.name}',
+                                },
+                              ).toString(),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
           ),
