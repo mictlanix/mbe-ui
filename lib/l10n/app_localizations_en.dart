@@ -1147,4 +1147,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerPriceListRequiredError => 'Price list is required.';
+
+  @override
+  String get taxpayerRecipientIdLabel => 'Tax ID (RFC)';
+
+  @override
+  String get postalCodeFieldLabel => 'Postal code';
+
+  @override
+  String get regimeFieldLabel => 'Tax regime';
+
+  @override
+  String get unresolvedFallbackLabel => 'Unknown';
+
+  @override
+  String get taxpayerRecipientsSearchLabel => 'Search by name or email';
+
+  @override
+  String get newTaxpayerRecipientTooltip => 'New taxpayer recipient';
+
+  @override
+  String get noTaxpayerRecipientsFound => 'No taxpayer recipients found.';
+
+  @override
+  String taxpayerRecipientsLoadError(Object error) {
+    return 'Failed to load taxpayer recipients: $error';
+  }
+
+  @override
+  String get newTaxpayerRecipientTitle => 'New taxpayer recipient';
+
+  @override
+  String get editTaxpayerRecipientTitle => 'Edit taxpayer recipient';
+
+  @override
+  String get viewTaxpayerRecipientTitle => 'View taxpayer recipient';
+
+  @override
+  String get deleteTaxpayerRecipientButton => 'Delete taxpayer recipient';
+
+  @override
+  String get deleteTaxpayerRecipientConfirmTitle =>
+      'Delete taxpayer recipient?';
+
+  @override
+  String deleteTaxpayerRecipientConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get taxpayerRecipientLoadFailedError =>
+      'Failed to load taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientCreateFailedError =>
+      'Failed to create taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientUpdateFailedError =>
+      'Failed to update taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientDeleteFailedError =>
+      'Failed to delete taxpayer recipient.';
+
+  @override
+  String get taxpayerRecipientCreatePermissionDeniedError =>
+      'You no longer have permission to create taxpayer recipients.';
+
+  @override
+  String get taxpayerRecipientUpdatePermissionDeniedError =>
+      'You no longer have permission to edit taxpayer recipients.';
+
+  @override
+  String get taxpayerRecipientDeletePermissionDeniedError =>
+      'You no longer have permission to delete taxpayer recipients.';
+
+  @override
+  String get taxpayerRecipientIdRequiredError => 'Tax ID is required.';
+
+  @override
+  String get taxpayerRecipientNameRequiredError => 'Name is required.';
+
+  @override
+  String get taxpayerRecipientEmailRequiredError => 'Email is required.';
 }

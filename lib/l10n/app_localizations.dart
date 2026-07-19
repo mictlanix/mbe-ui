@@ -2215,6 +2215,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Price list is required.'**
   String get customerPriceListRequiredError;
+
+  /// No description provided for @taxpayerRecipientIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ID (RFC)'**
+  String get taxpayerRecipientIdLabel;
+
+  /// No description provided for @postalCodeFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get postalCodeFieldLabel;
+
+  /// No description provided for @regimeFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax regime'**
+  String get regimeFieldLabel;
+
+  /// No description provided for @unresolvedFallbackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unresolvedFallbackLabel;
+
+  /// No description provided for @taxpayerRecipientsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or email'**
+  String get taxpayerRecipientsSearchLabel;
+
+  /// No description provided for @newTaxpayerRecipientTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New taxpayer recipient'**
+  String get newTaxpayerRecipientTooltip;
+
+  /// No description provided for @noTaxpayerRecipientsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No taxpayer recipients found.'**
+  String get noTaxpayerRecipientsFound;
+
+  /// No description provided for @taxpayerRecipientsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load taxpayer recipients: {error}'**
+  String taxpayerRecipientsLoadError(Object error);
+
+  /// No description provided for @newTaxpayerRecipientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New taxpayer recipient'**
+  String get newTaxpayerRecipientTitle;
+
+  /// No description provided for @editTaxpayerRecipientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit taxpayer recipient'**
+  String get editTaxpayerRecipientTitle;
+
+  /// No description provided for @viewTaxpayerRecipientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View taxpayer recipient'**
+  String get viewTaxpayerRecipientTitle;
+
+  /// No description provided for @deleteTaxpayerRecipientButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete taxpayer recipient'**
+  String get deleteTaxpayerRecipientButton;
+
+  /// No description provided for @deleteTaxpayerRecipientConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete taxpayer recipient?'**
+  String get deleteTaxpayerRecipientConfirmTitle;
+
+  /// No description provided for @deleteTaxpayerRecipientConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteTaxpayerRecipientConfirmMessage(String name);
+
+  /// No description provided for @taxpayerRecipientLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load taxpayer recipient.'**
+  String get taxpayerRecipientLoadFailedError;
+
+  /// No description provided for @taxpayerRecipientCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create taxpayer recipient.'**
+  String get taxpayerRecipientCreateFailedError;
+
+  /// No description provided for @taxpayerRecipientUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update taxpayer recipient.'**
+  String get taxpayerRecipientUpdateFailedError;
+
+  /// No description provided for @taxpayerRecipientDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete taxpayer recipient.'**
+  String get taxpayerRecipientDeleteFailedError;
+
+  /// No description provided for @taxpayerRecipientCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create taxpayer recipients.'**
+  String get taxpayerRecipientCreatePermissionDeniedError;
+
+  /// No description provided for @taxpayerRecipientUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit taxpayer recipients.'**
+  String get taxpayerRecipientUpdatePermissionDeniedError;
+
+  /// No description provided for @taxpayerRecipientDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete taxpayer recipients.'**
+  String get taxpayerRecipientDeletePermissionDeniedError;
+
+  /// No description provided for @taxpayerRecipientIdRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ID is required.'**
+  String get taxpayerRecipientIdRequiredError;
+
+  /// No description provided for @taxpayerRecipientNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get taxpayerRecipientNameRequiredError;
+
+  /// No description provided for @taxpayerRecipientEmailRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required.'**
+  String get taxpayerRecipientEmailRequiredError;
 }
 
 class _AppLocalizationsDelegate

@@ -24,6 +24,8 @@ import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart'
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -132,6 +134,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/customers',
                 builder: (context, state) => const CustomersListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/taxpayer-recipients',
+                builder: (context, state) =>
+                    const TaxpayerRecipientsListScreen(),
               ),
             ],
           ),
@@ -250,6 +261,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
+      GoRoute(
+        path: '/taxpayer-recipients/new',
+        builder: (context, state) => const TaxpayerRecipientDetailScreen(),
+      ),
+      GoRoute(
+        // String path param — taxpayerRecipientId is a client-supplied RFC,
+        // not a server-assigned int (research.md §9); no int.parse here.
+        path: '/taxpayer-recipients/:taxpayerRecipientId',
+        builder: (context, state) => TaxpayerRecipientDetailScreen(
+          taxpayerRecipientId: state.pathParameters['taxpayerRecipientId'],
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
     ],
   );
 });
@@ -345,6 +369,9 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/customers')) {
     return (object: SystemObject.customers, right: AccessRight.read);
+  }
+  if (location.startsWith('/taxpayer-recipients')) {
+    return (object: SystemObject.taxpayerRecipients, right: AccessRight.read);
   }
   return null;
 }

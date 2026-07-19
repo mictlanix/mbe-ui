@@ -1164,4 +1164,89 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get customerPriceListRequiredError =>
       'La lista de precios es obligatoria.';
+
+  @override
+  String get taxpayerRecipientIdLabel => 'RFC';
+
+  @override
+  String get postalCodeFieldLabel => 'Código postal';
+
+  @override
+  String get regimeFieldLabel => 'Régimen fiscal';
+
+  @override
+  String get unresolvedFallbackLabel => 'Desconocido';
+
+  @override
+  String get taxpayerRecipientsSearchLabel => 'Buscar por nombre o correo';
+
+  @override
+  String get newTaxpayerRecipientTooltip => 'Nuevo receptor fiscal';
+
+  @override
+  String get noTaxpayerRecipientsFound =>
+      'No se encontraron receptores fiscales.';
+
+  @override
+  String taxpayerRecipientsLoadError(Object error) {
+    return 'No se pudieron cargar los receptores fiscales: $error';
+  }
+
+  @override
+  String get newTaxpayerRecipientTitle => 'Nuevo receptor fiscal';
+
+  @override
+  String get editTaxpayerRecipientTitle => 'Editar receptor fiscal';
+
+  @override
+  String get viewTaxpayerRecipientTitle => 'Ver receptor fiscal';
+
+  @override
+  String get deleteTaxpayerRecipientButton => 'Eliminar receptor fiscal';
+
+  @override
+  String get deleteTaxpayerRecipientConfirmTitle =>
+      '¿Eliminar receptor fiscal?';
+
+  @override
+  String deleteTaxpayerRecipientConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get taxpayerRecipientLoadFailedError =>
+      'No se pudo cargar el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientCreateFailedError =>
+      'No se pudo crear el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientUpdateFailedError =>
+      'No se pudo actualizar el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientDeleteFailedError =>
+      'No se pudo eliminar el receptor fiscal.';
+
+  @override
+  String get taxpayerRecipientCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear receptores fiscales.';
+
+  @override
+  String get taxpayerRecipientUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar receptores fiscales.';
+
+  @override
+  String get taxpayerRecipientDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar receptores fiscales.';
+
+  @override
+  String get taxpayerRecipientIdRequiredError => 'El RFC es obligatorio.';
+
+  @override
+  String get taxpayerRecipientNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get taxpayerRecipientEmailRequiredError => 'El correo es obligatorio.';
 }

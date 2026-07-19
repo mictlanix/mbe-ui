@@ -382,5 +382,31 @@
   "customerDeletePermissionDeniedError": "Ya no tienes permiso para eliminar clientes.",
   "customerCodeRequiredError": "El código es obligatorio.",
   "customerNameRequiredError": "El nombre es obligatorio.",
-  "customerPriceListRequiredError": "La lista de precios es obligatoria."
+  "customerPriceListRequiredError": "La lista de precios es obligatoria.",
+
+  "taxpayerRecipientIdLabel": "RFC",
+  "postalCodeFieldLabel": "Código postal",
+  "regimeFieldLabel": "Régimen fiscal",
+  "unresolvedFallbackLabel": "Desconocido",
+
+  "taxpayerRecipientsSearchLabel": "Buscar por nombre o correo",
+  "newTaxpayerRecipientTooltip": "Nuevo receptor fiscal",
+  "noTaxpayerRecipientsFound": "No se encontraron receptores fiscales.",
+  "taxpayerRecipientsLoadError": "No se pudieron cargar los receptores fiscales: {error}",
+  "newTaxpayerRecipientTitle": "Nuevo receptor fiscal",
+  "editTaxpayerRecipientTitle": "Editar receptor fiscal",
+  "viewTaxpayerRecipientTitle": "Ver receptor fiscal",
+  "deleteTaxpayerRecipientButton": "Eliminar receptor fiscal",
+  "deleteTaxpayerRecipientConfirmTitle": "¿Eliminar receptor fiscal?",
+  "deleteTaxpayerRecipientConfirmMessage": "Esto eliminará permanentemente \"{name}\". Esta acción no se puede deshacer.",
+  "taxpayerRecipientLoadFailedError": "No se pudo cargar el receptor fiscal.",
+  "taxpayerRecipientCreateFailedError": "No se pudo crear el receptor fiscal.",
+  "taxpayerRecipientUpdateFailedError": "No se pudo actualizar el receptor fiscal.",
+  "taxpayerRecipientDeleteFailedError": "No se pudo eliminar el receptor fiscal.",
+  "taxpayerRecipientCreatePermissionDeniedError": "Ya no tienes permiso para crear receptores fiscales.",
+  "taxpayerRecipientUpdatePermissionDeniedError": "Ya no tienes permiso para editar receptores fiscales.",
+  "taxpayerRecipientDeletePermissionDeniedError": "Ya no tienes permiso para eliminar receptores fiscales.",
+  "taxpayerRecipientIdRequiredError": "El RFC es obligatorio.",
+  "taxpayerRecipientNameRequiredError": "El nombre es obligatorio.",
+  "taxpayerRecipientEmailRequiredError": "El correo es obligatorio."
 }
