@@ -14,7 +14,7 @@ class DataTableColumn<T> {
     this.numeric = false,
     this.size = ColumnSize.M,
     this.fixedWidth,
-    this.headerTooltip,
+    this.header,
   });
 
   /// Convenience for a plain-text cell: wraps [text] in an ellipsis-on-
@@ -63,10 +63,11 @@ class DataTableColumn<T> {
   /// `size` distribution. Takes precedence over [size] when set.
   final double? fixedWidth;
 
-  /// Optional hover tooltip for the column header — for a header
-  /// abbreviated to save width (e.g. a single-letter column) that still
-  /// needs its full meaning available on hover.
-  final String? headerTooltip;
+  /// Optional custom header content, replacing the default `Text(label)`
+  /// header — for a column whose header needs more than a single string
+  /// (e.g. several tooltip-wrapped sub-labels for a merged column). [label]
+  /// is still required for accessibility/semantics purposes when this is set.
+  final Widget? header;
 }
 
 /// Shared sortable/paginated data table for list screens (constitution
@@ -132,12 +133,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     return [
       for (final column in widget.columns)
         DataColumn2(
-          label: column.headerTooltip == null
-              ? Text(column.label)
-              : Tooltip(
-                  message: column.headerTooltip,
-                  child: Text(column.label),
-                ),
+          label: column.header ?? Text(column.label),
           numeric: column.numeric,
           size: column.size,
           fixedWidth: column.fixedWidth,

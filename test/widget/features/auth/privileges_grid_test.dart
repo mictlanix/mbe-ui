@@ -156,4 +156,35 @@ void main() {
       expect(lastRowCheckboxBottom, lessThanOrEqualTo(tableBottom));
     },
   );
+
+  testWidgets(
+    'every C/R/U/D header renders with a real, non-zero width — regression '
+    'guard for a DataColumn2 layout bug where every fixed-width column but '
+    'the last collapses to zero width when several appear consecutively '
+    '(reproduced in isolation against data_table_2 directly; fixed here by '
+    'merging the four checkboxes into a single fixedWidth column instead of '
+    'four separate ones)',
+    (tester) async {
+      tester.view.physicalSize = const Size(1400, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await pumpGrid(tester, privileges: const []);
+
+      final widths = {
+        for (final label in ['C', 'R', 'U', 'D'])
+          label: tester.getRect(find.text(label).first).width,
+      };
+
+      for (final entry in widths.entries) {
+        expect(
+          entry.value,
+          greaterThan(0),
+          reason: '${entry.key} header collapsed to zero width',
+        );
+      }
+      // All four should be laid out identically (same font/tooltip wrapper).
+      expect(widths.values.toSet(), hasLength(1));
+    },
+  );
 }

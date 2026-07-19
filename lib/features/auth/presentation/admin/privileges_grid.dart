@@ -8,8 +8,8 @@ import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Renders a paginated data table with one row per [SystemObject] and four
-/// C/R/U/D checkbox columns. Paginated client-side over the fixed, in-memory
+/// Renders a paginated data table with one row per [SystemObject] and a
+/// C/R/U/D checkbox group. Paginated client-side over the fixed, in-memory
 /// [SystemObject.values] list (100+ entries) via the shared
 /// [DataTableView]/[CatalogPage] machinery (constitution §VI — pagination
 /// implemented once, not per screen) — rendering every module at once forced
@@ -60,6 +60,14 @@ class _PrivilegesGridState extends State<PrivilegesGrid> {
     AccessRight.delete,
   ];
 
+  // One checkbox's slot width within the merged permissions column.
+  static const _checkboxSlotWidth = 48.0;
+  // _rights.length isn't const-evaluable; kept in sync with _rights above.
+  // The extra 40 covers DataTable2's own internal cell padding (column
+  // spacing / horizontal margin) around the last column's content, so the
+  // Row of 4 checkbox slots isn't squeezed narrower than it asked for.
+  static const _permissionsColumnWidth = _checkboxSlotWidth * 4 + 40;
+
   @override
   Widget build(BuildContext context) {
     final byObject = {for (final p in widget.privileges) p.systemObject: p};
@@ -83,19 +91,19 @@ class _PrivilegesGridState extends State<PrivilegesGrid> {
             text: (obj) => obj.name,
             size: ColumnSize.L,
           ),
-          for (final right in _rights)
-            DataTableColumn<SystemObject>(
-              label: _columnLabel(l10n, right),
-              headerTooltip: _columnTooltip(l10n, right),
-              fixedWidth: 56,
-              cellBuilder: (context, obj) => Checkbox(
-                key: Key('privilege_${obj.name}_${right.name}'),
-                value: (byObject[obj]?.rawValue ?? 0) & right.value != 0,
-                onChanged: widget.onChanged == null
-                    ? null
-                    : (checked) => _toggle(obj, right, byObject, checked!),
-              ),
-            ),
+          // A single merged column, not four separate fixedWidth columns:
+          // data_table_2's DataColumn2 mis-sizes every fixed-width column
+          // but the last when several appear consecutively (upstream layout
+          // bug — reproduced in isolation, unrelated to this app's code).
+          // One fixedWidth column with an internal Row of checkboxes avoids
+          // it entirely while keeping a stable, viewport-independent width
+          // (unlike ColumnSize.S, which would shrink on narrow screens).
+          DataTableColumn<SystemObject>(
+            label: l10n.permissionsLabel,
+            header: _permissionsHeader(l10n),
+            fixedWidth: _permissionsColumnWidth,
+            cellBuilder: (context, obj) => _permissionsRow(obj, byObject),
+          ),
         ],
         rows: page,
         pagination: CatalogPage<SystemObject>(
@@ -106,6 +114,44 @@ class _PrivilegesGridState extends State<PrivilegesGrid> {
         ),
         onPageChanged: (index) => setState(() => _pageIndex = index),
       ),
+    );
+  }
+
+  Widget _permissionsHeader(AppLocalizations l10n) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final right in _rights)
+          SizedBox(
+            width: _checkboxSlotWidth,
+            child: Tooltip(
+              message: _columnTooltip(l10n, right),
+              child: Center(child: Text(_columnLabel(l10n, right))),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _permissionsRow(
+    SystemObject obj,
+    Map<SystemObject, Privilege> byObject,
+  ) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final right in _rights)
+          SizedBox(
+            width: _checkboxSlotWidth,
+            child: Checkbox(
+              key: Key('privilege_${obj.name}_${right.name}'),
+              value: (byObject[obj]?.rawValue ?? 0) & right.value != 0,
+              onChanged: widget.onChanged == null
+                  ? null
+                  : (checked) => _toggle(obj, right, byObject, checked!),
+            ),
+          ),
+      ],
     );
   }
 
