@@ -803,4 +803,68 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get creditDaysInvalidError =>
       'Enter a valid non-negative whole number.';
+
+  @override
+  String get suppliersSearchLabel => 'Search by code or name';
+
+  @override
+  String get newSupplierTooltip => 'New supplier';
+
+  @override
+  String get noSuppliersFound => 'No suppliers found.';
+
+  @override
+  String suppliersLoadError(Object error) {
+    return 'Failed to load suppliers: $error';
+  }
+
+  @override
+  String get newSupplierTitle => 'New supplier';
+
+  @override
+  String get editSupplierTitle => 'Edit supplier';
+
+  @override
+  String get viewSupplierTitle => 'View supplier';
+
+  @override
+  String get deleteSupplierButton => 'Delete supplier';
+
+  @override
+  String get deleteSupplierConfirmTitle => 'Delete supplier?';
+
+  @override
+  String deleteSupplierConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get supplierLoadFailedError => 'Failed to load supplier.';
+
+  @override
+  String get supplierCreateFailedError => 'Failed to create supplier.';
+
+  @override
+  String get supplierUpdateFailedError => 'Failed to update supplier.';
+
+  @override
+  String get supplierDeleteFailedError => 'Failed to delete supplier.';
+
+  @override
+  String get supplierCreatePermissionDeniedError =>
+      'You no longer have permission to create suppliers.';
+
+  @override
+  String get supplierUpdatePermissionDeniedError =>
+      'You no longer have permission to edit suppliers.';
+
+  @override
+  String get supplierDeletePermissionDeniedError =>
+      'You no longer have permission to delete suppliers.';
+
+  @override
+  String get supplierCodeRequiredError => 'Code is required.';
+
+  @override
+  String get supplierNameRequiredError => 'Name is required.';
 }

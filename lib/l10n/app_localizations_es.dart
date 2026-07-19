@@ -817,4 +817,68 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get creditDaysInvalidError =>
       'Ingresa un número entero no negativo válido.';
+
+  @override
+  String get suppliersSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newSupplierTooltip => 'Nuevo proveedor';
+
+  @override
+  String get noSuppliersFound => 'No se encontraron proveedores.';
+
+  @override
+  String suppliersLoadError(Object error) {
+    return 'No se pudieron cargar los proveedores: $error';
+  }
+
+  @override
+  String get newSupplierTitle => 'Nuevo proveedor';
+
+  @override
+  String get editSupplierTitle => 'Editar proveedor';
+
+  @override
+  String get viewSupplierTitle => 'Ver proveedor';
+
+  @override
+  String get deleteSupplierButton => 'Eliminar proveedor';
+
+  @override
+  String get deleteSupplierConfirmTitle => '¿Eliminar proveedor?';
+
+  @override
+  String deleteSupplierConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get supplierLoadFailedError => 'No se pudo cargar el proveedor.';
+
+  @override
+  String get supplierCreateFailedError => 'No se pudo crear el proveedor.';
+
+  @override
+  String get supplierUpdateFailedError => 'No se pudo actualizar el proveedor.';
+
+  @override
+  String get supplierDeleteFailedError => 'No se pudo eliminar el proveedor.';
+
+  @override
+  String get supplierCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear proveedores.';
+
+  @override
+  String get supplierUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar proveedores.';
+
+  @override
+  String get supplierDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar proveedores.';
+
+  @override
+  String get supplierCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get supplierNameRequiredError => 'El nombre es obligatorio.';
 }

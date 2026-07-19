@@ -270,5 +270,25 @@
   "creditLimitLabel": "Límite de crédito",
   "creditDaysLabel": "Días de crédito",
   "creditLimitInvalidError": "Ingresa un monto válido no negativo.",
-  "creditDaysInvalidError": "Ingresa un número entero no negativo válido."
+  "creditDaysInvalidError": "Ingresa un número entero no negativo válido.",
+
+  "suppliersSearchLabel": "Buscar por código o nombre",
+  "newSupplierTooltip": "Nuevo proveedor",
+  "noSuppliersFound": "No se encontraron proveedores.",
+  "suppliersLoadError": "No se pudieron cargar los proveedores: {error}",
+  "newSupplierTitle": "Nuevo proveedor",
+  "editSupplierTitle": "Editar proveedor",
+  "viewSupplierTitle": "Ver proveedor",
+  "deleteSupplierButton": "Eliminar proveedor",
+  "deleteSupplierConfirmTitle": "¿Eliminar proveedor?",
+  "deleteSupplierConfirmMessage": "Esto eliminará permanentemente \"{name}\". Esta acción no se puede deshacer.",
+  "supplierLoadFailedError": "No se pudo cargar el proveedor.",
+  "supplierCreateFailedError": "No se pudo crear el proveedor.",
+  "supplierUpdateFailedError": "No se pudo actualizar el proveedor.",
+  "supplierDeleteFailedError": "No se pudo eliminar el proveedor.",
+  "supplierCreatePermissionDeniedError": "Ya no tienes permiso para crear proveedores.",
+  "supplierUpdatePermissionDeniedError": "Ya no tienes permiso para editar proveedores.",
+  "supplierDeletePermissionDeniedError": "Ya no tienes permiso para eliminar proveedores.",
+  "supplierCodeRequiredError": "El código es obligatorio.",
+  "supplierNameRequiredError": "El nombre es obligatorio."
 }

@@ -1585,6 +1585,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid non-negative whole number.'**
   String get creditDaysInvalidError;
+
+  /// No description provided for @suppliersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get suppliersSearchLabel;
+
+  /// No description provided for @newSupplierTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New supplier'**
+  String get newSupplierTooltip;
+
+  /// No description provided for @noSuppliersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No suppliers found.'**
+  String get noSuppliersFound;
+
+  /// No description provided for @suppliersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load suppliers: {error}'**
+  String suppliersLoadError(Object error);
+
+  /// No description provided for @newSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New supplier'**
+  String get newSupplierTitle;
+
+  /// No description provided for @editSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit supplier'**
+  String get editSupplierTitle;
+
+  /// No description provided for @viewSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View supplier'**
+  String get viewSupplierTitle;
+
+  /// No description provided for @deleteSupplierButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete supplier'**
+  String get deleteSupplierButton;
+
+  /// No description provided for @deleteSupplierConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete supplier?'**
+  String get deleteSupplierConfirmTitle;
+
+  /// No description provided for @deleteSupplierConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteSupplierConfirmMessage(String name);
+
+  /// No description provided for @supplierLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load supplier.'**
+  String get supplierLoadFailedError;
+
+  /// No description provided for @supplierCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create supplier.'**
+  String get supplierCreateFailedError;
+
+  /// No description provided for @supplierUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update supplier.'**
+  String get supplierUpdateFailedError;
+
+  /// No description provided for @supplierDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete supplier.'**
+  String get supplierDeleteFailedError;
+
+  /// No description provided for @supplierCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create suppliers.'**
+  String get supplierCreatePermissionDeniedError;
+
+  /// No description provided for @supplierUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit suppliers.'**
+  String get supplierUpdatePermissionDeniedError;
+
+  /// No description provided for @supplierDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete suppliers.'**
+  String get supplierDeletePermissionDeniedError;
+
+  /// No description provided for @supplierCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get supplierCodeRequiredError;
+
+  /// No description provided for @supplierNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get supplierNameRequiredError;
 }
 
 class _AppLocalizationsDelegate

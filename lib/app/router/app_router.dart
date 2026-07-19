@@ -16,6 +16,8 @@ import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/suppliers_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -91,6 +93,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // Branch index is positional (contracts/routes.md §1, spec 012):
+          // each new branch below is appended at the next available index,
+          // in build order (Suppliers→Labels→Employees→Customers→
+          // TaxpayerRecipients), not a pre-reserved slot.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/suppliers',
+                builder: (context, state) => const SuppliersListScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -159,6 +173,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/exchange-rates/:exchangeRateId',
         builder: (context, state) => ExchangeRateDetailScreen(
           exchangeRateId: int.parse(state.pathParameters['exchangeRateId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/suppliers/new',
+        builder: (context, state) => const SupplierDetailScreen(),
+      ),
+      GoRoute(
+        path: '/suppliers/:supplierId',
+        builder: (context, state) => SupplierDetailScreen(
+          supplierId: int.parse(state.pathParameters['supplierId']!),
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
@@ -245,6 +270,9 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/exchange-rates')) {
     return (object: SystemObject.exchangeRates, right: AccessRight.read);
+  }
+  if (location.startsWith('/suppliers')) {
+    return (object: SystemObject.suppliers, right: AccessRight.read);
   }
   return null;
 }
