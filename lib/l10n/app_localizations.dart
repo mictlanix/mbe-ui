@@ -1699,6 +1699,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name is required.'**
   String get supplierNameRequiredError;
+
+  /// No description provided for @labelsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get labelsSearchLabel;
+
+  /// No description provided for @newLabelTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New label'**
+  String get newLabelTooltip;
+
+  /// No description provided for @noLabelsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No labels found.'**
+  String get noLabelsFound;
+
+  /// No description provided for @labelsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load labels: {error}'**
+  String labelsLoadError(Object error);
+
+  /// No description provided for @newLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New label'**
+  String get newLabelTitle;
+
+  /// No description provided for @editLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit label'**
+  String get editLabelTitle;
+
+  /// No description provided for @viewLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View label'**
+  String get viewLabelTitle;
+
+  /// No description provided for @deleteLabelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete label'**
+  String get deleteLabelButton;
+
+  /// No description provided for @deleteLabelConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete label?'**
+  String get deleteLabelConfirmTitle;
+
+  /// No description provided for @deleteLabelConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteLabelConfirmMessage(String name);
+
+  /// No description provided for @labelLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load label.'**
+  String get labelLoadFailedError;
+
+  /// No description provided for @labelCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create label.'**
+  String get labelCreateFailedError;
+
+  /// No description provided for @labelUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update label.'**
+  String get labelUpdateFailedError;
+
+  /// No description provided for @labelDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete label.'**
+  String get labelDeleteFailedError;
+
+  /// No description provided for @labelCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create labels.'**
+  String get labelCreatePermissionDeniedError;
+
+  /// No description provided for @labelUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit labels.'**
+  String get labelUpdatePermissionDeniedError;
+
+  /// No description provided for @labelDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete labels.'**
+  String get labelDeletePermissionDeniedError;
+
+  /// No description provided for @labelNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get labelNameRequiredError;
 }
 
 class _AppLocalizationsDelegate

@@ -867,4 +867,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supplierNameRequiredError => 'Name is required.';
+
+  @override
+  String get labelsSearchLabel => 'Search by name';
+
+  @override
+  String get newLabelTooltip => 'New label';
+
+  @override
+  String get noLabelsFound => 'No labels found.';
+
+  @override
+  String labelsLoadError(Object error) {
+    return 'Failed to load labels: $error';
+  }
+
+  @override
+  String get newLabelTitle => 'New label';
+
+  @override
+  String get editLabelTitle => 'Edit label';
+
+  @override
+  String get viewLabelTitle => 'View label';
+
+  @override
+  String get deleteLabelButton => 'Delete label';
+
+  @override
+  String get deleteLabelConfirmTitle => 'Delete label?';
+
+  @override
+  String deleteLabelConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get labelLoadFailedError => 'Failed to load label.';
+
+  @override
+  String get labelCreateFailedError => 'Failed to create label.';
+
+  @override
+  String get labelUpdateFailedError => 'Failed to update label.';
+
+  @override
+  String get labelDeleteFailedError => 'Failed to delete label.';
+
+  @override
+  String get labelCreatePermissionDeniedError =>
+      'You no longer have permission to create labels.';
+
+  @override
+  String get labelUpdatePermissionDeniedError =>
+      'You no longer have permission to edit labels.';
+
+  @override
+  String get labelDeletePermissionDeniedError =>
+      'You no longer have permission to delete labels.';
+
+  @override
+  String get labelNameRequiredError => 'Name is required.';
 }

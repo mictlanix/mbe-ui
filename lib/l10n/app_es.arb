@@ -290,5 +290,24 @@
   "supplierUpdatePermissionDeniedError": "Ya no tienes permiso para editar proveedores.",
   "supplierDeletePermissionDeniedError": "Ya no tienes permiso para eliminar proveedores.",
   "supplierCodeRequiredError": "El código es obligatorio.",
-  "supplierNameRequiredError": "El nombre es obligatorio."
+  "supplierNameRequiredError": "El nombre es obligatorio.",
+
+  "labelsSearchLabel": "Buscar por nombre",
+  "newLabelTooltip": "Nueva etiqueta",
+  "noLabelsFound": "No se encontraron etiquetas.",
+  "labelsLoadError": "No se pudieron cargar las etiquetas: {error}",
+  "newLabelTitle": "Nueva etiqueta",
+  "editLabelTitle": "Editar etiqueta",
+  "viewLabelTitle": "Ver etiqueta",
+  "deleteLabelButton": "Eliminar etiqueta",
+  "deleteLabelConfirmTitle": "¿Eliminar etiqueta?",
+  "deleteLabelConfirmMessage": "Esto eliminará permanentemente \"{name}\". Esta acción no se puede deshacer.",
+  "labelLoadFailedError": "No se pudo cargar la etiqueta.",
+  "labelCreateFailedError": "No se pudo crear la etiqueta.",
+  "labelUpdateFailedError": "No se pudo actualizar la etiqueta.",
+  "labelDeleteFailedError": "No se pudo eliminar la etiqueta.",
+  "labelCreatePermissionDeniedError": "Ya no tienes permiso para crear etiquetas.",
+  "labelUpdatePermissionDeniedError": "Ya no tienes permiso para editar etiquetas.",
+  "labelDeletePermissionDeniedError": "Ya no tienes permiso para eliminar etiquetas.",
+  "labelNameRequiredError": "El nombre es obligatorio."
 }

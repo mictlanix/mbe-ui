@@ -13,6 +13,8 @@ import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/labels_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
@@ -105,6 +107,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/labels',
+                builder: (context, state) => const LabelsListScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -184,6 +194,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/suppliers/:supplierId',
         builder: (context, state) => SupplierDetailScreen(
           supplierId: int.parse(state.pathParameters['supplierId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/labels/new',
+        builder: (context, state) => const LabelDetailScreen(),
+      ),
+      GoRoute(
+        path: '/labels/:labelId',
+        builder: (context, state) => LabelDetailScreen(
+          labelId: int.parse(state.pathParameters['labelId']!),
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
@@ -273,6 +294,9 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/suppliers')) {
     return (object: SystemObject.suppliers, right: AccessRight.read);
+  }
+  if (location.startsWith('/labels')) {
+    return (object: SystemObject.labels, right: AccessRight.read);
   }
   return null;
 }

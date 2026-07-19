@@ -732,5 +732,46 @@
   "supplierCodeRequiredError": "Code is required.",
   "@supplierCodeRequiredError": {},
   "supplierNameRequiredError": "Name is required.",
-  "@supplierNameRequiredError": {}
+  "@supplierNameRequiredError": {},
+
+  "labelsSearchLabel": "Search by name",
+  "@labelsSearchLabel": {},
+  "newLabelTooltip": "New label",
+  "@newLabelTooltip": {},
+  "noLabelsFound": "No labels found.",
+  "@noLabelsFound": {},
+  "labelsLoadError": "Failed to load labels: {error}",
+  "@labelsLoadError": {
+    "placeholders": {"error": {"type": "Object"}}
+  },
+  "newLabelTitle": "New label",
+  "@newLabelTitle": {},
+  "editLabelTitle": "Edit label",
+  "@editLabelTitle": {},
+  "viewLabelTitle": "View label",
+  "@viewLabelTitle": {},
+  "deleteLabelButton": "Delete label",
+  "@deleteLabelButton": {},
+  "deleteLabelConfirmTitle": "Delete label?",
+  "@deleteLabelConfirmTitle": {},
+  "deleteLabelConfirmMessage": "This will permanently delete \"{name}\". This cannot be undone.",
+  "@deleteLabelConfirmMessage": {
+    "placeholders": {"name": {"type": "String"}}
+  },
+  "labelLoadFailedError": "Failed to load label.",
+  "@labelLoadFailedError": {},
+  "labelCreateFailedError": "Failed to create label.",
+  "@labelCreateFailedError": {},
+  "labelUpdateFailedError": "Failed to update label.",
+  "@labelUpdateFailedError": {},
+  "labelDeleteFailedError": "Failed to delete label.",
+  "@labelDeleteFailedError": {},
+  "labelCreatePermissionDeniedError": "You no longer have permission to create labels.",
+  "@labelCreatePermissionDeniedError": {},
+  "labelUpdatePermissionDeniedError": "You no longer have permission to edit labels.",
+  "@labelUpdatePermissionDeniedError": {},
+  "labelDeletePermissionDeniedError": "You no longer have permission to delete labels.",
+  "@labelDeletePermissionDeniedError": {},
+  "labelNameRequiredError": "Name is required.",
+  "@labelNameRequiredError": {}
 }

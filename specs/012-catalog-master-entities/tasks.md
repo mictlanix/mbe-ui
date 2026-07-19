@@ -85,20 +85,20 @@ Single Flutter project, feature-first. All work lands inside the existing `lib/f
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T019 [P] [US2] Unit test `test/unit/features/catalog/label_repository_impl_test.dart` — `LabelResponse`→`Label` mapping; `get`/`create`/`update`/`delete`; **asserts `allLabelsProvider` is invalidated after each mutation** (FR-014); error mapping (mocktail-faked `LabelsApi`)
-- [ ] T020 [P] [US2] Unit test `test/unit/features/catalog/labels_list_controller_test.dart` — search + pagination
-- [ ] T021 [P] [US2] Unit test `test/unit/features/catalog/label_form_controller_test.dart` — required name, create/update/delete with permission re-check
-- [ ] T022 [P] [US2] Widget test `test/widget/features/catalog/labels_list_screen_test.dart` — columns, search, pagination, Create/Edit gated by privilege, row-click read-only
-- [ ] T023 [P] [US2] Widget test `test/widget/features/catalog/label_detail_screen_test.dart` — create/view/edit, AppBar toggle only, body Delete hidden without `delete`, deletion-while-assigned rejection surfaced
+- [X] T019 [P] [US2] Unit test `test/unit/features/catalog/label_repository_impl_test.dart` — `LabelResponse`→`Label` mapping; `get`/`create`/`update`/`delete`; **asserts `allLabelsProvider` is invalidated after each mutation** (FR-014); error mapping (mocktail-faked `LabelsApi`)
+- [X] T020 [P] [US2] Unit test `test/unit/features/catalog/labels_list_controller_test.dart` — search + pagination
+- [X] T021 [P] [US2] Unit test `test/unit/features/catalog/label_form_controller_test.dart` — required name, create/update/delete with permission re-check
+- [X] T022 [P] [US2] Widget test `test/widget/features/catalog/labels_list_screen_test.dart` — columns, search, pagination, Create/Edit gated by privilege, row-click read-only
+- [X] T023 [P] [US2] Widget test `test/widget/features/catalog/label_detail_screen_test.dart` — create/view/edit, AppBar toggle only, body Delete hidden without `delete`, deletion-while-assigned rejection surfaced
 
 ### Implementation for User Story 2
 
-- [ ] T024 [P] [US2] Create the `Label` freezed detail entity in `lib/features/catalog/domain/entities/label.dart` per data-model.md §2 (`labelId`, `name`, `comment?`) with `fromResponse`. Leave the existing `LabelItem` (picker/filter type) untouched
-- [ ] T025 [US2] Extend `lib/features/catalog/domain/repositories/label_repository.dart` — add `get`/`create`/`update`/`delete`, keeping `list`
-- [ ] T026 [US2] Extend `lib/features/catalog/data/label_repository_impl.dart` — implement `get`/`create`/`update`/`delete` wrapping `LabelsApi`; **invalidate `allLabelsProvider` after each mutation** so the product form/filter refresh (FR-014). Keep `list` and `allLabelsProvider` definitions intact
-- [ ] T027 [US2] Create `LabelsListController` (`Notifier`) in `lib/features/catalog/presentation/labels_list_controller.dart` — search + pagination
-- [ ] T028 [US2] Create `LabelFormController` (`Notifier`) in `lib/features/catalog/presentation/label_form_controller.dart` — form state, required-name validation, create/update/delete with permission re-checks and list invalidation
-- [ ] T029 [US2] Create `LabelsListScreen` + `LabelDetailScreen` in `lib/features/catalog/presentation/{labels_list_screen,label_detail_screen}.dart` — same shared-widget pattern as Suppliers (no filter drawer), add label l10n keys, and wire routes/nav (`/labels`, `/labels/new`, `/labels/:labelId`, `_routeGate` read, `NavDestination` + `NavBranch.labels` index 7 — the next available position after T018) in `app_router.dart`/`nav_destinations.dart`. Sequential with T018/T041/T053/T064 (shared router/nav files)
+- [X] T024 [P] [US2] Create the `Label` freezed detail entity in `lib/features/catalog/domain/entities/label.dart` per data-model.md §2 (`labelId`, `name`, `comment?`) with `fromResponse`. Leave the existing `LabelItem` (picker/filter type) untouched
+- [X] T025 [US2] Extend `lib/features/catalog/domain/repositories/label_repository.dart` — add `get`/`create`/`update`/`delete`, keeping `list`
+- [X] T026 [US2] Extend `lib/features/catalog/data/label_repository_impl.dart` — implement `get`/`create`/`update`/`delete` wrapping `LabelsApi`; **invalidate `allLabelsProvider` after each mutation** so the product form/filter refresh (FR-014). Keep `list` and `allLabelsProvider` definitions intact
+- [X] T027 [US2] Create `LabelsListController` (`Notifier`) in `lib/features/catalog/presentation/labels_list_controller.dart` — search + pagination
+- [X] T028 [US2] Create `LabelFormController` (`Notifier`) in `lib/features/catalog/presentation/label_form_controller.dart` — form state, required-name validation, create/update/delete with permission re-checks and list invalidation
+- [X] T029 [US2] Create `LabelsListScreen` + `LabelDetailScreen` in `lib/features/catalog/presentation/{labels_list_screen,label_detail_screen}.dart` — same shared-widget pattern as Suppliers (no filter drawer), add label l10n keys, and wire routes/nav (`/labels`, `/labels/new`, `/labels/:labelId`, `_routeGate` read, `NavDestination` + `NavBranch.labels` index 7 — the next available position after T018) in `app_router.dart`/`nav_destinations.dart`. Sequential with T018/T041/T053/T064 (shared router/nav files)
 
 **Checkpoint**: Labels catalog works; product form/filter still reflect label changes.
 

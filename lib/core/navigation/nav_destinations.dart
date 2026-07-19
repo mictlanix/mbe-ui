@@ -18,6 +18,7 @@ class NavBranch {
   static const int pricing = 4;
   static const int exchangeRates = 5;
   static const int suppliers = 6;
+  static const int labels = 7;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -80,6 +81,15 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.suppliers,
         gate: (object: SystemObject.suppliers, right: AccessRight.read),
       ),
+      NavDestination(
+        id: 'labels',
+        label: _labelsLabel,
+        icon: Icons.label_outline,
+        selectedIcon: Icons.label,
+        route: '/labels',
+        branchIndex: NavBranch.labels,
+        gate: (object: SystemObject.labels, right: AccessRight.read),
+      ),
     ],
   ),
   NavGroup(
@@ -110,6 +120,7 @@ String _pricingLabel(AppLocalizations l10n) => l10n.pricingMenuTitle;
 String _exchangeRatesLabel(AppLocalizations l10n) =>
     l10n.exchangeRatesMenuTitle;
 String _suppliersLabel(AppLocalizations l10n) => l10n.suppliersMenuTitle;
+String _labelsLabel(AppLocalizations l10n) => l10n.labelsMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

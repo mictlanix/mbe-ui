@@ -881,4 +881,65 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get supplierNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get labelsSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get newLabelTooltip => 'Nueva etiqueta';
+
+  @override
+  String get noLabelsFound => 'No se encontraron etiquetas.';
+
+  @override
+  String labelsLoadError(Object error) {
+    return 'No se pudieron cargar las etiquetas: $error';
+  }
+
+  @override
+  String get newLabelTitle => 'Nueva etiqueta';
+
+  @override
+  String get editLabelTitle => 'Editar etiqueta';
+
+  @override
+  String get viewLabelTitle => 'Ver etiqueta';
+
+  @override
+  String get deleteLabelButton => 'Eliminar etiqueta';
+
+  @override
+  String get deleteLabelConfirmTitle => '¿Eliminar etiqueta?';
+
+  @override
+  String deleteLabelConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get labelLoadFailedError => 'No se pudo cargar la etiqueta.';
+
+  @override
+  String get labelCreateFailedError => 'No se pudo crear la etiqueta.';
+
+  @override
+  String get labelUpdateFailedError => 'No se pudo actualizar la etiqueta.';
+
+  @override
+  String get labelDeleteFailedError => 'No se pudo eliminar la etiqueta.';
+
+  @override
+  String get labelCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear etiquetas.';
+
+  @override
+  String get labelUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar etiquetas.';
+
+  @override
+  String get labelDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar etiquetas.';
+
+  @override
+  String get labelNameRequiredError => 'El nombre es obligatorio.';
 }
