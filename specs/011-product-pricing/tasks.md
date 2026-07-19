@@ -189,7 +189,7 @@ independently of price lists or products (quickstart §4).
 - [X] T046 **Regression guard for feature 007**: add/extend a widget test asserting the product detail screen shows **no** prices anywhere and that labels still occupy the `switches|labels` band (`product_detail_screen.dart` `_SwitchesLabelsBand`). This feature deliberately does not touch the product form (007 FR-012/FR-013; spec FR-007a; research.md §1) — a price section reappearing there is a regression (quickstart §6)
 - [X] T047 Verify the RBAC gating matrix from quickstart §5 with a non-administrator user: no privileges → no nav entries and direct-URL denial; `pricing` read-only → read-only grid; `pricing` without `priceLists` → pricing works, Price Lists nav absent; `priceLists` read without update → Edit icon **hidden**, not disabled (FR-019, constitution §VI)
 - [X] T048 Run `flutter analyze` and `dart format` — zero new analyzer findings; confirm no file under `lib/generated/openapi/` was modified (constitution §III)
-- [ ] T049 Run the full quickstart.md validation against a live mbe-api, including §3's **wire-format check** on the `AnyOf` write path (confirm `"price": "120.00"` arrives as a JSON string) and the >20-price-lists truncation check (G5)
+- [X] T049 Run the full quickstart.md validation against a live mbe-api, including §3's **wire-format check** on the `AnyOf` write path (confirm `"price": "120.00"` arrives as a JSON string) and the >20-price-lists truncation check (G5)
 
 ---
 
