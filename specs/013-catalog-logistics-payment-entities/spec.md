@@ -112,7 +112,7 @@ A user with the appropriate privilege needs to see the full list of vehicle oper
 
 - **FR-012**: The Vehicles catalog MUST support creating, viewing, editing, and deleting a vehicle with fields: license plate, name, nickname, tonnage capacity, and active flag.
 - **FR-013**: License plate, name, nickname, and tonnage capacity MUST be required on create.
-- **FR-014**: The Vehicles list and detail screen MUST display the vehicle's active/inactive status clearly.
+- **FR-014**: The Vehicles list and detail screen MUST display the vehicle's active/inactive status via the shared status-badge pattern already used elsewhere in the catalog module.
 
 **Vehicle Operators (User Story 3)**
 

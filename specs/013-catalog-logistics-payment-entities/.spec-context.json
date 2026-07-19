@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Catalog Logistics & Payment Entities (Expenses, Payment Method Options, Vehicles, Vehicle Operators)",
   "branch": "013-catalog-logistics-payment-entities",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-19T19:52:01.750Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-19T22:05:57.285Z"
     }
   ]
 }
