@@ -959,7 +959,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lastNameLabel => 'Apellidos';
 
   @override
-  String get nicknameLabel => 'Apodo';
+  String get nicknameLabel => 'Nombre preferido';
 
   @override
   String get birthdayLabel => 'Fecha de nacimiento';

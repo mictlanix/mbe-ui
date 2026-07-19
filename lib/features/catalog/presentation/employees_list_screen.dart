@@ -97,19 +97,17 @@ class EmployeesListScreen extends ConsumerWidget {
                         size: ColumnSize.M,
                       ),
                       DataTableColumn(
+                        label: l10n.salesPersonLabel,
+                        size: ColumnSize.S,
+                        cellBuilder: (_, e) => e.salesPerson
+                            ? const Icon(Icons.check)
+                            : const SizedBox.shrink(),
+                      ),
+                      DataTableColumn(
                         label: l10n.activeLabel,
                         fixedWidth: 100,
                         cellBuilder: (context, e) => Text(
                           e.active
-                              ? l10n.statusActive
-                              : l10n.statusInactiveBadge,
-                        ),
-                      ),
-                      DataTableColumn(
-                        label: l10n.salesPersonLabel,
-                        fixedWidth: 130,
-                        cellBuilder: (context, e) => Text(
-                          e.salesPerson
                               ? l10n.statusActive
                               : l10n.statusInactiveBadge,
                         ),

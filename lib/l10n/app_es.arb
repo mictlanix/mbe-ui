@@ -316,7 +316,7 @@
   "genderLabel": "Género",
   "firstNameLabel": "Nombre(s)",
   "lastNameLabel": "Apellidos",
-  "nicknameLabel": "Apodo",
+  "nicknameLabel": "Nombre preferido",
   "birthdayLabel": "Fecha de nacimiento",
   "taxpayerIdLabel": "RFC",
   "salesPersonLabel": "Vendedor",
