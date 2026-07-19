@@ -44,7 +44,9 @@ void main() {
           () => repository.listDetailed(search: null, skip: 0, limit: 20),
         ).thenAnswer((_) async => LabelPage(items: [_label(1)], total: 1));
 
-        final result = await container.read(labelsListControllerProvider.future);
+        final result = await container.read(
+          labelsListControllerProvider.future,
+        );
 
         expect(result.items, hasLength(1));
         expect(result.total, 1);

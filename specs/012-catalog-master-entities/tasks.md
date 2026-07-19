@@ -191,11 +191,11 @@ Single Flutter project, feature-first. All work lands inside the existing `lib/f
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T065 Write the integration test `test/integration/catalog_master_flow_test.dart` — golden path against a live mbe-api: create an employee → create a customer selecting that employee as salesperson and a price list → create a taxpayer recipient with a postal code + tax regime (quickstart.md golden path; constitution Quality Gates)
-- [ ] T066 **Regression guard (SC-005)**: add/extend widget tests asserting the product form's supplier picker, unit-of-measurement/SAT-key pickers, label multi-picker, and the products-list label filter all still work after Suppliers/Labels were promoted to full CRUD (quickstart.md "Regression guard")
-- [ ] T067 Verify the RBAC matrix (quickstart.md "RBAC checks", FR-007, constitution §VI): a user lacking read on a catalog sees no nav entry and is redirected from its direct URL; a user with read but not update/delete sees no Edit row icon and no Save/Delete on detail, while the read-only view still renders every field (including FK names)
-- [ ] T068 Run `dart run build_runner build --delete-conflicting-outputs`, `flutter gen-l10n`, `flutter analyze`, and `dart format` — zero new analyzer findings; confirm **no file under `lib/generated/openapi/` was modified** (constitution §III)
-- [ ] T069 Run the full quickstart.md validation against a live mbe-api, including the credit-limit wire-format check (`"creditLimit": "1000.50"` arrives as a JSON string) and the duplicate taxpayer-id rejection (FR-027)
+- [X] T065 Write the integration test `test/integration/catalog_master_flow_test.dart` — golden path against a live mbe-api: create an employee → create a customer selecting that employee as salesperson and a price list → create a taxpayer recipient with a postal code + tax regime (quickstart.md golden path; constitution Quality Gates)
+- [X] T066 **Regression guard (SC-005)**: add/extend widget tests asserting the product form's supplier picker, unit-of-measurement/SAT-key pickers, label multi-picker, and the products-list label filter all still work after Suppliers/Labels were promoted to full CRUD (quickstart.md "Regression guard")
+- [X] T067 Verify the RBAC matrix (quickstart.md "RBAC checks", FR-007, constitution §VI): a user lacking read on a catalog sees no nav entry and is redirected from its direct URL; a user with read but not update/delete sees no Edit row icon and no Save/Delete on detail, while the read-only view still renders every field (including FK names)
+- [X] T068 Run `dart run build_runner build --delete-conflicting-outputs`, `flutter gen-l10n`, `flutter analyze`, and `dart format` — zero new analyzer findings; confirm **no file under `lib/generated/openapi/` was modified** (constitution §III)
+- [X] T069 Run the full quickstart.md validation against a live mbe-api, including the credit-limit wire-format check (`"creditLimit": "1000.50"` arrives as a JSON string) and the duplicate taxpayer-id rejection (FR-027)
 
 ---
 

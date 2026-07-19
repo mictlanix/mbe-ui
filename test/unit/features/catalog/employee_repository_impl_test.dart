@@ -35,31 +35,34 @@ void main() {
       expect(result.items.single.salesPerson, isTrue);
     });
 
-    test('forwards search/active/salesPerson/skip/limit as query params', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode({'items': [], 'total': 0}),
-          200,
-          headers: _jsonHeaders,
+    test(
+      'forwards search/active/salesPerson/skip/limit as query params',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode({'items': [], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.list(
+          search: 'Jane',
+          active: true,
+          salesPerson: false,
+          skip: 20,
+          limit: 10,
         );
-      });
 
-      await repository.list(
-        search: 'Jane',
-        active: true,
-        salesPerson: false,
-        skip: 20,
-        limit: 10,
-      );
-
-      expect(captured!.queryParameters['search'], 'Jane');
-      expect(captured!.queryParameters['active'], true);
-      expect(captured!.queryParameters['sales_person'], false);
-      expect(captured!.queryParameters['skip'], 20);
-      expect(captured!.queryParameters['limit'], 10);
-    });
+        expect(captured!.queryParameters['search'], 'Jane');
+        expect(captured!.queryParameters['active'], true);
+        expect(captured!.queryParameters['sales_person'], false);
+        expect(captured!.queryParameters['skip'], 20);
+        expect(captured!.queryParameters['limit'], 10);
+      },
+    );
   });
 
   group('EmployeeRepositoryImpl.get', () {
@@ -79,19 +82,22 @@ void main() {
       expect(employee.gender, Gender.female);
     });
 
-    test('an unknown gender code does not crash (falls back to null)', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({..._employeeJson(), 'gender': 99}),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'an unknown gender code does not crash (falls back to null)',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({..._employeeJson(), 'gender': 99}),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final employee = await repository.get(employeeId: 1);
+        final employee = await repository.get(employeeId: 1);
 
-      expect(employee.gender, isNull);
-    });
+        expect(employee.gender, isNull);
+      },
+    );
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(
@@ -110,31 +116,34 @@ void main() {
   });
 
   group('EmployeeRepositoryImpl.create', () {
-    test('201 returns the created Employee, sending Date-encoded birthday/startJobDate', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_employeeJson()),
-          201,
-          headers: _jsonHeaders,
+    test(
+      '201 returns the created Employee, sending Date-encoded birthday/startJobDate',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_employeeJson()),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final employee = await repository.create(
+          firstName: 'Jane',
+          lastName: 'Doe',
+          nickname: 'Janie',
+          gender: 0,
+          birthday: DateTime(1990, 5, 15),
+          startJobDate: DateTime(2020, 1, 10),
         );
-      });
 
-      final employee = await repository.create(
-        firstName: 'Jane',
-        lastName: 'Doe',
-        nickname: 'Janie',
-        gender: 0,
-        birthday: DateTime(1990, 5, 15),
-        startJobDate: DateTime(2020, 1, 10),
-      );
-
-      expect(employee.firstName, 'Jane');
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody['birthday'], '1990-05-15');
-      expect(sentBody['start_job_date'], '2020-01-10');
-    });
+        expect(employee.firstName, 'Jane');
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['birthday'], '1990-05-15');
+        expect(sentBody['start_job_date'], '2020-01-10');
+      },
+    );
   });
 
   group('EmployeeRepositoryImpl.update', () {

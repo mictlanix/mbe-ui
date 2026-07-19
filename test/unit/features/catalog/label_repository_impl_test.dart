@@ -135,7 +135,10 @@ void main() {
         ),
       );
 
-      final label = await repository.update(labelId: 1, name: 'Featured Updated');
+      final label = await repository.update(
+        labelId: 1,
+        name: 'Featured Updated',
+      );
 
       expect(label.name, 'Featured Updated');
     });

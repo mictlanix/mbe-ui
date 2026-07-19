@@ -22,11 +22,7 @@ abstract class LabelRepository {
 
   Future<Label> create({required String name, String? comment});
 
-  Future<Label> update({
-    required int labelId,
-    String? name,
-    String? comment,
-  });
+  Future<Label> update({required int labelId, String? name, String? comment});
 
   Future<void> delete({required int labelId});
 }

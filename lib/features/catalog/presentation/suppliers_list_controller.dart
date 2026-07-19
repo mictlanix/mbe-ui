@@ -51,9 +51,7 @@ class SuppliersListController extends _$SuppliersListController {
   /// Fetches [pageIndex] and replaces the current page with it.
   Future<void> goToPage(int pageIndex) async {
     final search = ref.read(supplierSearchControllerProvider);
-    state = const AsyncLoading<CatalogPage<Supplier>>().copyWithPrevious(
-      state,
-    );
+    state = const AsyncLoading<CatalogPage<Supplier>>().copyWithPrevious(state);
     state = await AsyncValue.guard(() => _fetch(search, pageIndex: pageIndex));
   }
 }

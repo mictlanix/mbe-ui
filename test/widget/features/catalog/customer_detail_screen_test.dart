@@ -129,10 +129,7 @@ void main() {
       expect(find.byKey(const Key('delete_customer_button')), findsNothing);
       // Create mode has no customer loaded yet, so the disabled toggle
       // (edit-only) must not render.
-      expect(
-        find.byKey(const Key('customer_disabled_switch')),
-        findsNothing,
-      );
+      expect(find.byKey(const Key('customer_disabled_switch')), findsNothing);
     });
   });
 
@@ -217,10 +214,7 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _fullAccessUser, customerId: 1);
 
-        expect(
-          find.byKey(const Key('delete_customer_button')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('delete_customer_button')), findsOneWidget);
         await tester.ensureVisible(
           find.byKey(const Key('delete_customer_button')),
         );

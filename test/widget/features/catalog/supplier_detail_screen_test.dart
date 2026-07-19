@@ -145,10 +145,7 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _fullAccessUser, supplierId: 1);
 
-        expect(
-          find.byKey(const Key('delete_supplier_button')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('delete_supplier_button')), findsOneWidget);
         await tester.tap(find.byKey(const Key('delete_supplier_button')));
         await tester.pumpAndSettle();
         await tester.tap(

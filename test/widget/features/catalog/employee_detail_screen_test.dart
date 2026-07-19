@@ -167,10 +167,7 @@ void main() {
       (tester) async {
         await pumpScreen(tester, signedInAs: _fullAccessUser, employeeId: 1);
 
-        expect(
-          find.byKey(const Key('delete_employee_button')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('delete_employee_button')), findsOneWidget);
         await tester.ensureVisible(
           find.byKey(const Key('delete_employee_button')),
         );

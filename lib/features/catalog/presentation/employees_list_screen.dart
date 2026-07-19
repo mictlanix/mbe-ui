@@ -27,7 +27,9 @@ class EmployeesListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageAsync = ref.watch(employeesListControllerProvider);
     final filter = ref.watch(employeeFilterControllerProvider);
-    final filterController = ref.read(employeeFilterControllerProvider.notifier);
+    final filterController = ref.read(
+      employeeFilterControllerProvider.notifier,
+    );
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.employees, AccessRight.create);
     final canUpdate = access.can(SystemObject.employees, AccessRight.update);
@@ -97,14 +99,20 @@ class EmployeesListScreen extends ConsumerWidget {
                       DataTableColumn(
                         label: l10n.activeLabel,
                         fixedWidth: 100,
-                        cellBuilder: (context, e) =>
-                            Text(e.active ? l10n.statusActive : l10n.statusInactiveBadge),
+                        cellBuilder: (context, e) => Text(
+                          e.active
+                              ? l10n.statusActive
+                              : l10n.statusInactiveBadge,
+                        ),
                       ),
                       DataTableColumn(
                         label: l10n.salesPersonLabel,
                         fixedWidth: 130,
-                        cellBuilder: (context, e) =>
-                            Text(e.salesPerson ? l10n.statusActive : l10n.statusInactiveBadge),
+                        cellBuilder: (context, e) => Text(
+                          e.salesPerson
+                              ? l10n.statusActive
+                              : l10n.statusInactiveBadge,
+                        ),
                       ),
                     ],
                     rows: page.items,
@@ -136,7 +144,9 @@ class _EmployeeFiltersPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(employeeFilterControllerProvider);
-    final filterController = ref.read(employeeFilterControllerProvider.notifier);
+    final filterController = ref.read(
+      employeeFilterControllerProvider.notifier,
+    );
     final l10n = AppLocalizations.of(context)!;
 
     return Wrap(

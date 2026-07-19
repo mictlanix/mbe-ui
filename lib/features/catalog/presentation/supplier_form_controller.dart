@@ -275,9 +275,7 @@ class SupplierFormController extends _$SupplierFormController {
 
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
-      await ref
-          .read(supplierRepositoryProvider)
-          .delete(supplierId: supplierId);
+      await ref.read(supplierRepositoryProvider).delete(supplierId: supplierId);
       ref.invalidate(suppliersListControllerProvider);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {

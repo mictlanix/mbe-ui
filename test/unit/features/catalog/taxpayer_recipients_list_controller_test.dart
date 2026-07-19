@@ -39,10 +39,7 @@ void main() {
       container
           .read(taxpayerRecipientSearchControllerProvider.notifier)
           .searchChanged('Acme');
-      expect(
-        container.read(taxpayerRecipientSearchControllerProvider),
-        'Acme',
-      );
+      expect(container.read(taxpayerRecipientSearchControllerProvider), 'Acme');
     });
   });
 
@@ -69,19 +66,19 @@ void main() {
     );
 
     test('goToPage replaces the current page with the requested one', () async {
-      when(
-        () => repository.list(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            TaxpayerRecipientPage(items: [_taxpayer('AAA010101000')], total: 21),
+      when(() => repository.list(search: null, skip: 0, limit: 20)).thenAnswer(
+        (_) async => TaxpayerRecipientPage(
+          items: [_taxpayer('AAA010101000')],
+          total: 21,
+        ),
       );
       await container.read(taxpayerRecipientsListControllerProvider.future);
 
-      when(
-        () => repository.list(search: null, skip: 20, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            TaxpayerRecipientPage(items: [_taxpayer('BBB010101000')], total: 21),
+      when(() => repository.list(search: null, skip: 20, limit: 20)).thenAnswer(
+        (_) async => TaxpayerRecipientPage(
+          items: [_taxpayer('BBB010101000')],
+          total: 21,
+        ),
       );
 
       await container

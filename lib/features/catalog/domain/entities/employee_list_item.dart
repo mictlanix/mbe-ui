@@ -15,12 +15,11 @@ class EmployeeListItem with _$EmployeeListItem {
     required bool salesPerson,
   }) = _EmployeeListItem;
 
-  factory EmployeeListItem.fromResponse(EmployeeResponse r) =>
-      EmployeeListItem(
-        employeeId: r.employeeId,
-        fullName: '${r.firstName} ${r.lastName}',
-        nickname: r.nickname,
-        active: r.active,
-        salesPerson: r.salesPerson,
-      );
+  factory EmployeeListItem.fromResponse(EmployeeResponse r) => EmployeeListItem(
+    employeeId: r.employeeId,
+    fullName: '${r.firstName} ${r.lastName}',
+    nickname: r.nickname,
+    active: r.active,
+    salesPerson: r.salesPerson,
+  );
 }

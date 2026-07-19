@@ -118,7 +118,10 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.receipt_long,
         route: '/taxpayer-recipients',
         branchIndex: NavBranch.taxpayerRecipients,
-        gate: (object: SystemObject.taxpayerRecipients, right: AccessRight.read),
+        gate: (
+          object: SystemObject.taxpayerRecipients,
+          right: AccessRight.read,
+        ),
       ),
     ],
   ),

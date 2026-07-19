@@ -135,31 +135,28 @@ void main() {
       expect(supplier.name, 'Acme Corp');
     });
 
-    test(
-      'sends creditLimit as a JSON decimal string, not a number '
-      '(the AnyOf write path, contracts/mbe-api-catalogs.md §7)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_supplierJson()),
-            201,
-            headers: _jsonHeaders,
-          );
-        });
-
-        await repository.create(
-          code: 'SUP-001',
-          name: 'Acme Corp',
-          creditLimit: '1000.50',
+    test('sends creditLimit as a JSON decimal string, not a number '
+        '(the AnyOf write path, contracts/mbe-api-catalogs.md §7)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_supplierJson()),
+          201,
+          headers: _jsonHeaders,
         );
+      });
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['credit_limit'], '1000.50');
-        expect(sentBody['credit_limit'], isA<String>());
-      },
-    );
+      await repository.create(
+        code: 'SUP-001',
+        name: 'Acme Corp',
+        creditLimit: '1000.50',
+      );
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['credit_limit'], '1000.50');
+      expect(sentBody['credit_limit'], isA<String>());
+    });
 
     test('omits creditLimit from the request body when not provided', () async {
       RequestOptions? captured;
@@ -220,28 +217,25 @@ void main() {
       expect(supplier.name, 'Acme Corp Updated');
     });
 
-    test(
-      'sends an updated creditLimit as a JSON string via the update-side '
-      'wrapper class (CreditLimit1-style, research.md §4)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_supplierJson()),
-            200,
-            headers: _jsonHeaders,
-          );
-        });
+    test('sends an updated creditLimit as a JSON string via the update-side '
+        'wrapper class (CreditLimit1-style, research.md §4)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_supplierJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
 
-        await repository.update(supplierId: 1, creditLimit: '2000.00');
+      await repository.update(supplierId: 1, creditLimit: '2000.00');
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['credit_limit'], '2000.00');
-        expect(sentBody['credit_limit'], isA<String>());
-        expect(sentBody.containsKey('name'), isFalse);
-      },
-    );
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['credit_limit'], '2000.00');
+      expect(sentBody['credit_limit'], isA<String>());
+      expect(sentBody.containsKey('name'), isFalse);
+    });
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(

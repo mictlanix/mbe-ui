@@ -52,10 +52,8 @@ class TaxpayerRecipientsListController
   /// Fetches [pageIndex] and replaces the current page with it.
   Future<void> goToPage(int pageIndex) async {
     final search = ref.read(taxpayerRecipientSearchControllerProvider);
-    state =
-        const AsyncLoading<
-          CatalogPage<TaxpayerRecipientListItem>
-        >().copyWithPrevious(state);
+    state = const AsyncLoading<CatalogPage<TaxpayerRecipientListItem>>()
+        .copyWithPrevious(state);
     state = await AsyncValue.guard(() => _fetch(search, pageIndex: pageIndex));
   }
 }

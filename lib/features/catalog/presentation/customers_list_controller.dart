@@ -52,8 +52,10 @@ class CustomerFilterController extends _$CustomerFilterController {
   /// active-only, mirroring `ProductFilterController.deactivatedChanged`.
   void disabledChanged(bool? value) => state = state.copyWith(disabled: value);
 
-  void priceListChanged(int? id, String? displayText) => state = state
-      .copyWith(priceListId: id, priceListDisplayText: displayText);
+  void priceListChanged(int? id, String? displayText) => state = state.copyWith(
+    priceListId: id,
+    priceListDisplayText: displayText,
+  );
 
   void salespersonChanged(int? id, String? displayText) => state = state
       .copyWith(salespersonId: id, salespersonDisplayText: displayText);
@@ -97,10 +99,8 @@ class CustomersListController extends _$CustomersListController {
   /// Fetches [pageIndex] and replaces the current page with it.
   Future<void> goToPage(int pageIndex) async {
     final filter = ref.read(customerFilterControllerProvider);
-    state =
-        const AsyncLoading<CatalogPage<CustomerListItem>>().copyWithPrevious(
-          state,
-        );
+    state = const AsyncLoading<CatalogPage<CustomerListItem>>()
+        .copyWithPrevious(state);
     state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }

@@ -13,27 +13,24 @@ const _jsonHeaders = {
 
 void main() {
   group('CustomerRepositoryImpl.list', () {
-    test(
-      '200 maps expanded priceList/salesperson FKs to display names '
-      '(research.md §7)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode({
-              'items': [_customerJson()],
-              'total': 1,
-            }),
-            200,
-            headers: _jsonHeaders,
-          ),
-        );
+    test('200 maps expanded priceList/salesperson FKs to display names '
+        '(research.md §7)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'items': [_customerJson()],
+            'total': 1,
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
 
-        final result = await repository.list();
+      final result = await repository.list();
 
-        expect(result.items.single.priceList.name, 'Retail');
-        expect(result.items.single.salesperson?.name, 'Jane Doe');
-      },
-    );
+      expect(result.items.single.priceList.name, 'Retail');
+      expect(result.items.single.salesperson?.name, 'Jane Doe');
+    });
 
     test('a null salesperson maps to no EmployeeRef', () async {
       final repository = _repositoryWith(
@@ -117,35 +114,32 @@ void main() {
   });
 
   group('CustomerRepositoryImpl.create', () {
-    test(
-      'sends creditLimit as a JSON decimal string and priceList/salesperson '
-      'as plain ids, not expanded objects (research.md §7)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_customerJson()),
-            201,
-            headers: _jsonHeaders,
-          );
-        });
-
-        await repository.create(
-          code: 'CUST-001',
-          name: 'Acme Corp',
-          priceList: 1,
-          creditLimit: '1000.50',
-          salesperson: 2,
+    test('sends creditLimit as a JSON decimal string and priceList/salesperson '
+        'as plain ids, not expanded objects (research.md §7)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_customerJson()),
+          201,
+          headers: _jsonHeaders,
         );
+      });
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['credit_limit'], '1000.50');
-        expect(sentBody['credit_limit'], isA<String>());
-        expect(sentBody['price_list'], 1);
-        expect(sentBody['salesperson'], 2);
-      },
-    );
+      await repository.create(
+        code: 'CUST-001',
+        name: 'Acme Corp',
+        priceList: 1,
+        creditLimit: '1000.50',
+        salesperson: 2,
+      );
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['credit_limit'], '1000.50');
+      expect(sentBody['credit_limit'], isA<String>());
+      expect(sentBody['price_list'], 1);
+      expect(sentBody['salesperson'], 2);
+    });
 
     test('422 duplicate code maps to AppError.validation', () async {
       final repository = _repositoryWith(
@@ -165,35 +159,36 @@ void main() {
       );
 
       await expectLater(
-        () => repository.create(code: 'CUST-001', name: 'Acme Corp', priceList: 1),
+        () => repository.create(
+          code: 'CUST-001',
+          name: 'Acme Corp',
+          priceList: 1,
+        ),
         throwsA(isA<ValidationError>()),
       );
     });
   });
 
   group('CustomerRepositoryImpl.update', () {
-    test(
-      'sends an updated creditLimit via the update-side wrapper class '
-      '(CreditLimit1-style, research.md §4)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_customerJson()),
-            200,
-            headers: _jsonHeaders,
-          );
-        });
+    test('sends an updated creditLimit via the update-side wrapper class '
+        '(CreditLimit1-style, research.md §4)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_customerJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
 
-        await repository.update(customerId: 1, creditLimit: '2000.00');
+      await repository.update(customerId: 1, creditLimit: '2000.00');
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['credit_limit'], '2000.00');
-        expect(sentBody['credit_limit'], isA<String>());
-        expect(sentBody.containsKey('name'), isFalse);
-      },
-    );
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['credit_limit'], '2000.00');
+      expect(sentBody['credit_limit'], isA<String>());
+      expect(sentBody.containsKey('name'), isFalse);
+    });
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(
@@ -245,7 +240,9 @@ void main() {
   });
 }
 
-Map<String, Object?> _customerJson({Object? salesperson = _defaultSalesperson}) => {
+Map<String, Object?> _customerJson({
+  Object? salesperson = _defaultSalesperson,
+}) => {
   'customer_id': 1,
   'code': 'CUST-001',
   'name': 'Acme Corp',

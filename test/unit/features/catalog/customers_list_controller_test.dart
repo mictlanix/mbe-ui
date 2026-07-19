@@ -42,21 +42,24 @@ void main() {
       expect(filter.hasActiveFilters, isFalse);
     });
 
-    test('priceListChanged/salespersonChanged/disabledChanged set independently', () {
-      final notifier = container.read(
-        customerFilterControllerProvider.notifier,
-      );
-      notifier
-        ..disabledChanged(false)
-        ..priceListChanged(1, 'Retail')
-        ..salespersonChanged(2, 'Jane Doe');
+    test(
+      'priceListChanged/salespersonChanged/disabledChanged set independently',
+      () {
+        final notifier = container.read(
+          customerFilterControllerProvider.notifier,
+        );
+        notifier
+          ..disabledChanged(false)
+          ..priceListChanged(1, 'Retail')
+          ..salespersonChanged(2, 'Jane Doe');
 
-      final filter = container.read(customerFilterControllerProvider);
-      expect(filter.disabled, isFalse);
-      expect(filter.priceListId, 1);
-      expect(filter.salespersonId, 2);
-      expect(filter.activeFilterCount, 3);
-    });
+        final filter = container.read(customerFilterControllerProvider);
+        expect(filter.disabled, isFalse);
+        expect(filter.priceListId, 1);
+        expect(filter.salespersonId, 2);
+        expect(filter.activeFilterCount, 3);
+      },
+    );
 
     test('reset clears facets but preserves search', () {
       final notifier = container.read(
@@ -75,27 +78,30 @@ void main() {
   });
 
   group('CustomersListController', () {
-    test('build() maps the current filter to repository query params', () async {
-      when(
-        () => repository.list(
-          search: null,
-          disabled: null,
-          priceList: null,
-          salesperson: null,
-          skip: 0,
-          limit: 20,
-        ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(1)], total: 1),
-      );
+    test(
+      'build() maps the current filter to repository query params',
+      () async {
+        when(
+          () => repository.list(
+            search: null,
+            disabled: null,
+            priceList: null,
+            salesperson: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => CustomerPage(items: [_customer(1)], total: 1),
+        );
 
-      final result = await container.read(
-        customersListControllerProvider.future,
-      );
+        final result = await container.read(
+          customersListControllerProvider.future,
+        );
 
-      expect(result.items, hasLength(1));
-      expect(result.total, 1);
-    });
+        expect(result.items, hasLength(1));
+        expect(result.total, 1);
+      },
+    );
 
     test('changing the priceList filter re-fetches from skip=0', () async {
       when(
@@ -107,9 +113,7 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(1)], total: 1),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(1)], total: 1));
       await container.read(customersListControllerProvider.future);
 
       when(
@@ -121,9 +125,7 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(2)], total: 1),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(2)], total: 1));
       container
           .read(customerFilterControllerProvider.notifier)
           .priceListChanged(1, 'Retail');
@@ -144,9 +146,7 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(1)], total: 21),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(1)], total: 21));
       await container.read(customersListControllerProvider.future);
 
       when(
@@ -158,9 +158,7 @@ void main() {
           skip: 20,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(2)], total: 21),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(2)], total: 21));
 
       await container
           .read(customersListControllerProvider.notifier)

@@ -59,10 +59,7 @@ void main() {
     test('codeChanged updates state and clears prior errors', () {
       final notifier = container.read(supplierFormControllerProvider.notifier);
       notifier.codeChanged('SUP-001');
-      expect(
-        container.read(supplierFormControllerProvider).code,
-        'SUP-001',
-      );
+      expect(container.read(supplierFormControllerProvider).code, 'SUP-001');
     });
   });
 
@@ -192,44 +189,49 @@ void main() {
   });
 
   group('SupplierFormController.submitUpdate', () {
-    test('sends the changed fields when editing an existing supplier', () async {
-      when(() => repository.get(supplierId: 1)).thenAnswer(
-        (_) async => const Supplier(
-          supplierId: 1,
-          code: 'SUP-001',
-          name: 'Acme Corp',
-          creditLimit: '1000.50',
-          creditDays: 30,
-        ),
-      );
-      when(
-        () => repository.update(
-          supplierId: 1,
-          code: 'SUP-001',
-          name: 'Acme Corp',
-          zone: '',
-          creditLimit: '2000.00',
-          creditDays: 30,
-          comment: '',
-        ),
-      ).thenAnswer(
-        (_) async => const Supplier(
-          supplierId: 1,
-          code: 'SUP-001',
-          name: 'Acme Corp',
-          creditLimit: '2000.00',
-          creditDays: 30,
-        ),
-      );
+    test(
+      'sends the changed fields when editing an existing supplier',
+      () async {
+        when(() => repository.get(supplierId: 1)).thenAnswer(
+          (_) async => const Supplier(
+            supplierId: 1,
+            code: 'SUP-001',
+            name: 'Acme Corp',
+            creditLimit: '1000.50',
+            creditDays: 30,
+          ),
+        );
+        when(
+          () => repository.update(
+            supplierId: 1,
+            code: 'SUP-001',
+            name: 'Acme Corp',
+            zone: '',
+            creditLimit: '2000.00',
+            creditDays: 30,
+            comment: '',
+          ),
+        ).thenAnswer(
+          (_) async => const Supplier(
+            supplierId: 1,
+            code: 'SUP-001',
+            name: 'Acme Corp',
+            creditLimit: '2000.00',
+            creditDays: 30,
+          ),
+        );
 
-      final notifier = container.read(supplierFormControllerProvider.notifier);
-      await notifier.loadForEdit(1);
-      notifier.creditLimitChanged('2000.00');
+        final notifier = container.read(
+          supplierFormControllerProvider.notifier,
+        );
+        await notifier.loadForEdit(1);
+        notifier.creditLimitChanged('2000.00');
 
-      await notifier.submitUpdate();
+        await notifier.submitUpdate();
 
-      expect(container.read(supplierFormControllerProvider).saved, isTrue);
-    });
+        expect(container.read(supplierFormControllerProvider).saved, isTrue);
+      },
+    );
   });
 
   group('SupplierFormController.delete', () {

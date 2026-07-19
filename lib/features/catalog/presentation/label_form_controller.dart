@@ -62,9 +62,9 @@ class LabelFormController extends _$LabelFormController {
   Future<void> loadForEdit(int labelId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
     try {
-      final label = await ref.read(labelRepositoryProvider).get(
-        labelId: labelId,
-      );
+      final label = await ref
+          .read(labelRepositoryProvider)
+          .get(labelId: labelId);
       state = LabelFormState(
         labelId: label.labelId,
         name: label.name,

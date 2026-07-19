@@ -83,9 +83,7 @@ void main() {
       () async {
         when(
           () => repository.create(name: 'Clearance', comment: null),
-        ).thenAnswer(
-          (_) async => const Label(labelId: 1, name: 'Clearance'),
-        );
+        ).thenAnswer((_) async => const Label(labelId: 1, name: 'Clearance'));
 
         final notifier = container.read(labelFormControllerProvider.notifier);
         notifier.nameChanged('Clearance');
@@ -146,11 +144,12 @@ void main() {
 
   group('LabelFormController.submitUpdate', () {
     test('sends the changed fields when editing an existing label', () async {
-      when(() => repository.get(labelId: 1)).thenAnswer(
-        (_) async => const Label(labelId: 1, name: 'Clearance'),
-      );
       when(
-        () => repository.update(labelId: 1, name: 'Clearance Sale', comment: ''),
+        () => repository.get(labelId: 1),
+      ).thenAnswer((_) async => const Label(labelId: 1, name: 'Clearance'));
+      when(
+        () =>
+            repository.update(labelId: 1, name: 'Clearance Sale', comment: ''),
       ).thenAnswer(
         (_) async => const Label(labelId: 1, name: 'Clearance Sale'),
       );
@@ -169,9 +168,9 @@ void main() {
     test(
       'a still-assigned rejection is surfaced and the label stays loaded',
       () async {
-        when(() => repository.get(labelId: 1)).thenAnswer(
-          (_) async => const Label(labelId: 1, name: 'Clearance'),
-        );
+        when(
+          () => repository.get(labelId: 1),
+        ).thenAnswer((_) async => const Label(labelId: 1, name: 'Clearance'));
         when(() => repository.delete(labelId: 1)).thenThrow(
           const AppError.server(
             statusCode: 400,

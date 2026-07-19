@@ -96,14 +96,13 @@ class CustomerFormController extends _$CustomerFormController {
     fieldErrors: const {},
   );
 
-  void priceListSelected(int id, String displayText) => state = state
-      .copyWith(
-        priceListId: id,
-        priceListDisplayText: displayText,
-        error: null,
-        errorDetail: null,
-        fieldErrors: const {},
-      );
+  void priceListSelected(int id, String displayText) => state = state.copyWith(
+    priceListId: id,
+    priceListDisplayText: displayText,
+    error: null,
+    errorDetail: null,
+    fieldErrors: const {},
+  );
 
   void shippingChanged(bool v) => state = state.copyWith(shipping: v);
 
@@ -322,9 +321,7 @@ class CustomerFormController extends _$CustomerFormController {
 
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
-      await ref
-          .read(customerRepositoryProvider)
-          .delete(customerId: customerId);
+      await ref.read(customerRepositoryProvider).delete(customerId: customerId);
       ref.invalidate(customersListControllerProvider);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {

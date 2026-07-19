@@ -319,7 +319,9 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                       key: const Key('active_switch'),
                       title: Text(l10n.activeLabel),
                       value: formState.active,
-                      onChanged: fieldsEnabled ? controller.activeChanged : null,
+                      onChanged: fieldsEnabled
+                          ? controller.activeChanged
+                          : null,
                     ),
                   ),
                 ],

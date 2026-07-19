@@ -47,9 +47,7 @@ class TaxpayerRecipientRepositoryImpl implements TaxpayerRecipientRepository {
   }
 
   @override
-  Future<TaxpayerRecipient> get({
-    required String taxpayerRecipientId,
-  }) async {
+  Future<TaxpayerRecipient> get({required String taxpayerRecipientId}) async {
     try {
       final response = await _api
           .getTaxpayerRecipientApiV1TaxpayerRecipientsRfcGet(

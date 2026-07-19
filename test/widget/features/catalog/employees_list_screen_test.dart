@@ -125,10 +125,7 @@ void main() {
       await tester.tap(find.byKey(const Key('employees_filter_button')));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('employees_filter_active')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('employees_filter_active')), findsOneWidget);
       expect(
         find.byKey(const Key('employees_filter_sales_person')),
         findsOneWidget,

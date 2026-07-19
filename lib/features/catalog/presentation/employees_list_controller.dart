@@ -88,10 +88,8 @@ class EmployeesListController extends _$EmployeesListController {
   /// Fetches [pageIndex] and replaces the current page with it.
   Future<void> goToPage(int pageIndex) async {
     final filter = ref.read(employeeFilterControllerProvider);
-    state =
-        const AsyncLoading<CatalogPage<EmployeeListItem>>().copyWithPrevious(
-          state,
-        );
+    state = const AsyncLoading<CatalogPage<EmployeeListItem>>()
+        .copyWithPrevious(state);
     state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }

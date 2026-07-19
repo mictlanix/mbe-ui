@@ -55,106 +55,78 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group(
-    'EmployeeFormController.submitCreate validation (FR-015, FR-016)',
-    () {
-      test('required fields are rejected before submit', () async {
-        final notifier = container.read(
-          employeeFormControllerProvider.notifier,
-        );
+  group('EmployeeFormController.submitCreate validation (FR-015, FR-016)', () {
+    test('required fields are rejected before submit', () async {
+      final notifier = container.read(employeeFormControllerProvider.notifier);
 
-        await notifier.submitCreate();
+      await notifier.submitCreate();
 
-        final state = container.read(employeeFormControllerProvider);
-        expect(
-          state.fieldErrors['firstName'],
-          EmployeeFormErrorCode.firstNameRequired,
-        );
-        expect(
-          state.fieldErrors['lastName'],
-          EmployeeFormErrorCode.lastNameRequired,
-        );
-        expect(
-          state.fieldErrors['nickname'],
-          EmployeeFormErrorCode.nicknameRequired,
-        );
-        expect(
-          state.fieldErrors['gender'],
-          EmployeeFormErrorCode.genderRequired,
-        );
-        expect(
-          state.fieldErrors['birthday'],
-          EmployeeFormErrorCode.birthdayRequired,
-        );
-        expect(
-          state.fieldErrors['startJobDate'],
-          EmployeeFormErrorCode.startJobDateRequired,
-        );
-        verifyNever(
+      final state = container.read(employeeFormControllerProvider);
+      expect(
+        state.fieldErrors['firstName'],
+        EmployeeFormErrorCode.firstNameRequired,
+      );
+      expect(
+        state.fieldErrors['lastName'],
+        EmployeeFormErrorCode.lastNameRequired,
+      );
+      expect(
+        state.fieldErrors['nickname'],
+        EmployeeFormErrorCode.nicknameRequired,
+      );
+      expect(state.fieldErrors['gender'], EmployeeFormErrorCode.genderRequired);
+      expect(
+        state.fieldErrors['birthday'],
+        EmployeeFormErrorCode.birthdayRequired,
+      );
+      expect(
+        state.fieldErrors['startJobDate'],
+        EmployeeFormErrorCode.startJobDateRequired,
+      );
+      verifyNever(
+        () => repository.create(
+          firstName: any(named: 'firstName'),
+          lastName: any(named: 'lastName'),
+          nickname: any(named: 'nickname'),
+          gender: any(named: 'gender'),
+          birthday: any(named: 'birthday'),
+          startJobDate: any(named: 'startJobDate'),
+        ),
+      );
+    });
+
+    test(
+      'a valid submission creates the employee and invalidates the list',
+      () async {
+        when(
           () => repository.create(
-            firstName: any(named: 'firstName'),
-            lastName: any(named: 'lastName'),
-            nickname: any(named: 'nickname'),
-            gender: any(named: 'gender'),
-            birthday: any(named: 'birthday'),
-            startJobDate: any(named: 'startJobDate'),
+            firstName: 'Jane',
+            lastName: 'Doe',
+            nickname: 'Janie',
+            gender: 0,
+            birthday: DateTime(1990, 5, 15),
+            startJobDate: DateTime(2020, 1, 10),
+            taxpayerId: null,
+            salesPerson: false,
+            active: true,
+            personalId: null,
+            enrollNumber: null,
+            comment: null,
+          ),
+        ).thenAnswer(
+          (_) async => Employee(
+            employeeId: 1,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            nickname: 'Janie',
+            gender: Gender.female,
+            birthday: DateTime(1990, 5, 15),
+            salesPerson: false,
+            active: true,
+            startJobDate: DateTime(2020, 1, 10),
           ),
         );
-      });
 
-      test(
-        'a valid submission creates the employee and invalidates the list',
-        () async {
-          when(
-            () => repository.create(
-              firstName: 'Jane',
-              lastName: 'Doe',
-              nickname: 'Janie',
-              gender: 0,
-              birthday: DateTime(1990, 5, 15),
-              startJobDate: DateTime(2020, 1, 10),
-              taxpayerId: null,
-              salesPerson: false,
-              active: true,
-              personalId: null,
-              enrollNumber: null,
-              comment: null,
-            ),
-          ).thenAnswer(
-            (_) async => Employee(
-              employeeId: 1,
-              firstName: 'Jane',
-              lastName: 'Doe',
-              nickname: 'Janie',
-              gender: Gender.female,
-              birthday: DateTime(1990, 5, 15),
-              salesPerson: false,
-              active: true,
-              startJobDate: DateTime(2020, 1, 10),
-            ),
-          );
-
-          final notifier = container.read(
-            employeeFormControllerProvider.notifier,
-          );
-          notifier
-            ..firstNameChanged('Jane')
-            ..lastNameChanged('Doe')
-            ..nicknameChanged('Janie')
-            ..genderChanged(Gender.female)
-            ..birthdayChanged(DateTime(1990, 5, 15))
-            ..startJobDateChanged(DateTime(2020, 1, 10));
-
-          await notifier.submitCreate();
-
-          expect(
-            container.read(employeeFormControllerProvider).saved,
-            isTrue,
-          );
-        },
-      );
-
-      test('a non-integer enroll number is rejected before submit', () async {
         final notifier = container.read(
           employeeFormControllerProvider.notifier,
         );
@@ -164,19 +136,34 @@ void main() {
           ..nicknameChanged('Janie')
           ..genderChanged(Gender.female)
           ..birthdayChanged(DateTime(1990, 5, 15))
-          ..startJobDateChanged(DateTime(2020, 1, 10))
-          ..enrollNumberChanged('abc');
+          ..startJobDateChanged(DateTime(2020, 1, 10));
 
         await notifier.submitCreate();
 
-        final state = container.read(employeeFormControllerProvider);
-        expect(
-          state.fieldErrors['enrollNumber'],
-          EmployeeFormErrorCode.enrollNumberInvalid,
-        );
-      });
-    },
-  );
+        expect(container.read(employeeFormControllerProvider).saved, isTrue);
+      },
+    );
+
+    test('a non-integer enroll number is rejected before submit', () async {
+      final notifier = container.read(employeeFormControllerProvider.notifier);
+      notifier
+        ..firstNameChanged('Jane')
+        ..lastNameChanged('Doe')
+        ..nicknameChanged('Janie')
+        ..genderChanged(Gender.female)
+        ..birthdayChanged(DateTime(1990, 5, 15))
+        ..startJobDateChanged(DateTime(2020, 1, 10))
+        ..enrollNumberChanged('abc');
+
+      await notifier.submitCreate();
+
+      final state = container.read(employeeFormControllerProvider);
+      expect(
+        state.fieldErrors['enrollNumber'],
+        EmployeeFormErrorCode.enrollNumberInvalid,
+      );
+    });
+  });
 
   group('EmployeeFormController privilege checks', () {
     test('submitCreate is denied for a read-only user', () async {

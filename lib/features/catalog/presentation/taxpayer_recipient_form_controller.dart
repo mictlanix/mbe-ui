@@ -96,8 +96,7 @@ class TaxpayerRecipientFormController
           .read(taxpayerRecipientRepositoryProvider)
           .get(taxpayerRecipientId: taxpayerRecipientId);
       state = TaxpayerRecipientFormState(
-        existingTaxpayerRecipientId:
-            taxpayerRecipient.taxpayerRecipientId,
+        existingTaxpayerRecipientId: taxpayerRecipient.taxpayerRecipientId,
         taxpayerRecipientId: taxpayerRecipient.taxpayerRecipientId,
         name: taxpayerRecipient.name,
         email: taxpayerRecipient.email,
@@ -119,9 +118,7 @@ class TaxpayerRecipientFormController
   Map<String, String> _validate() {
     final errors = <String, String>{};
     if (state.existingTaxpayerRecipientId == null &&
-        !CatalogFieldValidators.isRequiredNonEmpty(
-          state.taxpayerRecipientId,
-        )) {
+        !CatalogFieldValidators.isRequiredNonEmpty(state.taxpayerRecipientId)) {
       errors['taxpayerRecipientId'] = TaxpayerRecipientFormErrorCode.idRequired;
     }
     if (!CatalogFieldValidators.isRequiredNonEmpty(state.name)) {

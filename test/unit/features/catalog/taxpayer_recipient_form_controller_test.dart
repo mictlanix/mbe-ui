@@ -159,9 +159,7 @@ void main() {
 
           await notifier.submitCreate();
 
-          final state = container.read(
-            taxpayerRecipientFormControllerProvider,
-          );
+          final state = container.read(taxpayerRecipientFormControllerProvider);
           expect(
             state.fieldErrors['taxpayer_recipient_id'],
             'Taxpayer recipient already exists',
@@ -188,7 +186,10 @@ void main() {
       final state = readOnlyContainer.read(
         taxpayerRecipientFormControllerProvider,
       );
-      expect(state.error, TaxpayerRecipientFormErrorCode.createPermissionDenied);
+      expect(
+        state.error,
+        TaxpayerRecipientFormErrorCode.createPermissionDenied,
+      );
     });
   });
 
@@ -231,10 +232,7 @@ void main() {
       expect(state.saved, isTrue);
       // The id field itself must not have been treated as required/changed —
       // no idRequired field error should ever surface once loaded for edit.
-      expect(
-        state.fieldErrors.containsKey('taxpayerRecipientId'),
-        isFalse,
-      );
+      expect(state.fieldErrors.containsKey('taxpayerRecipientId'), isFalse);
     });
   });
 

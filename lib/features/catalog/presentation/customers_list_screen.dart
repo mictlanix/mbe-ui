@@ -32,7 +32,9 @@ class CustomersListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageAsync = ref.watch(customersListControllerProvider);
     final filter = ref.watch(customerFilterControllerProvider);
-    final filterController = ref.read(customerFilterControllerProvider.notifier);
+    final filterController = ref.read(
+      customerFilterControllerProvider.notifier,
+    );
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.customers, AccessRight.create);
     final canUpdate = access.can(SystemObject.customers, AccessRight.update);
@@ -101,7 +103,8 @@ class CustomersListScreen extends ConsumerWidget {
                       ),
                       DataTableColumn.text(
                         label: l10n.columnSalesperson,
-                        text: (c) => c.salesperson?.name ?? l10n.noneAssignedLabel,
+                        text: (c) =>
+                            c.salesperson?.name ?? l10n.noneAssignedLabel,
                         size: ColumnSize.M,
                       ),
                       DataTableColumn.text(
@@ -113,7 +116,9 @@ class CustomersListScreen extends ConsumerWidget {
                         label: l10n.columnStatus,
                         fixedWidth: 130,
                         cellBuilder: (context, c) => Text(
-                          c.disabled ? l10n.statusInactiveBadge : l10n.statusActive,
+                          c.disabled
+                              ? l10n.statusInactiveBadge
+                              : l10n.statusActive,
                         ),
                       ),
                     ],
@@ -146,7 +151,9 @@ class _CustomerFiltersPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(customerFilterControllerProvider);
-    final filterController = ref.read(customerFilterControllerProvider.notifier);
+    final filterController = ref.read(
+      customerFilterControllerProvider.notifier,
+    );
     final l10n = AppLocalizations.of(context)!;
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final employeeRepo = ref.read(employeeRepositoryProvider);

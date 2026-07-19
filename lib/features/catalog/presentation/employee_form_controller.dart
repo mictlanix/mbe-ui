@@ -336,9 +336,7 @@ class EmployeeFormController extends _$EmployeeFormController {
 
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
-      await ref
-          .read(employeeRepositoryProvider)
-          .delete(employeeId: employeeId);
+      await ref.read(employeeRepositoryProvider).delete(employeeId: employeeId);
       ref.invalidate(employeesListControllerProvider);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {

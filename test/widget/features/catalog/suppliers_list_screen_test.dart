@@ -146,10 +146,8 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
-        (_) async => SupplierPage(
-          items: _testSuppliers,
-          total: _testSuppliers.length,
-        ),
+        (_) async =>
+            SupplierPage(items: _testSuppliers, total: _testSuppliers.length),
       );
 
       final router = GoRouter(

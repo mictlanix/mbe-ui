@@ -68,26 +68,29 @@ void main() {
   });
 
   group('EmployeesListController', () {
-    test('build() maps the current filter to repository query params', () async {
-      when(
-        () => repository.list(
-          search: null,
-          active: null,
-          salesPerson: null,
-          skip: 0,
-          limit: 20,
-        ),
-      ).thenAnswer(
-        (_) async => EmployeeListResult(items: [_employee(1)], total: 1),
-      );
+    test(
+      'build() maps the current filter to repository query params',
+      () async {
+        when(
+          () => repository.list(
+            search: null,
+            active: null,
+            salesPerson: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => EmployeeListResult(items: [_employee(1)], total: 1),
+        );
 
-      final result = await container.read(
-        employeesListControllerProvider.future,
-      );
+        final result = await container.read(
+          employeesListControllerProvider.future,
+        );
 
-      expect(result.items, hasLength(1));
-      expect(result.total, 1);
-    });
+        expect(result.items, hasLength(1));
+        expect(result.total, 1);
+      },
+    );
 
     test('changing the active filter re-fetches from skip=0', () async {
       when(

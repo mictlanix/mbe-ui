@@ -83,16 +83,12 @@ void main() {
     test('goToPage replaces the current page with the requested one', () async {
       when(
         () => repository.listDetailed(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => SupplierPage(items: [_supplier(1)], total: 21),
-      );
+      ).thenAnswer((_) async => SupplierPage(items: [_supplier(1)], total: 21));
       await container.read(suppliersListControllerProvider.future);
 
       when(
         () => repository.listDetailed(search: null, skip: 20, limit: 20),
-      ).thenAnswer(
-        (_) async => SupplierPage(items: [_supplier(2)], total: 21),
-      );
+      ).thenAnswer((_) async => SupplierPage(items: [_supplier(2)], total: 21));
 
       await container
           .read(suppliersListControllerProvider.notifier)

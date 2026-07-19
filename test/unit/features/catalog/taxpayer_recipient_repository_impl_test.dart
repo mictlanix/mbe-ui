@@ -58,7 +58,11 @@ void main() {
       () async {
         final repository = _repositoryWith(
           (options) async => ResponseBody.fromString(
-            jsonEncode({..._taxpayerJson(), 'postal_code': null, 'regime': null}),
+            jsonEncode({
+              ..._taxpayerJson(),
+              'postal_code': null,
+              'regime': null,
+            }),
             200,
             headers: _jsonHeaders,
           ),
@@ -118,63 +122,57 @@ void main() {
       },
     );
 
-    test(
-      'a duplicate tax id rejection maps to AppError.validation, not a '
-      'silent overwrite (FR-027)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode({
-              'detail': [
-                {
-                  'loc': ['body', 'taxpayer_recipient_id'],
-                  'msg': 'Taxpayer recipient already exists',
-                  'type': 'value_error',
-                },
-              ],
-            }),
-            422,
-            headers: _jsonHeaders,
-          ),
-        );
+    test('a duplicate tax id rejection maps to AppError.validation, not a '
+        'silent overwrite (FR-027)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'taxpayer_recipient_id'],
+                'msg': 'Taxpayer recipient already exists',
+                'type': 'value_error',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
 
-        await expectLater(
-          () => repository.create(
-            taxpayerRecipientId: 'XAXX010101000',
-            email: 'test@example.com',
-          ),
-          throwsA(isA<ValidationError>()),
-        );
-      },
-    );
+      await expectLater(
+        () => repository.create(
+          taxpayerRecipientId: 'XAXX010101000',
+          email: 'test@example.com',
+        ),
+        throwsA(isA<ValidationError>()),
+      );
+    });
   });
 
   group('TaxpayerRecipientRepositoryImpl.update', () {
-    test(
-      'the rfc path param is used, and the id is never sent in the body '
-      '(immutable, research.md §9)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_taxpayerJson()),
-            200,
-            headers: _jsonHeaders,
-          );
-        });
-
-        await repository.update(
-          taxpayerRecipientId: 'XAXX010101000',
-          email: 'updated@example.com',
+    test('the rfc path param is used, and the id is never sent in the body '
+        '(immutable, research.md §9)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_taxpayerJson()),
+          200,
+          headers: _jsonHeaders,
         );
+      });
 
-        expect(captured!.path, contains('XAXX010101000'));
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody.containsKey('taxpayer_recipient_id'), isFalse);
-        expect(sentBody['email'], 'updated@example.com');
-      },
-    );
+      await repository.update(
+        taxpayerRecipientId: 'XAXX010101000',
+        email: 'updated@example.com',
+      );
+
+      expect(captured!.path, contains('XAXX010101000'));
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody.containsKey('taxpayer_recipient_id'), isFalse);
+      expect(sentBody['email'], 'updated@example.com');
+    });
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(

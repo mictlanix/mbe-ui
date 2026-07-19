@@ -96,8 +96,7 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
-      (_) async =>
-          CustomerPage(items: customers, total: customers.length),
+      (_) async => CustomerPage(items: customers, total: customers.length),
     );
 
     await tester.pumpWidget(
@@ -118,17 +117,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets(
-    'shows salesperson by name and a "none assigned" fallback',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser);
+  testWidgets('shows salesperson by name and a "none assigned" fallback', (
+    tester,
+  ) async {
+    await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-      expect(find.text('Acme Corp'), findsOneWidget);
-      expect(find.text('Jane Doe'), findsOneWidget);
-      expect(find.text('Beta LLC'), findsOneWidget);
-      expect(find.text('None assigned'), findsOneWidget);
-    },
-  );
+    expect(find.text('Acme Corp'), findsOneWidget);
+    expect(find.text('Jane Doe'), findsOneWidget);
+    expect(find.text('Beta LLC'), findsOneWidget);
+    expect(find.text('None assigned'), findsOneWidget);
+  });
 
   testWidgets('search box, filter button, and pagination are present', (
     tester,
@@ -148,10 +146,7 @@ void main() {
       await tester.tap(find.byKey(const Key('customers_filter_button')));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('customers_filter_active')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('customers_filter_active')), findsOneWidget);
       expect(
         find.byKey(const Key('customers_filter_price_list')),
         findsOneWidget,
@@ -194,10 +189,8 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
-        (_) async => CustomerPage(
-          items: _testCustomers,
-          total: _testCustomers.length,
-        ),
+        (_) async =>
+            CustomerPage(items: _testCustomers, total: _testCustomers.length),
       );
 
       final router = GoRouter(

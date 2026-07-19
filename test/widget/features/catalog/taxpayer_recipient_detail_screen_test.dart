@@ -97,73 +97,66 @@ void main() {
   }
 
   group('create mode', () {
-    testWidgets(
-      'shows an editable id field, Save, and no Delete',
-      (tester) async {
-        await pumpScreen(tester, signedInAs: _fullAccessUser);
+    testWidgets('shows an editable id field, Save, and no Delete', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-        final idField = tester.widget<TextFormField>(
-          find.byKey(const Key('taxpayer_recipient_id_field')),
-        );
-        expect(idField.enabled, isTrue);
-        expect(find.byKey(const Key('postal_code_field')), findsOneWidget);
-        expect(find.byKey(const Key('regime_field')), findsOneWidget);
-        expect(find.byKey(const Key('save_button')), findsOneWidget);
-        expect(
-          find.byKey(const Key('delete_taxpayer_recipient_button')),
-          findsNothing,
-        );
-      },
-    );
+      final idField = tester.widget<TextFormField>(
+        find.byKey(const Key('taxpayer_recipient_id_field')),
+      );
+      expect(idField.enabled, isTrue);
+      expect(find.byKey(const Key('postal_code_field')), findsOneWidget);
+      expect(find.byKey(const Key('regime_field')), findsOneWidget);
+      expect(find.byKey(const Key('save_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('delete_taxpayer_recipient_button')),
+        findsNothing,
+      );
+    });
   });
 
   group('view mode (forceReadOnly)', () {
-    testWidgets(
-      'renders the id read-only, with no Save/Delete, and the AppBar '
-      'carries only the edit toggle (constitution v1.8.0)',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          taxpayerRecipientId: 'XAXX010101000',
-          forceReadOnly: true,
-        );
+    testWidgets('renders the id read-only, with no Save/Delete, and the AppBar '
+        'carries only the edit toggle (constitution v1.8.0)', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        taxpayerRecipientId: 'XAXX010101000',
+        forceReadOnly: true,
+      );
 
-        final idField = tester.widget<TextFormField>(
-          find.byKey(const Key('taxpayer_recipient_id_field')),
-        );
-        expect(idField.enabled, isFalse);
-        expect(idField.initialValue, 'XAXX010101000');
-        expect(find.byKey(const Key('save_button')), findsNothing);
-        expect(
-          find.byKey(const Key('delete_taxpayer_recipient_button')),
-          findsNothing,
-        );
-        expect(
-          find.byKey(const Key('edit_taxpayer_recipient_button')),
-          findsOneWidget,
-        );
-      },
-    );
+      final idField = tester.widget<TextFormField>(
+        find.byKey(const Key('taxpayer_recipient_id_field')),
+      );
+      expect(idField.enabled, isFalse);
+      expect(idField.initialValue, 'XAXX010101000');
+      expect(find.byKey(const Key('save_button')), findsNothing);
+      expect(
+        find.byKey(const Key('delete_taxpayer_recipient_button')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('edit_taxpayer_recipient_button')),
+        findsOneWidget,
+      );
+    });
   });
 
   group('edit mode', () {
-    testWidgets(
-      'the id field is not editable even with update privilege '
-      '(immutable, research.md §9)',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          taxpayerRecipientId: 'XAXX010101000',
-        );
+    testWidgets('the id field is not editable even with update privilege '
+        '(immutable, research.md §9)', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        taxpayerRecipientId: 'XAXX010101000',
+      );
 
-        final idField = tester.widget<TextFormField>(
-          find.byKey(const Key('taxpayer_recipient_id_field')),
-        );
-        expect(idField.enabled, isFalse);
-      },
-    );
+      final idField = tester.widget<TextFormField>(
+        find.byKey(const Key('taxpayer_recipient_id_field')),
+      );
+      expect(idField.enabled, isFalse);
+    });
 
     testWidgets('a read-only user sees disabled fields and no Delete', (
       tester,

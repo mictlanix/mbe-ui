@@ -67,72 +67,50 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group(
-    'CustomerFormController.submitCreate validation (FR-018, FR-019)',
-    () {
-      test('code/name/priceList are required before submit', () async {
-        final notifier = container.read(
-          customerFormControllerProvider.notifier,
-        );
+  group('CustomerFormController.submitCreate validation (FR-018, FR-019)', () {
+    test('code/name/priceList are required before submit', () async {
+      final notifier = container.read(customerFormControllerProvider.notifier);
 
-        await notifier.submitCreate();
+      await notifier.submitCreate();
 
-        final state = container.read(customerFormControllerProvider);
-        expect(state.fieldErrors['code'], CustomerFormErrorCode.codeRequired);
-        expect(state.fieldErrors['name'], CustomerFormErrorCode.nameRequired);
-        expect(
-          state.fieldErrors['priceList'],
-          CustomerFormErrorCode.priceListRequired,
-        );
-        verifyNever(
+      final state = container.read(customerFormControllerProvider);
+      expect(state.fieldErrors['code'], CustomerFormErrorCode.codeRequired);
+      expect(state.fieldErrors['name'], CustomerFormErrorCode.nameRequired);
+      expect(
+        state.fieldErrors['priceList'],
+        CustomerFormErrorCode.priceListRequired,
+      );
+      verifyNever(
+        () => repository.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+        ),
+      );
+    });
+
+    test(
+      'a valid submission (with salesperson) creates the customer',
+      () async {
+        when(
           () => repository.create(
-            code: any(named: 'code'),
-            name: any(named: 'name'),
-            priceList: any(named: 'priceList'),
+            code: 'CUST-001',
+            name: 'Acme Corp',
+            priceList: 1,
+            zone: null,
+            creditLimit: null,
+            creditDays: null,
+            shipping: false,
+            shippingRequiredDocument: false,
+            salesperson: 2,
+            comment: null,
+          ),
+        ).thenAnswer(
+          (_) async => _customer(
+            salesperson: const EmployeeRef(id: 2, name: 'Jane Doe'),
           ),
         );
-      });
 
-      test(
-        'a valid submission (with salesperson) creates the customer',
-        () async {
-          when(
-            () => repository.create(
-              code: 'CUST-001',
-              name: 'Acme Corp',
-              priceList: 1,
-              zone: null,
-              creditLimit: null,
-              creditDays: null,
-              shipping: false,
-              shippingRequiredDocument: false,
-              salesperson: 2,
-              comment: null,
-            ),
-          ).thenAnswer(
-            (_) async =>
-                _customer(salesperson: const EmployeeRef(id: 2, name: 'Jane Doe')),
-          );
-
-          final notifier = container.read(
-            customerFormControllerProvider.notifier,
-          );
-          notifier
-            ..codeChanged('CUST-001')
-            ..nameChanged('Acme Corp')
-            ..priceListSelected(1, 'Retail')
-            ..salespersonSelected(2, 'Jane Doe');
-
-          await notifier.submitCreate();
-
-          expect(
-            container.read(customerFormControllerProvider).saved,
-            isTrue,
-          );
-        },
-      );
-
-      test('a negative credit limit is rejected before submit', () async {
         final notifier = container.read(
           customerFormControllerProvider.notifier,
         );
@@ -140,18 +118,31 @@ void main() {
           ..codeChanged('CUST-001')
           ..nameChanged('Acme Corp')
           ..priceListSelected(1, 'Retail')
-          ..creditLimitChanged('-1');
+          ..salespersonSelected(2, 'Jane Doe');
 
         await notifier.submitCreate();
 
-        final state = container.read(customerFormControllerProvider);
-        expect(
-          state.fieldErrors['creditLimit'],
-          CustomerFormErrorCode.creditLimitInvalid,
-        );
-      });
-    },
-  );
+        expect(container.read(customerFormControllerProvider).saved, isTrue);
+      },
+    );
+
+    test('a negative credit limit is rejected before submit', () async {
+      final notifier = container.read(customerFormControllerProvider.notifier);
+      notifier
+        ..codeChanged('CUST-001')
+        ..nameChanged('Acme Corp')
+        ..priceListSelected(1, 'Retail')
+        ..creditLimitChanged('-1');
+
+      await notifier.submitCreate();
+
+      final state = container.read(customerFormControllerProvider);
+      expect(
+        state.fieldErrors['creditLimit'],
+        CustomerFormErrorCode.creditLimitInvalid,
+      );
+    });
+  });
 
   group('CustomerFormController privilege checks', () {
     test('submitCreate is denied for a read-only user', () async {
@@ -173,28 +164,33 @@ void main() {
   });
 
   group('CustomerFormController.loadForEdit', () {
-    test('a customer with no salesperson pre-fills an empty display text', () async {
-      when(() => repository.get(customerId: 1)).thenAnswer(
-        (_) async => _customer(),
-      );
+    test(
+      'a customer with no salesperson pre-fills an empty display text',
+      () async {
+        when(
+          () => repository.get(customerId: 1),
+        ).thenAnswer((_) async => _customer());
 
-      final notifier = container.read(customerFormControllerProvider.notifier);
-      await notifier.loadForEdit(1);
+        final notifier = container.read(
+          customerFormControllerProvider.notifier,
+        );
+        await notifier.loadForEdit(1);
 
-      final state = container.read(customerFormControllerProvider);
-      expect(state.salespersonId, isNull);
-      expect(state.salespersonDisplayText, '');
-      expect(state.priceListDisplayText, 'Retail');
-    });
+        final state = container.read(customerFormControllerProvider);
+        expect(state.salespersonId, isNull);
+        expect(state.salespersonDisplayText, '');
+        expect(state.priceListDisplayText, 'Retail');
+      },
+    );
   });
 
   group('CustomerFormController.delete', () {
     test(
       'a still-referenced rejection is surfaced and the customer stays loaded',
       () async {
-        when(() => repository.get(customerId: 1)).thenAnswer(
-          (_) async => _customer(),
-        );
+        when(
+          () => repository.get(customerId: 1),
+        ).thenAnswer((_) async => _customer());
         when(() => repository.delete(customerId: 1)).thenThrow(
           const AppError.server(
             statusCode: 400,
