@@ -1,0 +1,130 @@
+{
+  "workflow": "speckit",
+  "specName": "facility scoped catalogs",
+  "branch": "014-facility-scoped-catalogs",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-20T04:23:17.415Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-20T04:26:21.397Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Each of the three catalogs MUST have its own dedicated paginated list screen consistent with existing catalogs"
+    },
+    "FR-002": {
+      "title": "Each list screen MUST ship a free-text search box wired to the server-side search capability requested upstream"
+    },
+    "FR-003": {
+      "title": "Each list screen MUST expose backend-supported facet filters, combinable with each other and with search"
+    },
+    "FR-004": {
+      "title": "Create MUST be a primary action beside the filter/search bar, visible only with create privilege"
+    },
+    "FR-005": {
+      "title": "Row's sole direct action MUST be Edit; clicking elsewhere opens the read-only detail screen"
+    },
+    "FR-006": {
+      "title": "Read-only detail MUST offer a switch-to-edit control only when the user holds update privilege"
+    },
+    "FR-007": {
+      "title": "Delete MUST live only on the detail screen, require confirmation, and be gated by delete privilege"
+    },
+    "FR-008": {
+      "title": "Every create/update/delete MUST be gated by the existing per-catalog access-control privilege"
+    },
+    "FR-009": {
+      "title": "All three catalogs MUST be reachable from the existing catalog navigation, gated by read privilege"
+    },
+    "FR-010": {
+      "title": "Screen-level actions other than the read-only-to-edit toggle MUST be visible-label body buttons"
+    },
+    "FR-011": {
+      "title": "All three catalogs MUST display status via the shared status badge and reuse the shared status concept"
+    },
+    "FR-012": {
+      "title": "Backend rejections on save or delete MUST be surfaced in place without discarding unsaved input"
+    },
+    "FR-013": {
+      "title": "Warehouses MUST support CRUD with fields facility, code, name, comment, status"
+    },
+    "FR-014": {
+      "title": "Warehouse facility, code, and name MUST be required on create"
+    },
+    "FR-015": {
+      "title": "Warehouse form MUST provide a searchable facility picker; facility displayed by name with a fallback label"
+    },
+    "FR-016": {
+      "title": "Cash Drawers MUST support CRUD with fields facility, code, name, comment, status"
+    },
+    "FR-017": {
+      "title": "Cash drawer facility, code, and name MUST be required on create"
+    },
+    "FR-018": {
+      "title": "Cash drawer form MUST provide the same searchable facility picker with by-name display and fallback"
+    },
+    "FR-019": {
+      "title": "Points of Sale MUST support CRUD with fields facility, code, name, warehouse, comment, status"
+    },
+    "FR-020": {
+      "title": "Point of sale facility, code, name, and warehouse MUST be required on create"
+    },
+    "FR-021": {
+      "title": "Point-of-sale form MUST provide searchable facility and warehouse pickers, both displayed by name with fallbacks"
+    },
+    "FR-022": {
+      "title": "Point-of-sale warehouse picker MUST offer only warehouses of the selected facility and force reselection on facility change"
+    },
+    "FR-023": {
+      "title": "Facility picker and filter MUST read facilities only, with no create/edit/delete affordance in this feature"
+    },
+    "FR-024": {
+      "title": "Facility type MAY be shown as a plain label but MUST NOT change any screen's behavior, fields, or layout"
+    },
+    "FR-025": {
+      "title": "Reading facilities MUST degrade gracefully: the list still renders and facility controls show their empty state"
+    },
+    "FR-026": {
+      "title": "Facility type MUST be named in one domain enum (Store 0 / Production Site 1); no screen reads raw type numbers"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 30,
+    "projectedTasks": 45,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "context": [
+    "area: lib/features/catalog (existing shared master-data module, extended)",
+    "area: lib/generated/openapi — WarehousesApi, PointsOfSaleApi, CashDrawersApi, FacilitiesApi (full CRUD already generated)",
+    "precedent: specs/013-catalog-logistics-payment-entities and specs/012-catalog-master-entities",
+    "constraint: reuse shared EntityStatus at lib/core/domain/entity_status.dart — no new status enum",
+    "constraint: RBAC objects warehouses(4)/pointsOfSale(9)/cashDrawers(10) already exist; no facilities object exists",
+    "constraint: no search param on any of the four list endpoints — file upstream, never client-side filter (constitution III/VI)",
+    "constraint: reuse DataTableView, CatalogPagination, CatalogFilterBar/SearchBar, CatalogFilterSheet, CatalogEntityPicker, ResponsiveFormGrid, ErrorBanner unmodified",
+    "upstream: mbe-api #86/#87/#88/#89 search param; #90 address FK, #91 logo upload, #92 FacilityType names, #93 facilities SystemObject — filed 2026-07-19",
+    "resolved: mbe-api FacilityType IntEnum is STORE=0, PRODUCTION_SITE=1 — issue #92 closed 2026-07-19; name it UI-side per the EntityStatus/Gender pattern"
+  ],
+  "intent": "Deliver full CRUD catalog UIs for the three facility-scoped operational catalogs — Warehouses, Points of Sale, and Cash Drawers — consuming Facility read-only as a picker and filter.",
+  "expectations": [
+    "Facilities management (create/edit/delete) and any Facilities screen — deferred pending upstream address management, logo upload, named facility-type values, and a facility access-control object",
+    "Cash drawer sessions (open/close/reconcile) — master record only",
+    "Warehouse stock, lots, serial numbers, and movements — master record only",
+    "Bulk import/export (CSV) for any of the three catalogs",
+    "Client-side filtering as a substitute for the missing server-side search param"
+  ]
+}
