@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,7 +16,7 @@ part 'user_list_item.g.dart';
 /// * [email]
 /// * [employeeId]
 /// * [administrator]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class UserListItem
     implements Built<UserListItem, UserListItemBuilder> {
@@ -31,8 +32,9 @@ abstract class UserListItem
   @BuiltValueField(wireName: r'administrator')
   bool get administrator;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   UserListItem._();
 
@@ -79,10 +81,10 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
       object.administrator,
       specifiedType: const FullType(bool),
     );
-    yield r'disabled';
+    yield r'status';
     yield serializers.serialize(
-      object.disabled,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
   }
 
@@ -148,14 +150,14 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
                   as bool;
           result.administrator = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,7 +17,7 @@ part 'warehouse_summary.g.dart';
 /// * [code]
 /// * [name]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class WarehouseSummary
     implements Built<WarehouseSummary, WarehouseSummaryBuilder> {
@@ -35,8 +36,9 @@ abstract class WarehouseSummary
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   WarehouseSummary._();
 
@@ -91,13 +93,11 @@ class _$WarehouseSummarySerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
-    yield r'disabled';
-    yield object.disabled == null
-        ? null
-        : serializers.serialize(
-            object.disabled,
-            specifiedType: const FullType.nullable(bool),
-          );
+    yield r'status';
+    yield serializers.serialize(
+      object.status,
+      specifiedType: const FullType(EntityStatus),
+    );
   }
 
   @override
@@ -165,15 +165,14 @@ class _$WarehouseSummarySerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

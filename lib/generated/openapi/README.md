@@ -215,6 +215,7 @@ Class | Method | HTTP request | Description
  - [EmployeeCreate](doc/EmployeeCreate.md)
  - [EmployeeResponse](doc/EmployeeResponse.md)
  - [EmployeeUpdate](doc/EmployeeUpdate.md)
+ - [EntityStatus](doc/EntityStatus.md)
  - [ExchangeRateCreate](doc/ExchangeRateCreate.md)
  - [ExchangeRateResponse](doc/ExchangeRateResponse.md)
  - [ExchangeRateUpdate](doc/ExchangeRateUpdate.md)

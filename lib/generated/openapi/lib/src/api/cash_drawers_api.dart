@@ -12,6 +12,7 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_update.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
 
@@ -266,6 +267,7 @@ class CashDrawersApi {
   ///
   /// Parameters:
   /// * [facility]
+  /// * [status]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -280,6 +282,7 @@ class CashDrawersApi {
   Future<Response<ListResponseCashDrawerResponse>>
   listCashDrawersApiV1CashDrawersGet({
     int? facility,
+    EntityStatus? status,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -308,6 +311,12 @@ class CashDrawersApi {
           _serializers,
           facility,
           const FullType(int),
+        ),
+      if (status != null)
+        r'status': encodeQueryParameter(
+          _serializers,
+          status,
+          const FullType(EntityStatus),
         ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),

@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/warehouse_summary.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -21,7 +22,7 @@ part 'payment_method_option_response.g.dart';
 /// * [displayOnTicket]
 /// * [paymentMethod]
 /// * [commission]
-/// * [enabled]
+/// * [status]
 @BuiltValue()
 abstract class PaymentMethodOptionResponse
     implements
@@ -50,8 +51,9 @@ abstract class PaymentMethodOptionResponse
   @BuiltValueField(wireName: r'commission')
   String get commission;
 
-  @BuiltValueField(wireName: r'enabled')
-  bool get enabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   PaymentMethodOptionResponse._();
 
@@ -125,10 +127,10 @@ class _$PaymentMethodOptionResponseSerializer
       object.commission,
       specifiedType: const FullType(String),
     );
-    yield r'enabled';
+    yield r'status';
     yield serializers.serialize(
-      object.enabled,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
   }
 
@@ -221,14 +223,14 @@ class _$PaymentMethodOptionResponseSerializer
                   as String;
           result.commission = valueDes;
           break;
-        case r'enabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.enabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

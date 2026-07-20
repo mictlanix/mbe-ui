@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/credit_limit.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -21,6 +22,7 @@ part 'customer_create.g.dart';
 /// * [shipping]
 /// * [shippingRequiredDocument]
 /// * [salesperson]
+/// * [status]
 /// * [comment]
 @BuiltValue()
 abstract class CustomerCreate
@@ -52,6 +54,10 @@ abstract class CustomerCreate
   @BuiltValueField(wireName: r'salesperson')
   int? get salesperson;
 
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
+
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
@@ -64,7 +70,8 @@ abstract class CustomerCreate
   static void _defaults(CustomerCreateBuilder b) => b
     ..creditDays = 0
     ..shipping = false
-    ..shippingRequiredDocument = false;
+    ..shippingRequiredDocument = false
+    ..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<CustomerCreate> get serializer =>
@@ -139,6 +146,13 @@ class _$CustomerCreateSerializer
       yield serializers.serialize(
         object.salesperson,
         specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.status != null) {
+      yield r'status';
+      yield serializers.serialize(
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
     if (object.comment != null) {
@@ -251,6 +265,15 @@ class _$CustomerCreateSerializer
                   as int?;
           if (valueDes == null) continue;
           result.salesperson = valueDes;
+          break;
+        case r'status':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(EntityStatus),
+                  )
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         case r'comment':
           final valueDes =

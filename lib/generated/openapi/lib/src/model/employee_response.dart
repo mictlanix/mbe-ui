@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/date.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -20,12 +21,11 @@ part 'employee_response.g.dart';
 /// * [birthday]
 /// * [taxpayerId]
 /// * [salesPerson]
-/// * [active]
+/// * [status]
 /// * [personalId]
 /// * [startJobDate]
 /// * [enrollNumber]
 /// * [comment]
-/// * [disabled]
 @BuiltValue()
 abstract class EmployeeResponse
     implements Built<EmployeeResponse, EmployeeResponseBuilder> {
@@ -53,8 +53,9 @@ abstract class EmployeeResponse
   @BuiltValueField(wireName: r'sales_person')
   bool get salesPerson;
 
-  @BuiltValueField(wireName: r'active')
-  bool get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'personal_id')
   String? get personalId;
@@ -67,9 +68,6 @@ abstract class EmployeeResponse
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
-
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
 
   EmployeeResponse._();
 
@@ -139,10 +137,10 @@ class _$EmployeeResponseSerializer
       object.salesPerson,
       specifiedType: const FullType(bool),
     );
-    yield r'active';
+    yield r'status';
     yield serializers.serialize(
-      object.active,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
     yield r'personal_id';
     yield object.personalId == null
@@ -169,13 +167,6 @@ class _$EmployeeResponseSerializer
         : serializers.serialize(
             object.comment,
             specifiedType: const FullType.nullable(String),
-          );
-    yield r'disabled';
-    yield object.disabled == null
-        ? null
-        : serializers.serialize(
-            object.disabled,
-            specifiedType: const FullType.nullable(bool),
           );
   }
 
@@ -271,14 +262,14 @@ class _$EmployeeResponseSerializer
                   as bool;
           result.salesPerson = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.active = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         case r'personal_id':
           final valueDes =
@@ -318,16 +309,6 @@ class _$EmployeeResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
-          break;
-        case r'disabled':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(bool),
-                  )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
           break;
         default:
           unhandled.add(key);

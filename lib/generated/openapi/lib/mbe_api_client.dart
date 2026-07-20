@@ -48,6 +48,7 @@ export 'package:mbe_api_client/src/model/customer_update.dart';
 export 'package:mbe_api_client/src/model/employee_create.dart';
 export 'package:mbe_api_client/src/model/employee_response.dart';
 export 'package:mbe_api_client/src/model/employee_update.dart';
+export 'package:mbe_api_client/src/model/entity_status.dart';
 export 'package:mbe_api_client/src/model/exchange_rate_create.dart';
 export 'package:mbe_api_client/src/model/exchange_rate_response.dart';
 export 'package:mbe_api_client/src/model/exchange_rate_update.dart';

@@ -9,6 +9,7 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_point_sale_response.dart';
 import 'package:mbe_api_client/src/model/point_sale_create.dart';
@@ -264,6 +265,7 @@ class PointsOfSaleApi {
   /// Parameters:
   /// * [facility]
   /// * [warehouse]
+  /// * [status]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -279,6 +281,7 @@ class PointsOfSaleApi {
   listPointsOfSaleApiV1PointsOfSaleGet({
     int? facility,
     int? warehouse,
+    EntityStatus? status,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -313,6 +316,12 @@ class PointsOfSaleApi {
           _serializers,
           warehouse,
           const FullType(int),
+        ),
+      if (status != null)
+        r'status': encodeQueryParameter(
+          _serializers,
+          status,
+          const FullType(EntityStatus),
         ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),

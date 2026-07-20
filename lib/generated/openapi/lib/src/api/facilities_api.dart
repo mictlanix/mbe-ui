@@ -9,6 +9,7 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/facility_create.dart';
 import 'package:mbe_api_client/src/model/facility_response.dart';
 import 'package:mbe_api_client/src/model/facility_update.dart';
@@ -261,6 +262,7 @@ class FacilitiesApi {
   ///
   ///
   /// Parameters:
+  /// * [status]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -274,6 +276,7 @@ class FacilitiesApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseFacilityResponse>>
   listFacilitiesApiV1FacilitiesGet({
+    EntityStatus? status,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -297,6 +300,12 @@ class FacilitiesApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (status != null)
+        r'status': encodeQueryParameter(
+          _serializers,
+          status,
+          const FullType(EntityStatus),
+        ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null)

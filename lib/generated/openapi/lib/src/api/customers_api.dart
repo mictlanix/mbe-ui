@@ -12,6 +12,7 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/customer_create.dart';
 import 'package:mbe_api_client/src/model/customer_response.dart';
 import 'package:mbe_api_client/src/model/customer_update.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 
@@ -262,7 +263,7 @@ class CustomersApi {
   ///
   /// Parameters:
   /// * [search]
-  /// * [disabled]
+  /// * [status]
   /// * [priceList]
   /// * [salesperson]
   /// * [skip]
@@ -279,7 +280,7 @@ class CustomersApi {
   Future<Response<ListResponseCustomerListItem>>
   listCustomersApiV1CustomersGet({
     String? search,
-    bool? disabled,
+    EntityStatus? status,
     int? priceList,
     int? salesperson,
     int? skip = 0,
@@ -311,11 +312,11 @@ class CustomersApi {
           search,
           const FullType(String),
         ),
-      if (disabled != null)
-        r'disabled': encodeQueryParameter(
+      if (status != null)
+        r'status': encodeQueryParameter(
           _serializers,
-          disabled,
-          const FullType(bool),
+          status,
+          const FullType(EntityStatus),
         ),
       if (priceList != null)
         r'price_list': encodeQueryParameter(

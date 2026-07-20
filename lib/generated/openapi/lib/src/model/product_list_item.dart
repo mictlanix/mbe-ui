@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -21,7 +22,7 @@ part 'product_list_item.g.dart';
 /// * [model]
 /// * [unitOfMeasurement]
 /// * [taxRate]
-/// * [deactivated]
+/// * [status]
 @BuiltValue()
 abstract class ProductListItem
     implements Built<ProductListItem, ProductListItemBuilder> {
@@ -52,8 +53,9 @@ abstract class ProductListItem
   @BuiltValueField(wireName: r'tax_rate')
   String get taxRate;
 
-  @BuiltValueField(wireName: r'deactivated')
-  bool get deactivated;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   ProductListItem._();
 
@@ -134,10 +136,10 @@ class _$ProductListItemSerializer
       object.taxRate,
       specifiedType: const FullType(String),
     );
-    yield r'deactivated';
+    yield r'status';
     yield serializers.serialize(
-      object.deactivated,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
   }
 
@@ -248,14 +250,14 @@ class _$ProductListItemSerializer
                   as String;
           result.taxRate = valueDes;
           break;
-        case r'deactivated':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.deactivated = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

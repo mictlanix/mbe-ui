@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/commission.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -19,7 +20,7 @@ part 'payment_method_option_create.g.dart';
 /// * [displayOnTicket]
 /// * [paymentMethod]
 /// * [commission]
-/// * [enabled]
+/// * [status]
 @BuiltValue()
 abstract class PaymentMethodOptionCreate
     implements
@@ -45,8 +46,9 @@ abstract class PaymentMethodOptionCreate
   @BuiltValueField(wireName: r'commission')
   Commission? get commission;
 
-  @BuiltValueField(wireName: r'enabled')
-  bool? get enabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   PaymentMethodOptionCreate._();
 
@@ -58,7 +60,7 @@ abstract class PaymentMethodOptionCreate
   static void _defaults(PaymentMethodOptionCreateBuilder b) => b
     ..numberOfPayments = 1
     ..displayOnTicket = true
-    ..enabled = true;
+    ..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<PaymentMethodOptionCreate> get serializer =>
@@ -124,11 +126,11 @@ class _$PaymentMethodOptionCreateSerializer
         specifiedType: const FullType(Commission),
       );
     }
-    if (object.enabled != null) {
-      yield r'enabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.enabled,
-        specifiedType: const FullType(bool),
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
   }
@@ -213,14 +215,14 @@ class _$PaymentMethodOptionCreateSerializer
                   as Commission;
           result.commission.replace(valueDes);
           break;
-        case r'enabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.enabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

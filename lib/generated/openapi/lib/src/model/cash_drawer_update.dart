@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,7 +16,7 @@ part 'cash_drawer_update.g.dart';
 /// * [code]
 /// * [name]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class CashDrawerUpdate
     implements Built<CashDrawerUpdate, CashDrawerUpdateBuilder> {
@@ -31,8 +32,9 @@ abstract class CashDrawerUpdate
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   CashDrawerUpdate._();
 
@@ -88,11 +90,11 @@ class _$CashDrawerUpdateSerializer
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -162,15 +164,15 @@ class _$CashDrawerUpdateSerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.disabled = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

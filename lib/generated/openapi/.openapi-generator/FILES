@@ -22,6 +22,7 @@ doc/EmployeeCreate.md
 doc/EmployeeResponse.md
 doc/EmployeeUpdate.md
 doc/EmployeesApi.md
+doc/EntityStatus.md
 doc/ExchangeRateCreate.md
 doc/ExchangeRateResponse.md
 doc/ExchangeRateUpdate.md
@@ -181,6 +182,7 @@ lib/src/model/date.dart
 lib/src/model/employee_create.dart
 lib/src/model/employee_response.dart
 lib/src/model/employee_update.dart
+lib/src/model/entity_status.dart
 lib/src/model/exchange_rate_create.dart
 lib/src/model/exchange_rate_response.dart
 lib/src/model/exchange_rate_update.dart

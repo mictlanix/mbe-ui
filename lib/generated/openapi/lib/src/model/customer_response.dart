@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/employee_response.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -23,7 +24,7 @@ part 'customer_response.g.dart';
 /// * [shipping]
 /// * [shippingRequiredDocument]
 /// * [salesperson]
-/// * [disabled]
+/// * [status]
 /// * [comment]
 @BuiltValue()
 abstract class CustomerResponse
@@ -58,8 +59,9 @@ abstract class CustomerResponse
   @BuiltValueField(wireName: r'salesperson')
   EmployeeResponse? get salesperson;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
@@ -144,13 +146,11 @@ class _$CustomerResponseSerializer
             object.salesperson,
             specifiedType: const FullType.nullable(EmployeeResponse),
           );
-    yield r'disabled';
-    yield object.disabled == null
-        ? null
-        : serializers.serialize(
-            object.disabled,
-            specifiedType: const FullType.nullable(bool),
-          );
+    yield r'status';
+    yield serializers.serialize(
+      object.status,
+      specifiedType: const FullType(EntityStatus),
+    );
     yield r'comment';
     yield object.comment == null
         ? null
@@ -271,15 +271,14 @@ class _$CustomerResponseSerializer
           if (valueDes == null) continue;
           result.salesperson.replace(valueDes);
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         case r'comment':
           final valueDes =

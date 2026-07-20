@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,7 +17,7 @@ part 'point_sale_create.g.dart';
 /// * [name]
 /// * [warehouse]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class PointSaleCreate
     implements Built<PointSaleCreate, PointSaleCreateBuilder> {
@@ -35,8 +36,9 @@ abstract class PointSaleCreate
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   PointSaleCreate._();
 
@@ -44,7 +46,8 @@ abstract class PointSaleCreate
       _$PointSaleCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(PointSaleCreateBuilder b) => b;
+  static void _defaults(PointSaleCreateBuilder b) =>
+      b..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<PointSaleCreate> get serializer =>
@@ -91,11 +94,11 @@ class _$PointSaleCreateSerializer
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
   }
@@ -165,15 +168,14 @@ class _$PointSaleCreateSerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

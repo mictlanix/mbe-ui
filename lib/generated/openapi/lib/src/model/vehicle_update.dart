@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,7 +16,7 @@ part 'vehicle_update.g.dart';
 /// * [name]
 /// * [nickname]
 /// * [tonsCapacity]
-/// * [active]
+/// * [status]
 @BuiltValue()
 abstract class VehicleUpdate
     implements Built<VehicleUpdate, VehicleUpdateBuilder> {
@@ -31,8 +32,9 @@ abstract class VehicleUpdate
   @BuiltValueField(wireName: r'tons_capacity')
   int? get tonsCapacity;
 
-  @BuiltValueField(wireName: r'active')
-  bool? get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   VehicleUpdate._();
 
@@ -87,11 +89,11 @@ class _$VehicleUpdateSerializer implements PrimitiveSerializer<VehicleUpdate> {
         specifiedType: const FullType.nullable(int),
       );
     }
-    if (object.active != null) {
-      yield r'active';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.active,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -161,15 +163,15 @@ class _$VehicleUpdateSerializer implements PrimitiveSerializer<VehicleUpdate> {
           if (valueDes == null) continue;
           result.tonsCapacity = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.active = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

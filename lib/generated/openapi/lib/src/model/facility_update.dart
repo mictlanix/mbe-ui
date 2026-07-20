@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -21,7 +22,7 @@ part 'facility_update.g.dart';
 /// * [logo]
 /// * [receiptMessage]
 /// * [defaultBatch]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class FacilityUpdate
     implements Built<FacilityUpdate, FacilityUpdateBuilder> {
@@ -53,8 +54,9 @@ abstract class FacilityUpdate
   @BuiltValueField(wireName: r'default_batch')
   String? get defaultBatch;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   FacilityUpdate._();
 
@@ -145,11 +147,11 @@ class _$FacilityUpdateSerializer
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -269,15 +271,15 @@ class _$FacilityUpdateSerializer
           if (valueDes == null) continue;
           result.defaultBatch = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.disabled = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

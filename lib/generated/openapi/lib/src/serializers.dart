@@ -30,6 +30,7 @@ import 'package:mbe_api_client/src/model/customer_update.dart';
 import 'package:mbe_api_client/src/model/employee_create.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/employee_update.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_create.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_update.dart';
@@ -145,6 +146,7 @@ part 'serializers.g.dart';
   EmployeeCreate,
   EmployeeResponse,
   EmployeeUpdate,
+  EntityStatus,
   ExchangeRateCreate,
   ExchangeRateResponse,
   ExchangeRateUpdate,

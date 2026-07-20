@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/privilege_update.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/user_settings_update.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -17,7 +18,7 @@ part 'user_update.g.dart';
 /// * [email]
 /// * [employeeId]
 /// * [administrator]
-/// * [disabled]
+/// * [status]
 /// * [privileges]
 /// * [settings]
 @BuiltValue()
@@ -31,8 +32,9 @@ abstract class UserUpdate implements Built<UserUpdate, UserUpdateBuilder> {
   @BuiltValueField(wireName: r'administrator')
   bool? get administrator;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'privileges')
   BuiltList<PrivilegeUpdate>? get privileges;
@@ -84,11 +86,11 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
         specifiedType: const FullType.nullable(bool),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
     if (object.privileges != null) {
@@ -164,15 +166,15 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
           if (valueDes == null) continue;
           result.administrator = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.disabled = valueDes;
+          result.status = valueDes;
           break;
         case r'privileges':
           final valueDes =

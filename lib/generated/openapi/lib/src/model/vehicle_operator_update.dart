@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/date.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,7 +19,7 @@ part 'vehicle_operator_update.g.dart';
 /// * [issueDate]
 /// * [expirationDate]
 /// * [issuingLocation]
-/// * [active]
+/// * [status]
 @BuiltValue()
 abstract class VehicleOperatorUpdate
     implements Built<VehicleOperatorUpdate, VehicleOperatorUpdateBuilder> {
@@ -40,8 +41,9 @@ abstract class VehicleOperatorUpdate
   @BuiltValueField(wireName: r'issuing_location')
   String? get issuingLocation;
 
-  @BuiltValueField(wireName: r'active')
-  bool? get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   VehicleOperatorUpdate._();
 
@@ -115,11 +117,11 @@ class _$VehicleOperatorUpdateSerializer
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.active != null) {
-      yield r'active';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.active,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -209,15 +211,15 @@ class _$VehicleOperatorUpdateSerializer
           if (valueDes == null) continue;
           result.issuingLocation = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.active = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);
