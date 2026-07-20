@@ -3,16 +3,19 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'store_update.g.dart';
+part 'facility_summary.g.dart';
 
-/// StoreUpdate
+/// Flat Facility representation used when embedded as another resource's FK.
 ///
 /// Properties:
+/// * [facilityId]
 /// * [code]
 /// * [name]
+/// * [type]
 /// * [location]
 /// * [address]
 /// * [taxpayer]
@@ -21,24 +24,32 @@ part 'store_update.g.dart';
 /// * [defaultBatch]
 /// * [disabled]
 @BuiltValue()
-abstract class StoreUpdate implements Built<StoreUpdate, StoreUpdateBuilder> {
+abstract class FacilitySummary
+    implements Built<FacilitySummary, FacilitySummaryBuilder> {
+  @BuiltValueField(wireName: r'facility_id')
+  int get facilityId;
+
   @BuiltValueField(wireName: r'code')
-  String? get code;
+  String get code;
 
   @BuiltValueField(wireName: r'name')
-  String? get name;
+  String get name;
+
+  @BuiltValueField(wireName: r'type')
+  FacilityType get type;
+  // enum typeEnum {  0,  1,  };
 
   @BuiltValueField(wireName: r'location')
-  String? get location;
+  String get location;
 
   @BuiltValueField(wireName: r'address')
-  int? get address;
+  int get address;
 
   @BuiltValueField(wireName: r'taxpayer')
-  String? get taxpayer;
+  String get taxpayer;
 
   @BuiltValueField(wireName: r'logo')
-  String? get logo;
+  String get logo;
 
   @BuiltValueField(wireName: r'receipt_message')
   String? get receiptMessage;
@@ -49,98 +60,99 @@ abstract class StoreUpdate implements Built<StoreUpdate, StoreUpdateBuilder> {
   @BuiltValueField(wireName: r'disabled')
   bool? get disabled;
 
-  StoreUpdate._();
+  FacilitySummary._();
 
-  factory StoreUpdate([void updates(StoreUpdateBuilder b)]) = _$StoreUpdate;
+  factory FacilitySummary([void updates(FacilitySummaryBuilder b)]) =
+      _$FacilitySummary;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(StoreUpdateBuilder b) => b;
+  static void _defaults(FacilitySummaryBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<StoreUpdate> get serializer => _$StoreUpdateSerializer();
+  static Serializer<FacilitySummary> get serializer =>
+      _$FacilitySummarySerializer();
 }
 
-class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
+class _$FacilitySummarySerializer
+    implements PrimitiveSerializer<FacilitySummary> {
   @override
-  final Iterable<Type> types = const [StoreUpdate, _$StoreUpdate];
+  final Iterable<Type> types = const [FacilitySummary, _$FacilitySummary];
 
   @override
-  final String wireName = r'StoreUpdate';
+  final String wireName = r'FacilitySummary';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    StoreUpdate object, {
+    FacilitySummary object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.code != null) {
-      yield r'code';
-      yield serializers.serialize(
-        object.code,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.name != null) {
-      yield r'name';
-      yield serializers.serialize(
-        object.name,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.location != null) {
-      yield r'location';
-      yield serializers.serialize(
-        object.location,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.address != null) {
-      yield r'address';
-      yield serializers.serialize(
-        object.address,
-        specifiedType: const FullType.nullable(int),
-      );
-    }
-    if (object.taxpayer != null) {
-      yield r'taxpayer';
-      yield serializers.serialize(
-        object.taxpayer,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.logo != null) {
-      yield r'logo';
-      yield serializers.serialize(
-        object.logo,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.receiptMessage != null) {
-      yield r'receipt_message';
-      yield serializers.serialize(
-        object.receiptMessage,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.defaultBatch != null) {
-      yield r'default_batch';
-      yield serializers.serialize(
-        object.defaultBatch,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.disabled != null) {
-      yield r'disabled';
-      yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
-      );
-    }
+    yield r'facility_id';
+    yield serializers.serialize(
+      object.facilityId,
+      specifiedType: const FullType(int),
+    );
+    yield r'code';
+    yield serializers.serialize(
+      object.code,
+      specifiedType: const FullType(String),
+    );
+    yield r'name';
+    yield serializers.serialize(
+      object.name,
+      specifiedType: const FullType(String),
+    );
+    yield r'type';
+    yield serializers.serialize(
+      object.type,
+      specifiedType: const FullType(FacilityType),
+    );
+    yield r'location';
+    yield serializers.serialize(
+      object.location,
+      specifiedType: const FullType(String),
+    );
+    yield r'address';
+    yield serializers.serialize(
+      object.address,
+      specifiedType: const FullType(int),
+    );
+    yield r'taxpayer';
+    yield serializers.serialize(
+      object.taxpayer,
+      specifiedType: const FullType(String),
+    );
+    yield r'logo';
+    yield serializers.serialize(
+      object.logo,
+      specifiedType: const FullType(String),
+    );
+    yield r'receipt_message';
+    yield object.receiptMessage == null
+        ? null
+        : serializers.serialize(
+            object.receiptMessage,
+            specifiedType: const FullType.nullable(String),
+          );
+    yield r'default_batch';
+    yield object.defaultBatch == null
+        ? null
+        : serializers.serialize(
+            object.defaultBatch,
+            specifiedType: const FullType.nullable(String),
+          );
+    yield r'disabled';
+    yield object.disabled == null
+        ? null
+        : serializers.serialize(
+            object.disabled,
+            specifiedType: const FullType.nullable(bool),
+          );
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    StoreUpdate object, {
+    FacilitySummary object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -155,71 +167,77 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required StoreUpdateBuilder result,
+    required FacilitySummaryBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
+        case r'facility_id':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.facilityId = valueDes;
+          break;
         case r'code':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(String),
+                    specifiedType: const FullType(String),
                   )
-                  as String?;
-          if (valueDes == null) continue;
+                  as String;
           result.code = valueDes;
           break;
         case r'name':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(String),
+                    specifiedType: const FullType(String),
                   )
-                  as String?;
-          if (valueDes == null) continue;
+                  as String;
           result.name = valueDes;
+          break;
+        case r'type':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(FacilityType),
+                  )
+                  as FacilityType;
+          result.type = valueDes;
           break;
         case r'location':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(String),
+                    specifiedType: const FullType(String),
                   )
-                  as String?;
-          if (valueDes == null) continue;
+                  as String;
           result.location = valueDes;
           break;
         case r'address':
           final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(int),
-                  )
-                  as int?;
-          if (valueDes == null) continue;
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.address = valueDes;
           break;
         case r'taxpayer':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(String),
+                    specifiedType: const FullType(String),
                   )
-                  as String?;
-          if (valueDes == null) continue;
+                  as String;
           result.taxpayer = valueDes;
           break;
         case r'logo':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(String),
+                    specifiedType: const FullType(String),
                   )
-                  as String?;
-          if (valueDes == null) continue;
+                  as String;
           result.logo = valueDes;
           break;
         case r'receipt_message':
@@ -261,12 +279,12 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
   }
 
   @override
-  StoreUpdate deserialize(
+  FacilitySummary deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = StoreUpdateBuilder();
+    final result = FacilitySummaryBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

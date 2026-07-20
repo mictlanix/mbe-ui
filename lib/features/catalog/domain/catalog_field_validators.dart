@@ -1,5 +1,6 @@
-/// Client-side validators shared by the Suppliers, Employees, Customers, and
-/// Taxpayer Recipients forms (spec 012 FR-011/FR-016/FR-019/FR-024).
+/// Client-side validators shared by the Suppliers, Employees, Customers,
+/// Taxpayer Recipients, Vehicles, and Vehicle Operators forms (spec 012
+/// FR-011/FR-016/FR-019/FR-024; spec 013 FR-013/FR-016).
 /// Money/integer fields operate on their raw `String` representation and are
 /// never parsed to `double` for storage, only checked for validity here.
 abstract final class CatalogFieldValidators {
@@ -20,5 +21,21 @@ abstract final class CatalogFieldValidators {
     if (value.trim().isEmpty) return true;
     final parsed = int.tryParse(value.trim());
     return parsed != null && parsed >= 0;
+  }
+
+  /// `tonsCapacity` on Vehicles: required, must be a non-negative integer.
+  /// Combine with [isRequiredNonEmpty] at the call site — empty is NOT valid
+  /// here, unlike [isOptionalNonNegativeInteger] (data-model.md §2).
+  static bool isRequiredNonNegativeInteger(String value) {
+    final parsed = int.tryParse(value.trim());
+    return parsed != null && parsed >= 0;
+  }
+
+  /// Vehicle Operator's `expirationDate >= issueDate` soft rule
+  /// (data-model.md §3). `null` for either date is treated as valid here —
+  /// the required-field check runs separately.
+  static bool dateNotBefore(DateTime? start, DateTime? end) {
+    if (start == null || end == null) return true;
+    return !end.isBefore(start);
   }
 }

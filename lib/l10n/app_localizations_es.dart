@@ -69,8 +69,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get userMenuLogout => 'Salir';
 
   @override
-  String userMenuStoreFallback(int id) {
-    return 'Store $id';
+  String userMenuFacilityFallback(int id) {
+    return 'Instalación $id';
   }
 
   @override
@@ -803,6 +803,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get taxpayerRecipientsMenuTitle => 'Receptores Fiscales';
 
   @override
+  String get expensesMenuTitle => 'Gastos';
+
+  @override
+  String get vehiclesMenuTitle => 'Vehículos';
+
+  @override
+  String get vehicleOperatorsMenuTitle => 'Operadores de Vehículo';
+
+  @override
   String get zoneLabel => 'Zona';
 
   @override
@@ -942,6 +951,274 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get labelNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get expensesSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get newExpenseTooltip => 'Nuevo gasto';
+
+  @override
+  String get noExpensesFound => 'No se encontraron gastos.';
+
+  @override
+  String expensesLoadError(Object error) {
+    return 'Error al cargar los gastos: $error';
+  }
+
+  @override
+  String get newExpenseTitle => 'Nuevo gasto';
+
+  @override
+  String get editExpenseTitle => 'Editar gasto';
+
+  @override
+  String get viewExpenseTitle => 'Ver gasto';
+
+  @override
+  String get deleteExpenseButton => 'Eliminar gasto';
+
+  @override
+  String get deleteExpenseConfirmTitle => '¿Eliminar gasto?';
+
+  @override
+  String deleteExpenseConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get expenseLoadFailedError => 'Error al cargar el gasto.';
+
+  @override
+  String get expenseCreateFailedError => 'Error al crear el gasto.';
+
+  @override
+  String get expenseUpdateFailedError => 'Error al actualizar el gasto.';
+
+  @override
+  String get expenseDeleteFailedError => 'Error al eliminar el gasto.';
+
+  @override
+  String get expenseCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear gastos.';
+
+  @override
+  String get expenseUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar gastos.';
+
+  @override
+  String get expenseDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar gastos.';
+
+  @override
+  String get expenseNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get licensePlateLabel => 'Placa';
+
+  @override
+  String get tonsCapacityLabel => 'Capacidad en toneladas';
+
+  @override
+  String get vehiclesSearchLabel => 'Buscar por placa, nombre o apodo';
+
+  @override
+  String get newVehicleTooltip => 'Nuevo vehículo';
+
+  @override
+  String get noVehiclesFound => 'No se encontraron vehículos.';
+
+  @override
+  String vehiclesLoadError(Object error) {
+    return 'Error al cargar los vehículos: $error';
+  }
+
+  @override
+  String get newVehicleTitle => 'Nuevo vehículo';
+
+  @override
+  String get editVehicleTitle => 'Editar vehículo';
+
+  @override
+  String get viewVehicleTitle => 'Ver vehículo';
+
+  @override
+  String get deleteVehicleButton => 'Eliminar vehículo';
+
+  @override
+  String get deleteVehicleConfirmTitle => '¿Eliminar vehículo?';
+
+  @override
+  String deleteVehicleConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get vehicleLoadFailedError => 'Error al cargar el vehículo.';
+
+  @override
+  String get vehicleCreateFailedError => 'Error al crear el vehículo.';
+
+  @override
+  String get vehicleUpdateFailedError => 'Error al actualizar el vehículo.';
+
+  @override
+  String get vehicleDeleteFailedError => 'Error al eliminar el vehículo.';
+
+  @override
+  String get vehicleCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear vehículos.';
+
+  @override
+  String get vehicleUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar vehículos.';
+
+  @override
+  String get vehicleDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar vehículos.';
+
+  @override
+  String get vehicleLicensePlateRequiredError => 'La placa es obligatoria.';
+
+  @override
+  String get vehicleNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get vehicleNicknameRequiredError => 'El apodo es obligatorio.';
+
+  @override
+  String get vehicleTonsCapacityInvalidError =>
+      'Ingresa un número entero no negativo válido.';
+
+  @override
+  String get driverLabel => 'Operador';
+
+  @override
+  String get licenseTypeLabel => 'Tipo de licencia';
+
+  @override
+  String get driverLicenseNumberLabel => 'Número de licencia';
+
+  @override
+  String get issueDateLabel => 'Fecha de expedición';
+
+  @override
+  String get expirationDateLabel => 'Fecha de vencimiento';
+
+  @override
+  String get issuingLocationLabel => 'Lugar de expedición';
+
+  @override
+  String get daysUntilExpiryColumn => 'Vencimiento';
+
+  @override
+  String expiresInDays(int days) {
+    return 'Vence en $days días';
+  }
+
+  @override
+  String get expiresToday => 'Vence hoy';
+
+  @override
+  String expiredDaysAgo(int days) {
+    return 'Venció hace $days días';
+  }
+
+  @override
+  String get vehicleOperatorsDriverFilter => 'Operador';
+
+  @override
+  String get vehicleOperatorsSearchLabel =>
+      'Buscar por operador o número de licencia';
+
+  @override
+  String get newVehicleOperatorTooltip => 'Nuevo operador de vehículo';
+
+  @override
+  String get noVehicleOperatorsFound =>
+      'No se encontraron operadores de vehículo.';
+
+  @override
+  String vehicleOperatorsLoadError(Object error) {
+    return 'Error al cargar los operadores de vehículo: $error';
+  }
+
+  @override
+  String get newVehicleOperatorTitle => 'Nuevo operador de vehículo';
+
+  @override
+  String get editVehicleOperatorTitle => 'Editar operador de vehículo';
+
+  @override
+  String get viewVehicleOperatorTitle => 'Ver operador de vehículo';
+
+  @override
+  String get deleteVehicleOperatorButton => 'Eliminar operador de vehículo';
+
+  @override
+  String get deleteVehicleOperatorConfirmTitle =>
+      '¿Eliminar operador de vehículo?';
+
+  @override
+  String deleteVehicleOperatorConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get vehicleOperatorLoadFailedError =>
+      'Error al cargar el operador de vehículo.';
+
+  @override
+  String get vehicleOperatorCreateFailedError =>
+      'Error al crear el operador de vehículo.';
+
+  @override
+  String get vehicleOperatorUpdateFailedError =>
+      'Error al actualizar el operador de vehículo.';
+
+  @override
+  String get vehicleOperatorDeleteFailedError =>
+      'Error al eliminar el operador de vehículo.';
+
+  @override
+  String get vehicleOperatorCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear operadores de vehículo.';
+
+  @override
+  String get vehicleOperatorUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar operadores de vehículo.';
+
+  @override
+  String get vehicleOperatorDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar operadores de vehículo.';
+
+  @override
+  String get vehicleOperatorDriverRequiredError =>
+      'El operador es obligatorio.';
+
+  @override
+  String get vehicleOperatorLicenseTypeRequiredError =>
+      'El tipo de licencia es obligatorio.';
+
+  @override
+  String get vehicleOperatorDriverLicenseNumberRequiredError =>
+      'El número de licencia es obligatorio.';
+
+  @override
+  String get vehicleOperatorIssueDateRequiredError =>
+      'La fecha de expedición es obligatoria.';
+
+  @override
+  String get vehicleOperatorExpirationDateRequiredError =>
+      'La fecha de vencimiento es obligatoria.';
+
+  @override
+  String get vehicleOperatorExpirationBeforeIssueError =>
+      'La fecha de vencimiento no debe ser anterior a la fecha de expedición.';
+
+  @override
+  String get vehicleOperatorIssuingLocationRequiredError =>
+      'El lugar de expedición es obligatorio.';
 
   @override
   String get genderFemaleLabel => 'Femenino';

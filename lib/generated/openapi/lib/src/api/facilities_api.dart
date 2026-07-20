@@ -9,24 +9,24 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
+import 'package:mbe_api_client/src/model/facility_create.dart';
+import 'package:mbe_api_client/src/model/facility_response.dart';
+import 'package:mbe_api_client/src/model/facility_update.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
-import 'package:mbe_api_client/src/model/list_response_store_response.dart';
-import 'package:mbe_api_client/src/model/store_create.dart';
-import 'package:mbe_api_client/src/model/store_response.dart';
-import 'package:mbe_api_client/src/model/store_update.dart';
+import 'package:mbe_api_client/src/model/list_response_facility_response.dart';
 
-class StoresApi {
+class FacilitiesApi {
   final Dio _dio;
 
   final Serializers _serializers;
 
-  const StoresApi(this._dio, this._serializers);
+  const FacilitiesApi(this._dio, this._serializers);
 
-  /// Create Store
+  /// Create Facility
   ///
   ///
   /// Parameters:
-  /// * [storeCreate]
+  /// * [facilityCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -34,10 +34,10 @@ class StoresApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [StoreResponse] as data
+  /// Returns a [Future] containing a [Response] with a [FacilityResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<StoreResponse>> createStoreApiV1StoresPost({
-    required StoreCreate storeCreate,
+  Future<Response<FacilityResponse>> createFacilityApiV1FacilitiesPost({
+    required FacilityCreate facilityCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -45,7 +45,7 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores';
+    final _path = r'/api/v1/facilities';
     final _options = Options(
       method: r'POST',
       headers: <String, dynamic>{...?headers},
@@ -62,8 +62,8 @@ class StoresApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(StoreCreate);
-      _bodyData = _serializers.serialize(storeCreate, specifiedType: _type);
+      const _type = FullType(FacilityCreate);
+      _bodyData = _serializers.serialize(facilityCreate, specifiedType: _type);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),
@@ -82,7 +82,7 @@ class StoresApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    StoreResponse? _responseData;
+    FacilityResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -90,9 +90,9 @@ class StoresApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(StoreResponse),
+                  specifiedType: const FullType(FacilityResponse),
                 )
-                as StoreResponse;
+                as FacilityResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -103,7 +103,7 @@ class StoresApi {
       );
     }
 
-    return Response<StoreResponse>(
+    return Response<FacilityResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -115,11 +115,11 @@ class StoresApi {
     );
   }
 
-  /// Delete Store
+  /// Delete Facility
   ///
   ///
   /// Parameters:
-  /// * [storeId]
+  /// * [facilityId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -129,8 +129,8 @@ class StoresApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteStoreApiV1StoresStoreIdDelete({
-    required int storeId,
+  Future<Response<void>> deleteFacilityApiV1FacilitiesFacilityIdDelete({
+    required int facilityId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -138,13 +138,13 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores/{store_id}'.replaceAll(
+    final _path = r'/api/v1/facilities/{facility_id}'.replaceAll(
       '{'
-      r'store_id'
+      r'facility_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        storeId,
+        facilityId,
         const FullType(int),
       ).toString(),
     );
@@ -171,11 +171,11 @@ class StoresApi {
     return _response;
   }
 
-  /// Get Store
+  /// Get Facility
   ///
   ///
   /// Parameters:
-  /// * [storeId]
+  /// * [facilityId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -183,10 +183,10 @@ class StoresApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [StoreResponse] as data
+  /// Returns a [Future] containing a [Response] with a [FacilityResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<StoreResponse>> getStoreApiV1StoresStoreIdGet({
-    required int storeId,
+  Future<Response<FacilityResponse>> getFacilityApiV1FacilitiesFacilityIdGet({
+    required int facilityId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -194,13 +194,13 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores/{store_id}'.replaceAll(
+    final _path = r'/api/v1/facilities/{facility_id}'.replaceAll(
       '{'
-      r'store_id'
+      r'facility_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        storeId,
+        facilityId,
         const FullType(int),
       ).toString(),
     );
@@ -224,7 +224,7 @@ class StoresApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    StoreResponse? _responseData;
+    FacilityResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -232,9 +232,9 @@ class StoresApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(StoreResponse),
+                  specifiedType: const FullType(FacilityResponse),
                 )
-                as StoreResponse;
+                as FacilityResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -245,7 +245,7 @@ class StoresApi {
       );
     }
 
-    return Response<StoreResponse>(
+    return Response<FacilityResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -257,7 +257,7 @@ class StoresApi {
     );
   }
 
-  /// List Stores
+  /// List Facilities
   ///
   ///
   /// Parameters:
@@ -270,9 +270,10 @@ class StoresApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ListResponseStoreResponse] as data
+  /// Returns a [Future] containing a [Response] with a [ListResponseFacilityResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseStoreResponse>> listStoresApiV1StoresGet({
+  Future<Response<ListResponseFacilityResponse>>
+  listFacilitiesApiV1FacilitiesGet({
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -282,7 +283,7 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores';
+    final _path = r'/api/v1/facilities';
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{...?headers},
@@ -315,7 +316,7 @@ class StoresApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    ListResponseStoreResponse? _responseData;
+    ListResponseFacilityResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -323,9 +324,9 @@ class StoresApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(ListResponseStoreResponse),
+                  specifiedType: const FullType(ListResponseFacilityResponse),
                 )
-                as ListResponseStoreResponse;
+                as ListResponseFacilityResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -336,7 +337,7 @@ class StoresApi {
       );
     }
 
-    return Response<ListResponseStoreResponse>(
+    return Response<ListResponseFacilityResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -348,12 +349,12 @@ class StoresApi {
     );
   }
 
-  /// Update Store
+  /// Update Facility
   ///
   ///
   /// Parameters:
-  /// * [storeId]
-  /// * [storeUpdate]
+  /// * [facilityId]
+  /// * [facilityUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -361,11 +362,12 @@ class StoresApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [StoreResponse] as data
+  /// Returns a [Future] containing a [Response] with a [FacilityResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<StoreResponse>> updateStoreApiV1StoresStoreIdPut({
-    required int storeId,
-    required StoreUpdate storeUpdate,
+  Future<Response<FacilityResponse>>
+  updateFacilityApiV1FacilitiesFacilityIdPut({
+    required int facilityId,
+    required FacilityUpdate facilityUpdate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -373,13 +375,13 @@ class StoresApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/stores/{store_id}'.replaceAll(
+    final _path = r'/api/v1/facilities/{facility_id}'.replaceAll(
       '{'
-      r'store_id'
+      r'facility_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        storeId,
+        facilityId,
         const FullType(int),
       ).toString(),
     );
@@ -399,8 +401,8 @@ class StoresApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(StoreUpdate);
-      _bodyData = _serializers.serialize(storeUpdate, specifiedType: _type);
+      const _type = FullType(FacilityUpdate);
+      _bodyData = _serializers.serialize(facilityUpdate, specifiedType: _type);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),
@@ -419,7 +421,7 @@ class StoresApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    StoreResponse? _responseData;
+    FacilityResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -427,9 +429,9 @@ class StoresApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(StoreResponse),
+                  specifiedType: const FullType(FacilityResponse),
                 )
-                as StoreResponse;
+                as FacilityResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -440,7 +442,7 @@ class StoresApi {
       );
     }
 
-    return Response<StoreResponse>(
+    return Response<FacilityResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

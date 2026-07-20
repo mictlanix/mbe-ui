@@ -262,7 +262,7 @@ class PointsOfSaleApi {
   ///
   ///
   /// Parameters:
-  /// * [store]
+  /// * [facility]
   /// * [warehouse]
   /// * [skip]
   /// * [limit]
@@ -277,7 +277,7 @@ class PointsOfSaleApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponsePointSaleResponse>>
   listPointsOfSaleApiV1PointsOfSaleGet({
-    int? store,
+    int? facility,
     int? warehouse,
     int? skip = 0,
     int? limit = 20,
@@ -302,10 +302,10 @@ class PointsOfSaleApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (store != null)
-        r'store': encodeQueryParameter(
+      if (facility != null)
+        r'facility': encodeQueryParameter(
           _serializers,
-          store,
+          facility,
           const FullType(int),
         ),
       if (warehouse != null)

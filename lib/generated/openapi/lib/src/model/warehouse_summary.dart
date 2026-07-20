@@ -12,7 +12,7 @@ part 'warehouse_summary.g.dart';
 ///
 /// Properties:
 /// * [warehouseId]
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [comment]
@@ -23,8 +23,8 @@ abstract class WarehouseSummary
   @BuiltValueField(wireName: r'warehouse_id')
   int get warehouseId;
 
-  @BuiltValueField(wireName: r'store')
-  int get store;
+  @BuiltValueField(wireName: r'facility')
+  int get facility;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -69,9 +69,9 @@ class _$WarehouseSummarySerializer
       object.warehouseId,
       specifiedType: const FullType(int),
     );
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
+      object.facility,
       specifiedType: const FullType(int),
     );
     yield r'code';
@@ -131,11 +131,11 @@ class _$WarehouseSummarySerializer
                   as int;
           result.warehouseId = valueDes;
           break;
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'code':
           final valueDes =

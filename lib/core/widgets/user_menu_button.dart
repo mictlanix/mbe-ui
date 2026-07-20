@@ -59,9 +59,9 @@ class UserMenuButton extends ConsumerWidget {
     );
   }
 
-  /// The store / POS / cash-drawer lines. A line is omitted when its id is
+  /// The facility / POS / cash-drawer lines. A line is omitted when its id is
   /// null (FR-014); when the id is present it shows the resolved name — the
-  /// store's `name`, or `name (code)` for POS/cash-drawer — now that
+  /// facility's `name`, or `name (code)` for POS/cash-drawer — now that
   /// `/auth/me` carries it (mbe-api#79), falling back to a labeled id if the
   /// name is unset (FR-011).
   List<Widget> _locationLines(
@@ -71,18 +71,18 @@ class UserMenuButton extends ConsumerWidget {
   ) {
     if (settings == null) return const [];
     final lines = <Widget>[];
-    final store = settings.storeId;
+    final facility = settings.facilityId;
     final pos = settings.pointSaleId;
     final drawer = settings.cashDrawerId;
-    if (store != null) {
+    if (facility != null) {
       lines.add(
         _infoLine(
           context,
-          const Key('user_menu_store'),
+          const Key('user_menu_facility'),
           _displayLine(
-            name: settings.storeName,
-            code: settings.storeCode,
-            fallback: () => l10n.userMenuStoreFallback(store),
+            name: settings.facilityName,
+            code: settings.facilityCode,
+            fallback: () => l10n.userMenuFacilityFallback(facility),
           ),
         ),
       );

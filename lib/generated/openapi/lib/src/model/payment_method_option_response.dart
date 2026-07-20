@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/store_summary.dart';
+import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/warehouse_summary.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -14,7 +14,7 @@ part 'payment_method_option_response.g.dart';
 ///
 /// Properties:
 /// * [paymentMethodOptionId]
-/// * [store]
+/// * [facility]
 /// * [warehouse]
 /// * [name]
 /// * [numberOfPayments]
@@ -29,8 +29,8 @@ abstract class PaymentMethodOptionResponse
   @BuiltValueField(wireName: r'payment_method_option_id')
   int get paymentMethodOptionId;
 
-  @BuiltValueField(wireName: r'store')
-  StoreSummary get store;
+  @BuiltValueField(wireName: r'facility')
+  FacilitySummary get facility;
 
   @BuiltValueField(wireName: r'warehouse')
   WarehouseSummary? get warehouse;
@@ -88,10 +88,10 @@ class _$PaymentMethodOptionResponseSerializer
       object.paymentMethodOptionId,
       specifiedType: const FullType(int),
     );
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
-      specifiedType: const FullType(StoreSummary),
+      object.facility,
+      specifiedType: const FullType(FacilitySummary),
     );
     yield r'warehouse';
     yield object.warehouse == null
@@ -163,14 +163,14 @@ class _$PaymentMethodOptionResponseSerializer
                   as int;
           result.paymentMethodOptionId = valueDes;
           break;
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(StoreSummary),
+                    specifiedType: const FullType(FacilitySummary),
                   )
-                  as StoreSummary;
-          result.store.replace(valueDes);
+                  as FacilitySummary;
+          result.facility.replace(valueDes);
           break;
         case r'warehouse':
           final valueDes =

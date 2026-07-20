@@ -3,17 +3,20 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
+import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'store_summary.g.dart';
+part 'facility_response.g.dart';
 
-/// Flat Store representation used when embedded as another resource's FK.
+/// FacilityResponse
 ///
 /// Properties:
-/// * [storeId]
+/// * [facilityId]
 /// * [code]
 /// * [name]
+/// * [type]
 /// * [location]
 /// * [address]
 /// * [taxpayer]
@@ -22,10 +25,10 @@ part 'store_summary.g.dart';
 /// * [defaultBatch]
 /// * [disabled]
 @BuiltValue()
-abstract class StoreSummary
-    implements Built<StoreSummary, StoreSummaryBuilder> {
-  @BuiltValueField(wireName: r'store_id')
-  int get storeId;
+abstract class FacilityResponse
+    implements Built<FacilityResponse, FacilityResponseBuilder> {
+  @BuiltValueField(wireName: r'facility_id')
+  int get facilityId;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -33,8 +36,12 @@ abstract class StoreSummary
   @BuiltValueField(wireName: r'name')
   String get name;
 
+  @BuiltValueField(wireName: r'type')
+  FacilityType get type;
+  // enum typeEnum {  0,  1,  };
+
   @BuiltValueField(wireName: r'location')
-  String get location;
+  SatCatalogResponse get location;
 
   @BuiltValueField(wireName: r'address')
   int get address;
@@ -54,32 +61,35 @@ abstract class StoreSummary
   @BuiltValueField(wireName: r'disabled')
   bool? get disabled;
 
-  StoreSummary._();
+  FacilityResponse._();
 
-  factory StoreSummary([void updates(StoreSummaryBuilder b)]) = _$StoreSummary;
+  factory FacilityResponse([void updates(FacilityResponseBuilder b)]) =
+      _$FacilityResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(StoreSummaryBuilder b) => b;
+  static void _defaults(FacilityResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<StoreSummary> get serializer => _$StoreSummarySerializer();
+  static Serializer<FacilityResponse> get serializer =>
+      _$FacilityResponseSerializer();
 }
 
-class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
+class _$FacilityResponseSerializer
+    implements PrimitiveSerializer<FacilityResponse> {
   @override
-  final Iterable<Type> types = const [StoreSummary, _$StoreSummary];
+  final Iterable<Type> types = const [FacilityResponse, _$FacilityResponse];
 
   @override
-  final String wireName = r'StoreSummary';
+  final String wireName = r'FacilityResponse';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    StoreSummary object, {
+    FacilityResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'store_id';
+    yield r'facility_id';
     yield serializers.serialize(
-      object.storeId,
+      object.facilityId,
       specifiedType: const FullType(int),
     );
     yield r'code';
@@ -92,10 +102,15 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
       object.name,
       specifiedType: const FullType(String),
     );
+    yield r'type';
+    yield serializers.serialize(
+      object.type,
+      specifiedType: const FullType(FacilityType),
+    );
     yield r'location';
     yield serializers.serialize(
       object.location,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(SatCatalogResponse),
     );
     yield r'address';
     yield serializers.serialize(
@@ -138,7 +153,7 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
   @override
   Object serialize(
     Serializers serializers,
-    StoreSummary object, {
+    FacilityResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -153,18 +168,18 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required StoreSummaryBuilder result,
+    required FacilityResponseBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store_id':
+        case r'facility_id':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.storeId = valueDes;
+          result.facilityId = valueDes;
           break;
         case r'code':
           final valueDes =
@@ -184,14 +199,23 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
                   as String;
           result.name = valueDes;
           break;
+        case r'type':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(FacilityType),
+                  )
+                  as FacilityType;
+          result.type = valueDes;
+          break;
         case r'location':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType(SatCatalogResponse),
                   )
-                  as String;
-          result.location = valueDes;
+                  as SatCatalogResponse;
+          result.location.replace(valueDes);
           break;
         case r'address':
           final valueDes =
@@ -256,12 +280,12 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
   }
 
   @override
-  StoreSummary deserialize(
+  FacilityResponse deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = StoreSummaryBuilder();
+    final result = FacilityResponseBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

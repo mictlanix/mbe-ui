@@ -3,16 +3,18 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'store_create.g.dart';
+part 'facility_create.g.dart';
 
-/// StoreCreate
+/// FacilityCreate
 ///
 /// Properties:
 /// * [code]
 /// * [name]
+/// * [type]
 /// * [location]
 /// * [address]
 /// * [taxpayer]
@@ -21,12 +23,17 @@ part 'store_create.g.dart';
 /// * [defaultBatch]
 /// * [disabled]
 @BuiltValue()
-abstract class StoreCreate implements Built<StoreCreate, StoreCreateBuilder> {
+abstract class FacilityCreate
+    implements Built<FacilityCreate, FacilityCreateBuilder> {
   @BuiltValueField(wireName: r'code')
   String get code;
 
   @BuiltValueField(wireName: r'name')
   String get name;
+
+  @BuiltValueField(wireName: r'type')
+  FacilityType? get type;
+  // enum typeEnum {  0,  1,  };
 
   @BuiltValueField(wireName: r'location')
   String get location;
@@ -49,27 +56,31 @@ abstract class StoreCreate implements Built<StoreCreate, StoreCreateBuilder> {
   @BuiltValueField(wireName: r'disabled')
   bool? get disabled;
 
-  StoreCreate._();
+  FacilityCreate._();
 
-  factory StoreCreate([void updates(StoreCreateBuilder b)]) = _$StoreCreate;
+  factory FacilityCreate([void updates(FacilityCreateBuilder b)]) =
+      _$FacilityCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(StoreCreateBuilder b) => b;
+  static void _defaults(FacilityCreateBuilder b) =>
+      b..type = FacilityType.number0;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<StoreCreate> get serializer => _$StoreCreateSerializer();
+  static Serializer<FacilityCreate> get serializer =>
+      _$FacilityCreateSerializer();
 }
 
-class _$StoreCreateSerializer implements PrimitiveSerializer<StoreCreate> {
+class _$FacilityCreateSerializer
+    implements PrimitiveSerializer<FacilityCreate> {
   @override
-  final Iterable<Type> types = const [StoreCreate, _$StoreCreate];
+  final Iterable<Type> types = const [FacilityCreate, _$FacilityCreate];
 
   @override
-  final String wireName = r'StoreCreate';
+  final String wireName = r'FacilityCreate';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    StoreCreate object, {
+    FacilityCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     yield r'code';
@@ -82,6 +93,13 @@ class _$StoreCreateSerializer implements PrimitiveSerializer<StoreCreate> {
       object.name,
       specifiedType: const FullType(String),
     );
+    if (object.type != null) {
+      yield r'type';
+      yield serializers.serialize(
+        object.type,
+        specifiedType: const FullType(FacilityType),
+      );
+    }
     yield r'location';
     yield serializers.serialize(
       object.location,
@@ -128,7 +146,7 @@ class _$StoreCreateSerializer implements PrimitiveSerializer<StoreCreate> {
   @override
   Object serialize(
     Serializers serializers,
-    StoreCreate object, {
+    FacilityCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -143,7 +161,7 @@ class _$StoreCreateSerializer implements PrimitiveSerializer<StoreCreate> {
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required StoreCreateBuilder result,
+    required FacilityCreateBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -167,6 +185,15 @@ class _$StoreCreateSerializer implements PrimitiveSerializer<StoreCreate> {
                   )
                   as String;
           result.name = valueDes;
+          break;
+        case r'type':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(FacilityType),
+                  )
+                  as FacilityType;
+          result.type = valueDes;
           break;
         case r'location':
           final valueDes =
@@ -240,12 +267,12 @@ class _$StoreCreateSerializer implements PrimitiveSerializer<StoreCreate> {
   }
 
   @override
-  StoreCreate deserialize(
+  FacilityCreate deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = StoreCreateBuilder();
+    final result = FacilityCreateBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

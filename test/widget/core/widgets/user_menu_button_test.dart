@@ -25,7 +25,7 @@ const _userWithSettings = User(
   sessionVersion: 1,
   privileges: [],
   // Ids only, no resolved names — the labeled-ID fallback path (FR-011).
-  settings: UserSettings(storeId: 51, pointSaleId: 18, cashDrawerId: 14),
+  settings: UserSettings(facilityId: 51, pointSaleId: 18, cashDrawerId: 14),
 );
 
 const _userWithResolvedNames = User(
@@ -37,8 +37,8 @@ const _userWithResolvedNames = User(
   privileges: [],
   // /auth/me now resolves names (mbe-api#79).
   settings: UserSettings(
-    storeId: 51,
-    storeName: 'CASA MAESTRA ZUMPANGO',
+    facilityId: 51,
+    facilityName: 'CASA MAESTRA ZUMPANGO',
     pointSaleId: 18,
     pointSaleCode: '01',
     pointSaleName: 'PV ZUMPANGO',
@@ -124,13 +124,13 @@ void main() {
     await openMenu(tester);
 
     expect(find.text('eddy@mictlanix.com'), findsOneWidget);
-    expect(find.byKey(const Key('user_menu_store')), findsOneWidget);
-    expect(find.text('Store 51'), findsOneWidget);
+    expect(find.byKey(const Key('user_menu_facility')), findsOneWidget);
+    expect(find.text('Facility 51'), findsOneWidget);
     expect(find.text('POS 18'), findsOneWidget);
     expect(find.text('Drawer 14'), findsOneWidget);
   });
 
-  testWidgets('shows resolved store/POS/cash-drawer names — name only, no '
+  testWidgets('shows resolved facility/POS/cash-drawer names — name only, no '
       'code suffix — once /auth/me resolves them (mbe-api#79, FR-011)', (
     tester,
   ) async {
@@ -142,7 +142,7 @@ void main() {
     expect(find.text('PV ZUMPANGO'), findsOneWidget);
     expect(find.text('CC ZUMPANGO'), findsOneWidget);
     // The labeled-ID fallback is not shown once names resolve.
-    expect(find.text('Store 51'), findsNothing);
+    expect(find.text('Facility 51'), findsNothing);
   });
 
   testWidgets('omits location lines when the user has no settings (FR-014)', (
@@ -152,7 +152,7 @@ void main() {
     await openMenu(tester);
 
     expect(find.text('eddy@mictlanix.com'), findsOneWidget);
-    expect(find.byKey(const Key('user_menu_store')), findsNothing);
+    expect(find.byKey(const Key('user_menu_facility')), findsNothing);
     expect(find.byKey(const Key('user_menu_pos')), findsNothing);
     expect(find.byKey(const Key('user_menu_cash_drawer')), findsNothing);
     // Actions still present.

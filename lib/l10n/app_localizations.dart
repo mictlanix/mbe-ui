@@ -218,11 +218,11 @@ abstract class AppLocalizations {
   /// **'Logout'**
   String get userMenuLogout;
 
-  /// No description provided for @userMenuStoreFallback.
+  /// No description provided for @userMenuFacilityFallback.
   ///
   /// In en, this message translates to:
-  /// **'Store {id}'**
-  String userMenuStoreFallback(int id);
+  /// **'Facility {id}'**
+  String userMenuFacilityFallback(int id);
 
   /// No description provided for @userMenuPosFallback.
   ///
@@ -1556,6 +1556,24 @@ abstract class AppLocalizations {
   /// **'Taxpayer Recipients'**
   String get taxpayerRecipientsMenuTitle;
 
+  /// No description provided for @expensesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get expensesMenuTitle;
+
+  /// No description provided for @vehiclesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles'**
+  String get vehiclesMenuTitle;
+
+  /// No description provided for @vehicleOperatorsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Operators'**
+  String get vehicleOperatorsMenuTitle;
+
   /// No description provided for @zoneLabel.
   ///
   /// In en, this message translates to:
@@ -1807,6 +1825,462 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name is required.'**
   String get labelNameRequiredError;
+
+  /// No description provided for @expensesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get expensesSearchLabel;
+
+  /// No description provided for @newExpenseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New expense'**
+  String get newExpenseTooltip;
+
+  /// No description provided for @noExpensesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses found.'**
+  String get noExpensesFound;
+
+  /// No description provided for @expensesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load expenses: {error}'**
+  String expensesLoadError(Object error);
+
+  /// No description provided for @newExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New expense'**
+  String get newExpenseTitle;
+
+  /// No description provided for @editExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit expense'**
+  String get editExpenseTitle;
+
+  /// No description provided for @viewExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View expense'**
+  String get viewExpenseTitle;
+
+  /// No description provided for @deleteExpenseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete expense'**
+  String get deleteExpenseButton;
+
+  /// No description provided for @deleteExpenseConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete expense?'**
+  String get deleteExpenseConfirmTitle;
+
+  /// No description provided for @deleteExpenseConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteExpenseConfirmMessage(String name);
+
+  /// No description provided for @expenseLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load expense.'**
+  String get expenseLoadFailedError;
+
+  /// No description provided for @expenseCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create expense.'**
+  String get expenseCreateFailedError;
+
+  /// No description provided for @expenseUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update expense.'**
+  String get expenseUpdateFailedError;
+
+  /// No description provided for @expenseDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete expense.'**
+  String get expenseDeleteFailedError;
+
+  /// No description provided for @expenseCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create expenses.'**
+  String get expenseCreatePermissionDeniedError;
+
+  /// No description provided for @expenseUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit expenses.'**
+  String get expenseUpdatePermissionDeniedError;
+
+  /// No description provided for @expenseDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete expenses.'**
+  String get expenseDeletePermissionDeniedError;
+
+  /// No description provided for @expenseNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get expenseNameRequiredError;
+
+  /// No description provided for @licensePlateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License plate'**
+  String get licensePlateLabel;
+
+  /// No description provided for @tonsCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tons capacity'**
+  String get tonsCapacityLabel;
+
+  /// No description provided for @vehiclesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by plate, name, or nickname'**
+  String get vehiclesSearchLabel;
+
+  /// No description provided for @newVehicleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New vehicle'**
+  String get newVehicleTooltip;
+
+  /// No description provided for @noVehiclesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicles found.'**
+  String get noVehiclesFound;
+
+  /// No description provided for @vehiclesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load vehicles: {error}'**
+  String vehiclesLoadError(Object error);
+
+  /// No description provided for @newVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New vehicle'**
+  String get newVehicleTitle;
+
+  /// No description provided for @editVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit vehicle'**
+  String get editVehicleTitle;
+
+  /// No description provided for @viewVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View vehicle'**
+  String get viewVehicleTitle;
+
+  /// No description provided for @deleteVehicleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete vehicle'**
+  String get deleteVehicleButton;
+
+  /// No description provided for @deleteVehicleConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete vehicle?'**
+  String get deleteVehicleConfirmTitle;
+
+  /// No description provided for @deleteVehicleConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteVehicleConfirmMessage(String name);
+
+  /// No description provided for @vehicleLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load vehicle.'**
+  String get vehicleLoadFailedError;
+
+  /// No description provided for @vehicleCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create vehicle.'**
+  String get vehicleCreateFailedError;
+
+  /// No description provided for @vehicleUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update vehicle.'**
+  String get vehicleUpdateFailedError;
+
+  /// No description provided for @vehicleDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete vehicle.'**
+  String get vehicleDeleteFailedError;
+
+  /// No description provided for @vehicleCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create vehicles.'**
+  String get vehicleCreatePermissionDeniedError;
+
+  /// No description provided for @vehicleUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit vehicles.'**
+  String get vehicleUpdatePermissionDeniedError;
+
+  /// No description provided for @vehicleDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete vehicles.'**
+  String get vehicleDeletePermissionDeniedError;
+
+  /// No description provided for @vehicleLicensePlateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'License plate is required.'**
+  String get vehicleLicensePlateRequiredError;
+
+  /// No description provided for @vehicleNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get vehicleNameRequiredError;
+
+  /// No description provided for @vehicleNicknameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname is required.'**
+  String get vehicleNicknameRequiredError;
+
+  /// No description provided for @vehicleTonsCapacityInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative whole number.'**
+  String get vehicleTonsCapacityInvalidError;
+
+  /// No description provided for @driverLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get driverLabel;
+
+  /// No description provided for @licenseTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License type'**
+  String get licenseTypeLabel;
+
+  /// No description provided for @driverLicenseNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License number'**
+  String get driverLicenseNumberLabel;
+
+  /// No description provided for @issueDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date'**
+  String get issueDateLabel;
+
+  /// No description provided for @expirationDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiration date'**
+  String get expirationDateLabel;
+
+  /// No description provided for @issuingLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Issuing location'**
+  String get issuingLocationLabel;
+
+  /// No description provided for @daysUntilExpiryColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry'**
+  String get daysUntilExpiryColumn;
+
+  /// No description provided for @expiresInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in {days} days'**
+  String expiresInDays(int days);
+
+  /// No description provided for @expiresToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires today'**
+  String get expiresToday;
+
+  /// No description provided for @expiredDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired {days} days ago'**
+  String expiredDaysAgo(int days);
+
+  /// No description provided for @vehicleOperatorsDriverFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get vehicleOperatorsDriverFilter;
+
+  /// No description provided for @vehicleOperatorsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by driver or license number'**
+  String get vehicleOperatorsSearchLabel;
+
+  /// No description provided for @newVehicleOperatorTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New vehicle operator'**
+  String get newVehicleOperatorTooltip;
+
+  /// No description provided for @noVehicleOperatorsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicle operators found.'**
+  String get noVehicleOperatorsFound;
+
+  /// No description provided for @vehicleOperatorsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load vehicle operators: {error}'**
+  String vehicleOperatorsLoadError(Object error);
+
+  /// No description provided for @newVehicleOperatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New vehicle operator'**
+  String get newVehicleOperatorTitle;
+
+  /// No description provided for @editVehicleOperatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit vehicle operator'**
+  String get editVehicleOperatorTitle;
+
+  /// No description provided for @viewVehicleOperatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View vehicle operator'**
+  String get viewVehicleOperatorTitle;
+
+  /// No description provided for @deleteVehicleOperatorButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete vehicle operator'**
+  String get deleteVehicleOperatorButton;
+
+  /// No description provided for @deleteVehicleOperatorConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete vehicle operator?'**
+  String get deleteVehicleOperatorConfirmTitle;
+
+  /// No description provided for @deleteVehicleOperatorConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteVehicleOperatorConfirmMessage(String name);
+
+  /// No description provided for @vehicleOperatorLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load vehicle operator.'**
+  String get vehicleOperatorLoadFailedError;
+
+  /// No description provided for @vehicleOperatorCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create vehicle operator.'**
+  String get vehicleOperatorCreateFailedError;
+
+  /// No description provided for @vehicleOperatorUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update vehicle operator.'**
+  String get vehicleOperatorUpdateFailedError;
+
+  /// No description provided for @vehicleOperatorDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete vehicle operator.'**
+  String get vehicleOperatorDeleteFailedError;
+
+  /// No description provided for @vehicleOperatorCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create vehicle operators.'**
+  String get vehicleOperatorCreatePermissionDeniedError;
+
+  /// No description provided for @vehicleOperatorUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit vehicle operators.'**
+  String get vehicleOperatorUpdatePermissionDeniedError;
+
+  /// No description provided for @vehicleOperatorDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete vehicle operators.'**
+  String get vehicleOperatorDeletePermissionDeniedError;
+
+  /// No description provided for @vehicleOperatorDriverRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver is required.'**
+  String get vehicleOperatorDriverRequiredError;
+
+  /// No description provided for @vehicleOperatorLicenseTypeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'License type is required.'**
+  String get vehicleOperatorLicenseTypeRequiredError;
+
+  /// No description provided for @vehicleOperatorDriverLicenseNumberRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'License number is required.'**
+  String get vehicleOperatorDriverLicenseNumberRequiredError;
+
+  /// No description provided for @vehicleOperatorIssueDateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date is required.'**
+  String get vehicleOperatorIssueDateRequiredError;
+
+  /// No description provided for @vehicleOperatorExpirationDateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiration date is required.'**
+  String get vehicleOperatorExpirationDateRequiredError;
+
+  /// No description provided for @vehicleOperatorExpirationBeforeIssueError.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiration date must not be before the issue date.'**
+  String get vehicleOperatorExpirationBeforeIssueError;
+
+  /// No description provided for @vehicleOperatorIssuingLocationRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Issuing location is required.'**
+  String get vehicleOperatorIssuingLocationRequiredError;
 
   /// No description provided for @genderFemaleLabel.
   ///

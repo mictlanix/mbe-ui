@@ -12,7 +12,7 @@ part 'payment_method_option_create.g.dart';
 /// PaymentMethodOptionCreate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [warehouse]
 /// * [name]
 /// * [numberOfPayments]
@@ -24,8 +24,8 @@ part 'payment_method_option_create.g.dart';
 abstract class PaymentMethodOptionCreate
     implements
         Built<PaymentMethodOptionCreate, PaymentMethodOptionCreateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int get store;
+  @BuiltValueField(wireName: r'facility')
+  int get facility;
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
@@ -81,9 +81,9 @@ class _$PaymentMethodOptionCreateSerializer
     PaymentMethodOptionCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
+      object.facility,
       specifiedType: const FullType(int),
     );
     if (object.warehouse != null) {
@@ -158,11 +158,11 @@ class _$PaymentMethodOptionCreateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'warehouse':
           final valueDes =

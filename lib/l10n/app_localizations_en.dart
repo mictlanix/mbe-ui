@@ -69,8 +69,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userMenuLogout => 'Logout';
 
   @override
-  String userMenuStoreFallback(int id) {
-    return 'Store $id';
+  String userMenuFacilityFallback(int id) {
+    return 'Facility $id';
   }
 
   @override
@@ -789,6 +789,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taxpayerRecipientsMenuTitle => 'Taxpayer Recipients';
 
   @override
+  String get expensesMenuTitle => 'Expenses';
+
+  @override
+  String get vehiclesMenuTitle => 'Vehicles';
+
+  @override
+  String get vehicleOperatorsMenuTitle => 'Vehicle Operators';
+
+  @override
   String get zoneLabel => 'Zone';
 
   @override
@@ -928,6 +937,270 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelNameRequiredError => 'Name is required.';
+
+  @override
+  String get expensesSearchLabel => 'Search by name';
+
+  @override
+  String get newExpenseTooltip => 'New expense';
+
+  @override
+  String get noExpensesFound => 'No expenses found.';
+
+  @override
+  String expensesLoadError(Object error) {
+    return 'Failed to load expenses: $error';
+  }
+
+  @override
+  String get newExpenseTitle => 'New expense';
+
+  @override
+  String get editExpenseTitle => 'Edit expense';
+
+  @override
+  String get viewExpenseTitle => 'View expense';
+
+  @override
+  String get deleteExpenseButton => 'Delete expense';
+
+  @override
+  String get deleteExpenseConfirmTitle => 'Delete expense?';
+
+  @override
+  String deleteExpenseConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get expenseLoadFailedError => 'Failed to load expense.';
+
+  @override
+  String get expenseCreateFailedError => 'Failed to create expense.';
+
+  @override
+  String get expenseUpdateFailedError => 'Failed to update expense.';
+
+  @override
+  String get expenseDeleteFailedError => 'Failed to delete expense.';
+
+  @override
+  String get expenseCreatePermissionDeniedError =>
+      'You no longer have permission to create expenses.';
+
+  @override
+  String get expenseUpdatePermissionDeniedError =>
+      'You no longer have permission to edit expenses.';
+
+  @override
+  String get expenseDeletePermissionDeniedError =>
+      'You no longer have permission to delete expenses.';
+
+  @override
+  String get expenseNameRequiredError => 'Name is required.';
+
+  @override
+  String get licensePlateLabel => 'License plate';
+
+  @override
+  String get tonsCapacityLabel => 'Tons capacity';
+
+  @override
+  String get vehiclesSearchLabel => 'Search by plate, name, or nickname';
+
+  @override
+  String get newVehicleTooltip => 'New vehicle';
+
+  @override
+  String get noVehiclesFound => 'No vehicles found.';
+
+  @override
+  String vehiclesLoadError(Object error) {
+    return 'Failed to load vehicles: $error';
+  }
+
+  @override
+  String get newVehicleTitle => 'New vehicle';
+
+  @override
+  String get editVehicleTitle => 'Edit vehicle';
+
+  @override
+  String get viewVehicleTitle => 'View vehicle';
+
+  @override
+  String get deleteVehicleButton => 'Delete vehicle';
+
+  @override
+  String get deleteVehicleConfirmTitle => 'Delete vehicle?';
+
+  @override
+  String deleteVehicleConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get vehicleLoadFailedError => 'Failed to load vehicle.';
+
+  @override
+  String get vehicleCreateFailedError => 'Failed to create vehicle.';
+
+  @override
+  String get vehicleUpdateFailedError => 'Failed to update vehicle.';
+
+  @override
+  String get vehicleDeleteFailedError => 'Failed to delete vehicle.';
+
+  @override
+  String get vehicleCreatePermissionDeniedError =>
+      'You no longer have permission to create vehicles.';
+
+  @override
+  String get vehicleUpdatePermissionDeniedError =>
+      'You no longer have permission to edit vehicles.';
+
+  @override
+  String get vehicleDeletePermissionDeniedError =>
+      'You no longer have permission to delete vehicles.';
+
+  @override
+  String get vehicleLicensePlateRequiredError => 'License plate is required.';
+
+  @override
+  String get vehicleNameRequiredError => 'Name is required.';
+
+  @override
+  String get vehicleNicknameRequiredError => 'Nickname is required.';
+
+  @override
+  String get vehicleTonsCapacityInvalidError =>
+      'Enter a valid non-negative whole number.';
+
+  @override
+  String get driverLabel => 'Driver';
+
+  @override
+  String get licenseTypeLabel => 'License type';
+
+  @override
+  String get driverLicenseNumberLabel => 'License number';
+
+  @override
+  String get issueDateLabel => 'Issue date';
+
+  @override
+  String get expirationDateLabel => 'Expiration date';
+
+  @override
+  String get issuingLocationLabel => 'Issuing location';
+
+  @override
+  String get daysUntilExpiryColumn => 'Expiry';
+
+  @override
+  String expiresInDays(int days) {
+    return 'Expires in $days days';
+  }
+
+  @override
+  String get expiresToday => 'Expires today';
+
+  @override
+  String expiredDaysAgo(int days) {
+    return 'Expired $days days ago';
+  }
+
+  @override
+  String get vehicleOperatorsDriverFilter => 'Driver';
+
+  @override
+  String get vehicleOperatorsSearchLabel =>
+      'Search by driver or license number';
+
+  @override
+  String get newVehicleOperatorTooltip => 'New vehicle operator';
+
+  @override
+  String get noVehicleOperatorsFound => 'No vehicle operators found.';
+
+  @override
+  String vehicleOperatorsLoadError(Object error) {
+    return 'Failed to load vehicle operators: $error';
+  }
+
+  @override
+  String get newVehicleOperatorTitle => 'New vehicle operator';
+
+  @override
+  String get editVehicleOperatorTitle => 'Edit vehicle operator';
+
+  @override
+  String get viewVehicleOperatorTitle => 'View vehicle operator';
+
+  @override
+  String get deleteVehicleOperatorButton => 'Delete vehicle operator';
+
+  @override
+  String get deleteVehicleOperatorConfirmTitle => 'Delete vehicle operator?';
+
+  @override
+  String deleteVehicleOperatorConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get vehicleOperatorLoadFailedError =>
+      'Failed to load vehicle operator.';
+
+  @override
+  String get vehicleOperatorCreateFailedError =>
+      'Failed to create vehicle operator.';
+
+  @override
+  String get vehicleOperatorUpdateFailedError =>
+      'Failed to update vehicle operator.';
+
+  @override
+  String get vehicleOperatorDeleteFailedError =>
+      'Failed to delete vehicle operator.';
+
+  @override
+  String get vehicleOperatorCreatePermissionDeniedError =>
+      'You no longer have permission to create vehicle operators.';
+
+  @override
+  String get vehicleOperatorUpdatePermissionDeniedError =>
+      'You no longer have permission to edit vehicle operators.';
+
+  @override
+  String get vehicleOperatorDeletePermissionDeniedError =>
+      'You no longer have permission to delete vehicle operators.';
+
+  @override
+  String get vehicleOperatorDriverRequiredError => 'Driver is required.';
+
+  @override
+  String get vehicleOperatorLicenseTypeRequiredError =>
+      'License type is required.';
+
+  @override
+  String get vehicleOperatorDriverLicenseNumberRequiredError =>
+      'License number is required.';
+
+  @override
+  String get vehicleOperatorIssueDateRequiredError => 'Issue date is required.';
+
+  @override
+  String get vehicleOperatorExpirationDateRequiredError =>
+      'Expiration date is required.';
+
+  @override
+  String get vehicleOperatorExpirationBeforeIssueError =>
+      'Expiration date must not be before the issue date.';
+
+  @override
+  String get vehicleOperatorIssuingLocationRequiredError =>
+      'Issuing location is required.';
 
   @override
   String get genderFemaleLabel => 'Female';

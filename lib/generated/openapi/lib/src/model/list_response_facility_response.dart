@@ -3,67 +3,65 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/production_site_response.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/facility_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'list_response_production_site_response.g.dart';
+part 'list_response_facility_response.g.dart';
 
-/// ListResponseProductionSiteResponse
+/// ListResponseFacilityResponse
 ///
 /// Properties:
 /// * [items]
 /// * [total]
 @BuiltValue()
-abstract class ListResponseProductionSiteResponse
+abstract class ListResponseFacilityResponse
     implements
         Built<
-          ListResponseProductionSiteResponse,
-          ListResponseProductionSiteResponseBuilder
+          ListResponseFacilityResponse,
+          ListResponseFacilityResponseBuilder
         > {
   @BuiltValueField(wireName: r'items')
-  BuiltList<ProductionSiteResponse> get items;
+  BuiltList<FacilityResponse> get items;
 
   @BuiltValueField(wireName: r'total')
   int get total;
 
-  ListResponseProductionSiteResponse._();
+  ListResponseFacilityResponse._();
 
-  factory ListResponseProductionSiteResponse([
-    void updates(ListResponseProductionSiteResponseBuilder b),
-  ]) = _$ListResponseProductionSiteResponse;
+  factory ListResponseFacilityResponse([
+    void updates(ListResponseFacilityResponseBuilder b),
+  ]) = _$ListResponseFacilityResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(ListResponseProductionSiteResponseBuilder b) => b;
+  static void _defaults(ListResponseFacilityResponseBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ListResponseProductionSiteResponse> get serializer =>
-      _$ListResponseProductionSiteResponseSerializer();
+  static Serializer<ListResponseFacilityResponse> get serializer =>
+      _$ListResponseFacilityResponseSerializer();
 }
 
-class _$ListResponseProductionSiteResponseSerializer
-    implements PrimitiveSerializer<ListResponseProductionSiteResponse> {
+class _$ListResponseFacilityResponseSerializer
+    implements PrimitiveSerializer<ListResponseFacilityResponse> {
   @override
   final Iterable<Type> types = const [
-    ListResponseProductionSiteResponse,
-    _$ListResponseProductionSiteResponse,
+    ListResponseFacilityResponse,
+    _$ListResponseFacilityResponse,
   ];
 
   @override
-  final String wireName = r'ListResponseProductionSiteResponse';
+  final String wireName = r'ListResponseFacilityResponse';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    ListResponseProductionSiteResponse object, {
+    ListResponseFacilityResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     yield r'items';
     yield serializers.serialize(
       object.items,
-      specifiedType: const FullType(BuiltList, [
-        FullType(ProductionSiteResponse),
-      ]),
+      specifiedType: const FullType(BuiltList, [FullType(FacilityResponse)]),
     );
     yield r'total';
     yield serializers.serialize(
@@ -75,7 +73,7 @@ class _$ListResponseProductionSiteResponseSerializer
   @override
   Object serialize(
     Serializers serializers,
-    ListResponseProductionSiteResponse object, {
+    ListResponseFacilityResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -90,7 +88,7 @@ class _$ListResponseProductionSiteResponseSerializer
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required ListResponseProductionSiteResponseBuilder result,
+    required ListResponseFacilityResponseBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -102,10 +100,10 @@ class _$ListResponseProductionSiteResponseSerializer
               serializers.deserialize(
                     value,
                     specifiedType: const FullType(BuiltList, [
-                      FullType(ProductionSiteResponse),
+                      FullType(FacilityResponse),
                     ]),
                   )
-                  as BuiltList<ProductionSiteResponse>;
+                  as BuiltList<FacilityResponse>;
           result.items.replace(valueDes);
           break;
         case r'total':
@@ -123,12 +121,12 @@ class _$ListResponseProductionSiteResponseSerializer
   }
 
   @override
-  ListResponseProductionSiteResponse deserialize(
+  ListResponseFacilityResponse deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = ListResponseProductionSiteResponseBuilder();
+    final result = ListResponseFacilityResponseBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

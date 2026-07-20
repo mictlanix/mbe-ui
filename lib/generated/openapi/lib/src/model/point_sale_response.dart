@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/store_summary.dart';
+import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/warehouse_summary.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -14,7 +14,7 @@ part 'point_sale_response.g.dart';
 ///
 /// Properties:
 /// * [pointSaleId]
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [warehouse]
@@ -26,8 +26,8 @@ abstract class PointSaleResponse
   @BuiltValueField(wireName: r'point_sale_id')
   int get pointSaleId;
 
-  @BuiltValueField(wireName: r'store')
-  StoreSummary get store;
+  @BuiltValueField(wireName: r'facility')
+  FacilitySummary get facility;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -75,10 +75,10 @@ class _$PointSaleResponseSerializer
       object.pointSaleId,
       specifiedType: const FullType(int),
     );
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
-      specifiedType: const FullType(StoreSummary),
+      object.facility,
+      specifiedType: const FullType(FacilitySummary),
     );
     yield r'code';
     yield serializers.serialize(
@@ -142,14 +142,14 @@ class _$PointSaleResponseSerializer
                   as int;
           result.pointSaleId = valueDes;
           break;
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(StoreSummary),
+                    specifiedType: const FullType(FacilitySummary),
                   )
-                  as StoreSummary;
-          result.store.replace(valueDes);
+                  as FacilitySummary;
+          result.facility.replace(valueDes);
           break;
         case r'code':
           final valueDes =

@@ -17,6 +17,8 @@ import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employee_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/expense_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/expenses_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/labels_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
@@ -26,6 +28,10 @@ import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicle_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicles_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -143,6 +149,34 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/taxpayer-recipients',
                 builder: (context, state) =>
                     const TaxpayerRecipientsListScreen(),
+              ),
+            ],
+          ),
+          // Branch index continues positionally from spec 012's last branch
+          // (taxpayerRecipients = 10): spec 013 appends Expenses(11)→
+          // Vehicles(12)→VehicleOperators(13) in build order
+          // (contracts/routes.md §1).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/expenses',
+                builder: (context, state) => const ExpensesListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/vehicles',
+                builder: (context, state) => const VehiclesListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/vehicle-operators',
+                builder: (context, state) => const VehicleOperatorsListScreen(),
               ),
             ],
           ),
@@ -274,6 +308,41 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
+      GoRoute(
+        path: '/expenses/new',
+        builder: (context, state) => const ExpenseDetailScreen(),
+      ),
+      GoRoute(
+        path: '/expenses/:expenseId',
+        builder: (context, state) => ExpenseDetailScreen(
+          expenseId: int.parse(state.pathParameters['expenseId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/vehicles/new',
+        builder: (context, state) => const VehicleDetailScreen(),
+      ),
+      GoRoute(
+        path: '/vehicles/:vehicleId',
+        builder: (context, state) => VehicleDetailScreen(
+          vehicleId: int.parse(state.pathParameters['vehicleId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/vehicle-operators/new',
+        builder: (context, state) => const VehicleOperatorDetailScreen(),
+      ),
+      GoRoute(
+        path: '/vehicle-operators/:vehicleOperatorId',
+        builder: (context, state) => VehicleOperatorDetailScreen(
+          vehicleOperatorId: int.parse(
+            state.pathParameters['vehicleOperatorId']!,
+          ),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
     ],
   );
 });
@@ -372,6 +441,15 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/taxpayer-recipients')) {
     return (object: SystemObject.taxpayerRecipients, right: AccessRight.read);
+  }
+  if (location.startsWith('/expenses')) {
+    return (object: SystemObject.expenses, right: AccessRight.read);
+  }
+  if (location.startsWith('/vehicles')) {
+    return (object: SystemObject.vehicle, right: AccessRight.read);
+  }
+  if (location.startsWith('/vehicle-operators')) {
+    return (object: SystemObject.vehicleOperators, right: AccessRight.read);
   }
   return null;
 }

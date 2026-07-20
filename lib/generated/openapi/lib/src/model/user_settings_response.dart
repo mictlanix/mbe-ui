@@ -11,9 +11,9 @@ part 'user_settings_response.g.dart';
 /// UserSettingsResponse
 ///
 /// Properties:
-/// * [storeId]
-/// * [storeCode]
-/// * [storeName]
+/// * [facilityId]
+/// * [facilityCode]
+/// * [facilityName]
 /// * [pointSaleId]
 /// * [pointSaleCode]
 /// * [pointSaleName]
@@ -23,14 +23,14 @@ part 'user_settings_response.g.dart';
 @BuiltValue()
 abstract class UserSettingsResponse
     implements Built<UserSettingsResponse, UserSettingsResponseBuilder> {
-  @BuiltValueField(wireName: r'store_id')
-  int? get storeId;
+  @BuiltValueField(wireName: r'facility_id')
+  int? get facilityId;
 
-  @BuiltValueField(wireName: r'store_code')
-  String? get storeCode;
+  @BuiltValueField(wireName: r'facility_code')
+  String? get facilityCode;
 
-  @BuiltValueField(wireName: r'store_name')
-  String? get storeName;
+  @BuiltValueField(wireName: r'facility_name')
+  String? get facilityName;
 
   @BuiltValueField(wireName: r'point_sale_id')
   int? get pointSaleId;
@@ -79,24 +79,24 @@ class _$UserSettingsResponseSerializer
     UserSettingsResponse object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'store_id';
-    yield object.storeId == null
+    yield r'facility_id';
+    yield object.facilityId == null
         ? null
         : serializers.serialize(
-            object.storeId,
+            object.facilityId,
             specifiedType: const FullType.nullable(int),
           );
-    if (object.storeCode != null) {
-      yield r'store_code';
+    if (object.facilityCode != null) {
+      yield r'facility_code';
       yield serializers.serialize(
-        object.storeCode,
+        object.facilityCode,
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.storeName != null) {
-      yield r'store_name';
+    if (object.facilityName != null) {
+      yield r'facility_name';
       yield serializers.serialize(
-        object.storeName,
+        object.facilityName,
         specifiedType: const FullType.nullable(String),
       );
     }
@@ -169,7 +169,7 @@ class _$UserSettingsResponseSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store_id':
+        case r'facility_id':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -177,9 +177,9 @@ class _$UserSettingsResponseSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.storeId = valueDes;
+          result.facilityId = valueDes;
           break;
-        case r'store_code':
+        case r'facility_code':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -187,9 +187,9 @@ class _$UserSettingsResponseSerializer
                   )
                   as String?;
           if (valueDes == null) continue;
-          result.storeCode = valueDes;
+          result.facilityCode = valueDes;
           break;
-        case r'store_name':
+        case r'facility_name':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -197,7 +197,7 @@ class _$UserSettingsResponseSerializer
                   )
                   as String?;
           if (valueDes == null) continue;
-          result.storeName = valueDes;
+          result.facilityName = valueDes;
           break;
         case r'point_sale_id':
           final valueDes =

@@ -11,7 +11,7 @@ part 'point_sale_create.g.dart';
 /// PointSaleCreate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [warehouse]
@@ -20,8 +20,8 @@ part 'point_sale_create.g.dart';
 @BuiltValue()
 abstract class PointSaleCreate
     implements Built<PointSaleCreate, PointSaleCreateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int get store;
+  @BuiltValueField(wireName: r'facility')
+  int get facility;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -64,9 +64,9 @@ class _$PointSaleCreateSerializer
     PointSaleCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
+      object.facility,
       specifiedType: const FullType(int),
     );
     yield r'code';
@@ -125,11 +125,11 @@ class _$PointSaleCreateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'code':
           final valueDes =

@@ -11,7 +11,7 @@ part 'cash_drawer_update.g.dart';
 /// CashDrawerUpdate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [comment]
@@ -19,8 +19,8 @@ part 'cash_drawer_update.g.dart';
 @BuiltValue()
 abstract class CashDrawerUpdate
     implements Built<CashDrawerUpdate, CashDrawerUpdateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int? get store;
+  @BuiltValueField(wireName: r'facility')
+  int? get facility;
 
   @BuiltValueField(wireName: r'code')
   String? get code;
@@ -60,10 +60,10 @@ class _$CashDrawerUpdateSerializer
     CashDrawerUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.store != null) {
-      yield r'store';
+    if (object.facility != null) {
+      yield r'facility';
       yield serializers.serialize(
-        object.store,
+        object.facility,
         specifiedType: const FullType.nullable(int),
       );
     }
@@ -122,7 +122,7 @@ class _$CashDrawerUpdateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -130,7 +130,7 @@ class _$CashDrawerUpdateSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'code':
           final valueDes =

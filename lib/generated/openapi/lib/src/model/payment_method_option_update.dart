@@ -12,7 +12,7 @@ part 'payment_method_option_update.g.dart';
 /// PaymentMethodOptionUpdate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [warehouse]
 /// * [name]
 /// * [numberOfPayments]
@@ -24,8 +24,8 @@ part 'payment_method_option_update.g.dart';
 abstract class PaymentMethodOptionUpdate
     implements
         Built<PaymentMethodOptionUpdate, PaymentMethodOptionUpdateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int? get store;
+  @BuiltValueField(wireName: r'facility')
+  int? get facility;
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
@@ -78,10 +78,10 @@ class _$PaymentMethodOptionUpdateSerializer
     PaymentMethodOptionUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.store != null) {
-      yield r'store';
+    if (object.facility != null) {
+      yield r'facility';
       yield serializers.serialize(
-        object.store,
+        object.facility,
         specifiedType: const FullType.nullable(int),
       );
     }
@@ -161,7 +161,7 @@ class _$PaymentMethodOptionUpdateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -169,7 +169,7 @@ class _$PaymentMethodOptionUpdateSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'warehouse':
           final valueDes =

@@ -3,7 +3,7 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 
 part 'user_settings.freezed.dart';
 
-/// Read-only display of a user's default store/POS/cash-drawer references
+/// Read-only display of a user's default facility/POS/cash-drawer references
 /// (data-model.md "UserSettings"). Maps `UserSettingsResponse` /
 /// `UserSettingsUpdate`. The `*Name`/`*Code` fields are resolved
 /// server-side (mbe-api#79) and are display-only; `toUpdate()` sends only
@@ -13,9 +13,9 @@ class UserSettings with _$UserSettings {
   const UserSettings._();
 
   const factory UserSettings({
-    int? storeId,
-    String? storeCode,
-    String? storeName,
+    int? facilityId,
+    String? facilityCode,
+    String? facilityName,
     int? pointSaleId,
     String? pointSaleCode,
     String? pointSaleName,
@@ -26,9 +26,9 @@ class UserSettings with _$UserSettings {
 
   factory UserSettings.fromResponse(UserSettingsResponse response) {
     return UserSettings(
-      storeId: response.storeId,
-      storeCode: response.storeCode,
-      storeName: response.storeName,
+      facilityId: response.facilityId,
+      facilityCode: response.facilityCode,
+      facilityName: response.facilityName,
       pointSaleId: response.pointSaleId,
       pointSaleCode: response.pointSaleCode,
       pointSaleName: response.pointSaleName,
@@ -41,7 +41,7 @@ class UserSettings with _$UserSettings {
   UserSettingsUpdate toUpdate() {
     return UserSettingsUpdate(
       (b) => b
-        ..storeId = storeId
+        ..facilityId = facilityId
         ..pointSaleId = pointSaleId
         ..cashDrawerId = cashDrawerId,
     );

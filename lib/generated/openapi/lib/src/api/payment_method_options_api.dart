@@ -269,7 +269,7 @@ class PaymentMethodOptionsApi {
   ///
   ///
   /// Parameters:
-  /// * [store]
+  /// * [facility]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -283,7 +283,7 @@ class PaymentMethodOptionsApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponsePaymentMethodOptionResponse>>
   listPaymentMethodOptionsApiV1PaymentMethodOptionsGet({
-    int? store,
+    int? facility,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -307,10 +307,10 @@ class PaymentMethodOptionsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (store != null)
-        r'store': encodeQueryParameter(
+      if (facility != null)
+        r'facility': encodeQueryParameter(
           _serializers,
-          store,
+          facility,
           const FullType(int),
         ),
       if (skip != null)
