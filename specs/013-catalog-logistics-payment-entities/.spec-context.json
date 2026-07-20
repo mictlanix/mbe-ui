@@ -3,7 +3,7 @@
   "specName": "Catalog Logistics & Payment Entities (Expenses, Payment Method Options, Vehicles, Vehicle Operators)",
   "branch": "013-catalog-logistics-payment-entities",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-19T23:11:30.423Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-20T04:04:51.072Z"
     }
   ]
 }
