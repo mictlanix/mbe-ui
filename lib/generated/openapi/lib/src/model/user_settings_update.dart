@@ -11,14 +11,14 @@ part 'user_settings_update.g.dart';
 /// UserSettingsUpdate
 ///
 /// Properties:
-/// * [storeId]
+/// * [facilityId]
 /// * [pointSaleId]
 /// * [cashDrawerId]
 @BuiltValue()
 abstract class UserSettingsUpdate
     implements Built<UserSettingsUpdate, UserSettingsUpdateBuilder> {
-  @BuiltValueField(wireName: r'store_id')
-  int? get storeId;
+  @BuiltValueField(wireName: r'facility_id')
+  int? get facilityId;
 
   @BuiltValueField(wireName: r'point_sale_id')
   int? get pointSaleId;
@@ -52,10 +52,10 @@ class _$UserSettingsUpdateSerializer
     UserSettingsUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.storeId != null) {
-      yield r'store_id';
+    if (object.facilityId != null) {
+      yield r'facility_id';
       yield serializers.serialize(
-        object.storeId,
+        object.facilityId,
         specifiedType: const FullType.nullable(int),
       );
     }
@@ -100,7 +100,7 @@ class _$UserSettingsUpdateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store_id':
+        case r'facility_id':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -108,7 +108,7 @@ class _$UserSettingsUpdateSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.storeId = valueDes;
+          result.facilityId = valueDes;
           break;
         case r'point_sale_id':
           final valueDes =

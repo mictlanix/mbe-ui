@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/date.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,7 +19,7 @@ part 'vehicle_operator_create.g.dart';
 /// * [issueDate]
 /// * [expirationDate]
 /// * [issuingLocation]
-/// * [active]
+/// * [status]
 @BuiltValue()
 abstract class VehicleOperatorCreate
     implements Built<VehicleOperatorCreate, VehicleOperatorCreateBuilder> {
@@ -40,8 +41,9 @@ abstract class VehicleOperatorCreate
   @BuiltValueField(wireName: r'issuing_location')
   String get issuingLocation;
 
-  @BuiltValueField(wireName: r'active')
-  bool? get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   VehicleOperatorCreate._();
 
@@ -50,7 +52,8 @@ abstract class VehicleOperatorCreate
   ]) = _$VehicleOperatorCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(VehicleOperatorCreateBuilder b) => b..active = true;
+  static void _defaults(VehicleOperatorCreateBuilder b) =>
+      b..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<VehicleOperatorCreate> get serializer =>
@@ -103,11 +106,11 @@ class _$VehicleOperatorCreateSerializer
       object.issuingLocation,
       specifiedType: const FullType(String),
     );
-    if (object.active != null) {
-      yield r'active';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.active,
-        specifiedType: const FullType(bool),
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
   }
@@ -188,14 +191,14 @@ class _$VehicleOperatorCreateSerializer
                   as String;
           result.issuingLocation = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.active = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

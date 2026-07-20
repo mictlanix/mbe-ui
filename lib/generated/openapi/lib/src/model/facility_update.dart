@@ -3,30 +3,38 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
+import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'store_update.g.dart';
+part 'facility_update.g.dart';
 
-/// StoreUpdate
+/// FacilityUpdate
 ///
 /// Properties:
 /// * [code]
 /// * [name]
+/// * [type]
 /// * [location]
 /// * [address]
 /// * [taxpayer]
 /// * [logo]
 /// * [receiptMessage]
 /// * [defaultBatch]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
-abstract class StoreUpdate implements Built<StoreUpdate, StoreUpdateBuilder> {
+abstract class FacilityUpdate
+    implements Built<FacilityUpdate, FacilityUpdateBuilder> {
   @BuiltValueField(wireName: r'code')
   String? get code;
 
   @BuiltValueField(wireName: r'name')
   String? get name;
+
+  @BuiltValueField(wireName: r'type')
+  FacilityType? get type;
+  // enum typeEnum {  0,  1,  };
 
   @BuiltValueField(wireName: r'location')
   String? get location;
@@ -46,30 +54,34 @@ abstract class StoreUpdate implements Built<StoreUpdate, StoreUpdateBuilder> {
   @BuiltValueField(wireName: r'default_batch')
   String? get defaultBatch;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
-  StoreUpdate._();
+  FacilityUpdate._();
 
-  factory StoreUpdate([void updates(StoreUpdateBuilder b)]) = _$StoreUpdate;
+  factory FacilityUpdate([void updates(FacilityUpdateBuilder b)]) =
+      _$FacilityUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(StoreUpdateBuilder b) => b;
+  static void _defaults(FacilityUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<StoreUpdate> get serializer => _$StoreUpdateSerializer();
+  static Serializer<FacilityUpdate> get serializer =>
+      _$FacilityUpdateSerializer();
 }
 
-class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
+class _$FacilityUpdateSerializer
+    implements PrimitiveSerializer<FacilityUpdate> {
   @override
-  final Iterable<Type> types = const [StoreUpdate, _$StoreUpdate];
+  final Iterable<Type> types = const [FacilityUpdate, _$FacilityUpdate];
 
   @override
-  final String wireName = r'StoreUpdate';
+  final String wireName = r'FacilityUpdate';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    StoreUpdate object, {
+    FacilityUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     if (object.code != null) {
@@ -84,6 +96,13 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
       yield serializers.serialize(
         object.name,
         specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.type != null) {
+      yield r'type';
+      yield serializers.serialize(
+        object.type,
+        specifiedType: const FullType.nullable(FacilityType),
       );
     }
     if (object.location != null) {
@@ -128,11 +147,11 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -140,7 +159,7 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
   @override
   Object serialize(
     Serializers serializers,
-    StoreUpdate object, {
+    FacilityUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -155,7 +174,7 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required StoreUpdateBuilder result,
+    required FacilityUpdateBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -181,6 +200,16 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
                   as String?;
           if (valueDes == null) continue;
           result.name = valueDes;
+          break;
+        case r'type':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(FacilityType),
+                  )
+                  as FacilityType?;
+          if (valueDes == null) continue;
+          result.type = valueDes;
           break;
         case r'location':
           final valueDes =
@@ -242,15 +271,15 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
           if (valueDes == null) continue;
           result.defaultBatch = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.disabled = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -261,12 +290,12 @@ class _$StoreUpdateSerializer implements PrimitiveSerializer<StoreUpdate> {
   }
 
   @override
-  StoreUpdate deserialize(
+  FacilityUpdate deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = StoreUpdateBuilder();
+    final result = FacilityUpdateBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

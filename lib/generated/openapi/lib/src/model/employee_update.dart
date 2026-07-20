@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/date.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -19,12 +20,11 @@ part 'employee_update.g.dart';
 /// * [birthday]
 /// * [taxpayerId]
 /// * [salesPerson]
-/// * [active]
+/// * [status]
 /// * [personalId]
 /// * [startJobDate]
 /// * [enrollNumber]
 /// * [comment]
-/// * [disabled]
 @BuiltValue()
 abstract class EmployeeUpdate
     implements Built<EmployeeUpdate, EmployeeUpdateBuilder> {
@@ -49,8 +49,9 @@ abstract class EmployeeUpdate
   @BuiltValueField(wireName: r'sales_person')
   bool? get salesPerson;
 
-  @BuiltValueField(wireName: r'active')
-  bool? get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'personal_id')
   String? get personalId;
@@ -63,9 +64,6 @@ abstract class EmployeeUpdate
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
-
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
 
   EmployeeUpdate._();
 
@@ -142,11 +140,11 @@ class _$EmployeeUpdateSerializer
         specifiedType: const FullType.nullable(bool),
       );
     }
-    if (object.active != null) {
-      yield r'active';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.active,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
     if (object.personalId != null) {
@@ -175,13 +173,6 @@ class _$EmployeeUpdateSerializer
       yield serializers.serialize(
         object.comment,
         specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.disabled != null) {
-      yield r'disabled';
-      yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
       );
     }
   }
@@ -281,15 +272,15 @@ class _$EmployeeUpdateSerializer
           if (valueDes == null) continue;
           result.salesPerson = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.active = valueDes;
+          result.status = valueDes;
           break;
         case r'personal_id':
           final valueDes =
@@ -330,16 +321,6 @@ class _$EmployeeUpdateSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
-          break;
-        case r'disabled':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(bool),
-                  )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
           break;
         default:
           unhandled.add(key);

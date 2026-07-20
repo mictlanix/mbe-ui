@@ -5,9 +5,10 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart'
-    hide ProductLabelFacet, ProductListItem;
+    hide EntityStatus, ProductLabelFacet, ProductListItem;
 import 'package:one_of/any_of.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -33,7 +34,7 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<ProductListResult> list({
     String? search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -44,7 +45,7 @@ class ProductRepositoryImpl implements ProductRepository {
     try {
       final response = await _api.listProductsApiV1ProductsGet(
         search: search,
-        deactivated: deactivated,
+        status: status?.toApi(),
         stockable: stockable,
         salable: salable,
         purchasable: purchasable,
@@ -164,7 +165,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? purchasable,
     bool? salable,
     bool? invoiceable,
-    bool? deactivated,
+    EntityStatus? status,
     int? supplier,
     String? key,
     int? currency,
@@ -191,7 +192,7 @@ class ProductRepositoryImpl implements ProductRepository {
           if (purchasable != null) b.purchasable = purchasable;
           if (salable != null) b.salable = salable;
           if (invoiceable != null) b.invoiceable = invoiceable;
-          if (deactivated != null) b.deactivated = deactivated;
+          if (status != null) b.status = status.toApi();
           if (supplier != null) b.supplier = supplier;
           if (key != null) b.key = key;
           if (currency != null) b.currency = currency;
@@ -260,7 +261,7 @@ class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<List<ProductLabelFacet>> productLabelFacets({
     String? search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -270,7 +271,7 @@ class ProductRepositoryImpl implements ProductRepository {
       final response = await _api
           .getProductLabelFacetsApiV1ProductsLabelsFacetsGet(
             search: search,
-            deactivated: deactivated,
+            status: status?.toApi(),
             stockable: stockable,
             salable: salable,
             purchasable: purchasable,

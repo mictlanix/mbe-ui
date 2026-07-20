@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -31,7 +32,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.customers, rawValue: 2)],
 );
@@ -40,7 +41,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.customers, rawValue: 15)],
 );
@@ -54,7 +55,7 @@ const _testCustomers = [
     creditDays: 30,
     priceList: PriceListRef(id: 1, name: 'Retail'),
     salesperson: EmployeeRef(id: 2, name: 'Jane Doe'),
-    disabled: false,
+    status: EntityStatus.active,
   ),
   CustomerListItem(
     customerId: 2,
@@ -63,7 +64,7 @@ const _testCustomers = [
     creditLimit: '0',
     creditDays: 0,
     priceList: PriceListRef(id: 1, name: 'Retail'),
-    disabled: false,
+    status: EntityStatus.active,
   ),
 ];
 
@@ -89,7 +90,7 @@ void main() {
     when(
       () => repository.list(
         search: any(named: 'search'),
-        disabled: any(named: 'disabled'),
+        status: any(named: 'status'),
         priceList: any(named: 'priceList'),
         salesperson: any(named: 'salesperson'),
         skip: any(named: 'skip'),
@@ -146,7 +147,10 @@ void main() {
       await tester.tap(find.byKey(const Key('customers_filter_button')));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('customers_filter_active')), findsOneWidget);
+      expect(
+        find.byKey(const Key('customers_filter_status_active')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('customers_filter_price_list')),
         findsOneWidget,
@@ -182,7 +186,7 @@ void main() {
       when(
         () => repository.list(
           search: any(named: 'search'),
-          disabled: any(named: 'disabled'),
+          status: any(named: 'status'),
           priceList: any(named: 'priceList'),
           salesperson: any(named: 'salesperson'),
           skip: any(named: 'skip'),

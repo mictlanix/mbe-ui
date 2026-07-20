@@ -25,7 +25,7 @@ mixin _$Employee {
   DateTime get birthday => throw _privateConstructorUsedError;
   String? get taxpayerId => throw _privateConstructorUsedError;
   bool get salesPerson => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   String? get personalId => throw _privateConstructorUsedError;
   DateTime get startJobDate => throw _privateConstructorUsedError;
   int? get enrollNumber => throw _privateConstructorUsedError;
@@ -52,7 +52,7 @@ abstract class $EmployeeCopyWith<$Res> {
     DateTime birthday,
     String? taxpayerId,
     bool salesPerson,
-    bool active,
+    EntityStatus status,
     String? personalId,
     DateTime startJobDate,
     int? enrollNumber,
@@ -83,7 +83,7 @@ class _$EmployeeCopyWithImpl<$Res, $Val extends Employee>
     Object? birthday = null,
     Object? taxpayerId = freezed,
     Object? salesPerson = null,
-    Object? active = null,
+    Object? status = null,
     Object? personalId = freezed,
     Object? startJobDate = null,
     Object? enrollNumber = freezed,
@@ -123,10 +123,10 @@ class _$EmployeeCopyWithImpl<$Res, $Val extends Employee>
                 ? _value.salesPerson
                 : salesPerson // ignore: cast_nullable_to_non_nullable
                       as bool,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             personalId: freezed == personalId
                 ? _value.personalId
                 : personalId // ignore: cast_nullable_to_non_nullable
@@ -167,7 +167,7 @@ abstract class _$$EmployeeImplCopyWith<$Res>
     DateTime birthday,
     String? taxpayerId,
     bool salesPerson,
-    bool active,
+    EntityStatus status,
     String? personalId,
     DateTime startJobDate,
     int? enrollNumber,
@@ -197,7 +197,7 @@ class __$$EmployeeImplCopyWithImpl<$Res>
     Object? birthday = null,
     Object? taxpayerId = freezed,
     Object? salesPerson = null,
-    Object? active = null,
+    Object? status = null,
     Object? personalId = freezed,
     Object? startJobDate = null,
     Object? enrollNumber = freezed,
@@ -237,10 +237,10 @@ class __$$EmployeeImplCopyWithImpl<$Res>
             ? _value.salesPerson
             : salesPerson // ignore: cast_nullable_to_non_nullable
                   as bool,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         personalId: freezed == personalId
             ? _value.personalId
             : personalId // ignore: cast_nullable_to_non_nullable
@@ -274,7 +274,7 @@ class _$EmployeeImpl implements _Employee {
     required this.birthday,
     this.taxpayerId,
     required this.salesPerson,
-    required this.active,
+    required this.status,
     this.personalId,
     required this.startJobDate,
     this.enrollNumber,
@@ -298,7 +298,7 @@ class _$EmployeeImpl implements _Employee {
   @override
   final bool salesPerson;
   @override
-  final bool active;
+  final EntityStatus status;
   @override
   final String? personalId;
   @override
@@ -310,7 +310,7 @@ class _$EmployeeImpl implements _Employee {
 
   @override
   String toString() {
-    return 'Employee(employeeId: $employeeId, firstName: $firstName, lastName: $lastName, nickname: $nickname, gender: $gender, birthday: $birthday, taxpayerId: $taxpayerId, salesPerson: $salesPerson, active: $active, personalId: $personalId, startJobDate: $startJobDate, enrollNumber: $enrollNumber, comment: $comment)';
+    return 'Employee(employeeId: $employeeId, firstName: $firstName, lastName: $lastName, nickname: $nickname, gender: $gender, birthday: $birthday, taxpayerId: $taxpayerId, salesPerson: $salesPerson, status: $status, personalId: $personalId, startJobDate: $startJobDate, enrollNumber: $enrollNumber, comment: $comment)';
   }
 
   @override
@@ -333,7 +333,7 @@ class _$EmployeeImpl implements _Employee {
                 other.taxpayerId == taxpayerId) &&
             (identical(other.salesPerson, salesPerson) ||
                 other.salesPerson == salesPerson) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.personalId, personalId) ||
                 other.personalId == personalId) &&
             (identical(other.startJobDate, startJobDate) ||
@@ -354,7 +354,7 @@ class _$EmployeeImpl implements _Employee {
     birthday,
     taxpayerId,
     salesPerson,
-    active,
+    status,
     personalId,
     startJobDate,
     enrollNumber,
@@ -380,7 +380,7 @@ abstract class _Employee implements Employee {
     required final DateTime birthday,
     final String? taxpayerId,
     required final bool salesPerson,
-    required final bool active,
+    required final EntityStatus status,
     final String? personalId,
     required final DateTime startJobDate,
     final int? enrollNumber,
@@ -404,7 +404,7 @@ abstract class _Employee implements Employee {
   @override
   bool get salesPerson;
   @override
-  bool get active;
+  EntityStatus get status;
   @override
   String? get personalId;
   @override

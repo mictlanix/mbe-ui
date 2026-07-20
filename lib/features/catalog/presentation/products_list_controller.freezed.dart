@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ProductFilter {
   String get search => throw _privateConstructorUsedError;
-  bool? get deactivated => throw _privateConstructorUsedError;
+  EntityStatus? get status => throw _privateConstructorUsedError;
   bool? get stockable => throw _privateConstructorUsedError;
   bool? get salable => throw _privateConstructorUsedError;
   bool? get purchasable => throw _privateConstructorUsedError;
@@ -40,7 +40,7 @@ abstract class $ProductFilterCopyWith<$Res> {
   @useResult
   $Res call({
     String search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -64,7 +64,7 @@ class _$ProductFilterCopyWithImpl<$Res, $Val extends ProductFilter>
   @override
   $Res call({
     Object? search = null,
-    Object? deactivated = freezed,
+    Object? status = freezed,
     Object? stockable = freezed,
     Object? salable = freezed,
     Object? purchasable = freezed,
@@ -76,10 +76,10 @@ class _$ProductFilterCopyWithImpl<$Res, $Val extends ProductFilter>
                 ? _value.search
                 : search // ignore: cast_nullable_to_non_nullable
                       as String,
-            deactivated: freezed == deactivated
-                ? _value.deactivated
-                : deactivated // ignore: cast_nullable_to_non_nullable
-                      as bool?,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus?,
             stockable: freezed == stockable
                 ? _value.stockable
                 : stockable // ignore: cast_nullable_to_non_nullable
@@ -113,7 +113,7 @@ abstract class _$$ProductFilterImplCopyWith<$Res>
   @useResult
   $Res call({
     String search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -136,7 +136,7 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? search = null,
-    Object? deactivated = freezed,
+    Object? status = freezed,
     Object? stockable = freezed,
     Object? salable = freezed,
     Object? purchasable = freezed,
@@ -148,10 +148,10 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
             ? _value.search
             : search // ignore: cast_nullable_to_non_nullable
                   as String,
-        deactivated: freezed == deactivated
-            ? _value.deactivated
-            : deactivated // ignore: cast_nullable_to_non_nullable
-                  as bool?,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus?,
         stockable: freezed == stockable
             ? _value.stockable
             : stockable // ignore: cast_nullable_to_non_nullable
@@ -178,7 +178,7 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
 class _$ProductFilterImpl implements _ProductFilter {
   const _$ProductFilterImpl({
     this.search = '',
-    this.deactivated,
+    this.status,
     this.stockable,
     this.salable,
     this.purchasable,
@@ -189,7 +189,7 @@ class _$ProductFilterImpl implements _ProductFilter {
   @JsonKey()
   final String search;
   @override
-  final bool? deactivated;
+  final EntityStatus? status;
   @override
   final bool? stockable;
   @override
@@ -207,7 +207,7 @@ class _$ProductFilterImpl implements _ProductFilter {
 
   @override
   String toString() {
-    return 'ProductFilter(search: $search, deactivated: $deactivated, stockable: $stockable, salable: $salable, purchasable: $purchasable, labels: $labels)';
+    return 'ProductFilter(search: $search, status: $status, stockable: $stockable, salable: $salable, purchasable: $purchasable, labels: $labels)';
   }
 
   @override
@@ -216,8 +216,7 @@ class _$ProductFilterImpl implements _ProductFilter {
         (other.runtimeType == runtimeType &&
             other is _$ProductFilterImpl &&
             (identical(other.search, search) || other.search == search) &&
-            (identical(other.deactivated, deactivated) ||
-                other.deactivated == deactivated) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.stockable, stockable) ||
                 other.stockable == stockable) &&
             (identical(other.salable, salable) || other.salable == salable) &&
@@ -230,7 +229,7 @@ class _$ProductFilterImpl implements _ProductFilter {
   int get hashCode => Object.hash(
     runtimeType,
     search,
-    deactivated,
+    status,
     stockable,
     salable,
     purchasable,
@@ -249,7 +248,7 @@ class _$ProductFilterImpl implements _ProductFilter {
 abstract class _ProductFilter implements ProductFilter {
   const factory _ProductFilter({
     final String search,
-    final bool? deactivated,
+    final EntityStatus? status,
     final bool? stockable,
     final bool? salable,
     final bool? purchasable,
@@ -259,7 +258,7 @@ abstract class _ProductFilter implements ProductFilter {
   @override
   String get search;
   @override
-  bool? get deactivated;
+  EntityStatus? get status;
   @override
   bool? get stockable;
   @override

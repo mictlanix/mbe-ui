@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
@@ -40,7 +41,7 @@ part 'product_response.g.dart';
 /// * [salable]
 /// * [invoiceable]
 /// * [stockVerification]
-/// * [deactivated]
+/// * [status]
 /// * [comment]
 /// * [labels]
 @BuiltValue()
@@ -118,8 +119,9 @@ abstract class ProductResponse
   @BuiltValueField(wireName: r'stock_verification')
   bool get stockVerification;
 
-  @BuiltValueField(wireName: r'deactivated')
-  bool get deactivated;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
@@ -289,10 +291,10 @@ class _$ProductResponseSerializer
       object.stockVerification,
       specifiedType: const FullType(bool),
     );
-    yield r'deactivated';
+    yield r'status';
     yield serializers.serialize(
-      object.deactivated,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
     yield r'comment';
     yield object.comment == null
@@ -547,14 +549,14 @@ class _$ProductResponseSerializer
                   as bool;
           result.stockVerification = valueDes;
           break;
-        case r'deactivated':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.deactivated = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         case r'comment':
           final valueDes =

@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 import 'package:one_of/any_of.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -24,7 +25,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
   @override
   Future<CustomerPage> list({
     String? search,
-    bool? disabled,
+    EntityStatus? status,
     int? priceList,
     int? salesperson,
     int skip = 0,
@@ -33,7 +34,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
     try {
       final response = await _api.listCustomersApiV1CustomersGet(
         search: search,
-        disabled: disabled,
+        status: status?.toApi(),
         priceList: priceList,
         salesperson: salesperson,
         skip: skip,
@@ -113,7 +114,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
     bool? shipping,
     bool? shippingRequiredDocument,
     int? salesperson,
-    bool? disabled,
+    EntityStatus? status,
     String? comment,
   }) async {
     try {
@@ -130,7 +131,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
             b.shippingRequiredDocument = shippingRequiredDocument;
           }
           if (salesperson != null) b.salesperson = salesperson;
-          if (disabled != null) b.disabled = disabled;
+          if (status != null) b.status = status.toApi();
           if (comment != null) b.comment = comment;
           if (creditLimit != null) {
             _setCreditLimit1(b.creditLimit, creditLimit);

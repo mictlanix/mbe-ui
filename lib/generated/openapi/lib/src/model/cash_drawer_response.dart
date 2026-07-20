@@ -3,7 +3,8 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/store_summary.dart';
+import 'package:mbe_api_client/src/model/facility_summary.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -13,19 +14,19 @@ part 'cash_drawer_response.g.dart';
 ///
 /// Properties:
 /// * [cashDrawerId]
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class CashDrawerResponse
     implements Built<CashDrawerResponse, CashDrawerResponseBuilder> {
   @BuiltValueField(wireName: r'cash_drawer_id')
   int get cashDrawerId;
 
-  @BuiltValueField(wireName: r'store')
-  StoreSummary get store;
+  @BuiltValueField(wireName: r'facility')
+  FacilitySummary get facility;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -36,8 +37,9 @@ abstract class CashDrawerResponse
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   CashDrawerResponse._();
 
@@ -70,10 +72,10 @@ class _$CashDrawerResponseSerializer
       object.cashDrawerId,
       specifiedType: const FullType(int),
     );
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
-      specifiedType: const FullType(StoreSummary),
+      object.facility,
+      specifiedType: const FullType(FacilitySummary),
     );
     yield r'code';
     yield serializers.serialize(
@@ -92,13 +94,11 @@ class _$CashDrawerResponseSerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
-    yield r'disabled';
-    yield object.disabled == null
-        ? null
-        : serializers.serialize(
-            object.disabled,
-            specifiedType: const FullType.nullable(bool),
-          );
+    yield r'status';
+    yield serializers.serialize(
+      object.status,
+      specifiedType: const FullType(EntityStatus),
+    );
   }
 
   @override
@@ -132,14 +132,14 @@ class _$CashDrawerResponseSerializer
                   as int;
           result.cashDrawerId = valueDes;
           break;
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(StoreSummary),
+                    specifiedType: const FullType(FacilitySummary),
                   )
-                  as StoreSummary;
-          result.store.replace(valueDes);
+                  as FacilitySummary;
+          result.facility.replace(valueDes);
           break;
         case r'code':
           final valueDes =
@@ -169,15 +169,14 @@ class _$CashDrawerResponseSerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

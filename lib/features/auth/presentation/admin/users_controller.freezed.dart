@@ -162,7 +162,7 @@ mixin _$UserFormState {
   /// picks a new one.
   String get employeeDisplayText => throw _privateConstructorUsedError;
   bool get administrator => throw _privateConstructorUsedError;
-  bool get disabled => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   List<Privilege> get privileges => throw _privateConstructorUsedError;
   UserSettings? get settings => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
@@ -201,7 +201,7 @@ abstract class $UserFormStateCopyWith<$Res> {
     int? employeeId,
     String employeeDisplayText,
     bool administrator,
-    bool disabled,
+    EntityStatus status,
     List<Privilege> privileges,
     UserSettings? settings,
     bool loading,
@@ -238,7 +238,7 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
     Object? employeeId = freezed,
     Object? employeeDisplayText = null,
     Object? administrator = null,
-    Object? disabled = null,
+    Object? status = null,
     Object? privileges = null,
     Object? settings = freezed,
     Object? loading = null,
@@ -276,10 +276,10 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
                 ? _value.administrator
                 : administrator // ignore: cast_nullable_to_non_nullable
                       as bool,
-            disabled: null == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             privileges: null == privileges
                 ? _value.privileges
                 : privileges // ignore: cast_nullable_to_non_nullable
@@ -356,7 +356,7 @@ abstract class _$$UserFormStateImplCopyWith<$Res>
     int? employeeId,
     String employeeDisplayText,
     bool administrator,
-    bool disabled,
+    EntityStatus status,
     List<Privilege> privileges,
     UserSettings? settings,
     bool loading,
@@ -393,7 +393,7 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
     Object? employeeId = freezed,
     Object? employeeDisplayText = null,
     Object? administrator = null,
-    Object? disabled = null,
+    Object? status = null,
     Object? privileges = null,
     Object? settings = freezed,
     Object? loading = null,
@@ -431,10 +431,10 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
             ? _value.administrator
             : administrator // ignore: cast_nullable_to_non_nullable
                   as bool,
-        disabled: null == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         privileges: null == privileges
             ? _value._privileges
             : privileges // ignore: cast_nullable_to_non_nullable
@@ -490,7 +490,7 @@ class _$UserFormStateImpl implements _UserFormState {
     this.employeeId,
     this.employeeDisplayText = '',
     this.administrator = false,
-    this.disabled = false,
+    this.status = EntityStatus.active,
     final List<Privilege> privileges = const <Privilege>[],
     this.settings,
     this.loading = false,
@@ -528,7 +528,7 @@ class _$UserFormStateImpl implements _UserFormState {
   final bool administrator;
   @override
   @JsonKey()
-  final bool disabled;
+  final EntityStatus status;
   final List<Privilege> _privileges;
   @override
   @JsonKey()
@@ -569,7 +569,7 @@ class _$UserFormStateImpl implements _UserFormState {
 
   @override
   String toString() {
-    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, employeeDisplayText: $employeeDisplayText, administrator: $administrator, disabled: $disabled, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
+    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, employeeDisplayText: $employeeDisplayText, administrator: $administrator, status: $status, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
   }
 
   @override
@@ -587,8 +587,7 @@ class _$UserFormStateImpl implements _UserFormState {
                 other.employeeDisplayText == employeeDisplayText) &&
             (identical(other.administrator, administrator) ||
                 other.administrator == administrator) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled) &&
+            (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(
               other._privileges,
               _privileges,
@@ -618,7 +617,7 @@ class _$UserFormStateImpl implements _UserFormState {
     employeeId,
     employeeDisplayText,
     administrator,
-    disabled,
+    status,
     const DeepCollectionEquality().hash(_privileges),
     settings,
     loading,
@@ -648,7 +647,7 @@ abstract class _UserFormState implements UserFormState {
     final int? employeeId,
     final String employeeDisplayText,
     final bool administrator,
-    final bool disabled,
+    final EntityStatus status,
     final List<Privilege> privileges,
     final UserSettings? settings,
     final bool loading,
@@ -680,7 +679,7 @@ abstract class _UserFormState implements UserFormState {
   @override
   bool get administrator;
   @override
-  bool get disabled;
+  EntityStatus get status;
   @override
   List<Privilege> get privileges;
   @override

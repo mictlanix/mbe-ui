@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
@@ -17,7 +18,7 @@ const _userJson = {
   'email': 'jdoe@example.com',
   'employee_id': null,
   'administrator': false,
-  'disabled': false,
+  'status': 0,
   'session_version': 1,
   'settings': null,
   'privileges': [
@@ -44,14 +45,14 @@ void main() {
                 'email': 'admin@example.com',
                 'employee_id': null,
                 'administrator': true,
-                'disabled': false,
+                'status': 0,
               },
               {
                 'user_id': 'jdoe',
                 'email': 'jdoe@example.com',
                 'employee_id': null,
                 'administrator': false,
-                'disabled': false,
+                'status': 0,
               },
             ],
             'total': 2,
@@ -181,15 +182,18 @@ void main() {
     test('200 returns updated User', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
-          jsonEncode({..._userJson, 'disabled': true}),
+          jsonEncode({..._userJson, 'status': 1}),
           200,
           headers: _jsonHeaders,
         ),
       );
 
-      final user = await repository.update(userId: 'jdoe', disabled: true);
+      final user = await repository.update(
+        userId: 'jdoe',
+        status: EntityStatus.inactive,
+      );
 
-      expect(user.disabled, isTrue);
+      expect(user.status, EntityStatus.inactive);
     });
 
     test('404 maps to AppError.notFound', () async {

@@ -20,7 +20,7 @@ mixin _$EmployeeListItem {
   int get employeeId => throw _privateConstructorUsedError;
   String get fullName => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   bool get salesPerson => throw _privateConstructorUsedError;
 
   /// Create a copy of EmployeeListItem
@@ -41,7 +41,7 @@ abstract class $EmployeeListItemCopyWith<$Res> {
     int employeeId,
     String fullName,
     String nickname,
-    bool active,
+    EntityStatus status,
     bool salesPerson,
   });
 }
@@ -64,7 +64,7 @@ class _$EmployeeListItemCopyWithImpl<$Res, $Val extends EmployeeListItem>
     Object? employeeId = null,
     Object? fullName = null,
     Object? nickname = null,
-    Object? active = null,
+    Object? status = null,
     Object? salesPerson = null,
   }) {
     return _then(
@@ -81,10 +81,10 @@ class _$EmployeeListItemCopyWithImpl<$Res, $Val extends EmployeeListItem>
                 ? _value.nickname
                 : nickname // ignore: cast_nullable_to_non_nullable
                       as String,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             salesPerson: null == salesPerson
                 ? _value.salesPerson
                 : salesPerson // ignore: cast_nullable_to_non_nullable
@@ -108,7 +108,7 @@ abstract class _$$EmployeeListItemImplCopyWith<$Res>
     int employeeId,
     String fullName,
     String nickname,
-    bool active,
+    EntityStatus status,
     bool salesPerson,
   });
 }
@@ -130,7 +130,7 @@ class __$$EmployeeListItemImplCopyWithImpl<$Res>
     Object? employeeId = null,
     Object? fullName = null,
     Object? nickname = null,
-    Object? active = null,
+    Object? status = null,
     Object? salesPerson = null,
   }) {
     return _then(
@@ -147,10 +147,10 @@ class __$$EmployeeListItemImplCopyWithImpl<$Res>
             ? _value.nickname
             : nickname // ignore: cast_nullable_to_non_nullable
                   as String,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         salesPerson: null == salesPerson
             ? _value.salesPerson
             : salesPerson // ignore: cast_nullable_to_non_nullable
@@ -167,7 +167,7 @@ class _$EmployeeListItemImpl implements _EmployeeListItem {
     required this.employeeId,
     required this.fullName,
     required this.nickname,
-    required this.active,
+    required this.status,
     required this.salesPerson,
   });
 
@@ -178,13 +178,13 @@ class _$EmployeeListItemImpl implements _EmployeeListItem {
   @override
   final String nickname;
   @override
-  final bool active;
+  final EntityStatus status;
   @override
   final bool salesPerson;
 
   @override
   String toString() {
-    return 'EmployeeListItem(employeeId: $employeeId, fullName: $fullName, nickname: $nickname, active: $active, salesPerson: $salesPerson)';
+    return 'EmployeeListItem(employeeId: $employeeId, fullName: $fullName, nickname: $nickname, status: $status, salesPerson: $salesPerson)';
   }
 
   @override
@@ -198,7 +198,7 @@ class _$EmployeeListItemImpl implements _EmployeeListItem {
                 other.fullName == fullName) &&
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.salesPerson, salesPerson) ||
                 other.salesPerson == salesPerson));
   }
@@ -209,7 +209,7 @@ class _$EmployeeListItemImpl implements _EmployeeListItem {
     employeeId,
     fullName,
     nickname,
-    active,
+    status,
     salesPerson,
   );
 
@@ -230,7 +230,7 @@ abstract class _EmployeeListItem implements EmployeeListItem {
     required final int employeeId,
     required final String fullName,
     required final String nickname,
-    required final bool active,
+    required final EntityStatus status,
     required final bool salesPerson,
   }) = _$EmployeeListItemImpl;
 
@@ -241,7 +241,7 @@ abstract class _EmployeeListItem implements EmployeeListItem {
   @override
   String get nickname;
   @override
-  bool get active;
+  EntityStatus get status;
   @override
   bool get salesPerson;
 

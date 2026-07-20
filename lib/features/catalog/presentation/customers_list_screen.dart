@@ -13,6 +13,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
@@ -115,11 +116,8 @@ class CustomersListScreen extends ConsumerWidget {
                       DataTableColumn(
                         label: l10n.columnStatus,
                         fixedWidth: 130,
-                        cellBuilder: (context, c) => Text(
-                          c.disabled
-                              ? l10n.statusInactiveBadge
-                              : l10n.statusActive,
-                        ),
+                        cellBuilder: (context, c) =>
+                            EntityStatusCell(status: c.status),
                       ),
                     ],
                     rows: page.items,
@@ -162,17 +160,18 @@ class _CustomerFiltersPanel extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // `filter.disabled` is the wire field; this chip shows the positive
-        // "Active" framing (spec 012 Assumptions, `/speckit-analyze` finding
-        // I3) — cycling null -> active(disabled=false) -> inactive
-        // (disabled=true) -> null.
-        _TriStateFilterChip(
-          chipKey: const Key('customers_filter_active'),
-          label: l10n.customersActiveFilter,
-          value: filter.disabled == null ? null : !filter.disabled!,
-          onChanged: (activeValue) => filterController.disabledChanged(
-            activeValue == null ? null : !activeValue,
-          ),
+        // The old polarity juggling (spec 012 `/speckit-analyze` finding I3)
+        // is gone: mbe-api#81 replaced `disabled` with the same `status`
+        // enum every catalog now filters on.
+        Text(
+          l10n.statusFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        EntityStatusFilterChips(
+          filterKey: 'customers_filter_status',
+          value: filter.status,
+          onChanged: filterController.statusChanged,
         ),
         const SizedBox(height: 12),
         CatalogEntityPicker<PriceList>(
@@ -205,42 +204,6 @@ class _CustomerFiltersPanel extends ConsumerWidget {
           initialDisplayText: filter.salespersonDisplayText ?? '',
         ),
       ],
-    );
-  }
-}
-
-/// A [FilterChip] that cycles through `null` → `true` → `false` → `null` on
-/// tap, mirroring `products_list_screen.dart`'s `_TriStateFilterChip`.
-class _TriStateFilterChip extends StatelessWidget {
-  const _TriStateFilterChip({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    this.chipKey,
-  });
-
-  final String label;
-  final bool? value;
-  final ValueChanged<bool?> onChanged;
-  final Key? chipKey;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilterChip(
-      key: chipKey,
-      label: Text(label),
-      selected: value != null,
-      showCheckmark: false,
-      avatar: switch (value) {
-        true => const Icon(Icons.check, size: 18),
-        false => const Icon(Icons.close, size: 18),
-        null => null,
-      },
-      onSelected: (_) => onChanged(switch (value) {
-        null => true,
-        true => false,
-        false => null,
-      }),
     );
   }
 }

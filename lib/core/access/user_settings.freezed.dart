@@ -17,9 +17,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$UserSettings {
-  int? get storeId => throw _privateConstructorUsedError;
-  String? get storeCode => throw _privateConstructorUsedError;
-  String? get storeName => throw _privateConstructorUsedError;
+  int? get facilityId => throw _privateConstructorUsedError;
+  String? get facilityCode => throw _privateConstructorUsedError;
+  String? get facilityName => throw _privateConstructorUsedError;
   int? get pointSaleId => throw _privateConstructorUsedError;
   String? get pointSaleCode => throw _privateConstructorUsedError;
   String? get pointSaleName => throw _privateConstructorUsedError;
@@ -42,9 +42,9 @@ abstract class $UserSettingsCopyWith<$Res> {
   ) = _$UserSettingsCopyWithImpl<$Res, UserSettings>;
   @useResult
   $Res call({
-    int? storeId,
-    String? storeCode,
-    String? storeName,
+    int? facilityId,
+    String? facilityCode,
+    String? facilityName,
     int? pointSaleId,
     String? pointSaleCode,
     String? pointSaleName,
@@ -69,9 +69,9 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? storeId = freezed,
-    Object? storeCode = freezed,
-    Object? storeName = freezed,
+    Object? facilityId = freezed,
+    Object? facilityCode = freezed,
+    Object? facilityName = freezed,
     Object? pointSaleId = freezed,
     Object? pointSaleCode = freezed,
     Object? pointSaleName = freezed,
@@ -81,17 +81,17 @@ class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
   }) {
     return _then(
       _value.copyWith(
-            storeId: freezed == storeId
-                ? _value.storeId
-                : storeId // ignore: cast_nullable_to_non_nullable
+            facilityId: freezed == facilityId
+                ? _value.facilityId
+                : facilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            storeCode: freezed == storeCode
-                ? _value.storeCode
-                : storeCode // ignore: cast_nullable_to_non_nullable
+            facilityCode: freezed == facilityCode
+                ? _value.facilityCode
+                : facilityCode // ignore: cast_nullable_to_non_nullable
                       as String?,
-            storeName: freezed == storeName
-                ? _value.storeName
-                : storeName // ignore: cast_nullable_to_non_nullable
+            facilityName: freezed == facilityName
+                ? _value.facilityName
+                : facilityName // ignore: cast_nullable_to_non_nullable
                       as String?,
             pointSaleId: freezed == pointSaleId
                 ? _value.pointSaleId
@@ -133,9 +133,9 @@ abstract class _$$UserSettingsImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    int? storeId,
-    String? storeCode,
-    String? storeName,
+    int? facilityId,
+    String? facilityCode,
+    String? facilityName,
     int? pointSaleId,
     String? pointSaleCode,
     String? pointSaleName,
@@ -159,9 +159,9 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? storeId = freezed,
-    Object? storeCode = freezed,
-    Object? storeName = freezed,
+    Object? facilityId = freezed,
+    Object? facilityCode = freezed,
+    Object? facilityName = freezed,
     Object? pointSaleId = freezed,
     Object? pointSaleCode = freezed,
     Object? pointSaleName = freezed,
@@ -171,17 +171,17 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$UserSettingsImpl(
-        storeId: freezed == storeId
-            ? _value.storeId
-            : storeId // ignore: cast_nullable_to_non_nullable
+        facilityId: freezed == facilityId
+            ? _value.facilityId
+            : facilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        storeCode: freezed == storeCode
-            ? _value.storeCode
-            : storeCode // ignore: cast_nullable_to_non_nullable
+        facilityCode: freezed == facilityCode
+            ? _value.facilityCode
+            : facilityCode // ignore: cast_nullable_to_non_nullable
                   as String?,
-        storeName: freezed == storeName
-            ? _value.storeName
-            : storeName // ignore: cast_nullable_to_non_nullable
+        facilityName: freezed == facilityName
+            ? _value.facilityName
+            : facilityName // ignore: cast_nullable_to_non_nullable
                   as String?,
         pointSaleId: freezed == pointSaleId
             ? _value.pointSaleId
@@ -216,9 +216,9 @@ class __$$UserSettingsImplCopyWithImpl<$Res>
 
 class _$UserSettingsImpl extends _UserSettings {
   const _$UserSettingsImpl({
-    this.storeId,
-    this.storeCode,
-    this.storeName,
+    this.facilityId,
+    this.facilityCode,
+    this.facilityName,
     this.pointSaleId,
     this.pointSaleCode,
     this.pointSaleName,
@@ -228,11 +228,11 @@ class _$UserSettingsImpl extends _UserSettings {
   }) : super._();
 
   @override
-  final int? storeId;
+  final int? facilityId;
   @override
-  final String? storeCode;
+  final String? facilityCode;
   @override
-  final String? storeName;
+  final String? facilityName;
   @override
   final int? pointSaleId;
   @override
@@ -248,7 +248,7 @@ class _$UserSettingsImpl extends _UserSettings {
 
   @override
   String toString() {
-    return 'UserSettings(storeId: $storeId, storeCode: $storeCode, storeName: $storeName, pointSaleId: $pointSaleId, pointSaleCode: $pointSaleCode, pointSaleName: $pointSaleName, cashDrawerId: $cashDrawerId, cashDrawerCode: $cashDrawerCode, cashDrawerName: $cashDrawerName)';
+    return 'UserSettings(facilityId: $facilityId, facilityCode: $facilityCode, facilityName: $facilityName, pointSaleId: $pointSaleId, pointSaleCode: $pointSaleCode, pointSaleName: $pointSaleName, cashDrawerId: $cashDrawerId, cashDrawerCode: $cashDrawerCode, cashDrawerName: $cashDrawerName)';
   }
 
   @override
@@ -256,11 +256,12 @@ class _$UserSettingsImpl extends _UserSettings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserSettingsImpl &&
-            (identical(other.storeId, storeId) || other.storeId == storeId) &&
-            (identical(other.storeCode, storeCode) ||
-                other.storeCode == storeCode) &&
-            (identical(other.storeName, storeName) ||
-                other.storeName == storeName) &&
+            (identical(other.facilityId, facilityId) ||
+                other.facilityId == facilityId) &&
+            (identical(other.facilityCode, facilityCode) ||
+                other.facilityCode == facilityCode) &&
+            (identical(other.facilityName, facilityName) ||
+                other.facilityName == facilityName) &&
             (identical(other.pointSaleId, pointSaleId) ||
                 other.pointSaleId == pointSaleId) &&
             (identical(other.pointSaleCode, pointSaleCode) ||
@@ -278,9 +279,9 @@ class _$UserSettingsImpl extends _UserSettings {
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    storeId,
-    storeCode,
-    storeName,
+    facilityId,
+    facilityCode,
+    facilityName,
     pointSaleId,
     pointSaleCode,
     pointSaleName,
@@ -300,9 +301,9 @@ class _$UserSettingsImpl extends _UserSettings {
 
 abstract class _UserSettings extends UserSettings {
   const factory _UserSettings({
-    final int? storeId,
-    final String? storeCode,
-    final String? storeName,
+    final int? facilityId,
+    final String? facilityCode,
+    final String? facilityName,
     final int? pointSaleId,
     final String? pointSaleCode,
     final String? pointSaleName,
@@ -313,11 +314,11 @@ abstract class _UserSettings extends UserSettings {
   const _UserSettings._() : super._();
 
   @override
-  int? get storeId;
+  int? get facilityId;
   @override
-  String? get storeCode;
+  String? get facilityCode;
   @override
-  String? get storeName;
+  String? get facilityName;
   @override
   int? get pointSaleId;
   @override

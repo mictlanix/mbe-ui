@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -22,7 +23,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.employees, rawValue: 2)],
 );
@@ -31,7 +32,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.employees, rawValue: 15)],
 );
@@ -41,14 +42,14 @@ const _testEmployees = [
     employeeId: 1,
     fullName: 'Jane Doe',
     nickname: 'Janie',
-    active: true,
+    status: EntityStatus.active,
     salesPerson: true,
   ),
   EmployeeListItem(
     employeeId: 2,
     fullName: 'John Smith',
     nickname: 'Johnny',
-    active: false,
+    status: EntityStatus.inactive,
     salesPerson: false,
   ),
 ];
@@ -71,7 +72,7 @@ void main() {
     when(
       () => repository.list(
         search: any(named: 'search'),
-        active: any(named: 'active'),
+        status: any(named: 'status'),
         salesPerson: any(named: 'salesPerson'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -125,7 +126,10 @@ void main() {
       await tester.tap(find.byKey(const Key('employees_filter_button')));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('employees_filter_active')), findsOneWidget);
+      expect(
+        find.byKey(const Key('employees_filter_status_active')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('employees_filter_sales_person')),
         findsOneWidget,
@@ -157,7 +161,7 @@ void main() {
       when(
         () => repository.list(
           search: any(named: 'search'),
-          active: any(named: 'active'),
+          status: any(named: 'status'),
           salesPerson: any(named: 'salesPerson'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),

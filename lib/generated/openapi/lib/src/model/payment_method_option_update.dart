@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/commission1.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -12,20 +13,20 @@ part 'payment_method_option_update.g.dart';
 /// PaymentMethodOptionUpdate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [warehouse]
 /// * [name]
 /// * [numberOfPayments]
 /// * [displayOnTicket]
 /// * [paymentMethod]
 /// * [commission]
-/// * [enabled]
+/// * [status]
 @BuiltValue()
 abstract class PaymentMethodOptionUpdate
     implements
         Built<PaymentMethodOptionUpdate, PaymentMethodOptionUpdateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int? get store;
+  @BuiltValueField(wireName: r'facility')
+  int? get facility;
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
@@ -45,8 +46,9 @@ abstract class PaymentMethodOptionUpdate
   @BuiltValueField(wireName: r'commission')
   Commission1? get commission;
 
-  @BuiltValueField(wireName: r'enabled')
-  bool? get enabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   PaymentMethodOptionUpdate._();
 
@@ -78,10 +80,10 @@ class _$PaymentMethodOptionUpdateSerializer
     PaymentMethodOptionUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.store != null) {
-      yield r'store';
+    if (object.facility != null) {
+      yield r'facility';
       yield serializers.serialize(
-        object.store,
+        object.facility,
         specifiedType: const FullType.nullable(int),
       );
     }
@@ -127,11 +129,11 @@ class _$PaymentMethodOptionUpdateSerializer
         specifiedType: const FullType.nullable(Commission1),
       );
     }
-    if (object.enabled != null) {
-      yield r'enabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.enabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -161,7 +163,7 @@ class _$PaymentMethodOptionUpdateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -169,7 +171,7 @@ class _$PaymentMethodOptionUpdateSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'warehouse':
           final valueDes =
@@ -231,15 +233,15 @@ class _$PaymentMethodOptionUpdateSerializer
           if (valueDes == null) continue;
           result.commission.replace(valueDes);
           break;
-        case r'enabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.enabled = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

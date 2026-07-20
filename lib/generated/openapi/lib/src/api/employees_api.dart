@@ -12,6 +12,7 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/employee_create.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/employee_update.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
 
@@ -262,7 +263,7 @@ class EmployeesApi {
   ///
   /// Parameters:
   /// * [search]
-  /// * [active]
+  /// * [status]
   /// * [salesPerson]
   /// * [skip]
   /// * [limit]
@@ -278,7 +279,7 @@ class EmployeesApi {
   Future<Response<ListResponseEmployeeResponse>>
   listEmployeesApiV1EmployeesGet({
     String? search,
-    bool? active,
+    EntityStatus? status,
     bool? salesPerson,
     int? skip = 0,
     int? limit = 20,
@@ -309,11 +310,11 @@ class EmployeesApi {
           search,
           const FullType(String),
         ),
-      if (active != null)
-        r'active': encodeQueryParameter(
+      if (status != null)
+        r'status': encodeQueryParameter(
           _serializers,
-          active,
-          const FullType(bool),
+          status,
+          const FullType(EntityStatus),
         ),
       if (salesPerson != null)
         r'sales_person': encodeQueryParameter(

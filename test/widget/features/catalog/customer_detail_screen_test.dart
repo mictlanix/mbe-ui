@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -29,7 +30,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.customers, rawValue: 2)],
 );
@@ -38,7 +39,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.customers, rawValue: 15)],
 );
@@ -53,7 +54,7 @@ const _existingWithSalesperson = Customer(
   shipping: false,
   shippingRequiredDocument: false,
   salesperson: EmployeeRef(id: 2, name: 'Jane Doe'),
-  disabled: false,
+  status: EntityStatus.active,
 );
 
 const _existingNoSalesperson = Customer(
@@ -65,7 +66,7 @@ const _existingNoSalesperson = Customer(
   priceList: PriceListRef(id: 1, name: 'Retail'),
   shipping: false,
   shippingRequiredDocument: false,
-  disabled: false,
+  status: EntityStatus.active,
 );
 
 AccessControlService _accessFor(User user) =>

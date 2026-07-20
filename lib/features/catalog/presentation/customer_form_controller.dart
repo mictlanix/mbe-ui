@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
@@ -48,7 +49,7 @@ class CustomerFormState with _$CustomerFormState {
     @Default(false) bool shippingRequiredDocument,
     int? salespersonId,
     @Default('') String salespersonDisplayText,
-    @Default(false) bool disabled,
+    @Default(EntityStatus.active) EntityStatus status,
     @Default('') String comment,
     @Default(false) bool loading,
     @Default(false) bool submitting,
@@ -112,7 +113,7 @@ class CustomerFormController extends _$CustomerFormController {
   void salespersonSelected(int? id, String displayText) => state = state
       .copyWith(salespersonId: id, salespersonDisplayText: displayText);
 
-  void disabledChanged(bool v) => state = state.copyWith(disabled: v);
+  void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   void commentChanged(String v) => state = state.copyWith(comment: v);
 
@@ -136,7 +137,7 @@ class CustomerFormController extends _$CustomerFormController {
         shippingRequiredDocument: customer.shippingRequiredDocument,
         salespersonId: customer.salesperson?.id,
         salespersonDisplayText: customer.salesperson?.name ?? '',
-        disabled: customer.disabled,
+        status: customer.status,
         comment: customer.comment ?? '',
       );
     } on AppError catch (e) {
@@ -281,7 +282,7 @@ class CustomerFormController extends _$CustomerFormController {
             shipping: state.shipping,
             shippingRequiredDocument: state.shippingRequiredDocument,
             salesperson: state.salespersonId,
-            disabled: state.disabled,
+            status: state.status,
             comment: state.comment,
           );
       ref.invalidate(customersListControllerProvider);

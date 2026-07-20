@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -17,7 +18,7 @@ const _pageSize = 20;
 class ProductFilter with _$ProductFilter {
   const factory ProductFilter({
     @Default('') String search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -27,15 +28,15 @@ class ProductFilter with _$ProductFilter {
 
 /// Derived facet-filter summary used by the products list's Filters button
 /// badge (FR-003, data-model.md). [search] is deliberately excluded — it has
-/// its own always-visible box — and `deactivated == null` (the default, which
-/// includes inactive products) does not count; only narrowing to active-only
-/// (`deactivated == false`) does, so a freshly-loaded list shows no badge.
+/// its own always-visible box — and `status == null` (the default "All",
+/// which includes every lifecycle state) does not count; narrowing to any one
+/// status does, so a freshly-loaded list shows no badge.
 /// Each selected label counts individually (FR-009), so selecting N labels
 /// contributes N to the total.
 extension ProductFilterBadge on ProductFilter {
   int get activeFilterCount {
     var count = 0;
-    if (deactivated == false) count++;
+    if (status != null) count++;
     if (stockable != null) count++;
     if (salable != null) count++;
     if (purchasable != null) count++;
@@ -55,11 +56,11 @@ class ProductFilterController extends _$ProductFilterController {
 
   void searchChanged(String value) => state = state.copyWith(search: value);
 
-  /// `null` shows both active and disabled products (FR-011's "include
-  /// disabled" filter); `false` shows only active ones (FR-002's
-  /// "active only" filter).
-  void deactivatedChanged(bool? value) =>
-      state = state.copyWith(deactivated: value);
+  /// `null` is "All" — no `?status=` param, so every lifecycle state is
+  /// returned (FR-011's "include disabled" filter); any other value narrows
+  /// to that single status (FR-002's "active only" filter).
+  void statusChanged(EntityStatus? value) =>
+      state = state.copyWith(status: value);
 
   void stockableChanged(bool? value) =>
       state = state.copyWith(stockable: value);
@@ -99,7 +100,7 @@ class ProductsListController extends _$ProductsListController {
         .read(productRepositoryProvider)
         .list(
           search: filter.search.isEmpty ? null : filter.search,
-          deactivated: filter.deactivated,
+          status: filter.status,
           stockable: filter.stockable,
           salable: filter.salable,
           purchasable: filter.purchasable,
@@ -143,7 +144,7 @@ Future<Map<int, int>> productLabelFacets(ProductLabelFacetsRef ref) async {
       .read(productRepositoryProvider)
       .productLabelFacets(
         search: filter.search.isEmpty ? null : filter.search,
-        deactivated: filter.deactivated,
+        status: filter.status,
         stockable: filter.stockable,
         salable: filter.salable,
         purchasable: filter.purchasable,

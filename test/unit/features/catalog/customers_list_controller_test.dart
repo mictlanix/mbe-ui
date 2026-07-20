@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
@@ -17,7 +18,7 @@ CustomerListItem _customer(int id) => CustomerListItem(
   creditLimit: '0',
   creditDays: 0,
   priceList: const PriceListRef(id: 1, name: 'Retail'),
-  disabled: false,
+  status: EntityStatus.active,
 );
 
 void main() {
@@ -36,7 +37,7 @@ void main() {
     test('starts with no filters', () {
       final filter = container.read(customerFilterControllerProvider);
       expect(filter.search, '');
-      expect(filter.disabled, isNull);
+      expect(filter.status, isNull);
       expect(filter.priceListId, isNull);
       expect(filter.salespersonId, isNull);
       expect(filter.hasActiveFilters, isFalse);
@@ -49,12 +50,12 @@ void main() {
           customerFilterControllerProvider.notifier,
         );
         notifier
-          ..disabledChanged(false)
+          ..statusChanged(EntityStatus.active)
           ..priceListChanged(1, 'Retail')
           ..salespersonChanged(2, 'Jane Doe');
 
         final filter = container.read(customerFilterControllerProvider);
-        expect(filter.disabled, isFalse);
+        expect(filter.status, EntityStatus.active);
         expect(filter.priceListId, 1);
         expect(filter.salespersonId, 2);
         expect(filter.activeFilterCount, 3);
@@ -84,7 +85,7 @@ void main() {
         when(
           () => repository.list(
             search: null,
-            disabled: null,
+            status: null,
             priceList: null,
             salesperson: null,
             skip: 0,
@@ -107,7 +108,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          disabled: null,
+          status: null,
           priceList: null,
           salesperson: null,
           skip: 0,
@@ -119,7 +120,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          disabled: null,
+          status: null,
           priceList: 1,
           salesperson: null,
           skip: 0,
@@ -140,7 +141,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          disabled: null,
+          status: null,
           priceList: null,
           salesperson: null,
           skip: 0,
@@ -152,7 +153,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          disabled: null,
+          status: null,
           priceList: null,
           salesperson: null,
           skip: 20,

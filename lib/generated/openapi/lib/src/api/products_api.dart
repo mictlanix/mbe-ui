@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/api_util.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
 import 'package:mbe_api_client/src/model/product_create.dart';
@@ -266,7 +267,7 @@ class ProductsApi {
   /// Parameters:
   /// * [search]
   /// * [label]
-  /// * [deactivated]
+  /// * [status]
   /// * [stockable]
   /// * [salable]
   /// * [purchasable]
@@ -284,7 +285,7 @@ class ProductsApi {
   getProductLabelFacetsApiV1ProductsLabelsFacetsGet({
     String? search,
     BuiltList<int>? label,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -323,11 +324,11 @@ class ProductsApi {
           const FullType(BuiltList, [FullType(int)]),
           format: ListFormat.multi,
         ),
-      if (deactivated != null)
-        r'deactivated': encodeQueryParameter(
+      if (status != null)
+        r'status': encodeQueryParameter(
           _serializers,
-          deactivated,
-          const FullType(bool),
+          status,
+          const FullType(EntityStatus),
         ),
       if (stockable != null)
         r'stockable': encodeQueryParameter(
@@ -405,7 +406,7 @@ class ProductsApi {
   /// Parameters:
   /// * [search]
   /// * [label]
-  /// * [deactivated]
+  /// * [status]
   /// * [stockable]
   /// * [salable]
   /// * [purchasable]
@@ -424,7 +425,7 @@ class ProductsApi {
   Future<Response<ListResponseProductListItem>> listProductsApiV1ProductsGet({
     String? search,
     BuiltList<int>? label,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -465,11 +466,11 @@ class ProductsApi {
           const FullType(BuiltList, [FullType(int)]),
           format: ListFormat.multi,
         ),
-      if (deactivated != null)
-        r'deactivated': encodeQueryParameter(
+      if (status != null)
+        r'status': encodeQueryParameter(
           _serializers,
-          deactivated,
-          const FullType(bool),
+          status,
+          const FullType(EntityStatus),
         ),
       if (stockable != null)
         r'stockable': encodeQueryParameter(

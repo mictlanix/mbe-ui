@@ -1,6 +1,7 @@
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 /// Result of `POST /api/v1/users/{user_id}/recover-password` (FR-010 admin
 /// path). Carries the signed token the administrator relays to the user.
@@ -32,7 +33,7 @@ abstract class UserRepository {
     required String email,
     int? employeeId,
     bool administrator = false,
-    bool disabled = false,
+    EntityStatus status = EntityStatus.active,
   });
 
   /// `PUT /api/v1/users/{user_id}` (FR-012/FR-013). All fields optional;
@@ -42,7 +43,7 @@ abstract class UserRepository {
     String? email,
     int? employeeId,
     bool? administrator,
-    bool? disabled,
+    EntityStatus? status,
     List<Privilege>? privileges,
     UserSettings? settings,
   });

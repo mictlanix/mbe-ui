@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -11,16 +12,16 @@ part 'warehouse_create.g.dart';
 /// WarehouseCreate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class WarehouseCreate
     implements Built<WarehouseCreate, WarehouseCreateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int get store;
+  @BuiltValueField(wireName: r'facility')
+  int get facility;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -31,8 +32,9 @@ abstract class WarehouseCreate
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   WarehouseCreate._();
 
@@ -40,7 +42,8 @@ abstract class WarehouseCreate
       _$WarehouseCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(WarehouseCreateBuilder b) => b;
+  static void _defaults(WarehouseCreateBuilder b) =>
+      b..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<WarehouseCreate> get serializer =>
@@ -60,9 +63,9 @@ class _$WarehouseCreateSerializer
     WarehouseCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
+      object.facility,
       specifiedType: const FullType(int),
     );
     yield r'code';
@@ -82,11 +85,11 @@ class _$WarehouseCreateSerializer
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
   }
@@ -116,11 +119,11 @@ class _$WarehouseCreateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'code':
           final valueDes =
@@ -150,15 +153,14 @@ class _$WarehouseCreateSerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

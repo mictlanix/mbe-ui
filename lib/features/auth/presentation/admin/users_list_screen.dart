@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -84,9 +85,8 @@ class UsersListScreen extends ConsumerWidget {
                       DataTableColumn(
                         label: l10n.columnStatus,
                         size: ColumnSize.S,
-                        cellBuilder: (_, u) => Text(
-                          u.disabled ? l10n.statusDisabled : l10n.statusActive,
-                        ),
+                        cellBuilder: (_, u) =>
+                            EntityStatusCell(status: u.status),
                       ),
                     ],
                     rows: page.items,

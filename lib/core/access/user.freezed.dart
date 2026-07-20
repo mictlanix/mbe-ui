@@ -21,7 +21,7 @@ mixin _$User {
   String get email => throw _privateConstructorUsedError;
   int? get employeeId => throw _privateConstructorUsedError;
   bool get administrator => throw _privateConstructorUsedError;
-  bool get disabled => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   int get sessionVersion => throw _privateConstructorUsedError;
   UserSettings? get settings => throw _privateConstructorUsedError;
   List<Privilege> get privileges => throw _privateConstructorUsedError;
@@ -42,7 +42,7 @@ abstract class $UserCopyWith<$Res> {
     String email,
     int? employeeId,
     bool administrator,
-    bool disabled,
+    EntityStatus status,
     int sessionVersion,
     UserSettings? settings,
     List<Privilege> privileges,
@@ -70,7 +70,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? email = null,
     Object? employeeId = freezed,
     Object? administrator = null,
-    Object? disabled = null,
+    Object? status = null,
     Object? sessionVersion = null,
     Object? settings = freezed,
     Object? privileges = null,
@@ -93,10 +93,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.administrator
                 : administrator // ignore: cast_nullable_to_non_nullable
                       as bool,
-            disabled: null == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             sessionVersion: null == sessionVersion
                 ? _value.sessionVersion
                 : sessionVersion // ignore: cast_nullable_to_non_nullable
@@ -142,7 +142,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     String email,
     int? employeeId,
     bool administrator,
-    bool disabled,
+    EntityStatus status,
     int sessionVersion,
     UserSettings? settings,
     List<Privilege> privileges,
@@ -168,7 +168,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? email = null,
     Object? employeeId = freezed,
     Object? administrator = null,
-    Object? disabled = null,
+    Object? status = null,
     Object? sessionVersion = null,
     Object? settings = freezed,
     Object? privileges = null,
@@ -191,10 +191,10 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.administrator
             : administrator // ignore: cast_nullable_to_non_nullable
                   as bool,
-        disabled: null == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         sessionVersion: null == sessionVersion
             ? _value.sessionVersion
             : sessionVersion // ignore: cast_nullable_to_non_nullable
@@ -220,7 +220,7 @@ class _$UserImpl implements _User {
     required this.email,
     this.employeeId,
     required this.administrator,
-    required this.disabled,
+    required this.status,
     required this.sessionVersion,
     this.settings,
     required final List<Privilege> privileges,
@@ -235,7 +235,7 @@ class _$UserImpl implements _User {
   @override
   final bool administrator;
   @override
-  final bool disabled;
+  final EntityStatus status;
   @override
   final int sessionVersion;
   @override
@@ -250,7 +250,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled, sessionVersion: $sessionVersion, settings: $settings, privileges: $privileges)';
+    return 'User(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status, sessionVersion: $sessionVersion, settings: $settings, privileges: $privileges)';
   }
 
   @override
@@ -264,8 +264,7 @@ class _$UserImpl implements _User {
                 other.employeeId == employeeId) &&
             (identical(other.administrator, administrator) ||
                 other.administrator == administrator) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.sessionVersion, sessionVersion) ||
                 other.sessionVersion == sessionVersion) &&
             (identical(other.settings, settings) ||
@@ -283,7 +282,7 @@ class _$UserImpl implements _User {
     email,
     employeeId,
     administrator,
-    disabled,
+    status,
     sessionVersion,
     settings,
     const DeepCollectionEquality().hash(_privileges),
@@ -304,7 +303,7 @@ abstract class _User implements User {
     required final String email,
     final int? employeeId,
     required final bool administrator,
-    required final bool disabled,
+    required final EntityStatus status,
     required final int sessionVersion,
     final UserSettings? settings,
     required final List<Privilege> privileges,
@@ -319,7 +318,7 @@ abstract class _User implements User {
   @override
   bool get administrator;
   @override
-  bool get disabled;
+  EntityStatus get status;
   @override
   int get sessionVersion;
   @override
@@ -341,7 +340,7 @@ mixin _$UserSummary {
   String get email => throw _privateConstructorUsedError;
   int? get employeeId => throw _privateConstructorUsedError;
   bool get administrator => throw _privateConstructorUsedError;
-  bool get disabled => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
 
   /// Create a copy of UserSummary
   /// with the given fields replaced by the non-null parameter values.
@@ -362,7 +361,7 @@ abstract class $UserSummaryCopyWith<$Res> {
     String email,
     int? employeeId,
     bool administrator,
-    bool disabled,
+    EntityStatus status,
   });
 }
 
@@ -385,7 +384,7 @@ class _$UserSummaryCopyWithImpl<$Res, $Val extends UserSummary>
     Object? email = null,
     Object? employeeId = freezed,
     Object? administrator = null,
-    Object? disabled = null,
+    Object? status = null,
   }) {
     return _then(
       _value.copyWith(
@@ -405,10 +404,10 @@ class _$UserSummaryCopyWithImpl<$Res, $Val extends UserSummary>
                 ? _value.administrator
                 : administrator // ignore: cast_nullable_to_non_nullable
                       as bool,
-            disabled: null == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
           )
           as $Val,
     );
@@ -429,7 +428,7 @@ abstract class _$$UserSummaryImplCopyWith<$Res>
     String email,
     int? employeeId,
     bool administrator,
-    bool disabled,
+    EntityStatus status,
   });
 }
 
@@ -451,7 +450,7 @@ class __$$UserSummaryImplCopyWithImpl<$Res>
     Object? email = null,
     Object? employeeId = freezed,
     Object? administrator = null,
-    Object? disabled = null,
+    Object? status = null,
   }) {
     return _then(
       _$UserSummaryImpl(
@@ -471,10 +470,10 @@ class __$$UserSummaryImplCopyWithImpl<$Res>
             ? _value.administrator
             : administrator // ignore: cast_nullable_to_non_nullable
                   as bool,
-        disabled: null == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
       ),
     );
   }
@@ -488,7 +487,7 @@ class _$UserSummaryImpl implements _UserSummary {
     required this.email,
     this.employeeId,
     required this.administrator,
-    required this.disabled,
+    required this.status,
   });
 
   @override
@@ -500,11 +499,11 @@ class _$UserSummaryImpl implements _UserSummary {
   @override
   final bool administrator;
   @override
-  final bool disabled;
+  final EntityStatus status;
 
   @override
   String toString() {
-    return 'UserSummary(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, disabled: $disabled)';
+    return 'UserSummary(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status)';
   }
 
   @override
@@ -518,8 +517,7 @@ class _$UserSummaryImpl implements _UserSummary {
                 other.employeeId == employeeId) &&
             (identical(other.administrator, administrator) ||
                 other.administrator == administrator) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled));
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
@@ -529,7 +527,7 @@ class _$UserSummaryImpl implements _UserSummary {
     email,
     employeeId,
     administrator,
-    disabled,
+    status,
   );
 
   /// Create a copy of UserSummary
@@ -547,7 +545,7 @@ abstract class _UserSummary implements UserSummary {
     required final String email,
     final int? employeeId,
     required final bool administrator,
-    required final bool disabled,
+    required final EntityStatus status,
   }) = _$UserSummaryImpl;
 
   @override
@@ -559,7 +557,7 @@ abstract class _UserSummary implements UserSummary {
   @override
   bool get administrator;
   @override
-  bool get disabled;
+  EntityStatus get status;
 
   /// Create a copy of UserSummary
   /// with the given fields replaced by the non-null parameter values.

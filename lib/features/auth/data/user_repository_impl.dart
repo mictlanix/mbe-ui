@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -61,7 +62,7 @@ class UserRepositoryImpl implements UserRepository {
     required String email,
     int? employeeId,
     bool administrator = false,
-    bool disabled = false,
+    EntityStatus status = EntityStatus.active,
   }) async {
     try {
       final response = await _api.createUserApiV1UsersPost(
@@ -72,7 +73,7 @@ class UserRepositoryImpl implements UserRepository {
             ..email = email
             ..employeeId = employeeId
             ..administrator = administrator
-            ..disabled = disabled,
+            ..status = status.toApi(),
         ),
       );
       final user = response.data;
@@ -89,7 +90,7 @@ class UserRepositoryImpl implements UserRepository {
     String? email,
     int? employeeId,
     bool? administrator,
-    bool? disabled,
+    EntityStatus? status,
     List<Privilege>? privileges,
     UserSettings? settings,
   }) async {
@@ -100,7 +101,7 @@ class UserRepositoryImpl implements UserRepository {
           if (email != null) b.email = email;
           if (employeeId != null) b.employeeId = employeeId;
           if (administrator != null) b.administrator = administrator;
-          if (disabled != null) b.disabled = disabled;
+          if (status != null) b.status = status.toApi();
           if (privileges != null) {
             b.privileges.replace(privileges.map((p) => p.toUpdate()));
           }

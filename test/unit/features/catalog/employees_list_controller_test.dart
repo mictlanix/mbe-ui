@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
@@ -13,7 +14,7 @@ EmployeeListItem _employee(int id) => EmployeeListItem(
   employeeId: id,
   fullName: 'Employee $id',
   nickname: 'E$id',
-  active: true,
+  status: EntityStatus.active,
   salesPerson: false,
 );
 
@@ -33,7 +34,7 @@ void main() {
     test('starts with no filters', () {
       final filter = container.read(employeeFilterControllerProvider);
       expect(filter.search, '');
-      expect(filter.active, isNull);
+      expect(filter.status, isNull);
       expect(filter.salesPerson, isNull);
       expect(filter.hasActiveFilters, isFalse);
     });
@@ -42,11 +43,11 @@ void main() {
       final notifier = container.read(
         employeeFilterControllerProvider.notifier,
       );
-      notifier.activeChanged(true);
+      notifier.statusChanged(EntityStatus.active);
       notifier.salesPersonChanged(false);
 
       final filter = container.read(employeeFilterControllerProvider);
-      expect(filter.active, isTrue);
+      expect(filter.status, EntityStatus.active);
       expect(filter.salesPerson, isFalse);
       expect(filter.activeFilterCount, 2);
     });
@@ -57,13 +58,13 @@ void main() {
       );
       notifier
         ..searchChanged('Jane')
-        ..activeChanged(true);
+        ..statusChanged(EntityStatus.active);
 
       notifier.reset();
 
       final filter = container.read(employeeFilterControllerProvider);
       expect(filter.search, 'Jane');
-      expect(filter.active, isNull);
+      expect(filter.status, isNull);
     });
   });
 
@@ -74,7 +75,7 @@ void main() {
         when(
           () => repository.list(
             search: null,
-            active: null,
+            status: null,
             salesPerson: null,
             skip: 0,
             limit: 20,
@@ -96,7 +97,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          active: null,
+          status: null,
           salesPerson: null,
           skip: 0,
           limit: 20,
@@ -109,7 +110,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          active: true,
+          status: EntityStatus.active,
           salesPerson: null,
           skip: 0,
           limit: 20,
@@ -119,7 +120,7 @@ void main() {
       );
       container
           .read(employeeFilterControllerProvider.notifier)
-          .activeChanged(true);
+          .statusChanged(EntityStatus.active);
 
       final result = await container.read(
         employeesListControllerProvider.future,
@@ -131,7 +132,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          active: null,
+          status: null,
           salesPerson: null,
           skip: 0,
           limit: 20,
@@ -144,7 +145,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          active: null,
+          status: null,
           salesPerson: null,
           skip: 20,
           limit: 20,

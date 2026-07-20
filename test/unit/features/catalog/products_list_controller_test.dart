@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -17,7 +18,7 @@ ProductListItem _item(int id) => ProductListItem(
   unitOfMeasurementCode: 'PCE',
   unitOfMeasurementName: 'Piece',
   taxRate: '0.16',
-  deactivated: false,
+  status: EntityStatus.active,
 );
 
 void main() {
@@ -36,7 +37,7 @@ void main() {
     test('starts with an empty filter', () {
       final filter = container.read(productFilterControllerProvider);
       expect(filter.search, '');
-      expect(filter.deactivated, isNull);
+      expect(filter.status, isNull);
       expect(filter.stockable, isNull);
       expect(filter.salable, isNull);
       expect(filter.purchasable, isNull);
@@ -46,14 +47,14 @@ void main() {
       final notifier = container.read(productFilterControllerProvider.notifier);
 
       notifier.searchChanged('widget');
-      notifier.deactivatedChanged(false);
+      notifier.statusChanged(EntityStatus.active);
       notifier.stockableChanged(true);
       notifier.salableChanged(true);
       notifier.purchasableChanged(true);
 
       final filter = container.read(productFilterControllerProvider);
       expect(filter.search, 'widget');
-      expect(filter.deactivated, isFalse);
+      expect(filter.status, EntityStatus.active);
       expect(filter.stockable, isTrue);
       expect(filter.salable, isTrue);
       expect(filter.purchasable, isTrue);
@@ -63,7 +64,7 @@ void main() {
       final notifier = container.read(productFilterControllerProvider.notifier);
       notifier
         ..searchChanged('widget')
-        ..deactivatedChanged(false)
+        ..statusChanged(EntityStatus.active)
         ..stockableChanged(true)
         ..salableChanged(false)
         ..purchasableChanged(true)
@@ -73,7 +74,7 @@ void main() {
 
       final filter = container.read(productFilterControllerProvider);
       expect(filter.search, 'widget');
-      expect(filter.deactivated, isNull);
+      expect(filter.status, isNull);
       expect(filter.stockable, isNull);
       expect(filter.salable, isNull);
       expect(filter.purchasable, isNull);
@@ -95,14 +96,14 @@ void main() {
     });
 
     test('counts narrowing to active-only (deactivated == false)', () {
-      const filter = ProductFilter(deactivated: false);
+      const filter = ProductFilter(status: EntityStatus.active);
       expect(filter.activeFilterCount, 1);
       expect(filter.hasActiveFilters, isTrue);
     });
 
     test('counts each set attribute facet and a single selected label', () {
       const filter = ProductFilter(
-        deactivated: false,
+        status: EntityStatus.active,
         stockable: true,
         salable: false,
         purchasable: true,
@@ -125,7 +126,7 @@ void main() {
         when(
           () => repository.list(
             search: null,
-            deactivated: null,
+            status: null,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -152,7 +153,7 @@ void main() {
         when(
           () => repository.list(
             search: null,
-            deactivated: null,
+            status: null,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -168,7 +169,7 @@ void main() {
         when(
           () => repository.list(
             search: 'widget',
-            deactivated: false,
+            status: EntityStatus.active,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -182,7 +183,7 @@ void main() {
 
         container.read(productFilterControllerProvider.notifier)
           ..searchChanged('widget')
-          ..deactivatedChanged(false);
+          ..statusChanged(EntityStatus.active);
 
         final result = await container.read(
           productsListControllerProvider.future,
@@ -195,7 +196,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          deactivated: null,
+          status: null,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -211,7 +212,7 @@ void main() {
       when(
         () => repository.list(
           search: null,
-          deactivated: null,
+          status: null,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -237,7 +238,7 @@ void main() {
       when(
         () => repository.productLabelFacets(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -259,7 +260,7 @@ void main() {
       when(
         () => repository.productLabelFacets(
           search: null,
-          deactivated: null,
+          status: null,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -274,7 +275,7 @@ void main() {
       when(
         () => repository.productLabelFacets(
           search: null,
-          deactivated: null,
+          status: null,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -300,7 +301,7 @@ void main() {
         when(
           () => repository.productLabelFacets(
             search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
+            status: any(named: 'status'),
             stockable: any(named: 'stockable'),
             salable: any(named: 'salable'),
             purchasable: any(named: 'purchasable'),

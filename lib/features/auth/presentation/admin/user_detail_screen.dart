@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
@@ -191,11 +192,9 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                     ? controller.administratorChanged
                     : null,
               ),
-              SwitchListTile(
-                key: const Key('disabled_switch'),
-                title: Text(l10n.disabledLabel),
-                value: formState.disabled,
-                onChanged: fieldsEnabled ? controller.disabledChanged : null,
+              EntityStatusFormField(
+                value: formState.status,
+                onChanged: fieldsEnabled ? controller.statusChanged : null,
               ),
               const SizedBox(height: 16),
               const Divider(key: Key('permissions_divider')),

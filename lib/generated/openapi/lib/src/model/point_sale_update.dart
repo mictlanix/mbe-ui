@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -11,17 +12,17 @@ part 'point_sale_update.g.dart';
 /// PointSaleUpdate
 ///
 /// Properties:
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [warehouse]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class PointSaleUpdate
     implements Built<PointSaleUpdate, PointSaleUpdateBuilder> {
-  @BuiltValueField(wireName: r'store')
-  int? get store;
+  @BuiltValueField(wireName: r'facility')
+  int? get facility;
 
   @BuiltValueField(wireName: r'code')
   String? get code;
@@ -35,8 +36,9 @@ abstract class PointSaleUpdate
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   PointSaleUpdate._();
 
@@ -64,10 +66,10 @@ class _$PointSaleUpdateSerializer
     PointSaleUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.store != null) {
-      yield r'store';
+    if (object.facility != null) {
+      yield r'facility';
       yield serializers.serialize(
-        object.store,
+        object.facility,
         specifiedType: const FullType.nullable(int),
       );
     }
@@ -99,11 +101,11 @@ class _$PointSaleUpdateSerializer
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType.nullable(bool),
+        object.status,
+        specifiedType: const FullType.nullable(EntityStatus),
       );
     }
   }
@@ -133,7 +135,7 @@ class _$PointSaleUpdateSerializer
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -141,7 +143,7 @@ class _$PointSaleUpdateSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'code':
           final valueDes =
@@ -183,15 +185,15 @@ class _$PointSaleUpdateSerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as bool?;
+                  as EntityStatus?;
           if (valueDes == null) continue;
-          result.disabled = valueDes;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

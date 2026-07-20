@@ -325,7 +325,7 @@ mixin _$Customer {
   bool get shipping => throw _privateConstructorUsedError;
   bool get shippingRequiredDocument => throw _privateConstructorUsedError;
   EmployeeRef? get salesperson => throw _privateConstructorUsedError;
-  bool get disabled => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
 
   /// Create a copy of Customer
@@ -351,7 +351,7 @@ abstract class $CustomerCopyWith<$Res> {
     bool shipping,
     bool shippingRequiredDocument,
     EmployeeRef? salesperson,
-    bool disabled,
+    EntityStatus status,
     String? comment,
   });
 
@@ -384,7 +384,7 @@ class _$CustomerCopyWithImpl<$Res, $Val extends Customer>
     Object? shipping = null,
     Object? shippingRequiredDocument = null,
     Object? salesperson = freezed,
-    Object? disabled = null,
+    Object? status = null,
     Object? comment = freezed,
   }) {
     return _then(
@@ -429,10 +429,10 @@ class _$CustomerCopyWithImpl<$Res, $Val extends Customer>
                 ? _value.salesperson
                 : salesperson // ignore: cast_nullable_to_non_nullable
                       as EmployeeRef?,
-            disabled: null == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             comment: freezed == comment
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
@@ -487,7 +487,7 @@ abstract class _$$CustomerImplCopyWith<$Res>
     bool shipping,
     bool shippingRequiredDocument,
     EmployeeRef? salesperson,
-    bool disabled,
+    EntityStatus status,
     String? comment,
   });
 
@@ -521,7 +521,7 @@ class __$$CustomerImplCopyWithImpl<$Res>
     Object? shipping = null,
     Object? shippingRequiredDocument = null,
     Object? salesperson = freezed,
-    Object? disabled = null,
+    Object? status = null,
     Object? comment = freezed,
   }) {
     return _then(
@@ -566,10 +566,10 @@ class __$$CustomerImplCopyWithImpl<$Res>
             ? _value.salesperson
             : salesperson // ignore: cast_nullable_to_non_nullable
                   as EmployeeRef?,
-        disabled: null == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         comment: freezed == comment
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
@@ -593,7 +593,7 @@ class _$CustomerImpl implements _Customer {
     required this.shipping,
     required this.shippingRequiredDocument,
     this.salesperson,
-    required this.disabled,
+    required this.status,
     this.comment,
   });
 
@@ -618,13 +618,13 @@ class _$CustomerImpl implements _Customer {
   @override
   final EmployeeRef? salesperson;
   @override
-  final bool disabled;
+  final EntityStatus status;
   @override
   final String? comment;
 
   @override
   String toString() {
-    return 'Customer(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salesperson: $salesperson, disabled: $disabled, comment: $comment)';
+    return 'Customer(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salesperson: $salesperson, status: $status, comment: $comment)';
   }
 
   @override
@@ -652,8 +652,7 @@ class _$CustomerImpl implements _Customer {
                 other.shippingRequiredDocument == shippingRequiredDocument) &&
             (identical(other.salesperson, salesperson) ||
                 other.salesperson == salesperson) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.comment, comment) || other.comment == comment));
   }
 
@@ -670,7 +669,7 @@ class _$CustomerImpl implements _Customer {
     shipping,
     shippingRequiredDocument,
     salesperson,
-    disabled,
+    status,
     comment,
   );
 
@@ -695,7 +694,7 @@ abstract class _Customer implements Customer {
     required final bool shipping,
     required final bool shippingRequiredDocument,
     final EmployeeRef? salesperson,
-    required final bool disabled,
+    required final EntityStatus status,
     final String? comment,
   }) = _$CustomerImpl;
 
@@ -720,7 +719,7 @@ abstract class _Customer implements Customer {
   @override
   EmployeeRef? get salesperson;
   @override
-  bool get disabled;
+  EntityStatus get status;
   @override
   String? get comment;
 

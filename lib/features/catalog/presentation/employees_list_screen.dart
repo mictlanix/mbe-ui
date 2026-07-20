@@ -12,13 +12,14 @@ import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Employees catalog list screen (FR-001, FR-002, FR-017, US3). Gated by
 /// `can(SystemObject.employees, AccessRight.read)` in the router. Ships a
-/// filter drawer (active + salesPerson tri-state) since the list endpoint
+/// filter drawer (status + salesPerson tri-state) since the list endpoint
 /// exposes those facets, per constitution §VI.
 class EmployeesListScreen extends ConsumerWidget {
   const EmployeesListScreen({super.key});
@@ -104,13 +105,10 @@ class EmployeesListScreen extends ConsumerWidget {
                             : const SizedBox.shrink(),
                       ),
                       DataTableColumn(
-                        label: l10n.activeLabel,
+                        label: l10n.columnStatus,
                         size: ColumnSize.S,
-                        cellBuilder: (context, e) => Text(
-                          e.active
-                              ? l10n.statusActive
-                              : l10n.statusInactiveBadge,
-                        ),
+                        cellBuilder: (context, e) =>
+                            EntityStatusCell(status: e.status),
                       ),
                     ],
                     rows: page.items,
@@ -134,7 +132,7 @@ class EmployeesListScreen extends ConsumerWidget {
   }
 }
 
-/// The Employees catalog's facet filters (active, sales-person tri-states),
+/// The Employees catalog's facet filters (status, sales-person tri-state),
 /// rendered inside the filter panel opened from the Filters button (FR-017).
 class _EmployeeFiltersPanel extends ConsumerWidget {
   const _EmployeeFiltersPanel();
@@ -147,16 +145,21 @@ class _EmployeeFiltersPanel extends ConsumerWidget {
     );
     final l10n = AppLocalizations.of(context)!;
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _TriStateFilterChip(
-          chipKey: const Key('employees_filter_active'),
-          label: l10n.employeesActiveFilter,
-          value: filter.active,
-          onChanged: filterController.activeChanged,
+        Text(
+          l10n.statusFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
+        const SizedBox(height: 8),
+        EntityStatusFilterChips(
+          filterKey: 'employees_filter_status',
+          value: filter.status,
+          onChanged: filterController.statusChanged,
+        ),
+        const SizedBox(height: 12),
         _TriStateFilterChip(
           chipKey: const Key('employees_filter_sales_person'),
           label: l10n.employeesSalesPersonFilter,

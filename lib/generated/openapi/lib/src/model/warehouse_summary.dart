@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -12,19 +13,19 @@ part 'warehouse_summary.g.dart';
 ///
 /// Properties:
 /// * [warehouseId]
-/// * [store]
+/// * [facility]
 /// * [code]
 /// * [name]
 /// * [comment]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class WarehouseSummary
     implements Built<WarehouseSummary, WarehouseSummaryBuilder> {
   @BuiltValueField(wireName: r'warehouse_id')
   int get warehouseId;
 
-  @BuiltValueField(wireName: r'store')
-  int get store;
+  @BuiltValueField(wireName: r'facility')
+  int get facility;
 
   @BuiltValueField(wireName: r'code')
   String get code;
@@ -35,8 +36,9 @@ abstract class WarehouseSummary
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   WarehouseSummary._();
 
@@ -69,9 +71,9 @@ class _$WarehouseSummarySerializer
       object.warehouseId,
       specifiedType: const FullType(int),
     );
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
+      object.facility,
       specifiedType: const FullType(int),
     );
     yield r'code';
@@ -91,13 +93,11 @@ class _$WarehouseSummarySerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
-    yield r'disabled';
-    yield object.disabled == null
-        ? null
-        : serializers.serialize(
-            object.disabled,
-            specifiedType: const FullType.nullable(bool),
-          );
+    yield r'status';
+    yield serializers.serialize(
+      object.status,
+      specifiedType: const FullType(EntityStatus),
+    );
   }
 
   @override
@@ -131,11 +131,11 @@ class _$WarehouseSummarySerializer
                   as int;
           result.warehouseId = valueDes;
           break;
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.store = valueDes;
+          result.facility = valueDes;
           break;
         case r'code':
           final valueDes =
@@ -165,15 +165,14 @@ class _$WarehouseSummarySerializer
           if (valueDes == null) continue;
           result.comment = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

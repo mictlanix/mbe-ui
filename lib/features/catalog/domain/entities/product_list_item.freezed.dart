@@ -26,7 +26,7 @@ mixin _$ProductListItem {
   String get unitOfMeasurementCode => throw _privateConstructorUsedError;
   String get unitOfMeasurementName => throw _privateConstructorUsedError;
   String get taxRate => throw _privateConstructorUsedError;
-  bool get deactivated => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
 
   /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
   /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
@@ -57,7 +57,7 @@ abstract class $ProductListItemCopyWith<$Res> {
     String unitOfMeasurementCode,
     String unitOfMeasurementName,
     String taxRate,
-    bool deactivated,
+    EntityStatus status,
     String? photo,
   });
 }
@@ -86,7 +86,7 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
     Object? unitOfMeasurementCode = null,
     Object? unitOfMeasurementName = null,
     Object? taxRate = null,
-    Object? deactivated = null,
+    Object? status = null,
     Object? photo = freezed,
   }) {
     return _then(
@@ -127,10 +127,10 @@ class _$ProductListItemCopyWithImpl<$Res, $Val extends ProductListItem>
                 ? _value.taxRate
                 : taxRate // ignore: cast_nullable_to_non_nullable
                       as String,
-            deactivated: null == deactivated
-                ? _value.deactivated
-                : deactivated // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             photo: freezed == photo
                 ? _value.photo
                 : photo // ignore: cast_nullable_to_non_nullable
@@ -160,7 +160,7 @@ abstract class _$$ProductListItemImplCopyWith<$Res>
     String unitOfMeasurementCode,
     String unitOfMeasurementName,
     String taxRate,
-    bool deactivated,
+    EntityStatus status,
     String? photo,
   });
 }
@@ -188,7 +188,7 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
     Object? unitOfMeasurementCode = null,
     Object? unitOfMeasurementName = null,
     Object? taxRate = null,
-    Object? deactivated = null,
+    Object? status = null,
     Object? photo = freezed,
   }) {
     return _then(
@@ -229,10 +229,10 @@ class __$$ProductListItemImplCopyWithImpl<$Res>
             ? _value.taxRate
             : taxRate // ignore: cast_nullable_to_non_nullable
                   as String,
-        deactivated: null == deactivated
-            ? _value.deactivated
-            : deactivated // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         photo: freezed == photo
             ? _value.photo
             : photo // ignore: cast_nullable_to_non_nullable
@@ -255,7 +255,7 @@ class _$ProductListItemImpl implements _ProductListItem {
     required this.unitOfMeasurementCode,
     required this.unitOfMeasurementName,
     required this.taxRate,
-    required this.deactivated,
+    required this.status,
     this.photo,
   });
 
@@ -278,7 +278,7 @@ class _$ProductListItemImpl implements _ProductListItem {
   @override
   final String taxRate;
   @override
-  final bool deactivated;
+  final EntityStatus status;
 
   /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
   /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
@@ -288,7 +288,7 @@ class _$ProductListItemImpl implements _ProductListItem {
 
   @override
   String toString() {
-    return 'ProductListItem(productId: $productId, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, taxRate: $taxRate, deactivated: $deactivated, photo: $photo)';
+    return 'ProductListItem(productId: $productId, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, taxRate: $taxRate, status: $status, photo: $photo)';
   }
 
   @override
@@ -308,8 +308,7 @@ class _$ProductListItemImpl implements _ProductListItem {
             (identical(other.unitOfMeasurementName, unitOfMeasurementName) ||
                 other.unitOfMeasurementName == unitOfMeasurementName) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
-            (identical(other.deactivated, deactivated) ||
-                other.deactivated == deactivated) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.photo, photo) || other.photo == photo));
   }
 
@@ -325,7 +324,7 @@ class _$ProductListItemImpl implements _ProductListItem {
     unitOfMeasurementCode,
     unitOfMeasurementName,
     taxRate,
-    deactivated,
+    status,
     photo,
   );
 
@@ -352,7 +351,7 @@ abstract class _ProductListItem implements ProductListItem {
     required final String unitOfMeasurementCode,
     required final String unitOfMeasurementName,
     required final String taxRate,
-    required final bool deactivated,
+    required final EntityStatus status,
     final String? photo,
   }) = _$ProductListItemImpl;
 
@@ -375,7 +374,7 @@ abstract class _ProductListItem implements ProductListItem {
   @override
   String get taxRate;
   @override
-  bool get deactivated;
+  EntityStatus get status;
 
   /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
   /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same

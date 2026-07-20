@@ -93,6 +93,11 @@ Class | Method | HTTP request | Description
 [*ExpensesApi*](doc/ExpensesApi.md) | [**getExpenseApiV1ExpensesExpenseIdGet**](doc/ExpensesApi.md#getexpenseapiv1expensesexpenseidget) | **GET** /api/v1/expenses/{expense_id} | Get Expense
 [*ExpensesApi*](doc/ExpensesApi.md) | [**listExpensesApiV1ExpensesGet**](doc/ExpensesApi.md#listexpensesapiv1expensesget) | **GET** /api/v1/expenses | List Expenses
 [*ExpensesApi*](doc/ExpensesApi.md) | [**updateExpenseApiV1ExpensesExpenseIdPut**](doc/ExpensesApi.md#updateexpenseapiv1expensesexpenseidput) | **PUT** /api/v1/expenses/{expense_id} | Update Expense
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**createFacilityApiV1FacilitiesPost**](doc/FacilitiesApi.md#createfacilityapiv1facilitiespost) | **POST** /api/v1/facilities | Create Facility
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**deleteFacilityApiV1FacilitiesFacilityIdDelete**](doc/FacilitiesApi.md#deletefacilityapiv1facilitiesfacilityiddelete) | **DELETE** /api/v1/facilities/{facility_id} | Delete Facility
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**getFacilityApiV1FacilitiesFacilityIdGet**](doc/FacilitiesApi.md#getfacilityapiv1facilitiesfacilityidget) | **GET** /api/v1/facilities/{facility_id} | Get Facility
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**listFacilitiesApiV1FacilitiesGet**](doc/FacilitiesApi.md#listfacilitiesapiv1facilitiesget) | **GET** /api/v1/facilities | List Facilities
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**updateFacilityApiV1FacilitiesFacilityIdPut**](doc/FacilitiesApi.md#updatefacilityapiv1facilitiesfacilityidput) | **PUT** /api/v1/facilities/{facility_id} | Update Facility
 [*HealthApi*](doc/HealthApi.md) | [**healthCheckApiV1HealthGet**](doc/HealthApi.md#healthcheckapiv1healthget) | **GET** /api/v1/health | Health Check
 [*LabelsApi*](doc/LabelsApi.md) | [**createLabelApiV1LabelsPost**](doc/LabelsApi.md#createlabelapiv1labelspost) | **POST** /api/v1/labels | Create Label
 [*LabelsApi*](doc/LabelsApi.md) | [**deleteLabelApiV1LabelsLabelIdDelete**](doc/LabelsApi.md#deletelabelapiv1labelslabeliddelete) | **DELETE** /api/v1/labels/{label_id} | Delete Label
@@ -119,11 +124,6 @@ Class | Method | HTTP request | Description
 [*ProductPricesApi*](doc/ProductPricesApi.md) | [**getProductPriceApiV1ProductPricesProductPriceIdGet**](doc/ProductPricesApi.md#getproductpriceapiv1productpricesproductpriceidget) | **GET** /api/v1/product-prices/{product_price_id} | Get Product Price
 [*ProductPricesApi*](doc/ProductPricesApi.md) | [**listProductPricesApiV1ProductPricesGet**](doc/ProductPricesApi.md#listproductpricesapiv1productpricesget) | **GET** /api/v1/product-prices | List Product Prices
 [*ProductPricesApi*](doc/ProductPricesApi.md) | [**updateProductPriceApiV1ProductPricesProductPriceIdPut**](doc/ProductPricesApi.md#updateproductpriceapiv1productpricesproductpriceidput) | **PUT** /api/v1/product-prices/{product_price_id} | Update Product Price
-[*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**createProductionSiteApiV1ProductionSitesPost**](doc/ProductionSitesApi.md#createproductionsiteapiv1productionsitespost) | **POST** /api/v1/production-sites | Create Production Site
-[*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**deleteProductionSiteApiV1ProductionSitesProductionSiteIdDelete**](doc/ProductionSitesApi.md#deleteproductionsiteapiv1productionsitesproductionsiteiddelete) | **DELETE** /api/v1/production-sites/{production_site_id} | Delete Production Site
-[*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**getProductionSiteApiV1ProductionSitesProductionSiteIdGet**](doc/ProductionSitesApi.md#getproductionsiteapiv1productionsitesproductionsiteidget) | **GET** /api/v1/production-sites/{production_site_id} | Get Production Site
-[*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**listProductionSitesApiV1ProductionSitesGet**](doc/ProductionSitesApi.md#listproductionsitesapiv1productionsitesget) | **GET** /api/v1/production-sites | List Production Sites
-[*ProductionSitesApi*](doc/ProductionSitesApi.md) | [**updateProductionSiteApiV1ProductionSitesProductionSiteIdPut**](doc/ProductionSitesApi.md#updateproductionsiteapiv1productionsitesproductionsiteidput) | **PUT** /api/v1/production-sites/{production_site_id} | Update Production Site
 [*ProductsApi*](doc/ProductsApi.md) | [**createProductApiV1ProductsPost**](doc/ProductsApi.md#createproductapiv1productspost) | **POST** /api/v1/products | Create Product
 [*ProductsApi*](doc/ProductsApi.md) | [**deleteProductApiV1ProductsProductIdDelete**](doc/ProductsApi.md#deleteproductapiv1productsproductiddelete) | **DELETE** /api/v1/products/{product_id} | Delete Product
 [*ProductsApi*](doc/ProductsApi.md) | [**getProductApiV1ProductsProductIdGet**](doc/ProductsApi.md#getproductapiv1productsproductidget) | **GET** /api/v1/products/{product_id} | Get Product
@@ -164,11 +164,6 @@ Class | Method | HTTP request | Description
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listTaxRegimesApiV1SatTaxRegimesGet_0**](doc/SatCatalogsApi.md#listtaxregimesapiv1sattaxregimesget_0) | **GET** /api/v1/sat/tax-regimes | List Tax Regimes
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_0**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget_0) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
-[*StoresApi*](doc/StoresApi.md) | [**createStoreApiV1StoresPost**](doc/StoresApi.md#createstoreapiv1storespost) | **POST** /api/v1/stores | Create Store
-[*StoresApi*](doc/StoresApi.md) | [**deleteStoreApiV1StoresStoreIdDelete**](doc/StoresApi.md#deletestoreapiv1storesstoreiddelete) | **DELETE** /api/v1/stores/{store_id} | Delete Store
-[*StoresApi*](doc/StoresApi.md) | [**getStoreApiV1StoresStoreIdGet**](doc/StoresApi.md#getstoreapiv1storesstoreidget) | **GET** /api/v1/stores/{store_id} | Get Store
-[*StoresApi*](doc/StoresApi.md) | [**listStoresApiV1StoresGet**](doc/StoresApi.md#liststoresapiv1storesget) | **GET** /api/v1/stores | List Stores
-[*StoresApi*](doc/StoresApi.md) | [**updateStoreApiV1StoresStoreIdPut**](doc/StoresApi.md#updatestoreapiv1storesstoreidput) | **PUT** /api/v1/stores/{store_id} | Update Store
 [*SuppliersApi*](doc/SuppliersApi.md) | [**createSupplierApiV1SuppliersPost**](doc/SuppliersApi.md#createsupplierapiv1supplierspost) | **POST** /api/v1/suppliers | Create Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**deleteSupplierApiV1SuppliersSupplierIdDelete**](doc/SuppliersApi.md#deletesupplierapiv1supplierssupplieriddelete) | **DELETE** /api/v1/suppliers/{supplier_id} | Delete Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**getSupplierApiV1SuppliersSupplierIdGet**](doc/SuppliersApi.md#getsupplierapiv1supplierssupplieridget) | **GET** /api/v1/suppliers/{supplier_id} | Get Supplier
@@ -220,12 +215,18 @@ Class | Method | HTTP request | Description
  - [EmployeeCreate](doc/EmployeeCreate.md)
  - [EmployeeResponse](doc/EmployeeResponse.md)
  - [EmployeeUpdate](doc/EmployeeUpdate.md)
+ - [EntityStatus](doc/EntityStatus.md)
  - [ExchangeRateCreate](doc/ExchangeRateCreate.md)
  - [ExchangeRateResponse](doc/ExchangeRateResponse.md)
  - [ExchangeRateUpdate](doc/ExchangeRateUpdate.md)
  - [ExpenseCreate](doc/ExpenseCreate.md)
  - [ExpenseResponse](doc/ExpenseResponse.md)
  - [ExpenseUpdate](doc/ExpenseUpdate.md)
+ - [FacilityCreate](doc/FacilityCreate.md)
+ - [FacilityResponse](doc/FacilityResponse.md)
+ - [FacilitySummary](doc/FacilitySummary.md)
+ - [FacilityType](doc/FacilityType.md)
+ - [FacilityUpdate](doc/FacilityUpdate.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfit1](doc/HighProfit1.md)
@@ -239,15 +240,14 @@ Class | Method | HTTP request | Description
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)
  - [ListResponseExchangeRateResponse](doc/ListResponseExchangeRateResponse.md)
  - [ListResponseExpenseResponse](doc/ListResponseExpenseResponse.md)
+ - [ListResponseFacilityResponse](doc/ListResponseFacilityResponse.md)
  - [ListResponseLabelResponse](doc/ListResponseLabelResponse.md)
  - [ListResponsePaymentMethodOptionResponse](doc/ListResponsePaymentMethodOptionResponse.md)
  - [ListResponsePointSaleResponse](doc/ListResponsePointSaleResponse.md)
  - [ListResponsePriceListResponse](doc/ListResponsePriceListResponse.md)
  - [ListResponseProductListItem](doc/ListResponseProductListItem.md)
  - [ListResponseProductPriceResponse](doc/ListResponseProductPriceResponse.md)
- - [ListResponseProductionSiteResponse](doc/ListResponseProductionSiteResponse.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
- - [ListResponseStoreResponse](doc/ListResponseStoreResponse.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
  - [ListResponseTaxpayerRecipientResponse](doc/ListResponseTaxpayerRecipientResponse.md)
  - [ListResponseVehicleOperatorResponse](doc/ListResponseVehicleOperatorResponse.md)
@@ -280,18 +280,11 @@ Class | Method | HTTP request | Description
  - [ProductPriceUpdate](doc/ProductPriceUpdate.md)
  - [ProductResponse](doc/ProductResponse.md)
  - [ProductUpdate](doc/ProductUpdate.md)
- - [ProductionSiteCreate](doc/ProductionSiteCreate.md)
- - [ProductionSiteResponse](doc/ProductionSiteResponse.md)
- - [ProductionSiteUpdate](doc/ProductionSiteUpdate.md)
  - [Rate](doc/Rate.md)
  - [Rate1](doc/Rate1.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [SatCatalogResponse](doc/SatCatalogResponse.md)
  - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
- - [StoreCreate](doc/StoreCreate.md)
- - [StoreResponse](doc/StoreResponse.md)
- - [StoreSummary](doc/StoreSummary.md)
- - [StoreUpdate](doc/StoreUpdate.md)
  - [SupplierCreate](doc/SupplierCreate.md)
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)

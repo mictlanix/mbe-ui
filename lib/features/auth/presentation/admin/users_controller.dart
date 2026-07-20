@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
@@ -67,7 +68,7 @@ class UserFormState with _$UserFormState {
     /// picks a new one.
     @Default('') String employeeDisplayText,
     @Default(false) bool administrator,
-    @Default(false) bool disabled,
+    @Default(EntityStatus.active) EntityStatus status,
     @Default(<Privilege>[]) List<Privilege> privileges,
     UserSettings? settings,
     @Default(false) bool loading,
@@ -169,7 +170,7 @@ class UserFormController extends _$UserFormController {
         employeeId: user.employeeId,
         employeeDisplayText: employeeDisplayText,
         administrator: user.administrator,
-        disabled: user.disabled,
+        status: user.status,
         privileges: user.privileges,
         settings: user.settings,
       );
@@ -203,8 +204,8 @@ class UserFormController extends _$UserFormController {
   void administratorChanged(bool v) =>
       state = state.copyWith(administrator: v, error: null, errorDetail: null);
 
-  void disabledChanged(bool v) =>
-      state = state.copyWith(disabled: v, error: null, errorDetail: null);
+  void statusChanged(EntityStatus v) =>
+      state = state.copyWith(status: v, error: null, errorDetail: null);
 
   /// Updates the `rawValue` bitmask for one [SystemObject] in the form's
   /// privileges list. Removes the entry when [rawValue] is 0.
@@ -260,7 +261,7 @@ class UserFormController extends _$UserFormController {
           email: state.email,
           employeeId: state.employeeId,
           administrator: state.administrator,
-          disabled: state.disabled,
+          status: state.status,
           privileges: state.privileges,
           settings: state.settings,
         );
@@ -272,7 +273,7 @@ class UserFormController extends _$UserFormController {
           email: state.email,
           employeeId: state.employeeId,
           administrator: state.administrator,
-          disabled: state.disabled,
+          status: state.status,
         );
         if (state.privileges.isNotEmpty) {
           await repo.update(

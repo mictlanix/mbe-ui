@@ -47,7 +47,7 @@ mixin _$Product {
   bool get salable => throw _privateConstructorUsedError;
   bool get invoiceable => throw _privateConstructorUsedError;
   bool get stockRequired => throw _privateConstructorUsedError;
-  bool get deactivated => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   String? get comment => throw _privateConstructorUsedError;
   List<ProductLabel> get labels => throw _privateConstructorUsedError;
 
@@ -92,7 +92,7 @@ abstract class $ProductCopyWith<$Res> {
     bool salable,
     bool invoiceable,
     bool stockRequired,
-    bool deactivated,
+    EntityStatus status,
     String? comment,
     List<ProductLabel> labels,
   });
@@ -142,7 +142,7 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
     Object? salable = null,
     Object? invoiceable = null,
     Object? stockRequired = null,
-    Object? deactivated = null,
+    Object? status = null,
     Object? comment = freezed,
     Object? labels = null,
   }) {
@@ -265,10 +265,10 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
                 ? _value.stockRequired
                 : stockRequired // ignore: cast_nullable_to_non_nullable
                       as bool,
-            deactivated: null == deactivated
-                ? _value.deactivated
-                : deactivated // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             comment: freezed == comment
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
@@ -321,7 +321,7 @@ abstract class _$$ProductImplCopyWith<$Res> implements $ProductCopyWith<$Res> {
     bool salable,
     bool invoiceable,
     bool stockRequired,
-    bool deactivated,
+    EntityStatus status,
     String? comment,
     List<ProductLabel> labels,
   });
@@ -370,7 +370,7 @@ class __$$ProductImplCopyWithImpl<$Res>
     Object? salable = null,
     Object? invoiceable = null,
     Object? stockRequired = null,
-    Object? deactivated = null,
+    Object? status = null,
     Object? comment = freezed,
     Object? labels = null,
   }) {
@@ -492,10 +492,10 @@ class __$$ProductImplCopyWithImpl<$Res>
             ? _value.stockRequired
             : stockRequired // ignore: cast_nullable_to_non_nullable
                   as bool,
-        deactivated: null == deactivated
-            ? _value.deactivated
-            : deactivated // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         comment: freezed == comment
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
@@ -542,7 +542,7 @@ class _$ProductImpl implements _Product {
     required this.salable,
     required this.invoiceable,
     required this.stockRequired,
-    required this.deactivated,
+    required this.status,
     this.comment,
     final List<ProductLabel> labels = const [],
   }) : _labels = labels;
@@ -606,7 +606,7 @@ class _$ProductImpl implements _Product {
   @override
   final bool stockRequired;
   @override
-  final bool deactivated;
+  final EntityStatus status;
   @override
   final String? comment;
   final List<ProductLabel> _labels;
@@ -620,7 +620,7 @@ class _$ProductImpl implements _Product {
 
   @override
   String toString() {
-    return 'Product(productId: $productId, code: $code, name: $name, photo: $photo, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, unitOfMeasurementDescription: $unitOfMeasurementDescription, unitOfMeasurementSymbol: $unitOfMeasurementSymbol, satKeyCode: $satKeyCode, satKeyDescription: $satKeyDescription, taxRate: $taxRate, taxIncluded: $taxIncluded, priceType: $priceType, currency: $currency, minOrderQty: $minOrderQty, supplierId: $supplierId, supplierName: $supplierName, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, stockRequired: $stockRequired, deactivated: $deactivated, comment: $comment, labels: $labels)';
+    return 'Product(productId: $productId, code: $code, name: $name, photo: $photo, sku: $sku, brand: $brand, model: $model, barCode: $barCode, location: $location, unitOfMeasurementCode: $unitOfMeasurementCode, unitOfMeasurementName: $unitOfMeasurementName, unitOfMeasurementDescription: $unitOfMeasurementDescription, unitOfMeasurementSymbol: $unitOfMeasurementSymbol, satKeyCode: $satKeyCode, satKeyDescription: $satKeyDescription, taxRate: $taxRate, taxIncluded: $taxIncluded, priceType: $priceType, currency: $currency, minOrderQty: $minOrderQty, supplierId: $supplierId, supplierName: $supplierName, stockable: $stockable, perishable: $perishable, seriable: $seriable, purchasable: $purchasable, salable: $salable, invoiceable: $invoiceable, stockRequired: $stockRequired, status: $status, comment: $comment, labels: $labels)';
   }
 
   @override
@@ -684,8 +684,7 @@ class _$ProductImpl implements _Product {
                 other.invoiceable == invoiceable) &&
             (identical(other.stockRequired, stockRequired) ||
                 other.stockRequired == stockRequired) &&
-            (identical(other.deactivated, deactivated) ||
-                other.deactivated == deactivated) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.comment, comment) || other.comment == comment) &&
             const DeepCollectionEquality().equals(other._labels, _labels));
   }
@@ -722,7 +721,7 @@ class _$ProductImpl implements _Product {
     salable,
     invoiceable,
     stockRequired,
-    deactivated,
+    status,
     comment,
     const DeepCollectionEquality().hash(_labels),
   ]);
@@ -767,7 +766,7 @@ abstract class _Product implements Product {
     required final bool salable,
     required final bool invoiceable,
     required final bool stockRequired,
-    required final bool deactivated,
+    required final EntityStatus status,
     final String? comment,
     final List<ProductLabel> labels,
   }) = _$ProductImpl;
@@ -831,7 +830,7 @@ abstract class _Product implements Product {
   @override
   bool get stockRequired;
   @override
-  bool get deactivated;
+  EntityStatus get status;
   @override
   String? get comment;
   @override

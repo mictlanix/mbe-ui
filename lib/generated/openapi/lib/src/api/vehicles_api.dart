@@ -9,6 +9,7 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_vehicle_response.dart';
 import 'package:mbe_api_client/src/model/vehicle_create.dart';
@@ -261,6 +262,8 @@ class VehiclesApi {
   ///
   ///
   /// Parameters:
+  /// * [search]
+  /// * [status]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -273,6 +276,8 @@ class VehiclesApi {
   /// Returns a [Future] containing a [Response] with a [ListResponseVehicleResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseVehicleResponse>> listVehiclesApiV1VehiclesGet({
+    String? search,
+    EntityStatus? status,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -296,6 +301,18 @@ class VehiclesApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
+      if (status != null)
+        r'status': encodeQueryParameter(
+          _serializers,
+          status,
+          const FullType(EntityStatus),
+        ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null)

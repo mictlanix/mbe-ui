@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/gender.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/employee_form_controller.dart';
@@ -315,12 +316,10 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                     ),
                   ),
                   Expanded(
-                    child: SwitchListTile(
-                      key: const Key('active_switch'),
-                      title: Text(l10n.activeLabel),
-                      value: formState.active,
+                    child: EntityStatusFormField(
+                      value: formState.status,
                       onChanged: fieldsEnabled
-                          ? controller.activeChanged
+                          ? controller.statusChanged
                           : null,
                     ),
                   ),

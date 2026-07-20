@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 
@@ -31,7 +32,7 @@ void main() {
                   'symbol': null,
                 },
                 'tax_rate': '0.16',
-                'deactivated': false,
+                'status': 0,
               },
             ],
             'total': 1,
@@ -47,7 +48,7 @@ void main() {
       expect(result.items, hasLength(1));
       expect(result.items.single.productId, 1);
       expect(result.items.single.code, 'SKU-001');
-      expect(result.items.single.deactivated, isFalse);
+      expect(result.items.single.status, EntityStatus.active);
     });
 
     test('422 maps to AppError.validation', () async {
@@ -152,7 +153,7 @@ void main() {
       );
 
       expect(product.code, 'SKU-001');
-      expect(product.deactivated, isFalse);
+      expect(product.status, EntityStatus.active);
     });
 
     test('sends sku in the request body', () async {
@@ -275,7 +276,7 @@ void main() {
       expect(product.code, 'SKU-001');
       expect(product.name, 'Widget');
       expect(product.unitOfMeasurementCode, 'PCE');
-      expect(product.deactivated, isFalse);
+      expect(product.status, EntityStatus.active);
     });
 
     test('404 maps to AppError.notFound', () async {
@@ -471,24 +472,27 @@ void main() {
       );
     });
 
-    test('a deactivate-only call sends just {deactivated: true}', () async {
+    test('a deactivate-only call sends just {status: inactive}', () async {
       late Object? sentData;
       final repository = _repositoryWith((options) async {
         sentData = options.data;
         return ResponseBody.fromString(
-          jsonEncode({..._productResponseJson(), 'deactivated': true}),
+          jsonEncode({..._productResponseJson(), 'status': 1}),
           200,
           headers: _jsonHeaders,
         );
       });
 
-      final product = await repository.update(productId: 1, deactivated: true);
+      final product = await repository.update(
+        productId: 1,
+        status: EntityStatus.inactive,
+      );
 
-      expect(product.deactivated, isTrue);
+      expect(product.status, EntityStatus.inactive);
       final sentBody = sentData is String
           ? jsonDecode(sentData as String) as Map<String, Object?>
           : sentData as Map<String, Object?>;
-      expect(sentBody['deactivated'], isTrue);
+      expect(sentBody['status'], 1);
       expect(sentBody.containsKey('code'), isFalse);
       expect(sentBody.containsKey('name'), isFalse);
     });
@@ -685,14 +689,14 @@ void main() {
 
       await repository.productLabelFacets(
         search: 'drill',
-        deactivated: false,
+        status: EntityStatus.active,
         stockable: true,
         labels: [1, 2],
       );
 
       expect(captured!.path, '/api/v1/products/labels/facets');
       expect(captured!.queryParameters['search'], 'drill');
-      expect(captured!.queryParameters['deactivated'], false);
+      expect(captured!.queryParameters['status'], 0);
       expect(captured!.queryParameters['stockable'], true);
       final label = captured!.queryParameters['label'] as ListParam;
       expect(label.value, [1, 2]);
@@ -852,7 +856,7 @@ Map<String, Object?> _productResponseJson() => {
   'salable': true,
   'invoiceable': true,
   'stock_verification': true,
-  'deactivated': false,
+  'status': 0,
   'comment': null,
 };
 

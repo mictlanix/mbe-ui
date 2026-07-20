@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/date.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -24,7 +25,7 @@ part 'vehicle_operator_response.g.dart';
 /// * [modificationTime]
 /// * [creator]
 /// * [updater]
-/// * [active]
+/// * [status]
 /// * [daysUntilExpiry]
 @BuiltValue()
 abstract class VehicleOperatorResponse
@@ -62,8 +63,9 @@ abstract class VehicleOperatorResponse
   @BuiltValueField(wireName: r'updater')
   EmployeeResponse get updater;
 
-  @BuiltValueField(wireName: r'active')
-  bool get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'days_until_expiry')
   int? get daysUntilExpiry;
@@ -154,10 +156,10 @@ class _$VehicleOperatorResponseSerializer
       object.updater,
       specifiedType: const FullType(EmployeeResponse),
     );
-    yield r'active';
+    yield r'status';
     yield serializers.serialize(
-      object.active,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
     if (object.daysUntilExpiry != null) {
       yield r'days_until_expiry';
@@ -289,14 +291,14 @@ class _$VehicleOperatorResponseSerializer
                   as EmployeeResponse;
           result.updater.replace(valueDes);
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.active = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         case r'days_until_expiry':
           final valueDes =

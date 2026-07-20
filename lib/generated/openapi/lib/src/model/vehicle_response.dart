@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,7 +17,7 @@ part 'vehicle_response.g.dart';
 /// * [name]
 /// * [nickname]
 /// * [tonsCapacity]
-/// * [active]
+/// * [status]
 @BuiltValue()
 abstract class VehicleResponse
     implements Built<VehicleResponse, VehicleResponseBuilder> {
@@ -35,8 +36,9 @@ abstract class VehicleResponse
   @BuiltValueField(wireName: r'tons_capacity')
   int get tonsCapacity;
 
-  @BuiltValueField(wireName: r'active')
-  bool get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   VehicleResponse._();
 
@@ -89,10 +91,10 @@ class _$VehicleResponseSerializer
       object.tonsCapacity,
       specifiedType: const FullType(int),
     );
-    yield r'active';
+    yield r'status';
     yield serializers.serialize(
-      object.active,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
   }
 
@@ -160,14 +162,14 @@ class _$VehicleResponseSerializer
                   as int;
           result.tonsCapacity = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.active = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

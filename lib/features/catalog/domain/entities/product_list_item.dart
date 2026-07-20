@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
+
 import 'package:mbe_ui/core/network/photo_url.dart';
 
 part 'product_list_item.freezed.dart';
@@ -20,7 +22,7 @@ class ProductListItem with _$ProductListItem {
     required String unitOfMeasurementCode,
     required String unitOfMeasurementName,
     required String taxRate,
-    required bool deactivated,
+    required EntityStatus status,
 
     /// A fully-resolved, ready-to-fetch photo URL, same as `Product.photo`
     /// (mictlanix/mbe-api#71 — the list endpoint now resolves this the same
@@ -39,7 +41,7 @@ class ProductListItem with _$ProductListItem {
       unitOfMeasurementCode: item.unitOfMeasurement.id,
       unitOfMeasurementName: item.unitOfMeasurement.name,
       taxRate: item.taxRate,
-      deactivated: item.deactivated,
+      status: EntityStatus.fromApi(item.status),
       photo: resolvePhotoUrl(item.photo),
     );
   }

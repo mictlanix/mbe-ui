@@ -1,3 +1,4 @@
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 
@@ -10,7 +11,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart'
 abstract class EmployeeRepository {
   Future<EmployeeListResult> list({
     String? search,
-    bool? active,
+    EntityStatus? status,
     bool? salesPerson,
     int skip = 0,
     int limit = 20,
@@ -27,7 +28,7 @@ abstract class EmployeeRepository {
     required DateTime startJobDate,
     String? taxpayerId,
     bool? salesPerson,
-    bool? active,
+    EntityStatus? status,
     String? personalId,
     int? enrollNumber,
     String? comment,
@@ -43,7 +44,7 @@ abstract class EmployeeRepository {
     DateTime? startJobDate,
     String? taxpayerId,
     bool? salesPerson,
-    bool? active,
+    EntityStatus? status,
     String? personalId,
     int? enrollNumber,
     String? comment,

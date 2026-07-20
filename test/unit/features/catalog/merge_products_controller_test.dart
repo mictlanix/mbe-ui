@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -18,7 +19,7 @@ const _canonical = ProductListItem(
   unitOfMeasurementCode: 'PCE',
   unitOfMeasurementName: 'Piece',
   taxRate: '0.16',
-  deactivated: false,
+  status: EntityStatus.active,
 );
 
 const _duplicate = ProductListItem(
@@ -28,7 +29,7 @@ const _duplicate = ProductListItem(
   unitOfMeasurementCode: 'PCE',
   unitOfMeasurementName: 'Piece',
   taxRate: '0.16',
-  deactivated: false,
+  status: EntityStatus.active,
 );
 
 ProviderContainer _containerWith(ProductRepository repository) {

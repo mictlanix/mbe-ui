@@ -3,35 +3,38 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
+import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'store_summary.g.dart';
+part 'facility_create.g.dart';
 
-/// Flat Store representation used when embedded as another resource's FK.
+/// FacilityCreate
 ///
 /// Properties:
-/// * [storeId]
 /// * [code]
 /// * [name]
+/// * [type]
 /// * [location]
 /// * [address]
 /// * [taxpayer]
 /// * [logo]
 /// * [receiptMessage]
 /// * [defaultBatch]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
-abstract class StoreSummary
-    implements Built<StoreSummary, StoreSummaryBuilder> {
-  @BuiltValueField(wireName: r'store_id')
-  int get storeId;
-
+abstract class FacilityCreate
+    implements Built<FacilityCreate, FacilityCreateBuilder> {
   @BuiltValueField(wireName: r'code')
   String get code;
 
   @BuiltValueField(wireName: r'name')
   String get name;
+
+  @BuiltValueField(wireName: r'type')
+  FacilityType? get type;
+  // enum typeEnum {  0,  1,  };
 
   @BuiltValueField(wireName: r'location')
   String get location;
@@ -51,37 +54,38 @@ abstract class StoreSummary
   @BuiltValueField(wireName: r'default_batch')
   String? get defaultBatch;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
-  StoreSummary._();
+  FacilityCreate._();
 
-  factory StoreSummary([void updates(StoreSummaryBuilder b)]) = _$StoreSummary;
+  factory FacilityCreate([void updates(FacilityCreateBuilder b)]) =
+      _$FacilityCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(StoreSummaryBuilder b) => b;
+  static void _defaults(FacilityCreateBuilder b) => b
+    ..type = FacilityType.number0
+    ..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<StoreSummary> get serializer => _$StoreSummarySerializer();
+  static Serializer<FacilityCreate> get serializer =>
+      _$FacilityCreateSerializer();
 }
 
-class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
+class _$FacilityCreateSerializer
+    implements PrimitiveSerializer<FacilityCreate> {
   @override
-  final Iterable<Type> types = const [StoreSummary, _$StoreSummary];
+  final Iterable<Type> types = const [FacilityCreate, _$FacilityCreate];
 
   @override
-  final String wireName = r'StoreSummary';
+  final String wireName = r'FacilityCreate';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    StoreSummary object, {
+    FacilityCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'store_id';
-    yield serializers.serialize(
-      object.storeId,
-      specifiedType: const FullType(int),
-    );
     yield r'code';
     yield serializers.serialize(
       object.code,
@@ -92,6 +96,13 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
       object.name,
       specifiedType: const FullType(String),
     );
+    if (object.type != null) {
+      yield r'type';
+      yield serializers.serialize(
+        object.type,
+        specifiedType: const FullType(FacilityType),
+      );
+    }
     yield r'location';
     yield serializers.serialize(
       object.location,
@@ -112,33 +123,33 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
       object.logo,
       specifiedType: const FullType(String),
     );
-    yield r'receipt_message';
-    yield object.receiptMessage == null
-        ? null
-        : serializers.serialize(
-            object.receiptMessage,
-            specifiedType: const FullType.nullable(String),
-          );
-    yield r'default_batch';
-    yield object.defaultBatch == null
-        ? null
-        : serializers.serialize(
-            object.defaultBatch,
-            specifiedType: const FullType.nullable(String),
-          );
-    yield r'disabled';
-    yield object.disabled == null
-        ? null
-        : serializers.serialize(
-            object.disabled,
-            specifiedType: const FullType.nullable(bool),
-          );
+    if (object.receiptMessage != null) {
+      yield r'receipt_message';
+      yield serializers.serialize(
+        object.receiptMessage,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.defaultBatch != null) {
+      yield r'default_batch';
+      yield serializers.serialize(
+        object.defaultBatch,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.status != null) {
+      yield r'status';
+      yield serializers.serialize(
+        object.status,
+        specifiedType: const FullType(EntityStatus),
+      );
+    }
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    StoreSummary object, {
+    FacilityCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -153,19 +164,13 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required StoreSummaryBuilder result,
+    required FacilityCreateBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'store_id':
-          final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
-          result.storeId = valueDes;
-          break;
         case r'code':
           final valueDes =
               serializers.deserialize(
@@ -183,6 +188,15 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
                   )
                   as String;
           result.name = valueDes;
+          break;
+        case r'type':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(FacilityType),
+                  )
+                  as FacilityType;
+          result.type = valueDes;
           break;
         case r'location':
           final valueDes =
@@ -237,15 +251,14 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
           if (valueDes == null) continue;
           result.defaultBatch = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -256,12 +269,12 @@ class _$StoreSummarySerializer implements PrimitiveSerializer<StoreSummary> {
   }
 
   @override
-  StoreSummary deserialize(
+  FacilityCreate deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = StoreSummaryBuilder();
+    final result = FacilityCreateBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

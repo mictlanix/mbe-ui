@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,7 +17,7 @@ part 'user_create.g.dart';
 /// * [email]
 /// * [employeeId]
 /// * [administrator]
-/// * [disabled]
+/// * [status]
 @BuiltValue()
 abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   @BuiltValueField(wireName: r'user_id')
@@ -34,8 +35,9 @@ abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   @BuiltValueField(wireName: r'administrator')
   bool? get administrator;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool? get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   UserCreate._();
 
@@ -44,7 +46,7 @@ abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(UserCreateBuilder b) => b
     ..administrator = false
-    ..disabled = false;
+    ..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<UserCreate> get serializer => _$UserCreateSerializer();
@@ -91,11 +93,11 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
         specifiedType: const FullType(bool),
       );
     }
-    if (object.disabled != null) {
-      yield r'disabled';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.disabled,
-        specifiedType: const FullType(bool),
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
   }
@@ -171,14 +173,14 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
                   as bool;
           result.administrator = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

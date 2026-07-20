@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -16,7 +17,7 @@ const _bothUser = User(
   userId: 'both',
   email: 'both@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.users, rawValue: 2),

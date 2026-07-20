@@ -9,6 +9,7 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
@@ -269,7 +270,8 @@ class PaymentMethodOptionsApi {
   ///
   ///
   /// Parameters:
-  /// * [store]
+  /// * [facility]
+  /// * [status]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -283,7 +285,8 @@ class PaymentMethodOptionsApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponsePaymentMethodOptionResponse>>
   listPaymentMethodOptionsApiV1PaymentMethodOptionsGet({
-    int? store,
+    int? facility,
+    EntityStatus? status,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -307,11 +310,17 @@ class PaymentMethodOptionsApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      if (store != null)
-        r'store': encodeQueryParameter(
+      if (facility != null)
+        r'facility': encodeQueryParameter(
           _serializers,
-          store,
+          facility,
           const FullType(int),
+        ),
+      if (status != null)
+        r'status': encodeQueryParameter(
+          _serializers,
+          status,
+          const FullType(EntityStatus),
         ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),

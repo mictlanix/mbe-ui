@@ -1,3 +1,4 @@
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'dart:typed_data';
 
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
@@ -24,7 +25,7 @@ abstract class ProductRepository {
   /// lookup that builds on this (spec 009 FR-001).
   Future<ProductListResult> list({
     String? search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,
@@ -73,7 +74,8 @@ abstract class ProductRepository {
   /// `PUT /api/v1/products/{product_id}` (FR-009, FR-010). All fields
   /// optional; only non-null values are sent (mirrors `UserRepository.
   /// update`'s convention). Used both for ordinary edits (FR-009) and for
-  /// soft-delete (FR-010 — call with only `deactivated: true`). Throws
+  /// soft-delete (FR-010 — call with only `status: EntityStatus.inactive`).
+  /// Throws
   /// `NotFoundError` on `404`, `ValidationError` on `422` (e.g. duplicate
   /// code on rename).
   ///
@@ -103,7 +105,7 @@ abstract class ProductRepository {
     bool? purchasable,
     bool? salable,
     bool? invoiceable,
-    bool? deactivated,
+    EntityStatus? status,
     int? supplier,
     String? key,
     int? currency,
@@ -166,7 +168,7 @@ abstract class ProductRepository {
   /// (treating an error as "availability unknown" → all chips enabled, FR-010).
   Future<List<ProductLabelFacet>> productLabelFacets({
     String? search,
-    bool? deactivated,
+    EntityStatus? status,
     bool? stockable,
     bool? salable,
     bool? purchasable,

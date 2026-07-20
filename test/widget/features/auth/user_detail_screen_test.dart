@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
@@ -33,7 +34,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 2)],
 );
@@ -42,7 +43,7 @@ const _editUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   // read (2) + update (4)
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 6)],
@@ -52,7 +53,7 @@ const _fullAccessUser = User(
   userId: 'admin',
   email: 'admin@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   // read (2) + update (4) + delete (8)
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 14)],
@@ -62,7 +63,7 @@ const _targetUser = User(
   userId: 'jdoe',
   email: 'jdoe@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );
@@ -72,7 +73,7 @@ const _targetUserWithEmployee = User(
   email: 'jdoe@example.com',
   employeeId: 7,
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );
@@ -85,7 +86,7 @@ final _employee = Employee(
   gender: Gender.female,
   birthday: DateTime(1990, 1, 1),
   salesPerson: true,
-  active: true,
+  status: EntityStatus.active,
   startJobDate: DateTime(2020, 1, 1),
 );
 

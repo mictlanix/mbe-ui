@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
@@ -10,13 +11,13 @@ part 'employees_list_controller.g.dart';
 
 const _pageSize = 20;
 
-/// The Employees list screen's search/filter selection (FR-017): active and
+/// The Employees list screen's search/filter selection (FR-017): status and
 /// sales-person tri-state facets, independent of each other and of search.
 @freezed
 class EmployeeFilter with _$EmployeeFilter {
   const factory EmployeeFilter({
     @Default('') String search,
-    bool? active,
+    EntityStatus? status,
     bool? salesPerson,
   }) = _EmployeeFilter;
 }
@@ -27,7 +28,7 @@ class EmployeeFilter with _$EmployeeFilter {
 extension EmployeeFilterBadge on EmployeeFilter {
   int get activeFilterCount {
     var count = 0;
-    if (active != null) count++;
+    if (status != null) count++;
     if (salesPerson != null) count++;
     return count;
   }
@@ -44,7 +45,8 @@ class EmployeeFilterController extends _$EmployeeFilterController {
 
   void searchChanged(String value) => state = state.copyWith(search: value);
 
-  void activeChanged(bool? value) => state = state.copyWith(active: value);
+  void statusChanged(EntityStatus? value) =>
+      state = state.copyWith(status: value);
 
   void salesPersonChanged(bool? value) =>
       state = state.copyWith(salesPerson: value);
@@ -72,7 +74,7 @@ class EmployeesListController extends _$EmployeesListController {
         .read(employeeRepositoryProvider)
         .list(
           search: filter.search.isEmpty ? null : filter.search,
-          active: filter.active,
+          status: filter.status,
           salesPerson: filter.salesPerson,
           skip: pageIndex * _pageSize,
           limit: _pageSize,

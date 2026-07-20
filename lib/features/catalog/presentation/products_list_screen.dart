@@ -13,6 +13,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
@@ -144,21 +145,8 @@ class ProductsListScreen extends ConsumerWidget {
                       DataTableColumn(
                         label: l10n.columnStatus,
                         fixedWidth: 130,
-                        cellBuilder: (context, p) => p.deactivated
-                            ? Chip(
-                                key: const Key('inactive_badge'),
-                                label: Text(l10n.statusInactiveBadge),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer,
-                                labelStyle: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
-                                ),
-                                visualDensity: VisualDensity.compact,
-                              )
-                            : Text(l10n.statusActive),
+                        cellBuilder: (context, p) =>
+                            EntityStatusCell(status: p.status),
                       ),
                     ],
                     rows: page.items,
@@ -234,17 +222,21 @@ class _ProductFiltersPanel extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          l10n.statusFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        EntityStatusFilterChips(
+          filterKey: 'products_filter_status',
+          value: filter.status,
+          onChanged: filterController.statusChanged,
+        ),
+        const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            FilterChip(
-              key: const Key('products_filter_show_inactive'),
-              label: Text(l10n.productsShowInactiveFilter),
-              selected: filter.deactivated == null,
-              onSelected: (selected) =>
-                  filterController.deactivatedChanged(selected ? null : false),
-            ),
             _TriStateFilterChip(
               chipKey: const Key('products_filter_stockable'),
               label: l10n.productsStockableFilter,

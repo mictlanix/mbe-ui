@@ -30,12 +30,18 @@ import 'package:mbe_api_client/src/model/customer_update.dart';
 import 'package:mbe_api_client/src/model/employee_create.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/employee_update.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_create.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_update.dart';
 import 'package:mbe_api_client/src/model/expense_create.dart';
 import 'package:mbe_api_client/src/model/expense_response.dart';
 import 'package:mbe_api_client/src/model/expense_update.dart';
+import 'package:mbe_api_client/src/model/facility_create.dart';
+import 'package:mbe_api_client/src/model/facility_response.dart';
+import 'package:mbe_api_client/src/model/facility_summary.dart';
+import 'package:mbe_api_client/src/model/facility_type.dart';
+import 'package:mbe_api_client/src/model/facility_update.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:mbe_api_client/src/model/high_profit1.dart';
@@ -49,15 +55,14 @@ import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
 import 'package:mbe_api_client/src/model/list_response_exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/list_response_expense_response.dart';
+import 'package:mbe_api_client/src/model/list_response_facility_response.dart';
 import 'package:mbe_api_client/src/model/list_response_label_response.dart';
 import 'package:mbe_api_client/src/model/list_response_payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/list_response_point_sale_response.dart';
 import 'package:mbe_api_client/src/model/list_response_price_list_response.dart';
 import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_product_price_response.dart';
-import 'package:mbe_api_client/src/model/list_response_production_site_response.dart';
 import 'package:mbe_api_client/src/model/list_response_sat_catalog_response.dart';
-import 'package:mbe_api_client/src/model/list_response_store_response.dart';
 import 'package:mbe_api_client/src/model/list_response_supplier_response.dart';
 import 'package:mbe_api_client/src/model/list_response_taxpayer_recipient_response.dart';
 import 'package:mbe_api_client/src/model/list_response_vehicle_operator_response.dart';
@@ -90,18 +95,11 @@ import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:mbe_api_client/src/model/product_price_update.dart';
 import 'package:mbe_api_client/src/model/product_response.dart';
 import 'package:mbe_api_client/src/model/product_update.dart';
-import 'package:mbe_api_client/src/model/production_site_create.dart';
-import 'package:mbe_api_client/src/model/production_site_response.dart';
-import 'package:mbe_api_client/src/model/production_site_update.dart';
 import 'package:mbe_api_client/src/model/rate.dart';
 import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
-import 'package:mbe_api_client/src/model/store_create.dart';
-import 'package:mbe_api_client/src/model/store_response.dart';
-import 'package:mbe_api_client/src/model/store_summary.dart';
-import 'package:mbe_api_client/src/model/store_update.dart';
 import 'package:mbe_api_client/src/model/supplier_create.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:mbe_api_client/src/model/supplier_update.dart';
@@ -148,12 +146,18 @@ part 'serializers.g.dart';
   EmployeeCreate,
   EmployeeResponse,
   EmployeeUpdate,
+  EntityStatus,
   ExchangeRateCreate,
   ExchangeRateResponse,
   ExchangeRateUpdate,
   ExpenseCreate,
   ExpenseResponse,
   ExpenseUpdate,
+  FacilityCreate,
+  FacilityResponse,
+  FacilitySummary,
+  FacilityType,
+  FacilityUpdate,
   HTTPValidationError,
   HighProfit,
   HighProfit1,
@@ -167,15 +171,14 @@ part 'serializers.g.dart';
   ListResponseEmployeeResponse,
   ListResponseExchangeRateResponse,
   ListResponseExpenseResponse,
+  ListResponseFacilityResponse,
   ListResponseLabelResponse,
   ListResponsePaymentMethodOptionResponse,
   ListResponsePointSaleResponse,
   ListResponsePriceListResponse,
   ListResponseProductListItem,
   ListResponseProductPriceResponse,
-  ListResponseProductionSiteResponse,
   ListResponseSatCatalogResponse,
-  ListResponseStoreResponse,
   ListResponseSupplierResponse,
   ListResponseTaxpayerRecipientResponse,
   ListResponseVehicleOperatorResponse,
@@ -208,18 +211,11 @@ part 'serializers.g.dart';
   ProductPriceUpdate,
   ProductResponse,
   ProductUpdate,
-  ProductionSiteCreate,
-  ProductionSiteResponse,
-  ProductionSiteUpdate,
   Rate,
   Rate1,
   RecoverPasswordAdminResponse,
   SatCatalogResponse,
   SatUnitOfMeasurementResponse,
-  StoreCreate,
-  StoreResponse,
-  StoreSummary,
-  StoreUpdate,
   SupplierCreate,
   SupplierResponse,
   SupplierUpdate,

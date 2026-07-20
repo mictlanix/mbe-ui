@@ -3,8 +3,9 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/store_summary.dart';
+import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/warehouse_summary.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -14,14 +15,14 @@ part 'payment_method_option_response.g.dart';
 ///
 /// Properties:
 /// * [paymentMethodOptionId]
-/// * [store]
+/// * [facility]
 /// * [warehouse]
 /// * [name]
 /// * [numberOfPayments]
 /// * [displayOnTicket]
 /// * [paymentMethod]
 /// * [commission]
-/// * [enabled]
+/// * [status]
 @BuiltValue()
 abstract class PaymentMethodOptionResponse
     implements
@@ -29,8 +30,8 @@ abstract class PaymentMethodOptionResponse
   @BuiltValueField(wireName: r'payment_method_option_id')
   int get paymentMethodOptionId;
 
-  @BuiltValueField(wireName: r'store')
-  StoreSummary get store;
+  @BuiltValueField(wireName: r'facility')
+  FacilitySummary get facility;
 
   @BuiltValueField(wireName: r'warehouse')
   WarehouseSummary? get warehouse;
@@ -50,8 +51,9 @@ abstract class PaymentMethodOptionResponse
   @BuiltValueField(wireName: r'commission')
   String get commission;
 
-  @BuiltValueField(wireName: r'enabled')
-  bool get enabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   PaymentMethodOptionResponse._();
 
@@ -88,10 +90,10 @@ class _$PaymentMethodOptionResponseSerializer
       object.paymentMethodOptionId,
       specifiedType: const FullType(int),
     );
-    yield r'store';
+    yield r'facility';
     yield serializers.serialize(
-      object.store,
-      specifiedType: const FullType(StoreSummary),
+      object.facility,
+      specifiedType: const FullType(FacilitySummary),
     );
     yield r'warehouse';
     yield object.warehouse == null
@@ -125,10 +127,10 @@ class _$PaymentMethodOptionResponseSerializer
       object.commission,
       specifiedType: const FullType(String),
     );
-    yield r'enabled';
+    yield r'status';
     yield serializers.serialize(
-      object.enabled,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
   }
 
@@ -163,14 +165,14 @@ class _$PaymentMethodOptionResponseSerializer
                   as int;
           result.paymentMethodOptionId = valueDes;
           break;
-        case r'store':
+        case r'facility':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(StoreSummary),
+                    specifiedType: const FullType(FacilitySummary),
                   )
-                  as StoreSummary;
-          result.store.replace(valueDes);
+                  as FacilitySummary;
+          result.facility.replace(valueDes);
           break;
         case r'warehouse':
           final valueDes =
@@ -221,14 +223,14 @@ class _$PaymentMethodOptionResponseSerializer
                   as String;
           result.commission = valueDes;
           break;
-        case r'enabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.enabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

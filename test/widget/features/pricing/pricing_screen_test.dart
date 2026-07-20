@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -31,7 +32,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 2)],
 );
@@ -40,7 +41,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 6)],
 );

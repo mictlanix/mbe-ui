@@ -22,6 +22,9 @@ class NavBranch {
   static const int employees = 8;
   static const int customers = 9;
   static const int taxpayerRecipients = 10;
+  static const int expenses = 11;
+  static const int vehicles = 12;
+  static const int vehicleOperators = 13;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -123,6 +126,33 @@ const List<NavItem> kNavigationTree = [
           right: AccessRight.read,
         ),
       ),
+      NavDestination(
+        id: 'expenses',
+        label: _expensesLabel,
+        icon: Icons.payments_outlined,
+        selectedIcon: Icons.payments,
+        route: '/expenses',
+        branchIndex: NavBranch.expenses,
+        gate: (object: SystemObject.expenses, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'vehicles',
+        label: _vehiclesLabel,
+        icon: Icons.airport_shuttle_outlined,
+        selectedIcon: Icons.airport_shuttle,
+        route: '/vehicles',
+        branchIndex: NavBranch.vehicles,
+        gate: (object: SystemObject.vehicle, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'vehicle-operators',
+        label: _vehicleOperatorsLabel,
+        icon: Icons.assignment_ind_outlined,
+        selectedIcon: Icons.assignment_ind,
+        route: '/vehicle-operators',
+        branchIndex: NavBranch.vehicleOperators,
+        gate: (object: SystemObject.vehicleOperators, right: AccessRight.read),
+      ),
     ],
   ),
   NavGroup(
@@ -158,6 +188,10 @@ String _employeesLabel(AppLocalizations l10n) => l10n.employeesMenuTitle;
 String _customersLabel(AppLocalizations l10n) => l10n.customersMenuTitle;
 String _taxpayerRecipientsLabel(AppLocalizations l10n) =>
     l10n.taxpayerRecipientsMenuTitle;
+String _expensesLabel(AppLocalizations l10n) => l10n.expensesMenuTitle;
+String _vehiclesLabel(AppLocalizations l10n) => l10n.vehiclesMenuTitle;
+String _vehicleOperatorsLabel(AppLocalizations l10n) =>
+    l10n.vehicleOperatorsMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

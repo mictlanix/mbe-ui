@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,7 +16,7 @@ part 'vehicle_create.g.dart';
 /// * [name]
 /// * [nickname]
 /// * [tonsCapacity]
-/// * [active]
+/// * [status]
 @BuiltValue()
 abstract class VehicleCreate
     implements Built<VehicleCreate, VehicleCreateBuilder> {
@@ -31,8 +32,9 @@ abstract class VehicleCreate
   @BuiltValueField(wireName: r'tons_capacity')
   int get tonsCapacity;
 
-  @BuiltValueField(wireName: r'active')
-  bool? get active;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus? get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   VehicleCreate._();
 
@@ -40,7 +42,8 @@ abstract class VehicleCreate
       _$VehicleCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(VehicleCreateBuilder b) => b..active = true;
+  static void _defaults(VehicleCreateBuilder b) =>
+      b..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<VehicleCreate> get serializer =>
@@ -79,11 +82,11 @@ class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
       object.tonsCapacity,
       specifiedType: const FullType(int),
     );
-    if (object.active != null) {
-      yield r'active';
+    if (object.status != null) {
+      yield r'status';
       yield serializers.serialize(
-        object.active,
-        specifiedType: const FullType(bool),
+        object.status,
+        specifiedType: const FullType(EntityStatus),
       );
     }
   }
@@ -146,14 +149,14 @@ class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
                   as int;
           result.tonsCapacity = valueDes;
           break;
-        case r'active':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.active = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         default:
           unhandled.add(key);

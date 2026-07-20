@@ -65,6 +65,53 @@ flutter run -d linux
 
 ---
 
+## Driving the running app (agent/automated testing)
+
+`lib/main.dart` calls `enableFlutterDriverExtension()` before `runApp` in
+every debug run, so any `flutter run` session (any target — `chrome`,
+`macos`, etc.) can be inspected and driven programmatically instead of
+requiring a human to click through the UI. This is how an AI coding agent
+(or a script) verifies a change against the real running app and a live
+mbe-api, beyond what the `flutter test` suite covers.
+
+**Dev-only, by construction**: the call is wrapped in `if (kDebugMode)` in
+`main.dart`. `kDebugMode` is a compile-time constant, so `flutter build`
+(profile/release) tree-shakes the whole branch — `enableFlutterDriverExtension`
+and the `flutter_driver` import never reach a shipped build. `flutter run`
+(always debug by default) is the only path that enables it; nothing further
+to configure.
+
+**Connecting** (Claude Code with the `dart` MCP server, or any Dart Tooling
+Daemon client):
+
+1. Start the app: `flutter run -d chrome` (prints a `Debug service listening
+   at: ws://127.0.0.1:PORT/...` line — that's the **app URI**, not the DTD
+   URI).
+2. Find the DTD URI: `mcp__dart__dtd` → `listDtdUris`. Pick the entry whose
+   `Workspace Root` matches this repo and was started most recently.
+3. Connect: `mcp__dart__dtd` → `connect` with that URI. The response lists
+   connected app URIs (the same `ws://.../ws` printed in step 1).
+4. Drive it:
+   - `mcp__dart__get_runtime_errors` — check for uncaught exceptions
+   - `mcp__dart__widget_inspector` (`get_widget_tree`) — inspect what's on
+     screen; every interactive widget in this codebase carries a `Key(...)`
+     for exactly this purpose
+   - `mcp__dart__flutter_driver_command` — `tap` / `enter_text` / `waitFor`
+     / `scroll` / `get_text` / `screenshot`, addressed by `ByValueKey` (the
+     same keys used in `test/widget/`) or `ByText`
+   - `mcp__dart__hot_reload` / `hot_restart` — apply code changes without
+     relaunching (note: hot restart cannot pick up a **new pub dependency**;
+     stop and re-run `flutter run` for that)
+
+Example: navigate to a catalog screen and confirm it rendered —
+
+```
+tap        ByValueKey  nav_dest_expenses
+waitFor    ByValueKey  expenses_table      # resolves once the list renders
+```
+
+---
+
 ## Project structure
 
 ```

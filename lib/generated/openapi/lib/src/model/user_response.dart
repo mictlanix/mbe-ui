@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/user_settings_response.dart';
 import 'package:mbe_api_client/src/model/privilege_response.dart';
 import 'package:built_value/built_value.dart';
@@ -18,7 +19,7 @@ part 'user_response.g.dart';
 /// * [email]
 /// * [employeeId]
 /// * [administrator]
-/// * [disabled]
+/// * [status]
 /// * [sessionVersion]
 /// * [settings]
 /// * [privileges]
@@ -37,8 +38,9 @@ abstract class UserResponse
   @BuiltValueField(wireName: r'administrator')
   bool get administrator;
 
-  @BuiltValueField(wireName: r'disabled')
-  bool get disabled;
+  @BuiltValueField(wireName: r'status')
+  EntityStatus get status;
+  // enum statusEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'session_version')
   int get sessionVersion;
@@ -94,10 +96,10 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
       object.administrator,
       specifiedType: const FullType(bool),
     );
-    yield r'disabled';
+    yield r'status';
     yield serializers.serialize(
-      object.disabled,
-      specifiedType: const FullType(bool),
+      object.status,
+      specifiedType: const FullType(EntityStatus),
     );
     yield r'session_version';
     yield serializers.serialize(
@@ -180,14 +182,14 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
                   as bool;
           result.administrator = valueDes;
           break;
-        case r'disabled':
+        case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType(EntityStatus),
                   )
-                  as bool;
-          result.disabled = valueDes;
+                  as EntityStatus;
+          result.status = valueDes;
           break;
         case r'session_version':
           final valueDes =

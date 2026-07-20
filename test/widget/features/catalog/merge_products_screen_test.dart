@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -23,7 +24,7 @@ const _canonical = ProductListItem(
   unitOfMeasurementCode: 'PCE',
   unitOfMeasurementName: 'Piece',
   taxRate: '0.16',
-  deactivated: false,
+  status: EntityStatus.active,
 );
 
 const _duplicate = ProductListItem(
@@ -33,7 +34,7 @@ const _duplicate = ProductListItem(
   unitOfMeasurementCode: 'PCE',
   unitOfMeasurementName: 'Piece',
   taxRate: '0.16',
-  deactivated: false,
+  status: EntityStatus.active,
 );
 
 void main() {
@@ -44,7 +45,7 @@ void main() {
     when(
       () => productRepository.list(
         search: any(named: 'search'),
-        deactivated: any(named: 'deactivated'),
+        status: any(named: 'status'),
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const ProductListResult(items: [], total: 0));
@@ -305,7 +306,7 @@ void main() {
       verifyNever(
         () => productRepository.list(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           limit: any(named: 'limit'),
         ),
       );
@@ -319,7 +320,7 @@ void main() {
         when(
           () => productRepository.list(
             search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
+            status: any(named: 'status'),
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
@@ -334,7 +335,7 @@ void main() {
                 unitOfMeasurementCode: 'PCE',
                 unitOfMeasurementName: 'Piece',
                 taxRate: '0.16',
-                deactivated: true,
+                status: EntityStatus.inactive,
                 photo: 'http://test/widget5.png',
               ),
             ],
@@ -350,11 +351,8 @@ void main() {
         );
 
         verify(
-          () => productRepository.list(
-            search: 'widget',
-            deactivated: null,
-            limit: 15,
-          ),
+          () =>
+              productRepository.list(search: 'widget', status: null, limit: 15),
         ).called(1);
         expect(find.text('Deactivated Widget'), findsOneWidget);
         expect(find.text('SKU-005 · M5 · INTERNAL-005'), findsOneWidget);
@@ -367,7 +365,7 @@ void main() {
         when(
           () => productRepository.list(
             search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
+            status: any(named: 'status'),
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
@@ -411,7 +409,7 @@ void main() {
         when(
           () => productRepository.list(
             search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
+            status: any(named: 'status'),
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
