@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_form_controller.dart';
@@ -182,11 +183,9 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
             ),
             FormGridChild(
               span: FormGridSpan.full,
-              SwitchListTile(
-                key: const Key('vehicle_active_switch'),
-                title: Text(l10n.activeLabel),
-                value: formState.active,
-                onChanged: fieldsEnabled ? controller.activeChanged : null,
+              EntityStatusFormField(
+                value: formState.status,
+                onChanged: fieldsEnabled ? controller.statusChanged : null,
               ),
             ),
             if (canSave)

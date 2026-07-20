@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -45,7 +46,7 @@ const _createUser = User(
   userId: 'creator',
   email: 'creator@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 1)],
 );
@@ -54,7 +55,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 2)],
 );
@@ -63,7 +64,7 @@ const _editUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   // read (2) + update (4)
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 6)],
@@ -73,7 +74,7 @@ const _deleteUser = User(
   userId: 'deleter',
   email: 'deleter@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   // read (2) + update (4) + delete (8)
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 14)],
@@ -83,7 +84,7 @@ const _editUserWithPricing = User(
   userId: 'editor-pricing',
   email: 'editor-pricing@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     // read (2) + update (4)
@@ -185,7 +186,7 @@ Product _product() => Product(
   salable: false,
   invoiceable: false,
   stockRequired: false,
-  deactivated: false,
+  status: EntityStatus.active,
 );
 
 void main() {
@@ -874,9 +875,9 @@ void main() {
       'still shows the Delete button for an already-deactivated product '
       '(FR-015 — not gated by deactivated state)',
       (tester) async {
-        when(
-          () => productRepository.get(productId: 1),
-        ).thenAnswer((_) async => _product().copyWith(deactivated: true));
+        when(() => productRepository.get(productId: 1)).thenAnswer(
+          (_) async => _product().copyWith(status: EntityStatus.inactive),
+        );
 
         await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 

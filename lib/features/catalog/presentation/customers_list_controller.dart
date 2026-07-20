@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
@@ -11,13 +12,13 @@ part 'customers_list_controller.g.dart';
 const _pageSize = 20;
 
 /// The Customers list screen's search/filter selection (FR-022): a
-/// disabled tri-state and price-list/salesperson FK filters, independent of
+/// status filter and price-list/salesperson FK filters, independent of
 /// each other and of search.
 @freezed
 class CustomerFilter with _$CustomerFilter {
   const factory CustomerFilter({
     @Default('') String search,
-    bool? disabled,
+    EntityStatus? status,
     int? priceListId,
     String? priceListDisplayText,
     int? salespersonId,
@@ -30,7 +31,7 @@ class CustomerFilter with _$CustomerFilter {
 extension CustomerFilterBadge on CustomerFilter {
   int get activeFilterCount {
     var count = 0;
-    if (disabled != null) count++;
+    if (status != null) count++;
     if (priceListId != null) count++;
     if (salespersonId != null) count++;
     return count;
@@ -48,9 +49,10 @@ class CustomerFilterController extends _$CustomerFilterController {
 
   void searchChanged(String value) => state = state.copyWith(search: value);
 
-  /// `null` shows both active and disabled customers; `false` narrows to
-  /// active-only, mirroring `ProductFilterController.deactivatedChanged`.
-  void disabledChanged(bool? value) => state = state.copyWith(disabled: value);
+  /// `null` is "All" — no `?status=` param; any other value narrows to that
+  /// single status, mirroring `ProductFilterController.statusChanged`.
+  void statusChanged(EntityStatus? value) =>
+      state = state.copyWith(status: value);
 
   void priceListChanged(int? id, String? displayText) => state = state.copyWith(
     priceListId: id,
@@ -82,7 +84,7 @@ class CustomersListController extends _$CustomersListController {
         .read(customerRepositoryProvider)
         .list(
           search: filter.search.isEmpty ? null : filter.search,
-          disabled: filter.disabled,
+          status: filter.status,
           priceList: filter.priceListId,
           salesperson: filter.salespersonId,
           skip: pageIndex * _pageSize,

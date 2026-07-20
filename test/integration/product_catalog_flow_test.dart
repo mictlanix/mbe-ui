@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -131,7 +132,7 @@ void main() {
     );
 
     expect(created.code, code);
-    expect(created.deactivated, isFalse);
+    expect(created.status, EntityStatus.active);
 
     final fetched = await repo.get(productId: created.productId);
     expect(fetched.code, code);
@@ -266,11 +267,14 @@ void main() {
 
     final deactivated = await repo.update(
       productId: created.productId,
-      deactivated: true,
+      status: EntityStatus.inactive,
     );
-    expect(deactivated.deactivated, isTrue);
+    expect(deactivated.status, EntityStatus.inactive);
 
-    final activeOnly = await repo.list(search: code, deactivated: false);
+    final activeOnly = await repo.list(
+      search: code,
+      status: EntityStatus.active,
+    );
     expect(
       activeOnly.items.any((p) => p.productId == created.productId),
       isFalse,
@@ -289,13 +293,16 @@ void main() {
       name: 'Integration Test Widget',
       unitOfMeasurement: 'PCE',
     );
-    await repo.update(productId: created.productId, deactivated: true);
+    await repo.update(
+      productId: created.productId,
+      status: EntityStatus.inactive,
+    );
 
     final includeDisabled = await repo.list(search: code);
     final found = includeDisabled.items.singleWhere(
       (p) => p.productId == created.productId,
     );
-    expect(found.deactivated, isTrue);
+    expect(found.status, EntityStatus.inactive);
   }, skip: !_hasCreateCredentials);
 
   test('US4 scenario 4: a user without products.delete privilege is denied '

@@ -122,11 +122,21 @@
   "columnStatus": "Status",
   "@columnStatus": {},
 
-  "statusDisabled": "Disabled",
-  "@statusDisabled": {},
 
   "statusActive": "Active",
   "@statusActive": {},
+
+  "statusInactive": "Inactive",
+  "@statusInactive": {},
+
+  "statusArchived": "Archived",
+  "@statusArchived": {},
+
+  "statusFilterLabel": "Status",
+  "@statusFilterLabel": {"description": "Label for the status filter that maps to mbe-api's uniform ?status= query param"},
+
+  "statusFilterAll": "All",
+  "@statusFilterAll": {"description": "Status filter option that applies no ?status= filter, showing every lifecycle state"},
 
   "productsTitle": "Products",
   "@productsTitle": {},
@@ -146,8 +156,6 @@
   "productsSearchLabel": "Search by code, name, brand, or model",
   "@productsSearchLabel": {},
 
-  "productsShowInactiveFilter": "Show inactive",
-  "@productsShowInactiveFilter": {},
 
   "productsStockableFilter": "Stockable",
   "@productsStockableFilter": {},
@@ -299,8 +307,6 @@
     }
   },
 
-  "statusInactiveBadge": "Inactive",
-  "@statusInactiveBadge": {},
 
   "mergeProductsTitle": "Merge Products",
   "@mergeProductsTitle": {},
@@ -385,8 +391,6 @@
   "administratorLabel": "Administrator",
   "@administratorLabel": {},
 
-  "disabledLabel": "Disabled",
-  "@disabledLabel": {},
 
   "permissionsLabel": "Permissions",
   "@permissionsLabel": {},
@@ -972,8 +976,6 @@
   "@taxpayerIdLabel": {},
   "salesPersonLabel": "Sales person",
   "@salesPersonLabel": {},
-  "activeLabel": "Active",
-  "@activeLabel": {},
   "personalIdLabel": "Personal ID",
   "@personalIdLabel": {},
   "startJobDateLabel": "Start date",
@@ -993,8 +995,6 @@
   "@employeesLoadError": {
     "placeholders": {"error": {"type": "Object"}}
   },
-  "employeesActiveFilter": "Active",
-  "@employeesActiveFilter": {},
   "employeesSalesPersonFilter": "Sales person",
   "@employeesSalesPersonFilter": {},
   "newEmployeeTitle": "New employee",
@@ -1063,8 +1063,6 @@
   "@customersLoadError": {
     "placeholders": {"error": {"type": "Object"}}
   },
-  "customersActiveFilter": "Active",
-  "@customersActiveFilter": {},
   "customersPriceListFilterLabel": "Price list",
   "@customersPriceListFilterLabel": {},
   "customersSalespersonFilterLabel": "Salesperson",

@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 part 'vehicle.freezed.dart';
 
@@ -15,7 +17,7 @@ class Vehicle with _$Vehicle {
     required String name,
     required String nickname,
     required int tonsCapacity,
-    required bool active,
+    required EntityStatus status,
   }) = _Vehicle;
 
   factory Vehicle.fromResponse(VehicleResponse response) {
@@ -25,7 +27,7 @@ class Vehicle with _$Vehicle {
       name: response.name,
       nickname: response.nickname,
       tonsCapacity: response.tonsCapacity,
-      active: response.active,
+      status: EntityStatus.fromApi(response.status),
     );
   }
 }

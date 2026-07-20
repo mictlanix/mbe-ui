@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -21,7 +22,7 @@ const _userWithSettings = User(
   userId: 'admin',
   email: 'eddy@mictlanix.com',
   administrator: true,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
   // Ids only, no resolved names — the labeled-ID fallback path (FR-011).
@@ -32,7 +33,7 @@ const _userWithResolvedNames = User(
   userId: 'admin',
   email: 'eddy@mictlanix.com',
   administrator: true,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
   // /auth/me now resolves names (mbe-api#79).
@@ -52,7 +53,7 @@ const _userNoSettings = User(
   userId: 'admin',
   email: 'eddy@mictlanix.com',
   administrator: true,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );

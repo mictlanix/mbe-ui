@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 import 'privilege.dart';
 import 'user_settings.dart';
@@ -16,7 +18,7 @@ class User with _$User {
     required String email,
     int? employeeId,
     required bool administrator,
-    required bool disabled,
+    required EntityStatus status,
     required int sessionVersion,
     UserSettings? settings,
     required List<Privilege> privileges,
@@ -28,7 +30,7 @@ class User with _$User {
       email: response.email,
       employeeId: response.employeeId,
       administrator: response.administrator,
-      disabled: response.disabled,
+      status: EntityStatus.fromApi(response.status),
       sessionVersion: response.sessionVersion,
       settings: response.settings == null
           ? null
@@ -50,7 +52,7 @@ class UserSummary with _$UserSummary {
     required String email,
     int? employeeId,
     required bool administrator,
-    required bool disabled,
+    required EntityStatus status,
   }) = _UserSummary;
 
   factory UserSummary.fromListItem(UserListItem item) {
@@ -59,7 +61,7 @@ class UserSummary with _$UserSummary {
       email: item.email,
       employeeId: item.employeeId,
       administrator: item.administrator,
-      disabled: item.disabled,
+      status: EntityStatus.fromApi(item.status),
     );
   }
 }

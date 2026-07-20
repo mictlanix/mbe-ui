@@ -25,7 +25,7 @@ mixin _$CustomerListItem {
   int get creditDays => throw _privateConstructorUsedError;
   PriceListRef get priceList => throw _privateConstructorUsedError;
   EmployeeRef? get salesperson => throw _privateConstructorUsedError;
-  bool get disabled => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
 
   /// Create a copy of CustomerListItem
   /// with the given fields replaced by the non-null parameter values.
@@ -50,7 +50,7 @@ abstract class $CustomerListItemCopyWith<$Res> {
     int creditDays,
     PriceListRef priceList,
     EmployeeRef? salesperson,
-    bool disabled,
+    EntityStatus status,
   });
 
   $PriceListRefCopyWith<$Res> get priceList;
@@ -80,7 +80,7 @@ class _$CustomerListItemCopyWithImpl<$Res, $Val extends CustomerListItem>
     Object? creditDays = null,
     Object? priceList = null,
     Object? salesperson = freezed,
-    Object? disabled = null,
+    Object? status = null,
   }) {
     return _then(
       _value.copyWith(
@@ -116,10 +116,10 @@ class _$CustomerListItemCopyWithImpl<$Res, $Val extends CustomerListItem>
                 ? _value.salesperson
                 : salesperson // ignore: cast_nullable_to_non_nullable
                       as EmployeeRef?,
-            disabled: null == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
           )
           as $Val,
     );
@@ -168,7 +168,7 @@ abstract class _$$CustomerListItemImplCopyWith<$Res>
     int creditDays,
     PriceListRef priceList,
     EmployeeRef? salesperson,
-    bool disabled,
+    EntityStatus status,
   });
 
   @override
@@ -199,7 +199,7 @@ class __$$CustomerListItemImplCopyWithImpl<$Res>
     Object? creditDays = null,
     Object? priceList = null,
     Object? salesperson = freezed,
-    Object? disabled = null,
+    Object? status = null,
   }) {
     return _then(
       _$CustomerListItemImpl(
@@ -235,10 +235,10 @@ class __$$CustomerListItemImplCopyWithImpl<$Res>
             ? _value.salesperson
             : salesperson // ignore: cast_nullable_to_non_nullable
                   as EmployeeRef?,
-        disabled: null == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
       ),
     );
   }
@@ -256,7 +256,7 @@ class _$CustomerListItemImpl implements _CustomerListItem {
     required this.creditDays,
     required this.priceList,
     this.salesperson,
-    required this.disabled,
+    required this.status,
   });
 
   @override
@@ -276,11 +276,11 @@ class _$CustomerListItemImpl implements _CustomerListItem {
   @override
   final EmployeeRef? salesperson;
   @override
-  final bool disabled;
+  final EntityStatus status;
 
   @override
   String toString() {
-    return 'CustomerListItem(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, salesperson: $salesperson, disabled: $disabled)';
+    return 'CustomerListItem(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, salesperson: $salesperson, status: $status)';
   }
 
   @override
@@ -301,8 +301,7 @@ class _$CustomerListItemImpl implements _CustomerListItem {
                 other.priceList == priceList) &&
             (identical(other.salesperson, salesperson) ||
                 other.salesperson == salesperson) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled));
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
@@ -316,7 +315,7 @@ class _$CustomerListItemImpl implements _CustomerListItem {
     creditDays,
     priceList,
     salesperson,
-    disabled,
+    status,
   );
 
   /// Create a copy of CustomerListItem
@@ -341,7 +340,7 @@ abstract class _CustomerListItem implements CustomerListItem {
     required final int creditDays,
     required final PriceListRef priceList,
     final EmployeeRef? salesperson,
-    required final bool disabled,
+    required final EntityStatus status,
   }) = _$CustomerListItemImpl;
 
   @override
@@ -361,7 +360,7 @@ abstract class _CustomerListItem implements CustomerListItem {
   @override
   EmployeeRef? get salesperson;
   @override
-  bool get disabled;
+  EntityStatus get status;
 
   /// Create a copy of CustomerListItem
   /// with the given fields replaced by the non-null parameter values.

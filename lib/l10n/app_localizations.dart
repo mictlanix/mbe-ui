@@ -356,17 +356,35 @@ abstract class AppLocalizations {
   /// **'Status'**
   String get columnStatus;
 
-  /// No description provided for @statusDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Disabled'**
-  String get statusDisabled;
-
   /// No description provided for @statusActive.
   ///
   /// In en, this message translates to:
   /// **'Active'**
   String get statusActive;
+
+  /// No description provided for @statusInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get statusInactive;
+
+  /// No description provided for @statusArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get statusArchived;
+
+  /// Label for the status filter that maps to mbe-api's uniform ?status= query param
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusFilterLabel;
+
+  /// Status filter option that applies no ?status= filter, showing every lifecycle state
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get statusFilterAll;
 
   /// No description provided for @productsTitle.
   ///
@@ -403,12 +421,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search by code, name, brand, or model'**
   String get productsSearchLabel;
-
-  /// No description provided for @productsShowInactiveFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'Show inactive'**
-  String get productsShowInactiveFilter;
 
   /// No description provided for @productsStockableFilter.
   ///
@@ -680,12 +692,6 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to permanently delete \"{code}\"? This cannot be undone — the product and its history will be removed entirely, not just hidden.'**
   String deleteProductConfirmMessage(String code);
 
-  /// No description provided for @statusInactiveBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Inactive'**
-  String get statusInactiveBadge;
-
   /// No description provided for @mergeProductsTitle.
   ///
   /// In en, this message translates to:
@@ -841,12 +847,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Administrator'**
   String get administratorLabel;
-
-  /// No description provided for @disabledLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Disabled'**
-  String get disabledLabel;
 
   /// No description provided for @permissionsLabel.
   ///
@@ -2336,12 +2336,6 @@ abstract class AppLocalizations {
   /// **'Sales person'**
   String get salesPersonLabel;
 
-  /// No description provided for @activeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get activeLabel;
-
   /// No description provided for @personalIdLabel.
   ///
   /// In en, this message translates to:
@@ -2389,12 +2383,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load employees: {error}'**
   String employeesLoadError(Object error);
-
-  /// No description provided for @employeesActiveFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get employeesActiveFilter;
 
   /// No description provided for @employeesSalesPersonFilter.
   ///
@@ -2575,12 +2563,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load customers: {error}'**
   String customersLoadError(Object error);
-
-  /// No description provided for @customersActiveFilter.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get customersActiveFilter;
 
   /// No description provided for @customersPriceListFilterLabel.
   ///

@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
@@ -38,7 +39,7 @@ class VehicleFormState with _$VehicleFormState {
     @Default('') String name,
     @Default('') String nickname,
     @Default('') String tonsCapacity,
-    @Default(true) bool active,
+    @Default(EntityStatus.active) EntityStatus status,
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
@@ -83,7 +84,7 @@ class VehicleFormController extends _$VehicleFormController {
     fieldErrors: const {},
   );
 
-  void activeChanged(bool v) => state = state.copyWith(active: v);
+  void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   /// Loads an existing vehicle into the form for viewing/editing.
   Future<void> loadForEdit(int vehicleId) async {
@@ -98,7 +99,7 @@ class VehicleFormController extends _$VehicleFormController {
         name: vehicle.name,
         nickname: vehicle.nickname,
         tonsCapacity: vehicle.tonsCapacity.toString(),
-        active: vehicle.active,
+        status: vehicle.status,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -170,7 +171,7 @@ class VehicleFormController extends _$VehicleFormController {
             name: state.name,
             nickname: state.nickname,
             tonsCapacity: int.parse(state.tonsCapacity),
-            active: state.active,
+            status: state.status,
           );
       _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
@@ -230,7 +231,7 @@ class VehicleFormController extends _$VehicleFormController {
             name: state.name,
             nickname: state.nickname,
             tonsCapacity: int.parse(state.tonsCapacity),
-            active: state.active,
+            status: state.status,
           );
       _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);

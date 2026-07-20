@@ -167,7 +167,7 @@ class MergeProductsScreen extends ConsumerWidget {
 }
 
 /// Shared `optionsBuilder` for both pickers (FR-002): searches the full
-/// catalog — `deactivated: null` applies no state filter, matching the
+/// catalog — `status: null` applies no state filter, matching the
 /// legacy merge-suggestion behavior of surfacing products in any state
 /// (spec.md Clarifications) — once at least [_minSearchLength] characters
 /// have been typed (research.md §2).
@@ -179,7 +179,7 @@ Future<List<ProductListItem>> _search(
   if (trimmed.length < _minSearchLength) return const [];
   final result = await repository.list(
     search: trimmed,
-    deactivated: null,
+    status: null,
     limit: _suggestionLimit,
   );
   return result.items;

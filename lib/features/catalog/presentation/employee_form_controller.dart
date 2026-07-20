@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/gender.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -45,7 +46,7 @@ class EmployeeFormState with _$EmployeeFormState {
     DateTime? birthday,
     @Default('') String taxpayerId,
     @Default(false) bool salesPerson,
-    @Default(true) bool active,
+    @Default(EntityStatus.active) EntityStatus status,
     @Default('') String personalId,
     DateTime? startJobDate,
     @Default('') String enrollNumber,
@@ -105,7 +106,7 @@ class EmployeeFormController extends _$EmployeeFormController {
 
   void salesPersonChanged(bool v) => state = state.copyWith(salesPerson: v);
 
-  void activeChanged(bool v) => state = state.copyWith(active: v);
+  void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   void personalIdChanged(String v) => state = state.copyWith(personalId: v);
 
@@ -141,7 +142,7 @@ class EmployeeFormController extends _$EmployeeFormController {
         birthday: employee.birthday,
         taxpayerId: employee.taxpayerId ?? '',
         salesPerson: employee.salesPerson,
-        active: employee.active,
+        status: employee.status,
         personalId: employee.personalId ?? '',
         startJobDate: employee.startJobDate,
         enrollNumber: employee.enrollNumber?.toString() ?? '',
@@ -226,7 +227,7 @@ class EmployeeFormController extends _$EmployeeFormController {
             startJobDate: state.startJobDate!,
             taxpayerId: _orNull(state.taxpayerId),
             salesPerson: state.salesPerson,
-            active: state.active,
+            status: state.status,
             personalId: _orNull(state.personalId),
             enrollNumber: _orNullInt(state.enrollNumber),
             comment: _orNull(state.comment),
@@ -294,7 +295,7 @@ class EmployeeFormController extends _$EmployeeFormController {
             startJobDate: state.startJobDate,
             taxpayerId: state.taxpayerId,
             salesPerson: state.salesPerson,
-            active: state.active,
+            status: state.status,
             personalId: state.personalId,
             enrollNumber: _orNullInt(state.enrollNumber),
             comment: state.comment,

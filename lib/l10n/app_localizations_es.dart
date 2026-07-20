@@ -148,10 +148,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get columnStatus => 'Estado';
 
   @override
-  String get statusDisabled => 'Inactivo';
+  String get statusActive => 'Activo';
 
   @override
-  String get statusActive => 'Activo';
+  String get statusInactive => 'Inactivo';
+
+  @override
+  String get statusArchived => 'Archivado';
+
+  @override
+  String get statusFilterLabel => 'Estado';
+
+  @override
+  String get statusFilterAll => 'Todos';
 
   @override
   String get productsTitle => 'Productos';
@@ -170,9 +179,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get productsSearchLabel => 'Buscar por código, nombre, marca o modelo';
-
-  @override
-  String get productsShowInactiveFilter => 'Mostrar inactivos';
 
   @override
   String get productsStockableFilter => 'Almacenable';
@@ -316,9 +322,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get statusInactiveBadge => 'Inactivo';
-
-  @override
   String get mergeProductsTitle => 'Fusión de productos';
 
   @override
@@ -401,9 +404,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get administratorLabel => 'Administrador';
-
-  @override
-  String get disabledLabel => 'Inactivo';
 
   @override
   String get permissionsLabel => 'Permisos';
@@ -1248,9 +1248,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesPersonLabel => 'Vendedor';
 
   @override
-  String get activeLabel => 'Activo';
-
-  @override
   String get personalIdLabel => 'CURP';
 
   @override
@@ -1275,9 +1272,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String employeesLoadError(Object error) {
     return 'No se pudieron cargar los empleados: $error';
   }
-
-  @override
-  String get employeesActiveFilter => 'Activo';
 
   @override
   String get employeesSalesPersonFilter => 'Vendedor';
@@ -1378,9 +1372,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String customersLoadError(Object error) {
     return 'No se pudieron cargar los clientes: $error';
   }
-
-  @override
-  String get customersActiveFilter => 'Activo';
 
   @override
   String get customersPriceListFilterLabel => 'Lista de precios';

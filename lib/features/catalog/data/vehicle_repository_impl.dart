@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -60,7 +61,7 @@ class VehicleRepositoryImpl implements VehicleRepository {
     required String name,
     required String nickname,
     required int tonsCapacity,
-    bool? active,
+    EntityStatus? status,
   }) async {
     try {
       final response = await _api.createVehicleApiV1VehiclesPost(
@@ -70,7 +71,7 @@ class VehicleRepositoryImpl implements VehicleRepository {
             ..name = name
             ..nickname = nickname
             ..tonsCapacity = tonsCapacity
-            ..active = active;
+            ..status = status?.toApi();
         }),
       );
       final vehicle = response.data;
@@ -88,7 +89,7 @@ class VehicleRepositoryImpl implements VehicleRepository {
     String? name,
     String? nickname,
     int? tonsCapacity,
-    bool? active,
+    EntityStatus? status,
   }) async {
     try {
       final response = await _api.updateVehicleApiV1VehiclesVehicleIdPut(
@@ -98,7 +99,7 @@ class VehicleRepositoryImpl implements VehicleRepository {
           if (name != null) b.name = name;
           if (nickname != null) b.nickname = nickname;
           if (tonsCapacity != null) b.tonsCapacity = tonsCapacity;
-          if (active != null) b.active = active;
+          if (status != null) b.status = status.toApi();
         }),
       );
       final vehicle = response.data;

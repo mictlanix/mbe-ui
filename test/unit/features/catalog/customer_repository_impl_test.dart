@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 
@@ -50,7 +51,7 @@ void main() {
     });
 
     test(
-      'forwards search/disabled/priceList/salesperson/skip/limit as query params',
+      'forwards search/status/priceList/salesperson/skip/limit as query params',
       () async {
         RequestOptions? captured;
         final repository = _repositoryWith((options) async {
@@ -64,7 +65,7 @@ void main() {
 
         await repository.list(
           search: 'Acme',
-          disabled: false,
+          status: EntityStatus.active,
           priceList: 1,
           salesperson: 2,
           skip: 20,
@@ -72,7 +73,7 @@ void main() {
         );
 
         expect(captured!.queryParameters['search'], 'Acme');
-        expect(captured!.queryParameters['disabled'], false);
+        expect(captured!.queryParameters['status'], 0);
         expect(captured!.queryParameters['price_list'], 1);
         expect(captured!.queryParameters['salesperson'], 2);
         expect(captured!.queryParameters['skip'], 20);
@@ -266,11 +267,11 @@ Map<String, Object?> _customerJson({
           'gender': 0,
           'birthday': '1990-05-15',
           'sales_person': true,
-          'active': true,
+          'status': 0,
           'start_job_date': '2020-01-10',
         }
       : salesperson,
-  'disabled': false,
+  'status': 0,
   'comment': null,
 };
 

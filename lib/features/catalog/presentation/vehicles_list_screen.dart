@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -80,23 +81,10 @@ class VehiclesListScreen extends ConsumerWidget {
                         size: ColumnSize.M,
                       ),
                       DataTableColumn(
-                        label: l10n.activeLabel,
+                        label: l10n.columnStatus,
                         fixedWidth: 130,
-                        cellBuilder: (context, v) => v.active
-                            ? Text(l10n.statusActive)
-                            : Chip(
-                                key: const Key('inactive_badge'),
-                                label: Text(l10n.statusInactiveBadge),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer,
-                                labelStyle: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
-                                ),
-                                visualDensity: VisualDensity.compact,
-                              ),
+                        cellBuilder: (context, v) =>
+                            EntityStatusCell(status: v.status),
                       ),
                     ],
                     rows: page.items,

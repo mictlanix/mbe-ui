@@ -25,7 +25,7 @@ mixin _$VehicleOperatorFormState {
   DateTime? get issueDate => throw _privateConstructorUsedError;
   DateTime? get expirationDate => throw _privateConstructorUsedError;
   String get issuingLocation => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
@@ -57,7 +57,7 @@ abstract class $VehicleOperatorFormStateCopyWith<$Res> {
     DateTime? issueDate,
     DateTime? expirationDate,
     String issuingLocation,
-    bool active,
+    EntityStatus status,
     bool loading,
     bool submitting,
     bool saved,
@@ -94,7 +94,7 @@ class _$VehicleOperatorFormStateCopyWithImpl<
     Object? issueDate = freezed,
     Object? expirationDate = freezed,
     Object? issuingLocation = null,
-    Object? active = null,
+    Object? status = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
@@ -137,10 +137,10 @@ class _$VehicleOperatorFormStateCopyWithImpl<
                 ? _value.issuingLocation
                 : issuingLocation // ignore: cast_nullable_to_non_nullable
                       as String,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             loading: null == loading
                 ? _value.loading
                 : loading // ignore: cast_nullable_to_non_nullable
@@ -193,7 +193,7 @@ abstract class _$$VehicleOperatorFormStateImplCopyWith<$Res>
     DateTime? issueDate,
     DateTime? expirationDate,
     String issuingLocation,
-    bool active,
+    EntityStatus status,
     bool loading,
     bool submitting,
     bool saved,
@@ -230,7 +230,7 @@ class __$$VehicleOperatorFormStateImplCopyWithImpl<$Res>
     Object? issueDate = freezed,
     Object? expirationDate = freezed,
     Object? issuingLocation = null,
-    Object? active = null,
+    Object? status = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
@@ -273,10 +273,10 @@ class __$$VehicleOperatorFormStateImplCopyWithImpl<$Res>
             ? _value.issuingLocation
             : issuingLocation // ignore: cast_nullable_to_non_nullable
                   as String,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         loading: null == loading
             ? _value.loading
             : loading // ignore: cast_nullable_to_non_nullable
@@ -322,7 +322,7 @@ class _$VehicleOperatorFormStateImpl implements _VehicleOperatorFormState {
     this.issueDate,
     this.expirationDate,
     this.issuingLocation = '',
-    this.active = true,
+    this.status = EntityStatus.active,
     this.loading = false,
     this.submitting = false,
     this.saved = false,
@@ -354,7 +354,7 @@ class _$VehicleOperatorFormStateImpl implements _VehicleOperatorFormState {
   final String issuingLocation;
   @override
   @JsonKey()
-  final bool active;
+  final EntityStatus status;
   @override
   @JsonKey()
   final bool loading;
@@ -382,7 +382,7 @@ class _$VehicleOperatorFormStateImpl implements _VehicleOperatorFormState {
 
   @override
   String toString() {
-    return 'VehicleOperatorFormState(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverDisplayText: $driverDisplayText, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, active: $active, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'VehicleOperatorFormState(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverDisplayText: $driverDisplayText, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -406,7 +406,7 @@ class _$VehicleOperatorFormStateImpl implements _VehicleOperatorFormState {
                 other.expirationDate == expirationDate) &&
             (identical(other.issuingLocation, issuingLocation) ||
                 other.issuingLocation == issuingLocation) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
@@ -432,7 +432,7 @@ class _$VehicleOperatorFormStateImpl implements _VehicleOperatorFormState {
     issueDate,
     expirationDate,
     issuingLocation,
-    active,
+    status,
     loading,
     submitting,
     saved,
@@ -464,7 +464,7 @@ abstract class _VehicleOperatorFormState implements VehicleOperatorFormState {
     final DateTime? issueDate,
     final DateTime? expirationDate,
     final String issuingLocation,
-    final bool active,
+    final EntityStatus status,
     final bool loading,
     final bool submitting,
     final bool saved,
@@ -491,7 +491,7 @@ abstract class _VehicleOperatorFormState implements VehicleOperatorFormState {
   @override
   String get issuingLocation;
   @override
-  bool get active;
+  EntityStatus get status;
   @override
   bool get loading;
   @override

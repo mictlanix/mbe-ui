@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 import 'package:mbe_ui/core/domain/gender.dart';
 
@@ -10,9 +12,9 @@ part 'employee.freezed.dart';
 /// `startJobDate` are the generated `Date` (y/m/d) on the wire, represented
 /// here as `DateTime` for use with `showDatePicker`/`intl` formatting.
 ///
-/// `EmployeeResponse.disabled` is deliberately NOT mapped (spec 012
-/// `/speckit-analyze` finding U1): it duplicates `active` with no documented
-/// distinction between the two — see data-model.md §3.
+/// The old `active`/`disabled` duplication (spec 012 `/speckit-analyze`
+/// finding U1) is gone: mbe-api#80 collapsed both into the single [status]
+/// field shared by every catalog entity.
 @freezed
 class Employee with _$Employee {
   const factory Employee({
@@ -24,7 +26,7 @@ class Employee with _$Employee {
     required DateTime birthday,
     String? taxpayerId,
     required bool salesPerson,
-    required bool active,
+    required EntityStatus status,
     String? personalId,
     required DateTime startJobDate,
     int? enrollNumber,
@@ -41,7 +43,7 @@ class Employee with _$Employee {
       birthday: response.birthday.toDateTime(),
       taxpayerId: response.taxpayerId,
       salesPerson: response.salesPerson,
-      active: response.active,
+      status: EntityStatus.fromApi(response.status),
       personalId: response.personalId,
       startJobDate: response.startJobDate.toDateTime(),
       enrollNumber: response.enrollNumber,

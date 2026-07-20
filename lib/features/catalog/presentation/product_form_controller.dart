@@ -547,8 +547,8 @@ class ProductFormController extends _$ProductFormController {
   /// Permanently deletes the loaded product (FR-016a) via
   /// `ProductRepository.delete` — a genuine hard delete, not the prior
   /// soft-deactivate. No-ops if no product has been loaded; unlike the
-  /// former `deactivate()`, this is NOT gated by the product's deactivated
-  /// state (FR-015 — a deactivated product can still be deleted). Re-checks
+  /// former `deactivate()`, this is NOT gated by the product's status
+  /// (FR-015 — an inactive product can still be deleted). Re-checks
   /// the caller's `products` delete privilege immediately before submitting
   /// (spec.md Edge Cases). A server rejection (e.g. referential integrity)
   /// is surfaced via `error`/`errorDetail`, leaving the product in place

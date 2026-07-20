@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/app/router/app_router.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -57,7 +58,7 @@ const _mergeUser = User(
   userId: 'merger',
   email: 'merger@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.productsMerge, rawValue: 1), // create
@@ -68,7 +69,7 @@ const _noMergeUser = User(
   userId: 'no-merger',
   email: 'no-merger@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   // Holds products/users read but not productsMerge.
   privileges: [
@@ -81,7 +82,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 2)],
 );
@@ -90,7 +91,7 @@ const _noAccessUser = User(
   userId: 'no-access',
   email: 'no-access@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );
@@ -100,7 +101,7 @@ const _catalogsReaderUser = User(
   userId: 'catalogs-reader',
   email: 'catalogs-reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.suppliers, rawValue: 2),
@@ -129,7 +130,7 @@ void main() {
     when(
       () => productRepository.list(
         search: any(named: 'search'),
-        deactivated: any(named: 'deactivated'),
+        status: any(named: 'status'),
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
@@ -170,7 +171,7 @@ void main() {
     when(
       () => employeeRepository.list(
         search: any(named: 'search'),
-        active: any(named: 'active'),
+        status: any(named: 'status'),
         salesPerson: any(named: 'salesPerson'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -181,7 +182,7 @@ void main() {
     when(
       () => customerRepository.list(
         search: any(named: 'search'),
-        disabled: any(named: 'disabled'),
+        status: any(named: 'status'),
         priceList: any(named: 'priceList'),
         salesperson: any(named: 'salesperson'),
         skip: any(named: 'skip'),

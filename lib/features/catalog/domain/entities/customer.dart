@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 part 'customer.freezed.dart';
 
@@ -44,7 +46,7 @@ class Customer with _$Customer {
     required bool shipping,
     required bool shippingRequiredDocument,
     EmployeeRef? salesperson,
-    required bool disabled,
+    required EntityStatus status,
     String? comment,
   }) = _Customer;
 
@@ -62,7 +64,7 @@ class Customer with _$Customer {
       salesperson: response.salesperson == null
           ? null
           : EmployeeRef.fromResponse(response.salesperson!),
-      disabled: response.disabled ?? false,
+      status: EntityStatus.fromApi(response.status),
       comment: response.comment,
     );
   }

@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as mbe_api;
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
+
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 
 part 'customer_list_item.freezed.dart';
@@ -19,7 +21,7 @@ class CustomerListItem with _$CustomerListItem {
     required int creditDays,
     required PriceListRef priceList,
     EmployeeRef? salesperson,
-    required bool disabled,
+    required EntityStatus status,
   }) = _CustomerListItem;
 
   factory CustomerListItem.fromResponse(mbe_api.CustomerListItem r) {
@@ -34,7 +36,7 @@ class CustomerListItem with _$CustomerListItem {
       salesperson: r.salesperson == null
           ? null
           : EmployeeRef.fromResponse(r.salesperson!),
-      disabled: r.disabled ?? false,
+      status: EntityStatus.fromApi(r.status),
     );
   }
 }

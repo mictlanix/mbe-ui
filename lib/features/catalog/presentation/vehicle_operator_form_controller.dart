@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
@@ -44,7 +45,7 @@ class VehicleOperatorFormState with _$VehicleOperatorFormState {
     DateTime? issueDate,
     DateTime? expirationDate,
     @Default('') String issuingLocation,
-    @Default(true) bool active,
+    @Default(EntityStatus.active) EntityStatus status,
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
@@ -105,7 +106,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
     fieldErrors: const {},
   );
 
-  void activeChanged(bool v) => state = state.copyWith(active: v);
+  void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   /// Loads an existing vehicle operator into the form for viewing/editing.
   Future<void> loadForEdit(int vehicleOperatorId) async {
@@ -123,7 +124,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         issueDate: operator.issueDate,
         expirationDate: operator.expirationDate,
         issuingLocation: operator.issuingLocation,
-        active: operator.active,
+        status: operator.status,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -213,7 +214,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
             issueDate: state.issueDate!,
             expirationDate: state.expirationDate!,
             issuingLocation: state.issuingLocation,
-            active: state.active,
+            status: state.status,
           );
       _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
@@ -276,7 +277,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
             issueDate: state.issueDate,
             expirationDate: state.expirationDate,
             issuingLocation: state.issuingLocation,
-            active: state.active,
+            status: state.status,
           );
       _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);

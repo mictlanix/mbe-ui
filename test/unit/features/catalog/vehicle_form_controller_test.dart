@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -19,7 +20,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.vehicle, rawValue: 2)],
 );
@@ -28,7 +29,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.vehicle, rawValue: 15)],
 );
@@ -39,7 +40,7 @@ const _existingVehicle = Vehicle(
   name: 'Freightliner',
   nickname: 'Big Red',
   tonsCapacity: 5,
-  active: true,
+  status: EntityStatus.active,
 );
 
 ProviderContainer _containerFor(User user, VehicleRepository repository) {
@@ -74,7 +75,10 @@ void main() {
     });
 
     test('active defaults to true', () {
-      expect(container.read(vehicleFormControllerProvider).active, isTrue);
+      expect(
+        container.read(vehicleFormControllerProvider).status,
+        EntityStatus.active,
+      );
     });
   });
 
@@ -104,7 +108,7 @@ void main() {
           name: any(named: 'name'),
           nickname: any(named: 'nickname'),
           tonsCapacity: any(named: 'tonsCapacity'),
-          active: any(named: 'active'),
+          status: any(named: 'status'),
         ),
       );
     });
@@ -134,7 +138,7 @@ void main() {
             name: 'Freightliner',
             nickname: 'Big Red',
             tonsCapacity: 5,
-            active: true,
+            status: EntityStatus.active,
           ),
         ).thenAnswer((_) async => _existingVehicle);
 
@@ -173,7 +177,7 @@ void main() {
           name: any(named: 'name'),
           nickname: any(named: 'nickname'),
           tonsCapacity: any(named: 'tonsCapacity'),
-          active: any(named: 'active'),
+          status: any(named: 'status'),
         ),
       );
     });
@@ -191,7 +195,7 @@ void main() {
           name: 'Freightliner',
           nickname: 'Red Beast',
           tonsCapacity: 5,
-          active: true,
+          status: EntityStatus.active,
         ),
       ).thenAnswer(
         (_) async => _existingVehicle.copyWith(nickname: 'Red Beast'),

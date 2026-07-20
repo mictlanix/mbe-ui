@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
@@ -35,7 +36,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 2)],
 );
@@ -44,7 +45,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.products, rawValue: 15)],
 );
@@ -53,7 +54,7 @@ const _fullAccessUserWithPricing = User(
   userId: 'editor-pricing',
   email: 'editor-pricing@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.products, rawValue: 15),
@@ -69,7 +70,7 @@ const _testProducts = [
     unitOfMeasurementCode: 'PCE',
     unitOfMeasurementName: 'Piece',
     taxRate: '0.16',
-    deactivated: false,
+    status: EntityStatus.active,
     photo: 'http://test/images/widget.png',
   ),
   ProductListItem(
@@ -79,7 +80,7 @@ const _testProducts = [
     unitOfMeasurementCode: 'PCE',
     unitOfMeasurementName: 'Piece',
     taxRate: '0.16',
-    deactivated: true,
+    status: EntityStatus.inactive,
   ),
 ];
 
@@ -109,7 +110,7 @@ void main() {
     when(
       () => productRepository.list(
         search: any(named: 'search'),
-        deactivated: any(named: 'deactivated'),
+        status: any(named: 'status'),
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
@@ -128,7 +129,7 @@ void main() {
     when(
       () => productRepository.productLabelFacets(
         search: any(named: 'search'),
-        deactivated: any(named: 'deactivated'),
+        status: any(named: 'status'),
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
@@ -168,7 +169,7 @@ void main() {
     when(
       () => productRepository.list(
         search: any(named: 'search'),
-        deactivated: any(named: 'deactivated'),
+        status: any(named: 'status'),
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
@@ -237,7 +238,7 @@ void main() {
     expect(find.text('Widget'), findsOneWidget);
     expect(find.text('SKU-002'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
-    expect(find.byKey(const Key('inactive_badge')), findsOneWidget);
+    expect(find.byKey(const Key('status_badge_inactive')), findsOneWidget);
     expect(find.text('Inactive'), findsOneWidget);
   });
 
@@ -273,7 +274,7 @@ void main() {
       expect(find.byKey(const Key('products_search_field')), findsOneWidget);
       expect(find.byKey(const Key('products_filter_button')), findsOneWidget);
       expect(
-        find.byKey(const Key('products_filter_show_inactive')),
+        find.byKey(const Key('products_filter_status_inactive')),
         findsNothing,
       );
       expect(find.byKey(const Key('products_filter_stockable')), findsNothing);
@@ -281,7 +282,7 @@ void main() {
       // Opening the panel reveals every facet control.
       await openFilterSheet(tester);
       expect(
-        find.byKey(const Key('products_filter_show_inactive')),
+        find.byKey(const Key('products_filter_status_inactive')),
         findsOneWidget,
       );
       expect(
@@ -381,7 +382,7 @@ void main() {
       verifyNever(
         () => productRepository.list(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -397,7 +398,7 @@ void main() {
       verify(
         () => productRepository.list(
           search: 'widget',
-          deactivated: null,
+          status: null,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -474,7 +475,7 @@ void main() {
       when(
         () => productRepository.list(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -490,7 +491,7 @@ void main() {
       when(
         () => productRepository.list(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -517,7 +518,7 @@ void main() {
       verify(
         () => productRepository.list(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -589,7 +590,7 @@ void main() {
         when(
           () => productRepository.productLabelFacets(
             search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
+            status: any(named: 'status'),
             stockable: any(named: 'stockable'),
             salable: any(named: 'salable'),
             purchasable: any(named: 'purchasable'),
@@ -628,7 +629,7 @@ void main() {
         when(
           () => productRepository.productLabelFacets(
             search: any(named: 'search'),
-            deactivated: any(named: 'deactivated'),
+            status: any(named: 'status'),
             stockable: any(named: 'stockable'),
             salable: any(named: 'salable'),
             purchasable: any(named: 'purchasable'),
@@ -674,7 +675,7 @@ void main() {
       when(
         () => productRepository.productLabelFacets(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -701,7 +702,7 @@ void main() {
       when(
         () => productRepository.productLabelFacets(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -716,7 +717,7 @@ void main() {
       when(
         () => productRepository.productLabelFacets(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -757,7 +758,7 @@ void main() {
       when(
         () => productRepository.productLabelFacets(
           search: any(named: 'search'),
-          deactivated: any(named: 'deactivated'),
+          status: any(named: 'status'),
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
@@ -802,7 +803,7 @@ void main() {
         userId: 'merger',
         email: 'merger@example.com',
         administrator: false,
-        disabled: false,
+        status: EntityStatus.active,
         sessionVersion: 1,
         privileges: [
           Privilege(systemObject: SystemObject.products, rawValue: 3),
@@ -1081,7 +1082,7 @@ void main() {
         userId: 'merger',
         email: 'merger@example.com',
         administrator: false,
-        disabled: false,
+        status: EntityStatus.active,
         sessionVersion: 1,
         privileges: [
           Privilege(systemObject: SystemObject.products, rawValue: 2),

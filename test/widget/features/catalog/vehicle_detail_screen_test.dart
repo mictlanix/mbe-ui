@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -21,7 +23,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.vehicle, rawValue: 2)],
 );
@@ -30,7 +32,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.vehicle, rawValue: 15)],
 );
@@ -41,7 +43,7 @@ const _existing = Vehicle(
   name: 'Freightliner',
   nickname: 'Big Red',
   tonsCapacity: 10,
-  active: true,
+  status: EntityStatus.active,
 );
 
 AccessControlService _accessFor(User user) =>
@@ -89,7 +91,7 @@ void main() {
 
   group('create mode', () {
     testWidgets(
-      'shows an empty form with Save, active on by default, and no Delete',
+      'shows an empty form with Save, status Active by default, and no Delete',
       (tester) async {
         await pumpScreen(tester, signedInAs: _fullAccessUser);
 
@@ -101,10 +103,10 @@ void main() {
           find.byKey(const Key('vehicle_tons_capacity_field')),
           findsOneWidget,
         );
-        final activeSwitch = tester.widget<SwitchListTile>(
-          find.byKey(const Key('vehicle_active_switch')),
+        final statusField = tester.widget<EntityStatusFormField>(
+          find.byType(EntityStatusFormField),
         );
-        expect(activeSwitch.value, isTrue);
+        expect(statusField.value, EntityStatus.active);
         expect(find.byKey(const Key('save_button')), findsOneWidget);
         expect(find.byKey(const Key('delete_vehicle_button')), findsNothing);
       },

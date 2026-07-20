@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/gender.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -31,12 +32,12 @@ void main() {
       expect(result.total, 1);
       expect(result.items.single.employeeId, 1);
       expect(result.items.single.fullName, 'Jane Doe');
-      expect(result.items.single.active, isTrue);
+      expect(result.items.single.status, EntityStatus.active);
       expect(result.items.single.salesPerson, isTrue);
     });
 
     test(
-      'forwards search/active/salesPerson/skip/limit as query params',
+      'forwards search/status/salesPerson/skip/limit as query params',
       () async {
         RequestOptions? captured;
         final repository = _repositoryWith((options) async {
@@ -50,14 +51,14 @@ void main() {
 
         await repository.list(
           search: 'Jane',
-          active: true,
+          status: EntityStatus.active,
           salesPerson: false,
           skip: 20,
           limit: 10,
         );
 
         expect(captured!.queryParameters['search'], 'Jane');
-        expect(captured!.queryParameters['active'], true);
+        expect(captured!.queryParameters['status'], 0);
         expect(captured!.queryParameters['sales_person'], false);
         expect(captured!.queryParameters['skip'], 20);
         expect(captured!.queryParameters['limit'], 10);
@@ -220,7 +221,7 @@ Map<String, Object?> _employeeJson() => {
   'birthday': '1990-05-15',
   'taxpayer_id': null,
   'sales_person': true,
-  'active': true,
+  'status': 0,
   'personal_id': null,
   'start_job_date': '2020-01-10',
   'enroll_number': null,

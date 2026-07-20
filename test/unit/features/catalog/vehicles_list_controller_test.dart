@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_repository.dart';
@@ -15,7 +16,7 @@ Vehicle _vehicle(int id) => Vehicle(
   name: 'Vehicle $id',
   nickname: 'Nick $id',
   tonsCapacity: 5,
-  active: true,
+  status: EntityStatus.active,
 );
 
 void main() {

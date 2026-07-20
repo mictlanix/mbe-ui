@@ -22,7 +22,7 @@ mixin _$VehicleFormState {
   String get name => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
   String get tonsCapacity => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
@@ -51,7 +51,7 @@ abstract class $VehicleFormStateCopyWith<$Res> {
     String name,
     String nickname,
     String tonsCapacity,
-    bool active,
+    EntityStatus status,
     bool loading,
     bool submitting,
     bool saved,
@@ -82,7 +82,7 @@ class _$VehicleFormStateCopyWithImpl<$Res, $Val extends VehicleFormState>
     Object? name = null,
     Object? nickname = null,
     Object? tonsCapacity = null,
-    Object? active = null,
+    Object? status = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
@@ -113,10 +113,10 @@ class _$VehicleFormStateCopyWithImpl<$Res, $Val extends VehicleFormState>
                 ? _value.tonsCapacity
                 : tonsCapacity // ignore: cast_nullable_to_non_nullable
                       as String,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             loading: null == loading
                 ? _value.loading
                 : loading // ignore: cast_nullable_to_non_nullable
@@ -166,7 +166,7 @@ abstract class _$$VehicleFormStateImplCopyWith<$Res>
     String name,
     String nickname,
     String tonsCapacity,
-    bool active,
+    EntityStatus status,
     bool loading,
     bool submitting,
     bool saved,
@@ -196,7 +196,7 @@ class __$$VehicleFormStateImplCopyWithImpl<$Res>
     Object? name = null,
     Object? nickname = null,
     Object? tonsCapacity = null,
-    Object? active = null,
+    Object? status = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
@@ -227,10 +227,10 @@ class __$$VehicleFormStateImplCopyWithImpl<$Res>
             ? _value.tonsCapacity
             : tonsCapacity // ignore: cast_nullable_to_non_nullable
                   as String,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         loading: null == loading
             ? _value.loading
             : loading // ignore: cast_nullable_to_non_nullable
@@ -273,7 +273,7 @@ class _$VehicleFormStateImpl implements _VehicleFormState {
     this.name = '',
     this.nickname = '',
     this.tonsCapacity = '',
-    this.active = true,
+    this.status = EntityStatus.active,
     this.loading = false,
     this.submitting = false,
     this.saved = false,
@@ -299,7 +299,7 @@ class _$VehicleFormStateImpl implements _VehicleFormState {
   final String tonsCapacity;
   @override
   @JsonKey()
-  final bool active;
+  final EntityStatus status;
   @override
   @JsonKey()
   final bool loading;
@@ -327,7 +327,7 @@ class _$VehicleFormStateImpl implements _VehicleFormState {
 
   @override
   String toString() {
-    return 'VehicleFormState(vehicleId: $vehicleId, licensePlate: $licensePlate, name: $name, nickname: $nickname, tonsCapacity: $tonsCapacity, active: $active, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'VehicleFormState(vehicleId: $vehicleId, licensePlate: $licensePlate, name: $name, nickname: $nickname, tonsCapacity: $tonsCapacity, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -344,7 +344,7 @@ class _$VehicleFormStateImpl implements _VehicleFormState {
                 other.nickname == nickname) &&
             (identical(other.tonsCapacity, tonsCapacity) ||
                 other.tonsCapacity == tonsCapacity) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
@@ -367,7 +367,7 @@ class _$VehicleFormStateImpl implements _VehicleFormState {
     name,
     nickname,
     tonsCapacity,
-    active,
+    status,
     loading,
     submitting,
     saved,
@@ -396,7 +396,7 @@ abstract class _VehicleFormState implements VehicleFormState {
     final String name,
     final String nickname,
     final String tonsCapacity,
-    final bool active,
+    final EntityStatus status,
     final bool loading,
     final bool submitting,
     final bool saved,
@@ -417,7 +417,7 @@ abstract class _VehicleFormState implements VehicleFormState {
   @override
   String get tonsCapacity;
   @override
-  bool get active;
+  EntityStatus get status;
   @override
   bool get loading;
   @override

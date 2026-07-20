@@ -1,3 +1,4 @@
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 
@@ -10,7 +11,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart'
 abstract class CustomerRepository {
   Future<CustomerPage> list({
     String? search,
-    bool? disabled,
+    EntityStatus? status,
     int? priceList,
     int? salesperson,
     int skip = 0,
@@ -43,7 +44,7 @@ abstract class CustomerRepository {
     bool? shipping,
     bool? shippingRequiredDocument,
     int? salesperson,
-    bool? disabled,
+    EntityStatus? status,
     String? comment,
   });
 

@@ -29,7 +29,7 @@ mixin _$CustomerFormState {
   bool get shippingRequiredDocument => throw _privateConstructorUsedError;
   int? get salespersonId => throw _privateConstructorUsedError;
   String get salespersonDisplayText => throw _privateConstructorUsedError;
-  bool get disabled => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   String get comment => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
@@ -66,7 +66,7 @@ abstract class $CustomerFormStateCopyWith<$Res> {
     bool shippingRequiredDocument,
     int? salespersonId,
     String salespersonDisplayText,
-    bool disabled,
+    EntityStatus status,
     String comment,
     bool loading,
     bool submitting,
@@ -105,7 +105,7 @@ class _$CustomerFormStateCopyWithImpl<$Res, $Val extends CustomerFormState>
     Object? shippingRequiredDocument = null,
     Object? salespersonId = freezed,
     Object? salespersonDisplayText = null,
-    Object? disabled = null,
+    Object? status = null,
     Object? comment = null,
     Object? loading = null,
     Object? submitting = null,
@@ -165,10 +165,10 @@ class _$CustomerFormStateCopyWithImpl<$Res, $Val extends CustomerFormState>
                 ? _value.salespersonDisplayText
                 : salespersonDisplayText // ignore: cast_nullable_to_non_nullable
                       as String,
-            disabled: null == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             comment: null == comment
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
@@ -229,7 +229,7 @@ abstract class _$$CustomerFormStateImplCopyWith<$Res>
     bool shippingRequiredDocument,
     int? salespersonId,
     String salespersonDisplayText,
-    bool disabled,
+    EntityStatus status,
     String comment,
     bool loading,
     bool submitting,
@@ -267,7 +267,7 @@ class __$$CustomerFormStateImplCopyWithImpl<$Res>
     Object? shippingRequiredDocument = null,
     Object? salespersonId = freezed,
     Object? salespersonDisplayText = null,
-    Object? disabled = null,
+    Object? status = null,
     Object? comment = null,
     Object? loading = null,
     Object? submitting = null,
@@ -327,10 +327,10 @@ class __$$CustomerFormStateImplCopyWithImpl<$Res>
             ? _value.salespersonDisplayText
             : salespersonDisplayText // ignore: cast_nullable_to_non_nullable
                   as String,
-        disabled: null == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         comment: null == comment
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
@@ -384,7 +384,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
     this.shippingRequiredDocument = false,
     this.salespersonId,
     this.salespersonDisplayText = '',
-    this.disabled = false,
+    this.status = EntityStatus.active,
     this.comment = '',
     this.loading = false,
     this.submitting = false,
@@ -430,7 +430,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
   final String salespersonDisplayText;
   @override
   @JsonKey()
-  final bool disabled;
+  final EntityStatus status;
   @override
   @JsonKey()
   final String comment;
@@ -461,7 +461,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
 
   @override
   String toString() {
-    return 'CustomerFormState(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText, disabled: $disabled, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'CustomerFormState(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText, status: $status, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -493,8 +493,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
                 other.salespersonId == salespersonId) &&
             (identical(other.salespersonDisplayText, salespersonDisplayText) ||
                 other.salespersonDisplayText == salespersonDisplayText) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.comment, comment) || other.comment == comment) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.submitting, submitting) ||
@@ -525,7 +524,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
     shippingRequiredDocument,
     salespersonId,
     salespersonDisplayText,
-    disabled,
+    status,
     comment,
     loading,
     submitting,
@@ -562,7 +561,7 @@ abstract class _CustomerFormState implements CustomerFormState {
     final bool shippingRequiredDocument,
     final int? salespersonId,
     final String salespersonDisplayText,
-    final bool disabled,
+    final EntityStatus status,
     final String comment,
     final bool loading,
     final bool submitting,
@@ -598,7 +597,7 @@ abstract class _CustomerFormState implements CustomerFormState {
   @override
   String get salespersonDisplayText;
   @override
-  bool get disabled;
+  EntityStatus get status;
   @override
   String get comment;
   @override

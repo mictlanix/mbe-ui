@@ -1,3 +1,4 @@
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 
 /// Vehicle Operator lookup and full CRUD management (data-model.md §3,
@@ -22,7 +23,7 @@ abstract class VehicleOperatorRepository {
     required DateTime issueDate,
     required DateTime expirationDate,
     required String issuingLocation,
-    bool? active,
+    EntityStatus? status,
   });
 
   Future<VehicleOperator> update({
@@ -33,7 +34,7 @@ abstract class VehicleOperatorRepository {
     DateTime? issueDate,
     DateTime? expirationDate,
     String? issuingLocation,
-    bool? active,
+    EntityStatus? status,
   });
 
   Future<void> delete({required int vehicleOperatorId});

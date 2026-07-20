@@ -193,7 +193,7 @@ Map<String, Object?> _operatorJson({
     'birthday': '1990-01-01',
     'start_job_date': '2020-01-01',
     'sales_person': false,
-    'active': true,
+    'status': 0,
   },
   'license_type': 'A',
   'driver_license_number': 'LN-1',
@@ -211,7 +211,7 @@ Map<String, Object?> _operatorJson({
     'birthday': '1990-01-01',
     'start_job_date': '2020-01-01',
     'sales_person': false,
-    'active': true,
+    'status': 0,
   },
   'updater': {
     'employee_id': 1,
@@ -222,9 +222,9 @@ Map<String, Object?> _operatorJson({
     'birthday': '1990-01-01',
     'start_job_date': '2020-01-01',
     'sales_person': false,
-    'active': true,
+    'status': 0,
   },
-  'active': true,
+  'status': 0,
   'days_until_expiry': daysUntilExpiry,
 };
 

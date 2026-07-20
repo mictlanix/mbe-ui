@@ -13,6 +13,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
@@ -119,23 +120,10 @@ class VehicleOperatorsListScreen extends ConsumerWidget {
                         ),
                       ),
                       DataTableColumn(
-                        label: l10n.activeLabel,
+                        label: l10n.columnStatus,
                         fixedWidth: 130,
-                        cellBuilder: (context, op) => op.active
-                            ? Text(l10n.statusActive)
-                            : Chip(
-                                key: const Key('inactive_badge'),
-                                label: Text(l10n.statusInactiveBadge),
-                                backgroundColor: Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer,
-                                labelStyle: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
-                                ),
-                                visualDensity: VisualDensity.compact,
-                              ),
+                        cellBuilder: (context, op) =>
+                            EntityStatusCell(status: op.status),
                       ),
                     ],
                     rows: page.items,

@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 part 'vehicle_operator.freezed.dart';
 
@@ -21,7 +23,7 @@ class VehicleOperator with _$VehicleOperator {
     required DateTime issueDate,
     required DateTime expirationDate,
     required String issuingLocation,
-    required bool active,
+    required EntityStatus status,
     int? daysUntilExpiry,
   }) = _VehicleOperator;
 
@@ -35,7 +37,7 @@ class VehicleOperator with _$VehicleOperator {
       issueDate: response.issueDate.toDateTime(),
       expirationDate: response.expirationDate.toDateTime(),
       issuingLocation: response.issuingLocation,
-      active: response.active,
+      status: EntityStatus.fromApi(response.status),
       daysUntilExpiry: response.daysUntilExpiry,
     );
   }

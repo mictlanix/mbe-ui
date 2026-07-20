@@ -25,7 +25,7 @@ mixin _$VehicleOperator {
   DateTime get issueDate => throw _privateConstructorUsedError;
   DateTime get expirationDate => throw _privateConstructorUsedError;
   String get issuingLocation => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   int? get daysUntilExpiry => throw _privateConstructorUsedError;
 
   /// Create a copy of VehicleOperator
@@ -51,7 +51,7 @@ abstract class $VehicleOperatorCopyWith<$Res> {
     DateTime issueDate,
     DateTime expirationDate,
     String issuingLocation,
-    bool active,
+    EntityStatus status,
     int? daysUntilExpiry,
   });
 }
@@ -79,7 +79,7 @@ class _$VehicleOperatorCopyWithImpl<$Res, $Val extends VehicleOperator>
     Object? issueDate = null,
     Object? expirationDate = null,
     Object? issuingLocation = null,
-    Object? active = null,
+    Object? status = null,
     Object? daysUntilExpiry = freezed,
   }) {
     return _then(
@@ -116,10 +116,10 @@ class _$VehicleOperatorCopyWithImpl<$Res, $Val extends VehicleOperator>
                 ? _value.issuingLocation
                 : issuingLocation // ignore: cast_nullable_to_non_nullable
                       as String,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             daysUntilExpiry: freezed == daysUntilExpiry
                 ? _value.daysUntilExpiry
                 : daysUntilExpiry // ignore: cast_nullable_to_non_nullable
@@ -148,7 +148,7 @@ abstract class _$$VehicleOperatorImplCopyWith<$Res>
     DateTime issueDate,
     DateTime expirationDate,
     String issuingLocation,
-    bool active,
+    EntityStatus status,
     int? daysUntilExpiry,
   });
 }
@@ -175,7 +175,7 @@ class __$$VehicleOperatorImplCopyWithImpl<$Res>
     Object? issueDate = null,
     Object? expirationDate = null,
     Object? issuingLocation = null,
-    Object? active = null,
+    Object? status = null,
     Object? daysUntilExpiry = freezed,
   }) {
     return _then(
@@ -212,10 +212,10 @@ class __$$VehicleOperatorImplCopyWithImpl<$Res>
             ? _value.issuingLocation
             : issuingLocation // ignore: cast_nullable_to_non_nullable
                   as String,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         daysUntilExpiry: freezed == daysUntilExpiry
             ? _value.daysUntilExpiry
             : daysUntilExpiry // ignore: cast_nullable_to_non_nullable
@@ -237,7 +237,7 @@ class _$VehicleOperatorImpl implements _VehicleOperator {
     required this.issueDate,
     required this.expirationDate,
     required this.issuingLocation,
-    required this.active,
+    required this.status,
     this.daysUntilExpiry,
   });
 
@@ -258,13 +258,13 @@ class _$VehicleOperatorImpl implements _VehicleOperator {
   @override
   final String issuingLocation;
   @override
-  final bool active;
+  final EntityStatus status;
   @override
   final int? daysUntilExpiry;
 
   @override
   String toString() {
-    return 'VehicleOperator(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverName: $driverName, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, active: $active, daysUntilExpiry: $daysUntilExpiry)';
+    return 'VehicleOperator(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverName: $driverName, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, status: $status, daysUntilExpiry: $daysUntilExpiry)';
   }
 
   @override
@@ -288,7 +288,7 @@ class _$VehicleOperatorImpl implements _VehicleOperator {
                 other.expirationDate == expirationDate) &&
             (identical(other.issuingLocation, issuingLocation) ||
                 other.issuingLocation == issuingLocation) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.daysUntilExpiry, daysUntilExpiry) ||
                 other.daysUntilExpiry == daysUntilExpiry));
   }
@@ -304,7 +304,7 @@ class _$VehicleOperatorImpl implements _VehicleOperator {
     issueDate,
     expirationDate,
     issuingLocation,
-    active,
+    status,
     daysUntilExpiry,
   );
 
@@ -330,7 +330,7 @@ abstract class _VehicleOperator implements VehicleOperator {
     required final DateTime issueDate,
     required final DateTime expirationDate,
     required final String issuingLocation,
-    required final bool active,
+    required final EntityStatus status,
     final int? daysUntilExpiry,
   }) = _$VehicleOperatorImpl;
 
@@ -351,7 +351,7 @@ abstract class _VehicleOperator implements VehicleOperator {
   @override
   String get issuingLocation;
   @override
-  bool get active;
+  EntityStatus get status;
   @override
   int? get daysUntilExpiry;
 

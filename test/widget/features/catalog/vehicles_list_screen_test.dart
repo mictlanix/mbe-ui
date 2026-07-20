@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -22,7 +23,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.vehicle, rawValue: 2)],
 );
@@ -31,7 +32,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.vehicle, rawValue: 15)],
 );
@@ -43,7 +44,7 @@ const _testVehicles = [
     name: 'Freightliner',
     nickname: 'Big Red',
     tonsCapacity: 10,
-    active: true,
+    status: EntityStatus.active,
   ),
   Vehicle(
     vehicleId: 2,
@@ -51,7 +52,7 @@ const _testVehicles = [
     name: 'Sprinter',
     nickname: 'Speedy',
     tonsCapacity: 3,
-    active: false,
+    status: EntityStatus.inactive,
   ),
 ];
 
@@ -111,7 +112,7 @@ void main() {
   ) async {
     await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-    expect(find.byKey(const Key('inactive_badge')), findsOneWidget);
+    expect(find.byKey(const Key('status_badge_inactive')), findsOneWidget);
   });
 
   testWidgets('search box and pagination are present', (tester) async {

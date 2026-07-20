@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 import 'package:mbe_ui/core/network/photo_url.dart';
 
@@ -43,7 +45,7 @@ class Product with _$Product {
     required bool salable,
     required bool invoiceable,
     required bool stockRequired,
-    required bool deactivated,
+    required EntityStatus status,
     String? comment,
     @Default([]) List<ProductLabel> labels,
   }) = _Product;
@@ -79,7 +81,7 @@ class Product with _$Product {
       salable: response.salable,
       invoiceable: response.invoiceable,
       stockRequired: response.stockVerification,
-      deactivated: response.deactivated,
+      status: EntityStatus.fromApi(response.status),
       comment: response.comment,
       labels: (response.labels?.toList() ?? <LabelResponse>[])
           .map(ProductLabel.fromResponse)

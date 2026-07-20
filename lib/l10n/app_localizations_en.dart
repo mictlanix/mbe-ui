@@ -148,10 +148,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnStatus => 'Status';
 
   @override
-  String get statusDisabled => 'Disabled';
+  String get statusActive => 'Active';
 
   @override
-  String get statusActive => 'Active';
+  String get statusInactive => 'Inactive';
+
+  @override
+  String get statusArchived => 'Archived';
+
+  @override
+  String get statusFilterLabel => 'Status';
+
+  @override
+  String get statusFilterAll => 'All';
 
   @override
   String get productsTitle => 'Products';
@@ -170,9 +179,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productsSearchLabel => 'Search by code, name, brand, or model';
-
-  @override
-  String get productsShowInactiveFilter => 'Show inactive';
 
   @override
   String get productsStockableFilter => 'Stockable';
@@ -316,9 +322,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get statusInactiveBadge => 'Inactive';
-
-  @override
   String get mergeProductsTitle => 'Merge Products';
 
   @override
@@ -401,9 +404,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get administratorLabel => 'Administrator';
-
-  @override
-  String get disabledLabel => 'Disabled';
 
   @override
   String get permissionsLabel => 'Permissions';
@@ -1230,9 +1230,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesPersonLabel => 'Sales person';
 
   @override
-  String get activeLabel => 'Active';
-
-  @override
   String get personalIdLabel => 'Personal ID';
 
   @override
@@ -1257,9 +1254,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String employeesLoadError(Object error) {
     return 'Failed to load employees: $error';
   }
-
-  @override
-  String get employeesActiveFilter => 'Active';
 
   @override
   String get employeesSalesPersonFilter => 'Sales person';
@@ -1358,9 +1352,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String customersLoadError(Object error) {
     return 'Failed to load customers: $error';
   }
-
-  @override
-  String get customersActiveFilter => 'Active';
 
   @override
   String get customersPriceListFilterLabel => 'Price list';

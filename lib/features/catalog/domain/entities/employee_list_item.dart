@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
 
 part 'employee_list_item.freezed.dart';
 
@@ -11,7 +13,7 @@ class EmployeeListItem with _$EmployeeListItem {
     required int employeeId,
     required String fullName,
     required String nickname,
-    required bool active,
+    required EntityStatus status,
     required bool salesPerson,
   }) = _EmployeeListItem;
 
@@ -19,7 +21,7 @@ class EmployeeListItem with _$EmployeeListItem {
     employeeId: r.employeeId,
     fullName: '${r.firstName} ${r.lastName}',
     nickname: r.nickname,
-    active: r.active,
+    status: EntityStatus.fromApi(r.status),
     salesPerson: r.salesPerson,
   );
 }

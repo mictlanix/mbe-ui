@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$EmployeeFilter {
   String get search => throw _privateConstructorUsedError;
-  bool? get active => throw _privateConstructorUsedError;
+  EntityStatus? get status => throw _privateConstructorUsedError;
   bool? get salesPerson => throw _privateConstructorUsedError;
 
   /// Create a copy of EmployeeFilter
@@ -35,7 +35,7 @@ abstract class $EmployeeFilterCopyWith<$Res> {
     $Res Function(EmployeeFilter) then,
   ) = _$EmployeeFilterCopyWithImpl<$Res, EmployeeFilter>;
   @useResult
-  $Res call({String search, bool? active, bool? salesPerson});
+  $Res call({String search, EntityStatus? status, bool? salesPerson});
 }
 
 /// @nodoc
@@ -54,7 +54,7 @@ class _$EmployeeFilterCopyWithImpl<$Res, $Val extends EmployeeFilter>
   @override
   $Res call({
     Object? search = null,
-    Object? active = freezed,
+    Object? status = freezed,
     Object? salesPerson = freezed,
   }) {
     return _then(
@@ -63,10 +63,10 @@ class _$EmployeeFilterCopyWithImpl<$Res, $Val extends EmployeeFilter>
                 ? _value.search
                 : search // ignore: cast_nullable_to_non_nullable
                       as String,
-            active: freezed == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool?,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus?,
             salesPerson: freezed == salesPerson
                 ? _value.salesPerson
                 : salesPerson // ignore: cast_nullable_to_non_nullable
@@ -86,7 +86,7 @@ abstract class _$$EmployeeFilterImplCopyWith<$Res>
   ) = __$$EmployeeFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String search, bool? active, bool? salesPerson});
+  $Res call({String search, EntityStatus? status, bool? salesPerson});
 }
 
 /// @nodoc
@@ -104,7 +104,7 @@ class __$$EmployeeFilterImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? search = null,
-    Object? active = freezed,
+    Object? status = freezed,
     Object? salesPerson = freezed,
   }) {
     return _then(
@@ -113,10 +113,10 @@ class __$$EmployeeFilterImplCopyWithImpl<$Res>
             ? _value.search
             : search // ignore: cast_nullable_to_non_nullable
                   as String,
-        active: freezed == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool?,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus?,
         salesPerson: freezed == salesPerson
             ? _value.salesPerson
             : salesPerson // ignore: cast_nullable_to_non_nullable
@@ -129,19 +129,19 @@ class __$$EmployeeFilterImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$EmployeeFilterImpl implements _EmployeeFilter {
-  const _$EmployeeFilterImpl({this.search = '', this.active, this.salesPerson});
+  const _$EmployeeFilterImpl({this.search = '', this.status, this.salesPerson});
 
   @override
   @JsonKey()
   final String search;
   @override
-  final bool? active;
+  final EntityStatus? status;
   @override
   final bool? salesPerson;
 
   @override
   String toString() {
-    return 'EmployeeFilter(search: $search, active: $active, salesPerson: $salesPerson)';
+    return 'EmployeeFilter(search: $search, status: $status, salesPerson: $salesPerson)';
   }
 
   @override
@@ -150,13 +150,13 @@ class _$EmployeeFilterImpl implements _EmployeeFilter {
         (other.runtimeType == runtimeType &&
             other is _$EmployeeFilterImpl &&
             (identical(other.search, search) || other.search == search) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.salesPerson, salesPerson) ||
                 other.salesPerson == salesPerson));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, search, active, salesPerson);
+  int get hashCode => Object.hash(runtimeType, search, status, salesPerson);
 
   /// Create a copy of EmployeeFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -173,14 +173,14 @@ class _$EmployeeFilterImpl implements _EmployeeFilter {
 abstract class _EmployeeFilter implements EmployeeFilter {
   const factory _EmployeeFilter({
     final String search,
-    final bool? active,
+    final EntityStatus? status,
     final bool? salesPerson,
   }) = _$EmployeeFilterImpl;
 
   @override
   String get search;
   @override
-  bool? get active;
+  EntityStatus? get status;
   @override
   bool? get salesPerson;
 

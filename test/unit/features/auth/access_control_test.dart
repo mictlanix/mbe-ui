@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -11,7 +12,7 @@ const adminUser = User(
   userId: 'admin',
   email: 'admin@example.com',
   administrator: true,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );
@@ -20,7 +21,7 @@ const regularUser = User(
   userId: 'jdoe',
   email: 'jdoe@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.users, rawValue: 2), // read only

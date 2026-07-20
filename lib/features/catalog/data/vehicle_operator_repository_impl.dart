@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mbe_api_client/mbe_api_client.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -68,7 +69,7 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
     required DateTime issueDate,
     required DateTime expirationDate,
     required String issuingLocation,
-    bool? active,
+    EntityStatus? status,
   }) async {
     try {
       final response = await _api
@@ -81,7 +82,7 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
                 ..issueDate = issueDate.toDate()
                 ..expirationDate = expirationDate.toDate()
                 ..issuingLocation = issuingLocation
-                ..active = active;
+                ..status = status?.toApi();
             }),
           );
       final operator = response.data;
@@ -101,7 +102,7 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
     DateTime? issueDate,
     DateTime? expirationDate,
     String? issuingLocation,
-    bool? active,
+    EntityStatus? status,
   }) async {
     try {
       final response = await _api
@@ -120,7 +121,7 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
               if (issuingLocation != null) {
                 b.issuingLocation = issuingLocation;
               }
-              if (active != null) b.active = active;
+              if (status != null) b.status = status.toApi();
             }),
           );
       final operator = response.data;

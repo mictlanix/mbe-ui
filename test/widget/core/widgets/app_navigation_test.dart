@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -15,7 +16,7 @@ const _bothUser = User(
   userId: 'both',
   email: 'both@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.users, rawValue: 2),
@@ -28,7 +29,7 @@ const _usersOnlyUser = User(
   userId: 'users',
   email: 'users@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 2)],
 );
@@ -38,7 +39,7 @@ const _noCatalogsUser = User(
   userId: 'none',
   email: 'none@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );
@@ -49,7 +50,7 @@ const _pricingOnlyUser = User(
   userId: 'pricing-only',
   email: 'pricing-only@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 2)],
 );
@@ -61,7 +62,7 @@ const _priceListsOnlyUser = User(
   userId: 'price-lists-only',
   email: 'price-lists-only@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.priceLists, rawValue: 2)],
 );
@@ -72,7 +73,7 @@ const _noPricingUser = User(
   userId: 'no-pricing',
   email: 'no-pricing@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );

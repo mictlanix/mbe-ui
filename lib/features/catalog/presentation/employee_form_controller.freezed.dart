@@ -25,7 +25,7 @@ mixin _$EmployeeFormState {
   DateTime? get birthday => throw _privateConstructorUsedError;
   String get taxpayerId => throw _privateConstructorUsedError;
   bool get salesPerson => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
   String get personalId => throw _privateConstructorUsedError;
   DateTime? get startJobDate => throw _privateConstructorUsedError;
   String get enrollNumber => throw _privateConstructorUsedError;
@@ -61,7 +61,7 @@ abstract class $EmployeeFormStateCopyWith<$Res> {
     DateTime? birthday,
     String taxpayerId,
     bool salesPerson,
-    bool active,
+    EntityStatus status,
     String personalId,
     DateTime? startJobDate,
     String enrollNumber,
@@ -99,7 +99,7 @@ class _$EmployeeFormStateCopyWithImpl<$Res, $Val extends EmployeeFormState>
     Object? birthday = freezed,
     Object? taxpayerId = null,
     Object? salesPerson = null,
-    Object? active = null,
+    Object? status = null,
     Object? personalId = null,
     Object? startJobDate = freezed,
     Object? enrollNumber = null,
@@ -146,10 +146,10 @@ class _$EmployeeFormStateCopyWithImpl<$Res, $Val extends EmployeeFormState>
                 ? _value.salesPerson
                 : salesPerson // ignore: cast_nullable_to_non_nullable
                       as bool,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
             personalId: null == personalId
                 ? _value.personalId
                 : personalId // ignore: cast_nullable_to_non_nullable
@@ -218,7 +218,7 @@ abstract class _$$EmployeeFormStateImplCopyWith<$Res>
     DateTime? birthday,
     String taxpayerId,
     bool salesPerson,
-    bool active,
+    EntityStatus status,
     String personalId,
     DateTime? startJobDate,
     String enrollNumber,
@@ -255,7 +255,7 @@ class __$$EmployeeFormStateImplCopyWithImpl<$Res>
     Object? birthday = freezed,
     Object? taxpayerId = null,
     Object? salesPerson = null,
-    Object? active = null,
+    Object? status = null,
     Object? personalId = null,
     Object? startJobDate = freezed,
     Object? enrollNumber = null,
@@ -302,10 +302,10 @@ class __$$EmployeeFormStateImplCopyWithImpl<$Res>
             ? _value.salesPerson
             : salesPerson // ignore: cast_nullable_to_non_nullable
                   as bool,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
         personalId: null == personalId
             ? _value.personalId
             : personalId // ignore: cast_nullable_to_non_nullable
@@ -367,7 +367,7 @@ class _$EmployeeFormStateImpl implements _EmployeeFormState {
     this.birthday,
     this.taxpayerId = '',
     this.salesPerson = false,
-    this.active = true,
+    this.status = EntityStatus.active,
     this.personalId = '',
     this.startJobDate,
     this.enrollNumber = '',
@@ -404,7 +404,7 @@ class _$EmployeeFormStateImpl implements _EmployeeFormState {
   final bool salesPerson;
   @override
   @JsonKey()
-  final bool active;
+  final EntityStatus status;
   @override
   @JsonKey()
   final String personalId;
@@ -443,7 +443,7 @@ class _$EmployeeFormStateImpl implements _EmployeeFormState {
 
   @override
   String toString() {
-    return 'EmployeeFormState(employeeId: $employeeId, firstName: $firstName, lastName: $lastName, nickname: $nickname, gender: $gender, birthday: $birthday, taxpayerId: $taxpayerId, salesPerson: $salesPerson, active: $active, personalId: $personalId, startJobDate: $startJobDate, enrollNumber: $enrollNumber, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'EmployeeFormState(employeeId: $employeeId, firstName: $firstName, lastName: $lastName, nickname: $nickname, gender: $gender, birthday: $birthday, taxpayerId: $taxpayerId, salesPerson: $salesPerson, status: $status, personalId: $personalId, startJobDate: $startJobDate, enrollNumber: $enrollNumber, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -466,7 +466,7 @@ class _$EmployeeFormStateImpl implements _EmployeeFormState {
                 other.taxpayerId == taxpayerId) &&
             (identical(other.salesPerson, salesPerson) ||
                 other.salesPerson == salesPerson) &&
-            (identical(other.active, active) || other.active == active) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.personalId, personalId) ||
                 other.personalId == personalId) &&
             (identical(other.startJobDate, startJobDate) ||
@@ -499,7 +499,7 @@ class _$EmployeeFormStateImpl implements _EmployeeFormState {
     birthday,
     taxpayerId,
     salesPerson,
-    active,
+    status,
     personalId,
     startJobDate,
     enrollNumber,
@@ -535,7 +535,7 @@ abstract class _EmployeeFormState implements EmployeeFormState {
     final DateTime? birthday,
     final String taxpayerId,
     final bool salesPerson,
-    final bool active,
+    final EntityStatus status,
     final String personalId,
     final DateTime? startJobDate,
     final String enrollNumber,
@@ -566,7 +566,7 @@ abstract class _EmployeeFormState implements EmployeeFormState {
   @override
   bool get salesPerson;
   @override
-  bool get active;
+  EntityStatus get status;
   @override
   String get personalId;
   @override

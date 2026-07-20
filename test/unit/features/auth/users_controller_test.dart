@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
@@ -22,7 +23,7 @@ const _testUser = User(
   userId: 'jdoe',
   email: 'jdoe@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
 );
@@ -75,7 +76,7 @@ void main() {
       userId: userId,
       email: '$userId@example.com',
       administrator: false,
-      disabled: false,
+      status: EntityStatus.active,
     );
 
     test('build() fetches page 0 with the current filter', () async {
@@ -263,7 +264,7 @@ void main() {
           email: any(named: 'email'),
           employeeId: any(named: 'employeeId'),
           administrator: any(named: 'administrator'),
-          disabled: any(named: 'disabled'),
+          status: any(named: 'status'),
           privileges: any(named: 'privileges'),
           settings: any(named: 'settings'),
         ),
@@ -274,7 +275,7 @@ void main() {
       final notifier = container.read(userFormControllerProvider.notifier);
 
       notifier.emailChanged('updated@example.com');
-      notifier.disabledChanged(true);
+      notifier.statusChanged(EntityStatus.inactive);
 
       await notifier.save(existingUserId: 'jdoe');
 
@@ -282,7 +283,7 @@ void main() {
         () => userRepository.update(
           userId: 'jdoe',
           email: 'updated@example.com',
-          disabled: true,
+          status: EntityStatus.inactive,
           employeeId: any(named: 'employeeId'),
           administrator: any(named: 'administrator'),
           privileges: any(named: 'privileges'),

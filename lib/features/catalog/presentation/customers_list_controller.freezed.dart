@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$CustomerFilter {
   String get search => throw _privateConstructorUsedError;
-  bool? get disabled => throw _privateConstructorUsedError;
+  EntityStatus? get status => throw _privateConstructorUsedError;
   int? get priceListId => throw _privateConstructorUsedError;
   String? get priceListDisplayText => throw _privateConstructorUsedError;
   int? get salespersonId => throw _privateConstructorUsedError;
@@ -40,7 +40,7 @@ abstract class $CustomerFilterCopyWith<$Res> {
   @useResult
   $Res call({
     String search,
-    bool? disabled,
+    EntityStatus? status,
     int? priceListId,
     String? priceListDisplayText,
     int? salespersonId,
@@ -64,7 +64,7 @@ class _$CustomerFilterCopyWithImpl<$Res, $Val extends CustomerFilter>
   @override
   $Res call({
     Object? search = null,
-    Object? disabled = freezed,
+    Object? status = freezed,
     Object? priceListId = freezed,
     Object? priceListDisplayText = freezed,
     Object? salespersonId = freezed,
@@ -76,10 +76,10 @@ class _$CustomerFilterCopyWithImpl<$Res, $Val extends CustomerFilter>
                 ? _value.search
                 : search // ignore: cast_nullable_to_non_nullable
                       as String,
-            disabled: freezed == disabled
-                ? _value.disabled
-                : disabled // ignore: cast_nullable_to_non_nullable
-                      as bool?,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus?,
             priceListId: freezed == priceListId
                 ? _value.priceListId
                 : priceListId // ignore: cast_nullable_to_non_nullable
@@ -113,7 +113,7 @@ abstract class _$$CustomerFilterImplCopyWith<$Res>
   @useResult
   $Res call({
     String search,
-    bool? disabled,
+    EntityStatus? status,
     int? priceListId,
     String? priceListDisplayText,
     int? salespersonId,
@@ -136,7 +136,7 @@ class __$$CustomerFilterImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? search = null,
-    Object? disabled = freezed,
+    Object? status = freezed,
     Object? priceListId = freezed,
     Object? priceListDisplayText = freezed,
     Object? salespersonId = freezed,
@@ -148,10 +148,10 @@ class __$$CustomerFilterImplCopyWithImpl<$Res>
             ? _value.search
             : search // ignore: cast_nullable_to_non_nullable
                   as String,
-        disabled: freezed == disabled
-            ? _value.disabled
-            : disabled // ignore: cast_nullable_to_non_nullable
-                  as bool?,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus?,
         priceListId: freezed == priceListId
             ? _value.priceListId
             : priceListId // ignore: cast_nullable_to_non_nullable
@@ -178,7 +178,7 @@ class __$$CustomerFilterImplCopyWithImpl<$Res>
 class _$CustomerFilterImpl implements _CustomerFilter {
   const _$CustomerFilterImpl({
     this.search = '',
-    this.disabled,
+    this.status,
     this.priceListId,
     this.priceListDisplayText,
     this.salespersonId,
@@ -189,7 +189,7 @@ class _$CustomerFilterImpl implements _CustomerFilter {
   @JsonKey()
   final String search;
   @override
-  final bool? disabled;
+  final EntityStatus? status;
   @override
   final int? priceListId;
   @override
@@ -201,7 +201,7 @@ class _$CustomerFilterImpl implements _CustomerFilter {
 
   @override
   String toString() {
-    return 'CustomerFilter(search: $search, disabled: $disabled, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText)';
+    return 'CustomerFilter(search: $search, status: $status, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText)';
   }
 
   @override
@@ -210,8 +210,7 @@ class _$CustomerFilterImpl implements _CustomerFilter {
         (other.runtimeType == runtimeType &&
             other is _$CustomerFilterImpl &&
             (identical(other.search, search) || other.search == search) &&
-            (identical(other.disabled, disabled) ||
-                other.disabled == disabled) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.priceListId, priceListId) ||
                 other.priceListId == priceListId) &&
             (identical(other.priceListDisplayText, priceListDisplayText) ||
@@ -226,7 +225,7 @@ class _$CustomerFilterImpl implements _CustomerFilter {
   int get hashCode => Object.hash(
     runtimeType,
     search,
-    disabled,
+    status,
     priceListId,
     priceListDisplayText,
     salespersonId,
@@ -248,7 +247,7 @@ class _$CustomerFilterImpl implements _CustomerFilter {
 abstract class _CustomerFilter implements CustomerFilter {
   const factory _CustomerFilter({
     final String search,
-    final bool? disabled,
+    final EntityStatus? status,
     final int? priceListId,
     final String? priceListDisplayText,
     final int? salespersonId,
@@ -258,7 +257,7 @@ abstract class _CustomerFilter implements CustomerFilter {
   @override
   String get search;
   @override
-  bool? get disabled;
+  EntityStatus? get status;
   @override
   int? get priceListId;
   @override

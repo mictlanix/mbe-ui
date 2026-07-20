@@ -1,3 +1,4 @@
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
 
 /// Vehicle lookup and full CRUD management (data-model.md §2,
@@ -18,7 +19,7 @@ abstract class VehicleRepository {
     required String name,
     required String nickname,
     required int tonsCapacity,
-    bool? active,
+    EntityStatus? status,
   });
 
   Future<Vehicle> update({
@@ -27,7 +28,7 @@ abstract class VehicleRepository {
     String? name,
     String? nickname,
     int? tonsCapacity,
-    bool? active,
+    EntityStatus? status,
   });
 
   Future<void> delete({required int vehicleId});

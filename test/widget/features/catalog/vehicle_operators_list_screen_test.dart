@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -27,7 +28,7 @@ const _readOnlyUser = User(
   userId: 'reader',
   email: 'reader@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.vehicleOperators, rawValue: 2),
@@ -38,7 +39,7 @@ const _fullAccessUser = User(
   userId: 'editor',
   email: 'editor@example.com',
   administrator: false,
-  disabled: false,
+  status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.vehicleOperators, rawValue: 15),
@@ -55,7 +56,7 @@ final _testOperators = [
     issueDate: DateTime(2026, 1, 1),
     expirationDate: DateTime(2099, 1, 1),
     issuingLocation: 'CDMX',
-    active: true,
+    status: EntityStatus.active,
     daysUntilExpiry: 3650,
   ),
   VehicleOperator(
@@ -67,7 +68,7 @@ final _testOperators = [
     issueDate: DateTime(2020, 1, 1),
     expirationDate: DateTime(2021, 1, 1),
     issuingLocation: 'GDL',
-    active: false,
+    status: EntityStatus.inactive,
     daysUntilExpiry: -100,
   ),
 ];
@@ -140,7 +141,7 @@ void main() {
       operators: _testOperators,
     );
 
-    expect(find.byKey(const Key('inactive_badge')), findsOneWidget);
+    expect(find.byKey(const Key('status_badge_inactive')), findsOneWidget);
   });
 
   testWidgets('search box, pagination, and filter button are present', (

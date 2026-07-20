@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
 
@@ -24,7 +25,7 @@ void main() {
                 name: 'Freightliner',
                 nickname: 'Big Red',
                 tonsCapacity: 10,
-                active: true,
+                status: 0,
               ),
             ],
             'total': 1,
@@ -39,7 +40,7 @@ void main() {
       final vehicle = result.items.single;
       expect(vehicle.licensePlate, 'ABC-123');
       expect(vehicle.tonsCapacity, 10);
-      expect(vehicle.active, isTrue);
+      expect(vehicle.status, EntityStatus.active);
       expect(result.total, 1);
     });
 
@@ -152,15 +153,18 @@ void main() {
     test('200 returns the updated Vehicle', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
-          jsonEncode(_vehicleJson(id: 1, plate: 'ABC-123', active: false)),
+          jsonEncode(_vehicleJson(id: 1, plate: 'ABC-123', status: 1)),
           200,
           headers: _jsonHeaders,
         ),
       );
 
-      final vehicle = await repository.update(vehicleId: 1, active: false);
+      final vehicle = await repository.update(
+        vehicleId: 1,
+        status: EntityStatus.inactive,
+      );
 
-      expect(vehicle.active, isFalse);
+      expect(vehicle.status, EntityStatus.inactive);
     });
 
     test('404 maps to AppError.notFound', () async {
@@ -216,14 +220,14 @@ Map<String, Object?> _vehicleJson({
   String name = 'Freightliner',
   String nickname = 'Big Red',
   int tonsCapacity = 10,
-  bool active = true,
+  int status = 0,
 }) => {
   'vehicle_id': id,
   'license_plate': plate,
   'name': name,
   'nickname': nickname,
   'tons_capacity': tonsCapacity,
-  'active': active,
+  'status': status,
 };
 
 VehicleRepositoryImpl _repositoryWith(

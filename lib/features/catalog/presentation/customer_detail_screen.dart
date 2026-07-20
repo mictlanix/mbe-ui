@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -283,11 +284,9 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
             if (_isEdit)
               FormGridChild(
                 span: FormGridSpan.full,
-                SwitchListTile(
-                  key: const Key('customer_disabled_switch'),
-                  title: Text(l10n.statusInactiveBadge),
-                  value: formState.disabled,
-                  onChanged: fieldsEnabled ? controller.disabledChanged : null,
+                EntityStatusFormField(
+                  value: formState.status,
+                  onChanged: fieldsEnabled ? controller.statusChanged : null,
                 ),
               ),
             if (canSave)

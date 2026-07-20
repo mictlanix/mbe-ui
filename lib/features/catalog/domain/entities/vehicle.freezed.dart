@@ -22,7 +22,7 @@ mixin _$Vehicle {
   String get name => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
   int get tonsCapacity => throw _privateConstructorUsedError;
-  bool get active => throw _privateConstructorUsedError;
+  EntityStatus get status => throw _privateConstructorUsedError;
 
   /// Create a copy of Vehicle
   /// with the given fields replaced by the non-null parameter values.
@@ -41,7 +41,7 @@ abstract class $VehicleCopyWith<$Res> {
     String name,
     String nickname,
     int tonsCapacity,
-    bool active,
+    EntityStatus status,
   });
 }
 
@@ -65,7 +65,7 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
     Object? name = null,
     Object? nickname = null,
     Object? tonsCapacity = null,
-    Object? active = null,
+    Object? status = null,
   }) {
     return _then(
       _value.copyWith(
@@ -89,10 +89,10 @@ class _$VehicleCopyWithImpl<$Res, $Val extends Vehicle>
                 ? _value.tonsCapacity
                 : tonsCapacity // ignore: cast_nullable_to_non_nullable
                       as int,
-            active: null == active
-                ? _value.active
-                : active // ignore: cast_nullable_to_non_nullable
-                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus,
           )
           as $Val,
     );
@@ -113,7 +113,7 @@ abstract class _$$VehicleImplCopyWith<$Res> implements $VehicleCopyWith<$Res> {
     String name,
     String nickname,
     int tonsCapacity,
-    bool active,
+    EntityStatus status,
   });
 }
 
@@ -136,7 +136,7 @@ class __$$VehicleImplCopyWithImpl<$Res>
     Object? name = null,
     Object? nickname = null,
     Object? tonsCapacity = null,
-    Object? active = null,
+    Object? status = null,
   }) {
     return _then(
       _$VehicleImpl(
@@ -160,10 +160,10 @@ class __$$VehicleImplCopyWithImpl<$Res>
             ? _value.tonsCapacity
             : tonsCapacity // ignore: cast_nullable_to_non_nullable
                   as int,
-        active: null == active
-            ? _value.active
-            : active // ignore: cast_nullable_to_non_nullable
-                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus,
       ),
     );
   }
@@ -178,7 +178,7 @@ class _$VehicleImpl implements _Vehicle {
     required this.name,
     required this.nickname,
     required this.tonsCapacity,
-    required this.active,
+    required this.status,
   });
 
   @override
@@ -192,11 +192,11 @@ class _$VehicleImpl implements _Vehicle {
   @override
   final int tonsCapacity;
   @override
-  final bool active;
+  final EntityStatus status;
 
   @override
   String toString() {
-    return 'Vehicle(vehicleId: $vehicleId, licensePlate: $licensePlate, name: $name, nickname: $nickname, tonsCapacity: $tonsCapacity, active: $active)';
+    return 'Vehicle(vehicleId: $vehicleId, licensePlate: $licensePlate, name: $name, nickname: $nickname, tonsCapacity: $tonsCapacity, status: $status)';
   }
 
   @override
@@ -213,7 +213,7 @@ class _$VehicleImpl implements _Vehicle {
                 other.nickname == nickname) &&
             (identical(other.tonsCapacity, tonsCapacity) ||
                 other.tonsCapacity == tonsCapacity) &&
-            (identical(other.active, active) || other.active == active));
+            (identical(other.status, status) || other.status == status));
   }
 
   @override
@@ -224,7 +224,7 @@ class _$VehicleImpl implements _Vehicle {
     name,
     nickname,
     tonsCapacity,
-    active,
+    status,
   );
 
   /// Create a copy of Vehicle
@@ -243,7 +243,7 @@ abstract class _Vehicle implements Vehicle {
     required final String name,
     required final String nickname,
     required final int tonsCapacity,
-    required final bool active,
+    required final EntityStatus status,
   }) = _$VehicleImpl;
 
   @override
@@ -257,7 +257,7 @@ abstract class _Vehicle implements Vehicle {
   @override
   int get tonsCapacity;
   @override
-  bool get active;
+  EntityStatus get status;
 
   /// Create a copy of Vehicle
   /// with the given fields replaced by the non-null parameter values.

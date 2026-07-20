@@ -114,7 +114,7 @@ void main() {
             'email': 'jdoe@example.com',
             'employee_id': null,
             'administrator': false,
-            'disabled': false,
+            'status': 0,
             'session_version': 3,
             'settings': null,
             'privileges': [

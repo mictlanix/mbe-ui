@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
@@ -19,7 +20,7 @@ VehicleOperator _operator(int id, {int driverId = 1}) => VehicleOperator(
   issueDate: DateTime(2026, 1, 1),
   expirationDate: DateTime(2030, 1, 1),
   issuingLocation: 'CDMX',
-  active: true,
+  status: EntityStatus.active,
 );
 
 void main() {
