@@ -9,25 +9,26 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
-import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
-import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
-import 'package:mbe_api_client/src/model/cash_drawer_update.dart';
+import 'package:mbe_api_client/src/model/address_create.dart';
+import 'package:mbe_api_client/src/model/address_response.dart';
+import 'package:mbe_api_client/src/model/address_type.dart';
+import 'package:mbe_api_client/src/model/address_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
-import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
+import 'package:mbe_api_client/src/model/list_response_address_response.dart';
 
-class CashDrawersApi {
+class AddressesApi {
   final Dio _dio;
 
   final Serializers _serializers;
 
-  const CashDrawersApi(this._dio, this._serializers);
+  const AddressesApi(this._dio, this._serializers);
 
-  /// Create Cash Drawer
+  /// Create Address
   ///
   ///
   /// Parameters:
-  /// * [cashDrawerCreate]
+  /// * [addressCreate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -35,10 +36,10 @@ class CashDrawersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [CashDrawerResponse] as data
+  /// Returns a [Future] containing a [Response] with a [AddressResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<CashDrawerResponse>> createCashDrawerApiV1CashDrawersPost({
-    required CashDrawerCreate cashDrawerCreate,
+  Future<Response<AddressResponse>> createAddressApiV1AddressesPost({
+    required AddressCreate addressCreate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -46,7 +47,7 @@ class CashDrawersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/cash-drawers';
+    final _path = r'/api/v1/addresses';
     final _options = Options(
       method: r'POST',
       headers: <String, dynamic>{...?headers},
@@ -63,11 +64,8 @@ class CashDrawersApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(CashDrawerCreate);
-      _bodyData = _serializers.serialize(
-        cashDrawerCreate,
-        specifiedType: _type,
-      );
+      const _type = FullType(AddressCreate);
+      _bodyData = _serializers.serialize(addressCreate, specifiedType: _type);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),
@@ -86,7 +84,7 @@ class CashDrawersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    CashDrawerResponse? _responseData;
+    AddressResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -94,9 +92,9 @@ class CashDrawersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(CashDrawerResponse),
+                  specifiedType: const FullType(AddressResponse),
                 )
-                as CashDrawerResponse;
+                as AddressResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -107,7 +105,7 @@ class CashDrawersApi {
       );
     }
 
-    return Response<CashDrawerResponse>(
+    return Response<AddressResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -119,11 +117,11 @@ class CashDrawersApi {
     );
   }
 
-  /// Delete Cash Drawer
+  /// Delete Address
   ///
   ///
   /// Parameters:
-  /// * [cashDrawerId]
+  /// * [addressId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -133,8 +131,8 @@ class CashDrawersApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteCashDrawerApiV1CashDrawersCashDrawerIdDelete({
-    required int cashDrawerId,
+  Future<Response<void>> deleteAddressApiV1AddressesAddressIdDelete({
+    required int addressId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -142,13 +140,13 @@ class CashDrawersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/cash-drawers/{cash_drawer_id}'.replaceAll(
+    final _path = r'/api/v1/addresses/{address_id}'.replaceAll(
       '{'
-      r'cash_drawer_id'
+      r'address_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        cashDrawerId,
+        addressId,
         const FullType(int),
       ).toString(),
     );
@@ -175,11 +173,11 @@ class CashDrawersApi {
     return _response;
   }
 
-  /// Get Cash Drawer
+  /// Get Address
   ///
   ///
   /// Parameters:
-  /// * [cashDrawerId]
+  /// * [addressId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -187,11 +185,10 @@ class CashDrawersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [CashDrawerResponse] as data
+  /// Returns a [Future] containing a [Response] with a [AddressResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<CashDrawerResponse>>
-  getCashDrawerApiV1CashDrawersCashDrawerIdGet({
-    required int cashDrawerId,
+  Future<Response<AddressResponse>> getAddressApiV1AddressesAddressIdGet({
+    required int addressId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -199,13 +196,13 @@ class CashDrawersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/cash-drawers/{cash_drawer_id}'.replaceAll(
+    final _path = r'/api/v1/addresses/{address_id}'.replaceAll(
       '{'
-      r'cash_drawer_id'
+      r'address_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        cashDrawerId,
+        addressId,
         const FullType(int),
       ).toString(),
     );
@@ -229,7 +226,7 @@ class CashDrawersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    CashDrawerResponse? _responseData;
+    AddressResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -237,9 +234,9 @@ class CashDrawersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(CashDrawerResponse),
+                  specifiedType: const FullType(AddressResponse),
                 )
-                as CashDrawerResponse;
+                as AddressResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -250,7 +247,7 @@ class CashDrawersApi {
       );
     }
 
-    return Response<CashDrawerResponse>(
+    return Response<AddressResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -262,12 +259,12 @@ class CashDrawersApi {
     );
   }
 
-  /// List Cash Drawers
+  /// List Addresses
   ///
   ///
   /// Parameters:
   /// * [search]
-  /// * [facility]
+  /// * [type]
   /// * [status]
   /// * [skip]
   /// * [limit]
@@ -278,12 +275,11 @@ class CashDrawersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [ListResponseCashDrawerResponse] as data
+  /// Returns a [Future] containing a [Response] with a [ListResponseAddressResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<ListResponseCashDrawerResponse>>
-  listCashDrawersApiV1CashDrawersGet({
+  Future<Response<ListResponseAddressResponse>> listAddressesApiV1AddressesGet({
     String? search,
-    int? facility,
+    AddressType? type,
     EntityStatus? status,
     int? skip = 0,
     int? limit = 20,
@@ -294,7 +290,7 @@ class CashDrawersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/cash-drawers';
+    final _path = r'/api/v1/addresses';
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{...?headers},
@@ -314,11 +310,11 @@ class CashDrawersApi {
           search,
           const FullType(String),
         ),
-      if (facility != null)
-        r'facility': encodeQueryParameter(
+      if (type != null)
+        r'type': encodeQueryParameter(
           _serializers,
-          facility,
-          const FullType(int),
+          type,
+          const FullType(AddressType),
         ),
       if (status != null)
         r'status': encodeQueryParameter(
@@ -345,7 +341,7 @@ class CashDrawersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    ListResponseCashDrawerResponse? _responseData;
+    ListResponseAddressResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -353,9 +349,9 @@ class CashDrawersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(ListResponseCashDrawerResponse),
+                  specifiedType: const FullType(ListResponseAddressResponse),
                 )
-                as ListResponseCashDrawerResponse;
+                as ListResponseAddressResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -366,7 +362,7 @@ class CashDrawersApi {
       );
     }
 
-    return Response<ListResponseCashDrawerResponse>(
+    return Response<ListResponseAddressResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -378,12 +374,12 @@ class CashDrawersApi {
     );
   }
 
-  /// Update Cash Drawer
+  /// Update Address
   ///
   ///
   /// Parameters:
-  /// * [cashDrawerId]
-  /// * [cashDrawerUpdate]
+  /// * [addressId]
+  /// * [addressUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -391,12 +387,11 @@ class CashDrawersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [CashDrawerResponse] as data
+  /// Returns a [Future] containing a [Response] with a [AddressResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<CashDrawerResponse>>
-  updateCashDrawerApiV1CashDrawersCashDrawerIdPut({
-    required int cashDrawerId,
-    required CashDrawerUpdate cashDrawerUpdate,
+  Future<Response<AddressResponse>> updateAddressApiV1AddressesAddressIdPut({
+    required int addressId,
+    required AddressUpdate addressUpdate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -404,13 +399,13 @@ class CashDrawersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/cash-drawers/{cash_drawer_id}'.replaceAll(
+    final _path = r'/api/v1/addresses/{address_id}'.replaceAll(
       '{'
-      r'cash_drawer_id'
+      r'address_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        cashDrawerId,
+        addressId,
         const FullType(int),
       ).toString(),
     );
@@ -430,11 +425,8 @@ class CashDrawersApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(CashDrawerUpdate);
-      _bodyData = _serializers.serialize(
-        cashDrawerUpdate,
-        specifiedType: _type,
-      );
+      const _type = FullType(AddressUpdate);
+      _bodyData = _serializers.serialize(addressUpdate, specifiedType: _type);
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),
@@ -453,7 +445,7 @@ class CashDrawersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    CashDrawerResponse? _responseData;
+    AddressResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -461,9 +453,9 @@ class CashDrawersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(CashDrawerResponse),
+                  specifiedType: const FullType(AddressResponse),
                 )
-                as CashDrawerResponse;
+                as AddressResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -474,7 +466,7 @@ class CashDrawersApi {
       );
     }
 
-    return Response<CashDrawerResponse>(
+    return Response<AddressResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

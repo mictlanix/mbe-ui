@@ -51,7 +51,7 @@ abstract class FacilityResponse
   String get taxpayer;
 
   @BuiltValueField(wireName: r'logo')
-  String get logo;
+  String? get logo;
 
   @BuiltValueField(wireName: r'receipt_message')
   String? get receiptMessage;
@@ -125,10 +125,12 @@ class _$FacilityResponseSerializer
       specifiedType: const FullType(String),
     );
     yield r'logo';
-    yield serializers.serialize(
-      object.logo,
-      specifiedType: const FullType(String),
-    );
+    yield object.logo == null
+        ? null
+        : serializers.serialize(
+            object.logo,
+            specifiedType: const FullType.nullable(String),
+          );
     yield r'receipt_message';
     yield object.receiptMessage == null
         ? null
@@ -236,9 +238,10 @@ class _$FacilityResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(String),
                   )
-                  as String;
+                  as String?;
+          if (valueDes == null) continue;
           result.logo = valueDes;
           break;
         case r'receipt_message':

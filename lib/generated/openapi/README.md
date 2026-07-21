@@ -47,13 +47,14 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 
-final api = MbeApiClient().getAuthApi();
-final ChangePasswordRequest changePasswordRequest = ; // ChangePasswordRequest | 
+final api = MbeApiClient().getAddressesApi();
+final AddressCreate addressCreate = ; // AddressCreate | 
 
 try {
-    api.changePasswordApiV1AuthChangePasswordPost(changePasswordRequest);
+    final response = await api.createAddressApiV1AddressesPost(addressCreate);
+    print(response);
 } on DioException catch (e) {
-    print("Exception when calling AuthApi->changePasswordApiV1AuthChangePasswordPost: $e\n");
+    print("Exception when calling AddressesApi->createAddressApiV1AddressesPost: $e\n");
 }
 
 ```
@@ -64,6 +65,11 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*AddressesApi*](doc/AddressesApi.md) | [**createAddressApiV1AddressesPost**](doc/AddressesApi.md#createaddressapiv1addressespost) | **POST** /api/v1/addresses | Create Address
+[*AddressesApi*](doc/AddressesApi.md) | [**deleteAddressApiV1AddressesAddressIdDelete**](doc/AddressesApi.md#deleteaddressapiv1addressesaddressiddelete) | **DELETE** /api/v1/addresses/{address_id} | Delete Address
+[*AddressesApi*](doc/AddressesApi.md) | [**getAddressApiV1AddressesAddressIdGet**](doc/AddressesApi.md#getaddressapiv1addressesaddressidget) | **GET** /api/v1/addresses/{address_id} | Get Address
+[*AddressesApi*](doc/AddressesApi.md) | [**listAddressesApiV1AddressesGet**](doc/AddressesApi.md#listaddressesapiv1addressesget) | **GET** /api/v1/addresses | List Addresses
+[*AddressesApi*](doc/AddressesApi.md) | [**updateAddressApiV1AddressesAddressIdPut**](doc/AddressesApi.md#updateaddressapiv1addressesaddressidput) | **PUT** /api/v1/addresses/{address_id} | Update Address
 [*AuthApi*](doc/AuthApi.md) | [**changePasswordApiV1AuthChangePasswordPost**](doc/AuthApi.md#changepasswordapiv1authchangepasswordpost) | **POST** /api/v1/auth/change-password | Change Password
 [*AuthApi*](doc/AuthApi.md) | [**confirmRecoveryApiV1AuthRecoverPost**](doc/AuthApi.md#confirmrecoveryapiv1authrecoverpost) | **POST** /api/v1/auth/recover | Confirm Recovery
 [*AuthApi*](doc/AuthApi.md) | [**getMeApiV1AuthMeGet**](doc/AuthApi.md#getmeapiv1authmeget) | **GET** /api/v1/auth/me | Get Me
@@ -98,6 +104,7 @@ Class | Method | HTTP request | Description
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**getFacilityApiV1FacilitiesFacilityIdGet**](doc/FacilitiesApi.md#getfacilityapiv1facilitiesfacilityidget) | **GET** /api/v1/facilities/{facility_id} | Get Facility
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**listFacilitiesApiV1FacilitiesGet**](doc/FacilitiesApi.md#listfacilitiesapiv1facilitiesget) | **GET** /api/v1/facilities | List Facilities
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**updateFacilityApiV1FacilitiesFacilityIdPut**](doc/FacilitiesApi.md#updatefacilityapiv1facilitiesfacilityidput) | **PUT** /api/v1/facilities/{facility_id} | Update Facility
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**uploadFacilityLogoApiV1FacilitiesFacilityIdLogoPost**](doc/FacilitiesApi.md#uploadfacilitylogoapiv1facilitiesfacilityidlogopost) | **POST** /api/v1/facilities/{facility_id}/logo | Upload Facility Logo
 [*HealthApi*](doc/HealthApi.md) | [**healthCheckApiV1HealthGet**](doc/HealthApi.md#healthcheckapiv1healthget) | **GET** /api/v1/health | Health Check
 [*LabelsApi*](doc/LabelsApi.md) | [**createLabelApiV1LabelsPost**](doc/LabelsApi.md#createlabelapiv1labelspost) | **POST** /api/v1/labels | Create Label
 [*LabelsApi*](doc/LabelsApi.md) | [**deleteLabelApiV1LabelsLabelIdDelete**](doc/LabelsApi.md#deletelabelapiv1labelslabeliddelete) | **DELETE** /api/v1/labels/{label_id} | Delete Label
@@ -199,6 +206,10 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AddressCreate](doc/AddressCreate.md)
+ - [AddressResponse](doc/AddressResponse.md)
+ - [AddressType](doc/AddressType.md)
+ - [AddressUpdate](doc/AddressUpdate.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerUpdate](doc/CashDrawerUpdate.md)
@@ -235,6 +246,7 @@ Class | Method | HTTP request | Description
  - [LabelCreate](doc/LabelCreate.md)
  - [LabelResponse](doc/LabelResponse.md)
  - [LabelUpdate](doc/LabelUpdate.md)
+ - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)

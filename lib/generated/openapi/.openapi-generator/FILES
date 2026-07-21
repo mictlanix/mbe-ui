@@ -2,6 +2,11 @@
 .openapi-generator-ignore
 README.md
 analysis_options.yaml
+doc/AddressCreate.md
+doc/AddressResponse.md
+doc/AddressType.md
+doc/AddressUpdate.md
+doc/AddressesApi.md
 doc/AuthApi.md
 doc/CashDrawerCreate.md
 doc/CashDrawerResponse.md
@@ -47,6 +52,7 @@ doc/LabelCreate.md
 doc/LabelResponse.md
 doc/LabelUpdate.md
 doc/LabelsApi.md
+doc/ListResponseAddressResponse.md
 doc/ListResponseCashDrawerResponse.md
 doc/ListResponseCustomerListItem.md
 doc/ListResponseEmployeeResponse.md
@@ -137,6 +143,7 @@ doc/WarehouseUpdate.md
 doc/WarehousesApi.md
 lib/mbe_api_client.dart
 lib/src/api.dart
+lib/src/api/addresses_api.dart
 lib/src/api/auth_api.dart
 lib/src/api/cash_drawers_api.dart
 lib/src/api/customers_api.dart
@@ -165,6 +172,10 @@ lib/src/auth/basic_auth.dart
 lib/src/auth/bearer_auth.dart
 lib/src/auth/oauth.dart
 lib/src/date_serializer.dart
+lib/src/model/address_create.dart
+lib/src/model/address_response.dart
+lib/src/model/address_type.dart
+lib/src/model/address_update.dart
 lib/src/model/cash_drawer_create.dart
 lib/src/model/cash_drawer_response.dart
 lib/src/model/cash_drawer_update.dart
@@ -202,6 +213,7 @@ lib/src/model/http_validation_error.dart
 lib/src/model/label_create.dart
 lib/src/model/label_response.dart
 lib/src/model/label_update.dart
+lib/src/model/list_response_address_response.dart
 lib/src/model/list_response_cash_drawer_response.dart
 lib/src/model/list_response_customer_list_item.dart
 lib/src/model/list_response_employee_response.dart

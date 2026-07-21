@@ -9,6 +9,7 @@ import 'package:mbe_api_client/src/auth/api_key_auth.dart';
 import 'package:mbe_api_client/src/auth/basic_auth.dart';
 import 'package:mbe_api_client/src/auth/bearer_auth.dart';
 import 'package:mbe_api_client/src/auth/oauth.dart';
+import 'package:mbe_api_client/src/api/addresses_api.dart';
 import 'package:mbe_api_client/src/api/auth_api.dart';
 import 'package:mbe_api_client/src/api/cash_drawers_api.dart';
 import 'package:mbe_api_client/src/api/customers_api.dart';
@@ -102,6 +103,12 @@ class MbeApiClient {
               .apiKeys[name] =
           apiKey;
     }
+  }
+
+  /// Get AddressesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AddressesApi getAddressesApi() {
+    return AddressesApi(dio, serializers);
   }
 
   /// Get AuthApi instance, base route and serializer can be overridden by a given but be careful,

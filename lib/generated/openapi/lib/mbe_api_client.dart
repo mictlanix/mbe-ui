@@ -10,6 +10,7 @@ export 'package:mbe_api_client/src/auth/oauth.dart';
 export 'package:mbe_api_client/src/serializers.dart';
 export 'package:mbe_api_client/src/model/date.dart';
 
+export 'package:mbe_api_client/src/api/addresses_api.dart';
 export 'package:mbe_api_client/src/api/auth_api.dart';
 export 'package:mbe_api_client/src/api/cash_drawers_api.dart';
 export 'package:mbe_api_client/src/api/customers_api.dart';
@@ -32,6 +33,10 @@ export 'package:mbe_api_client/src/api/vehicle_operators_api.dart';
 export 'package:mbe_api_client/src/api/vehicles_api.dart';
 export 'package:mbe_api_client/src/api/warehouses_api.dart';
 
+export 'package:mbe_api_client/src/model/address_create.dart';
+export 'package:mbe_api_client/src/model/address_response.dart';
+export 'package:mbe_api_client/src/model/address_type.dart';
+export 'package:mbe_api_client/src/model/address_update.dart';
 export 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 export 'package:mbe_api_client/src/model/cash_drawer_response.dart';
 export 'package:mbe_api_client/src/model/cash_drawer_update.dart';
@@ -68,6 +73,7 @@ export 'package:mbe_api_client/src/model/high_profit_margin1.dart';
 export 'package:mbe_api_client/src/model/label_create.dart';
 export 'package:mbe_api_client/src/model/label_response.dart';
 export 'package:mbe_api_client/src/model/label_update.dart';
+export 'package:mbe_api_client/src/model/list_response_address_response.dart';
 export 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
 export 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 export 'package:mbe_api_client/src/model/list_response_employee_response.dart';

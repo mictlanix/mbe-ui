@@ -14,6 +14,10 @@ import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:mbe_api_client/src/date_serializer.dart';
 import 'package:mbe_api_client/src/model/date.dart';
 
+import 'package:mbe_api_client/src/model/address_create.dart';
+import 'package:mbe_api_client/src/model/address_response.dart';
+import 'package:mbe_api_client/src/model/address_type.dart';
+import 'package:mbe_api_client/src/model/address_update.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_update.dart';
@@ -50,6 +54,7 @@ import 'package:mbe_api_client/src/model/high_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/label_create.dart';
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:mbe_api_client/src/model/label_update.dart';
+import 'package:mbe_api_client/src/model/list_response_address_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
@@ -130,6 +135,10 @@ import 'package:mbe_api_client/src/model/warehouse_update.dart';
 part 'serializers.g.dart';
 
 @SerializersFor([
+  AddressCreate,
+  AddressResponse,
+  AddressType,
+  AddressUpdate,
   CashDrawerCreate,
   CashDrawerResponse,
   CashDrawerUpdate,
@@ -166,6 +175,7 @@ part 'serializers.g.dart';
   LabelCreate,
   LabelResponse,
   LabelUpdate,
+  ListResponseAddressResponse,
   ListResponseCashDrawerResponse,
   ListResponseCustomerListItem,
   ListResponseEmployeeResponse,
