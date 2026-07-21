@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "facility scoped catalogs",
   "branch": "014-facility-scoped-catalogs",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-07-21T22:48:34.484Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-21T23:05:49.076Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T23:08:49.758Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T23:08:49.811Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
