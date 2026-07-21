@@ -119,13 +119,14 @@ every list endpoint (all shipped 2026-07-21; research.md §1). The facility's
 *creation* is out of scope (FR-034a).
 
 **Scale/Scope**: 8 screens (4 list + 4 detail), ~4 list controllers + 4 form
-controllers + 3 filter controllers (Warehouses, Cash Drawers, Points of Sale
-facet drawers) + 1 inline-address sub-controller, 6 new repositories (Warehouse,
-PointSale, CashDrawer, Facility, Address, TaxpayerIssuer — interfaces + impls) +
-4 `freezed` detail entities + 4 list-item view models + 3 picker list-item view
-models (Facility, Address, TaxpayerIssuer), 2 new shared-kernel enums, 4 router
-branches + 8 sub-routes, 4 nav destinations, 1 RBAC-mirror correction, ~110 new
-l10n keys.
+controllers + 4 filter controllers (one per catalog; Warehouses/Cash Drawers/
+Points of Sale carry a facility facet, Facilities is status-only) + 1
+inline-address sub-controller, 6 new repositories (Warehouse, PointSale,
+CashDrawer, Facility, Address, TaxpayerIssuer — interfaces + impls) + 4 `freezed`
+detail entities (list rows reuse the detail entity; no separate list-item types)
++ 3 picker view models (Facility, Address, TaxpayerIssuer), 2 new shared-kernel
+enums, 4 router branches + 8 sub-routes, 4 nav destinations, 1 RBAC-mirror
+correction, ~110 new l10n keys.
 
 ## Constitution Check
 
@@ -204,10 +205,11 @@ lib/
         │   └── taxpayer_issuer_repository_impl.dart  # NEW: wraps TaxpayerIssuersApi (list only, for autocomplete)
         ├── domain/
         │   ├── entities/
-        │   │   ├── warehouse.dart / warehouse_list_item.dart
-        │   │   ├── cash_drawer.dart / cash_drawer_list_item.dart
-        │   │   ├── point_sale.dart / point_sale_list_item.dart
-        │   │   ├── facility.dart / facility_list_item.dart
+        │   │   ├── warehouse.dart                    # list rows reuse the detail entity — no separate *_list_item (data-model.md)
+        │   │   ├── cash_drawer.dart
+        │   │   ├── point_sale.dart
+        │   │   ├── facility.dart
+        │   │   ├── facility_list_item.dart           # picker/filter view model consumed by the other 3 catalogs
         │   │   ├── address_list_item.dart            # picker view model (+ inline-create payload)
         │   │   └── taxpayer_issuer_list_item.dart    # picker view model
         │   └── repositories/

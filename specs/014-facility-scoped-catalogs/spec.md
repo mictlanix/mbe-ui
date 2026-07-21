@@ -134,7 +134,7 @@ A user with the appropriate privilege needs to see the full list of facilities �
 - What happens when a user enters a code that another record in the same catalog already uses? → The system surfaces whatever rejection the backend returns on save; the UI never pre-validates uniqueness speculatively and never silently rewrites the user's code.
 - What happens when a user attempts to delete a record that is still referenced elsewhere (a warehouse holding stock, a warehouse a point of sale draws from, a cash drawer with session history)? → The system surfaces whatever rejection the backend returns; the UI never pre-blocks the attempt speculatively, and never silently drops the reference.
 - What happens when a user without any privilege on one of these three catalogs tries to navigate directly to its route? → Denied per the existing deny-by-default access control, consistent with every other catalog in the app.
-- What happens when a user has privilege on a catalog but cannot read facilities? → The list still renders, and the facility filter and picker degrade to their empty state rather than breaking the screen (see FR-021).
+- What happens when a user has privilege on a catalog but cannot read facilities? → The list still renders, and the facility filter and picker degrade to their empty state rather than breaking the screen (see FR-025).
 - What happens when a user can create facilities but not addresses? → The address picker still works over existing addresses; the inline-create path is hidden rather than shown and failing (FR-032). If no address exists at all, the user cannot complete the facility and the form says so plainly.
 - What happens when the inline address save succeeds but the facility save then fails? → The address has already been created and is not rolled back; the user is returned to the facility form with the new address still selected so they can correct the failure and retry without re-entering it.
 - What happens when a user types a taxpayer key that is not a registered issuer? → The form accepts it locally (only its shape is checked) and the server's rejection is surfaced against the taxpayer field. There is no way to browse valid issuers — a documented compromise, see Clarifications.
@@ -144,9 +144,11 @@ A user with the appropriate privilege needs to see the full list of facilities �
 
 ### Functional Requirements
 
-**Cross-cutting (all three catalogs)**
+**Cross-cutting (all four catalogs)**
 
-- **FR-001**: Each of the three catalogs (Warehouses, Points of Sale, Cash Drawers) MUST have its own dedicated list screen showing a paginated table of records, consistent in look, feel, and interaction with the existing Products catalog and the spec-012/013 catalogs.
+*(FR-001–FR-012 apply to all four managed catalogs — Warehouses, Cash Drawers, Points of Sale, and Facilities. Where a requirement lists "Warehouses, Points of Sale, Cash Drawers" it predates Facilities' promotion to a managed catalog on 2026-07-20; FR-028 binds Facilities to this same cross-cutting set.)*
+
+- **FR-001**: Each of the catalogs (Warehouses, Points of Sale, Cash Drawers, Facilities) MUST have its own dedicated list screen showing a paginated table of records, consistent in look, feel, and interaction with the existing Products catalog and the spec-012/013 catalogs.
 - **FR-002**: Each catalog's list screen MUST ship a free-text search box using the shared filter/search pattern, and MUST NOT ship search-less (constitution §VI). The search box filters by the record's identifying text (code and name), wired to the server-side search capability now available on all three list endpoints (mictlanix/mbe-api#86, #87, #88 — shipped and regenerated into the client 2026-07-20).
 - **FR-003**: In addition to search, each list screen MUST expose the backend-supported facet filters using the shared filter controls, independently combinable with each other and with search — facility and status on all three catalogs, plus warehouse on Points of Sale.
 - **FR-004**: Creating a record MUST be available as a primary action alongside the list's filter/search bar (not tucked into a menu), visible only to users holding create privilege for that catalog.
@@ -178,7 +180,7 @@ A user with the appropriate privilege needs to see the full list of facilities �
 - **FR-021**: The point-of-sale form MUST provide searchable pickers for both the facility and the warehouse fields, showing human-readable names rather than raw ids; the list and detail screens MUST display both by name, and either one that cannot be resolved MUST show a fallback label.
 - **FR-022**: The warehouse picker on the point-of-sale form MUST offer only warehouses belonging to the currently selected facility, and MUST require the user to reselect a warehouse when the facility is changed to one the current warehouse does not belong to. *(Updated 2026-07-21: the backend now validates this pairing on both create and update — mictlanix/mbe-api#102 — so the picker guard is a UX convenience that spares the user a round-trip, layered over a real backend invariant, not the only line of defense. A backend rejection of a mismatched pairing MUST still be surfaced per FR-012. A legacy record that already pairs across facilities MUST still load and display rather than being rejected on open.)*
 
-**Facility consumption (all three catalogs; Facilities itself is out of scope)**
+**Facility consumption by the operational catalogs (Facilities is separately managed — User Story 4)**
 
 - **FR-023**: The facility picker and facility filter on the three operational catalogs MUST read from the same facility source the Facilities catalog manages (User Story 4), so a facility created there is immediately selectable without a reload.
 - **FR-024**: Where a facility is displayed on any of the three catalogs, its type (Store or Production Site) MAY be shown as a plain label to disambiguate similarly named facilities, but MUST NOT change the behavior, fields, or layout of any screen in this feature.
@@ -213,17 +215,17 @@ A user with the appropriate privilege needs to see the full list of facilities �
 
 ### Measurable Outcomes
 
-- **SC-001**: A privileged user can locate, create, edit, or delete a record in any of the three catalogs in under 30 seconds from landing on that catalog's list screen.
-- **SC-002**: 100% of records across the three catalogs display their facility — and, for points of sale, their warehouse — as a human-readable name (or an explicit fallback label), never as a raw id, on both the list and detail screens.
-- **SC-003**: A user can reduce any of the three lists to the records of a single facility in at most two interactions from the list screen.
+- **SC-001**: A privileged user can locate, create, edit, or delete a record in any of the four catalogs in under 30 seconds from landing on that catalog's list screen.
+- **SC-002**: 100% of records across the operational catalogs display their facility — and, for points of sale, their warehouse — as a human-readable name (or an explicit fallback label), never as a raw id, on both the list and detail screens.
+- **SC-003**: A user can reduce any list to the records of a single facility using the shared filter sheet's facility facet — the same open→select→apply flow every catalog/list screen in the app already uses — with no screen requiring a different or extra step.
 - **SC-004**: Zero point-of-sale records can be saved whose warehouse belongs to a facility other than the record's own — the backend rejects such a pairing (mictlanix/mbe-api#102) and the form's picker prevents the user from attempting it. A legacy record that already exhibits one MUST still display without error (FR-022).
-- **SC-005**: A user lacking any privilege on one of these three catalogs cannot reach its screens, and a user lacking only update/delete privilege never sees an edit or delete control for it.
-- **SC-006**: Zero regressions in any existing catalog screen or shared picker after this feature ships.
+- **SC-005**: A user lacking any privilege on one of these catalogs cannot reach its screens, and a user lacking only update/delete privilege never sees an edit or delete control for it.
+- **SC-006**: Zero regressions in any existing catalog screen or shared picker after this feature ships, verified by the full existing test suite passing.
+- **SC-007**: Every backend rejection on save or delete (duplicate code, referential constraint) is surfaced to the user without loss of unsaved form input — no silent failures.
 - **SC-008**: A user can create a facility end to end — including an address that did not previously exist — without leaving the facility form and without any other screen in the app.
 - **SC-009**: 100% of displayed facility addresses render as readable address text or an explicit fallback, never as a raw id, with zero additional requests — the address arrives pre-expanded on the facility response (mictlanix/mbe-api#101).
-- **SC-011**: The taxpayer field resolves a user's search to a selectable issuer and stores that issuer's RFC; a facility cannot be saved with a taxpayer the server does not recognize, and the taxpayer shown on the detail screen is the issuer's name or RFC, never blank.
 - **SC-010**: A facility created in the Facilities catalog is selectable in the warehouse, point-of-sale, and cash-drawer facility pickers without the user reloading the app.
-- **SC-007**: Every backend rejection on save or delete (duplicate code, referential constraint) is surfaced to the user without loss of unsaved form input — no silent failures.
+- **SC-011**: The taxpayer field resolves a user's search to a selectable issuer and stores that issuer's RFC; a facility cannot be saved with a taxpayer the server does not recognize, and the taxpayer shown on the detail screen is the issuer's name (falling back to its RFC), never blank.
 
 ## Assumptions
 

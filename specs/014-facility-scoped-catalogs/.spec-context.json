@@ -211,7 +211,8 @@
     "resolved 2026-07-21: #100 taxpayer-issuers API shipped -> taxpayer field is now an autocomplete gated on taxpayers(24); interim typed field retired",
     "resolved 2026-07-21: #101 FacilityResponse.address now expanded (AddressResponse) -> FR-035 direct render, zero extra requests",
     "resolved 2026-07-21: #102 backend now validates point-of-sale facility<->warehouse on create+update -> FR-022 guard is UX layer over an invariant",
-    "out of scope: TaxpayerCertificatesApi + FiscalCertificationProvider (CSD) rode along with #100 but are not consumed; Taxpayer Issuers catalog is a follow-up"
+    "out of scope: TaxpayerCertificatesApi + FiscalCertificationProvider (CSD) rode along with #100 but are not consumed; Taxpayer Issuers catalog is a follow-up",
+    "analyze pass 2026-07-21: fixed 12 findings — I1/I2 header+FR-ref, I3 phantom list-item files, I4 filter-count, G1 FR-025 degrade task T115, G2 taxpayer-name resolution (T086/T090/T095/T096), G3 no-inline-issuer test, G4 delete-confirmation, G5 full-suite T116, U1 EntityStatusCell, A1 SC-003 softened, L1 SC reorder"
   ],
   "intent": "Deliver full CRUD catalog UIs for Facilities and its three facility-scoped operational catalogs (Warehouses, Points of Sale, Cash Drawers); addresses created inline and taxpayer picked via autocomplete from the facility form.",
   "expectations": [

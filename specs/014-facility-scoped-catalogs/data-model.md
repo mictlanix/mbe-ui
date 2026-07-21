@@ -73,7 +73,8 @@ Identical shape to Warehouse with `cashDrawerId` in place of `warehouseId`.
 | `locationLabel` | `String` | from expanded `SatCatalogResponse` (FR-030 display) |
 | `addressId` | `int` | from `address.addressId` (pre-expanded) |
 | `addressLabel` | `String` | composed from expanded `AddressResponse` (FR-035) |
-| `taxpayerRfc` | `String` | bare RFC (unexpanded; FR-034b) |
+| `taxpayerRfc` | `String` | bare RFC (unexpanded on the response; FR-034b) |
+| `taxpayerName` | `String?` | resolved issuer name — `null` from `fromResponse` (the response carries only the RFC); populated on the detail/edit load by a single `TaxpayerIssuersApi.get(rfc)` call (FR-034b, research.md §9). The detail screen shows `taxpayerName ?? taxpayerRfc`; the list shows `taxpayerRfc` (no per-row resolve). |
 | `logo` | `String?` | optional (mbe-api#91) |
 | `receiptMessage` | `String?` | optional |
 | `defaultBatch` | `String?` | optional |
@@ -97,7 +98,10 @@ Picker displays `label` (composed one-line address). Also carries the
 
 ### TaxpayerIssuerListItem — `taxpayer_issuer_list_item.dart`
 `{ rfc: String, name: String? }` from `TaxpayerIssuerResponse`. Picker matches on
-both, displays `name ?? rfc`; the facility stores `rfc`.
+both, displays `name ?? rfc`; the facility stores `rfc`. The repository also
+exposes `get(rfc) → TaxpayerIssuerListItem?` so the facility detail/edit load can
+resolve the stored RFC to a display name (FR-034b) with a single request, no
+per-row resolve.
 
 ### List-item view models for the four catalogs
 Warehouses/CashDrawers/PointsOfSale/Facilities list rows reuse their detail

@@ -61,7 +61,7 @@ Single Flutter project, feature-first. Feature code under
 
 - [ ] T020 [P] [US1] Unit test `test/unit/features/catalog/warehouse_test.dart`: `Warehouse.fromResponse` maps the pre-expanded `facility` summary to `facilityName`; unresolvable facility → fallback label.
 - [ ] T021 [P] [US1] Widget test `test/widget/features/catalog/warehouses_list_screen_test.dart`: list renders facility/code/name/status; filter drawer combines facility + status; empty state; Create/Edit hidden without RBAC.
-- [ ] T022 [P] [US1] Widget test `test/widget/features/catalog/warehouse_detail_screen_test.dart`: read-only vs editable toggle by update privilege; delete in form body gated by delete privilege; duplicate-code server rejection surfaced on the form (FR-012).
+- [ ] T022 [P] [US1] Widget test `test/widget/features/catalog/warehouse_detail_screen_test.dart`: read-only vs editable toggle by update privilege; delete in form body gated by delete privilege and requiring a confirmation dialog before the delete is submitted (FR-007); duplicate-code server rejection surfaced on the form (FR-012).
 
 ### Implementation for User Story 1
 
@@ -69,9 +69,9 @@ Single Flutter project, feature-first. Feature code under
 - [ ] T024 [P] [US1] Create `lib/features/catalog/domain/repositories/warehouse_repository.dart`: `list({search, facilityId, status, skip, limit})`, `get`, `create`, `update`, `delete`.
 - [ ] T025 [US1] Create `lib/features/catalog/data/warehouse_repository_impl.dart`: wraps `WarehousesApi`, maps create/update from `{facility, code, name, comment?, status?}`, exposes `warehouseRepositoryProvider` (contracts/mbe-api-catalogs.md).
 - [ ] T026 [US1] Create `lib/features/catalog/presentation/warehouses_list_controller.dart`: `WarehouseFilter{search, facilityId?, facilityDisplayText, status?}` + `FilterBadge` extension + filter `Notifier` + list `Notifier` with `goToPage`, mirroring `products_list_controller.dart` + the operator FK-facet (research.md §6).
-- [ ] T027 [US1] Create `lib/features/catalog/presentation/warehouses_list_screen.dart`: `DataTableView` + `CatalogPagination` + `CatalogFilterBar` (search) + `CatalogFilterSheet` with a `CatalogEntityPicker<FacilityListItem>` facet and `EntityStatusControls`; Create as a toolbar `FilledButton`; row-click → read-only detail; Edit row icon.
+- [ ] T027 [US1] Create `lib/features/catalog/presentation/warehouses_list_screen.dart`: `DataTableView` (status column via `EntityStatusCell`) + `CatalogPagination` + `CatalogFilterBar` (search) + `CatalogFilterSheet` with a `CatalogEntityPicker<FacilityListItem>` facet and `EntityStatusControls`; Create as a toolbar `FilledButton`; row-click → read-only detail; Edit row icon.
 - [ ] T028 [US1] Create `lib/features/catalog/presentation/warehouse_form_controller.dart`: `WarehouseFormState` + validate (facility/code/name required) + submitCreate/submitUpdate/delete with pre-submit RBAC re-check and `_fieldErrorsFromServer`, mirroring `vehicle_operator_form_controller.dart`.
-- [ ] T029 [US1] Create `lib/features/catalog/presentation/warehouse_detail_screen.dart`: `ResponsiveFormGrid`; facility `CatalogEntityPicker<FacilityListItem>` (backed by `facilityRepositoryProvider`); code/name/comment fields; `EntityStatusControls`; read-only "View" mode + edit toggle; delete button in body.
+- [ ] T029 [US1] Create `lib/features/catalog/presentation/warehouse_detail_screen.dart`: `ResponsiveFormGrid`; facility `CatalogEntityPicker<FacilityListItem>` (backed by `facilityRepositoryProvider`); code/name/comment fields; `EntityStatusControls`; read-only "View" mode + edit toggle; delete button in body that opens a confirmation dialog before calling `delete()` (FR-007).
 - [ ] T030 [US1] Add the `/warehouses` + `/warehouses/new` + `/warehouses/:id` branch to `lib/app/router/app_router.dart` (wrapped in `_routeGate(SystemObject.warehouses, read)`), appended after the vehicle-operators branch (contracts/routes.md).
 - [ ] T031 [US1] Add the Warehouses `NavDestination` + `NavBranch.warehouses = 14` to `lib/core/navigation/nav_destinations.dart`, in the same position as the router branch (NavBranch invariant).
 - [ ] T032 [P] [US1] Add Warehouses l10n keys (nav title, column headers, field labels, validation, empty state) to `lib/l10n/app_en.arb` and `app_es.arb` in parity.
@@ -91,7 +91,7 @@ Single Flutter project, feature-first. Feature code under
 
 - [ ] T040 [P] [US2] Unit test `test/unit/features/catalog/cash_drawer_test.dart`: `CashDrawer.fromResponse` facility expansion + fallback.
 - [ ] T041 [P] [US2] Widget test `test/widget/features/catalog/cash_drawers_list_screen_test.dart`: list + facility/status filter drawer + empty state + RBAC hiding.
-- [ ] T042 [P] [US2] Widget test `test/widget/features/catalog/cash_drawer_detail_screen_test.dart`: read-only/edit toggle, delete gating, server-rejection surfacing.
+- [ ] T042 [P] [US2] Widget test `test/widget/features/catalog/cash_drawer_detail_screen_test.dart`: read-only/edit toggle, delete gating + confirmation dialog before submit (FR-007), server-rejection surfacing.
 
 ### Implementation for User Story 2
 
@@ -99,9 +99,9 @@ Single Flutter project, feature-first. Feature code under
 - [ ] T044 [P] [US2] Create `lib/features/catalog/domain/repositories/cash_drawer_repository.dart` (same ops as warehouse repo).
 - [ ] T045 [US2] Create `lib/features/catalog/data/cash_drawer_repository_impl.dart`: wraps `CashDrawersApi`, exposes `cashDrawerRepositoryProvider`.
 - [ ] T046 [US2] Create `lib/features/catalog/presentation/cash_drawers_list_controller.dart`: `CashDrawerFilter{search, facilityId?, facilityDisplayText, status?}` + badge + filter/list notifiers.
-- [ ] T047 [US2] Create `lib/features/catalog/presentation/cash_drawers_list_screen.dart` (Warehouses list screen copy, retargeted; facility + status drawer).
+- [ ] T047 [US2] Create `lib/features/catalog/presentation/cash_drawers_list_screen.dart` (Warehouses list screen copy, retargeted; status column via `EntityStatusCell`; facility + status drawer).
 - [ ] T048 [US2] Create `lib/features/catalog/presentation/cash_drawer_form_controller.dart` (Warehouse form controller copy; RBAC object `cashDrawers`).
-- [ ] T049 [US2] Create `lib/features/catalog/presentation/cash_drawer_detail_screen.dart` (Warehouse detail copy; facility picker + code/name/comment/status).
+- [ ] T049 [US2] Create `lib/features/catalog/presentation/cash_drawer_detail_screen.dart` (Warehouse detail copy; facility picker + code/name/comment/status; delete button opens a confirmation dialog before `delete()` — FR-007).
 - [ ] T050 [US2] Add the `/cash-drawers` branch to `lib/app/router/app_router.dart` (`_routeGate(SystemObject.cashDrawers, read)`), appended after Warehouses.
 - [ ] T051 [US2] Add the Cash Drawers `NavDestination` + `NavBranch.cashDrawers = 15` to `lib/core/navigation/nav_destinations.dart` (matching router position).
 - [ ] T052 [P] [US2] Add Cash Drawers l10n keys to both `.arb` files in parity.
@@ -123,7 +123,7 @@ Single Flutter project, feature-first. Feature code under
 
 - [ ] T060 [P] [US3] Unit test `test/unit/features/catalog/point_sale_test.dart`: `PointSale.fromResponse` expands both facility and warehouse; either unresolvable → fallback.
 - [ ] T061 [P] [US3] Widget test `test/widget/features/catalog/points_of_sale_list_screen_test.dart`: three-facet drawer (facility+warehouse+status); empty state; RBAC.
-- [ ] T062 [P] [US3] Widget test `test/widget/features/catalog/point_sale_detail_screen_test.dart`: warehouse picker scoped to selected facility; changing facility to one the current warehouse doesn't belong to clears/forces reselect (FR-022); cross-facility server rejection surfaced (mbe-api#102).
+- [ ] T062 [P] [US3] Widget test `test/widget/features/catalog/point_sale_detail_screen_test.dart`: warehouse picker scoped to selected facility; changing facility to one the current warehouse doesn't belong to clears/forces reselect (FR-022); cross-facility server rejection surfaced (mbe-api#102); delete requires a confirmation dialog before submit (FR-007).
 
 ### Implementation for User Story 3
 
@@ -131,9 +131,9 @@ Single Flutter project, feature-first. Feature code under
 - [ ] T064 [P] [US3] Create `lib/features/catalog/domain/repositories/point_sale_repository.dart` (list with facility+warehouse+status, get/create/update/delete).
 - [ ] T065 [US3] Create `lib/features/catalog/data/point_sale_repository_impl.dart`: wraps `PointsOfSaleApi`, exposes `pointSaleRepositoryProvider`.
 - [ ] T066 [US3] Create `lib/features/catalog/presentation/points_of_sale_list_controller.dart`: `PointSaleFilter{search, facilityId?, facilityDisplayText, warehouseId?, warehouseDisplayText, status?}` + badge + filter/list notifiers.
-- [ ] T067 [US3] Create `lib/features/catalog/presentation/points_of_sale_list_screen.dart`: list + `CatalogFilterSheet` with facility picker, warehouse picker (`warehouseRepositoryProvider` from US1), and `EntityStatusControls`.
+- [ ] T067 [US3] Create `lib/features/catalog/presentation/points_of_sale_list_screen.dart`: list (status column via `EntityStatusCell`) + `CatalogFilterSheet` with facility picker, warehouse picker (`warehouseRepositoryProvider` from US1), and `EntityStatusControls`.
 - [ ] T068 [US3] Create `lib/features/catalog/presentation/point_sale_form_controller.dart`: `PointSaleFormState` with facility+warehouse id/displayText pairs; on facility change, clear the warehouse when it no longer belongs (FR-022); validate facility/code/name/warehouse required.
-- [ ] T069 [US3] Create `lib/features/catalog/presentation/point_sale_detail_screen.dart`: facility picker + warehouse picker whose `optionsBuilder` passes `facilityId` to `warehouseRepo.list`; code/name/comment/status; read-only/edit/delete.
+- [ ] T069 [US3] Create `lib/features/catalog/presentation/point_sale_detail_screen.dart`: facility picker + warehouse picker whose `optionsBuilder` passes `facilityId` to `warehouseRepo.list`; code/name/comment/status; read-only/edit; delete button opens a confirmation dialog before `delete()` (FR-007).
 - [ ] T070 [US3] Add the `/points-of-sale` branch to `app_router.dart` (`_routeGate(SystemObject.pointsOfSale, read)`), appended after Cash Drawers.
 - [ ] T071 [US3] Add the Points of Sale `NavDestination` + `NavBranch.pointsOfSale = 16` to `nav_destinations.dart` (matching router position).
 - [ ] T072 [P] [US3] Add Points of Sale l10n keys to both `.arb` files in parity.
@@ -154,23 +154,23 @@ Single Flutter project, feature-first. Feature code under
 - [ ] T080 [P] [US4] Unit test `test/unit/features/catalog/facility_test.dart`: `Facility.fromResponse` expands `location` and `address`, keeps `taxpayer` as bare RFC (FR-034b); `FacilityType`/`AddressType` round-trip.
 - [ ] T081 [P] [US4] Unit test `test/unit/features/catalog/facility_validators_test.dart`: required fields (code/name/location/address/taxpayer) and RFC ≤13 shape-only (never an existence claim).
 - [ ] T082 [P] [US4] Widget test `test/widget/features/catalog/facilities_list_screen_test.dart`: list (code/name/type/status) + status-only filter drawer + empty state + RBAC.
-- [ ] T083 [P] [US4] Widget test `test/widget/features/catalog/facility_detail_screen_test.dart`: location/address/taxpayer pickers; address inline-create shown only with `addresses(11)` create (FR-032); taxpayer degrades to typed RFC without `taxpayers(24)` read (FR-034); delete gating.
+- [ ] T083 [P] [US4] Widget test `test/widget/features/catalog/facility_detail_screen_test.dart`: location/address/taxpayer pickers; address inline-create shown only with `addresses(11)` create (FR-032); taxpayer degrades to typed RFC without `taxpayers(24)` read (FR-034); the taxpayer field renders **no** inline create-issuer affordance regardless of privilege (FR-034a); the loaded taxpayer shows the resolved issuer name, never blank (FR-034b); delete gating + confirmation dialog before submit (FR-007).
 - [ ] T084 [P] [US4] Widget test `test/widget/features/catalog/address_inline_create_test.dart`: required address fields; on success returns the address to the facility form; a later facility-save failure keeps the created address selected (spec Edge Cases).
 
 ### Implementation for User Story 4
 
 - [ ] T085 [P] [US4] Create `lib/core/domain/address_type.dart`: `AddressType` `other(0)`/`home(1)`/`work(2)`/`business(3)`/`fiscal(4)` with `fromApi`/`toApi` (data-model.md, FR-033).
-- [ ] T086 [P] [US4] Extend `lib/features/catalog/domain/entities/facility.dart`: `Facility{facilityId, code, name, type, locationId, locationLabel, addressId, addressLabel, taxpayerRfc, logo?, receiptMessage?, defaultBatch?, status}` + `fromResponse` (address/location from expanded objects; taxpayer bare RFC).
+- [ ] T086 [P] [US4] Extend `lib/features/catalog/domain/entities/facility.dart`: `Facility{facilityId, code, name, type, locationId, locationLabel, addressId, addressLabel, taxpayerRfc, taxpayerName?, logo?, receiptMessage?, defaultBatch?, status}` + `fromResponse` (address/location from expanded objects; taxpayer bare RFC; `taxpayerName` is `null` from `fromResponse` and resolved on detail load per T095 — FR-034b).
 - [ ] T087 [P] [US4] Create `lib/features/catalog/domain/entities/address_list_item.dart` (`{addressId, label, type}` + `AddressCreatePayload`) and `taxpayer_issuer_list_item.dart` (`{rfc, name?}`).
 - [ ] T088 [US4] Extend `facility_repository.dart` + `facility_repository_impl.dart` with `get`/`create`/`update`/`delete` over `FacilitiesApi` (contracts/mbe-api-catalogs.md).
 - [ ] T089 [P] [US4] Create `lib/features/catalog/domain/repositories/address_repository.dart` + `data/address_repository_impl.dart`: `list({search})` and `create(AddressCreatePayload)`, `addressRepositoryProvider` (list+create only; contracts §Addresses).
-- [ ] T090 [P] [US4] Create `lib/features/catalog/domain/repositories/taxpayer_issuer_repository.dart` + `data/taxpayer_issuer_repository_impl.dart`: `list({search})` and optional `get(rfc)`, `taxpayerIssuerRepositoryProvider` (contracts §Taxpayer Issuers).
+- [ ] T090 [P] [US4] Create `lib/features/catalog/domain/repositories/taxpayer_issuer_repository.dart` + `data/taxpayer_issuer_repository_impl.dart`: `list({search})` **and** `get(rfc)` (the latter is required — it resolves the facility's stored RFC to a display name per FR-034b, T095), `taxpayerIssuerRepositoryProvider` (contracts §Taxpayer Issuers).
 - [ ] T091 [US4] Add an RFC shape validator (≤13 chars, shape only) to `lib/features/catalog/domain/catalog_field_validators.dart` (FR-034).
 - [ ] T092 [US4] Create `lib/features/catalog/presentation/facilities_list_controller.dart`: `FacilityFilter{search, status?}` + badge + filter/list notifiers.
-- [ ] T093 [US4] Create `lib/features/catalog/presentation/facilities_list_screen.dart`: list (code/name/type/status) + `CatalogFilterSheet` with `EntityStatusControls` only; Create toolbar button; row-click read-only.
+- [ ] T093 [US4] Create `lib/features/catalog/presentation/facilities_list_screen.dart`: list (code/name/type; status column via `EntityStatusCell`) + `CatalogFilterSheet` with `EntityStatusControls` only; Create toolbar button; row-click read-only.
 - [ ] T094 [US4] Create `lib/features/catalog/presentation/address_inline_create_controller.dart` + `address_inline_create.dart`: Material 3 `Dialog` with a `ResponsiveFormGrid` body over the `AddressCreate` fields, posting via `addressRepositoryProvider`, returning the created `AddressListItem`; shown only with `can(addresses, create)` (FR-031/032).
-- [ ] T095 [US4] Create `lib/features/catalog/presentation/facility_form_controller.dart`: `FacilityFormState` (all facility fields); validate; submitCreate/submitUpdate/delete with pre-submit RBAC re-check on `facilities`; `_fieldErrorsFromServer` maps duplicate-code / unregistered-taxpayer to the right field (FR-012).
-- [ ] T096 [US4] Create `lib/features/catalog/presentation/facility_detail_screen.dart`: `ResponsiveFormGrid` with — code/name; `FacilityType` control; location `CatalogEntityPicker<SatCatalogItem>` (reuse `SatCatalogRepository.listPostalCodes`, research.md §7); address `CatalogEntityPicker<AddressListItem>` + inline-create affordance; taxpayer `CatalogEntityPicker<TaxpayerIssuerListItem>` gated on `taxpayers(24)` with typed-RFC degrade (FR-034); logo/receiptMessage/defaultBatch; status; read-only/edit/delete.
+- [ ] T095 [US4] Create `lib/features/catalog/presentation/facility_form_controller.dart`: `FacilityFormState` (all facility fields incl. `taxpayerRfc`/`taxpayerDisplayText`); `loadForEdit` resolves the stored RFC to a display name via `taxpayerIssuerRepositoryProvider.get(rfc)` when the user can read `taxpayers(24)`, falling back to the bare RFC on denial/absence (FR-034b, G2); validate; submitCreate/submitUpdate/delete with pre-submit RBAC re-check on `facilities`; `_fieldErrorsFromServer` maps duplicate-code / unregistered-taxpayer to the right field (FR-012).
+- [ ] T096 [US4] Create `lib/features/catalog/presentation/facility_detail_screen.dart`: `ResponsiveFormGrid` with — code/name; `FacilityType` control; location `CatalogEntityPicker<SatCatalogItem>` (reuse `SatCatalogRepository.listPostalCodes`, research.md §7); address `CatalogEntityPicker<AddressListItem>` + inline-create affordance; taxpayer `CatalogEntityPicker<TaxpayerIssuerListItem>` gated on `taxpayers(24)` with typed-RFC degrade (FR-034), displaying the resolved `taxpayerName ?? taxpayerRfc` never blank (FR-034b); logo/receiptMessage/defaultBatch; status; read-only/edit; delete button opens a confirmation dialog before `delete()` (FR-007).
 - [ ] T097 [US4] Add the `/facilities` branch to `app_router.dart` (`_routeGate(SystemObject.facilities, read)`), appended after Points of Sale.
 - [ ] T098 [US4] Add the Facilities `NavDestination` + `NavBranch.facilities = 17` to `nav_destinations.dart` (router-matching position; the destination MAY be listed first in the Catalogs group for display).
 - [ ] T099 [P] [US4] Add Facilities + address + taxpayer + address-type l10n keys to both `.arb` files in parity.
@@ -187,6 +187,8 @@ Single Flutter project, feature-first. Feature code under
 - [ ] T112 Run `dart run build_runner build --delete-conflicting-outputs` clean, then `dart analyze` with zero new warnings across `lib/` and `test/`.
 - [ ] T113 [P] Confirm the NavBranch↔router-branch order invariant across all four new branches (`nav_destinations.dart` indices 14–17 match `app_router.dart` branch order); run the app and confirm the correct nav item highlights per route (contracts/routes.md).
 - [ ] T114 [P] Run the quickstart.md targeted checks (RBAC hiding, address-create gating, taxpayer degrade, cross-facility rejection, duplicate code, no-N+1) and record results.
+- [ ] T115 FR-025 graceful degrade: ensure the facility picker/filter `optionsBuilder` (via `facilityRepositoryProvider`) returns an empty result on a `facilities(29)` read denial (403) instead of surfacing an error, and add a parametrized widget test `test/widget/features/catalog/facility_read_denied_test.dart` asserting the Warehouses, Cash Drawers, and Points of Sale list+detail screens still render with the facility controls in their empty state when `can(facilities, read)` is false.
+- [ ] T116 SC-006 regression gate: run the **full** existing test suite (`flutter test`, not only this feature's new files) and confirm zero regressions in the spec-012/013 catalog screens and the shared `CatalogEntityPicker`/`CatalogFilterSheet` widgets before marking the feature complete.
 
 ---
 
