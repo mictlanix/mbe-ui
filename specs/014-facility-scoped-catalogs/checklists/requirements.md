@@ -41,6 +41,15 @@
 - *Dependencies identified*: three follow-ups filed (#100 taxpayer issuers, #101 address expansion, #102 point-of-sale cross-FK validation), each recorded with why it does not block and what changes when it lands. **Pass.**
 - *Success criteria measurable*: SC-008/009/010 added for the new surface, including a bound on address resolution requests (SC-009) so FR-035's bulk-resolve rule is testable rather than aspirational. **Pass.**
 
+**Upstream resolution re-check (2026-07-21, after #100/#101/#102 shipped)** — 4 user stories, 37 requirements, 11 success criteria, 0 clarification markers:
+
+- *No stale interim language*: all three interim shapes were rewritten to their intended designs, and each superseded passage is explicitly marked *(Superseded …)* rather than deleted or left contradicting. Verified the only surviving "typed RFC" mentions are (a) the marked 2026-07-20 note and (b) FR-034's read-denied degradation path. **Pass.**
+  - **Taxpayer**: FR-034 is now an autocomplete over `taxpayers(24)`; FR-034a forbids inline issuer creation (with rationale); FR-034b governs display. The old FR-034a ("build it for a later swap") is fully replaced.
+  - **Address**: FR-035 is a direct render of the pre-expanded address; SC-009 tightened to "zero additional requests".
+  - **Point of sale**: FR-022 reframed as a UX guard over a backend invariant; SC-004 restated as a backend guarantee.
+- *Scope still bounded*: the taxpayer-issuers API arriving does **not** silently pull issuer management into scope — FR-034a and the follow-ups section state the boundary, and the CSD `TaxpayerCertificatesApi` / `FiscalCertificationProvider` are named as deliberately unconsumed. **Pass.**
+- *Dependencies*: the feature now has **zero** open upstream dependencies; the follow-ups table records all six original + three second-round issues as resolved, with one new forward-looking follow-up (a Taxpayer Issuers catalog). **Pass.**
+
 **Self-check pass (2026-07-19)** — findings and how they were resolved:
 
 - *Content Quality / no implementation details*: the spec's **Verbatim Constraints** section names access-control objects, a source file path, and query-parameter names. This is the one section where exact, user-pinned identifiers legitimately belong; the four narrative sections stay free of framework, endpoint, and type names. **Pass.**
