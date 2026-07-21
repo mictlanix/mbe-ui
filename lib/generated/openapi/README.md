@@ -176,6 +176,14 @@ Class | Method | HTTP request | Description
 [*SuppliersApi*](doc/SuppliersApi.md) | [**getSupplierApiV1SuppliersSupplierIdGet**](doc/SuppliersApi.md#getsupplierapiv1supplierssupplieridget) | **GET** /api/v1/suppliers/{supplier_id} | Get Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**listSuppliersApiV1SuppliersGet**](doc/SuppliersApi.md#listsuppliersapiv1suppliersget) | **GET** /api/v1/suppliers | List Suppliers
 [*SuppliersApi*](doc/SuppliersApi.md) | [**updateSupplierApiV1SuppliersSupplierIdPut**](doc/SuppliersApi.md#updatesupplierapiv1supplierssupplieridput) | **PUT** /api/v1/suppliers/{supplier_id} | Update Supplier
+[*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**getTaxpayerCertificateApiV1TaxpayerCertificatesCertificateIdGet**](doc/TaxpayerCertificatesApi.md#gettaxpayercertificateapiv1taxpayercertificatescertificateidget) | **GET** /api/v1/taxpayer-certificates/{certificate_id} | Get Taxpayer Certificate
+[*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**listTaxpayerCertificatesApiV1TaxpayerCertificatesGet**](doc/TaxpayerCertificatesApi.md#listtaxpayercertificatesapiv1taxpayercertificatesget) | **GET** /api/v1/taxpayer-certificates | List Taxpayer Certificates
+[*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**uploadTaxpayerCertificateApiV1TaxpayerCertificatesPost**](doc/TaxpayerCertificatesApi.md#uploadtaxpayercertificateapiv1taxpayercertificatespost) | **POST** /api/v1/taxpayer-certificates | Upload Taxpayer Certificate
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**createTaxpayerIssuerApiV1TaxpayerIssuersPost**](doc/TaxpayerIssuersApi.md#createtaxpayerissuerapiv1taxpayerissuerspost) | **POST** /api/v1/taxpayer-issuers | Create Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**deleteTaxpayerIssuerApiV1TaxpayerIssuersRfcDelete**](doc/TaxpayerIssuersApi.md#deletetaxpayerissuerapiv1taxpayerissuersrfcdelete) | **DELETE** /api/v1/taxpayer-issuers/{rfc} | Delete Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**getTaxpayerIssuerApiV1TaxpayerIssuersRfcGet**](doc/TaxpayerIssuersApi.md#gettaxpayerissuerapiv1taxpayerissuersrfcget) | **GET** /api/v1/taxpayer-issuers/{rfc} | Get Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**listTaxpayerIssuersApiV1TaxpayerIssuersGet**](doc/TaxpayerIssuersApi.md#listtaxpayerissuersapiv1taxpayerissuersget) | **GET** /api/v1/taxpayer-issuers | List Taxpayer Issuers
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**updateTaxpayerIssuerApiV1TaxpayerIssuersRfcPut**](doc/TaxpayerIssuersApi.md#updatetaxpayerissuerapiv1taxpayerissuersrfcput) | **PUT** /api/v1/taxpayer-issuers/{rfc} | Update Taxpayer Issuer
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**createTaxpayerRecipientApiV1TaxpayerRecipientsPost**](doc/TaxpayerRecipientsApi.md#createtaxpayerrecipientapiv1taxpayerrecipientspost) | **POST** /api/v1/taxpayer-recipients | Create Taxpayer Recipient
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**deleteTaxpayerRecipientApiV1TaxpayerRecipientsRfcDelete**](doc/TaxpayerRecipientsApi.md#deletetaxpayerrecipientapiv1taxpayerrecipientsrfcdelete) | **DELETE** /api/v1/taxpayer-recipients/{rfc} | Delete Taxpayer Recipient
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**getTaxpayerRecipientApiV1TaxpayerRecipientsRfcGet**](doc/TaxpayerRecipientsApi.md#gettaxpayerrecipientapiv1taxpayerrecipientsrfcget) | **GET** /api/v1/taxpayer-recipients/{rfc} | Get Taxpayer Recipient
@@ -238,6 +246,7 @@ Class | Method | HTTP request | Description
  - [FacilitySummary](doc/FacilitySummary.md)
  - [FacilityType](doc/FacilityType.md)
  - [FacilityUpdate](doc/FacilityUpdate.md)
+ - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfit1](doc/HighProfit1.md)
@@ -261,6 +270,8 @@ Class | Method | HTTP request | Description
  - [ListResponseProductPriceResponse](doc/ListResponseProductPriceResponse.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
+ - [ListResponseTaxpayerCertificateResponse](doc/ListResponseTaxpayerCertificateResponse.md)
+ - [ListResponseTaxpayerIssuerResponse](doc/ListResponseTaxpayerIssuerResponse.md)
  - [ListResponseTaxpayerRecipientResponse](doc/ListResponseTaxpayerRecipientResponse.md)
  - [ListResponseVehicleOperatorResponse](doc/ListResponseVehicleOperatorResponse.md)
  - [ListResponseVehicleResponse](doc/ListResponseVehicleResponse.md)
@@ -301,6 +312,10 @@ Class | Method | HTTP request | Description
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)
  - [TaxRate](doc/TaxRate.md)
+ - [TaxpayerCertificateResponse](doc/TaxpayerCertificateResponse.md)
+ - [TaxpayerIssuerCreate](doc/TaxpayerIssuerCreate.md)
+ - [TaxpayerIssuerResponse](doc/TaxpayerIssuerResponse.md)
+ - [TaxpayerIssuerUpdate](doc/TaxpayerIssuerUpdate.md)
  - [TaxpayerRecipientCreate](doc/TaxpayerRecipientCreate.md)
  - [TaxpayerRecipientResponse](doc/TaxpayerRecipientResponse.md)
  - [TaxpayerRecipientUpdate](doc/TaxpayerRecipientUpdate.md)

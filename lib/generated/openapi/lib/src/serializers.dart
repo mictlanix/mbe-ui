@@ -46,6 +46,7 @@ import 'package:mbe_api_client/src/model/facility_response.dart';
 import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:mbe_api_client/src/model/facility_update.dart';
+import 'package:mbe_api_client/src/model/fiscal_certification_provider.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:mbe_api_client/src/model/high_profit1.dart';
@@ -69,6 +70,8 @@ import 'package:mbe_api_client/src/model/list_response_product_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_product_price_response.dart';
 import 'package:mbe_api_client/src/model/list_response_sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/list_response_supplier_response.dart';
+import 'package:mbe_api_client/src/model/list_response_taxpayer_certificate_response.dart';
+import 'package:mbe_api_client/src/model/list_response_taxpayer_issuer_response.dart';
 import 'package:mbe_api_client/src/model/list_response_taxpayer_recipient_response.dart';
 import 'package:mbe_api_client/src/model/list_response_vehicle_operator_response.dart';
 import 'package:mbe_api_client/src/model/list_response_vehicle_response.dart';
@@ -109,6 +112,10 @@ import 'package:mbe_api_client/src/model/supplier_create.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:mbe_api_client/src/model/supplier_update.dart';
 import 'package:mbe_api_client/src/model/tax_rate.dart';
+import 'package:mbe_api_client/src/model/taxpayer_certificate_response.dart';
+import 'package:mbe_api_client/src/model/taxpayer_issuer_create.dart';
+import 'package:mbe_api_client/src/model/taxpayer_issuer_response.dart';
+import 'package:mbe_api_client/src/model/taxpayer_issuer_update.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_create.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_response.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_update.dart';
@@ -167,6 +174,7 @@ part 'serializers.g.dart';
   FacilitySummary,
   FacilityType,
   FacilityUpdate,
+  FiscalCertificationProvider,
   HTTPValidationError,
   HighProfit,
   HighProfit1,
@@ -190,6 +198,8 @@ part 'serializers.g.dart';
   ListResponseProductPriceResponse,
   ListResponseSatCatalogResponse,
   ListResponseSupplierResponse,
+  ListResponseTaxpayerCertificateResponse,
+  ListResponseTaxpayerIssuerResponse,
   ListResponseTaxpayerRecipientResponse,
   ListResponseVehicleOperatorResponse,
   ListResponseVehicleResponse,
@@ -230,6 +240,10 @@ part 'serializers.g.dart';
   SupplierResponse,
   SupplierUpdate,
   TaxRate,
+  TaxpayerCertificateResponse,
+  TaxpayerIssuerCreate,
+  TaxpayerIssuerResponse,
+  TaxpayerIssuerUpdate,
   TaxpayerRecipientCreate,
   TaxpayerRecipientResponse,
   TaxpayerRecipientUpdate,

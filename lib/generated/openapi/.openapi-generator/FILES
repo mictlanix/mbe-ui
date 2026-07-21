@@ -42,6 +42,7 @@ doc/FacilityResponse.md
 doc/FacilitySummary.md
 doc/FacilityType.md
 doc/FacilityUpdate.md
+doc/FiscalCertificationProvider.md
 doc/HTTPValidationError.md
 doc/HealthApi.md
 doc/HighProfit.md
@@ -67,6 +68,8 @@ doc/ListResponseProductListItem.md
 doc/ListResponseProductPriceResponse.md
 doc/ListResponseSatCatalogResponse.md
 doc/ListResponseSupplierResponse.md
+doc/ListResponseTaxpayerCertificateResponse.md
+doc/ListResponseTaxpayerIssuerResponse.md
 doc/ListResponseTaxpayerRecipientResponse.md
 doc/ListResponseVehicleOperatorResponse.md
 doc/ListResponseVehicleResponse.md
@@ -114,6 +117,12 @@ doc/SupplierResponse.md
 doc/SupplierUpdate.md
 doc/SuppliersApi.md
 doc/TaxRate.md
+doc/TaxpayerCertificateResponse.md
+doc/TaxpayerCertificatesApi.md
+doc/TaxpayerIssuerCreate.md
+doc/TaxpayerIssuerResponse.md
+doc/TaxpayerIssuerUpdate.md
+doc/TaxpayerIssuersApi.md
 doc/TaxpayerRecipientCreate.md
 doc/TaxpayerRecipientResponse.md
 doc/TaxpayerRecipientUpdate.md
@@ -160,6 +169,8 @@ lib/src/api/product_prices_api.dart
 lib/src/api/products_api.dart
 lib/src/api/sat_catalogs_api.dart
 lib/src/api/suppliers_api.dart
+lib/src/api/taxpayer_certificates_api.dart
+lib/src/api/taxpayer_issuers_api.dart
 lib/src/api/taxpayer_recipients_api.dart
 lib/src/api/users_api.dart
 lib/src/api/vehicle_operators_api.dart
@@ -205,6 +216,7 @@ lib/src/model/facility_response.dart
 lib/src/model/facility_summary.dart
 lib/src/model/facility_type.dart
 lib/src/model/facility_update.dart
+lib/src/model/fiscal_certification_provider.dart
 lib/src/model/high_profit.dart
 lib/src/model/high_profit1.dart
 lib/src/model/high_profit_margin.dart
@@ -228,6 +240,8 @@ lib/src/model/list_response_product_list_item.dart
 lib/src/model/list_response_product_price_response.dart
 lib/src/model/list_response_sat_catalog_response.dart
 lib/src/model/list_response_supplier_response.dart
+lib/src/model/list_response_taxpayer_certificate_response.dart
+lib/src/model/list_response_taxpayer_issuer_response.dart
 lib/src/model/list_response_taxpayer_recipient_response.dart
 lib/src/model/list_response_vehicle_operator_response.dart
 lib/src/model/list_response_vehicle_response.dart
@@ -268,6 +282,10 @@ lib/src/model/supplier_create.dart
 lib/src/model/supplier_response.dart
 lib/src/model/supplier_update.dart
 lib/src/model/tax_rate.dart
+lib/src/model/taxpayer_certificate_response.dart
+lib/src/model/taxpayer_issuer_create.dart
+lib/src/model/taxpayer_issuer_response.dart
+lib/src/model/taxpayer_issuer_update.dart
 lib/src/model/taxpayer_recipient_create.dart
 lib/src/model/taxpayer_recipient_response.dart
 lib/src/model/taxpayer_recipient_update.dart
