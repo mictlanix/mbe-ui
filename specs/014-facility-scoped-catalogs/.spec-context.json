@@ -99,13 +99,43 @@
     },
     "FR-026": {
       "title": "Facility type MUST be named in one domain enum (Store 0 / Production Site 1); no screen reads raw type numbers"
+    },
+    "FR-027": {
+      "title": "Correct the access-control object mirror: rename stores(29) to facilities(29), remove productionSites(107)"
+    },
+    "FR-028": {
+      "title": "Facilities catalog MUST support full CRUD with its own list screen gated on facilities(29)"
+    },
+    "FR-029": {
+      "title": "Facility code, name, location, address, taxpayer required on create; type defaults to Store"
+    },
+    "FR-030": {
+      "title": "Facility form MUST provide a searchable SAT postal-code picker for fiscal location"
+    },
+    "FR-031": {
+      "title": "Facility form MUST provide an address picker plus inline address create that preserves other input"
+    },
+    "FR-032": {
+      "title": "Inline address form MUST capture required+optional address fields and be gated on addresses(11)"
+    },
+    "FR-033": {
+      "title": "Address type MUST be named in one place (Other/Home/Work/Business/Fiscal); no raw enum numbers"
+    },
+    "FR-034": {
+      "title": "Taxpayer MUST be a typed 13-char RFC, not a picker; server rejection surfaced against the field"
+    },
+    "FR-035": {
+      "title": "Facility addresses MUST render as readable text, resolved in bulk — never one request per row"
+    },
+    "FR-034a": {
+      "title": "Taxpayer field MUST be built so the interim typed input swaps to an autocomplete (mbe-api#100) with no other form rework"
     }
   },
   "size": "oversized",
   "classification": {
-    "projectedFiles": 30,
-    "projectedTasks": 45,
-    "scopeSignal": "none",
+    "projectedFiles": 42,
+    "projectedTasks": 62,
+    "scopeSignal": "larger",
     "verdict": "oversized"
   },
   "context": [
@@ -117,9 +147,17 @@
     "constraint: no search param on any of the four list endpoints — file upstream, never client-side filter (constitution III/VI)",
     "constraint: reuse DataTableView, CatalogPagination, CatalogFilterBar/SearchBar, CatalogFilterSheet, CatalogEntityPicker, ResponsiveFormGrid, ErrorBanner unmodified",
     "upstream: mbe-api #86/#87/#88/#89 search param; #90 address FK, #91 logo upload, #92 FacilityType names, #93 facilities SystemObject — filed 2026-07-19",
-    "resolved: mbe-api FacilityType IntEnum is STORE=0, PRODUCTION_SITE=1 — issue #92 closed 2026-07-19; name it UI-side per the EntityStatus/Gender pattern"
+    "resolved: mbe-api FacilityType IntEnum is STORE=0, PRODUCTION_SITE=1 — issue #92 closed 2026-07-19; name it UI-side per the EntityStatus/Gender pattern",
+    "resolved 2026-07-20: mbe-api shipped search on all 4 list endpoints (#86-#89); client regenerated",
+    "resolved 2026-07-20: addresses full CRUD API + addresses(11) exists (#90); facility logo now optional (#91)",
+    "resolved 2026-07-20: SystemObject FACILITIES=29 reuses legacy stores slot; STORES/PRODUCTION_SITES removed upstream (#93) -> FR-027",
+    "resolved 2026-07-20: backend does NOT validate point-of-sale facility<->warehouse pairing -> FR-022 is a UI-only guard",
+    "scope reversal 2026-07-20: Facilities promoted to 4th managed catalog (US4, P2) with full CRUD",
+    "blocker accepted: taxpayer_issuer has no endpoint (#100) -> taxpayer is typed RFC, not a picker",
+    "Addresses: no catalog screens; picker + inline create from facility form only (#101 address not expanded)",
+    "taxpayer field is explicitly interim: mbe-api#100 requested to upgrade it to an autocomplete; stored value is the RFC either way"
   ],
-  "intent": "Deliver full CRUD catalog UIs for the three facility-scoped operational catalogs — Warehouses, Points of Sale, and Cash Drawers — consuming Facility read-only as a picker and filter.",
+  "intent": "Deliver full CRUD catalog UIs for Facilities and its three facility-scoped operational catalogs — Warehouses, Points of Sale, and Cash Drawers — with addresses created inline from the facility form.",
   "expectations": [
     "Facilities management (create/edit/delete) and any Facilities screen — deferred pending upstream address management, logo upload, named facility-type values, and a facility access-control object",
     "Cash drawer sessions (open/close/reconcile) — master record only",
