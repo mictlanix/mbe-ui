@@ -3,7 +3,7 @@
   "specName": "facility scoped catalogs",
   "branch": "014-facility-scoped-catalogs",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -74,6 +74,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-21T23:37:48.018Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-22T01:34:56.997Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
