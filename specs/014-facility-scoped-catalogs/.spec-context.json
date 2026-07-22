@@ -1,0 +1,239 @@
+{
+  "workflow": "speckit",
+  "specName": "facility scoped catalogs",
+  "branch": "014-facility-scoped-catalogs",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-20T04:23:17.415Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-20T04:26:21.397Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-21T22:42:12.326Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T22:45:21.044Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T22:48:34.431Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T22:48:34.484Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-21T23:05:49.076Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T23:08:49.758Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-07-21T23:08:49.811Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-21T23:37:48.018Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-22T01:34:56.997Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Each of the three catalogs MUST have its own dedicated paginated list screen consistent with existing catalogs"
+    },
+    "FR-002": {
+      "title": "Each list screen MUST ship a free-text search box wired to the server-side search capability requested upstream"
+    },
+    "FR-003": {
+      "title": "Each list screen MUST expose backend-supported facet filters, combinable with each other and with search"
+    },
+    "FR-004": {
+      "title": "Create MUST be a primary action beside the filter/search bar, visible only with create privilege"
+    },
+    "FR-005": {
+      "title": "Row's sole direct action MUST be Edit; clicking elsewhere opens the read-only detail screen"
+    },
+    "FR-006": {
+      "title": "Read-only detail MUST offer a switch-to-edit control only when the user holds update privilege"
+    },
+    "FR-007": {
+      "title": "Delete MUST live only on the detail screen, require confirmation, and be gated by delete privilege"
+    },
+    "FR-008": {
+      "title": "Every create/update/delete MUST be gated by the existing per-catalog access-control privilege"
+    },
+    "FR-009": {
+      "title": "All three catalogs MUST be reachable from the existing catalog navigation, gated by read privilege"
+    },
+    "FR-010": {
+      "title": "Screen-level actions other than the read-only-to-edit toggle MUST be visible-label body buttons"
+    },
+    "FR-011": {
+      "title": "All three catalogs MUST display status via the shared status badge and reuse the shared status concept"
+    },
+    "FR-012": {
+      "title": "Backend rejections on save or delete MUST be surfaced in place without discarding unsaved input"
+    },
+    "FR-013": {
+      "title": "Warehouses MUST support CRUD with fields facility, code, name, comment, status"
+    },
+    "FR-014": {
+      "title": "Warehouse facility, code, and name MUST be required on create"
+    },
+    "FR-015": {
+      "title": "Warehouse form MUST provide a searchable facility picker; facility displayed by name with a fallback label"
+    },
+    "FR-016": {
+      "title": "Cash Drawers MUST support CRUD with fields facility, code, name, comment, status"
+    },
+    "FR-017": {
+      "title": "Cash drawer facility, code, and name MUST be required on create"
+    },
+    "FR-018": {
+      "title": "Cash drawer form MUST provide the same searchable facility picker with by-name display and fallback"
+    },
+    "FR-019": {
+      "title": "Points of Sale MUST support CRUD with fields facility, code, name, warehouse, comment, status"
+    },
+    "FR-020": {
+      "title": "Point of sale facility, code, name, and warehouse MUST be required on create"
+    },
+    "FR-021": {
+      "title": "Point-of-sale form MUST provide searchable facility and warehouse pickers, both displayed by name with fallbacks"
+    },
+    "FR-022": {
+      "title": "Point-of-sale warehouse picker MUST offer only warehouses of the selected facility and force reselection on facility change"
+    },
+    "FR-023": {
+      "title": "Facility picker and filter MUST read facilities only, with no create/edit/delete affordance in this feature"
+    },
+    "FR-024": {
+      "title": "Facility type MAY be shown as a plain label but MUST NOT change any screen's behavior, fields, or layout"
+    },
+    "FR-025": {
+      "title": "Reading facilities MUST degrade gracefully: the list still renders and facility controls show their empty state"
+    },
+    "FR-026": {
+      "title": "Facility type MUST be named in one domain enum (Store 0 / Production Site 1); no screen reads raw type numbers"
+    },
+    "FR-027": {
+      "title": "Correct the access-control object mirror: rename stores(29) to facilities(29), remove productionSites(107)"
+    },
+    "FR-028": {
+      "title": "Facilities catalog MUST support full CRUD with its own list screen gated on facilities(29)"
+    },
+    "FR-029": {
+      "title": "Facility code, name, location, address, taxpayer required on create; type defaults to Store"
+    },
+    "FR-030": {
+      "title": "Facility form MUST provide a searchable SAT postal-code picker for fiscal location"
+    },
+    "FR-031": {
+      "title": "Facility form MUST provide an address picker plus inline address create that preserves other input"
+    },
+    "FR-032": {
+      "title": "Inline address form MUST capture required+optional address fields and be gated on addresses(11)"
+    },
+    "FR-033": {
+      "title": "Address type MUST be named in one place (Other/Home/Work/Business/Fiscal); no raw enum numbers"
+    },
+    "FR-034": {
+      "title": "Taxpayer MUST be a typed 13-char RFC, not a picker; server rejection surfaced against the field"
+    },
+    "FR-035": {
+      "title": "Facility addresses MUST render as readable text, resolved in bulk — never one request per row"
+    },
+    "FR-034a": {
+      "title": "Taxpayer field MUST be built so the interim typed input swaps to an autocomplete (mbe-api#100) with no other form rework"
+    },
+    "FR-034b": {
+      "title": "Facility taxpayer displayed as issuer name (fallback RFC, then label); no per-row resolve on the list"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 42,
+    "projectedTasks": 62,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "context": [
+    "area: lib/features/catalog (existing shared master-data module, extended)",
+    "area: lib/generated/openapi — WarehousesApi, PointsOfSaleApi, CashDrawersApi, FacilitiesApi (full CRUD already generated)",
+    "precedent: specs/013-catalog-logistics-payment-entities and specs/012-catalog-master-entities",
+    "constraint: reuse shared EntityStatus at lib/core/domain/entity_status.dart — no new status enum",
+    "constraint: RBAC objects warehouses(4)/pointsOfSale(9)/cashDrawers(10) already exist; no facilities object exists",
+    "constraint: no search param on any of the four list endpoints — file upstream, never client-side filter (constitution III/VI)",
+    "constraint: reuse DataTableView, CatalogPagination, CatalogFilterBar/SearchBar, CatalogFilterSheet, CatalogEntityPicker, ResponsiveFormGrid, ErrorBanner unmodified",
+    "upstream: mbe-api #86/#87/#88/#89 search param; #90 address FK, #91 logo upload, #92 FacilityType names, #93 facilities SystemObject — filed 2026-07-19",
+    "resolved: mbe-api FacilityType IntEnum is STORE=0, PRODUCTION_SITE=1 — issue #92 closed 2026-07-19; name it UI-side per the EntityStatus/Gender pattern",
+    "resolved 2026-07-20: mbe-api shipped search on all 4 list endpoints (#86-#89); client regenerated",
+    "resolved 2026-07-20: addresses full CRUD API + addresses(11) exists (#90); facility logo now optional (#91)",
+    "resolved 2026-07-20: SystemObject FACILITIES=29 reuses legacy stores slot; STORES/PRODUCTION_SITES removed upstream (#93) -> FR-027",
+    "resolved 2026-07-20: backend does NOT validate point-of-sale facility<->warehouse pairing -> FR-022 is a UI-only guard",
+    "scope reversal 2026-07-20: Facilities promoted to 4th managed catalog (US4, P2) with full CRUD",
+    "blocker accepted: taxpayer_issuer has no endpoint (#100) -> taxpayer is typed RFC, not a picker",
+    "Addresses: no catalog screens; picker + inline create from facility form only (#101 address not expanded)",
+    "taxpayer field is explicitly interim: mbe-api#100 requested to upgrade it to an autocomplete; stored value is the RFC either way",
+    "resolved 2026-07-21: #100 taxpayer-issuers API shipped -> taxpayer field is now an autocomplete gated on taxpayers(24); interim typed field retired",
+    "resolved 2026-07-21: #101 FacilityResponse.address now expanded (AddressResponse) -> FR-035 direct render, zero extra requests",
+    "resolved 2026-07-21: #102 backend now validates point-of-sale facility<->warehouse on create+update -> FR-022 guard is UX layer over an invariant",
+    "out of scope: TaxpayerCertificatesApi + FiscalCertificationProvider (CSD) rode along with #100 but are not consumed; Taxpayer Issuers catalog is a follow-up",
+    "analyze pass 2026-07-21: fixed 12 findings — I1/I2 header+FR-ref, I3 phantom list-item files, I4 filter-count, G1 FR-025 degrade task T115, G2 taxpayer-name resolution (T086/T090/T095/T096), G3 no-inline-issuer test, G4 delete-confirmation, G5 full-suite T116, U1 EntityStatusCell, A1 SC-003 softened, L1 SC reorder"
+  ],
+  "intent": "Deliver full CRUD catalog UIs for Facilities and its three facility-scoped operational catalogs (Warehouses, Points of Sale, Cash Drawers); addresses created inline and taxpayer picked via autocomplete from the facility form.",
+  "expectations": [
+    "Facilities management (create/edit/delete) and any Facilities screen — deferred pending upstream address management, logo upload, named facility-type values, and a facility access-control object",
+    "Cash drawer sessions (open/close/reconcile) — master record only",
+    "Warehouse stock, lots, serial numbers, and movements — master record only",
+    "Bulk import/export (CSV) for any of the three catalogs",
+    "Client-side filtering as a substitute for the missing server-side search param"
+  ]
+}

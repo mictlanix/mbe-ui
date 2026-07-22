@@ -9,6 +9,7 @@ import 'package:mbe_api_client/src/auth/api_key_auth.dart';
 import 'package:mbe_api_client/src/auth/basic_auth.dart';
 import 'package:mbe_api_client/src/auth/bearer_auth.dart';
 import 'package:mbe_api_client/src/auth/oauth.dart';
+import 'package:mbe_api_client/src/api/addresses_api.dart';
 import 'package:mbe_api_client/src/api/auth_api.dart';
 import 'package:mbe_api_client/src/api/cash_drawers_api.dart';
 import 'package:mbe_api_client/src/api/customers_api.dart';
@@ -25,6 +26,8 @@ import 'package:mbe_api_client/src/api/product_prices_api.dart';
 import 'package:mbe_api_client/src/api/products_api.dart';
 import 'package:mbe_api_client/src/api/sat_catalogs_api.dart';
 import 'package:mbe_api_client/src/api/suppliers_api.dart';
+import 'package:mbe_api_client/src/api/taxpayer_certificates_api.dart';
+import 'package:mbe_api_client/src/api/taxpayer_issuers_api.dart';
 import 'package:mbe_api_client/src/api/taxpayer_recipients_api.dart';
 import 'package:mbe_api_client/src/api/users_api.dart';
 import 'package:mbe_api_client/src/api/vehicle_operators_api.dart';
@@ -102,6 +105,12 @@ class MbeApiClient {
               .apiKeys[name] =
           apiKey;
     }
+  }
+
+  /// Get AddressesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AddressesApi getAddressesApi() {
+    return AddressesApi(dio, serializers);
   }
 
   /// Get AuthApi instance, base route and serializer can be overridden by a given but be careful,
@@ -198,6 +207,18 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   SuppliersApi getSuppliersApi() {
     return SuppliersApi(dio, serializers);
+  }
+
+  /// Get TaxpayerCertificatesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  TaxpayerCertificatesApi getTaxpayerCertificatesApi() {
+    return TaxpayerCertificatesApi(dio, serializers);
+  }
+
+  /// Get TaxpayerIssuersApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  TaxpayerIssuersApi getTaxpayerIssuersApi() {
+    return TaxpayerIssuersApi(dio, serializers);
   }
 
   /// Get TaxpayerRecipientsApi instance, base route and serializer can be overridden by a given but be careful,

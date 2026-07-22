@@ -266,6 +266,7 @@ class CashDrawersApi {
   ///
   ///
   /// Parameters:
+  /// * [search]
   /// * [facility]
   /// * [status]
   /// * [skip]
@@ -281,6 +282,7 @@ class CashDrawersApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseCashDrawerResponse>>
   listCashDrawersApiV1CashDrawersGet({
+    String? search,
     int? facility,
     EntityStatus? status,
     int? skip = 0,
@@ -306,6 +308,12 @@ class CashDrawersApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
       if (facility != null)
         r'facility': encodeQueryParameter(
           _serializers,

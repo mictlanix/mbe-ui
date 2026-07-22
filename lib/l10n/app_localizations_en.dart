@@ -1495,4 +1495,412 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taxpayerRecipientEmailRequiredError => 'Email is required.';
+
+  @override
+  String get facilityTypeStore => 'Store';
+
+  @override
+  String get facilityTypeProductionSite => 'Production Site';
+
+  @override
+  String get columnFacility => 'Facility';
+
+  @override
+  String get columnWarehouse => 'Warehouse';
+
+  @override
+  String get columnComment => 'Comment';
+
+  @override
+  String get columnType => 'Type';
+
+  @override
+  String get columnTaxpayer => 'Taxpayer';
+
+  @override
+  String get columnAddress => 'Address';
+
+  @override
+  String get columnLocation => 'Postal Code';
+
+  @override
+  String get facilityFieldLabel => 'Facility';
+
+  @override
+  String get warehouseFieldLabel => 'Warehouse';
+
+  @override
+  String get unknownFacilityLabel => 'Unknown facility';
+
+  @override
+  String get unknownWarehouseLabel => 'Unknown warehouse';
+
+  @override
+  String get warehousesMenuTitle => 'Warehouses';
+
+  @override
+  String get warehousesSearchLabel => 'Search by code or name';
+
+  @override
+  String get newWarehouseTooltip => 'New warehouse';
+
+  @override
+  String warehousesLoadError(Object error) {
+    return 'Failed to load warehouses: $error';
+  }
+
+  @override
+  String get noWarehousesFound => 'No warehouses found.';
+
+  @override
+  String get viewWarehouseTitle => 'View Warehouse';
+
+  @override
+  String get editWarehouseTitle => 'Edit Warehouse';
+
+  @override
+  String get newWarehouseTitle => 'New Warehouse';
+
+  @override
+  String get deleteWarehouseButton => 'Delete warehouse';
+
+  @override
+  String get deleteWarehouseConfirmTitle => 'Delete warehouse?';
+
+  @override
+  String deleteWarehouseConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get warehouseLoadFailedError => 'Failed to load warehouse.';
+
+  @override
+  String get warehouseCreateFailedError => 'Failed to create warehouse.';
+
+  @override
+  String get warehouseUpdateFailedError => 'Failed to update warehouse.';
+
+  @override
+  String get warehouseDeleteFailedError => 'Failed to delete warehouse.';
+
+  @override
+  String get warehouseCreatePermissionDeniedError =>
+      'You no longer have permission to create warehouses.';
+
+  @override
+  String get warehouseUpdatePermissionDeniedError =>
+      'You no longer have permission to edit warehouses.';
+
+  @override
+  String get warehouseDeletePermissionDeniedError =>
+      'You no longer have permission to delete warehouses.';
+
+  @override
+  String get warehouseFacilityRequiredError => 'Facility is required.';
+
+  @override
+  String get warehouseCodeRequiredError => 'Code is required.';
+
+  @override
+  String get warehouseNameRequiredError => 'Name is required.';
+
+  @override
+  String get cashDrawersMenuTitle => 'Cash Drawers';
+
+  @override
+  String get cashDrawersSearchLabel => 'Search by code or name';
+
+  @override
+  String get newCashDrawerTooltip => 'New cash drawer';
+
+  @override
+  String cashDrawersLoadError(Object error) {
+    return 'Failed to load cash drawers: $error';
+  }
+
+  @override
+  String get noCashDrawersFound => 'No cash drawers found.';
+
+  @override
+  String get viewCashDrawerTitle => 'View Cash Drawer';
+
+  @override
+  String get editCashDrawerTitle => 'Edit Cash Drawer';
+
+  @override
+  String get newCashDrawerTitle => 'New Cash Drawer';
+
+  @override
+  String get deleteCashDrawerButton => 'Delete cash drawer';
+
+  @override
+  String get deleteCashDrawerConfirmTitle => 'Delete cash drawer?';
+
+  @override
+  String deleteCashDrawerConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get cashDrawerLoadFailedError => 'Failed to load cash drawer.';
+
+  @override
+  String get cashDrawerCreateFailedError => 'Failed to create cash drawer.';
+
+  @override
+  String get cashDrawerUpdateFailedError => 'Failed to update cash drawer.';
+
+  @override
+  String get cashDrawerDeleteFailedError => 'Failed to delete cash drawer.';
+
+  @override
+  String get cashDrawerCreatePermissionDeniedError =>
+      'You no longer have permission to create cash drawers.';
+
+  @override
+  String get cashDrawerUpdatePermissionDeniedError =>
+      'You no longer have permission to edit cash drawers.';
+
+  @override
+  String get cashDrawerDeletePermissionDeniedError =>
+      'You no longer have permission to delete cash drawers.';
+
+  @override
+  String get cashDrawerFacilityRequiredError => 'Facility is required.';
+
+  @override
+  String get cashDrawerCodeRequiredError => 'Code is required.';
+
+  @override
+  String get cashDrawerNameRequiredError => 'Name is required.';
+
+  @override
+  String get pointsOfSaleMenuTitle => 'Points of Sale';
+
+  @override
+  String get pointsOfSaleSearchLabel => 'Search by code or name';
+
+  @override
+  String get newPointSaleTooltip => 'New point of sale';
+
+  @override
+  String pointsOfSaleLoadError(Object error) {
+    return 'Failed to load points of sale: $error';
+  }
+
+  @override
+  String get noPointsOfSaleFound => 'No points of sale found.';
+
+  @override
+  String get viewPointSaleTitle => 'View Point of Sale';
+
+  @override
+  String get editPointSaleTitle => 'Edit Point of Sale';
+
+  @override
+  String get newPointSaleTitle => 'New Point of Sale';
+
+  @override
+  String get deletePointSaleButton => 'Delete point of sale';
+
+  @override
+  String get deletePointSaleConfirmTitle => 'Delete point of sale?';
+
+  @override
+  String deletePointSaleConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get pointSaleLoadFailedError => 'Failed to load point of sale.';
+
+  @override
+  String get pointSaleCreateFailedError => 'Failed to create point of sale.';
+
+  @override
+  String get pointSaleUpdateFailedError => 'Failed to update point of sale.';
+
+  @override
+  String get pointSaleDeleteFailedError => 'Failed to delete point of sale.';
+
+  @override
+  String get pointSaleCreatePermissionDeniedError =>
+      'You no longer have permission to create points of sale.';
+
+  @override
+  String get pointSaleUpdatePermissionDeniedError =>
+      'You no longer have permission to edit points of sale.';
+
+  @override
+  String get pointSaleDeletePermissionDeniedError =>
+      'You no longer have permission to delete points of sale.';
+
+  @override
+  String get pointSaleFacilityRequiredError => 'Facility is required.';
+
+  @override
+  String get pointSaleCodeRequiredError => 'Code is required.';
+
+  @override
+  String get pointSaleNameRequiredError => 'Name is required.';
+
+  @override
+  String get pointSaleWarehouseRequiredError => 'Warehouse is required.';
+
+  @override
+  String get facilitiesMenuTitle => 'Facilities';
+
+  @override
+  String get facilitiesSearchLabel => 'Search by code or name';
+
+  @override
+  String get newFacilityTooltip => 'New facility';
+
+  @override
+  String facilitiesLoadError(Object error) {
+    return 'Failed to load facilities: $error';
+  }
+
+  @override
+  String get noFacilitiesFound => 'No facilities found.';
+
+  @override
+  String get viewFacilityTitle => 'View Facility';
+
+  @override
+  String get editFacilityTitle => 'Edit Facility';
+
+  @override
+  String get newFacilityTitle => 'New Facility';
+
+  @override
+  String get facilityReceiptMessageLabel => 'Receipt message';
+
+  @override
+  String get facilityDefaultBatchLabel => 'Default batch';
+
+  @override
+  String get facilityLogoLabel => 'Logo';
+
+  @override
+  String get deleteFacilityButton => 'Delete facility';
+
+  @override
+  String get deleteFacilityConfirmTitle => 'Delete facility?';
+
+  @override
+  String deleteFacilityConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get facilityLoadFailedError => 'Failed to load facility.';
+
+  @override
+  String get facilityCreateFailedError => 'Failed to create facility.';
+
+  @override
+  String get facilityUpdateFailedError => 'Failed to update facility.';
+
+  @override
+  String get facilityDeleteFailedError => 'Failed to delete facility.';
+
+  @override
+  String get facilityCreatePermissionDeniedError =>
+      'You no longer have permission to create facilities.';
+
+  @override
+  String get facilityUpdatePermissionDeniedError =>
+      'You no longer have permission to edit facilities.';
+
+  @override
+  String get facilityDeletePermissionDeniedError =>
+      'You no longer have permission to delete facilities.';
+
+  @override
+  String get facilityCodeRequiredError => 'Code is required.';
+
+  @override
+  String get facilityNameRequiredError => 'Name is required.';
+
+  @override
+  String get facilityLocationRequiredError => 'Postal code is required.';
+
+  @override
+  String get facilityAddressRequiredError => 'Address is required.';
+
+  @override
+  String get facilityTaxpayerRequiredError => 'Taxpayer is required.';
+
+  @override
+  String get facilityTaxpayerInvalidError =>
+      'Enter a valid RFC (up to 13 characters).';
+
+  @override
+  String get newAddressTooltip => 'New address';
+
+  @override
+  String get newAddressDialogTitle => 'New Address';
+
+  @override
+  String get createAddressButton => 'Create address';
+
+  @override
+  String get addressStreetLabel => 'Street';
+
+  @override
+  String get addressExteriorNumberLabel => 'Exterior number';
+
+  @override
+  String get addressInteriorNumberLabel => 'Interior number';
+
+  @override
+  String get addressPostalCodeLabel => 'Postal code';
+
+  @override
+  String get addressNeighborhoodLabel => 'Neighborhood';
+
+  @override
+  String get addressLocalityLabel => 'Locality';
+
+  @override
+  String get addressBoroughLabel => 'Borough';
+
+  @override
+  String get addressStateLabel => 'State';
+
+  @override
+  String get addressCityLabel => 'City';
+
+  @override
+  String get addressCountryLabel => 'Country';
+
+  @override
+  String get addressNicknameLabel => 'Nickname';
+
+  @override
+  String get addressCreateFailedError => 'Failed to create address.';
+
+  @override
+  String get addressStreetRequiredError => 'Street is required.';
+
+  @override
+  String get addressExteriorNumberRequiredError =>
+      'Exterior number is required.';
+
+  @override
+  String get addressPostalCodeRequiredError => 'Postal code is required.';
+
+  @override
+  String get addressNeighborhoodRequiredError => 'Neighborhood is required.';
+
+  @override
+  String get addressBoroughRequiredError => 'Borough is required.';
+
+  @override
+  String get addressStateRequiredError => 'State is required.';
+
+  @override
+  String get addressCountryRequiredError => 'Country is required.';
 }

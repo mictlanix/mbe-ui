@@ -46,7 +46,7 @@ abstract class FacilityCreate
   String get taxpayer;
 
   @BuiltValueField(wireName: r'logo')
-  String get logo;
+  String? get logo;
 
   @BuiltValueField(wireName: r'receipt_message')
   String? get receiptMessage;
@@ -118,11 +118,13 @@ class _$FacilityCreateSerializer
       object.taxpayer,
       specifiedType: const FullType(String),
     );
-    yield r'logo';
-    yield serializers.serialize(
-      object.logo,
-      specifiedType: const FullType(String),
-    );
+    if (object.logo != null) {
+      yield r'logo';
+      yield serializers.serialize(
+        object.logo,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     if (object.receiptMessage != null) {
       yield r'receipt_message';
       yield serializers.serialize(
@@ -226,9 +228,10 @@ class _$FacilityCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(String),
                   )
-                  as String;
+                  as String?;
+          if (valueDes == null) continue;
           result.logo = valueDes;
           break;
         case r'receipt_message':

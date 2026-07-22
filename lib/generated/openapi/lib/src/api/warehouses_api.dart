@@ -263,6 +263,7 @@ class WarehousesApi {
   ///
   ///
   /// Parameters:
+  /// * [search]
   /// * [facility]
   /// * [status]
   /// * [skip]
@@ -278,6 +279,7 @@ class WarehousesApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseWarehouseResponse>>
   listWarehousesApiV1WarehousesGet({
+    String? search,
     int? facility,
     EntityStatus? status,
     int? skip = 0,
@@ -303,6 +305,12 @@ class WarehousesApi {
     );
 
     final _queryParameters = <String, dynamic>{
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
+        ),
       if (facility != null)
         r'facility': encodeQueryParameter(
           _serializers,

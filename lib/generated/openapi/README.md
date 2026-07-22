@@ -47,13 +47,14 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 
-final api = MbeApiClient().getAuthApi();
-final ChangePasswordRequest changePasswordRequest = ; // ChangePasswordRequest | 
+final api = MbeApiClient().getAddressesApi();
+final AddressCreate addressCreate = ; // AddressCreate | 
 
 try {
-    api.changePasswordApiV1AuthChangePasswordPost(changePasswordRequest);
+    final response = await api.createAddressApiV1AddressesPost(addressCreate);
+    print(response);
 } on DioException catch (e) {
-    print("Exception when calling AuthApi->changePasswordApiV1AuthChangePasswordPost: $e\n");
+    print("Exception when calling AddressesApi->createAddressApiV1AddressesPost: $e\n");
 }
 
 ```
@@ -64,6 +65,11 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*AddressesApi*](doc/AddressesApi.md) | [**createAddressApiV1AddressesPost**](doc/AddressesApi.md#createaddressapiv1addressespost) | **POST** /api/v1/addresses | Create Address
+[*AddressesApi*](doc/AddressesApi.md) | [**deleteAddressApiV1AddressesAddressIdDelete**](doc/AddressesApi.md#deleteaddressapiv1addressesaddressiddelete) | **DELETE** /api/v1/addresses/{address_id} | Delete Address
+[*AddressesApi*](doc/AddressesApi.md) | [**getAddressApiV1AddressesAddressIdGet**](doc/AddressesApi.md#getaddressapiv1addressesaddressidget) | **GET** /api/v1/addresses/{address_id} | Get Address
+[*AddressesApi*](doc/AddressesApi.md) | [**listAddressesApiV1AddressesGet**](doc/AddressesApi.md#listaddressesapiv1addressesget) | **GET** /api/v1/addresses | List Addresses
+[*AddressesApi*](doc/AddressesApi.md) | [**updateAddressApiV1AddressesAddressIdPut**](doc/AddressesApi.md#updateaddressapiv1addressesaddressidput) | **PUT** /api/v1/addresses/{address_id} | Update Address
 [*AuthApi*](doc/AuthApi.md) | [**changePasswordApiV1AuthChangePasswordPost**](doc/AuthApi.md#changepasswordapiv1authchangepasswordpost) | **POST** /api/v1/auth/change-password | Change Password
 [*AuthApi*](doc/AuthApi.md) | [**confirmRecoveryApiV1AuthRecoverPost**](doc/AuthApi.md#confirmrecoveryapiv1authrecoverpost) | **POST** /api/v1/auth/recover | Confirm Recovery
 [*AuthApi*](doc/AuthApi.md) | [**getMeApiV1AuthMeGet**](doc/AuthApi.md#getmeapiv1authmeget) | **GET** /api/v1/auth/me | Get Me
@@ -98,6 +104,7 @@ Class | Method | HTTP request | Description
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**getFacilityApiV1FacilitiesFacilityIdGet**](doc/FacilitiesApi.md#getfacilityapiv1facilitiesfacilityidget) | **GET** /api/v1/facilities/{facility_id} | Get Facility
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**listFacilitiesApiV1FacilitiesGet**](doc/FacilitiesApi.md#listfacilitiesapiv1facilitiesget) | **GET** /api/v1/facilities | List Facilities
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**updateFacilityApiV1FacilitiesFacilityIdPut**](doc/FacilitiesApi.md#updatefacilityapiv1facilitiesfacilityidput) | **PUT** /api/v1/facilities/{facility_id} | Update Facility
+[*FacilitiesApi*](doc/FacilitiesApi.md) | [**uploadFacilityLogoApiV1FacilitiesFacilityIdLogoPost**](doc/FacilitiesApi.md#uploadfacilitylogoapiv1facilitiesfacilityidlogopost) | **POST** /api/v1/facilities/{facility_id}/logo | Upload Facility Logo
 [*HealthApi*](doc/HealthApi.md) | [**healthCheckApiV1HealthGet**](doc/HealthApi.md#healthcheckapiv1healthget) | **GET** /api/v1/health | Health Check
 [*LabelsApi*](doc/LabelsApi.md) | [**createLabelApiV1LabelsPost**](doc/LabelsApi.md#createlabelapiv1labelspost) | **POST** /api/v1/labels | Create Label
 [*LabelsApi*](doc/LabelsApi.md) | [**deleteLabelApiV1LabelsLabelIdDelete**](doc/LabelsApi.md#deletelabelapiv1labelslabeliddelete) | **DELETE** /api/v1/labels/{label_id} | Delete Label
@@ -169,6 +176,14 @@ Class | Method | HTTP request | Description
 [*SuppliersApi*](doc/SuppliersApi.md) | [**getSupplierApiV1SuppliersSupplierIdGet**](doc/SuppliersApi.md#getsupplierapiv1supplierssupplieridget) | **GET** /api/v1/suppliers/{supplier_id} | Get Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**listSuppliersApiV1SuppliersGet**](doc/SuppliersApi.md#listsuppliersapiv1suppliersget) | **GET** /api/v1/suppliers | List Suppliers
 [*SuppliersApi*](doc/SuppliersApi.md) | [**updateSupplierApiV1SuppliersSupplierIdPut**](doc/SuppliersApi.md#updatesupplierapiv1supplierssupplieridput) | **PUT** /api/v1/suppliers/{supplier_id} | Update Supplier
+[*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**getTaxpayerCertificateApiV1TaxpayerCertificatesCertificateIdGet**](doc/TaxpayerCertificatesApi.md#gettaxpayercertificateapiv1taxpayercertificatescertificateidget) | **GET** /api/v1/taxpayer-certificates/{certificate_id} | Get Taxpayer Certificate
+[*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**listTaxpayerCertificatesApiV1TaxpayerCertificatesGet**](doc/TaxpayerCertificatesApi.md#listtaxpayercertificatesapiv1taxpayercertificatesget) | **GET** /api/v1/taxpayer-certificates | List Taxpayer Certificates
+[*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**uploadTaxpayerCertificateApiV1TaxpayerCertificatesPost**](doc/TaxpayerCertificatesApi.md#uploadtaxpayercertificateapiv1taxpayercertificatespost) | **POST** /api/v1/taxpayer-certificates | Upload Taxpayer Certificate
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**createTaxpayerIssuerApiV1TaxpayerIssuersPost**](doc/TaxpayerIssuersApi.md#createtaxpayerissuerapiv1taxpayerissuerspost) | **POST** /api/v1/taxpayer-issuers | Create Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**deleteTaxpayerIssuerApiV1TaxpayerIssuersRfcDelete**](doc/TaxpayerIssuersApi.md#deletetaxpayerissuerapiv1taxpayerissuersrfcdelete) | **DELETE** /api/v1/taxpayer-issuers/{rfc} | Delete Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**getTaxpayerIssuerApiV1TaxpayerIssuersRfcGet**](doc/TaxpayerIssuersApi.md#gettaxpayerissuerapiv1taxpayerissuersrfcget) | **GET** /api/v1/taxpayer-issuers/{rfc} | Get Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**listTaxpayerIssuersApiV1TaxpayerIssuersGet**](doc/TaxpayerIssuersApi.md#listtaxpayerissuersapiv1taxpayerissuersget) | **GET** /api/v1/taxpayer-issuers | List Taxpayer Issuers
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**updateTaxpayerIssuerApiV1TaxpayerIssuersRfcPut**](doc/TaxpayerIssuersApi.md#updatetaxpayerissuerapiv1taxpayerissuersrfcput) | **PUT** /api/v1/taxpayer-issuers/{rfc} | Update Taxpayer Issuer
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**createTaxpayerRecipientApiV1TaxpayerRecipientsPost**](doc/TaxpayerRecipientsApi.md#createtaxpayerrecipientapiv1taxpayerrecipientspost) | **POST** /api/v1/taxpayer-recipients | Create Taxpayer Recipient
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**deleteTaxpayerRecipientApiV1TaxpayerRecipientsRfcDelete**](doc/TaxpayerRecipientsApi.md#deletetaxpayerrecipientapiv1taxpayerrecipientsrfcdelete) | **DELETE** /api/v1/taxpayer-recipients/{rfc} | Delete Taxpayer Recipient
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**getTaxpayerRecipientApiV1TaxpayerRecipientsRfcGet**](doc/TaxpayerRecipientsApi.md#gettaxpayerrecipientapiv1taxpayerrecipientsrfcget) | **GET** /api/v1/taxpayer-recipients/{rfc} | Get Taxpayer Recipient
@@ -199,6 +214,10 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AddressCreate](doc/AddressCreate.md)
+ - [AddressResponse](doc/AddressResponse.md)
+ - [AddressType](doc/AddressType.md)
+ - [AddressUpdate](doc/AddressUpdate.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerUpdate](doc/CashDrawerUpdate.md)
@@ -227,6 +246,7 @@ Class | Method | HTTP request | Description
  - [FacilitySummary](doc/FacilitySummary.md)
  - [FacilityType](doc/FacilityType.md)
  - [FacilityUpdate](doc/FacilityUpdate.md)
+ - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfit1](doc/HighProfit1.md)
@@ -235,6 +255,7 @@ Class | Method | HTTP request | Description
  - [LabelCreate](doc/LabelCreate.md)
  - [LabelResponse](doc/LabelResponse.md)
  - [LabelUpdate](doc/LabelUpdate.md)
+ - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)
@@ -249,6 +270,8 @@ Class | Method | HTTP request | Description
  - [ListResponseProductPriceResponse](doc/ListResponseProductPriceResponse.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
+ - [ListResponseTaxpayerCertificateResponse](doc/ListResponseTaxpayerCertificateResponse.md)
+ - [ListResponseTaxpayerIssuerResponse](doc/ListResponseTaxpayerIssuerResponse.md)
  - [ListResponseTaxpayerRecipientResponse](doc/ListResponseTaxpayerRecipientResponse.md)
  - [ListResponseVehicleOperatorResponse](doc/ListResponseVehicleOperatorResponse.md)
  - [ListResponseVehicleResponse](doc/ListResponseVehicleResponse.md)
@@ -289,6 +312,10 @@ Class | Method | HTTP request | Description
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)
  - [TaxRate](doc/TaxRate.md)
+ - [TaxpayerCertificateResponse](doc/TaxpayerCertificateResponse.md)
+ - [TaxpayerIssuerCreate](doc/TaxpayerIssuerCreate.md)
+ - [TaxpayerIssuerResponse](doc/TaxpayerIssuerResponse.md)
+ - [TaxpayerIssuerUpdate](doc/TaxpayerIssuerUpdate.md)
  - [TaxpayerRecipientCreate](doc/TaxpayerRecipientCreate.md)
  - [TaxpayerRecipientResponse](doc/TaxpayerRecipientResponse.md)
  - [TaxpayerRecipientUpdate](doc/TaxpayerRecipientUpdate.md)

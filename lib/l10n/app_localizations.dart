@@ -2815,6 +2815,762 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email is required.'**
   String get taxpayerRecipientEmailRequiredError;
+
+  /// No description provided for @facilityTypeStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get facilityTypeStore;
+
+  /// No description provided for @facilityTypeProductionSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Production Site'**
+  String get facilityTypeProductionSite;
+
+  /// No description provided for @columnFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get columnFacility;
+
+  /// No description provided for @columnWarehouse.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get columnWarehouse;
+
+  /// No description provided for @columnComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get columnComment;
+
+  /// No description provided for @columnType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get columnType;
+
+  /// No description provided for @columnTaxpayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer'**
+  String get columnTaxpayer;
+
+  /// No description provided for @columnAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get columnAddress;
+
+  /// No description provided for @columnLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal Code'**
+  String get columnLocation;
+
+  /// No description provided for @facilityFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get facilityFieldLabel;
+
+  /// No description provided for @warehouseFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get warehouseFieldLabel;
+
+  /// No description provided for @unknownFacilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown facility'**
+  String get unknownFacilityLabel;
+
+  /// No description provided for @unknownWarehouseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown warehouse'**
+  String get unknownWarehouseLabel;
+
+  /// No description provided for @warehousesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouses'**
+  String get warehousesMenuTitle;
+
+  /// No description provided for @warehousesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get warehousesSearchLabel;
+
+  /// No description provided for @newWarehouseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New warehouse'**
+  String get newWarehouseTooltip;
+
+  /// No description provided for @warehousesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load warehouses: {error}'**
+  String warehousesLoadError(Object error);
+
+  /// No description provided for @noWarehousesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No warehouses found.'**
+  String get noWarehousesFound;
+
+  /// No description provided for @viewWarehouseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Warehouse'**
+  String get viewWarehouseTitle;
+
+  /// No description provided for @editWarehouseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Warehouse'**
+  String get editWarehouseTitle;
+
+  /// No description provided for @newWarehouseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Warehouse'**
+  String get newWarehouseTitle;
+
+  /// No description provided for @deleteWarehouseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete warehouse'**
+  String get deleteWarehouseButton;
+
+  /// No description provided for @deleteWarehouseConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete warehouse?'**
+  String get deleteWarehouseConfirmTitle;
+
+  /// No description provided for @deleteWarehouseConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteWarehouseConfirmMessage(String name);
+
+  /// No description provided for @warehouseLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load warehouse.'**
+  String get warehouseLoadFailedError;
+
+  /// No description provided for @warehouseCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create warehouse.'**
+  String get warehouseCreateFailedError;
+
+  /// No description provided for @warehouseUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update warehouse.'**
+  String get warehouseUpdateFailedError;
+
+  /// No description provided for @warehouseDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete warehouse.'**
+  String get warehouseDeleteFailedError;
+
+  /// No description provided for @warehouseCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create warehouses.'**
+  String get warehouseCreatePermissionDeniedError;
+
+  /// No description provided for @warehouseUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit warehouses.'**
+  String get warehouseUpdatePermissionDeniedError;
+
+  /// No description provided for @warehouseDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete warehouses.'**
+  String get warehouseDeletePermissionDeniedError;
+
+  /// No description provided for @warehouseFacilityRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility is required.'**
+  String get warehouseFacilityRequiredError;
+
+  /// No description provided for @warehouseCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get warehouseCodeRequiredError;
+
+  /// No description provided for @warehouseNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get warehouseNameRequiredError;
+
+  /// No description provided for @cashDrawersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Drawers'**
+  String get cashDrawersMenuTitle;
+
+  /// No description provided for @cashDrawersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get cashDrawersSearchLabel;
+
+  /// No description provided for @newCashDrawerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New cash drawer'**
+  String get newCashDrawerTooltip;
+
+  /// No description provided for @cashDrawersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load cash drawers: {error}'**
+  String cashDrawersLoadError(Object error);
+
+  /// No description provided for @noCashDrawersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No cash drawers found.'**
+  String get noCashDrawersFound;
+
+  /// No description provided for @viewCashDrawerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Cash Drawer'**
+  String get viewCashDrawerTitle;
+
+  /// No description provided for @editCashDrawerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Cash Drawer'**
+  String get editCashDrawerTitle;
+
+  /// No description provided for @newCashDrawerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Cash Drawer'**
+  String get newCashDrawerTitle;
+
+  /// No description provided for @deleteCashDrawerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cash drawer'**
+  String get deleteCashDrawerButton;
+
+  /// No description provided for @deleteCashDrawerConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cash drawer?'**
+  String get deleteCashDrawerConfirmTitle;
+
+  /// No description provided for @deleteCashDrawerConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteCashDrawerConfirmMessage(String name);
+
+  /// No description provided for @cashDrawerLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load cash drawer.'**
+  String get cashDrawerLoadFailedError;
+
+  /// No description provided for @cashDrawerCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create cash drawer.'**
+  String get cashDrawerCreateFailedError;
+
+  /// No description provided for @cashDrawerUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update cash drawer.'**
+  String get cashDrawerUpdateFailedError;
+
+  /// No description provided for @cashDrawerDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete cash drawer.'**
+  String get cashDrawerDeleteFailedError;
+
+  /// No description provided for @cashDrawerCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create cash drawers.'**
+  String get cashDrawerCreatePermissionDeniedError;
+
+  /// No description provided for @cashDrawerUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit cash drawers.'**
+  String get cashDrawerUpdatePermissionDeniedError;
+
+  /// No description provided for @cashDrawerDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete cash drawers.'**
+  String get cashDrawerDeletePermissionDeniedError;
+
+  /// No description provided for @cashDrawerFacilityRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility is required.'**
+  String get cashDrawerFacilityRequiredError;
+
+  /// No description provided for @cashDrawerCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get cashDrawerCodeRequiredError;
+
+  /// No description provided for @cashDrawerNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get cashDrawerNameRequiredError;
+
+  /// No description provided for @pointsOfSaleMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Points of Sale'**
+  String get pointsOfSaleMenuTitle;
+
+  /// No description provided for @pointsOfSaleSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get pointsOfSaleSearchLabel;
+
+  /// No description provided for @newPointSaleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New point of sale'**
+  String get newPointSaleTooltip;
+
+  /// No description provided for @pointsOfSaleLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load points of sale: {error}'**
+  String pointsOfSaleLoadError(Object error);
+
+  /// No description provided for @noPointsOfSaleFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No points of sale found.'**
+  String get noPointsOfSaleFound;
+
+  /// No description provided for @viewPointSaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Point of Sale'**
+  String get viewPointSaleTitle;
+
+  /// No description provided for @editPointSaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Point of Sale'**
+  String get editPointSaleTitle;
+
+  /// No description provided for @newPointSaleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Point of Sale'**
+  String get newPointSaleTitle;
+
+  /// No description provided for @deletePointSaleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete point of sale'**
+  String get deletePointSaleButton;
+
+  /// No description provided for @deletePointSaleConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete point of sale?'**
+  String get deletePointSaleConfirmTitle;
+
+  /// No description provided for @deletePointSaleConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deletePointSaleConfirmMessage(String name);
+
+  /// No description provided for @pointSaleLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load point of sale.'**
+  String get pointSaleLoadFailedError;
+
+  /// No description provided for @pointSaleCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create point of sale.'**
+  String get pointSaleCreateFailedError;
+
+  /// No description provided for @pointSaleUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update point of sale.'**
+  String get pointSaleUpdateFailedError;
+
+  /// No description provided for @pointSaleDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete point of sale.'**
+  String get pointSaleDeleteFailedError;
+
+  /// No description provided for @pointSaleCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create points of sale.'**
+  String get pointSaleCreatePermissionDeniedError;
+
+  /// No description provided for @pointSaleUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit points of sale.'**
+  String get pointSaleUpdatePermissionDeniedError;
+
+  /// No description provided for @pointSaleDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete points of sale.'**
+  String get pointSaleDeletePermissionDeniedError;
+
+  /// No description provided for @pointSaleFacilityRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility is required.'**
+  String get pointSaleFacilityRequiredError;
+
+  /// No description provided for @pointSaleCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get pointSaleCodeRequiredError;
+
+  /// No description provided for @pointSaleNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get pointSaleNameRequiredError;
+
+  /// No description provided for @pointSaleWarehouseRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse is required.'**
+  String get pointSaleWarehouseRequiredError;
+
+  /// No description provided for @facilitiesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Facilities'**
+  String get facilitiesMenuTitle;
+
+  /// No description provided for @facilitiesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get facilitiesSearchLabel;
+
+  /// No description provided for @newFacilityTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New facility'**
+  String get newFacilityTooltip;
+
+  /// No description provided for @facilitiesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load facilities: {error}'**
+  String facilitiesLoadError(Object error);
+
+  /// No description provided for @noFacilitiesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No facilities found.'**
+  String get noFacilitiesFound;
+
+  /// No description provided for @viewFacilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Facility'**
+  String get viewFacilityTitle;
+
+  /// No description provided for @editFacilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Facility'**
+  String get editFacilityTitle;
+
+  /// No description provided for @newFacilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Facility'**
+  String get newFacilityTitle;
+
+  /// No description provided for @facilityReceiptMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt message'**
+  String get facilityReceiptMessageLabel;
+
+  /// No description provided for @facilityDefaultBatchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default batch'**
+  String get facilityDefaultBatchLabel;
+
+  /// No description provided for @facilityLogoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get facilityLogoLabel;
+
+  /// No description provided for @deleteFacilityButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete facility'**
+  String get deleteFacilityButton;
+
+  /// No description provided for @deleteFacilityConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete facility?'**
+  String get deleteFacilityConfirmTitle;
+
+  /// No description provided for @deleteFacilityConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteFacilityConfirmMessage(String name);
+
+  /// No description provided for @facilityLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load facility.'**
+  String get facilityLoadFailedError;
+
+  /// No description provided for @facilityCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create facility.'**
+  String get facilityCreateFailedError;
+
+  /// No description provided for @facilityUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update facility.'**
+  String get facilityUpdateFailedError;
+
+  /// No description provided for @facilityDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete facility.'**
+  String get facilityDeleteFailedError;
+
+  /// No description provided for @facilityCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create facilities.'**
+  String get facilityCreatePermissionDeniedError;
+
+  /// No description provided for @facilityUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to edit facilities.'**
+  String get facilityUpdatePermissionDeniedError;
+
+  /// No description provided for @facilityDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete facilities.'**
+  String get facilityDeletePermissionDeniedError;
+
+  /// No description provided for @facilityCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Code is required.'**
+  String get facilityCodeRequiredError;
+
+  /// No description provided for @facilityNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get facilityNameRequiredError;
+
+  /// No description provided for @facilityLocationRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code is required.'**
+  String get facilityLocationRequiredError;
+
+  /// No description provided for @facilityAddressRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Address is required.'**
+  String get facilityAddressRequiredError;
+
+  /// No description provided for @facilityTaxpayerRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer is required.'**
+  String get facilityTaxpayerRequiredError;
+
+  /// No description provided for @facilityTaxpayerInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid RFC (up to 13 characters).'**
+  String get facilityTaxpayerInvalidError;
+
+  /// No description provided for @newAddressTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New address'**
+  String get newAddressTooltip;
+
+  /// No description provided for @newAddressDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Address'**
+  String get newAddressDialogTitle;
+
+  /// No description provided for @createAddressButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create address'**
+  String get createAddressButton;
+
+  /// No description provided for @addressStreetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Street'**
+  String get addressStreetLabel;
+
+  /// No description provided for @addressExteriorNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exterior number'**
+  String get addressExteriorNumberLabel;
+
+  /// No description provided for @addressInteriorNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Interior number'**
+  String get addressInteriorNumberLabel;
+
+  /// No description provided for @addressPostalCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get addressPostalCodeLabel;
+
+  /// No description provided for @addressNeighborhoodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighborhood'**
+  String get addressNeighborhoodLabel;
+
+  /// No description provided for @addressLocalityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Locality'**
+  String get addressLocalityLabel;
+
+  /// No description provided for @addressBoroughLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Borough'**
+  String get addressBoroughLabel;
+
+  /// No description provided for @addressStateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get addressStateLabel;
+
+  /// No description provided for @addressCityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get addressCityLabel;
+
+  /// No description provided for @addressCountryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get addressCountryLabel;
+
+  /// No description provided for @addressNicknameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname'**
+  String get addressNicknameLabel;
+
+  /// No description provided for @addressCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create address.'**
+  String get addressCreateFailedError;
+
+  /// No description provided for @addressStreetRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Street is required.'**
+  String get addressStreetRequiredError;
+
+  /// No description provided for @addressExteriorNumberRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Exterior number is required.'**
+  String get addressExteriorNumberRequiredError;
+
+  /// No description provided for @addressPostalCodeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code is required.'**
+  String get addressPostalCodeRequiredError;
+
+  /// No description provided for @addressNeighborhoodRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighborhood is required.'**
+  String get addressNeighborhoodRequiredError;
+
+  /// No description provided for @addressBoroughRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Borough is required.'**
+  String get addressBoroughRequiredError;
+
+  /// No description provided for @addressStateRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'State is required.'**
+  String get addressStateRequiredError;
+
+  /// No description provided for @addressCountryRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Country is required.'**
+  String get addressCountryRequiredError;
 }
 
 class _AppLocalizationsDelegate

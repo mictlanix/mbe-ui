@@ -31,7 +31,15 @@ import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_sc
 import 'package:mbe_ui/features/catalog/presentation/vehicle_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/cash_drawer_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/cash_drawers_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/facilities_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/facility_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/point_sale_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/points_of_sale_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/warehouse_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/warehouses_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -177,6 +185,42 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/vehicle-operators',
                 builder: (context, state) => const VehicleOperatorsListScreen(),
+              ),
+            ],
+          ),
+          // Branch index continues positionally from spec 013's last branch
+          // (vehicleOperators = 13): spec 014 appends Warehouses(14)→
+          // CashDrawers(15)→PointsOfSale(16)→Facilities(17) in build order
+          // (contracts/routes.md).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/warehouses',
+                builder: (context, state) => const WarehousesListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/cash-drawers',
+                builder: (context, state) => const CashDrawersListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/points-of-sale',
+                builder: (context, state) => const PointsOfSaleListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/facilities',
+                builder: (context, state) => const FacilitiesListScreen(),
               ),
             ],
           ),
@@ -343,6 +387,50 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
+      GoRoute(
+        path: '/warehouses/new',
+        builder: (context, state) => const WarehouseDetailScreen(),
+      ),
+      GoRoute(
+        path: '/warehouses/:warehouseId',
+        builder: (context, state) => WarehouseDetailScreen(
+          warehouseId: int.parse(state.pathParameters['warehouseId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/cash-drawers/new',
+        builder: (context, state) => const CashDrawerDetailScreen(),
+      ),
+      GoRoute(
+        path: '/cash-drawers/:cashDrawerId',
+        builder: (context, state) => CashDrawerDetailScreen(
+          cashDrawerId: int.parse(state.pathParameters['cashDrawerId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/points-of-sale/new',
+        builder: (context, state) => const PointSaleDetailScreen(),
+      ),
+      GoRoute(
+        path: '/points-of-sale/:pointSaleId',
+        builder: (context, state) => PointSaleDetailScreen(
+          pointSaleId: int.parse(state.pathParameters['pointSaleId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/facilities/new',
+        builder: (context, state) => const FacilityDetailScreen(),
+      ),
+      GoRoute(
+        path: '/facilities/:facilityId',
+        builder: (context, state) => FacilityDetailScreen(
+          facilityId: int.parse(state.pathParameters['facilityId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
     ],
   );
 });
@@ -450,6 +538,18 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/vehicle-operators')) {
     return (object: SystemObject.vehicleOperators, right: AccessRight.read);
+  }
+  if (location.startsWith('/warehouses')) {
+    return (object: SystemObject.warehouses, right: AccessRight.read);
+  }
+  if (location.startsWith('/cash-drawers')) {
+    return (object: SystemObject.cashDrawers, right: AccessRight.read);
+  }
+  if (location.startsWith('/points-of-sale')) {
+    return (object: SystemObject.pointsOfSale, right: AccessRight.read);
+  }
+  if (location.startsWith('/facilities')) {
+    return (object: SystemObject.facilities, right: AccessRight.read);
   }
   return null;
 }

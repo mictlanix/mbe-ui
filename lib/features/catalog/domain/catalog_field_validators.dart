@@ -1,6 +1,7 @@
 /// Client-side validators shared by the Suppliers, Employees, Customers,
 /// Taxpayer Recipients, Vehicles, and Vehicle Operators forms (spec 012
-/// FR-011/FR-016/FR-019/FR-024; spec 013 FR-013/FR-016).
+/// FR-011/FR-016/FR-019/FR-024; spec 013 FR-013/FR-016), and the Facilities
+/// form (spec 014 FR-034).
 /// Money/integer fields operate on their raw `String` representation and are
 /// never parsed to `double` for storage, only checked for validity here.
 abstract final class CatalogFieldValidators {
@@ -37,5 +38,14 @@ abstract final class CatalogFieldValidators {
   static bool dateNotBefore(DateTime? start, DateTime? end) {
     if (start == null || end == null) return true;
     return !end.isBefore(start);
+  }
+
+  /// Facility `taxpayer` (RFC): required, at most 13 characters. Shape only
+  /// — this is deliberately NOT an existence check; whether the RFC belongs
+  /// to a registered issuer is the server's call to make, never claimed
+  /// locally (FR-034, spec Edge Cases).
+  static bool isValidRfcShape(String value) {
+    final trimmed = value.trim();
+    return trimmed.isNotEmpty && trimmed.length <= 13;
   }
 }
