@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Fiscal Catalogs (Payment Method Options, Taxpayer Issuers, Taxpayer Certificates)",
   "branch": "015-fiscal-catalogs",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-22T02:57:55.214Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-22T03:12:25.898Z"
     }
   ]
 }
