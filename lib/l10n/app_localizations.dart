@@ -3571,6 +3571,558 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Country is required.'**
   String get addressCountryRequiredError;
+
+  /// No description provided for @paymentMethodOptionsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method Options'**
+  String get paymentMethodOptionsMenuTitle;
+
+  /// No description provided for @columnPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method'**
+  String get columnPaymentMethod;
+
+  /// No description provided for @columnNumberOfPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get columnNumberOfPayments;
+
+  /// No description provided for @paymentMethodFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get paymentMethodFieldLabel;
+
+  /// No description provided for @numberOfPaymentsFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of payments'**
+  String get numberOfPaymentsFieldLabel;
+
+  /// No description provided for @displayOnTicketFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on ticket'**
+  String get displayOnTicketFieldLabel;
+
+  /// No description provided for @commissionFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission'**
+  String get commissionFieldLabel;
+
+  /// No description provided for @newPaymentMethodOptionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New payment method option'**
+  String get newPaymentMethodOptionTooltip;
+
+  /// No description provided for @paymentMethodOptionsSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get paymentMethodOptionsSearchLabel;
+
+  /// No description provided for @noPaymentMethodOptionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment method options found.'**
+  String get noPaymentMethodOptionsFound;
+
+  /// No description provided for @paymentMethodOptionsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load payment method options: {error}'**
+  String paymentMethodOptionsLoadError(Object error);
+
+  /// No description provided for @viewPaymentMethodOptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Payment Method Option'**
+  String get viewPaymentMethodOptionTitle;
+
+  /// No description provided for @editPaymentMethodOptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Payment Method Option'**
+  String get editPaymentMethodOptionTitle;
+
+  /// No description provided for @newPaymentMethodOptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Payment Method Option'**
+  String get newPaymentMethodOptionTitle;
+
+  /// No description provided for @deletePaymentMethodOptionButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete payment method option'**
+  String get deletePaymentMethodOptionButton;
+
+  /// No description provided for @deletePaymentMethodOptionConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete payment method option?'**
+  String get deletePaymentMethodOptionConfirmTitle;
+
+  /// No description provided for @deletePaymentMethodOptionConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deletePaymentMethodOptionConfirmMessage(String name);
+
+  /// No description provided for @paymentMethodOptionLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load payment method option.'**
+  String get paymentMethodOptionLoadFailedError;
+
+  /// No description provided for @paymentMethodOptionCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create payment method option.'**
+  String get paymentMethodOptionCreateFailedError;
+
+  /// No description provided for @paymentMethodOptionUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update payment method option.'**
+  String get paymentMethodOptionUpdateFailedError;
+
+  /// No description provided for @paymentMethodOptionDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete payment method option.'**
+  String get paymentMethodOptionDeleteFailedError;
+
+  /// No description provided for @paymentMethodOptionCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create payment method options.'**
+  String get paymentMethodOptionCreatePermissionDeniedError;
+
+  /// No description provided for @paymentMethodOptionUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to update payment method options.'**
+  String get paymentMethodOptionUpdatePermissionDeniedError;
+
+  /// No description provided for @paymentMethodOptionDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete payment method options.'**
+  String get paymentMethodOptionDeletePermissionDeniedError;
+
+  /// No description provided for @paymentMethodOptionFacilityRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility is required.'**
+  String get paymentMethodOptionFacilityRequiredError;
+
+  /// No description provided for @paymentMethodOptionNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get paymentMethodOptionNameRequiredError;
+
+  /// No description provided for @paymentMethodOptionPaymentMethodRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method is required.'**
+  String get paymentMethodOptionPaymentMethodRequiredError;
+
+  /// No description provided for @paymentMethodOptionNumberOfPaymentsInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of payments must be at least 1.'**
+  String get paymentMethodOptionNumberOfPaymentsInvalidError;
+
+  /// No description provided for @paymentMethodOptionCommissionInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission must be a non-negative number.'**
+  String get paymentMethodOptionCommissionInvalidError;
+
+  /// No description provided for @paymentMethodNa.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get paymentMethodNa;
+
+  /// No description provided for @paymentMethodCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentMethodCash;
+
+  /// No description provided for @paymentMethodCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Check'**
+  String get paymentMethodCheck;
+
+  /// No description provided for @paymentMethodEft.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic funds transfer'**
+  String get paymentMethodEft;
+
+  /// No description provided for @paymentMethodCreditCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit card'**
+  String get paymentMethodCreditCard;
+
+  /// No description provided for @paymentMethodElectronicPurse.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic purse'**
+  String get paymentMethodElectronicPurse;
+
+  /// No description provided for @paymentMethodElectronicMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronic money'**
+  String get paymentMethodElectronicMoney;
+
+  /// No description provided for @paymentMethodFoodVouchers.
+  ///
+  /// In en, this message translates to:
+  /// **'Food vouchers'**
+  String get paymentMethodFoodVouchers;
+
+  /// No description provided for @paymentMethodGiving.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment in kind'**
+  String get paymentMethodGiving;
+
+  /// No description provided for @paymentMethodCreditorSatisfaction.
+  ///
+  /// In en, this message translates to:
+  /// **'To the satisfaction of the creditor'**
+  String get paymentMethodCreditorSatisfaction;
+
+  /// No description provided for @paymentMethodDebitCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit card'**
+  String get paymentMethodDebitCard;
+
+  /// No description provided for @paymentMethodServiceCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Service card'**
+  String get paymentMethodServiceCard;
+
+  /// No description provided for @paymentMethodAdvancePayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance payments'**
+  String get paymentMethodAdvancePayments;
+
+  /// No description provided for @paymentMethodToBeDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'To be defined'**
+  String get paymentMethodToBeDefined;
+
+  /// No description provided for @paymentMethodGovernmentFunding.
+  ///
+  /// In en, this message translates to:
+  /// **'Government funding'**
+  String get paymentMethodGovernmentFunding;
+
+  /// No description provided for @taxpayerIssuersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxpayer Issuers'**
+  String get taxpayerIssuersMenuTitle;
+
+  /// No description provided for @columnRfc.
+  ///
+  /// In en, this message translates to:
+  /// **'RFC'**
+  String get columnRfc;
+
+  /// No description provided for @columnPostalCodeShort.
+  ///
+  /// In en, this message translates to:
+  /// **'C.P.'**
+  String get columnPostalCodeShort;
+
+  /// No description provided for @columnRegime.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiscal Regime'**
+  String get columnRegime;
+
+  /// No description provided for @rfcFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'RFC'**
+  String get rfcFieldLabel;
+
+  /// No description provided for @providerFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Certification provider'**
+  String get providerFieldLabel;
+
+  /// No description provided for @newTaxpayerIssuerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New taxpayer issuer'**
+  String get newTaxpayerIssuerTooltip;
+
+  /// No description provided for @taxpayerIssuersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by RFC or name'**
+  String get taxpayerIssuersSearchLabel;
+
+  /// No description provided for @noTaxpayerIssuersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No taxpayer issuers found.'**
+  String get noTaxpayerIssuersFound;
+
+  /// No description provided for @taxpayerIssuersLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load taxpayer issuers: {error}'**
+  String taxpayerIssuersLoadError(Object error);
+
+  /// No description provided for @viewTaxpayerIssuerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Taxpayer Issuer'**
+  String get viewTaxpayerIssuerTitle;
+
+  /// No description provided for @editTaxpayerIssuerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Taxpayer Issuer'**
+  String get editTaxpayerIssuerTitle;
+
+  /// No description provided for @newTaxpayerIssuerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Taxpayer Issuer'**
+  String get newTaxpayerIssuerTitle;
+
+  /// No description provided for @deleteTaxpayerIssuerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete taxpayer issuer'**
+  String get deleteTaxpayerIssuerButton;
+
+  /// No description provided for @deleteTaxpayerIssuerConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete taxpayer issuer?'**
+  String get deleteTaxpayerIssuerConfirmTitle;
+
+  /// No description provided for @deleteTaxpayerIssuerConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
+  String deleteTaxpayerIssuerConfirmMessage(String name);
+
+  /// No description provided for @taxpayerIssuerLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load taxpayer issuer.'**
+  String get taxpayerIssuerLoadFailedError;
+
+  /// No description provided for @taxpayerIssuerCreateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create taxpayer issuer.'**
+  String get taxpayerIssuerCreateFailedError;
+
+  /// No description provided for @taxpayerIssuerUpdateFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update taxpayer issuer.'**
+  String get taxpayerIssuerUpdateFailedError;
+
+  /// No description provided for @taxpayerIssuerDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete taxpayer issuer.'**
+  String get taxpayerIssuerDeleteFailedError;
+
+  /// No description provided for @taxpayerIssuerCreatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to create taxpayer issuers.'**
+  String get taxpayerIssuerCreatePermissionDeniedError;
+
+  /// No description provided for @taxpayerIssuerUpdatePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to update taxpayer issuers.'**
+  String get taxpayerIssuerUpdatePermissionDeniedError;
+
+  /// No description provided for @taxpayerIssuerDeletePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to delete taxpayer issuers.'**
+  String get taxpayerIssuerDeletePermissionDeniedError;
+
+  /// No description provided for @taxpayerIssuerRfcRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'RFC is required.'**
+  String get taxpayerIssuerRfcRequiredError;
+
+  /// No description provided for @taxpayerIssuerNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get taxpayerIssuerNameRequiredError;
+
+  /// No description provided for @taxpayerIssuerRegimeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiscal regime is required.'**
+  String get taxpayerIssuerRegimeRequiredError;
+
+  /// No description provided for @fiscalCertificationProviderNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get fiscalCertificationProviderNone;
+
+  /// No description provided for @fiscalCertificationProviderDiverza.
+  ///
+  /// In en, this message translates to:
+  /// **'Diverza'**
+  String get fiscalCertificationProviderDiverza;
+
+  /// No description provided for @fiscalCertificationProviderFiscoClic.
+  ///
+  /// In en, this message translates to:
+  /// **'FiscoClic'**
+  String get fiscalCertificationProviderFiscoClic;
+
+  /// No description provided for @fiscalCertificationProviderServisim.
+  ///
+  /// In en, this message translates to:
+  /// **'Servisim'**
+  String get fiscalCertificationProviderServisim;
+
+  /// No description provided for @fiscalCertificationProviderProFact.
+  ///
+  /// In en, this message translates to:
+  /// **'ProFact'**
+  String get fiscalCertificationProviderProFact;
+
+  /// No description provided for @certificatesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificates'**
+  String get certificatesSectionTitle;
+
+  /// No description provided for @columnCertificateNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate Number'**
+  String get columnCertificateNumber;
+
+  /// No description provided for @columnValidFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid From'**
+  String get columnValidFrom;
+
+  /// No description provided for @columnValidTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid To'**
+  String get columnValidTo;
+
+  /// No description provided for @addCertificateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addCertificateButton;
+
+  /// No description provided for @noCertificatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No certificates registered.'**
+  String get noCertificatesFound;
+
+  /// No description provided for @certificatesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load certificates: {error}'**
+  String certificatesLoadError(Object error);
+
+  /// No description provided for @newCertificateDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register Certificate'**
+  String get newCertificateDialogTitle;
+
+  /// No description provided for @certificateFileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Certificate file (.cer)'**
+  String get certificateFileLabel;
+
+  /// No description provided for @keyFileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Key file (.key)'**
+  String get keyFileLabel;
+
+  /// No description provided for @keyPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Key password'**
+  String get keyPasswordLabel;
+
+  /// No description provided for @chooseFileButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get chooseFileButton;
+
+  /// No description provided for @uploadCertificateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get uploadCertificateButton;
+
+  /// No description provided for @certificateFileRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a certificate (.cer) file.'**
+  String get certificateFileRequiredError;
+
+  /// No description provided for @keyFileRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a key (.key) file.'**
+  String get keyFileRequiredError;
+
+  /// No description provided for @keyPasswordRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Key password is required.'**
+  String get keyPasswordRequiredError;
+
+  /// No description provided for @certificateUploadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to register certificate.'**
+  String get certificateUploadFailedError;
 }
 
 class _AppLocalizationsDelegate

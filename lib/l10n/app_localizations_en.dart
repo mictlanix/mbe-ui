@@ -1903,4 +1903,310 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addressCountryRequiredError => 'Country is required.';
+
+  @override
+  String get paymentMethodOptionsMenuTitle => 'Payment Method Options';
+
+  @override
+  String get columnPaymentMethod => 'Payment Method';
+
+  @override
+  String get columnNumberOfPayments => 'Payments';
+
+  @override
+  String get paymentMethodFieldLabel => 'Payment method';
+
+  @override
+  String get numberOfPaymentsFieldLabel => 'Number of payments';
+
+  @override
+  String get displayOnTicketFieldLabel => 'Show on ticket';
+
+  @override
+  String get commissionFieldLabel => 'Commission';
+
+  @override
+  String get newPaymentMethodOptionTooltip => 'New payment method option';
+
+  @override
+  String get paymentMethodOptionsSearchLabel => 'Search by name';
+
+  @override
+  String get noPaymentMethodOptionsFound => 'No payment method options found.';
+
+  @override
+  String paymentMethodOptionsLoadError(Object error) {
+    return 'Failed to load payment method options: $error';
+  }
+
+  @override
+  String get viewPaymentMethodOptionTitle => 'View Payment Method Option';
+
+  @override
+  String get editPaymentMethodOptionTitle => 'Edit Payment Method Option';
+
+  @override
+  String get newPaymentMethodOptionTitle => 'New Payment Method Option';
+
+  @override
+  String get deletePaymentMethodOptionButton => 'Delete payment method option';
+
+  @override
+  String get deletePaymentMethodOptionConfirmTitle =>
+      'Delete payment method option?';
+
+  @override
+  String deletePaymentMethodOptionConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get paymentMethodOptionLoadFailedError =>
+      'Failed to load payment method option.';
+
+  @override
+  String get paymentMethodOptionCreateFailedError =>
+      'Failed to create payment method option.';
+
+  @override
+  String get paymentMethodOptionUpdateFailedError =>
+      'Failed to update payment method option.';
+
+  @override
+  String get paymentMethodOptionDeleteFailedError =>
+      'Failed to delete payment method option.';
+
+  @override
+  String get paymentMethodOptionCreatePermissionDeniedError =>
+      'You no longer have permission to create payment method options.';
+
+  @override
+  String get paymentMethodOptionUpdatePermissionDeniedError =>
+      'You no longer have permission to update payment method options.';
+
+  @override
+  String get paymentMethodOptionDeletePermissionDeniedError =>
+      'You no longer have permission to delete payment method options.';
+
+  @override
+  String get paymentMethodOptionFacilityRequiredError =>
+      'Facility is required.';
+
+  @override
+  String get paymentMethodOptionNameRequiredError => 'Name is required.';
+
+  @override
+  String get paymentMethodOptionPaymentMethodRequiredError =>
+      'Payment method is required.';
+
+  @override
+  String get paymentMethodOptionNumberOfPaymentsInvalidError =>
+      'Number of payments must be at least 1.';
+
+  @override
+  String get paymentMethodOptionCommissionInvalidError =>
+      'Commission must be a non-negative number.';
+
+  @override
+  String get paymentMethodNa => 'N/A';
+
+  @override
+  String get paymentMethodCash => 'Cash';
+
+  @override
+  String get paymentMethodCheck => 'Check';
+
+  @override
+  String get paymentMethodEft => 'Electronic funds transfer';
+
+  @override
+  String get paymentMethodCreditCard => 'Credit card';
+
+  @override
+  String get paymentMethodElectronicPurse => 'Electronic purse';
+
+  @override
+  String get paymentMethodElectronicMoney => 'Electronic money';
+
+  @override
+  String get paymentMethodFoodVouchers => 'Food vouchers';
+
+  @override
+  String get paymentMethodGiving => 'Payment in kind';
+
+  @override
+  String get paymentMethodCreditorSatisfaction =>
+      'To the satisfaction of the creditor';
+
+  @override
+  String get paymentMethodDebitCard => 'Debit card';
+
+  @override
+  String get paymentMethodServiceCard => 'Service card';
+
+  @override
+  String get paymentMethodAdvancePayments => 'Advance payments';
+
+  @override
+  String get paymentMethodToBeDefined => 'To be defined';
+
+  @override
+  String get paymentMethodGovernmentFunding => 'Government funding';
+
+  @override
+  String get taxpayerIssuersMenuTitle => 'Taxpayer Issuers';
+
+  @override
+  String get columnRfc => 'RFC';
+
+  @override
+  String get columnPostalCodeShort => 'C.P.';
+
+  @override
+  String get columnRegime => 'Fiscal Regime';
+
+  @override
+  String get rfcFieldLabel => 'RFC';
+
+  @override
+  String get providerFieldLabel => 'Certification provider';
+
+  @override
+  String get newTaxpayerIssuerTooltip => 'New taxpayer issuer';
+
+  @override
+  String get taxpayerIssuersSearchLabel => 'Search by RFC or name';
+
+  @override
+  String get noTaxpayerIssuersFound => 'No taxpayer issuers found.';
+
+  @override
+  String taxpayerIssuersLoadError(Object error) {
+    return 'Failed to load taxpayer issuers: $error';
+  }
+
+  @override
+  String get viewTaxpayerIssuerTitle => 'View Taxpayer Issuer';
+
+  @override
+  String get editTaxpayerIssuerTitle => 'Edit Taxpayer Issuer';
+
+  @override
+  String get newTaxpayerIssuerTitle => 'New Taxpayer Issuer';
+
+  @override
+  String get deleteTaxpayerIssuerButton => 'Delete taxpayer issuer';
+
+  @override
+  String get deleteTaxpayerIssuerConfirmTitle => 'Delete taxpayer issuer?';
+
+  @override
+  String deleteTaxpayerIssuerConfirmMessage(String name) {
+    return 'This will permanently delete \"$name\". This cannot be undone.';
+  }
+
+  @override
+  String get taxpayerIssuerLoadFailedError => 'Failed to load taxpayer issuer.';
+
+  @override
+  String get taxpayerIssuerCreateFailedError =>
+      'Failed to create taxpayer issuer.';
+
+  @override
+  String get taxpayerIssuerUpdateFailedError =>
+      'Failed to update taxpayer issuer.';
+
+  @override
+  String get taxpayerIssuerDeleteFailedError =>
+      'Failed to delete taxpayer issuer.';
+
+  @override
+  String get taxpayerIssuerCreatePermissionDeniedError =>
+      'You no longer have permission to create taxpayer issuers.';
+
+  @override
+  String get taxpayerIssuerUpdatePermissionDeniedError =>
+      'You no longer have permission to update taxpayer issuers.';
+
+  @override
+  String get taxpayerIssuerDeletePermissionDeniedError =>
+      'You no longer have permission to delete taxpayer issuers.';
+
+  @override
+  String get taxpayerIssuerRfcRequiredError => 'RFC is required.';
+
+  @override
+  String get taxpayerIssuerNameRequiredError => 'Name is required.';
+
+  @override
+  String get taxpayerIssuerRegimeRequiredError => 'Fiscal regime is required.';
+
+  @override
+  String get fiscalCertificationProviderNone => 'None';
+
+  @override
+  String get fiscalCertificationProviderDiverza => 'Diverza';
+
+  @override
+  String get fiscalCertificationProviderFiscoClic => 'FiscoClic';
+
+  @override
+  String get fiscalCertificationProviderServisim => 'Servisim';
+
+  @override
+  String get fiscalCertificationProviderProFact => 'ProFact';
+
+  @override
+  String get certificatesSectionTitle => 'Certificates';
+
+  @override
+  String get columnCertificateNumber => 'Certificate Number';
+
+  @override
+  String get columnValidFrom => 'Valid From';
+
+  @override
+  String get columnValidTo => 'Valid To';
+
+  @override
+  String get addCertificateButton => 'Add';
+
+  @override
+  String get noCertificatesFound => 'No certificates registered.';
+
+  @override
+  String certificatesLoadError(Object error) {
+    return 'Failed to load certificates: $error';
+  }
+
+  @override
+  String get newCertificateDialogTitle => 'Register Certificate';
+
+  @override
+  String get certificateFileLabel => 'Certificate file (.cer)';
+
+  @override
+  String get keyFileLabel => 'Key file (.key)';
+
+  @override
+  String get keyPasswordLabel => 'Key password';
+
+  @override
+  String get chooseFileButton => 'Choose file';
+
+  @override
+  String get uploadCertificateButton => 'Register';
+
+  @override
+  String get certificateFileRequiredError =>
+      'Select a certificate (.cer) file.';
+
+  @override
+  String get keyFileRequiredError => 'Select a key (.key) file.';
+
+  @override
+  String get keyPasswordRequiredError => 'Key password is required.';
+
+  @override
+  String get certificateUploadFailedError => 'Failed to register certificate.';
 }

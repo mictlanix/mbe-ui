@@ -16,14 +16,18 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/label_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -41,6 +45,12 @@ class MockCustomerRepository extends Mock implements CustomerRepository {}
 
 class MockTaxpayerRecipientRepository extends Mock
     implements TaxpayerRecipientRepository {}
+
+class MockPaymentMethodOptionRepository extends Mock
+    implements PaymentMethodOptionRepository {}
+
+class MockTaxpayerIssuerRepository extends Mock
+    implements TaxpayerIssuerRepository {}
 
 /// Bypasses `AuthNotifier.build()`'s real `TokenStorage`/`AuthRepository`
 /// round-trip, resolving directly to a fixed [AuthState] — this test only
@@ -109,6 +119,21 @@ const _catalogsReaderUser = User(
     Privilege(systemObject: SystemObject.employees, rawValue: 2),
     Privilege(systemObject: SystemObject.customers, rawValue: 2),
     Privilege(systemObject: SystemObject.taxpayerRecipients, rawValue: 2),
+  ],
+);
+
+/// Holds read on spec 015's two standalone catalogs (Payment Method Options,
+/// Taxpayer Issuers). Certificates has no route/destination of its own
+/// (research §9) — reached only through the already-gated issuer detail.
+const _fiscalCatalogsReaderUser = User(
+  userId: 'fiscal-catalogs-reader',
+  email: 'fiscal-catalogs-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.paymentMethodOptions, rawValue: 2),
+    Privilege(systemObject: SystemObject.taxpayers, rawValue: 2),
   ],
 );
 
@@ -199,6 +224,26 @@ void main() {
       ),
     ).thenAnswer((_) async => const TaxpayerRecipientPage(items: [], total: 0));
 
+    final paymentMethodOptionRepository = MockPaymentMethodOptionRepository();
+    when(
+      () => paymentMethodOptionRepository.list(
+        search: any(named: 'search'),
+        facilityId: any(named: 'facilityId'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const PaymentMethodOptionPage(items: [], total: 0));
+
+    final taxpayerIssuerRepository = MockTaxpayerIssuerRepository();
+    when(
+      () => taxpayerIssuerRepository.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const TaxpayerIssuerListResult(items: [], total: 0));
+
     final container = ProviderContainer(
       overrides: [
         authNotifierProvider.overrideWith(
@@ -220,6 +265,12 @@ void main() {
         customerRepositoryProvider.overrideWithValue(customerRepository),
         taxpayerRecipientRepositoryProvider.overrideWithValue(
           taxpayerRecipientRepository,
+        ),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(
+          paymentMethodOptionRepository,
+        ),
+        taxpayerIssuerRepositoryProvider.overrideWithValue(
+          taxpayerIssuerRepository,
         ),
       ],
     );
@@ -328,6 +379,35 @@ void main() {
           expect(handle.router.state.uri.path, '/');
         });
       }
+    },
+  );
+
+  group(
+    'spec 015 fiscal catalogs — Payment Method Options/Taxpayer Issuers each '
+    'gate on their own SystemObject/read (FR-009, FR-018, SC-007)',
+    () {
+      for (final route in ['/payment-method-options', '/taxpayer-issuers']) {
+        testWidgets('a user with read on $route reaches it', (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _fiscalCatalogsReaderUser,
+            route,
+          );
+          expect(handle.router.state.uri.path, route);
+        });
+
+        testWidgets('a user without read is redirected away from $route', (
+          tester,
+        ) async {
+          final handle = await pumpAt(tester, _noAccessUser, route);
+          expect(handle.router.state.uri.path, '/');
+        });
+      }
+
+      // Taxpayer Certificates has no route of its own — it is a child
+      // section of the Taxpayer Issuer detail (research §9), so there is
+      // nothing to gate independently here; its RBAC is exercised by the
+      // Certificates section's own widget tests instead.
     },
   );
 }

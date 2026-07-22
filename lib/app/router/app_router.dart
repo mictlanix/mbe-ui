@@ -35,8 +35,12 @@ import 'package:mbe_ui/features/catalog/presentation/cash_drawer_detail_screen.d
 import 'package:mbe_ui/features/catalog/presentation/cash_drawers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facilities_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/payment_method_option_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/payment_method_options_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/point_sale_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/points_of_sale_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/warehouse_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/warehouses_list_screen.dart';
@@ -221,6 +225,29 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/facilities',
                 builder: (context, state) => const FacilitiesListScreen(),
+              ),
+            ],
+          ),
+          // Branch index continues positionally from spec 014's last branch
+          // (facilities = 17): spec 015 appends PaymentMethodOptions(18)→
+          // TaxpayerIssuers(19) in build order (contracts/routes.md). There is
+          // NO taxpayerCertificates branch — Taxpayer Certificates is a child
+          // section of the Taxpayer Issuer detail, not a standalone catalog
+          // (spec 015 research.md §9).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/payment-method-options',
+                builder: (context, state) =>
+                    const PaymentMethodOptionsListScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/taxpayer-issuers',
+                builder: (context, state) => const TaxpayerIssuersListScreen(),
               ),
             ],
           ),
@@ -431,6 +458,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
+      GoRoute(
+        path: '/payment-method-options/new',
+        builder: (context, state) => const PaymentMethodOptionDetailScreen(),
+      ),
+      GoRoute(
+        path: '/payment-method-options/:paymentMethodOptionId',
+        builder: (context, state) => PaymentMethodOptionDetailScreen(
+          paymentMethodOptionId: int.parse(
+            state.pathParameters['paymentMethodOptionId']!,
+          ),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/taxpayer-issuers/new',
+        builder: (context, state) => const TaxpayerIssuerDetailScreen(),
+      ),
+      GoRoute(
+        // String path param — rfc is a client-supplied identity, not a
+        // server-assigned int (spec 015 contracts/routes.md); no int.parse.
+        path: '/taxpayer-issuers/:rfc',
+        builder: (context, state) => TaxpayerIssuerDetailScreen(
+          rfc: state.pathParameters['rfc'],
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
     ],
   );
 });
@@ -550,6 +603,12 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/facilities')) {
     return (object: SystemObject.facilities, right: AccessRight.read);
+  }
+  if (location.startsWith('/payment-method-options')) {
+    return (object: SystemObject.paymentMethodOptions, right: AccessRight.read);
+  }
+  if (location.startsWith('/taxpayer-issuers')) {
+    return (object: SystemObject.taxpayers, right: AccessRight.read);
   }
   return null;
 }
