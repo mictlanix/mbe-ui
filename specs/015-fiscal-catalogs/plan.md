@@ -1,13 +1,14 @@
 # Implementation Plan: Fiscal Catalogs (Payment Method Options, Taxpayer Issuers, Taxpayer Certificates)
 
-**Branch**: `015-fiscal-catalogs` | **Date**: 2026-07-21 | **Spec**: [spec.md](./spec.md)
+**Branch**: `015-fiscal-catalogs` | **Date**: 2026-07-21 (revised 2026-07-22) | **Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `/specs/015-fiscal-catalogs/spec.md`
 
 ## Summary
 
-Deliver three catalog UIs for mbe-api fiscal entities the app does not consume
-today, each already backed by a fully generated OpenAPI client:
+Deliver UIs for three mbe-api fiscal entities the app does not consume today —
+two standalone catalogs and one issuer-embedded section — each already backed by a
+fully generated OpenAPI client:
 
 1. **Payment Method Options** (Catálogos group) — **full CRUD**. A facility+
    warehouse+status-scoped catalog, structurally the spec-014 Warehouse catalog
@@ -17,13 +18,16 @@ today, each already backed by a fully generated OpenAPI client:
    group) — **full CRUD keyed by RFC** (a String primary key, immutable on edit),
    structurally the shipped spec-012 **Taxpayer Recipient** catalog (also RFC-keyed,
    with SAT regime/postal-code pickers) minus `email`, plus `provider` and `comment`.
-3. **Taxpayer Certificates** (Ventas group) — **partial: list + read-only view +
-   upload only** (no edit, no delete). A CSD (`.cer`/`.key`) multipart upload whose
-   validity window and number are server-derived.
+3. **Taxpayer Certificates** — **a child section of the Taxpayer Issuer detail**,
+   not a standalone catalog (revised 2026-07-22). An existing issuer's detail
+   renders a read-only Certificates section (certificate number, validity, active
+   status) scoped to that issuer's RFC, plus an **Agregar** action opening a CSD
+   (`.cer`/`.key`) multipart upload dialog; validity/number are server-derived. No
+   edit, no delete, and **no** standalone screen/route/nav destination.
 
 All work lands **inside the existing `lib/features/catalog/` module** (constitution
-§I shared master-data module), extended one sub-tree per entity, exactly as specs
-012/013/014 did. This is the follow-up spec 014's plan explicitly deferred.
+§I shared master-data module), extended per entity, exactly as specs 012/013/014
+did. This is the follow-up spec 014's plan explicitly deferred.
 
 Planning decisions that shape the work (full detail in [research.md](./research.md)):
 
@@ -41,24 +45,30 @@ Planning decisions that shape the work (full detail in [research.md](./research.
    exist there verbatim (research §4). The existing list-only `TaxpayerIssuerRepository`
    (spec 014's facility autocomplete) is **extended** to full CRUD additively, so
    its current consumer keeps working (research §13).
-4. **`paymentMethod` has no SAT endpoint** — it becomes a hand-named `PaymentForm`
-   (`c_FormaPago`) labeled lookup in `core/domain/`, the `FacilityType`/`Gender`
-   precedent; the member set is confirmed at implementation (research §5, Risks).
+4. **`paymentMethod` has no SAT endpoint** — it becomes a hand-named `PaymentMethod`
+   labeled lookup in `core/domain/`, the `FacilityType`/`Gender` precedent, mirroring
+   mbe-api's authoritative `PaymentMethod` constant (`mbe-api/docs/constants.md`;
+   research §5).
 5. **`FiscalCertificationProvider`** is a generated unnamed int enum → display-label
    map only, no replacement type (research §7).
-6. **Taxpayer Certificates is upload-plus-read-only** — the API has no update/delete;
-   the detail screen is always read-only with no edit toggle and no delete action,
-   and the "create" route is the upload form (research §9). The upload picks two
+6. **Taxpayer Certificates is a child section of the issuer detail** (revised
+   2026-07-22) — not a standalone catalog. The issuer detail renders a read-only
+   Certificates section scoped to the open issuer's RFC, plus an Agregar upload
+   dialog; **no** standalone screen/route/nav, **no** edit/delete (research §9). This
+   **resolves the earlier §VI Edit-row tension**: certificates are now a delimited
+   sub-section (spec 014 inline-address / product-pricing sub-panel precedent), not
+   a top-level catalog, so §VI's catalog-row rules do not apply. The upload picks two
    files via `file_picker`, encodes bytes to the string fields, and posts multipart
    (research §8; encoding confirmed in quickstart).
-7. **Search on two facet-only endpoints is a tracked dependency** — Payment Method
-   Options and Taxpayer Certificates lists expose facets but no `search`; each ships
-   a search box wired to the expected upstream capability (spec-013/014 precedent),
+7. **Search on the one remaining facet-only standalone catalog is a tracked
+   dependency** — Payment Method Options exposes facets but no `search`; it ships a
+   search box wired to the expected upstream capability (spec-013/014 precedent),
    filed upstream, **not** a §VI deviation and **not** client-side filtering
-   (research §15). Taxpayer Issuers `search` is functional today.
+   (research §15). Taxpayer Issuers `search` is functional today. Taxpayer
+   Certificates, being a bounded per-issuer child section, needs no search box.
 
 Consequently this feature modifies `app_router.dart`, `nav_destinations.dart`, and
-the two `.arb` files; adds one shared-kernel lookup (`PaymentForm`); and everything
+the two `.arb` files; adds one shared-kernel lookup (`PaymentMethod`); and everything
 else is new files under `lib/features/catalog/`. It does **not** touch
 `system_object.dart`.
 
@@ -84,27 +94,30 @@ Compact tier inherited from spec 010's adaptive shell.
 **Project Type**: Single Flutter project, feature-first — **extends** the existing
 `lib/features/catalog/` module (see Structure Decision).
 
-**Performance Goals**: Each list renders one paginated page (`skip`/`limit`, default 20)
-per fetch. Every displayed FK is **pre-expanded** on the response
+**Performance Goals**: Each standalone list renders one paginated page (`skip`/`limit`,
+default 20) per fetch. Every displayed FK is **pre-expanded** on the response
 (`PaymentMethodOptionResponse.facility`/`.warehouse`, `TaxpayerIssuerResponse.regime`/
-`.postalCode`; the certificate's taxpayer is a displayed RFC) — **no N+1 per-row lookup**
-on any screen (research §11). Pickers debounce at 300 ms via `CatalogEntityPicker`.
+`.postalCode`; the certificate section's rows are the taxpayer-scoped list payload) —
+**no N+1 per-row lookup** on any screen (research §11). Pickers debounce at 300 ms via
+`CatalogEntityPicker`.
 
 **Constraints**: Deny-by-default RBAC on `paymentMethodOptions(84)` (Payment Method
-Options) and `taxpayers(24)` (both Taxpayer catalogs). Client-side gating only,
-consistent with shipped catalogs; the server remains authoritative and its
-rejections are surfaced. Free-text search is server-side where available
-(Issuers today; Payment Method Options + Certificates pending upstream, research §15).
+Options) and `taxpayers(24)` (Taxpayer Issuers + its embedded certificate section).
+Client-side gating only, consistent with shipped catalogs; the server remains
+authoritative and its rejections are surfaced. Free-text search is server-side where
+available (Issuers today; Payment Method Options pending upstream, research §15).
 CSD validity/number are server-derived and never user-entered (FR-022).
 
-**Scale/Scope**: 3 list screens + 3 detail/upload screens = **6 screens**; ~3 list
-controllers + 2 filter controllers (Payment Method Options: facility+status;
-Certificates: taxpayer+status; Issuers: search-only, no filter controller) + 3 form/
-upload controllers; 3 new repositories (PaymentMethodOption new, TaxpayerCertificate
-new, TaxpayerIssuer **extended** from list-only to full CRUD) + reuse of Facility/
-Warehouse/Sat repositories; 3 `freezed` detail entities (+ a certificate-upload input
-value) + 1 new shared-kernel `PaymentForm` lookup + 1 provider label map; 3 router
-branches + 6 sub-routes; 3 nav destinations; **no** RBAC-mirror edit; ~80–90 new l10n keys.
+**Scale/Scope**: **2 standalone list screens** (Payment Method Options, Taxpayer
+Issuers) + 2 detail screens + **1 certificate sub-section (with an upload dialog)**
+embedded in the issuer detail; ~2 list controllers + 1 filter controller (Payment
+Method Options: facility+status; Issuers: search-only) + 2 form controllers + 2
+certificate sub-controllers (list-for-issuer section + upload dialog); 3 new/extended repositories
+(PaymentMethodOption new, TaxpayerCertificate new [list-for-issuer + upload only],
+TaxpayerIssuer **extended** from list-only to full CRUD) + reuse of Facility/Warehouse/
+Sat repositories; 3 `freezed` entities (+ a certificate-upload input value) + 1 new
+shared-kernel `PaymentMethod` lookup + 1 provider label map; **2 router branches + 4
+sub-routes; 2 nav destinations**; **no** RBAC-mirror edit; ~75–85 new l10n keys.
 
 ## Constitution Check
 
@@ -112,31 +125,35 @@ branches + 6 sub-routes; 3 nav destinations; **no** RBAC-mirror edit; ~80–90 n
 
 | Principle | Status | Notes |
 |---|---|---|
-| I. Feature-First Layered Architecture | ✅ PASS | Extends `lib/features/catalog/{data,domain,presentation}` one sub-tree per entity; `presentation` imports only `domain`; `data` implements `domain` repository interfaces. The one new lookup (`PaymentForm`) is shared-kernel (`core/domain/`), like `FacilityType`. |
-| II. Riverpod for State & DI | ✅ PASS | Each entity gets `Notifier`-based list + form/upload controllers exposing `AsyncValue`; Payment Method Options and Certificates add a filter `Notifier`; all three repositories exposed as providers for test overrides. |
-| III. Contract-Driven API Integration | ✅ PASS | Consumes the already-generated `PaymentMethodOptions`/`TaxpayerIssuers`/`TaxpayerCertificates` APIs; **no hand-written DTOs**, generated files not edited. Errors map via `ErrorBanner`. The two missing list `search` params are filed upstream as tracked dependencies per §III/precedent (research §15) — zero *blocking* dependency. |
-| IV. Deny-by-Default RBAC | ✅ PASS | Reuses `accessControlProvider.can(...)`; both objects pre-exist (no mirror edit). Routes gated via `_routeGate`, nav via `navDestinationsProvider`, actions **hidden** (not disabled) without privilege. Certificates exposes only a create/upload action (no update/delete to gate). |
-| V. Material 3 White-Labeled Design System | ✅ PASS | No new theming. Status via existing `EntityStatusCell`/`EntityStatusControls`/`EntityStatusFilterChips`; dates on the certificate detail via the shared date formatting. All new strings in both `.arb` files; no manual/hard-coded strings. |
-| VI. Desktop/Web-First, Compact-Ready Layout | ✅ PASS (with tracked search dependency) | All three lists reuse `DataTableView`, `CatalogPagination`, `CatalogFilterBar`/`CatalogSearchBar`; Payment Method Options + Certificates add a `CatalogFilterSheet` drawer (real backend facets); Issuers is search-only (no backend facets). Single Edit row action via `catalog_action_icons`; row-click → read-only view; toolbar `FilledButton` Create; delete-in-form-body. Detail/upload forms use `ResponsiveFormGrid`. **Certificates deliberately has no Edit/Delete row or detail action** — the entity's API has neither (research §9). The two facet-only lists' search boxes are wired to an expected upstream `search` (research §15) — a tracked dependency, not a deviation. |
+| I. Feature-First Layered Architecture | ✅ PASS | Extends `lib/features/catalog/{data,domain,presentation}` one sub-tree per entity; `presentation` imports only `domain`; `data` implements `domain` repository interfaces. The one new lookup (`PaymentMethod`) is shared-kernel (`core/domain/`), like `FacilityType`. |
+| II. Riverpod for State & DI | ✅ PASS | Each entity gets `Notifier`-based list + form controllers exposing `AsyncValue`; Payment Method Options adds a filter `Notifier`; the issuer form hosts a certificate sub-controller (list + upload) exposing `AsyncValue`; all three repositories exposed as providers for test overrides. |
+| III. Contract-Driven API Integration | ✅ PASS | Consumes the already-generated `PaymentMethodOptions`/`TaxpayerIssuers`/`TaxpayerCertificates` APIs; **no hand-written DTOs**, generated files not edited. Errors map via `ErrorBanner`. The one missing list `search` param (Payment Method Options) is filed upstream as a tracked dependency per §III/precedent (research §15) — zero *blocking* dependency. |
+| IV. Deny-by-Default RBAC | ✅ PASS | Reuses `accessControlProvider.can(...)`; both objects pre-exist (no mirror edit). Routes gated via `_routeGate`, nav via `navDestinationsProvider`, actions **hidden** (not disabled) without privilege. The certificate section's Agregar (upload) is gated on `taxpayers` create **and** the issuer detail's read-only flag (`can(taxpayers,create) && !readOnly`) so a row-click/View render never exposes it, even to a create-privileged user (FR-025, §VI row-click-is-read-only); it exposes no update/delete to gate. |
+| V. Material 3 White-Labeled Design System | ✅ PASS | No new theming. Status via existing `EntityStatusCell`/`EntityStatusControls`/`EntityStatusFilterChips`; certificate validity dates via the shared date formatting. All new strings in both `.arb` files; no manual/hard-coded strings. |
+| VI. Desktop/Web-First, Compact-Ready Layout | ✅ PASS (with tracked search dependency) | The two standalone lists reuse `DataTableView`, `CatalogPagination`, `CatalogFilterBar`/`CatalogSearchBar`; Payment Method Options adds a `CatalogFilterSheet` drawer (facility+status facets); Issuers is search-only (no backend facets). Single Edit row action via `catalog_action_icons`; row-click → read-only view; toolbar `FilledButton` Create; delete-in-form-body. Detail forms and the certificate upload dialog use `ResponsiveFormGrid`. **Certificates is a delimited sub-section of the issuer detail** (divider-delimited group per §VI's group guidance), not a top-level catalog — so §VI's catalog-list-row Edit rule does not apply to it (research §9). Payment Method Options' search box is wired to an expected upstream `search` (research §15) — a tracked dependency, not a deviation. |
 | VII. Online-Only, Server-Rendered Documents | ✅ PASS | No local persistence, no caching. The CSD upload sends file bytes to the server; nothing is stored client-side and no document is generated locally. |
 
-**On §VI and the Certificates read-only exception**: the standard catalog detail
-offers Edit + Delete; Taxpayer Certificates offers neither because
-`TaxpayerCertificatesApi` has no update and no delete method (research §9) — a CSD is
-an immutable government artifact, superseded by uploading a newer one. This is
-dictated by the entity's real API surface, not a layout choice, and is therefore not
-a §VI deviation. The read-only detail carries no read-only→edit toggle in
-`AppBar.actions` precisely because there is no editable form to switch to.
+**On §VI and the certificate section (resolves the earlier Edit-row concern)**:
+Taxpayer Certificates is **not** a standalone catalog list screen — it is a
+divider-delimited child section of the Taxpayer Issuer detail (research §9), the
+same shape as spec 014's facility inline-address sub-form and the product-pricing
+sub-panel. §VI's "every catalog/list screen's row MUST expose Edit" rule governs
+*top-level catalog screens*; a read-only child collection inside a detail form is
+not one, so there is no §VI exception to justify and **no Complexity Tracking entry
+is needed**. Certificates genuinely cannot be edited/deleted anyway
+(`TaxpayerCertificatesApi` has no such method — a CSD is immutable, superseded by
+uploading a newer one).
 
-**On §VI and search**: see research §15 — the two facet-only endpoints follow the
-spec-013/014 tracked-dependency posture (search box present and wired, gap filed
-upstream), explicitly classified there as **not** a constitution deviation. No
-Complexity Tracking entry is required.
+**On §VI and search**: see research §15 — Payment Method Options (the one facet-only
+standalone catalog) follows the spec-013/014 tracked-dependency posture (search box
+present and wired, gap filed upstream), explicitly classified there as **not** a
+constitution deviation. No Complexity Tracking entry is required.
 
 **Post-Phase 1 re-check**: ✅ still passing. Phase 1 introduced no new dependency, no
 generated-file edits, no local persistence, and no `system_object.dart` change; the
-one new shared-kernel lookup (`PaymentForm`) follows the `FacilityType`/`Gender`
-precedent, and the certificate read-only exception is API-mandated.
+one new shared-kernel lookup (`PaymentMethod`) follows the `FacilityType`/`Gender`
+precedent, and moving certificates into the issuer detail as a sub-section (2026-07-22)
+removed the only §VI question the earlier design raised — no exception remains to log.
 
 ## Project Structure
 
@@ -163,20 +180,20 @@ specs/015-fiscal-catalogs/
 lib/
 ├── app/
 │   └── router/
-│       └── app_router.dart              # MODIFIED: 3 shell branches + 6 sub-routes + 3 _routeGate entries
+│       └── app_router.dart              # MODIFIED: 2 shell branches + 4 sub-routes + 2 _routeGate entries (NO cert route)
 ├── core/
 │   ├── navigation/
-│   │   └── nav_destinations.dart        # MODIFIED: 3 NavDestinations + 3 NavBranch indices (order MUST match router)
+│   │   └── nav_destinations.dart        # MODIFIED: 2 NavDestinations + 2 NavBranch indices (18/19; order MUST match router)
 │   └── domain/
-│       └── payment_form.dart            # NEW: SAT c_FormaPago labeled lookup — hand-named, FacilityType/Gender pattern
+│       └── payment_method.dart            # NEW: PaymentMethod labeled lookup (mirrors mbe-api constants.md) — hand-named, FacilityType/Gender pattern
 │   # NOTE: system_object.dart is NOT modified — both RBAC objects already exist.
 ├── l10n/
-│   └── app_*.arb                        # MODIFIED: nav titles, column headers, field labels, validation, empty states, provider/payment-form labels
+│   └── app_*.arb                        # MODIFIED: nav titles, column headers, field labels, validation, empty states, provider/payment-method labels
 └── features/
     └── catalog/                         # EXTENDED (existing module)
         ├── data/
         │   ├── payment_method_option_repository_impl.dart   # NEW: wraps PaymentMethodOptionsApi
-        │   ├── taxpayer_certificate_repository_impl.dart    # NEW: wraps TaxpayerCertificatesApi (list/get/upload)
+        │   ├── taxpayer_certificate_repository_impl.dart    # NEW: wraps TaxpayerCertificatesApi (list-for-issuer + upload only)
         │   └── taxpayer_issuer_repository_impl.dart         # MODIFIED: extend list-only → full CRUD
         ├── domain/
         │   ├── entities/
@@ -185,65 +202,69 @@ lib/
         │   │   └── taxpayer_certificate.dart                # NEW (+ a small certificate-upload input value)
         │   └── repositories/
         │       ├── payment_method_option_repository.dart    # NEW
-        │       ├── taxpayer_certificate_repository.dart      # NEW (no update/delete)
+        │       ├── taxpayer_certificate_repository.dart      # NEW (listForIssuer + upload; no update/delete/standalone screen)
         │       └── taxpayer_issuer_repository.dart           # MODIFIED: add getDetail/create/update/delete
         └── presentation/
             ├── payment_method_options_list_screen.dart + _list_controller.dart (+ filter controller)
             ├── payment_method_option_detail_screen.dart + _form_controller.dart
             ├── taxpayer_issuers_list_screen.dart + _list_controller.dart          # search-only, no filter controller
-            ├── taxpayer_issuer_detail_screen.dart + _form_controller.dart
-            ├── taxpayer_certificates_list_screen.dart + _list_controller.dart (+ filter controller)
-            ├── taxpayer_certificate_detail_screen.dart                            # read-only view
-            └── taxpayer_certificate_upload_screen.dart + _upload_controller.dart  # create/upload (file pickers)
+            ├── taxpayer_issuer_detail_screen.dart + _form_controller.dart         # HOSTS the certificate section (existing-issuer only)
+            ├── taxpayer_certificates_section.dart + _certificates_controller.dart # NEW: read-only child list of the open issuer's certs
+            └── taxpayer_certificate_upload_dialog.dart + _upload_controller.dart  # NEW: Agregar upload dialog (file pickers), not a route
 
 lib/generated/openapi/                   # UNCHANGED — consumed, not edited
 
 test/
-├── unit/features/catalog/               # mapping (FK/SAT expansion, PaymentForm round-trip, provider label), validators, cert-upload encode
-├── widget/features/catalog/             # 6 screens: read-only vs editable, filters, empty states, RBAC hiding, cert form validation & no-edit/no-delete
-└── integration/fiscal_catalogs_flow_test.dart  # create issuer → upload its certificate → create a payment method option
+├── unit/features/catalog/               # mapping (FK/SAT expansion, PaymentMethod round-trip, provider label), validators, cert-upload encode
+├── widget/features/catalog/             # 2 standalone screens (list+detail each) + the issuer detail's certificate section & upload dialog: read-only vs editable, filters, empty states, RBAC hiding, cert no-edit/no-delete & section-absent-on-create
+└── integration/fiscal_catalogs_flow_test.dart  # create issuer → add its certificate from the issuer detail → create a payment method option
 ```
 
 **Structure Decision**: **Extend the existing `lib/features/catalog/` module**,
 identical to specs 012/013/014 and for the same reason: constitution §I designates
 `catalog` as the shared master-data module, and Payment Method Options / Taxpayer
-Issuers / Taxpayer Certificates are master-data catalogs of exactly that kind. The
-feature modifies `app_router.dart`, `nav_destinations.dart`, and the `.arb` files;
-adds one `core/domain/` lookup; and reuses `core/network`, `core/errors`,
+Issuers (with its embedded certificates) are master-data catalogs of exactly that
+kind. The feature modifies `app_router.dart`, `nav_destinations.dart`, and the `.arb`
+files; adds one `core/domain/` lookup; and reuses `core/network`, `core/errors`,
 `core/access`, and every `core/widgets/` component (`CatalogEntityPicker`,
 `CatalogFilterSheet`, `EntityStatusControls`, `ResponsiveFormGrid`,
 `catalog_action_icons`, `DataTableView`, `CatalogPagination`) unmodified, plus the
-spec-014 Facility/Warehouse repositories and the SAT-catalog repository.
+spec-014 Facility/Warehouse repositories, the SAT-catalog repository, and the
+inline-dialog pattern (facility inline-address create) for the certificate upload.
 
 ## Risks
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| **`paymentMethod` has no SAT endpoint and no generated enum** — its member set must be hand-listed. | The payment-form dropdown could show wrong/incomplete labels. | **Resolved** — the mbe legacy `PaymentMethod` member set + es-MX labels are confirmed (research §5 table: 0 N/A default … 1001 FONACOT). Model as a `PaymentForm` `{code:label}` lookup (`FacilityType`/`Gender` precedent); non-contiguous codes → explicit map; unmapped codes fall back to the raw value. Unit-tested round-trip. |
+| **`paymentMethod` has no SAT endpoint and no generated enum** — its member set must be hand-listed. | The payment-method dropdown could show wrong/incomplete labels. | **Resolved** — mirror mbe-api's authoritative `PaymentMethod` constant (`mbe-api/docs/constants.md`; research §5 table: `0 NA` default … `1001 GovernmentFunding`). Model as a `PaymentMethod` `{code:(name,label)}` lookup (`FacilityType`/`Gender` precedent); non-contiguous codes → explicit map; unmapped codes fall back to the raw value. Unit-tested round-trip. |
 | **CSD file byte→string encoding for the multipart upload is unspecified** (`certificate`/`key` are `String` "DER encoded"). | A valid CSD pair could be rejected if the encoding is wrong. | Default to base64-of-DER (research §8); confirm against one real CSD test pair in quickstart before finalizing; the pick+submit flow is unaffected by the encoding choice. |
-| **Missing list `search` on Payment Method Options & Certificates** | Search box present but inert until upstream ships it. | Wire the box to the expected `search` param (spec-013/014 precedent, research §15); file the upstream requests; never fall back to client-side page filtering. |
+| **Missing list `search` on Payment Method Options** | Search box present but inert until upstream ships it. | Wire the box to the expected `search` param (spec-013/014 precedent, research §15); file the upstream request; never fall back to client-side page filtering. (Certificates no longer a standalone list — no search box needed.) |
 | **Extending the shared `TaxpayerIssuerRepository`** (spec 014's facility autocomplete consumes it) | A signature change could break the facility form. | The extension is **additive** (keep `list` + lightweight `get`; add `getDetail`/`create`/`update`/`delete`); a repo-wide grep for existing issuer-repo consumers gates the edit (research §13). |
-| **NavBranch indices drift from router branch order** | Wrong nav item highlighted | Append the three branches in the same order (18/19/20) in both `nav_destinations.dart` and `app_router.dart`; invariant documented at `nav_destinations.dart` and honored by specs 012/013/014 (contracts/routes.md). |
+| **Certificate section must not render on the issuer create form** | A certificate needs a persisted issuer (RFC) to belong to; showing it pre-save would let a user attempt an orphan upload. | Gate the section on `_isEdit` (issuer persisted) exactly as the RFC-immutability check does; widget-tested that create-mode omits the section (FR-025, Acceptance Scenario 2). |
+| **NavBranch indices drift from router branch order** | Wrong nav item highlighted | Append the **two** branches in the same order (18/19) in both `nav_destinations.dart` and `app_router.dart`; invariant documented at `nav_destinations.dart` and honored by specs 012/013/014 (contracts/routes.md). |
 | **RFC immutability regressions** | A saved edit could change identity or 404 | The RFC field is create-only (`enabled && !_isEdit`, recipient precedent); update posts the RFC only as the path param, never in the body (contracts §2). Widget-tested. |
-| **Certificate detail accidentally exposes edit/delete** | A user could trigger a nonexistent endpoint | The detail screen is a distinct read-only widget with no toggle and no delete button; the repository has no update/delete methods to call. Widget-tested for their absence. |
+| **Certificate section accidentally exposes edit/delete** | A user could trigger a nonexistent endpoint | The section is a read-only child table with no per-row action; the repository has no update/delete methods to call. Widget-tested for their absence. |
 
 ## Follow-ups (not blocking)
 
-- **Upstream (tracked)**: add `search` to the Payment Method Options and Taxpayer
-  Certificates list endpoints (research §15); the search boxes light up automatically.
+- **Upstream (tracked)**: add `search` to the Payment Method Options list endpoint
+  (research §15); the search box lights up automatically.
 - **Confirm at implementation**: the CSD string encoding (research §8) —
-  mechanism-fixed, one value pending. *(The `paymentMethod` member set is now
-  confirmed — research §5.)*
+  mechanism-fixed, one value pending. *(The `paymentMethod` member set is confirmed
+  against mbe-api's `PaymentMethod` constant — research §5.)*
 - **Possible upstream nicety**: expanding `TaxpayerCertificateResponse.taxpayer` to
-  the issuer object (as facility's address/location already are) would let the
-  certificate list show the issuer name; not needed here — the RFC is displayed
-  directly (FR-026, spec-014 FR-034b precedent).
+  the issuer object — not needed here — the certificate section is already scoped to
+  a single issuer, so the RFC is implied (research §9, §11).
 
 ## Complexity Tracking
 
 *No constitution violations — this section is intentionally empty.* The §VI notes
-(Certificates' API-mandated read-only detail; the two facet-only lists' tracked
-search dependency) are scope clarifications with precedent from specs 013/014, not
-deviations. The one new shared-kernel lookup (`PaymentForm`) follows the existing
-`FacilityType`/`Gender` precedent and is mandated by a generated contract that hands
-over a bare `int` with no picker, not optional complexity.
+are scope clarifications with precedent from specs 012/013/014, not deviations:
+(a) Taxpayer Certificates is a divider-delimited **child section** of the issuer
+detail (spec-014 inline-address / product-pricing sub-panel precedent), not a
+top-level catalog, so §VI's catalog-row Edit rule does not apply — the earlier
+Edit-row concern is dissolved, not justified; (b) Payment Method Options' tracked
+search dependency follows the spec-013/014 posture. The one new shared-kernel lookup
+(`PaymentMethod`) follows the existing `FacilityType`/`Gender` precedent and is
+mandated by a generated contract that hands over a bare `int` with no picker, not
+optional complexity.

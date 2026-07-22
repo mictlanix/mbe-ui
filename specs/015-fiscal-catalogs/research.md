@@ -86,57 +86,66 @@ dropdown, §7) and `comment`, and the list columns (RFC, C.P., Nombre, Régimen)
 key type; the RFC-as-identity, immutable-on-edit behavior is exactly what
 Recipient already encodes and what the SAT domain requires.
 
-## §5 — `paymentMethod` has no SAT catalog endpoint: use a static SAT `c_FormaPago` lookup
+## §5 — `paymentMethod` has no SAT catalog endpoint: use a static `PaymentMethod` lookup
 
 **Decision**: Represent `paymentMethod` as a **dropdown backed by a small,
 hand-named static lookup** — integer code → human label — following the exact
 `FacilityType`/`Gender` precedent (a fixed list the generator hands over as a
 bare `int`). The lookup lives as a shared-kernel value in `core/domain/`
-(`payment_form.dart`) with the **confirmed** mbe legacy `PaymentMethod` members
-(code → es-MX label), default `0` (N/A):
+(`payment_method.dart`), mirroring mbe-api's **authoritative** `PaymentMethod`
+constant (`Model/Constants/PaymentMethod.cs`, documented at
+`mbe-api/docs/constants.md` — the SAT-aligned *forma de pago* catalog). Default
+`0` (NA). Each entry carries the canonical member name, the SAT code, and an
+es-MX display label:
 
-| Code | Label | Code | Label |
+| Code | Member name | SAT | es-MX label |
 |---|---|---|---|
-| 0 | N/A *(default)* | 27 | A Satisfacción Del Acreedor |
-| 1 | Efectivo | 28 | T. de Débito |
-| 2 | Cheque | 29 | Tarjeta de Servicio |
-| 3 | Transferencia Electrónica | 30 | Aplicación de Anticipos |
-| 4 | T. de Crédito | 99 | Por Definir |
-| 5 | Monedero Electrónico | 1001 | FONACOT |
-| 6 | Dinero Electrónico | | |
-| 8 | Vales de Despensa | | |
-| 12 | Dación | | |
+| 0 | NA *(default)* | — | No aplica |
+| 1 | Cash | 01 | Efectivo |
+| 2 | Check | 02 | Cheque nominativo |
+| 3 | EFT | 03 | Transferencia electrónica de fondos |
+| 4 | CreditCard | 04 | Tarjeta de crédito |
+| 5 | ElectronicPurse | 05 | Monedero electrónico |
+| 6 | ElectronicMoney | 06 | Dinero electrónico |
+| 8 | FoodVouchers | 08 | Vales de despensa |
+| 12 | Giving | 12 | Dación en pago |
+| 27 | ToTheSatisfactionOfTheCreditor | 27 | A satisfacción del acreedor |
+| 28 | DebitCard | 28 | Tarjeta de débito |
+| 29 | ServiceCard | 29 | Tarjeta de servicio |
+| 30 | AdvancePayments | 30 | Aplicación de anticipos |
+| 99 | ToBeDefined | 99 | Por definir |
+| 1001 | GovernmentFunding | — | Financiamiento gubernamental |
 
 **Rationale**: `PaymentMethodOptionCreate.paymentMethod` is a required bare `int`
 with **no** generated enum and **no** SAT endpoint to pick from. The SAT catalog
 API (`SatCatalogsApi`) exposes only CfdiUsages, Countries, Currencies,
 PostalCodes, ProductServices, ReasonCancellations, TaxRegimes, and
-UnitsOfMeasurement — there is **no** payment-forms list. Spec 013 characterized
-this field as "the `paymentMethod` SAT enum" (013 contracts/mbe-api-catalogs.md),
-but it is actually mbe's **legacy internal `PaymentMethod` enum** (a superset of
-SAT `c_FormaPago` — e.g. `1001 FONACOT` is not a SAT code), whose members are the
-table above, sourced from the legacy web app's `PaymentMethod` select. Because it
-is a small, stable, non-contiguous list (gaps at 7, 9–11, 13–26, etc.), a
-hand-named lookup — the established pattern for a generator-unnamed fixed enum —
-is the right fit; a live picker is impossible without an endpoint.
+UnitsOfMeasurement — there is **no** payment-methods list. Spec 013 characterized
+this field as "the `paymentMethod` SAT enum" (013 contracts/mbe-api-catalogs.md);
+it is mbe-api's `PaymentMethod` constant — SAT-aligned but a **superset** (codes
+`0 NA` and `1001 GovernmentFunding` are non-SAT extensions), authoritatively
+defined at `mbe-api/docs/constants.md`. Because it is a small, stable,
+non-contiguous list (gaps at 7, 9–11, 13–26, etc.), a hand-named lookup — the
+established pattern for a generator-unnamed fixed enum — is the right fit; a live
+picker is impossible without an endpoint.
 
 **Implementation notes**: the codes are **non-contiguous**, so the lookup is an
-explicit `{code: label}` map (not an ordinal-indexed list); the dropdown lists
-them in the table's order; an unmapped code (should the backend widen the set)
-falls back to rendering its raw value rather than dropping the record. `0` (N/A)
-is the default selection on the create form, matching the legacy default. The
-labels are already es-MX; the `.arb` keys carry them (and their future
+explicit `{code: (name, label)}` map keyed by the SAT-aligned integer (not an
+ordinal-indexed list); the dropdown lists them in the table's order; an unmapped
+code (should the backend widen the set) falls back to rendering its raw value
+rather than dropping the record. `0` (NA) is the default selection on the create
+form. The es-MX labels are surfaced via `.arb` keys (carrying their future
 translations) so nothing is hard-coded (FR-029).
 
-The `1001 FONACOT` entry MUST be annotated with a `// FIXME(payment-form):`
-comment in the `PaymentForm` map (and a matching note beside its `.arb` label
-key) marking it as provisional / easily removable — it is the one member whose
-inclusion is uncertain, so it is isolated on its own line so a later deletion is
-a one-line change that touches nothing else.
+The `1001 GovernmentFunding` entry MUST be annotated with a
+`// FIXME(payment-method):` comment in the `PaymentMethod` map (and a matching
+note beside its `.arb` label key): upstream documents it as a **non-SAT mbe
+extension**, so it is the one member whose inclusion is uncertain — isolated on
+its own line so a later deletion is a one-line change that touches nothing else.
 
 **Alternatives considered**:
-- *Plain integer text field* — rejected: leaks a raw SAT code to the user, no validation, poor UX, inconsistent with every other coded field in the app (all of which resolve to a label).
-- *Requesting a SAT `c_FormaPago` endpoint upstream* — heavier than warranted for a fixed ~20-entry government list; noted as a possible future nicety, not a blocker.
+- *Plain integer text field* — rejected: leaks a raw code to the user, no validation, poor UX, inconsistent with every other coded field in the app (all of which resolve to a label).
+- *Requesting a SAT payment-methods endpoint upstream* — heavier than warranted for a fixed ~15-entry government-aligned list already defined in `mbe-api/docs/constants.md`; noted as a possible future nicety, not a blocker.
 
 ## §6 — `commission` is an `AnyOf[String, num]`: optional decimal text field submitted as string
 
@@ -200,24 +209,52 @@ plain pick-bytes-and-submit flow.
 generated client already performs the multipart POST; only the byte→string
 encode is ours.
 
-## §9 — Taxpayer Certificates is upload-plus-read-only (no edit, no delete)
+## §9 — Taxpayer Certificates is a child section of the Taxpayer Issuer detail (not a standalone catalog)
 
-**Decision**: The Taxpayer Certificates catalog exposes a list, a read-only
-detail view, and an upload (create) form only. No edit affordance, no delete
-affordance anywhere. The detail screen shows the server-derived
-`taxpayerCertificateId`, `taxpayer` (RFC), `validFrom`, `validTo`, `status`
-read-only; the create form collects only issuer + two files + password.
+**Decision** *(revised 2026-07-22)*: Certificates are managed **inside the
+Taxpayer Issuer detail screen**, not as a standalone catalog. For an existing
+issuer, the detail screen renders a **Certificates section** — a read-only child
+table (certificate number, valid-from, valid-to, active status) scoped to the
+open issuer's RFC — plus an **Agregar** (Add) action opening an **upload
+sub-form/dialog** (`.cer` + `.key` + key password; the taxpayer RFC comes from
+the parent issuer). No standalone list screen, no `/taxpayer-certificates`
+route, no navigation destination. No per-certificate edit or delete affordance.
+The section is absent on the issuer **create** form (a certificate needs a
+persisted issuer to belong to).
 
-**Rationale**: `TaxpayerCertificatesApi` has no `update` and no `delete` method —
-a CSD is an immutable government artifact, superseded by uploading a newer one,
-never edited (spec Clarifications). `TaxpayerCertificateResponse` carries
-`validFrom`/`validTo` populated server-side from the certificate, so the form
-never requests them (FR-022). This departs from the standard catalog detail
-(which offers edit + delete) but is dictated by the entity's real API surface,
-not a constitution deviation.
+**Rationale**: This matches the legacy "Razones Sociales" detail, whose
+"Certificados" tab lists the issuer's certificates with an Agregar button. It
+also fits the API exactly: `TaxpayerCertificatesApi` has **no** `update`/`delete`
+(a CSD is immutable, superseded by uploading a newer one), and its `list` accepts
+a `taxpayer` (RFC) filter — precisely a per-issuer child collection.
+`TaxpayerCertificateResponse` carries `validFrom`/`validTo` populated server-side
+from the certificate, so the upload form never requests them (FR-022).
+**This is the resolution of the prior §VI tension**: because certificates are now
+a delimited sub-section of the issuer form — like spec 014's facility
+inline-address create dialog and the product-pricing sub-panel — the
+"every catalog list row must expose Edit" rule (which governs *top-level catalog
+list screens*) simply does not apply. There is no standalone certificates catalog
+to be "Edit-less," so no §VI exception and no Complexity Tracking entry is needed.
 
-**Alternatives considered**: Adding client-side edit/delete that no-op or call a
-nonexistent endpoint — impossible and wrong; the absence is intentional.
+**Structure**: the section is rendered below the issuer's own fields, delimited
+by a Material 3 divider (§VI's group-delimiter guidance); the legacy uses a tab
+("Certificados"), but with the sibling "Series y Folios" tab out of scope, a
+single delimited section is cleaner than a one-tab `TabBar`. The upload uses the
+shared `ResponsiveFormGrid` dialog pattern (spec 014 inline-address precedent).
+The Agregar action follows the **same read-only flag** the issuer detail already
+computes for its save/delete gating (`forceReadOnly || !canUpdate`) in addition to
+`can(taxpayers, create)` — so a read-only/View render (row-click) never exposes a
+data-mutating control, honoring §VI's row-click-is-read-only rule (FR-025).
+
+**Consumed API**: `TaxpayerCertificateRepository.listForIssuer(rfc)` (wraps
+`list(taxpayer: rfc)`) + `upload(taxpayer, certificate, key, keyPassword)`. No
+standalone `get`/detail screen is needed (the row data is fully in the list
+payload); `get` may remain unused on the repository.
+
+**Alternatives considered**:
+- *A standalone Taxpayer Certificates catalog* (the pre-2026-07-22 design) — rejected by the user: certificates belong to an issuer and the legacy UI nests them; a standalone Edit-less catalog also strained §VI.
+- *A one-tab `TabBar`* — rejected: needless chrome for a single in-scope section; a divider-delimited section reads better.
+- *Client-side edit/delete that no-op or call a nonexistent endpoint* — impossible and wrong; the absence is intentional.
 
 ## §10 — SAT regime / postal-code pickers reuse the existing `SatCatalogRepository`
 
@@ -279,48 +316,52 @@ consumers are unaffected.
 **Alternatives considered**: A separate `TaxpayerIssuerCatalogRepository` — two
 repositories for one entity, rejected as duplication.
 
-## §14 — Navigation and router: three appended branches, NavBranch↔router invariant
+## §14 — Navigation and router: two appended branches, NavBranch↔router invariant
 
-**Decision**: Append three `NavBranch` indices — `paymentMethodOptions(18)`,
-`taxpayerIssuers(19)`, `taxpayerCertificates(20)` — and three shell branches in
+**Decision** *(revised 2026-07-22)*: Append **two** `NavBranch` indices —
+`paymentMethodOptions(18)` and `taxpayerIssuers(19)` — and two shell branches in
 **the same order** in `nav_destinations.dart` and `app_router.dart`, then the
-six flat detail sub-routes. Payment Method Options is placed in the `catalogs`
-group; Taxpayer Issuers and Taxpayer Certificates in the `sales` group.
+four flat detail sub-routes (`/payment-method-options/new` + `/:id`;
+`/taxpayer-issuers/new` + `/:rfc`). Payment Method Options goes in the `catalogs`
+group; Taxpayer Issuers in the `sales` group. **No** Taxpayer Certificates
+branch, route, or destination — certificates live inside the issuer detail (§9).
 
 **Rationale**: `NavBranch` currently ends at `facilities(17)`; the router branch
 order is positional and must match (documented at `nav_destinations.dart` and
-honored by specs 012/013/014). Certificates has no `/new` int route — its create
-path is `/taxpayer-certificates/new` (the upload form) and its detail is
-`/taxpayer-certificates/:taxpayerCertificateId` (String id, read-only), with no
-edit route target.
+honored by specs 012/013/014). Payment Method Options follows the int-keyed shape
+(`/new` + `int.parse(:id)` + `?view=true`); Taxpayer Issuers follows the
+String-keyed (RFC) shape (`/taxpayer-issuers/:rfc`, no `int.parse`, editable only
+in create mode — Taxpayer Recipient precedent).
 
 **Alternatives considered**: Reordering existing branches to group fiscal items —
 rejected: it would renumber shipped branches and break the invariant for no gain
 (nav display order is already independent of branch index).
 
-## §15 — Server-side search on the two facet-only list endpoints is a tracked dependency (not a deviation)
+## §15 — Server-side search on the Payment Method Options list is a tracked dependency (not a deviation)
 
-**Decision**: Payment Method Options and Taxpayer Certificates ship the **search
+**Decision** *(revised 2026-07-22)*: Payment Method Options ships the **search
 box present and wired** to an expected server-side `search` capability, activating
 the moment mbe-api adds it — the identical resolution specs 013/014 used for their
-search-less endpoints. File the upstream requests (Payment Method Options list
-`search`; Taxpayer Certificates list `search`). Taxpayer Issuers already exposes
-`search`, so its box is fully functional today.
+search-less endpoints. File the upstream request (Payment Method Options list
+`search`). Taxpayer Issuers already exposes `search`, so its box is fully
+functional today. Taxpayer Certificates is **no longer a standalone catalog** (it
+is a bounded per-issuer child section — §9), so the §VI search-box rule does not
+apply to it and no `search` param is needed there.
 
 **Rationale**: Constitution §VI is absolute — "A catalog MUST NOT ship
 search-less, even if pagination alone could make it 'usable.'" Verified against
 the generated client:
-- `listPaymentMethodOptions` params: `facility`, `status`, `skip`, `limit` — **no `search`**.
-- `listTaxpayerCertificates` params: `taxpayer`, `status`, `skip`, `limit` — **no `search`**.
+- `listPaymentMethodOptions` params: `facility`, `status`, `skip`, `limit` — **no `search`** (standalone catalog → search box wired to the pending param).
 - `listTaxpayerIssuers` params: `search`, `skip`, `limit` — **has `search`**, no backend facets (`TaxpayerIssuerResponse` carries no `status`/type field to facet on, so search-only is the correct, compliant shape for it).
+- `listTaxpayerCertificates` params: `taxpayer`, `status`, `skip`, `limit` — consumed only as a per-issuer child section via the `taxpayer` filter (§9); **not** a catalog list screen, so §VI's search rule is out of scope for it.
 
 Specs 013 (§III) and 014 established that a missing list `search` is a **tracked
 external dependency**, not a constitution deviation and not a client-side
 filtering workaround: the box is built against the expected capability and the
-gap is filed upstream. This feature applies the same posture to the two
-facet-only endpoints. Both already ship their real backend facets
-(`facility`+`status`; `taxpayer`+`status`) in a filter drawer, so neither is a
-bare search-only screen.
+gap is filed upstream. This feature applies that posture to the one remaining
+facet-only standalone catalog (Payment Method Options), which also ships its real
+backend facets (`facility`+`status`) in a filter drawer, so it is not a bare
+search-only screen.
 
 **Alternatives considered**:
 - *Client-side filtering of the fetched page* — explicitly rejected by the 013/014 precedent (filters only the current page, misleading across pagination).

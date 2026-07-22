@@ -71,10 +71,13 @@ get/update/delete. Entered on create, **immutable** thereafter (no RFC in the up
 | Get | `getTaxpayerCertificate…Get(certificateId)` | GET `/…/{certificate_id}` | `TaxpayerCertificateResponse` |
 | Upload | `uploadTaxpayerCertificate…Post(taxpayer, certificate, key, keyPassword)` | POST `/api/v1/taxpayer-certificates` (multipart/form-data) | `TaxpayerCertificateResponse` |
 
-**⚠️ No `update`, no `delete` method** — intentional (research §9). The catalog offers
-neither an edit nor a delete affordance.
-**List filters**: `taxpayer (String? RFC)`, `status (EntityStatus?)`. ⚠️ **No `search`** —
-tracked upstream dependency (research §15).
+**⚠️ No `update`, no `delete` method** — intentional (research §9). Consumed **only**
+as a per-issuer child section of the Taxpayer Issuer detail (not a standalone
+catalog): the section calls `list(taxpayer: <open issuer RFC>)` and `upload`, and
+offers no edit/delete affordance. The `taxpayer` filter scopes the list to the open
+issuer; `status`/`skip`/`limit` are available but unused by the bounded section.
+**No `search` param exists, and none is needed** — a per-issuer collection is bounded
+(FR-020), so the §VI search-box rule does not apply here (research §15).
 
 **`TaxpayerCertificateResponse`**: `taxpayerCertificateId:String`, `taxpayer:String(RFC)`,
 `validFrom:DateTime`, `validTo:DateTime`, `status:EntityStatus`. `validFrom`/`validTo`
@@ -95,7 +98,7 @@ user input (FR-022).
 - **`EntityStatus`** — status field/filter/cell on Payment Method Options and Taxpayer Certificates.
 - **`Commission`** (`AnyOf[String,num]`) — payment-method-option commission, submitted as a decimal string.
 - **`FiscalCertificationProvider`** — generated int enum, unnamed members; display-label mapped (research §7).
-- **No SAT `c_FormaPago` endpoint exists** — `paymentMethod` uses a hand-named `PaymentForm` lookup (research §5).
+- **No SAT `c_FormaPago` endpoint exists** — `paymentMethod` uses a hand-named `PaymentMethod` lookup (research §5).
 
 ## Error mapping
 
