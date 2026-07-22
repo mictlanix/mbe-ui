@@ -1517,4 +1517,420 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get taxpayerRecipientEmailRequiredError => 'El correo es obligatorio.';
+
+  @override
+  String get facilityTypeStore => 'Tienda';
+
+  @override
+  String get facilityTypeProductionSite => 'Sitio de producción';
+
+  @override
+  String get columnFacility => 'Instalación';
+
+  @override
+  String get columnWarehouse => 'Almacén';
+
+  @override
+  String get columnComment => 'Comentario';
+
+  @override
+  String get columnType => 'Tipo';
+
+  @override
+  String get columnTaxpayer => 'Contribuyente';
+
+  @override
+  String get columnAddress => 'Dirección';
+
+  @override
+  String get columnLocation => 'Código postal';
+
+  @override
+  String get facilityFieldLabel => 'Instalación';
+
+  @override
+  String get warehouseFieldLabel => 'Almacén';
+
+  @override
+  String get unknownFacilityLabel => 'Instalación desconocida';
+
+  @override
+  String get unknownWarehouseLabel => 'Almacén desconocido';
+
+  @override
+  String get warehousesMenuTitle => 'Almacenes';
+
+  @override
+  String get warehousesSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newWarehouseTooltip => 'Nuevo almacén';
+
+  @override
+  String warehousesLoadError(Object error) {
+    return 'No se pudieron cargar los almacenes: $error';
+  }
+
+  @override
+  String get noWarehousesFound => 'No se encontraron almacenes.';
+
+  @override
+  String get viewWarehouseTitle => 'Ver Almacén';
+
+  @override
+  String get editWarehouseTitle => 'Editar Almacén';
+
+  @override
+  String get newWarehouseTitle => 'Nuevo Almacén';
+
+  @override
+  String get deleteWarehouseButton => 'Eliminar almacén';
+
+  @override
+  String get deleteWarehouseConfirmTitle => '¿Eliminar almacén?';
+
+  @override
+  String deleteWarehouseConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get warehouseLoadFailedError => 'No se pudo cargar el almacén.';
+
+  @override
+  String get warehouseCreateFailedError => 'No se pudo crear el almacén.';
+
+  @override
+  String get warehouseUpdateFailedError => 'No se pudo actualizar el almacén.';
+
+  @override
+  String get warehouseDeleteFailedError => 'No se pudo eliminar el almacén.';
+
+  @override
+  String get warehouseCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear almacenes.';
+
+  @override
+  String get warehouseUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar almacenes.';
+
+  @override
+  String get warehouseDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar almacenes.';
+
+  @override
+  String get warehouseFacilityRequiredError => 'La instalación es obligatoria.';
+
+  @override
+  String get warehouseCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get warehouseNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get cashDrawersMenuTitle => 'Cajas';
+
+  @override
+  String get cashDrawersSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newCashDrawerTooltip => 'Nueva caja';
+
+  @override
+  String cashDrawersLoadError(Object error) {
+    return 'No se pudieron cargar las cajas: $error';
+  }
+
+  @override
+  String get noCashDrawersFound => 'No se encontraron cajas.';
+
+  @override
+  String get viewCashDrawerTitle => 'Ver Caja';
+
+  @override
+  String get editCashDrawerTitle => 'Editar Caja';
+
+  @override
+  String get newCashDrawerTitle => 'Nueva Caja';
+
+  @override
+  String get deleteCashDrawerButton => 'Eliminar caja';
+
+  @override
+  String get deleteCashDrawerConfirmTitle => '¿Eliminar caja?';
+
+  @override
+  String deleteCashDrawerConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get cashDrawerLoadFailedError => 'No se pudo cargar la caja.';
+
+  @override
+  String get cashDrawerCreateFailedError => 'No se pudo crear la caja.';
+
+  @override
+  String get cashDrawerUpdateFailedError => 'No se pudo actualizar la caja.';
+
+  @override
+  String get cashDrawerDeleteFailedError => 'No se pudo eliminar la caja.';
+
+  @override
+  String get cashDrawerCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear cajas.';
+
+  @override
+  String get cashDrawerUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar cajas.';
+
+  @override
+  String get cashDrawerDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar cajas.';
+
+  @override
+  String get cashDrawerFacilityRequiredError =>
+      'La instalación es obligatoria.';
+
+  @override
+  String get cashDrawerCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get cashDrawerNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get pointsOfSaleMenuTitle => 'Puntos de Venta';
+
+  @override
+  String get pointsOfSaleSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newPointSaleTooltip => 'Nuevo punto de venta';
+
+  @override
+  String pointsOfSaleLoadError(Object error) {
+    return 'No se pudieron cargar los puntos de venta: $error';
+  }
+
+  @override
+  String get noPointsOfSaleFound => 'No se encontraron puntos de venta.';
+
+  @override
+  String get viewPointSaleTitle => 'Ver Punto de Venta';
+
+  @override
+  String get editPointSaleTitle => 'Editar Punto de Venta';
+
+  @override
+  String get newPointSaleTitle => 'Nuevo Punto de Venta';
+
+  @override
+  String get deletePointSaleButton => 'Eliminar punto de venta';
+
+  @override
+  String get deletePointSaleConfirmTitle => '¿Eliminar punto de venta?';
+
+  @override
+  String deletePointSaleConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get pointSaleLoadFailedError => 'No se pudo cargar el punto de venta.';
+
+  @override
+  String get pointSaleCreateFailedError =>
+      'No se pudo crear el punto de venta.';
+
+  @override
+  String get pointSaleUpdateFailedError =>
+      'No se pudo actualizar el punto de venta.';
+
+  @override
+  String get pointSaleDeleteFailedError =>
+      'No se pudo eliminar el punto de venta.';
+
+  @override
+  String get pointSaleCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear puntos de venta.';
+
+  @override
+  String get pointSaleUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar puntos de venta.';
+
+  @override
+  String get pointSaleDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar puntos de venta.';
+
+  @override
+  String get pointSaleFacilityRequiredError => 'La instalación es obligatoria.';
+
+  @override
+  String get pointSaleCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get pointSaleNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get pointSaleWarehouseRequiredError => 'El almacén es obligatorio.';
+
+  @override
+  String get facilitiesMenuTitle => 'Instalaciones';
+
+  @override
+  String get facilitiesSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String get newFacilityTooltip => 'Nueva instalación';
+
+  @override
+  String facilitiesLoadError(Object error) {
+    return 'No se pudieron cargar las instalaciones: $error';
+  }
+
+  @override
+  String get noFacilitiesFound => 'No se encontraron instalaciones.';
+
+  @override
+  String get viewFacilityTitle => 'Ver Instalación';
+
+  @override
+  String get editFacilityTitle => 'Editar Instalación';
+
+  @override
+  String get newFacilityTitle => 'Nueva Instalación';
+
+  @override
+  String get facilityReceiptMessageLabel => 'Mensaje del recibo';
+
+  @override
+  String get facilityDefaultBatchLabel => 'Lote predeterminado';
+
+  @override
+  String get facilityLogoLabel => 'Logotipo';
+
+  @override
+  String get deleteFacilityButton => 'Eliminar instalación';
+
+  @override
+  String get deleteFacilityConfirmTitle => '¿Eliminar instalación?';
+
+  @override
+  String deleteFacilityConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get facilityLoadFailedError => 'No se pudo cargar la instalación.';
+
+  @override
+  String get facilityCreateFailedError => 'No se pudo crear la instalación.';
+
+  @override
+  String get facilityUpdateFailedError =>
+      'No se pudo actualizar la instalación.';
+
+  @override
+  String get facilityDeleteFailedError => 'No se pudo eliminar la instalación.';
+
+  @override
+  String get facilityCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear instalaciones.';
+
+  @override
+  String get facilityUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para editar instalaciones.';
+
+  @override
+  String get facilityDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar instalaciones.';
+
+  @override
+  String get facilityCodeRequiredError => 'El código es obligatorio.';
+
+  @override
+  String get facilityNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get facilityLocationRequiredError =>
+      'El código postal es obligatorio.';
+
+  @override
+  String get facilityAddressRequiredError => 'La dirección es obligatoria.';
+
+  @override
+  String get facilityTaxpayerRequiredError =>
+      'El contribuyente es obligatorio.';
+
+  @override
+  String get facilityTaxpayerInvalidError =>
+      'Ingresa un RFC válido (hasta 13 caracteres).';
+
+  @override
+  String get newAddressTooltip => 'Nueva dirección';
+
+  @override
+  String get newAddressDialogTitle => 'Nueva Dirección';
+
+  @override
+  String get createAddressButton => 'Crear dirección';
+
+  @override
+  String get addressStreetLabel => 'Calle';
+
+  @override
+  String get addressExteriorNumberLabel => 'Número exterior';
+
+  @override
+  String get addressInteriorNumberLabel => 'Número interior';
+
+  @override
+  String get addressPostalCodeLabel => 'Código postal';
+
+  @override
+  String get addressNeighborhoodLabel => 'Colonia';
+
+  @override
+  String get addressLocalityLabel => 'Localidad';
+
+  @override
+  String get addressBoroughLabel => 'Municipio';
+
+  @override
+  String get addressStateLabel => 'Estado';
+
+  @override
+  String get addressCityLabel => 'Ciudad';
+
+  @override
+  String get addressCountryLabel => 'País';
+
+  @override
+  String get addressNicknameLabel => 'Alias';
+
+  @override
+  String get addressCreateFailedError => 'No se pudo crear la dirección.';
+
+  @override
+  String get addressStreetRequiredError => 'La calle es obligatoria.';
+
+  @override
+  String get addressExteriorNumberRequiredError =>
+      'El número exterior es obligatorio.';
+
+  @override
+  String get addressPostalCodeRequiredError =>
+      'El código postal es obligatorio.';
+
+  @override
+  String get addressNeighborhoodRequiredError => 'La colonia es obligatoria.';
+
+  @override
+  String get addressBoroughRequiredError => 'El municipio es obligatorio.';
+
+  @override
+  String get addressStateRequiredError => 'El estado es obligatorio.';
+
+  @override
+  String get addressCountryRequiredError => 'El país es obligatorio.';
 }

@@ -4,6 +4,10 @@
 /// Each user has zero or one [Privilege] per [SystemObject]. Values `31`,
 /// `70`, `76`-`78`, and `104`-`105` are intentionally absent — they are
 /// disabled/unused in the legacy codebase and were never assigned a name.
+/// Value `107` (`productionSites`) is also intentionally absent as of
+/// spec 014: mbe-api merged the legacy Store and Production Site concepts
+/// into `Facility`, reusing slot `29` (previously `stores`) as `FACILITIES`
+/// and removing `PRODUCTION_SITES` entirely (mictlanix/mbe-api#93).
 enum SystemObject {
   products(0),
   labels(1),
@@ -34,7 +38,7 @@ enum SystemObject {
   salesOrdersHistoric(26),
   customerRefundsHistoric(27),
   supplierReturnHistoric(28),
-  stores(29),
+  facilities(29),
   salesQuotes(30),
   kardex(32),
   receivedPayments(33),
@@ -105,7 +109,6 @@ enum SystemObject {
   excludePriceRangeValidation(102),
   issuedLocationId(103),
   pricing(106),
-  productionSites(107),
   paymentsVerification(108),
   receivedPaymentsSummary(109),
   customerRefundConfirm(110),

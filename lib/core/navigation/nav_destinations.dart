@@ -25,6 +25,10 @@ class NavBranch {
   static const int expenses = 11;
   static const int vehicles = 12;
   static const int vehicleOperators = 13;
+  static const int warehouses = 14;
+  static const int cashDrawers = 15;
+  static const int pointsOfSale = 16;
+  static const int facilities = 17;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -153,6 +157,46 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.vehicleOperators,
         gate: (object: SystemObject.vehicleOperators, right: AccessRight.read),
       ),
+      NavDestination(
+        id: 'warehouses',
+        label: _warehousesLabel,
+        icon: Icons.warehouse_outlined,
+        selectedIcon: Icons.warehouse,
+        route: '/warehouses',
+        branchIndex: NavBranch.warehouses,
+        gate: (object: SystemObject.warehouses, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'cash-drawers',
+        label: _cashDrawersLabel,
+        icon: Icons.account_balance_wallet_outlined,
+        selectedIcon: Icons.account_balance_wallet,
+        route: '/cash-drawers',
+        branchIndex: NavBranch.cashDrawers,
+        gate: (object: SystemObject.cashDrawers, right: AccessRight.read),
+      ),
+      NavDestination(
+        id: 'points-of-sale',
+        label: _pointsOfSaleLabel,
+        icon: Icons.point_of_sale_outlined,
+        selectedIcon: Icons.point_of_sale,
+        route: '/points-of-sale',
+        branchIndex: NavBranch.pointsOfSale,
+        gate: (object: SystemObject.pointsOfSale, right: AccessRight.read),
+      ),
+      // Facilities is the parent of the three catalogs above; its
+      // `branchIndex` is 17 (append order preserves the NavBranch↔router
+      // invariant), but its display position here is a cosmetic choice —
+      // nav order is independent of branch index (contracts/routes.md).
+      NavDestination(
+        id: 'facilities',
+        label: _facilitiesLabel,
+        icon: Icons.business_outlined,
+        selectedIcon: Icons.business,
+        route: '/facilities',
+        branchIndex: NavBranch.facilities,
+        gate: (object: SystemObject.facilities, right: AccessRight.read),
+      ),
     ],
   ),
   NavGroup(
@@ -192,6 +236,10 @@ String _expensesLabel(AppLocalizations l10n) => l10n.expensesMenuTitle;
 String _vehiclesLabel(AppLocalizations l10n) => l10n.vehiclesMenuTitle;
 String _vehicleOperatorsLabel(AppLocalizations l10n) =>
     l10n.vehicleOperatorsMenuTitle;
+String _warehousesLabel(AppLocalizations l10n) => l10n.warehousesMenuTitle;
+String _cashDrawersLabel(AppLocalizations l10n) => l10n.cashDrawersMenuTitle;
+String _pointsOfSaleLabel(AppLocalizations l10n) => l10n.pointsOfSaleMenuTitle;
+String _facilitiesLabel(AppLocalizations l10n) => l10n.facilitiesMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a
