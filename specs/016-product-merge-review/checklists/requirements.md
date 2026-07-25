@@ -31,5 +31,6 @@
 
 ## Notes
 
-- All items pass on first draft. No [NEEDS CLARIFICATION] markers were needed — reasonable defaults were used throughout (documented in Assumptions), notably: this feature builds on and does not replace `specs/008-merge-products`, and the related-record-count summary (FR-006/Story 5) is scoped to degrade gracefully pending a backend capability that does not yet exist.
-- Ready for `/speckit-clarify` (optional, given no open markers) or `/speckit-plan`.
+- All items pass. No [NEEDS CLARIFICATION] markers were needed — reasonable defaults were used throughout (documented in Assumptions), notably that this feature builds on and does not replace `specs/008-merge-products`.
+- **Revised 2026-07-25 after an upstream review.** FR-006 / Story 5 originally scoped the related-record-count summary to degrade gracefully pending a backend capability that did not exist. That capability shipped (mbe-api#111, closed) and mbe-ui's client was already regenerated, so Story 5 is now fully in scope. Re-validated against the checklist after the change: still passing, with two new testable properties added from the real contract — unrecognized categories must render under a fallback label rather than being dropped (Story 5 #3, SC-006), and price-list rows must be described as destroyed rather than reassigned (Story 5 #2).
+- Ready for `/speckit-implement`.

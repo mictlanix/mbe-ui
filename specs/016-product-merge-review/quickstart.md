@@ -66,21 +66,35 @@ flutter run -d chrome   # or your usual device/flavor
 13. Cancel the confirmation dialog. → No merge is submitted; the review step
     (panels, table, acknowledgment) is unchanged.
 
-## US5 — Related-records summary (P3, degraded in this pass)
+## US5 — Blast-radius summary (P3)
 
-14. Reach the review step. → No "will be reassigned" counts summary is shown
-    (no backend support yet — [mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111)),
-    and no placeholder/zero-value section appears in its place. Everything
-    else on the review step (panels, table, acknowledgment, confirmation)
-    works normally without it.
+14. Reach the review step with a duplicate that carries history (orders,
+    inventory movements, price rows). → A summary lists each record category
+    with its count, largest first, plus a total.
+15. Compare the displayed total against the sum of the listed rows. → They
+    match (the total comes from the server, not a client-side re-add).
+16. Inspect the price-list row in the summary. → It is marked as destroyed
+    rather than moved to the kept product; the other categories are not.
+17. Point the app at a backend that reports a category the UI has no label
+    for (or temporarily rename one in a stub). → It still appears, under a
+    humanized fallback label, and is still included in the total.
+18. Simulate a preview failure (e.g. block the preview request). → The
+    summary section disappears entirely — no banner, no zero-filled rows —
+    and the merge button remains enabled; the rest of the review step is
+    unaffected.
+19. Open the confirmation dialog with the preview loaded. → It includes the
+    total line. With the preview failed or pending, the dialog omits that
+    line rather than showing a blank or zero.
 
 ## Error handling
 
-15. Before the review step's product data loads, simulate a failure (e.g. one
+20. Before the review step's product data loads, simulate a failure (e.g. one
     of the two products is deleted by another session between selection and
     review). → The review step shows an error (not a partial/stale
     comparison); the acknowledgment and merge button remain disabled; the
-    original picker selections are untouched.
+    original picker selections are untouched. Note the contrast with step 18:
+    a **comparison** failure blocks the merge because it is identity data; a
+    **preview** failure does not, because it is informational context.
 
 ## Automated coverage (expected)
 
@@ -90,9 +104,13 @@ flutter run -d chrome   # or your usual device/flavor
   differing pair and an identical pair (steps 4–5), compact-width layout
   (step 6), swap exchanges panels/table/confirmation (steps 7–8, 11),
   acknowledgment gates the merge button and resets on swap (steps 9–11),
-  extended confirmation dialog content (step 12), cancel leaves review state
-  intact (step 13), related-records summary omitted (step 14), comparison
-  fetch failure blocks proceeding (step 15).
+  extended confirmation dialog content and the conditional total line
+  (steps 12, 19), cancel leaves review state intact (step 13), comparison
+  fetch failure blocks proceeding (step 20).
+- **Widget** (new, `test/widget/features/catalog/merge_related_records_summary_test.dart`):
+  per-category rows and server-supplied total (steps 14–15), destroyed-vs-moved
+  marking (step 16), humanized fallback for an unknown category (step 17),
+  loading placeholder, and error-omits-without-blocking (step 18).
 - **Widget** (new, `test/widget/features/catalog/merge_comparison_table_test.dart`):
   diff-row computation in isolation across a matrix of matching/differing
   field combinations.

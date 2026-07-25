@@ -28,7 +28,7 @@ Single Flutter project, feature-first layered per constitution §I. All work lan
 
 **Purpose**: Localized strings for all new UI, before any widget references them
 
-- [ ] T001 [P] Add new es-MX keys to `lib/l10n/app_es.arb`: `mergeKeptLabel`, `mergeDeletedLabel`, `mergeSwapTooltip`, `mergeComparisonTitle`, `mergeComparisonFieldHeader`, `mergeAcknowledgeLabel` (with a `{duplicateName}` placeholder), `mergeDiffBadge`, and the diff-table field labels (`mergeFieldId`, `mergeFieldCode`, `mergeFieldSku`, `mergeFieldModel`, `mergeFieldBrand`, `mergeFieldUom`, `mergeFieldTaxRate`, `mergeFieldStatus`); replace `mergeConfirmMessage` with a four-placeholder version (`{canonicalName}`, `{canonicalCode}`, `{duplicateName}`, `{duplicateCode}`) per contracts/ui-contracts.md §6
+- [ ] T001 [P] Add new es-MX keys to `lib/l10n/app_es.arb`: `mergeKeptLabel`, `mergeDeletedLabel`, `mergeSwapTooltip`, `mergeComparisonTitle`, `mergeComparisonFieldHeader`, `mergeAcknowledgeLabel` (with a `{duplicateName}` placeholder), `mergeDiffBadge`; the diff-table field labels (`mergeFieldId`, `mergeFieldCode`, `mergeFieldSku`, `mergeFieldModel`, `mergeFieldBrand`, `mergeFieldUom`, `mergeFieldTaxRate`, `mergeFieldStatus`); the related-records keys (`mergeRelatedRecordsTitle`, `mergeRelatedDestroyedNote`, `mergeRelatedTotalLabel`, `mergeConfirmTotalLine` with a `{total}` placeholder); and one label per known preview category (`mergeCategorySalesOrderDetail`, `mergeCategoryPurchaseOrderDetail`, `mergeCategoryInventoryReceiptDetail`, `mergeCategoryInventoryIssueDetail`, `mergeCategoryInventoryTransferDetail`, `mergeCategoryLotSerialTracking`, `mergeCategoryProductPrice`, `mergeCategoryProductLabel`, `mergeCategoryFiscalDocumentDetail`, `mergeCategoryCommissionProduct`, `mergeCategoryCustomerDiscount`); replace `mergeConfirmMessage` with a four-placeholder version (`{canonicalName}`, `{canonicalCode}`, `{duplicateName}`, `{duplicateCode}`) per contracts/ui-contracts.md §6
 - [ ] T002 [P] Add the matching en keys plus their `@`-metadata placeholder declarations to `lib/l10n/app_en.arb`, mirroring the existing `@mergeConfirmMessage` metadata style
 - [ ] T003 Run `flutter gen-l10n` and confirm `lib/l10n/app_localizations.dart` exposes every new key with the expected signatures
 
@@ -110,25 +110,34 @@ Single Flutter project, feature-first layered per constitution §I. All work lan
 
 ---
 
-## Phase 7: User Story 5 - Understand the blast radius (Priority: P3, degraded pending backend)
+## Phase 7: User Story 5 - Understand the blast radius before merging (Priority: P3)
 
-**Goal**: Ship FR-006's graceful-degradation path only — no counts summary, and no fabricated placeholder in its place
+**Goal**: Show every category of record attached to the doomed product with counts and a total, sourced from the merge-preview endpoint
 
-**Independent Test**: The review step renders no related-records summary and no zero-valued placeholder section; every other part of the review step works normally
+**Independent Test**: The review step lists per-category counts plus a server-supplied total; an unrecognized category still appears under a fallback label; price-list rows are marked destroyed rather than moved; a failed preview omits the section without blocking the merge
 
-- [ ] T023 [US5] Add a short comment at the review step's composition point in `lib/features/catalog/presentation/merge_products_screen.dart` noting the related-records summary is intentionally absent pending [mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111) (research.md §4) — so a future reader doesn't mistake the omission for an oversight
-- [ ] T024 [P] [US5] Extend `test/widget/features/catalog/merge_products_screen_test.dart` with a regression test asserting no related-records/counts section renders, guarding against a placeholder or zero-default being added before the endpoint exists (FR-006)
+> **Note**: the endpoint and generated client already exist (mbe-api `990fa83` / mbe-ui `2d9b1e5`) — no regeneration needed, only mapping and UI. See research.md §4.
 
-**Checkpoint**: The missing capability is documented and guarded, not silently faked
+- [ ] T023 [US5] Create `lib/features/catalog/domain/entities/merge_preview.dart` — freezed `MergePreview { List<MergePreviewCategory> categories, int total }` and `MergePreviewCategory { String key, int count }` with the `isDestroyed` getter (`key` starting with `product_price.`), plus `fromResponse(ProductMergePreviewResponse)` preserving the server's category order and `total` verbatim (data-model.md)
+- [ ] T024 [US5] Add `mergePreview({required int productId, required int duplicateId})` to `lib/features/catalog/domain/repositories/product_repository.dart` and implement it in `lib/features/catalog/data/product_repository_impl.dart` via the generated `previewProductMergeApiV1ProductsMergePreviewGet`, mapping through `MergePreview.fromResponse` and reusing the existing `_toAppError` chain (contracts/product-repository.md)
+- [ ] T025 [US5] Add a merge-preview `@riverpod` provider keyed by `(canonicalId, duplicateId)` in `lib/features/catalog/presentation/merge_products_comparison_provider.dart`, exposing `AsyncValue<MergePreview>` independently of the comparison provider so a preview failure cannot block the review step
+- [ ] T026 [US5] Add category label resolution in `lib/features/catalog/presentation/widgets/merge_related_records_summary.dart`: map known `table.column` keys to their `.arb` labels and humanize unrecognized keys (strip the `.column` suffix, underscores to spaces, sentence-case) — never drop a category or exclude it from the total (FR-006, SC-006)
+- [ ] T027 [US5] Build the summary widget in the same file: one `Key('merge_related_category_row')` per category (label + count, server order), a destroyed-rather-than-moved qualifier on `isDestroyed` rows, a `Key('merge_related_total')` footer, `Key('merge_related_loading')` on `AsyncLoading`, and full omission on `AsyncError` (contracts/ui-contracts.md §3b)
+- [ ] T028 [US5] Render the summary into the review step in `lib/features/catalog/presentation/merge_products_screen.dart` and append the total to the confirmation dialog as a separate `l10n.mergeConfirmTotalLine(total)` line that is skipped when the preview is pending or failed (contracts/ui-contracts.md §6)
+- [ ] T029 [US5] Run `dart run build_runner build --delete-conflicting-outputs` for `merge_preview.freezed.dart` and the new provider's `.g.dart`
+- [ ] T030 [P] [US5] Add `test/unit/features/catalog/merge_preview_test.dart` plus repository coverage in `test/unit/features/catalog/product_repository_impl_test.dart`: response→entity mapping preserves order and total, `isDestroyed` is true only for `product_price.*`, and a `DioException` maps to the expected `AppError`
+- [ ] T031 [P] [US5] Add `test/widget/features/catalog/merge_related_records_summary_test.dart`: known categories render localized labels, an unknown key renders a humanized fallback (and is counted in the displayed total), a `product_price.*` row is marked destroyed, loading shows the placeholder, and an error omits the section while leaving the merge button enabled
+
+**Checkpoint**: The operator can see the full blast radius — including record types the interface has never seen before — without it ever blocking or misdescribing the merge
 
 ---
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T025 Run `dart analyze lib test` and resolve any issues introduced by this feature
-- [ ] T026 Run `flutter test` and confirm the full suite passes with no regressions in spec 008's existing merge coverage
-- [ ] T027 Verify kept/deleted distinction survives a grayscale/color-blind check (labels and treatment carry the meaning without hue) per FR-002 and SC-001
-- [ ] T028 Walk `specs/016-product-merge-review/quickstart.md` against a running app and record actual results in its "Automated coverage" section, matching spec 008's quickstart convention
+- [ ] T032 Run `dart analyze lib test` and resolve any issues introduced by this feature
+- [ ] T033 Run `flutter test` and confirm the full suite passes with no regressions in spec 008's existing merge coverage
+- [ ] T034 Verify kept/deleted distinction survives a grayscale/color-blind check (labels and treatment carry the meaning without hue) per FR-002 and SC-001
+- [ ] T035 Walk `specs/016-product-merge-review/quickstart.md` against a running app and record actual results in its "Automated coverage" section, matching spec 008's quickstart convention
 
 ---
 
@@ -141,7 +150,7 @@ Single Flutter project, feature-first layered per constitution §I. All work lan
 - **US1 (Phase 3)** blocks **US2 (Phase 4)** in practice: T013 renders the table into the same review-step scaffold T010 creates, and both share one `AsyncValue`.
 - **US3 (Phase 5)** depends on US1 — the swap control lives inside the panel widget from T009.
 - **US4 (Phase 6)** depends on Phase 2's `acknowledged` state and on US1's review step existing to host the checkbox. Independent of US3, except that T022 exercises the swap-reset interaction.
-- **US5 (Phase 7)** depends only on the review step existing (US1); it is verification + documentation of an intentional absence.
+- **US5 (Phase 7)** depends on the review step existing (US1) to host the summary, and on Phase 6's dialog change only for T028's total line. Internally: T023 → T024 → T025 → T027/T028, with T026 feeding T027 and T029 (codegen) after T023/T025.
 
 ## Parallel Opportunities
 
@@ -150,12 +159,12 @@ Single Flutter project, feature-first layered per constitution §I. All work lan
 - **Phase 4**: T014 and T015 (different test files/concerns).
 - **Phase 5**: T017 and T018 (unit vs. widget test files).
 - **Phase 6**: T021 and T022 (unit vs. widget test files).
-- **Phase 7**: T024 runs alongside any Phase 6 test work.
+- **Phase 7**: T030 and T031 (unit vs. widget test files).
 
 ## Implementation Strategy
 
 **MVP scope**: Phases 1–4 (both P1 stories). That delivers the entire safety rationale for this feature — an explicit kept/deleted presentation plus a field-level diff — and is independently shippable without swap, the acknowledgment gate, or the counts summary, since spec 008's existing confirmation dialog still guards the destructive action underneath.
 
-**Incremental delivery**: Phase 5 (swap) and Phase 6 (acknowledgment + restated confirmation) each add a self-contained increment on top of the MVP and can ship in separate passes. Phase 7 is verification-only. Phase 8 closes out quality gates.
+**Incremental delivery**: Phase 5 (swap), Phase 6 (acknowledgment + restated confirmation), and Phase 7 (blast-radius summary) each add a self-contained increment on top of the MVP and can ship in separate passes. Phase 8 closes out quality gates.
 
-**Deferred**: FR-006's real counts summary is out of scope for this feature entirely, pending [mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111). When that endpoint ships, a follow-up adds a repository method, regenerates the client, and replaces T023's comment with the real summary widget.
+**Nothing deferred**: FR-006 was previously out of scope pending [mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111). That endpoint shipped and mbe-ui's client is already regenerated, so Phase 7 now implements it for real. No task in this list waits on an external dependency.

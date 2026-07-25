@@ -21,6 +21,18 @@ Renders once the comparison provider resolves (`AsyncData`). Two-column value la
 - `AsyncLoading` → the table area shows a loading indicator (`Key('merge_comparison_loading')`).
 - `AsyncError` → the shared `ErrorBanner` renders in the table's place (reusing spec 008's existing error-banner pattern); the acknowledgment checkbox and merge button remain disabled (FR-011 extended to this fetch).
 
+## 3b. `MergeRelatedRecordsSummary` (new widget, `widgets/merge_related_records_summary.dart`)
+
+Renders the blast-radius summary (FR-006 / Story 5) from the merge-preview provider, independently of the comparison provider's state.
+
+- Header framed around the product marked for deletion, e.g. `l10n.mergeRelatedRecordsTitle` — **not** a blanket "will be reassigned" heading, since one category is destroyed rather than moved (research.md §4).
+- One row per `MergePreviewCategory` (`Key('merge_related_category_row')`): resolved label on the left, count on the right, in the server's order (largest first).
+  - Known category keys resolve to localized labels; unrecognized keys fall back to a humanized rendering of the raw key (data-model.md). A category is never dropped.
+  - A category with `isDestroyed == true` (price-list rows) is visually and textually marked as destroyed rather than moved — e.g. a short qualifier via `l10n.mergeRelatedDestroyedNote` — so the operator is not told their price rows survive.
+- Footer row showing `preview.total` (`Key('merge_related_total')`), displayed as returned by the server.
+- `AsyncLoading` → a compact loading placeholder (`Key('merge_related_loading')`) in the section's place.
+- `AsyncError` → the section is **omitted entirely** (no banner, no zero-filled rows): it is informational context, and a failure here must not distract from or block the destructive decision (Story 5 #4). The merge button's enablement is unaffected.
+
 ## 4. Acknowledgment (`Key('merge_acknowledge_checkbox')`)
 
 A `CheckboxListTile`-style control below the panels/table, visible whenever `state.reviewReady` is true. Label text names the specific product currently in the `duplicate` role, e.g. `l10n.mergeAcknowledgeLabel(state.duplicate!.name)` ("Entiendo que **{name}** se eliminará" / "I understand **{name}** will be deleted"). `onChanged` calls `controller.acknowledgeToggled()`. Its checked state is `state.acknowledged` — since `acknowledged` resets on swap/selection change (data-model.md), this control visibly unchecks itself if the operator swaps after having checked it, making the reset impossible to miss.
@@ -34,7 +46,7 @@ A `CheckboxListTile`-style control below the panels/table, visible whenever `sta
 `_confirmMerge` (spec 008, unchanged trigger/flow: opened on submit-button tap, `Key('merge_confirm_cancel_button')`/`Key('merge_confirm_button')` unchanged) has its message extended to restate **both** products by name and code (FR-009), not just by name as in spec 008:
 
 - content: `l10n.mergeConfirmMessage(keptName, keptCode, deletedName, deletedCode)` (arb key signature extended with two new placeholders).
-- When a related-record total is available (not in this pass — research.md §4), it would be appended to this same message; omitted entirely for now, consistent with FR-006's fallback.
+- When the merge preview has resolved, the total is appended via a separate localized line (`l10n.mergeConfirmTotalLine(total)`) rather than being folded into the main message — so a pending or failed preview simply omits that line instead of forcing a placeholder into the sentence (FR-009's "when available").
 
 ## 7. Compact-width layout
 

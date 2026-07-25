@@ -42,9 +42,36 @@ Fetched by a new `@riverpod` function provider (e.g. `mergeComparisonProvider`),
 
 No new fields are requested from mbe-api for this table — every field it needs is already present on the existing `Product` entity (`lib/features/catalog/domain/entities/product.dart`).
 
-### Related-record summary (FR-006) — not modeled in this pass
+## New: `MergePreview` (domain entity)
 
-No view model is introduced for the "will be reassigned" summary. Per research.md §4, the backend capability it would depend on does not exist yet ([mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111)); the summary section is simply not rendered. When the endpoint ships, this section will be added as a follow-up data-model entry alongside the new repository method and generated client types at that time.
+`lib/features/catalog/domain/entities/merge_preview.dart`. Mapped in `data/` from the generated `ProductMergePreviewResponse` before reaching `presentation` (constitution §III). Backs FR-006 / Story 5.
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `categories` | `List<MergePreviewCategory>` | One entry per category of record attached to the product marked for deletion, as returned by the preview endpoint. Order preserved from the server (largest count first). |
+| `total` | `int` | Server-computed sum across `categories`. Displayed as-is, never recomputed client-side, so the displayed total always matches the server's own accounting (SC-006). |
+
+### `MergePreviewCategory`
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `key` | `String` | The raw `table.column` identifier from the API (e.g. `sales_order_detail.product`). Preserved verbatim — it is the lookup key for the label map and the fallback. |
+| `count` | `int` | How many rows in that relation point at the product marked for deletion. |
+
+**Derived**
+
+| Property | Rule |
+|----------|------|
+| `isDestroyed` | `key` starts with `product_price.` — those rows are deleted by the merge rather than moved (research.md §4), so the UI labels them differently. Every other category moves to the kept product. |
+
+### Category label resolution (FR-006 / Story 5 #3)
+
+The API's category set is derived from mbe-api's mapped metadata and grows whenever a new foreign key to `product` is added, with no mbe-ui change. Resolution is therefore two-tier:
+
+1. **Known key → localized label.** A lookup table in the presentation layer maps the keys known today (sales/purchase order detail, the three inventory movement details, lot-serial tracking, price list, label, fiscal document detail, commission product, customer discount) to `.arb` strings.
+2. **Unknown key → humanized fallback.** Anything unrecognized is rendered from the raw key (strip the `.column` suffix, replace underscores with spaces, sentence-case) rather than dropped. A category is **never** omitted from the list and never excluded from the displayed total — dropping one would understate the blast radius, the opposite of this feature's purpose.
+
+## Validation rules (from requirements)
 
 ## Validation rules (from requirements)
 
@@ -57,8 +84,13 @@ No view model is introduced for the "will be reassigned" summary. Per research.m
 | Acknowledgment required and tied to the current deleted product | FR-007, FR-008 | client (`canSubmit`, `acknowledged` reset rules) |
 | Final confirmation restates both products by name and code | FR-009 (spec 008's dialog, extended) | screen (`_confirmMerge`, extended) |
 | Full product fetch failure blocks proceeding | FR-011 | client (comparison provider's `AsyncError` disables the review step's continuation) |
-| Related-record counts shown only when determinable, never fabricated | FR-006 | client (section omitted outright — research.md §4) |
+| Related-record counts sourced from the server, never estimated or fabricated | FR-006 | client (`MergePreview` from the preview endpoint; section omitted on failure, never zero-filled) |
+| Every returned category is displayed; total matches the sum shown | FR-006, SC-006 | client (label fallback for unknown keys — no silent drops) |
+| Price-list rows described as destroyed, not reassigned | FR-006 (Story 5 #2) | client (`MergePreviewCategory.isDestroyed`) |
+| Preview failure does not block the merge | FR-006 (Story 5 #4) | client (summary is informational; only the comparison fetch gates continuation) |
 
 ## RBAC
 
-Unchanged from spec 008: `can(SystemObject.productsMerge, AccessRight.create)` gates the route, entry point, and submit action. This feature adds no new gate — the review step is additional content inside the already-gated screen.
+Unchanged from spec 008: `can(SystemObject.productsMerge, AccessRight.create)` gates the route, entry point, and submit action. This feature adds no new client-side gate — the review step is additional content inside the already-gated screen.
+
+Server-side, the preview endpoint requires `PRODUCTS_MERGE` at **read** level while the merge itself requires **create**. Any user who can reach this screen already holds create on that object, so no additional client-side check is needed for the preview call; a `403` would surface through the normal error path.

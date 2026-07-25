@@ -37,6 +37,55 @@ Future<(Product, Product)> mergeComparison(
 
 The existing merge call (`ProductRepository.mergeProducts({required int productId, required int duplicateId})`, spec 008) is unchanged — it is still invoked from `MergeProductsController.submit()` with `productId: canonical.productId, duplicateId: duplicate.productId`, using whichever product currently holds the `canonical` role after any swap (research.md §2).
 
-## Not implemented in this pass: related-record counts
+## New method: `mergePreview()` (FR-006 / Story 5)
 
-No repository method is added for FR-006 (Story 5)'s related-record counts. The backend endpoint it would call does not exist yet — tracked as [mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111) (Complexity Tracking, plan.md). Once it ships, a follow-up will add a method here (e.g. `mergePreview({required int productId, required int duplicateId})`) and this document will be updated alongside it.
+The endpoint this originally waited on has shipped ([mictlanix/mbe-api#111](https://github.com/mictlanix/mbe-api/issues/111), closed) and mbe-ui's client is already regenerated against it (mbe-ui `2d9b1e5`), so one method is added to the domain interface:
+
+```dart
+/// `GET /api/v1/products/merge/preview` (FR-006). Reports every category of
+/// record attached to [duplicateId] together with its count and a server-computed
+/// total — the blast radius of merging [duplicateId] into [productId] — without
+/// modifying anything.
+///
+/// Server-side this validates the pair through the same guard the real merge
+/// uses, so a preview that answers describes the same pair a merge would act on.
+/// Requires `PRODUCTS_MERGE` at read level (the merge itself requires create),
+/// so any user who can reach the merge screen can call this.
+///
+/// Throws `NotFoundError` on `404` (either product missing), `ServerError` on a
+/// rejected pair (e.g. self-merge) or other backend failure, `NetworkError` on
+/// transport failure. Callers treat any failure as "omit the summary" — it is
+/// informational and MUST NOT block the merge (Story 5 #4).
+Future<MergePreview> mergePreview({
+  required int productId,
+  required int duplicateId,
+});
+```
+
+### Data implementation
+
+```dart
+@override
+Future<MergePreview> mergePreview({
+  required int productId,
+  required int duplicateId,
+}) async {
+  try {
+    final response = await _api.previewProductMergeApiV1ProductsMergePreviewGet(
+      productId: productId,
+      duplicateId: duplicateId,
+    );
+    return MergePreview.fromResponse(response.data!);
+  } on DioException catch (e) {
+    throw _toAppError(e);
+  }
+}
+```
+
+- `MergePreview.fromResponse` maps the generated `ProductMergePreviewResponse` (`items: BuiltList<ProductMergePreviewItem>{category, count}`, `total: int`) into the domain entity from data-model.md, preserving the server's category order and its `total` verbatim (never recomputed — SC-006).
+- The `category` string is carried through **unmodified** as `MergePreviewCategory.key`; all label resolution (known-key lookup, humanized fallback) happens in `presentation`, not here, so the domain entity stays free of display concerns.
+- Error handling reuses the existing `_toAppError(e)` → `mapDioException(e)` chain, same as `mergeProducts`.
+
+### Provider
+
+A second `@riverpod` function provider (alongside the comparison fetch) keyed by `(canonicalId, duplicateId)` exposes `AsyncValue<MergePreview>`. It is **independent** of the comparison provider: the review step renders panels and the diff table as soon as the comparison resolves, and slots the summary in when the preview resolves. A preview `AsyncError` leaves the rest of the review step fully functional and the merge button unaffected (Story 5 #4) — unlike a comparison failure, which does block (FR-011).
