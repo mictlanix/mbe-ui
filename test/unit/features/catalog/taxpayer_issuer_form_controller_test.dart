@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus, ValidationError;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    hide EntityStatus, ValidationError;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -178,82 +179,83 @@ void main() {
 
       await notifier.submitCreate();
 
-      final state = readOnlyContainer.read(taxpayerIssuerFormControllerProvider);
+      final state = readOnlyContainer.read(
+        taxpayerIssuerFormControllerProvider,
+      );
       expect(state.error, TaxpayerIssuerFormErrorCode.createPermissionDenied);
     });
   });
 
   group('TaxpayerIssuerFormController.loadForEdit / submitUpdate (FR-012)', () {
-    test('the RFC is immutable — never sent on update, and isEdit flips true', () async {
-      // A real loaded issuer always carries a regime (required at create,
-      // FR-011) — an unset regime would (correctly) fail this form's
-      // validation on save, same as it would on create.
-      when(
-        () => repository.getDetail('XAXX010101000'),
-      ).thenAnswer(
-        (_) async => const TaxpayerIssuer(
-          rfc: 'XAXX010101000',
-          name: 'Acme Corp',
-          regime: SatCatalogItem(code: '601', description: 'General de Ley'),
-          provider: FiscalCertificationProvider.number0,
-        ),
-      );
-      // The controller sends the current value of every field on update
-      // (Warehouse/TaxpayerRecipient "send everything" precedent) — an
-      // unset postalCode/comment is an empty string, not null, since
-      // `loadForEdit` maps a missing SAT expansion to `''` (research §4).
-      when(
-        () => repository.update(
-          rfc: 'XAXX010101000',
-          name: 'Updated Corp',
-          regime: '601',
-          provider: FiscalCertificationProvider.number0,
-          postalCode: '',
-          comment: '',
-        ),
-      ).thenAnswer(
-        (_) async => const TaxpayerIssuer(
-          rfc: 'XAXX010101000',
-          name: 'Updated Corp',
-          regime: SatCatalogItem(code: '601', description: 'General de Ley'),
-          provider: FiscalCertificationProvider.number0,
-        ),
-      );
+    test(
+      'the RFC is immutable — never sent on update, and isEdit flips true',
+      () async {
+        // A real loaded issuer always carries a regime (required at create,
+        // FR-011) — an unset regime would (correctly) fail this form's
+        // validation on save, same as it would on create.
+        when(() => repository.getDetail('XAXX010101000')).thenAnswer(
+          (_) async => const TaxpayerIssuer(
+            rfc: 'XAXX010101000',
+            name: 'Acme Corp',
+            regime: SatCatalogItem(code: '601', description: 'General de Ley'),
+            provider: FiscalCertificationProvider.number0,
+          ),
+        );
+        // The controller sends the current value of every field on update
+        // (Warehouse/TaxpayerRecipient "send everything" precedent) — an
+        // unset postalCode/comment is an empty string, not null, since
+        // `loadForEdit` maps a missing SAT expansion to `''` (research §4).
+        when(
+          () => repository.update(
+            rfc: 'XAXX010101000',
+            name: 'Updated Corp',
+            regime: '601',
+            provider: FiscalCertificationProvider.number0,
+            postalCode: '',
+            comment: '',
+          ),
+        ).thenAnswer(
+          (_) async => const TaxpayerIssuer(
+            rfc: 'XAXX010101000',
+            name: 'Updated Corp',
+            regime: SatCatalogItem(code: '601', description: 'General de Ley'),
+            provider: FiscalCertificationProvider.number0,
+          ),
+        );
 
-      final notifier = container.read(
-        taxpayerIssuerFormControllerProvider.notifier,
-      );
-      await notifier.loadForEdit('XAXX010101000');
-      expect(
-        container.read(taxpayerIssuerFormControllerProvider).isEdit,
-        isTrue,
-      );
+        final notifier = container.read(
+          taxpayerIssuerFormControllerProvider.notifier,
+        );
+        await notifier.loadForEdit('XAXX010101000');
+        expect(
+          container.read(taxpayerIssuerFormControllerProvider).isEdit,
+          isTrue,
+        );
 
-      notifier.nameChanged('Updated Corp');
-      await notifier.submitUpdate();
+        notifier.nameChanged('Updated Corp');
+        await notifier.submitUpdate();
 
-      final state = container.read(taxpayerIssuerFormControllerProvider);
-      expect(state.saved, isTrue);
-      // No path re-attempts to change the rfc — verified above the update
-      // call never received an `rfc` named param at all (it isn't one).
-      verify(
-        () => repository.update(
-          rfc: 'XAXX010101000',
-          name: 'Updated Corp',
-          regime: '601',
-          provider: FiscalCertificationProvider.number0,
-          postalCode: '',
-          comment: '',
-        ),
-      ).called(1);
-    });
+        final state = container.read(taxpayerIssuerFormControllerProvider);
+        expect(state.saved, isTrue);
+        // No path re-attempts to change the rfc — verified above the update
+        // call never received an `rfc` named param at all (it isn't one).
+        verify(
+          () => repository.update(
+            rfc: 'XAXX010101000',
+            name: 'Updated Corp',
+            regime: '601',
+            provider: FiscalCertificationProvider.number0,
+            postalCode: '',
+            comment: '',
+          ),
+        ).called(1);
+      },
+    );
   });
 
   group('TaxpayerIssuerFormController.delete (FR-016)', () {
     test('a rejection is surfaced and the record stays loaded', () async {
-      when(
-        () => repository.getDetail('XAXX010101000'),
-      ).thenAnswer(
+      when(() => repository.getDetail('XAXX010101000')).thenAnswer(
         (_) async => const TaxpayerIssuer(
           rfc: 'XAXX010101000',
           name: 'Acme Corp',

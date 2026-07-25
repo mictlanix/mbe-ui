@@ -56,7 +56,8 @@ class AddressInlineCreateController extends _$AddressInlineCreateController {
   @override
   AddressInlineCreateState build() => const AddressInlineCreateState();
 
-  void streetChanged(String v) => state = _clearErrors(state.copyWith(street: v));
+  void streetChanged(String v) =>
+      state = _clearErrors(state.copyWith(street: v));
   void exteriorNumberChanged(String v) =>
       state = _clearErrors(state.copyWith(exteriorNumber: v));
   void interiorNumberChanged(String v) =>

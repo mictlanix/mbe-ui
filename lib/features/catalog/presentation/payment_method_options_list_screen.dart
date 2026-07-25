@@ -131,7 +131,9 @@ class PaymentMethodOptionsListScreen extends ConsumerWidget {
                     rows: page.items,
                     pagination: page,
                     onPageChanged: (pageIndex) => ref
-                        .read(paymentMethodOptionsListControllerProvider.notifier)
+                        .read(
+                          paymentMethodOptionsListControllerProvider.notifier,
+                        )
                         .goToPage(pageIndex),
                     onRowTap: (o) => context.push(
                       '/payment-method-options/${o.paymentMethodOptionId}?view=true',

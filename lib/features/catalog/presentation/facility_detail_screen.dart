@@ -246,7 +246,10 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                 onCreatePressed: () async {
                   final created = await showAddressInlineCreateDialog(context);
                   if (created != null) {
-                    controller.addressSelected(created.addressId, created.label);
+                    controller.addressSelected(
+                      created.addressId,
+                      created.label,
+                    );
                   }
                 },
               ),
@@ -318,9 +321,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
               TextFormField(
                 key: const Key('logo_field'),
                 initialValue: formState.logo,
-                decoration: InputDecoration(
-                  labelText: l10n.facilityLogoLabel,
-                ),
+                decoration: InputDecoration(labelText: l10n.facilityLogoLabel),
                 enabled: fieldsEnabled,
                 onChanged: controller.logoChanged,
               ),

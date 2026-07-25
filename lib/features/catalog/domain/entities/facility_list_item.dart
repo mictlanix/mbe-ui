@@ -20,14 +20,13 @@ class FacilityListItem with _$FacilityListItem {
     required EntityStatus status,
   }) = _FacilityListItem;
 
-  factory FacilityListItem.fromResponse(FacilityResponse r) =>
-      FacilityListItem(
-        facilityId: r.facilityId,
-        code: r.code,
-        name: r.name,
-        type: FacilityType.fromApi(r.type),
-        status: EntityStatus.fromApi(r.status),
-      );
+  factory FacilityListItem.fromResponse(FacilityResponse r) => FacilityListItem(
+    facilityId: r.facilityId,
+    code: r.code,
+    name: r.name,
+    type: FacilityType.fromApi(r.type),
+    status: EntityStatus.fromApi(r.status),
+  );
 
   factory FacilityListItem.fromSummary(FacilitySummary r) => FacilityListItem(
     facilityId: r.facilityId,

@@ -54,9 +54,7 @@ class PaymentMethodOptionRepositoryImpl
   }
 
   @override
-  Future<PaymentMethodOption> get({
-    required int paymentMethodOptionId,
-  }) async {
+  Future<PaymentMethodOption> get({required int paymentMethodOptionId}) async {
     try {
       final response = await _api
           .getPaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdGet(

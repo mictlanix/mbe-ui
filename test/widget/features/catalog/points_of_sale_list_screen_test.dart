@@ -33,9 +33,7 @@ const _readOnlyUser = User(
   administrator: false,
   status: EntityStatus.active,
   sessionVersion: 1,
-  privileges: [
-    Privilege(systemObject: SystemObject.pointsOfSale, rawValue: 2),
-  ],
+  privileges: [Privilege(systemObject: SystemObject.pointsOfSale, rawValue: 2)],
 );
 
 const _fullAccessUser = User(
@@ -101,10 +99,8 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
-      (_) async => PointSaleListResult(
-        items: pointsOfSale,
-        total: pointsOfSale.length,
-      ),
+      (_) async =>
+          PointSaleListResult(items: pointsOfSale, total: pointsOfSale.length),
     );
 
     await tester.pumpWidget(
@@ -142,9 +138,7 @@ void main() {
     },
   );
 
-  testWidgets('shows an inactive badge for an inactive record', (
-    tester,
-  ) async {
+  testWidgets('shows an inactive badge for an inactive record', (tester) async {
     await pumpScreen(
       tester,
       signedInAs: _fullAccessUser,
@@ -231,9 +225,7 @@ void main() {
           overrides: [
             pointSaleRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
-            warehouseRepositoryProvider.overrideWithValue(
-              warehouseRepository,
-            ),
+            warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
             ),

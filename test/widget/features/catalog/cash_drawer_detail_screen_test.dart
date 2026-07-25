@@ -134,9 +134,7 @@ void main() {
     when(
       () => repository.get(cashDrawerId: 1),
     ).thenAnswer((_) async => _cashDrawer);
-    when(
-      () => repository.delete(cashDrawerId: 1),
-    ).thenAnswer((_) async {});
+    when(() => repository.delete(cashDrawerId: 1)).thenAnswer((_) async {});
 
     // Router-wrapped so the post-delete `context.pop()` (constitution §VI —
     // return to the list on success) has somewhere to go, mirroring the list
@@ -162,9 +160,7 @@ void main() {
         overrides: [
           cashDrawerRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
-          accessControlProvider.overrideWithValue(
-            _accessFor(_fullAccessUser),
-          ),
+          accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -204,7 +200,9 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
-    verifyNever(() => repository.delete(cashDrawerId: any(named: 'cashDrawerId')));
+    verifyNever(
+      () => repository.delete(cashDrawerId: any(named: 'cashDrawerId')),
+    );
   });
 
   testWidgets('a duplicate-code server rejection is surfaced on the form '

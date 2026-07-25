@@ -128,10 +128,7 @@ void main() {
         (options) async => ResponseBody.fromString('', 204),
       );
 
-      await expectLater(
-        repository.delete(paymentMethodOptionId: 1),
-        completes,
-      );
+      await expectLater(repository.delete(paymentMethodOptionId: 1), completes);
     });
   });
 }

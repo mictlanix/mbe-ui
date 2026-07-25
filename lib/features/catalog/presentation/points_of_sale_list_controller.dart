@@ -52,11 +52,8 @@ class PointSaleFilterController extends _$PointSaleFilterController {
   void facilitySelected(int facilityId, String facilityName) => state = state
       .copyWith(facilityId: facilityId, facilityDisplayText: facilityName);
 
-  void warehouseSelected(int warehouseId, String warehouseName) =>
-      state = state.copyWith(
-        warehouseId: warehouseId,
-        warehouseDisplayText: warehouseName,
-      );
+  void warehouseSelected(int warehouseId, String warehouseName) => state = state
+      .copyWith(warehouseId: warehouseId, warehouseDisplayText: warehouseName);
 
   void statusChanged(EntityStatus? value) =>
       state = state.copyWith(status: value);

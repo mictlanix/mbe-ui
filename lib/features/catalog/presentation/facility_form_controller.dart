@@ -95,14 +95,14 @@ class FacilityFormController extends _$FacilityFormController {
 
   /// FR-034 read-denied fallback: the field degrades to a typed RFC entry.
   /// The typed value is both the stored RFC and its own display text.
-  void taxpayerRfcTyped(String rfc) =>
-      state = _clear(state.copyWith(taxpayerRfc: rfc, taxpayerDisplayText: rfc));
+  void taxpayerRfcTyped(String rfc) => state = _clear(
+    state.copyWith(taxpayerRfc: rfc, taxpayerDisplayText: rfc),
+  );
 
   void logoChanged(String v) => state = state.copyWith(logo: v);
   void receiptMessageChanged(String v) =>
       state = state.copyWith(receiptMessage: v);
-  void defaultBatchChanged(String v) =>
-      state = state.copyWith(defaultBatch: v);
+  void defaultBatchChanged(String v) => state = state.copyWith(defaultBatch: v);
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   FacilityFormState _clear(FacilityFormState s) =>
@@ -312,9 +312,7 @@ class FacilityFormController extends _$FacilityFormController {
 
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
-      await ref
-          .read(facilityRepositoryProvider)
-          .delete(facilityId: facilityId);
+      await ref.read(facilityRepositoryProvider).delete(facilityId: facilityId);
       _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {

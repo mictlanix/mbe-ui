@@ -107,18 +107,19 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows facility name (not a raw id) for every warehouse (FR-015)', (
-    tester,
-  ) async {
-    await pumpScreen(
-      tester,
-      signedInAs: _fullAccessUser,
-      warehouses: _testWarehouses,
-    );
+  testWidgets(
+    'shows facility name (not a raw id) for every warehouse (FR-015)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        warehouses: _testWarehouses,
+      );
 
-    expect(find.text('Main Store'), findsOneWidget);
-    expect(find.text('North Plant'), findsOneWidget);
-  });
+      expect(find.text('Main Store'), findsOneWidget);
+      expect(find.text('North Plant'), findsOneWidget);
+    },
+  );
 
   testWidgets('shows an inactive badge for an inactive warehouse', (
     tester,

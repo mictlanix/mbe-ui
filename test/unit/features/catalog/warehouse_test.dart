@@ -14,51 +14,68 @@ const _jsonHeaders = {
 
 void main() {
   group('Warehouse.fromResponse (via WarehouseRepositoryImpl.list)', () {
-    test('maps the pre-expanded facility summary to facilityId/facilityName', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [_warehouseJson(id: 1, facilityId: 9, facilityName: 'Main Store')],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'maps the pre-expanded facility summary to facilityId/facilityName',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                _warehouseJson(
+                  id: 1,
+                  facilityId: 9,
+                  facilityName: 'Main Store',
+                ),
+              ],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final result = await repository.list();
-      final warehouse = result.items.single;
+        final result = await repository.list();
+        final warehouse = result.items.single;
 
-      expect(warehouse.warehouseId, 1);
-      expect(warehouse.facilityId, 9);
-      expect(warehouse.facilityName, 'Main Store');
-      expect(warehouse.code, 'WH-1');
-      expect(warehouse.status, EntityStatus.active);
-      expect(result.total, 1);
-    });
+        expect(warehouse.warehouseId, 1);
+        expect(warehouse.facilityId, 9);
+        expect(warehouse.facilityName, 'Main Store');
+        expect(warehouse.code, 'WH-1');
+        expect(warehouse.status, EntityStatus.active);
+        expect(result.total, 1);
+      },
+    );
 
-    test('an empty facility name falls back to the unknown-facility label', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [_warehouseJson(id: 1, facilityId: 9, facilityName: '')],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'an empty facility name falls back to the unknown-facility label',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'items': [_warehouseJson(id: 1, facilityId: 9, facilityName: '')],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final warehouse = (await repository.list()).items.single;
+        final warehouse = (await repository.list()).items.single;
 
-      expect(warehouse.facilityDisplayName('Unknown facility'), 'Unknown facility');
-    });
+        expect(
+          warehouse.facilityDisplayName('Unknown facility'),
+          'Unknown facility',
+        );
+      },
+    );
 
     test('a resolved facility name is shown as-is, not the fallback', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
           jsonEncode({
-            'items': [_warehouseJson(id: 1, facilityId: 9, facilityName: 'Main Store')],
+            'items': [
+              _warehouseJson(id: 1, facilityId: 9, facilityName: 'Main Store'),
+            ],
             'total': 1,
           }),
           200,

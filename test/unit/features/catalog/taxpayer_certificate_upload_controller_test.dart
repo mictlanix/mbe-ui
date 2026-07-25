@@ -27,76 +27,87 @@ void main() {
   });
 
   group('TaxpayerCertificateUploadController', () {
-    test('taxpayer is fixed to the open issuer, not user-editable (FR-021)', () {
-      final state = container.read(
-        taxpayerCertificateUploadControllerProvider('XAXX010101000'),
-      );
-      expect(state.taxpayer, 'XAXX010101000');
-    });
+    test(
+      'taxpayer is fixed to the open issuer, not user-editable (FR-021)',
+      () {
+        final state = container.read(
+          taxpayerCertificateUploadControllerProvider('XAXX010101000'),
+        );
+        expect(state.taxpayer, 'XAXX010101000');
+      },
+    );
 
-    test('both files and a password are required before submit (FR-023)', () async {
-      final notifier = container.read(
-        taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
-      );
+    test(
+      'both files and a password are required before submit (FR-023)',
+      () async {
+        final notifier = container.read(
+          taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
+        );
 
-      await notifier.submit();
+        await notifier.submit();
 
-      final state = container.read(
-        taxpayerCertificateUploadControllerProvider('XAXX010101000'),
-      );
-      expect(
-        state.fieldErrors['certificate'],
-        TaxpayerCertificateUploadErrorCode.certificateFileRequired,
-      );
-      expect(
-        state.fieldErrors['key'],
-        TaxpayerCertificateUploadErrorCode.keyFileRequired,
-      );
-      expect(
-        state.fieldErrors['keyPassword'],
-        TaxpayerCertificateUploadErrorCode.keyPasswordRequired,
-      );
-      verifyNever(() => repository.upload(
-        taxpayer: any(named: 'taxpayer'),
-        certificateBytes: any(named: 'certificateBytes'),
-        keyBytes: any(named: 'keyBytes'),
-        keyPassword: any(named: 'keyPassword'),
-      ));
-    });
+        final state = container.read(
+          taxpayerCertificateUploadControllerProvider('XAXX010101000'),
+        );
+        expect(
+          state.fieldErrors['certificate'],
+          TaxpayerCertificateUploadErrorCode.certificateFileRequired,
+        );
+        expect(
+          state.fieldErrors['key'],
+          TaxpayerCertificateUploadErrorCode.keyFileRequired,
+        );
+        expect(
+          state.fieldErrors['keyPassword'],
+          TaxpayerCertificateUploadErrorCode.keyPasswordRequired,
+        );
+        verifyNever(
+          () => repository.upload(
+            taxpayer: any(named: 'taxpayer'),
+            certificateBytes: any(named: 'certificateBytes'),
+            keyBytes: any(named: 'keyBytes'),
+            keyPassword: any(named: 'keyPassword'),
+          ),
+        );
+      },
+    );
 
-    test('a valid submission uploads the raw bytes for the open issuer', () async {
-      when(
-        () => repository.upload(
-          taxpayer: 'XAXX010101000',
-          certificateBytes: [1, 2, 3],
-          keyBytes: [4, 5, 6],
-          keyPassword: 'secret',
-        ),
-      ).thenAnswer(
-        (_) async => TaxpayerCertificate(
-          taxpayerCertificateId: 'CERT1',
-          taxpayer: 'XAXX010101000',
-          validFrom: DateTime(2025, 1, 1),
-          validTo: DateTime(2029, 1, 1),
-          status: EntityStatus.active,
-        ),
-      );
+    test(
+      'a valid submission uploads the raw bytes for the open issuer',
+      () async {
+        when(
+          () => repository.upload(
+            taxpayer: 'XAXX010101000',
+            certificateBytes: [1, 2, 3],
+            keyBytes: [4, 5, 6],
+            keyPassword: 'secret',
+          ),
+        ).thenAnswer(
+          (_) async => TaxpayerCertificate(
+            taxpayerCertificateId: 'CERT1',
+            taxpayer: 'XAXX010101000',
+            validFrom: DateTime(2025, 1, 1),
+            validTo: DateTime(2029, 1, 1),
+            status: EntityStatus.active,
+          ),
+        );
 
-      final notifier = container.read(
-        taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
-      );
-      notifier
-        ..certificateFilePicked([1, 2, 3], 'cert.cer')
-        ..keyFilePicked([4, 5, 6], 'key.key')
-        ..keyPasswordChanged('secret');
+        final notifier = container.read(
+          taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
+        );
+        notifier
+          ..certificateFilePicked([1, 2, 3], 'cert.cer')
+          ..keyFilePicked([4, 5, 6], 'key.key')
+          ..keyPasswordChanged('secret');
 
-      await notifier.submit();
+        await notifier.submit();
 
-      final state = container.read(
-        taxpayerCertificateUploadControllerProvider('XAXX010101000'),
-      );
-      expect(state.uploaded?.taxpayerCertificateId, 'CERT1');
-    });
+        final state = container.read(
+          taxpayerCertificateUploadControllerProvider('XAXX010101000'),
+        );
+        expect(state.uploaded?.taxpayerCertificateId, 'CERT1');
+      },
+    );
 
     test('a server rejection (invalid pair/wrong password) is surfaced '
         'while preserving the file selection (FR-023)', () async {

@@ -33,7 +33,9 @@ class TaxpayerIssuer with _$TaxpayerIssuer {
         // with no name falls back to empty rather than surfacing null
         // (Taxpayer Recipient precedent, research §4).
         name: r.name ?? '',
-        regime: r.regime == null ? null : SatCatalogItem.fromResponse(r.regime!),
+        regime: r.regime == null
+            ? null
+            : SatCatalogItem.fromResponse(r.regime!),
         provider: r.provider,
         postalCode: r.postalCode == null
             ? null

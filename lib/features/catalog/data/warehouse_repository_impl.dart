@@ -97,17 +97,16 @@ class WarehouseRepositoryImpl implements WarehouseRepository {
     EntityStatus? status,
   }) async {
     try {
-      final response = await _api
-          .updateWarehouseApiV1WarehousesWarehouseIdPut(
-            warehouseId: warehouseId,
-            warehouseUpdate: WarehouseUpdate((b) {
-              if (facilityId != null) b.facility = facilityId;
-              if (code != null) b.code = code;
-              if (name != null) b.name = name;
-              if (comment != null) b.comment = comment;
-              if (status != null) b.status = status.toApi();
-            }),
-          );
+      final response = await _api.updateWarehouseApiV1WarehousesWarehouseIdPut(
+        warehouseId: warehouseId,
+        warehouseUpdate: WarehouseUpdate((b) {
+          if (facilityId != null) b.facility = facilityId;
+          if (code != null) b.code = code;
+          if (name != null) b.name = name;
+          if (comment != null) b.comment = comment;
+          if (status != null) b.status = status.toApi();
+        }),
+      );
       final warehouse = response.data;
       if (warehouse == null) throw const AppError.server();
       return Warehouse.fromResponse(warehouse);

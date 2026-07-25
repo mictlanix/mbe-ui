@@ -11,10 +11,8 @@ part 'taxpayer_issuer_list_item.freezed.dart';
 /// (FR-034b).
 @freezed
 class TaxpayerIssuerListItem with _$TaxpayerIssuerListItem {
-  const factory TaxpayerIssuerListItem({
-    required String rfc,
-    String? name,
-  }) = _TaxpayerIssuerListItem;
+  const factory TaxpayerIssuerListItem({required String rfc, String? name}) =
+      _TaxpayerIssuerListItem;
 
   factory TaxpayerIssuerListItem.fromResponse(TaxpayerIssuerResponse r) =>
       TaxpayerIssuerListItem(rfc: r.taxpayerIssuerId, name: r.name);

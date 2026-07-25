@@ -76,7 +76,9 @@ class _TaxpayerIssuerDetailScreenState
 
     final title = readOnly
         ? l10n.viewTaxpayerIssuerTitle
-        : (_isEdit ? l10n.editTaxpayerIssuerTitle : l10n.newTaxpayerIssuerTitle);
+        : (_isEdit
+              ? l10n.editTaxpayerIssuerTitle
+              : l10n.newTaxpayerIssuerTitle);
 
     if (formState.loading) {
       return Scaffold(
@@ -249,7 +251,8 @@ class _TaxpayerIssuerDetailScreenState
                     ],
                     onChanged: fieldsEnabled
                         ? (value) {
-                            if (value != null) controller.providerChanged(value);
+                            if (value != null)
+                              controller.providerChanged(value);
                           }
                         : null,
                   ),

@@ -57,5 +57,6 @@ extension PaymentMethodOptionDisplay on PaymentMethodOption {
     return (name == null || name.isEmpty) ? unknownWarehouseLabel : name;
   }
 
-  PaymentMethod? get paymentMethodValue => PaymentMethod.fromCode(paymentMethod);
+  PaymentMethod? get paymentMethodValue =>
+      PaymentMethod.fromCode(paymentMethod);
 }

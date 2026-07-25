@@ -31,9 +31,7 @@ class TaxpayerCertificateRepositoryImpl
   Future<List<TaxpayerCertificate>> listForIssuer(String rfc) async {
     try {
       final response = await _api
-          .listTaxpayerCertificatesApiV1TaxpayerCertificatesGet(
-            taxpayer: rfc,
-          );
+          .listTaxpayerCertificatesApiV1TaxpayerCertificatesGet(taxpayer: rfc);
       final result = response.data;
       if (result == null) throw const AppError.server();
       return result.items.map(TaxpayerCertificate.fromResponse).toList();

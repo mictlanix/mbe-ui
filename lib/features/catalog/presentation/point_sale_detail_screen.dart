@@ -59,14 +59,8 @@ class _PointSaleDetailScreenState extends ConsumerState<PointSaleDetailScreen> {
     final formState = ref.watch(pointSaleFormControllerProvider);
     final controller = ref.read(pointSaleFormControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
-    final canCreate = access.can(
-      SystemObject.pointsOfSale,
-      AccessRight.create,
-    );
-    final canUpdate = access.can(
-      SystemObject.pointsOfSale,
-      AccessRight.update,
-    );
+    final canCreate = access.can(SystemObject.pointsOfSale, AccessRight.create);
+    final canUpdate = access.can(SystemObject.pointsOfSale, AccessRight.update);
     final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final l10n = AppLocalizations.of(context)!;
     final facilityRepo = ref.read(facilityRepositoryProvider);

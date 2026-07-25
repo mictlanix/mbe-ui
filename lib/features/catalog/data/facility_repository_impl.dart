@@ -17,7 +17,8 @@ final facilityRepositoryProvider = Provider<FacilityRepository>((ref) {
 });
 
 class FacilityRepositoryImpl implements FacilityRepository {
-  FacilityRepositoryImpl(Dio dio) : _api = FacilitiesApi(dio, standardSerializers);
+  FacilityRepositoryImpl(Dio dio)
+    : _api = FacilitiesApi(dio, standardSerializers);
 
   final FacilitiesApi _api;
 

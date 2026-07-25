@@ -233,7 +233,9 @@ void main() {
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
-    ).thenAnswer((_) async => const PaymentMethodOptionPage(items: [], total: 0));
+    ).thenAnswer(
+      (_) async => const PaymentMethodOptionPage(items: [], total: 0),
+    );
 
     final taxpayerIssuerRepository = MockTaxpayerIssuerRepository();
     when(
@@ -242,7 +244,9 @@ void main() {
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
-    ).thenAnswer((_) async => const TaxpayerIssuerListResult(items: [], total: 0));
+    ).thenAnswer(
+      (_) async => const TaxpayerIssuerListResult(items: [], total: 0),
+    );
     when(
       () => taxpayerIssuerRepository.listDetail(
         search: any(named: 'search'),
@@ -395,11 +399,7 @@ void main() {
     () {
       for (final route in ['/payment-method-options', '/taxpayer-issuers']) {
         testWidgets('a user with read on $route reaches it', (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _fiscalCatalogsReaderUser,
-            route,
-          );
+          final handle = await pumpAt(tester, _fiscalCatalogsReaderUser, route);
           expect(handle.router.state.uri.path, route);
         });
 
