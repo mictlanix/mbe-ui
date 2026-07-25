@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/015-fiscal-catalogs/plan.md
+at specs/016-product-merge-review/plan.md
 <!-- SPECKIT END -->
