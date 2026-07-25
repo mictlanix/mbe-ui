@@ -211,6 +211,10 @@ class _FilePickerField extends StatelessWidget {
       children: [
         Expanded(
           child: TextFormField(
+            // TextFormField.initialValue only seeds the controller once at
+            // first mount, not on rebuild — force a fresh element each time
+            // the picked file's name changes so it actually shows up.
+            key: ValueKey(fileName),
             readOnly: true,
             initialValue: fileName,
             decoration: InputDecoration(

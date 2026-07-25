@@ -13,8 +13,9 @@ const _jsonHeaders = {
 
 void main() {
   group('TaxpayerCertificateRepositoryImpl.upload', () {
-    test('base64-encodes the raw certificate/key bytes into the wire string '
-        'fields (research §8)', () async {
+    test('sends the raw certificate/key bytes as real multipart file parts '
+        '— the server requires UploadFile and rejects a base64 string '
+        '(research §8 correction)', () async {
       RequestOptions? captured;
       final repository = _repositoryWith((options) async {
         captured = options;
@@ -38,9 +39,17 @@ void main() {
       final body = captured!.data as FormData;
       final fields = {for (final f in body.fields) f.key: f.value};
       expect(fields['taxpayer'], 'XAXX010101000');
-      expect(fields['certificate'], base64Encode(certBytes));
-      expect(fields['key'], base64Encode(keyBytes));
       expect(fields['key_password'], 'secret');
+      // certificate/key must NOT be plain string fields — that's the bug
+      // that produced the server's "Expected UploadFile" rejection.
+      expect(fields.containsKey('certificate'), isFalse);
+      expect(fields.containsKey('key'), isFalse);
+
+      final files = {for (final f in body.files) f.key: f.value};
+      expect(files['certificate']!.length, certBytes.length);
+      expect(files['certificate']!.filename, 'certificate.cer');
+      expect(files['key']!.length, keyBytes.length);
+      expect(files['key']!.filename, 'key.key');
     });
 
     test('returns the server-derived TaxpayerCertificate on success', () async {
@@ -64,25 +73,30 @@ void main() {
       expect(certificate.validTo, isNotNull);
     });
 
-    test('an invalid pair / wrong password rejection maps to AppError', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'Invalid certificate/key pair or wrong password'}),
-          400,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'an invalid pair / wrong password rejection maps to AppError',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': 'Invalid certificate/key pair or wrong password',
+            }),
+            400,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      await expectLater(
-        () => repository.upload(
-          taxpayer: 'XAXX010101000',
-          certificateBytes: const [1],
-          keyBytes: const [2],
-          keyPassword: 'wrong',
-        ),
-        throwsA(isA<Object>()),
-      );
-    });
+        await expectLater(
+          () => repository.upload(
+            taxpayer: 'XAXX010101000',
+            certificateBytes: const [1],
+            keyBytes: const [2],
+            keyPassword: 'wrong',
+          ),
+          throwsA(isA<Object>()),
+        );
+      },
+    );
   });
 
   test('TaxpayerCertificateRepository exposes no update/delete methods '
