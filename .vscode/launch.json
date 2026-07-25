@@ -11,6 +11,12 @@
             "args": ["-d", "chrome", "--web-port=8081", "--dart-define=PHOTOS_BASE_URL=http://127.0.0.1:8000"]
         },
         {
+            "name": "mbe-ui (no flutter_driver extension)",
+            "request": "launch",
+            "type": "dart",
+            "args": ["-d", "chrome", "--web-port=8081", "--dart-define=PHOTOS_BASE_URL=http://127.0.0.1:8000", "--dart-define=ENABLE_FLUTTER_DRIVER_EXTENSION=false"]
+        },
+        {
             "name": "mbe-ui (profile mode)",
             "request": "launch",
             "type": "dart",

@@ -7,8 +7,17 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:mbe_ui/app/app.dart';
 
+/// Opt out with `--dart-define=ENABLE_FLUTTER_DRIVER_EXTENSION=false` for a
+/// manual debug run where the driver extension isn't wanted (e.g. it can
+/// interfere with normal keyboard/text input on web when no automation
+/// tooling is attached).
+const _enableFlutterDriverExtension = bool.fromEnvironment(
+  'ENABLE_FLUTTER_DRIVER_EXTENSION',
+  defaultValue: true,
+);
+
 Future<void> main() async {
-  if (kDebugMode) {
+  if (kDebugMode && _enableFlutterDriverExtension) {
     // Dev-only: lets an agent/tooling session drive the running app (tap,
     // enter text, read widget state) via `flutter_driver_command` instead of
     // relying on a human to click through the UI (README.md "Driving the
