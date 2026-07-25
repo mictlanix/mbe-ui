@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Merge Products — Explicit Kept/Deleted Review",
+  "branch": "016-product-merge-review",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T18:23:56.975Z"
+    }
+  ]
+}
