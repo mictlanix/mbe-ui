@@ -12,78 +12,87 @@ const _jsonHeaders = {
 };
 
 void main() {
-  group('PaymentMethodOption.fromResponse (via PaymentMethodOptionRepositoryImpl.list)', () {
-    test('maps the pre-expanded facility/warehouse summaries', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [
-              _optionJson(
-                id: 1,
-                facilityId: 9,
-                facilityName: 'Main Store',
-                warehouseId: 3,
-                warehouseName: 'Main Warehouse',
-              ),
-            ],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
-
-      final result = await repository.list();
-      final option = result.items.single;
-
-      expect(option.paymentMethodOptionId, 1);
-      expect(option.facilityId, 9);
-      expect(option.facilityName, 'Main Store');
-      expect(option.warehouseId, 3);
-      expect(option.warehouseName, 'Main Warehouse');
-      expect(option.numberOfPayments, 1);
-      expect(option.displayOnTicket, isTrue);
-      expect(option.paymentMethod, 1);
-      expect(option.commission, '0.05');
-      expect(option.status, EntityStatus.active);
-      expect(result.total, 1);
-    });
-
-    test('a null warehouse maps to a null warehouseId/warehouseName (FR-004)', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [_optionJson(id: 1, facilityId: 9, warehouse: null)],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
-
-      final option = (await repository.list()).items.single;
-
-      expect(option.warehouseId, isNull);
-      expect(option.warehouseName, isNull);
-    });
-
-    test('forwards facility/status query params (facility+status filter, FR-002)', () async {
-      late Map<String, dynamic> captured;
-      final repository = _repositoryWith((options) async {
-        captured = options.queryParameters;
-        return ResponseBody.fromString(
-          jsonEncode({'items': [], 'total': 0}),
-          200,
-          headers: _jsonHeaders,
+  group(
+    'PaymentMethodOption.fromResponse (via PaymentMethodOptionRepositoryImpl.list)',
+    () {
+      test('maps the pre-expanded facility/warehouse summaries', () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                _optionJson(
+                  id: 1,
+                  facilityId: 9,
+                  facilityName: 'Main Store',
+                  warehouseId: 3,
+                  warehouseName: 'Main Warehouse',
+                ),
+              ],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          ),
         );
+
+        final result = await repository.list();
+        final option = result.items.single;
+
+        expect(option.paymentMethodOptionId, 1);
+        expect(option.facilityId, 9);
+        expect(option.facilityName, 'Main Store');
+        expect(option.warehouseId, 3);
+        expect(option.warehouseName, 'Main Warehouse');
+        expect(option.numberOfPayments, 1);
+        expect(option.displayOnTicket, isTrue);
+        expect(option.paymentMethod, 1);
+        expect(option.commission, '0.05');
+        expect(option.status, EntityStatus.active);
+        expect(result.total, 1);
       });
 
-      await repository.list(facilityId: 9, status: EntityStatus.inactive);
+      test(
+        'a null warehouse maps to a null warehouseId/warehouseName (FR-004)',
+        () async {
+          final repository = _repositoryWith(
+            (options) async => ResponseBody.fromString(
+              jsonEncode({
+                'items': [_optionJson(id: 1, facilityId: 9, warehouse: null)],
+                'total': 1,
+              }),
+              200,
+              headers: _jsonHeaders,
+            ),
+          );
 
-      expect(captured['facility'], 9);
-      expect(captured['status'], 1);
-    });
-  });
+          final option = (await repository.list()).items.single;
+
+          expect(option.warehouseId, isNull);
+          expect(option.warehouseName, isNull);
+        },
+      );
+
+      test(
+        'forwards facility/status query params (facility+status filter, FR-002)',
+        () async {
+          late Map<String, dynamic> captured;
+          final repository = _repositoryWith((options) async {
+            captured = options.queryParameters;
+            return ResponseBody.fromString(
+              jsonEncode({'items': [], 'total': 0}),
+              200,
+              headers: _jsonHeaders,
+            );
+          });
+
+          await repository.list(facilityId: 9, status: EntityStatus.inactive);
+
+          expect(captured['facility'], 9);
+          expect(captured['status'], 1);
+        },
+      );
+    },
+  );
 
   group('PaymentMethodOptionRepositoryImpl.delete', () {
     test('a referential-constraint rejection maps to AppError', () async {

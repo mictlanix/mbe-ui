@@ -66,21 +66,24 @@ void main() {
     expect(ids, isNot(contains('payment-method-options')));
   });
 
-  test('the Payment Method Options destination appears with read privilege', () {
-    final container = ProviderContainer(
-      overrides: [
-        accessControlProvider.overrideWithValue(
-          AccessControlService(
-            AuthState.authenticated(token: 't', user: _pmoReaderUser),
+  test(
+    'the Payment Method Options destination appears with read privilege',
+    () {
+      final container = ProviderContainer(
+        overrides: [
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(token: 't', user: _pmoReaderUser),
+            ),
           ),
-        ),
-      ],
-    );
-    addTearDown(container.dispose);
+        ],
+      );
+      addTearDown(container.dispose);
 
-    final tree = container.read(navDestinationsProvider);
-    final ids = _allDestinations(tree).map((d) => d.id);
+      final tree = container.read(navDestinationsProvider);
+      final ids = _allDestinations(tree).map((d) => d.id);
 
-    expect(ids, contains('payment-method-options'));
-  });
+      expect(ids, contains('payment-method-options'));
+    },
+  );
 }

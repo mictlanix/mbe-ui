@@ -55,8 +55,9 @@ class TaxpayerIssuersListController extends _$TaxpayerIssuersListController {
   /// Fetches [pageIndex] and replaces the current page with it.
   Future<void> goToPage(int pageIndex) async {
     final search = ref.read(taxpayerIssuerSearchControllerProvider);
-    state = const AsyncLoading<CatalogPage<TaxpayerIssuer>>()
-        .copyWithPrevious(state);
+    state = const AsyncLoading<CatalogPage<TaxpayerIssuer>>().copyWithPrevious(
+      state,
+    );
     state = await AsyncValue.guard(() => _fetch(search, pageIndex: pageIndex));
   }
 }

@@ -12,54 +12,70 @@ const _jsonHeaders = {
 };
 
 void main() {
-  group('TaxpayerIssuer.fromResponse (via TaxpayerIssuerRepositoryImpl.getDetail)', () {
-    test('maps the pre-expanded regime/postalCode SAT objects (data-model §2)', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode(_issuerJson()),
-          200,
-          headers: _jsonHeaders,
-        ),
+  group(
+    'TaxpayerIssuer.fromResponse (via TaxpayerIssuerRepositoryImpl.getDetail)',
+    () {
+      test(
+        'maps the pre-expanded regime/postalCode SAT objects (data-model §2)',
+        () async {
+          final repository = _repositoryWith(
+            (options) async => ResponseBody.fromString(
+              jsonEncode(_issuerJson()),
+              200,
+              headers: _jsonHeaders,
+            ),
+          );
+
+          final issuer = await repository.getDetail('XAXX010101000');
+
+          expect(issuer.rfc, 'XAXX010101000');
+          expect(issuer.name, 'Acme Corp');
+          expect(issuer.regime?.description, 'General de Ley Personas Morales');
+          expect(issuer.postalCode?.description, 'Ciudad de México');
+          expect(issuer.provider, FiscalCertificationProvider.number1);
+        },
       );
 
-      final issuer = await repository.getDetail('XAXX010101000');
+      test(
+        'a null regime/postalCode falls back to null rather than crashing',
+        () async {
+          final repository = _repositoryWith(
+            (options) async => ResponseBody.fromString(
+              jsonEncode({
+                ..._issuerJson(),
+                'regime': null,
+                'postal_code': null,
+              }),
+              200,
+              headers: _jsonHeaders,
+            ),
+          );
 
-      expect(issuer.rfc, 'XAXX010101000');
-      expect(issuer.name, 'Acme Corp');
-      expect(issuer.regime?.description, 'General de Ley Personas Morales');
-      expect(issuer.postalCode?.description, 'Ciudad de México');
-      expect(issuer.provider, FiscalCertificationProvider.number1);
-    });
+          final issuer = await repository.getDetail('XAXX010101000');
 
-    test('a null regime/postalCode falls back to null rather than crashing', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({..._issuerJson(), 'regime': null, 'postal_code': null}),
-          200,
-          headers: _jsonHeaders,
-        ),
+          expect(issuer.regime, isNull);
+          expect(issuer.postalCode, isNull);
+        },
       );
 
-      final issuer = await repository.getDetail('XAXX010101000');
+      test(
+        'a missing name falls back to empty (Taxpayer Recipient precedent)',
+        () async {
+          final repository = _repositoryWith(
+            (options) async => ResponseBody.fromString(
+              jsonEncode({..._issuerJson(), 'name': null}),
+              200,
+              headers: _jsonHeaders,
+            ),
+          );
 
-      expect(issuer.regime, isNull);
-      expect(issuer.postalCode, isNull);
-    });
+          final issuer = await repository.getDetail('XAXX010101000');
 
-    test('a missing name falls back to empty (Taxpayer Recipient precedent)', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({..._issuerJson(), 'name': null}),
-          200,
-          headers: _jsonHeaders,
-        ),
+          expect(issuer.name, isEmpty);
+        },
       );
-
-      final issuer = await repository.getDetail('XAXX010101000');
-
-      expect(issuer.name, isEmpty);
-    });
-  });
+    },
+  );
 }
 
 Map<String, Object?> _issuerJson() => {

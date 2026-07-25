@@ -64,8 +64,7 @@ class PaymentMethodOptionFormState with _$PaymentMethodOptionFormState {
 class PaymentMethodOptionFormController
     extends _$PaymentMethodOptionFormController {
   @override
-  PaymentMethodOptionFormState build() =>
-      const PaymentMethodOptionFormState();
+  PaymentMethodOptionFormState build() => const PaymentMethodOptionFormState();
 
   void facilitySelected(int facilityId, String facilityName) =>
       state = _clearErrors(
@@ -99,9 +98,8 @@ class PaymentMethodOptionFormController
 
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
-  PaymentMethodOptionFormState _clearErrors(
-    PaymentMethodOptionFormState s,
-  ) => s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+  PaymentMethodOptionFormState _clearErrors(PaymentMethodOptionFormState s) =>
+      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
 
   /// Loads an existing payment method option into the form for
   /// viewing/editing.

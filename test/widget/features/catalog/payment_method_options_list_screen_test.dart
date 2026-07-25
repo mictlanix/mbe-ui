@@ -119,16 +119,22 @@ void main() {
   testWidgets('shows facility name (not a raw id) for every option (FR-004)', (
     tester,
   ) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser, options: _testOptions);
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      options: _testOptions,
+    );
 
     expect(find.text('Main Store'), findsOneWidget);
     expect(find.text('North Plant'), findsOneWidget);
   });
 
-  testWidgets('shows an inactive badge for an inactive option', (
-    tester,
-  ) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser, options: _testOptions);
+  testWidgets('shows an inactive badge for an inactive option', (tester) async {
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      options: _testOptions,
+    );
 
     expect(find.byKey(const Key('status_badge_inactive')), findsOneWidget);
   });

@@ -107,18 +107,19 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows facility name (not a raw id) for every cash drawer (FR-018)', (
-    tester,
-  ) async {
-    await pumpScreen(
-      tester,
-      signedInAs: _fullAccessUser,
-      cashDrawers: _testCashDrawers,
-    );
+  testWidgets(
+    'shows facility name (not a raw id) for every cash drawer (FR-018)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        cashDrawers: _testCashDrawers,
+      );
 
-    expect(find.text('Main Store'), findsOneWidget);
-    expect(find.text('North Plant'), findsOneWidget);
-  });
+      expect(find.text('Main Store'), findsOneWidget);
+      expect(find.text('North Plant'), findsOneWidget);
+    },
+  );
 
   testWidgets('shows an inactive badge for an inactive cash drawer', (
     tester,
@@ -222,7 +223,11 @@ void main() {
   );
 
   testWidgets('an empty result shows the empty state', (tester) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser, cashDrawers: const []);
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      cashDrawers: const [],
+    );
 
     expect(find.byKey(const Key('cash_drawers_table')), findsNothing);
   });

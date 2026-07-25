@@ -80,12 +80,14 @@ void main() {
     await tester.tap(find.byKey(const Key('upload_certificate_button')));
     await tester.pumpAndSettle();
 
-    verifyNever(() => repository.upload(
-      taxpayer: any(named: 'taxpayer'),
-      certificateBytes: any(named: 'certificateBytes'),
-      keyBytes: any(named: 'keyBytes'),
-      keyPassword: any(named: 'keyPassword'),
-    ));
+    verifyNever(
+      () => repository.upload(
+        taxpayer: any(named: 'taxpayer'),
+        certificateBytes: any(named: 'certificateBytes'),
+        keyBytes: any(named: 'keyBytes'),
+        keyPassword: any(named: 'keyPassword'),
+      ),
+    );
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.certificateFileRequiredError), findsOneWidget);
     expect(find.text(l10n.keyFileRequiredError), findsOneWidget);
@@ -131,16 +133,12 @@ void main() {
     // inline-create dialog's precedent for pickers it can't drive either).
     container
         .read(
-          taxpayerCertificateUploadControllerProvider(
-            'XAXX010101000',
-          ).notifier,
+          taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
         )
         .certificateFilePicked([1, 2, 3], 'cert.cer');
     container
         .read(
-          taxpayerCertificateUploadControllerProvider(
-            'XAXX010101000',
-          ).notifier,
+          taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
         )
         .keyFilePicked([4, 5, 6], 'key.key');
     await tester.enterText(
@@ -180,16 +178,12 @@ void main() {
 
     container
         .read(
-          taxpayerCertificateUploadControllerProvider(
-            'XAXX010101000',
-          ).notifier,
+          taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
         )
         .certificateFilePicked([1, 2, 3], 'cert.cer');
     container
         .read(
-          taxpayerCertificateUploadControllerProvider(
-            'XAXX010101000',
-          ).notifier,
+          taxpayerCertificateUploadControllerProvider('XAXX010101000').notifier,
         )
         .keyFilePicked([4, 5, 6], 'key.key');
     await tester.enterText(

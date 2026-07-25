@@ -15,10 +15,7 @@ void main() {
     });
 
     test('rejects a value longer than 13 characters', () {
-      expect(
-        CatalogFieldValidators.isValidRfcShape('AAA010101AAABQ'),
-        isFalse,
-      );
+      expect(CatalogFieldValidators.isValidRfcShape('AAA010101AAABQ'), isFalse);
     });
 
     test('is shape-only — never claims the RFC is a registered issuer', () {

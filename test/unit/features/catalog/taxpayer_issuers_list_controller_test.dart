@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' show FiscalCertificationProvider;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    show FiscalCertificationProvider;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';

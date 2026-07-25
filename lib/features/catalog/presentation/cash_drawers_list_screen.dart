@@ -118,12 +118,14 @@ class CashDrawersListScreen extends ConsumerWidget {
                     onPageChanged: (pageIndex) => ref
                         .read(cashDrawersListControllerProvider.notifier)
                         .goToPage(pageIndex),
-                    onRowTap: (w) =>
-                        context.push('/cash-drawers/${w.cashDrawerId}?view=true'),
+                    onRowTap: (w) => context.push(
+                      '/cash-drawers/${w.cashDrawerId}?view=true',
+                    ),
                     rowActionsBuilder: (context, w) => buildCatalogRowActions(
                       editTooltip: l10n.editActionTooltip,
                       onEdit: canUpdate
-                          ? () => context.push('/cash-drawers/${w.cashDrawerId}')
+                          ? () =>
+                                context.push('/cash-drawers/${w.cashDrawerId}')
                           : null,
                     ),
                   ),

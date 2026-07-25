@@ -38,7 +38,9 @@ void main() {
 
   group('PaymentMethodOptionFilterController', () {
     test('starts with no facets and empty search', () {
-      final filter = container.read(paymentMethodOptionFilterControllerProvider);
+      final filter = container.read(
+        paymentMethodOptionFilterControllerProvider,
+      );
       expect(filter.facilityId, isNull);
       expect(filter.status, isNull);
       expect(filter.search, isEmpty);
@@ -55,7 +57,9 @@ void main() {
 
       controller.reset();
 
-      final filter = container.read(paymentMethodOptionFilterControllerProvider);
+      final filter = container.read(
+        paymentMethodOptionFilterControllerProvider,
+      );
       expect(filter.search, 'cash');
       expect(filter.facilityId, isNull);
       expect(filter.status, isNull);
@@ -94,7 +98,11 @@ void main() {
       ).called(1);
       // No per-row lookup: only the one list() call above touched the
       // repository — no get() for any row.
-      verifyNever(() => repository.get(paymentMethodOptionId: any(named: 'paymentMethodOptionId')));
+      verifyNever(
+        () => repository.get(
+          paymentMethodOptionId: any(named: 'paymentMethodOptionId'),
+        ),
+      );
     });
 
     test('goToPage replaces the current page with the requested one', () async {

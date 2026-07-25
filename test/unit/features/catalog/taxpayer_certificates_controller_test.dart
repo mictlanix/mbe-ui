@@ -34,25 +34,30 @@ void main() {
   });
 
   group('TaxpayerCertificatesController', () {
-    test('build() scopes to the given RFC and performs exactly one '
-        'listForIssuer call — no per-row lookup (FR-020, FR-026, SC-006)', () async {
-      when(
-        () => repository.listForIssuer('XAXX010101000'),
-      ).thenAnswer((_) async => [_certificate('CERT1')]);
+    test(
+      'build() scopes to the given RFC and performs exactly one '
+      'listForIssuer call — no per-row lookup (FR-020, FR-026, SC-006)',
+      () async {
+        when(
+          () => repository.listForIssuer('XAXX010101000'),
+        ).thenAnswer((_) async => [_certificate('CERT1')]);
 
-      final result = await container.read(
-        taxpayerCertificatesControllerProvider('XAXX010101000').future,
-      );
+        final result = await container.read(
+          taxpayerCertificatesControllerProvider('XAXX010101000').future,
+        );
 
-      expect(result, hasLength(1));
-      verify(() => repository.listForIssuer('XAXX010101000')).called(1);
-      verifyNever(() => repository.upload(
-        taxpayer: any(named: 'taxpayer'),
-        certificateBytes: any(named: 'certificateBytes'),
-        keyBytes: any(named: 'keyBytes'),
-        keyPassword: any(named: 'keyPassword'),
-      ));
-    });
+        expect(result, hasLength(1));
+        verify(() => repository.listForIssuer('XAXX010101000')).called(1);
+        verifyNever(
+          () => repository.upload(
+            taxpayer: any(named: 'taxpayer'),
+            certificateBytes: any(named: 'certificateBytes'),
+            keyBytes: any(named: 'keyBytes'),
+            keyPassword: any(named: 'keyPassword'),
+          ),
+        );
+      },
+    );
 
     test('a different RFC gets its own independent provider instance '
         '(family scoping)', () async {

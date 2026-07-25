@@ -162,10 +162,7 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
-        (_) async => const FacilityListResult(
-          items: _testFacilities,
-          total: 2,
-        ),
+        (_) async => const FacilityListResult(items: _testFacilities, total: 2),
       );
 
       final router = GoRouter(

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' show FiscalCertificationProvider;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    show FiscalCertificationProvider;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -97,7 +98,11 @@ void main() {
   }
 
   testWidgets('shows RFC and name for every issuer (FR-010)', (tester) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser, issuers: _testIssuers);
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      issuers: _testIssuers,
+    );
 
     expect(find.text('XAXX010101000'), findsOneWidget);
     expect(find.text('Acme Corp'), findsOneWidget);
@@ -125,7 +130,11 @@ void main() {
       '(search-only catalog, contracts/mbe-api-catalogs.md §2)', (
     tester,
   ) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser, issuers: _testIssuers);
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      issuers: _testIssuers,
+    );
 
     expect(
       find.byKey(const Key('taxpayer_issuers_search_field')),
@@ -172,7 +181,8 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: TaxpayerIssuersListScreen()),
+            builder: (_, _) =>
+                const Scaffold(body: TaxpayerIssuersListScreen()),
           ),
           GoRoute(
             path: '/taxpayer-issuers/:rfc',
@@ -185,7 +195,9 @@ void main() {
         ProviderScope(
           overrides: [
             taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
-            accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
           ],
           child: MaterialApp.router(
             routerConfig: router,
@@ -199,7 +211,10 @@ void main() {
       await tester.tap(find.text('Acme Corp'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/taxpayer-issuers/XAXX010101000?view=true'), findsOneWidget);
+      expect(
+        find.text('/taxpayer-issuers/XAXX010101000?view=true'),
+        findsOneWidget,
+      );
     },
   );
 

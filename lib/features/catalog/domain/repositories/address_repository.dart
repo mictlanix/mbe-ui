@@ -7,7 +7,11 @@ import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 /// (FR-031/032). Addresses have no screens of their own in this feature —
 /// get/update/delete are intentionally not exposed here.
 abstract class AddressRepository {
-  Future<AddressListResult> list({String? search, int skip = 0, int limit = 20});
+  Future<AddressListResult> list({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  });
 
   Future<AddressListItem> create(AddressCreatePayload payload);
 }

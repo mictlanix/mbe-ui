@@ -97,9 +97,8 @@ class PaymentMethodOptionsListController
   /// Fetches [pageIndex] and replaces the current page with it.
   Future<void> goToPage(int pageIndex) async {
     final filter = ref.read(paymentMethodOptionFilterControllerProvider);
-    state =
-        const AsyncLoading<CatalogPage<PaymentMethodOption>>()
-            .copyWithPrevious(state);
+    state = const AsyncLoading<CatalogPage<PaymentMethodOption>>()
+        .copyWithPrevious(state);
     state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }

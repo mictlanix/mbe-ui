@@ -52,8 +52,8 @@ class TaxpayerCertificateUploadController
     TaxpayerCertificateUploadState s,
   ) => s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
 
-  void certificateFilePicked(List<int> bytes, String fileName) => state =
-      _clearErrors(
+  void certificateFilePicked(List<int> bytes, String fileName) =>
+      state = _clearErrors(
         state.copyWith(certificateBytes: bytes, certificateFileName: fileName),
       );
 
