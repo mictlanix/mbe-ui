@@ -1933,4 +1933,314 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get addressCountryRequiredError => 'El país es obligatorio.';
+
+  @override
+  String get paymentMethodOptionsMenuTitle => 'Formas de Pago';
+
+  @override
+  String get columnPaymentMethod => 'Forma de Pago';
+
+  @override
+  String get columnNumberOfPayments => 'Pagos';
+
+  @override
+  String get paymentMethodFieldLabel => 'Forma de pago';
+
+  @override
+  String get numberOfPaymentsFieldLabel => 'Número de pagos';
+
+  @override
+  String get displayOnTicketFieldLabel => 'Mostrar en ticket';
+
+  @override
+  String get commissionFieldLabel => 'Comisión';
+
+  @override
+  String get newPaymentMethodOptionTooltip => 'Nueva forma de pago';
+
+  @override
+  String get paymentMethodOptionsSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get noPaymentMethodOptionsFound => 'No se encontraron formas de pago.';
+
+  @override
+  String paymentMethodOptionsLoadError(Object error) {
+    return 'Error al cargar las formas de pago: $error';
+  }
+
+  @override
+  String get viewPaymentMethodOptionTitle => 'Ver Forma de Pago';
+
+  @override
+  String get editPaymentMethodOptionTitle => 'Editar Forma de Pago';
+
+  @override
+  String get newPaymentMethodOptionTitle => 'Nueva Forma de Pago';
+
+  @override
+  String get deletePaymentMethodOptionButton => 'Eliminar forma de pago';
+
+  @override
+  String get deletePaymentMethodOptionConfirmTitle =>
+      '¿Eliminar forma de pago?';
+
+  @override
+  String deletePaymentMethodOptionConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get paymentMethodOptionLoadFailedError =>
+      'No se pudo cargar la forma de pago.';
+
+  @override
+  String get paymentMethodOptionCreateFailedError =>
+      'No se pudo crear la forma de pago.';
+
+  @override
+  String get paymentMethodOptionUpdateFailedError =>
+      'No se pudo actualizar la forma de pago.';
+
+  @override
+  String get paymentMethodOptionDeleteFailedError =>
+      'No se pudo eliminar la forma de pago.';
+
+  @override
+  String get paymentMethodOptionCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear formas de pago.';
+
+  @override
+  String get paymentMethodOptionUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para actualizar formas de pago.';
+
+  @override
+  String get paymentMethodOptionDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar formas de pago.';
+
+  @override
+  String get paymentMethodOptionFacilityRequiredError =>
+      'La instalación es obligatoria.';
+
+  @override
+  String get paymentMethodOptionNameRequiredError =>
+      'El nombre es obligatorio.';
+
+  @override
+  String get paymentMethodOptionPaymentMethodRequiredError =>
+      'La forma de pago es obligatoria.';
+
+  @override
+  String get paymentMethodOptionNumberOfPaymentsInvalidError =>
+      'El número de pagos debe ser al menos 1.';
+
+  @override
+  String get paymentMethodOptionCommissionInvalidError =>
+      'La comisión debe ser un número no negativo.';
+
+  @override
+  String get paymentMethodNa => 'No aplica';
+
+  @override
+  String get paymentMethodCash => 'Efectivo';
+
+  @override
+  String get paymentMethodCheck => 'Cheque nominativo';
+
+  @override
+  String get paymentMethodEft => 'Transferencia electrónica de fondos';
+
+  @override
+  String get paymentMethodCreditCard => 'Tarjeta de crédito';
+
+  @override
+  String get paymentMethodElectronicPurse => 'Monedero electrónico';
+
+  @override
+  String get paymentMethodElectronicMoney => 'Dinero electrónico';
+
+  @override
+  String get paymentMethodFoodVouchers => 'Vales de despensa';
+
+  @override
+  String get paymentMethodGiving => 'Dación en pago';
+
+  @override
+  String get paymentMethodCreditorSatisfaction => 'A satisfacción del acreedor';
+
+  @override
+  String get paymentMethodDebitCard => 'Tarjeta de débito';
+
+  @override
+  String get paymentMethodServiceCard => 'Tarjeta de servicio';
+
+  @override
+  String get paymentMethodAdvancePayments => 'Aplicación de anticipos';
+
+  @override
+  String get paymentMethodToBeDefined => 'Por definir';
+
+  @override
+  String get paymentMethodGovernmentFunding => 'Financiamiento gubernamental';
+
+  @override
+  String get taxpayerIssuersMenuTitle => 'Razones Sociales';
+
+  @override
+  String get columnRfc => 'RFC';
+
+  @override
+  String get columnPostalCodeShort => 'C.P.';
+
+  @override
+  String get columnRegime => 'Régimen Fiscal';
+
+  @override
+  String get rfcFieldLabel => 'RFC';
+
+  @override
+  String get providerFieldLabel => 'Proveedor de certificación';
+
+  @override
+  String get newTaxpayerIssuerTooltip => 'Nueva razón social';
+
+  @override
+  String get taxpayerIssuersSearchLabel => 'Buscar por RFC o nombre';
+
+  @override
+  String get noTaxpayerIssuersFound => 'No se encontraron razones sociales.';
+
+  @override
+  String taxpayerIssuersLoadError(Object error) {
+    return 'Error al cargar las razones sociales: $error';
+  }
+
+  @override
+  String get viewTaxpayerIssuerTitle => 'Ver Razón Social';
+
+  @override
+  String get editTaxpayerIssuerTitle => 'Editar Razón Social';
+
+  @override
+  String get newTaxpayerIssuerTitle => 'Nueva Razón Social';
+
+  @override
+  String get deleteTaxpayerIssuerButton => 'Eliminar razón social';
+
+  @override
+  String get deleteTaxpayerIssuerConfirmTitle => '¿Eliminar razón social?';
+
+  @override
+  String deleteTaxpayerIssuerConfirmMessage(String name) {
+    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get taxpayerIssuerLoadFailedError =>
+      'No se pudo cargar la razón social.';
+
+  @override
+  String get taxpayerIssuerCreateFailedError =>
+      'No se pudo crear la razón social.';
+
+  @override
+  String get taxpayerIssuerUpdateFailedError =>
+      'No se pudo actualizar la razón social.';
+
+  @override
+  String get taxpayerIssuerDeleteFailedError =>
+      'No se pudo eliminar la razón social.';
+
+  @override
+  String get taxpayerIssuerCreatePermissionDeniedError =>
+      'Ya no tienes permiso para crear razones sociales.';
+
+  @override
+  String get taxpayerIssuerUpdatePermissionDeniedError =>
+      'Ya no tienes permiso para actualizar razones sociales.';
+
+  @override
+  String get taxpayerIssuerDeletePermissionDeniedError =>
+      'Ya no tienes permiso para eliminar razones sociales.';
+
+  @override
+  String get taxpayerIssuerRfcRequiredError => 'El RFC es obligatorio.';
+
+  @override
+  String get taxpayerIssuerNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get taxpayerIssuerRegimeRequiredError =>
+      'El régimen fiscal es obligatorio.';
+
+  @override
+  String get fiscalCertificationProviderNone => 'Ninguno';
+
+  @override
+  String get fiscalCertificationProviderDiverza => 'Diverza';
+
+  @override
+  String get fiscalCertificationProviderFiscoClic => 'FiscoClic';
+
+  @override
+  String get fiscalCertificationProviderServisim => 'Servisim';
+
+  @override
+  String get fiscalCertificationProviderProFact => 'ProFact';
+
+  @override
+  String get certificatesSectionTitle => 'Certificados';
+
+  @override
+  String get columnCertificateNumber => 'Número de Certificado';
+
+  @override
+  String get columnValidFrom => 'Desde';
+
+  @override
+  String get columnValidTo => 'Hasta';
+
+  @override
+  String get addCertificateButton => 'Agregar';
+
+  @override
+  String get noCertificatesFound => 'No hay certificados registrados.';
+
+  @override
+  String certificatesLoadError(Object error) {
+    return 'Error al cargar los certificados: $error';
+  }
+
+  @override
+  String get newCertificateDialogTitle => 'Registrar Certificado';
+
+  @override
+  String get certificateFileLabel => 'Archivo de certificado (.cer)';
+
+  @override
+  String get keyFileLabel => 'Archivo de llave (.key)';
+
+  @override
+  String get keyPasswordLabel => 'Contraseña de la llave';
+
+  @override
+  String get chooseFileButton => 'Elegir archivo';
+
+  @override
+  String get uploadCertificateButton => 'Registrar';
+
+  @override
+  String get certificateFileRequiredError =>
+      'Selecciona un archivo de certificado (.cer).';
+
+  @override
+  String get keyFileRequiredError => 'Selecciona un archivo de llave (.key).';
+
+  @override
+  String get keyPasswordRequiredError =>
+      'La contraseña de la llave es obligatoria.';
+
+  @override
+  String get certificateUploadFailedError =>
+      'No se pudo registrar el certificado.';
 }

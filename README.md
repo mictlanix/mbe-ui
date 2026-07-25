@@ -81,6 +81,12 @@ and the `flutter_driver` import never reach a shipped build. `flutter run`
 (always debug by default) is the only path that enables it; nothing further
 to configure.
 
+**Opting out for a manual run**: if you're clicking through the app yourself
+(not driving it via MCP) and the driver extension gets in the way — e.g. it
+can interfere with normal keyboard/text input into form fields on web — pass
+`flutter run -d chrome --dart-define=ENABLE_FLUTTER_DRIVER_EXTENSION=false` to
+skip it for that session.
+
 **Connecting** (Claude Code with the `dart` MCP server, or any Dart Tooling
 Daemon client):
 

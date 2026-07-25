@@ -183,6 +183,23 @@ consumption once it ships and the client is regenerated. (Prompted by
 `specs/008-merge-products`, where a suggestion-row field the merge picker
 needed — `sku` on the products-list projection — didn't exist yet.)
 
+**File uploads (`multipart/form-data`)**: the `dio` generator has repeatedly
+emitted `String`-typed parameters for endpoints whose OpenAPI schema marks a
+field `format: binary` — the generated wrapper then sends the value as a
+plain form field (`FormData.fromMap`/`encodeFormParameter`), not a real file
+part. The server (FastAPI `UploadFile`) rejects that with `"Expected
+UploadFile, received: <class ...>"`; a base64-encoded string is not an
+acceptable substitute. Confirmed twice: `ProductRepositoryImpl.uploadPhoto`
+(spec 004) and `TaxpayerCertificateRepositoryImpl.upload` (spec 015 — the
+generated method originally shipped with `String certificate`/`String key`
+params and base64-encoded bytes, which the live server rejected on first
+real use). For any new binary-upload endpoint, verify the generated
+signature against a live upload before trusting it; if it's `String`-typed,
+bypass the generated wrapper and call `dio.post(path, data:
+FormData.fromMap({..., 'field': MultipartFile.fromBytes(bytes, filename:
+...)}))` directly, deserializing the response with
+`standardSerializers.deserialize` the same way the generated method would.
+
 ### 3.4 Error handling
 
 - Map API errors (validation errors, 4xx/5xx) to a small set of domain error

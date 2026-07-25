@@ -29,6 +29,8 @@ class NavBranch {
   static const int cashDrawers = 15;
   static const int pointsOfSale = 16;
   static const int facilities = 17;
+  static const int paymentMethodOptions = 18;
+  static const int taxpayerIssuers = 19;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -197,6 +199,21 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.facilities,
         gate: (object: SystemObject.facilities, right: AccessRight.read),
       ),
+      // spec 015: Payment Method Options is a fiscal catalog under Catálogos;
+      // its Taxpayer Issuers/Certificates counterparts live under Ventas
+      // below (contracts/routes.md).
+      NavDestination(
+        id: 'payment-method-options',
+        label: _paymentMethodOptionsLabel,
+        icon: Icons.payment_outlined,
+        selectedIcon: Icons.payment,
+        route: '/payment-method-options',
+        branchIndex: NavBranch.paymentMethodOptions,
+        gate: (
+          object: SystemObject.paymentMethodOptions,
+          right: AccessRight.read,
+        ),
+      ),
     ],
   ),
   NavGroup(
@@ -211,6 +228,18 @@ const List<NavItem> kNavigationTree = [
         route: '/pricing',
         branchIndex: NavBranch.pricing,
         gate: (object: SystemObject.pricing, right: AccessRight.read),
+      ),
+      // Taxpayer Certificates has no destination of its own — it is a child
+      // section of the Taxpayer Issuer detail screen below, not a standalone
+      // catalog (spec 015 research.md §9).
+      NavDestination(
+        id: 'taxpayer-issuers',
+        label: _taxpayerIssuersLabel,
+        icon: Icons.corporate_fare_outlined,
+        selectedIcon: Icons.corporate_fare,
+        route: '/taxpayer-issuers',
+        branchIndex: NavBranch.taxpayerIssuers,
+        gate: (object: SystemObject.taxpayers, right: AccessRight.read),
       ),
     ],
   ),
@@ -240,6 +269,10 @@ String _warehousesLabel(AppLocalizations l10n) => l10n.warehousesMenuTitle;
 String _cashDrawersLabel(AppLocalizations l10n) => l10n.cashDrawersMenuTitle;
 String _pointsOfSaleLabel(AppLocalizations l10n) => l10n.pointsOfSaleMenuTitle;
 String _facilitiesLabel(AppLocalizations l10n) => l10n.facilitiesMenuTitle;
+String _paymentMethodOptionsLabel(AppLocalizations l10n) =>
+    l10n.paymentMethodOptionsMenuTitle;
+String _taxpayerIssuersLabel(AppLocalizations l10n) =>
+    l10n.taxpayerIssuersMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

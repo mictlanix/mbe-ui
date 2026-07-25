@@ -1,7 +1,22 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.8.0
+Version change: 1.0.0 → 1.9.0
 Modified principles:
+  - III. Contract-Driven API Integration — materially expanded with a rule
+    on binary file uploads (`multipart/form-data`): the dio generator has
+    repeatedly emitted `String`-typed parameters for OpenAPI fields marked
+    `format: binary`, sending them as plain form fields instead of real
+    file parts, which the server rejects with "Expected UploadFile". The
+    generated wrapper's signature MUST be verified against a live upload
+    before being trusted, and bypassed in favor of a direct `dio.post` with
+    `FormData`/`MultipartFile.fromBytes` when the gap is confirmed.
+    Prompted by specs/015-fiscal-catalogs, where
+    `TaxpayerCertificateRepositoryImpl.upload` shipped base64-encoding raw
+    bytes into the generated method's string fields (mirroring an
+    assumption never actually confirmed against a live server) and was
+    rejected on first real use; corrected to match the already-existing
+    `ProductRepositoryImpl.uploadPhoto` (spec 004) pattern of posting real
+    multipart file parts directly [1.9.0]
   - III. Contract-Driven API Integration — materially expanded with an
     explicit repo-boundary rule: mbe-ui MUST NOT directly edit mbe-api's (or
     any sibling repo's) source, even when both are checked out locally in
@@ -57,6 +72,8 @@ Templates requiring updates:
   - .specify/templates/tasks-template.md ✅ (no changes needed)
   - DESIGN.md §3.3 ✅ updated with the same repo-boundary note ahead of this
     constitution amendment, per the Governance section's amendment process.
+  - DESIGN.md §3.3 ✅ (1.9.0) updated with the multipart file-upload
+    codegen-gap note ahead of this amendment.
 Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
   updated to "switches|labels" once specs/007-catalog-ui-improvements-2
   shipped the labels-in-place-of-prices change. specs/008-merge-products'
@@ -120,6 +137,21 @@ DTOs for a resource that already has a published schema are NOT permitted.
   widget rather than handled ad hoc per screen.
 - Codegen MUST be re-run whenever mbe-api's OpenAPI spec changes; generated
   files MUST NOT be hand-edited.
+- For any endpoint accepting a binary file (`multipart/form-data`), the
+  generated wrapper method's signature MUST be verified against a live
+  upload before being trusted: the dio generator has repeatedly emitted
+  `String`-typed parameters (sent as plain form fields via
+  `FormData.fromMap`/`encodeFormParameter`) for fields the server actually
+  requires as real file parts (FastAPI `UploadFile`), which the server
+  rejects with a "Expected UploadFile, received: ..." error. When this gap
+  is confirmed, bypass the generated wrapper for that call and post the
+  bytes directly via `dio.post(path, data: FormData.fromMap({...,
+  'field': MultipartFile.fromBytes(bytes, filename: ...)}))`, deserializing
+  the raw response with `standardSerializers.deserialize` the same way the
+  generated method would have (see `ProductRepositoryImpl.uploadPhoto` and
+  `TaxpayerCertificateRepositoryImpl.upload` for the pattern). Do not assume
+  a base64-encoded string field is an acceptable substitute without
+  confirming it against the real server first.
 - mbe-ui MUST NOT directly modify mbe-api's source (or any other sibling
   repository), even when a local checkout makes this technically possible
   within the same working session. When a feature needs a backend change —
@@ -354,4 +386,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.8.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-19
+**Version**: 1.9.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-22

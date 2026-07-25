@@ -87,4 +87,58 @@ void main() {
       expect(find.text('ID-3'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'shows page-0 rows after a mutation resets the provider to page 0 while '
+    'viewing a later page, instead of staying stuck on a stale row cursor '
+    'and rendering blank rows (live-verified regression: creating/editing/ '
+    'deleting a record invalidates the list provider, which always refetches '
+    'page 0 — PaginatedDataTable2 must resync, not keep showing the old '
+    'page)',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DataTableView<int>(
+              columns: columns(),
+              rows: const [21],
+              pagination: const CatalogPage(
+                items: [21],
+                total: 21,
+                pageIndex: 1,
+                pageSize: 20,
+              ),
+              onPageChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+      expect(find.text('ID-21'), findsOneWidget);
+
+      // Simulate `_invalidateCaches()`: the provider is invalidated and its
+      // `build()` always refetches page 0, regardless of which page was
+      // being viewed — same widget tree position, new pagination state.
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DataTableView<int>(
+              columns: columns(),
+              rows: const [1, 2, 3],
+              pagination: const CatalogPage(
+                items: [1, 2, 3],
+                total: 21,
+                pageIndex: 0,
+                pageSize: 20,
+              ),
+              onPageChanged: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('ID-1'), findsOneWidget);
+      expect(find.text('ID-2'), findsOneWidget);
+      expect(find.text('ID-3'), findsOneWidget);
+    },
+  );
 }
