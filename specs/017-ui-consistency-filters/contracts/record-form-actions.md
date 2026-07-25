@@ -98,10 +98,14 @@ re-derive it:
 | Delete | `delete_<entity>_button` |
 | Confirm delete | `confirm_delete_<entity>_button` |
 
-Keys are caller-supplied for the same reason labels are. **23 assertions across 16
+Keys are caller-supplied for the same reason labels are. **22 assertions across 15
 widget test files** currently find `edit_<entity>_button` in the app bar; after the
 move they find the same key in the form body — so most updates are an expectation
 about *where*, not *whether*.
+
+⚠️ `pricing_screen_test.dart:203`'s `edit_price_button_1` matches an
+`edit_.*_button` grep but is a **pricing-table row action**, not a record edit
+toggle. Leave it alone.
 
 ## 7. Test obligations
 

@@ -71,8 +71,10 @@ that SDK constraint — unchanged from specs 011–015.
 
 **Testing**: `flutter_test` for unit/widget, `mocktail` for repository fakes,
 `integration_test` for the end-to-end flow. See research §9 for the blast radius:
-**23 existing assertions across 16 widget test files** reference
-`edit_<entity>_button` and must be updated screen-by-screen, not batched.
+**22 existing assertions across 15 widget test files** reference the app-bar
+`edit_<entity>_button` and must be updated screen-by-screen, not batched. All 18
+detail and all 18 list screens already have test files, so every conversion updates
+an existing test rather than inventing one.
 
 **Target Platform**: Web, Windows, macOS, Linux — Expanded (desktop/web) tier,
 Compact tier inherited from spec 010's adaptive shell. US3 is most valuable on web

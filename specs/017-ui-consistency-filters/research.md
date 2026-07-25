@@ -351,11 +351,21 @@ repositories + their impls (`vehicle`, `vehicle_operator`, `user`, `product`),
 `app_router.dart` (every list route builder gains query decoding), 2 `.arb` files,
 `ErrorBanner`, DESIGN.md, the constitution. Plus 4 new files under `core/`.
 
-**Existing tests that will fail by design**: 23 assertions across 16 widget test
-files reference `edit_<entity>_button`
-(`test/widget/features/{auth,catalog,pricing}/*_detail_screen_test.dart`). They must
-be updated in the same commit as the screen they cover, not batch-fixed afterward —
+**Existing tests that will fail by design**: **22 assertions across 15 widget test
+files** reference the app-bar `edit_<entity>_button`
+(`test/widget/features/{auth,catalog}/*_detail_screen_test.dart`). They must be
+updated in the same commit as the screen they cover, not batch-fixed afterward —
 otherwise the suite is red across the whole conversion and stops being a signal.
+
+*Not affected*: `pricing_screen_test.dart:203` asserts on `edit_price_button_1`,
+which is a **row action inside the pricing table**, not a detail-screen edit toggle.
+A naive `edit_.*_button` grep matches it; it must not be "fixed".
+
+**Test surface is complete**: all 18 detail screens and all 18 list screens already
+have widget test files, so every conversion has an existing test to update rather
+than one to invent. Three detail-screen tests (point of sale, exchange rate, price
+list) exist but do not currently assert on the edit affordance — they gain that
+assertion during conversion.
 
 **New tests**:
 - Unit: `ListQuery` round-trip (encode → decode → equality), including the edge
