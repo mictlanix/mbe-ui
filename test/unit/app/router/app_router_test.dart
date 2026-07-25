@@ -243,6 +243,13 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const TaxpayerIssuerListResult(items: [], total: 0));
+    when(
+      () => taxpayerIssuerRepository.listDetail(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const TaxpayerIssuerPage(items: [], total: 0));
 
     final container = ProviderContainer(
       overrides: [

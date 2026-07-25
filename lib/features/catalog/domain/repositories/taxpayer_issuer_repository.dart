@@ -16,6 +16,18 @@ abstract class TaxpayerIssuerRepository {
     int limit = 20,
   });
 
+  /// The catalog list screen's own page fetch (FR-010, FR-026): the same
+  /// `TaxpayerIssuerResponse` the generic list endpoint already returns,
+  /// mapped to the full [TaxpayerIssuer] entity so the list can show
+  /// postal code and fiscal regime (both arrive pre-expanded — no extra
+  /// per-row lookup) instead of the lightweight [TaxpayerIssuerListItem]
+  /// the facility-form picker uses.
+  Future<TaxpayerIssuerPage> listDetail({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  });
+
   /// Returns `null` if the RFC cannot be resolved (e.g. deleted since the
   /// facility was saved) — callers fall back to displaying the bare RFC
   /// rather than failing the screen (FR-034b).
@@ -55,5 +67,11 @@ abstract class TaxpayerIssuerRepository {
 class TaxpayerIssuerListResult {
   const TaxpayerIssuerListResult({required this.items, required this.total});
   final List<TaxpayerIssuerListItem> items;
+  final int total;
+}
+
+class TaxpayerIssuerPage {
+  const TaxpayerIssuerPage({required this.items, required this.total});
+  final List<TaxpayerIssuer> items;
   final int total;
 }

@@ -45,6 +45,29 @@ class TaxpayerIssuerRepositoryImpl implements TaxpayerIssuerRepository {
   }
 
   @override
+  Future<TaxpayerIssuerPage> listDetail({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _api.listTaxpayerIssuersApiV1TaxpayerIssuersGet(
+        search: search,
+        skip: skip,
+        limit: limit,
+      );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return TaxpayerIssuerPage(
+        items: result.items.map(TaxpayerIssuer.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
   Future<TaxpayerIssuerListItem?> get(String rfc) async {
     try {
       final response = await _api.getTaxpayerIssuerApiV1TaxpayerIssuersRfcGet(

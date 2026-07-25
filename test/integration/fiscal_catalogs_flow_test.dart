@@ -34,8 +34,9 @@ import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 ///   --dart-define=MBE_CSD_KEY_PATH=/path/to/test.key
 ///   --dart-define=MBE_CSD_KEY_PASSWORD=...
 /// When these are absent, the issuer/facility/payment-method-option path is
-/// still exercised — only the certificate-upload assertion is skipped, with
-/// a note (research §8's byte→string encoding is confirmed there when run).
+/// still exercised — only the certificate-upload assertion is skipped
+/// (research §8: confirmed working against a real CSD pair and a live
+/// mbe-api as real multipart file parts, not a base64-encoded string).
 ///
 /// Skipped entirely when login credentials aren't provided — this test
 /// creates and then deletes real records, so it must never run unattended

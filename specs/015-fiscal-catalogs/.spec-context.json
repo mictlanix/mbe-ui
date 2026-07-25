@@ -3,7 +3,7 @@
   "specName": "Fiscal Catalogs (Payment Method Options, Taxpayer Issuers, Taxpayer Certificates)",
   "branch": "015-fiscal-catalogs",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -521,7 +521,30 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-07-22T14:58:12.182Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-25T02:00:33.585Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T064",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-25T02:55:32.096Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-25T02:55:32.096Z"
     }
   ],
-  "currentTask": "T061"
+  "currentTask": "T064"
 }

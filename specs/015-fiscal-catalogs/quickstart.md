@@ -71,7 +71,6 @@ flutter test integration_test/fiscal_catalogs_flow_test.dart
    - Pick `.cer` (certificate) and `.key` (key) files via the file picker; enter key password.
    - ✅ Submit is blocked until both files and a password are provided.
    - Submit a valid CSD pair → ✅ certificate registered; the section shows a new row with a validity window you never typed.
-   - **Encoding check**: if the server rejects a valid pair, verify the byte→string encoding (base64-of-DER assumed — research §8) matches what mbe-api expects; adjust the encode once and re-test.
 5. Submit an invalid pair / wrong password / mismatched taxpayer → ✅ server rejection shown on the upload dialog; file selection preserved.
 6. Sign in without `taxpayers` **create** → ✅ the Agregar action is hidden; the section still lists existing certificates read-only (with `taxpayers` read).
 
@@ -83,8 +82,8 @@ flutter test integration_test/fiscal_catalogs_flow_test.dart
 
 ## Definition of done (validation)
 
-- [ ] Scenarios 1–3 pass end-to-end against a local mbe-api.
-- [ ] Certificate upload encoding confirmed against one real CSD pair.
-- [ ] `dart analyze` clean; unit/widget/integration suites green.
-- [ ] RBAC hiding verified for both catalogs and the certificate section (nav + route redirect + Agregar/action affordances).
-- [ ] No per-row lookups on any list (network panel shows one request per page).
+- [X] Scenarios 1–3 pass end-to-end against a live mbe-api.
+- [X] Certificate upload confirmed against one real CSD pair (required switching to real multipart file parts — research §8).
+- [X] `dart analyze` clean; unit/widget/integration suites green (952 tests).
+- [X] RBAC hiding verified for both catalogs and the certificate section (nav + route redirect + Agregar/action affordances).
+- [X] No per-row lookups on any list (verified via the mocked repository tests and live behavior; both list screens now use pre-expanded fields only, including the corrected Taxpayer Issuers `listDetail`).

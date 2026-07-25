@@ -11,7 +11,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuers_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -21,12 +21,11 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// beyond `search` (contracts/mbe-api-catalogs.md §2, mirrors
 /// `TaxpayerRecipientsListScreen`).
 ///
-/// Rows reuse `TaxpayerIssuerListItem` (`{rfc, name}`) — the postal-code and
-/// regime columns the legacy "Razones Sociales" screen shows are read from
-/// the picker's [TaxpayerIssuerListItem.displayText] fallback only when a
-/// name is absent; the richer detail (regime/postal code) is shown on the
-/// detail screen, not per-row, since the list endpoint doesn't expand them
-/// (only the single-record `get` does).
+/// Rows use the full `TaxpayerIssuer` entity (via
+/// `TaxpayerIssuerRepository.listDetail`) so the table can show postal code
+/// and fiscal regime alongside RFC and name, matching the legacy "Razones
+/// Sociales" screen's columns (FR-010) — both arrive pre-expanded on the
+/// list response already, so this adds no per-row lookup (FR-026).
 class TaxpayerIssuersListScreen extends ConsumerWidget {
   const TaxpayerIssuersListScreen({super.key});
 
@@ -70,20 +69,34 @@ class TaxpayerIssuersListScreen extends ConsumerWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) =>
                 Center(child: Text(l10n.taxpayerIssuersLoadError(e))),
-            data: (CatalogPage<TaxpayerIssuerListItem> page) =>
+            data: (CatalogPage<TaxpayerIssuer> page) =>
                 page.items.isEmpty
                 ? Center(child: Text(l10n.noTaxpayerIssuersFound))
-                : DataTableView<TaxpayerIssuerListItem>(
+                : DataTableView<TaxpayerIssuer>(
                     key: const Key('taxpayer_issuers_table'),
                     columns: [
                       DataTableColumn.text(
                         label: l10n.columnRfc,
                         text: (t) => t.rfc,
-                        size: ColumnSize.M,
+                        size: ColumnSize.S,
+                      ),
+                      DataTableColumn.text(
+                        label: l10n.columnPostalCodeShort,
+                        text: (t) =>
+                            t.postalCode?.description ??
+                            t.postalCode?.code ??
+                            '',
+                        size: ColumnSize.S,
                       ),
                       DataTableColumn.text(
                         label: l10n.columnName,
-                        text: (t) => t.name ?? '',
+                        text: (t) => t.name,
+                        size: ColumnSize.L,
+                      ),
+                      DataTableColumn.text(
+                        label: l10n.columnRegime,
+                        text: (t) =>
+                            t.regime?.description ?? t.regime?.code ?? '',
                         size: ColumnSize.L,
                       ),
                     ],

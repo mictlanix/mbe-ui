@@ -176,6 +176,19 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     if (pagination != null) {
       _source ??= _CatalogDataTableSource<T>(widget, _buildRow);
       return PaginatedDataTable2(
+        // PaginatedDataTable2 only reads `initialFirstRowIndex` once, at
+        // first mount — it never re-seeds its internal row cursor from a
+        // changed value on rebuild (the same "initialValue only seeds once"
+        // Flutter behavior seen elsewhere in this codebase). Without this
+        // key, invalidating the underlying provider after a create/update/
+        // delete while viewing any page other than the first resets
+        // `pagination.pageIndex` back to 0, but this widget's own cursor
+        // stays on the old page — so it renders rows past the end of the
+        // freshly-fetched page-0 data and the table appears empty. Keying
+        // by pageIndex forces a fresh element (and a fresh
+        // `initialFirstRowIndex`) whenever the page actually changes,
+        // whether from user navigation or from a post-mutation reset.
+        key: ValueKey(pagination.pageIndex),
         columns: _buildColumns(sortable: false),
         source: _source!,
         showCheckboxColumn: false,

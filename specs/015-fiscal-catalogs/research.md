@@ -183,31 +183,37 @@ inside the spec's Out-of-Scope boundary ("only display-label mapping").
 **Alternatives considered**: A new hand-named enum replacing the generated one —
 explicitly out of scope and unnecessary.
 
-## §8 — Certificate upload: two `file_picker` selections, bytes encoded to the `String` fields
+## §8 — Certificate upload: two `file_picker` selections, sent as real multipart file parts
 
 **Decision**: The certificate registration form uses the already-present
 `file_picker` package to select the `.cer` and `.key` files (with extension
-filters where the platform allows), reads each file's bytes, encodes them to the
-`String` form the generated multipart `upload(taxpayer, certificate, key,
-keyPassword)` expects, and submits together with the password. **No new
-dependency.**
+filters where the platform allows), reads each file's bytes, and posts them
+directly to `/api/v1/taxpayer-certificates` as real `MultipartFile` parts
+(plus `taxpayer`/`key_password` string fields), bypassing the generated
+`TaxpayerCertificatesApi.uploadTaxpayerCertificateApiV1TaxpayerCertificatesPost`
+wrapper. **No new dependency.**
 
 **Rationale**: `pubspec.yaml` already declares `file_picker: ^8.1.2`. The
-generated `uploadTaxpayerCertificateApiV1TaxpayerCertificatesPost` takes
-`certificate`/`key` as `String` (documented "DER encoded .cer" / "DER encoded,
-password protected .key") over `multipart/form-data`. The two files are not
-images, so none of spec 004's image-crop/preview concerns apply — this is a
-plain pick-bytes-and-submit flow.
-
-> **OPEN ITEM (low risk)**: confirm the exact string encoding the server expects
-> for the `certificate`/`key` fields — base64 of the raw DER bytes is the
-> default assumption and the natural encoding for binary-in-a-string over
-> multipart; verify against one real CSD pair in quickstart before wiring the
-> final encode. The picker + submit mechanism is fixed regardless.
+generated wrapper types `certificate`/`key` as `String` and sends them as
+plain form fields (`FormData.fromMap`/`encodeFormParameter`) — this was
+initially assumed to be intentional (base64-of-DER over a string field) and
+shipped that way, but a live upload against real mbe-api rejected it with
+`"Expected UploadFile, received: <class 'str'>"`: the server actually
+requires real file parts (FastAPI `UploadFile`), and the generated
+signature is a codegen gap, not a contract. Corrected in
+`TaxpayerCertificateRepositoryImpl.upload` to call `dio.post` directly with
+`FormData.fromMap({..., 'certificate': MultipartFile.fromBytes(...)})`,
+mirroring the existing `ProductRepositoryImpl.uploadPhoto` (spec 004)
+pattern, and deserializing the response manually via
+`standardSerializers.deserialize`. Confirmed working against a live
+mbe-api with a real CSD `.cer`/`.key` pair (T061). This is now codified
+project-wide in the constitution (§III, v1.9.0) so future binary-upload
+endpoints check the generated signature before trusting it.
 
 **Alternatives considered**: Adding a dedicated multipart/HTTP helper — the
-generated client already performs the multipart POST; only the byte→string
-encode is ours.
+generated client already performs the multipart POST correctly for the
+`taxpayer`/`key_password` string fields; only the two file fields needed to
+bypass it.
 
 ## §9 — Taxpayer Certificates is a child section of the Taxpayer Issuer detail (not a standalone catalog)
 

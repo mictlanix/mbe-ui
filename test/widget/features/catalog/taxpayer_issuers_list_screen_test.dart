@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' show FiscalCertificationProvider;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -12,7 +13,8 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuers_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -39,8 +41,18 @@ const _fullAccessUser = User(
 );
 
 final _testIssuers = [
-  TaxpayerIssuerListItem(rfc: 'XAXX010101000', name: 'Acme Corp'),
-  TaxpayerIssuerListItem(rfc: 'BBB010101B01', name: 'North Supplies'),
+  TaxpayerIssuer(
+    rfc: 'XAXX010101000',
+    name: 'Acme Corp',
+    provider: FiscalCertificationProvider.number1,
+    postalCode: const SatCatalogItem(code: '06000', description: 'Centro'),
+    regime: const SatCatalogItem(code: '601', description: 'General de Ley'),
+  ),
+  TaxpayerIssuer(
+    rfc: 'BBB010101B01',
+    name: 'North Supplies',
+    provider: FiscalCertificationProvider.number1,
+  ),
 ];
 
 AccessControlService _accessFor(User user) =>
@@ -56,17 +68,16 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
-    List<TaxpayerIssuerListItem> issuers = const [],
+    List<TaxpayerIssuer> issuers = const [],
   }) async {
     when(
-      () => repository.list(
+      () => repository.listDetail(
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
-      (_) async =>
-          TaxpayerIssuerListResult(items: issuers, total: issuers.length),
+      (_) async => TaxpayerIssuerPage(items: issuers, total: issuers.length),
     );
 
     await tester.pumpWidget(
@@ -92,6 +103,23 @@ void main() {
     expect(find.text('Acme Corp'), findsOneWidget);
     expect(find.text('North Supplies'), findsOneWidget);
   });
+
+  testWidgets(
+    'shows postal code and fiscal regime columns too, matching the legacy '
+    'screen (FR-010) — both arrive pre-expanded, no per-row lookup',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        issuers: _testIssuers,
+      );
+
+      expect(find.text('Centro'), findsOneWidget);
+      expect(find.text('General de Ley'), findsOneWidget);
+      verifyNever(() => repository.get(any()));
+      verifyNever(() => repository.getDetail(any()));
+    },
+  );
 
   testWidgets('a functional search box is present, with no filter drawer '
       '(search-only catalog, contracts/mbe-api-catalogs.md §2)', (
@@ -129,14 +157,14 @@ void main() {
     'a row click opens the read-only detail view (constitution §VI)',
     (tester) async {
       when(
-        () => repository.list(
+        () => repository.listDetail(
           search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
         (_) async =>
-            TaxpayerIssuerListResult(items: _testIssuers, total: _testIssuers.length),
+            TaxpayerIssuerPage(items: _testIssuers, total: _testIssuers.length),
       );
 
       final router = GoRouter(
