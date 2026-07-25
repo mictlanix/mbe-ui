@@ -30,7 +30,7 @@ pattern instead of copying whichever variant they happen to land next to.
 | 1 | The read-only → edit affordance is an app-bar icon, visually and spatially divorced from the Save/Delete buttons that replace it in edit mode. | All 18 detail screens |
 | 2 | Save and Delete (plus its confirmation dialog) are hand-copied per screen and stretched edge-to-edge on wide displays. | All 18 detail screens |
 | 3 | Four catalogs ignore a filter facet their own data source already offers, so records cannot be narrowed by a criterion the list even displays. | Vehicles, Vehicle Operators, Users, Products |
-| 4 | No list view is addressable: filters, search text, and page number exist only in memory. A filtered list cannot be linked, bookmarked, or refreshed, and returning from a record resets it to an unfiltered page 1. | All 18 list screens |
+| 4 | No list view is addressable: filters, search text, and page number exist only in memory. A filtered list cannot be linked, bookmarked, or survive a refresh. Additionally, returning from a record that was *changed* silently drops the user back to page 1. | All 18 list screens |
 | 5 | Not one list screen uses the shared error presentation; every one renders load failures by interpolating the raw underlying failure object into a sentence, and every empty state is a bare line of centered text with no way to recover. | All 18 list screens |
 
 ## Clarifications
@@ -49,6 +49,18 @@ pattern instead of copying whichever variant they happen to land next to.
   affordance move is a single change rather than eighteen, (b) make a list survive
   navigating into a record and back, and (c) give every list one consistent
   loading, empty, and error presentation.
+- Q: (b) was scoped on the assumption that returning from a record always resets the
+  list. Is that actually what happens? → A: **No — the assumption was wrong and the
+  story was narrowed.** A behavioral probe against the real navigation shape (list
+  inside a shell branch, record screens as top-level siblings) showed that viewing a
+  record and going back preserves search, filters, **and** page today, because the
+  list stays mounted beneath the record screen. The place is lost **only after a
+  create, update, or delete**: refreshing the list to show the change also resets it
+  to the first page, while leaving the filters applied — so the list looks correct
+  but is showing different records. US4 now targets exactly that path, and adds a
+  no-regression requirement for the path that already works. The "nothing survives a
+  browser refresh, and no view can be shared" problem is real and unchanged, and is
+  US3's subject.
 - Q: The deferred table polish on the pricing screens (empty vertical space below
   short tables, footer placement, search box layout) — in or out? → A: **Out.** It
   stays deferred and is explicitly listed under Out of Scope. Only the pricing
@@ -216,30 +228,37 @@ place and confirming nothing is lost.
 
 ---
 
-### User Story 4 - Return from a record to exactly the list you left (Priority: P2)
+### User Story 4 - Keep your place in the list after changing a record (Priority: P2)
 
-A user searches a large catalog, filters it, pages to the record they want, opens
-it, and goes back. Today they land on an unfiltered page 1 and must redo the search,
-the filters, and the paging — every single time. For a user working through a batch
-of records this is the most repeated friction in the product.
+A user filters a large catalog, pages to the record they want, opens it, edits it,
+and saves. They are returned to the list — but on page 1, having lost their place.
+Their search and filters are still applied, so the loss is easy to miss and
+disorienting: the list looks right but is showing different records.
 
-After this change, leaving a record returns the user to the exact list view they
-came from: same search text, same filters, same page.
+This is narrower than it first appears, and the review corrected an initial
+assumption here. Merely *viewing* a record and going back already preserves
+everything today. The place is lost **only after a change** — create, update, or
+delete — because refreshing the list to reflect that change also resets it to the
+first page. Separately, nothing at all survives a browser refresh, but that is
+Story 3's concern.
 
-**Why this priority**: It is high-frequency friction, but it is a restoration of
-context rather than a missing capability, and Story 3 supplies the most natural
-mechanism for it.
+After this change, returning from a record the user changed keeps them on the page
+they were on, with the list refreshed to reflect the change.
+
+**Why this priority**: It is real, repeated friction for anyone working through a
+batch of records, and it is the kind of bug users rarely report because the list
+still looks plausible. It ranks below Stories 1–2 because the affected path is
+narrower than the missing-capability gaps, and Story 3 supplies the mechanism.
 
 **Independent Test**: Can be fully tested by filtering any list, paging to page 3,
-opening a record, returning, and confirming the list still shows page 3 with the
-same search and filters — repeated for a record opened read-only (row click) and one
-opened for edit.
+opening a record, editing and saving it, and confirming the list still shows page 3
+with the change reflected — then repeating for a delete and for a create.
 
 **Acceptance Scenarios**:
 
 1. **Given** a filtered list on page 3, **When** the user opens a record and returns
-   without changing it, **Then** the list shows page 3 with the same search and
-   filters applied.
+   without changing it, **Then** the list still shows page 3 with the same search and
+   filters applied. *(This already holds today and MUST NOT regress.)*
 2. **Given** the same, **When** the user edits and saves the record and returns,
    **Then** the list shows the same page and filters, refreshed to reflect the
    change.
@@ -401,9 +420,11 @@ different module and observing identical treatment.
 **List state preservation (US4)**
 
 - **FR-024**: Navigating from a list into a record and back MUST restore the list's
-  search, filters, and page exactly as they were left.
+  search, filters, and page exactly as they were left. This behavior exists today
+  for a record that was only viewed and MUST NOT regress.
 - **FR-025**: Returning after creating, updating, or deleting a record MUST show a
-  list refreshed to reflect the change while preserving search, filters, and page.
+  list refreshed to reflect the change while preserving search, filters, **and
+  page**. Refreshing a list to reflect a change MUST NOT reset its page.
 - **FR-026**: If the page a user returns to no longer exists because the result set
   shrank, the user MUST land on the nearest valid page rather than an empty view.
 
@@ -467,8 +488,10 @@ different module and observing identical treatment.
   (from four today).
 - **SC-004**: A user can reproduce any filtered, searched, paged list view from its
   address alone, in a new session, on 100% of list screens.
-- **SC-005**: Returning to a list after opening a record preserves search, filters,
-  and page on 100% of list screens (from 0% today).
+- **SC-005**: Returning to a list after creating, updating, or deleting a record
+  preserves search, filters, and page on 100% of list screens (today filters are
+  preserved but the page resets to 1 on 100% of them), and the already-correct
+  view-then-back path stays correct.
 - **SC-006**: A user working through a filtered list of records no longer re-enters
   search terms or re-applies filters between records — reducing the interactions
   needed to review N records from roughly proportional to N to a fixed setup cost.

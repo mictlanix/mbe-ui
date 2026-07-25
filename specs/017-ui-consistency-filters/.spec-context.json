@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Cross-Screen UX Consistency & Filtering Backfill",
   "branch": "017-ui-consistency-filters",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-25T19:34:17.106Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T19:54:44.891Z"
     }
   ]
 }
