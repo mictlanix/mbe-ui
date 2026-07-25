@@ -98,6 +98,8 @@ doc/PrivilegeUpdate.md
 doc/ProductCreate.md
 doc/ProductLabelFacet.md
 doc/ProductListItem.md
+doc/ProductMergePreviewItem.md
+doc/ProductMergePreviewResponse.md
 doc/ProductMergeRequest.md
 doc/ProductPriceCreate.md
 doc/ProductPriceResponse.md
@@ -267,6 +269,8 @@ lib/src/model/privilege_update.dart
 lib/src/model/product_create.dart
 lib/src/model/product_label_facet.dart
 lib/src/model/product_list_item.dart
+lib/src/model/product_merge_preview_item.dart
+lib/src/model/product_merge_preview_response.dart
 lib/src/model/product_merge_request.dart
 lib/src/model/product_price_create.dart
 lib/src/model/product_price_response.dart

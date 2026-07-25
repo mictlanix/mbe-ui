@@ -137,6 +137,7 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**getProductLabelFacetsApiV1ProductsLabelsFacetsGet**](doc/ProductsApi.md#getproductlabelfacetsapiv1productslabelsfacetsget) | **GET** /api/v1/products/labels/facets | Get Product Label Facets
 [*ProductsApi*](doc/ProductsApi.md) | [**listProductsApiV1ProductsGet**](doc/ProductsApi.md#listproductsapiv1productsget) | **GET** /api/v1/products | List Products
 [*ProductsApi*](doc/ProductsApi.md) | [**mergeProductsApiV1ProductsMergePost**](doc/ProductsApi.md#mergeproductsapiv1productsmergepost) | **POST** /api/v1/products/merge | Merge Products
+[*ProductsApi*](doc/ProductsApi.md) | [**previewProductMergeApiV1ProductsMergePreviewGet**](doc/ProductsApi.md#previewproductmergeapiv1productsmergepreviewget) | **GET** /api/v1/products/merge/preview | Preview Product Merge
 [*ProductsApi*](doc/ProductsApi.md) | [**updateProductApiV1ProductsProductIdPut**](doc/ProductsApi.md#updateproductapiv1productsproductidput) | **PUT** /api/v1/products/{product_id} | Update Product
 [*ProductsApi*](doc/ProductsApi.md) | [**uploadProductImageApiV1ProductsProductIdImagePost**](doc/ProductsApi.md#uploadproductimageapiv1productsproductidimagepost) | **POST** /api/v1/products/{product_id}/image | Upload Product Image
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCfdiUsagesApiV1SatCfdiUsagesIdGet**](doc/SatCatalogsApi.md#getcfdiusagesapiv1satcfdiusagesidget) | **GET** /api/v1/sat/cfdi-usages/{id} | Get Cfdi Usages
@@ -297,6 +298,8 @@ Class | Method | HTTP request | Description
  - [ProductCreate](doc/ProductCreate.md)
  - [ProductLabelFacet](doc/ProductLabelFacet.md)
  - [ProductListItem](doc/ProductListItem.md)
+ - [ProductMergePreviewItem](doc/ProductMergePreviewItem.md)
+ - [ProductMergePreviewResponse](doc/ProductMergePreviewResponse.md)
  - [ProductMergeRequest](doc/ProductMergeRequest.md)
  - [ProductPriceCreate](doc/ProductPriceCreate.md)
  - [ProductPriceResponse](doc/ProductPriceResponse.md)

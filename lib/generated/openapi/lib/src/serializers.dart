@@ -97,6 +97,8 @@ import 'package:mbe_api_client/src/model/privilege_update.dart';
 import 'package:mbe_api_client/src/model/product_create.dart';
 import 'package:mbe_api_client/src/model/product_label_facet.dart';
 import 'package:mbe_api_client/src/model/product_list_item.dart';
+import 'package:mbe_api_client/src/model/product_merge_preview_item.dart';
+import 'package:mbe_api_client/src/model/product_merge_preview_response.dart';
 import 'package:mbe_api_client/src/model/product_merge_request.dart';
 import 'package:mbe_api_client/src/model/product_price_create.dart';
 import 'package:mbe_api_client/src/model/product_price_response.dart';
@@ -225,6 +227,8 @@ part 'serializers.g.dart';
   ProductCreate,
   ProductLabelFacet,
   ProductListItem,
+  ProductMergePreviewItem,
+  ProductMergePreviewResponse,
   ProductMergeRequest,
   ProductPriceCreate,
   ProductPriceResponse,
