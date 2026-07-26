@@ -333,7 +333,9 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                     ? () => context.replace('/employees/${widget.employeeId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

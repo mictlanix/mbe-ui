@@ -39,9 +39,7 @@ class VehicleOperatorsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = VehicleOperatorFilter.fromQuery(query);
-    final pageAsync = ref.watch(
-      vehicleOperatorsListControllerProvider(filter),
-    );
+    final pageAsync = ref.watch(vehicleOperatorsListControllerProvider(filter));
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(
       SystemObject.vehicleOperators,
@@ -199,7 +197,9 @@ class _VehicleOperatorFiltersPanel extends ConsumerWidget {
     final employeeRepo = ref.read(employeeRepositoryProvider);
     final l10n = AppLocalizations.of(context)!;
     final driverDisplayText = filter.driverId != null
-        ? ref.watch(employeeDisplayNameProvider(filter.driverId!)).valueOrNull ??
+        ? ref
+                  .watch(employeeDisplayNameProvider(filter.driverId!))
+                  .valueOrNull ??
               '${filter.driverId}'
         : '';
 

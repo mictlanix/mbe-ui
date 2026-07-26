@@ -11,7 +11,10 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// tables get a translated label; anything else is humanized from the key
 /// rather than dropped — a category the UI silently omitted would understate
 /// the blast radius, which is the opposite of what this summary is for.
-String mergeCategoryLabel(AppLocalizations l10n, MergePreviewCategory category) {
+String mergeCategoryLabel(
+  AppLocalizations l10n,
+  MergePreviewCategory category,
+) {
   return switch (category.table) {
     'sales_order_detail' => l10n.mergeCategorySalesOrderDetail,
     'purchase_order_detail' => l10n.mergeCategoryPurchaseOrderDetail,

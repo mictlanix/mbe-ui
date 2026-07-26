@@ -336,156 +336,142 @@ void main() {
     });
   });
 
-  group(
-    'RISK GATE (017-ui-consistency-filters T008, plan Phase 2): '
-    'context.go to the same shell-branch path with a different query MUST '
-    'update the branch in place, not rebuild/reset it',
-    () {
-      Future<GoRouter> pumpShell(
-        WidgetTester tester, {
-        required List<Vehicle> vehicles,
-      }) async {
-        when(
-          () => repository.list(
-            search: any(named: 'search'),
-            status: any(named: 'status'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          (_) async =>
-              VehicleListResult(items: vehicles, total: vehicles.length),
-        );
+  group('RISK GATE (017-ui-consistency-filters T008, plan Phase 2): '
+      'context.go to the same shell-branch path with a different query MUST '
+      'update the branch in place, not rebuild/reset it', () {
+    Future<GoRouter> pumpShell(
+      WidgetTester tester, {
+      required List<Vehicle> vehicles,
+    }) async {
+      when(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => VehicleListResult(items: vehicles, total: vehicles.length),
+      );
 
-        // Mirrors app_router.dart's real shape: a StatefulShellRoute with
-        // (at least) two branches, Vehicles among them — not a bare
-        // single-route GoRouter, since the risk is specifically whether the
-        // *shell* preserves the branch across a same-path `go`.
-        final router = GoRouter(
-          initialLocation: '/vehicles',
-          routes: [
-            StatefulShellRoute.indexedStack(
-              builder: (context, state, navigationShell) => navigationShell,
-              branches: [
-                StatefulShellBranch(
-                  routes: [
-                    GoRoute(
-                      path: '/home',
-                      builder: (_, _) =>
-                          const Scaffold(body: Text('home branch')),
-                    ),
-                  ],
-                ),
-                StatefulShellBranch(
-                  routes: [
-                    GoRoute(
-                      path: '/vehicles',
-                      builder: (_, state) => Scaffold(
-                        body: VehiclesListScreen(
-                          query: ListQuery.fromUri(state.uri),
-                        ),
+      // Mirrors app_router.dart's real shape: a StatefulShellRoute with
+      // (at least) two branches, Vehicles among them — not a bare
+      // single-route GoRouter, since the risk is specifically whether the
+      // *shell* preserves the branch across a same-path `go`.
+      final router = GoRouter(
+        initialLocation: '/vehicles',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) => navigationShell,
+            branches: [
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/home',
+                    builder: (_, _) =>
+                        const Scaffold(body: Text('home branch')),
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/vehicles',
+                    builder: (_, state) => Scaffold(
+                      body: VehiclesListScreen(
+                        query: ListQuery.fromUri(state.uri),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        );
-
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              vehicleRepositoryProvider.overrideWithValue(repository),
-              accessControlProvider.overrideWithValue(
-                _accessFor(_fullAccessUser),
+                  ),
+                ],
               ),
             ],
-            child: MaterialApp.router(
-              routerConfig: router,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-            ),
           ),
-        );
-        await tester.pumpAndSettle();
-        return router;
-      }
-
-      testWidgets(
-        'unsubmitted search text survives a same-path `go` with new query '
-        'parameters — proof the widget subtree was updated, not torn down '
-        'and remounted',
-        (tester) async {
-          final router = await pumpShell(tester, vehicles: _testVehicles);
-
-          // Type into the search box WITHOUT submitting — pure ephemeral
-          // State internal to CatalogSearchBar's TextEditingController, not
-          // derived from `initialValue` after first mount. If `go` rebuilt
-          // the branch/subtree from scratch, this text would be gone.
-          await tester.enterText(
-            find.byKey(const Key('vehicles_search_field')),
-            'unsubmitted-draft',
-          );
-          await tester.pump();
-
-          // Simulate a pagination click: same path, new query.
-          router.go(
-            const ListQuery(pageIndex: 1).toUri('/vehicles').toString(),
-          );
-          await tester.pumpAndSettle();
-
-          expect(find.text('unsubmitted-draft'), findsOneWidget);
-        },
+        ],
       );
 
-      testWidgets(
-        'the repository is re-queried with the new page and the rendered '
-        'result reflects it — the URL change actually took effect',
-        (tester) async {
-          final router = await pumpShell(tester, vehicles: _testVehicles);
-
-          router.go(
-            const ListQuery(pageIndex: 1).toUri('/vehicles').toString(),
-          );
-          await tester.pumpAndSettle();
-
-          verify(
-            () => repository.list(
-              search: null,
-              status: null,
-              skip: 20,
-              limit: 20,
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            vehicleRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
             ),
-          ).called(greaterThanOrEqualTo(1));
-        },
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        ),
       );
+      await tester.pumpAndSettle();
+      return router;
+    }
 
-      testWidgets(
-        'the branch stays selected (no navigator push, no branch reset) '
-        'across a same-path query change',
-        (tester) async {
-          final router = await pumpShell(tester, vehicles: _testVehicles);
+    testWidgets(
+      'unsubmitted search text survives a same-path `go` with new query '
+      'parameters — proof the widget subtree was updated, not torn down '
+      'and remounted',
+      (tester) async {
+        final router = await pumpShell(tester, vehicles: _testVehicles);
 
-          final canPopBefore = Navigator.of(
-            tester.element(find.byType(VehiclesListScreen)),
-          ).canPop();
+        // Type into the search box WITHOUT submitting — pure ephemeral
+        // State internal to CatalogSearchBar's TextEditingController, not
+        // derived from `initialValue` after first mount. If `go` rebuilt
+        // the branch/subtree from scratch, this text would be gone.
+        await tester.enterText(
+          find.byKey(const Key('vehicles_search_field')),
+          'unsubmitted-draft',
+        );
+        await tester.pump();
 
-          router.go(
-            const ListQuery(pageIndex: 1).toUri('/vehicles').toString(),
-          );
-          await tester.pumpAndSettle();
+        // Simulate a pagination click: same path, new query.
+        router.go(const ListQuery(pageIndex: 1).toUri('/vehicles').toString());
+        await tester.pumpAndSettle();
 
-          // Still on the Vehicles branch, still not a pushed route on top
-          // of it — `go` updated the existing page in place.
-          expect(find.byType(VehiclesListScreen), findsOneWidget);
-          final canPopAfter = Navigator.of(
-            tester.element(find.byType(VehiclesListScreen)),
-          ).canPop();
-          expect(canPopBefore, isFalse);
-          expect(canPopAfter, isFalse);
-        },
-      );
-    },
-  );
+        expect(find.text('unsubmitted-draft'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'the repository is re-queried with the new page and the rendered '
+      'result reflects it — the URL change actually took effect',
+      (tester) async {
+        final router = await pumpShell(tester, vehicles: _testVehicles);
+
+        router.go(const ListQuery(pageIndex: 1).toUri('/vehicles').toString());
+        await tester.pumpAndSettle();
+
+        verify(
+          () =>
+              repository.list(search: null, status: null, skip: 20, limit: 20),
+        ).called(greaterThanOrEqualTo(1));
+      },
+    );
+
+    testWidgets(
+      'the branch stays selected (no navigator push, no branch reset) '
+      'across a same-path query change',
+      (tester) async {
+        final router = await pumpShell(tester, vehicles: _testVehicles);
+
+        final canPopBefore = Navigator.of(
+          tester.element(find.byType(VehiclesListScreen)),
+        ).canPop();
+
+        router.go(const ListQuery(pageIndex: 1).toUri('/vehicles').toString());
+        await tester.pumpAndSettle();
+
+        // Still on the Vehicles branch, still not a pushed route on top
+        // of it — `go` updated the existing page in place.
+        expect(find.byType(VehiclesListScreen), findsOneWidget);
+        final canPopAfter = Navigator.of(
+          tester.element(find.byType(VehiclesListScreen)),
+        ).canPop();
+        expect(canPopBefore, isFalse);
+        expect(canPopAfter, isFalse);
+      },
+    );
+  });
 }

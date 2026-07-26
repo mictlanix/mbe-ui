@@ -101,8 +101,7 @@ class LabelsListScreen extends ConsumerWidget {
                     .toUri(_labelsPath)
                     .toString(),
               ),
-              onRowTap: (lb) =>
-                  context.push('/labels/${lb.labelId}?view=true'),
+              onRowTap: (lb) => context.push('/labels/${lb.labelId}?view=true'),
               rowActionsBuilder: (context, lb) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate

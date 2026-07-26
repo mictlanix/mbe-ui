@@ -1228,106 +1228,113 @@ void main() {
       },
     );
 
-    testWidgets(
-      'selecting a supplier navigates to a URL carrying that facet',
-      (tester) async {
-        when(
-          () => supplierRepository.list(search: any(named: 'search')),
-        ).thenAnswer(
-          (_) async => const SupplierListResult(
-            items: [SupplierListItem(supplierId: 5, code: 'SUP-005', name: 'Acme Supplies')],
-            total: 1,
-          ),
-        );
-
-        final router = GoRouter(
-          initialLocation: '/products',
-          routes: [
-            StatefulShellRoute.indexedStack(
-              builder: (context, state, navigationShell) => navigationShell,
-              branches: [
-                StatefulShellBranch(
-                  routes: [
-                    GoRoute(
-                      path: '/products',
-                      builder: (_, state) => Scaffold(
-                        body: ProductsListScreen(
-                          query: ListQuery.fromUri(state.uri),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+    testWidgets('selecting a supplier navigates to a URL carrying that facet', (
+      tester,
+    ) async {
+      when(
+        () => supplierRepository.list(search: any(named: 'search')),
+      ).thenAnswer(
+        (_) async => const SupplierListResult(
+          items: [
+            SupplierListItem(
+              supplierId: 5,
+              code: 'SUP-005',
+              name: 'Acme Supplies',
             ),
           ],
-        );
-        when(() => authRepository.me()).thenAnswer((_) async => _fullAccessUser);
-        when(
-          () => productRepository.list(
-            search: any(named: 'search'),
-            status: any(named: 'status'),
-            stockable: any(named: 'stockable'),
-            salable: any(named: 'salable'),
-            purchasable: any(named: 'purchasable'),
-            supplier: any(named: 'supplier'),
-            labels: any(named: 'labels'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          (_) async =>
-              ProductListResult(items: _testProducts, total: _testProducts.length),
-        );
-        when(
-          () => productRepository.productLabelFacets(
-            search: any(named: 'search'),
-            status: any(named: 'status'),
-            stockable: any(named: 'stockable'),
-            salable: any(named: 'salable'),
-            purchasable: any(named: 'purchasable'),
-            labels: any(named: 'labels'),
-          ),
-        ).thenAnswer((_) async => const []);
+          total: 1,
+        ),
+      );
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              authRepositoryProvider.overrideWithValue(authRepository),
-              tokenStorageProvider.overrideWithValue(tokenStorage),
-              productRepositoryProvider.overrideWithValue(productRepository),
-              supplierRepositoryProvider.overrideWithValue(supplierRepository),
-              allLabelsProvider.overrideWith((_) async => []),
+      final router = GoRouter(
+        initialLocation: '/products',
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) => navigationShell,
+            branches: [
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/products',
+                    builder: (_, state) => Scaffold(
+                      body: ProductsListScreen(
+                        query: ListQuery.fromUri(state.uri),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
-            child: MaterialApp.router(
-              routerConfig: router,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-            ),
           ),
-        );
-        await tester.pumpAndSettle();
+        ],
+      );
+      when(() => authRepository.me()).thenAnswer((_) async => _fullAccessUser);
+      when(
+        () => productRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          supplier: any(named: 'supplier'),
+          labels: any(named: 'labels'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => ProductListResult(
+          items: _testProducts,
+          total: _testProducts.length,
+        ),
+      );
+      when(
+        () => productRepository.productLabelFacets(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          stockable: any(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          labels: any(named: 'labels'),
+        ),
+      ).thenAnswer((_) async => const []);
 
-        await tester.tap(find.byKey(const Key('products_filter_button')));
-        await tester.pumpAndSettle();
-
-        await tester.enterText(
-          find.descendant(
-            of: find.byKey(const Key('products_filter_supplier')),
-            matching: find.byType(TextFormField),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(authRepository),
+            tokenStorageProvider.overrideWithValue(tokenStorage),
+            productRepositoryProvider.overrideWithValue(productRepository),
+            supplierRepositoryProvider.overrideWithValue(supplierRepository),
+            allLabelsProvider.overrideWith((_) async => []),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
           ),
-          'Acme',
-        );
-        await tester.pumpAndSettle(const Duration(milliseconds: 400));
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.text('SUP-005 — Acme Supplies').last);
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('products_filter_button')));
+      await tester.pumpAndSettle();
 
-        expect(
-          router.routeInformationProvider.value.uri.toString(),
-          '/products?supplier=5',
-        );
-      },
-    );
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('products_filter_supplier')),
+          matching: find.byType(TextFormField),
+        ),
+        'Acme',
+      );
+      await tester.pumpAndSettle(const Duration(milliseconds: 400));
+
+      await tester.tap(find.text('SUP-005 — Acme Supplies').last);
+      await tester.pumpAndSettle();
+
+      expect(
+        router.routeInformationProvider.value.uri.toString(),
+        '/products?supplier=5',
+      );
+    });
   });
 }

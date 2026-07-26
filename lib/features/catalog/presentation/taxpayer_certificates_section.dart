@@ -76,9 +76,8 @@ class TaxpayerCertificatesSection extends ConsumerWidget {
           error: (e, _) => ListFailedView(
             error: toAppError(e),
             retryLabel: l10n.retryButton,
-            onRetry: () => ref.invalidate(
-              taxpayerCertificatesControllerProvider(rfc),
-            ),
+            onRetry: () =>
+                ref.invalidate(taxpayerCertificatesControllerProvider(rfc)),
           ),
           data: (certificates) => certificates.isEmpty
               ? Text(l10n.noCertificatesFound)

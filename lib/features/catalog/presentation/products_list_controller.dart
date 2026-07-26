@@ -142,10 +142,7 @@ class ProductsListController extends _$ProductsListController {
 /// and treat `null` (loading/error) as "availability unknown" → all chips
 /// enabled, so a facet failure never blocks filtering (FR-010).
 @riverpod
-Future<Map<int, int>> productLabelFacets(
-  Ref ref,
-  ProductFilter filter,
-) async {
+Future<Map<int, int>> productLabelFacets(Ref ref, ProductFilter filter) async {
   final facets = await ref
       .read(productRepositoryProvider)
       .productLabelFacets(

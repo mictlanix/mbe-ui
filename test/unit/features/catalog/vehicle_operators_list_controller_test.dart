@@ -101,45 +101,42 @@ void main() {
         },
       );
 
-      test(
-        'a driver facet and a status facet both reach the repository '
-        'together (FR-010, FR-013)',
-        () async {
-          when(
-            () => repository.list(
-              search: null,
-              driverId: 7,
-              status: EntityStatus.active,
-              skip: 0,
-              limit: 20,
-            ),
-          ).thenAnswer(
-            (_) async => VehicleOperatorListResult(
-              items: [_operator(2, driverId: 7)],
-              total: 1,
-            ),
-          );
-
-          const filter = VehicleOperatorFilter(
+      test('a driver facet and a status facet both reach the repository '
+          'together (FR-010, FR-013)', () async {
+        when(
+          () => repository.list(
+            search: null,
             driverId: 7,
             status: EntityStatus.active,
-          );
-          final result = await container.read(
-            vehicleOperatorsListControllerProvider(filter).future,
-          );
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => VehicleOperatorListResult(
+            items: [_operator(2, driverId: 7)],
+            total: 1,
+          ),
+        );
 
-          expect(result.items.single.vehicleOperatorId, 2);
-          verify(
-            () => repository.list(
-              search: null,
-              driverId: 7,
-              status: EntityStatus.active,
-              skip: 0,
-              limit: 20,
-            ),
-          ).called(1);
-        },
-      );
+        const filter = VehicleOperatorFilter(
+          driverId: 7,
+          status: EntityStatus.active,
+        );
+        final result = await container.read(
+          vehicleOperatorsListControllerProvider(filter).future,
+        );
+
+        expect(result.items.single.vehicleOperatorId, 2);
+        verify(
+          () => repository.list(
+            search: null,
+            driverId: 7,
+            status: EntityStatus.active,
+            skip: 0,
+            limit: 20,
+          ),
+        ).called(1);
+      });
 
       test(
         'a different driver filter maps to a different provider instance and query',

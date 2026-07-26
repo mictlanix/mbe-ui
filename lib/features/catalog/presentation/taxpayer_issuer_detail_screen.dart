@@ -272,7 +272,8 @@ class _TaxpayerIssuerDetailScreenState
                     saveKey: const Key('save_button'),
                     deleteKey: const Key('delete_taxpayer_issuer_button'),
                     onEdit: (canUpdate && widget.rfc != null)
-                        ? () => context.replace('/taxpayer-issuers/${widget.rfc}')
+                        ? () =>
+                              context.replace('/taxpayer-issuers/${widget.rfc}')
                         : null,
                     onSave: canSave
                         ? (_isEdit
@@ -287,7 +288,9 @@ class _TaxpayerIssuerDetailScreenState
                       ),
                       confirmLabel: l10n.deleteButton,
                       cancelLabel: l10n.cancelButton,
-                      confirmKey: const Key('confirm_delete_taxpayer_issuer_button'),
+                      confirmKey: const Key(
+                        'confirm_delete_taxpayer_issuer_button',
+                      ),
                     ),
                   ),
                 ),
@@ -314,7 +317,6 @@ class _TaxpayerIssuerDetailScreenState
       ),
     );
   }
-
 }
 
 String _localizeFormError(AppLocalizations l10n, String code) {

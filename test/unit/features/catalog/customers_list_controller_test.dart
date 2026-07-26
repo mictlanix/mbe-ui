@@ -79,9 +79,7 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(1)], total: 1),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(1)], total: 1));
 
       const filter = CustomerFilter();
       final result = await container.read(
@@ -144,9 +142,7 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(1)], total: 21),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(1)], total: 21));
       when(
         () => repository.list(
           search: null,
@@ -156,9 +152,7 @@ void main() {
           skip: 20,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => CustomerPage(items: [_customer(2)], total: 21),
-      );
+      ).thenAnswer((_) async => CustomerPage(items: [_customer(2)], total: 21));
 
       final page0 = await container.read(
         customersListControllerProvider(const CustomerFilter()).future,

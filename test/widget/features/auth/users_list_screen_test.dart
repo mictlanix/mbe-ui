@@ -95,8 +95,9 @@ void main() {
       routes: [
         GoRoute(
           path: '/users',
-          builder: (_, state) =>
-              Scaffold(body: UsersListScreen(query: ListQuery.fromUri(state.uri))),
+          builder: (_, state) => Scaffold(
+            body: UsersListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
         ),
       ],
     );
@@ -281,12 +282,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     verify(
-      () => userRepository.list(
-        search: null,
-        status: null,
-        skip: 20,
-        limit: 20,
-      ),
+      () =>
+          userRepository.list(search: null, status: null, skip: 20, limit: 20),
     ).called(1);
   });
 

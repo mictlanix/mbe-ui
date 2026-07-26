@@ -52,34 +52,31 @@ void main() {
     );
   }
 
-  group(
-    'UserFilter.fromQuery (017-ui-consistency-filters FR-011, FR-017)',
-    () {
-      test('derives every field from a ListQuery', () {
-        final filter = UserFilter.fromQuery(
-          const ListQuery(
-            search: 'jdoe',
-            pageIndex: 2,
-            facets: {
-              'status': ['inactive'],
-            },
-          ),
-        );
+  group('UserFilter.fromQuery (017-ui-consistency-filters FR-011, FR-017)', () {
+    test('derives every field from a ListQuery', () {
+      final filter = UserFilter.fromQuery(
+        const ListQuery(
+          search: 'jdoe',
+          pageIndex: 2,
+          facets: {
+            'status': ['inactive'],
+          },
+        ),
+      );
 
-        expect(filter.search, 'jdoe');
-        expect(filter.status, EntityStatus.inactive);
-        expect(filter.pageIndex, 2);
-      });
+      expect(filter.search, 'jdoe');
+      expect(filter.status, EntityStatus.inactive);
+      expect(filter.pageIndex, 2);
+    });
 
-      test('defaults from an empty ListQuery', () {
-        final filter = UserFilter.fromQuery(const ListQuery());
+    test('defaults from an empty ListQuery', () {
+      final filter = UserFilter.fromQuery(const ListQuery());
 
-        expect(filter.search, '');
-        expect(filter.status, isNull);
-        expect(filter.pageIndex, 0);
-      });
-    },
-  );
+      expect(filter.search, '');
+      expect(filter.status, isNull);
+      expect(filter.pageIndex, 0);
+    });
+  });
 
   group('UsersController (a family keyed by UserFilter)', () {
     UserSummary user(String userId) => UserSummary(
@@ -91,7 +88,8 @@ void main() {
 
     test('build(filter) fetches page 0 with the given filter', () async {
       when(
-        () => userRepository.list(search: null, status: null, skip: 0, limit: 20),
+        () =>
+            userRepository.list(search: null, status: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 1),
       );
@@ -100,9 +98,7 @@ void main() {
       addTearDown(container.dispose);
 
       const filter = UserFilter();
-      final page = await container.read(
-        usersControllerProvider(filter).future,
-      );
+      final page = await container.read(usersControllerProvider(filter).future);
 
       expect(page.items.single.userId, 'jdoe');
       expect(page.pageIndex, 0);
@@ -147,7 +143,12 @@ void main() {
       'a different search maps to a different provider instance and query',
       () async {
         when(
-          () => userRepository.list(search: null, status: null, skip: 0, limit: 20),
+          () => userRepository.list(
+            search: null,
+            status: null,
+            skip: 0,
+            limit: 20,
+          ),
         ).thenAnswer(
           (_) async => UserListResult(items: [user('jdoe')], total: 1),
         );
@@ -177,41 +178,39 @@ void main() {
       },
     );
 
-    test(
-      'a different pageIndex maps to skip = pageIndex * pageSize',
-      () async {
-        when(
-          () => userRepository.list(search: null, status: null, skip: 0, limit: 20),
-        ).thenAnswer(
-          (_) async => UserListResult(items: [user('jdoe')], total: 21),
-        );
-        when(
-          () => userRepository.list(
-            search: null,
-            status: null,
-            skip: 20,
-            limit: 20,
-          ),
-        ).thenAnswer(
-          (_) async => UserListResult(items: [user('admin')], total: 21),
-        );
+    test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
+      when(
+        () =>
+            userRepository.list(search: null, status: null, skip: 0, limit: 20),
+      ).thenAnswer(
+        (_) async => UserListResult(items: [user('jdoe')], total: 21),
+      );
+      when(
+        () => userRepository.list(
+          search: null,
+          status: null,
+          skip: 20,
+          limit: 20,
+        ),
+      ).thenAnswer(
+        (_) async => UserListResult(items: [user('admin')], total: 21),
+      );
 
-        final container = makeContainer();
-        addTearDown(container.dispose);
+      final container = makeContainer();
+      addTearDown(container.dispose);
 
-        final page0 = await container.read(
-          usersControllerProvider(const UserFilter()).future,
-        );
-        final page1 = await container.read(
-          usersControllerProvider(const UserFilter(pageIndex: 1)).future,
-        );
+      final page0 = await container.read(
+        usersControllerProvider(const UserFilter()).future,
+      );
+      final page1 = await container.read(
+        usersControllerProvider(const UserFilter(pageIndex: 1)).future,
+      );
 
-        expect(page0.items.single.userId, 'jdoe');
-        expect(page0.pageIndex, 0);
-        expect(page1.items.single.userId, 'admin');
-        expect(page1.pageIndex, 1);
-      },
-    );
+      expect(page0.items.single.userId, 'jdoe');
+      expect(page0.pageIndex, 0);
+      expect(page1.items.single.userId, 'admin');
+      expect(page1.pageIndex, 1);
+    });
 
     test(
       'invalidating the provider re-fetches the SAME page rather than '

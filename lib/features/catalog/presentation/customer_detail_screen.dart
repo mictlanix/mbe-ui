@@ -296,7 +296,9 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                     ? () => context.replace('/customers/${widget.customerId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

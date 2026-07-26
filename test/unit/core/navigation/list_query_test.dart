@@ -65,8 +65,11 @@ void main() {
       expect(ListQuery.fromUri(trueQuery.toUri('/products')), trueQuery);
       expect(ListQuery.fromUri(falseQuery.toUri('/products')), falseQuery);
       expect(absentQuery.facet('stockable'), isNull);
-      expect(trueQuery.toUri('/products').toString() ==
-          falseQuery.toUri('/products').toString(), isFalse);
+      expect(
+        trueQuery.toUri('/products').toString() ==
+            falseQuery.toUri('/products').toString(),
+        isFalse,
+      );
     });
 
     test('round-trips an ISO date facet', () {
@@ -132,10 +135,13 @@ void main() {
   });
 
   group('malformed input is decoded gracefully, never throws (FR-021)', () {
-    test('an unknown parameter is captured but ignored by any specific reader', () {
-      final query = ListQuery.fromUri(Uri.parse('/vehicles?nonsense=1'));
-      expect(query.facet('status'), isNull);
-    });
+    test(
+      'an unknown parameter is captured but ignored by any specific reader',
+      () {
+        final query = ListQuery.fromUri(Uri.parse('/vehicles?nonsense=1'));
+        expect(query.facet('status'), isNull);
+      },
+    );
 
     test('page <= 0 falls back to page 1 (index 0)', () {
       expect(ListQuery.fromUri(Uri.parse('/vehicles?page=0')).pageIndex, 0);
@@ -150,16 +156,23 @@ void main() {
       expect(ListQuery.fromUri(Uri.parse('/vehicles')).pageIndex, 0);
     });
 
-    test('a repeated key on what a caller treats as single-valued: first value wins', () {
-      final query = ListQuery.fromUri(Uri.parse('/vehicles?status=active&status=inactive'));
-      expect(query.facet('status'), 'active');
-      // The raw values are still all captured, for a multi-valued reader.
-      expect(query.facetValues('status'), ['active', 'inactive']);
-    });
+    test(
+      'a repeated key on what a caller treats as single-valued: first value wins',
+      () {
+        final query = ListQuery.fromUri(
+          Uri.parse('/vehicles?status=active&status=inactive'),
+        );
+        expect(query.facet('status'), 'active');
+        // The raw values are still all captured, for a multi-valued reader.
+        expect(query.facetValues('status'), ['active', 'inactive']);
+      },
+    );
 
     test('a malformed address never throws', () {
       expect(
-        () => ListQuery.fromUri(Uri.parse('/vehicles?status=bogus&page=999&nonsense=1')),
+        () => ListQuery.fromUri(
+          Uri.parse('/vehicles?status=bogus&page=999&nonsense=1'),
+        ),
         returnsNormally,
       );
     });
@@ -172,16 +185,23 @@ void main() {
 
     test('a facet alone is filtered', () {
       expect(
-        const ListQuery(facets: {'status': ['active']}).isFiltered,
+        const ListQuery(
+          facets: {
+            'status': ['active'],
+          },
+        ).isFiltered,
         isTrue,
       );
     });
 
-    test('page alone (no search, no facets) is not "filtered" but is not default either', () {
-      const query = ListQuery(pageIndex: 1);
-      expect(query.isFiltered, isFalse);
-      expect(query.isDefault, isFalse);
-    });
+    test(
+      'page alone (no search, no facets) is not "filtered" but is not default either',
+      () {
+        const query = ListQuery(pageIndex: 1);
+        expect(query.isFiltered, isFalse);
+        expect(query.isDefault, isFalse);
+      },
+    );
   });
 
   group('withFacet / withFacetValues', () {
@@ -212,16 +232,22 @@ void main() {
       expect(query.withFacet('facility', null).facet('facility'), isNull);
     });
 
-    test('withFacet preserves insertion order when updating an existing key', () {
-      const query = ListQuery(
-        facets: {
-          'facility': ['9'],
-          'status': ['active'],
-        },
-      );
-      final updated = query.withFacet('facility', '12');
-      expect(updated.toUri('/warehouses').toString(), '/warehouses?facility=12&status=active');
-    });
+    test(
+      'withFacet preserves insertion order when updating an existing key',
+      () {
+        const query = ListQuery(
+          facets: {
+            'facility': ['9'],
+            'status': ['active'],
+          },
+        );
+        final updated = query.withFacet('facility', '12');
+        expect(
+          updated.toUri('/warehouses').toString(),
+          '/warehouses?facility=12&status=active',
+        );
+      },
+    );
 
     test('withFacetValues sets a multi-valued facet', () {
       const query = ListQuery();
@@ -235,7 +261,10 @@ void main() {
           'label': ['3', '7'],
         },
       );
-      expect(query.withFacetValues('label', const []).facetValues('label'), isEmpty);
+      expect(
+        query.withFacetValues('label', const []).facetValues('label'),
+        isEmpty,
+      );
     });
   });
 }

@@ -252,55 +252,53 @@ void main() {
   });
 
   group('URL-driven filters (017-ui-consistency-filters US3)', () {
-    testWidgets(
-      'a status facet in the URL is passed to the repository',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          query: const ListQuery(
-            facets: {
-              'status': ['inactive'],
-            },
-          ),
-        );
+    testWidgets('a status facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(
+          facets: {
+            'status': ['inactive'],
+          },
+        ),
+      );
 
-        verify(
-          () => repository.list(
-            search: any(named: 'search'),
-            status: EntityStatus.inactive,
-            salesPerson: any(named: 'salesPerson'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThanOrEqualTo(1));
-      },
-    );
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: EntityStatus.inactive,
+          salesPerson: any(named: 'salesPerson'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
 
-    testWidgets(
-      'a salesPerson facet in the URL is passed to the repository',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          query: const ListQuery(
-            facets: {
-              'salesPerson': ['true'],
-            },
-          ),
-        );
+    testWidgets('a salesPerson facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(
+          facets: {
+            'salesPerson': ['true'],
+          },
+        ),
+      );
 
-        verify(
-          () => repository.list(
-            search: any(named: 'search'),
-            status: any(named: 'status'),
-            salesPerson: true,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThanOrEqualTo(1));
-      },
-    );
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          salesPerson: true,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
 
     testWidgets(
       'selecting a status filter navigates to a URL carrying that facet',
@@ -325,8 +323,7 @@ void main() {
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
-          (_) async =>
-              EmployeeListResult(items: _testEmployees, total: 2),
+          (_) async => EmployeeListResult(items: _testEmployees, total: 2),
         );
 
         await tester.pumpWidget(

@@ -243,29 +243,26 @@ void main() {
     expect(find.byKey(const Key('facilities_table')), findsNothing);
   });
 
-  testWidgets(
-    'a status facet in the URL is passed to the repository '
-    '(017-ui-consistency-filters US3)',
-    (tester) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        facilities: _testFacilities,
-        query: const ListQuery(
-          facets: {
-            'status': ['inactive'],
-          },
-        ),
-      );
+  testWidgets('a status facet in the URL is passed to the repository '
+      '(017-ui-consistency-filters US3)', (tester) async {
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      facilities: _testFacilities,
+      query: const ListQuery(
+        facets: {
+          'status': ['inactive'],
+        },
+      ),
+    );
 
-      verify(
-        () => repository.list(
-          search: any(named: 'search'),
-          status: EntityStatus.inactive,
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).called(greaterThanOrEqualTo(1));
-    },
-  );
+    verify(
+      () => repository.list(
+        search: any(named: 'search'),
+        status: EntityStatus.inactive,
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).called(greaterThanOrEqualTo(1));
+  });
 }

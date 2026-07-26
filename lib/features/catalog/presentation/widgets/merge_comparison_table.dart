@@ -7,7 +7,12 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One compared attribute: its label, both sides' rendered values, and
 /// whether they differ.
-typedef MergeComparisonRow = ({String label, String kept, String deleted, bool differs});
+typedef MergeComparisonRow = ({
+  String label,
+  String kept,
+  String deleted,
+  bool differs,
+});
 
 /// Builds the compared rows for [kept] versus [deleted]
 /// (specs/016-product-merge-review FR-005).
@@ -20,10 +25,7 @@ List<MergeComparisonRow> buildComparisonRows(
   Product kept,
   Product deleted,
 ) {
-  MergeComparisonRow row(
-    String label,
-    String Function(Product) value,
-  ) {
+  MergeComparisonRow row(String label, String Function(Product) value) {
     final a = value(kept);
     final b = value(deleted);
     return (label: label, kept: a, deleted: b, differs: a != b);

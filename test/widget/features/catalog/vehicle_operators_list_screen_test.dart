@@ -444,9 +444,7 @@ void main() {
           ProviderScope(
             overrides: [
               vehicleOperatorRepositoryProvider.overrideWithValue(repository),
-              employeeRepositoryProvider.overrideWithValue(
-                employeeRepository,
-              ),
+              employeeRepositoryProvider.overrideWithValue(employeeRepository),
               accessControlProvider.overrideWithValue(
                 _accessFor(_fullAccessUser),
               ),

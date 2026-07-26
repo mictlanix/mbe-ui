@@ -57,33 +57,28 @@ void main() {
   group(
     'TaxpayerIssuersListController (a family keyed by TaxpayerIssuerFilter)',
     () {
-      test(
-        'build(filter) maps the filter to repository query params and '
-        'performs exactly one listDetail call — no per-row get() (FR-026, '
-        'SC-006)',
-        () async {
-          when(
-            () => repository.listDetail(search: null, skip: 0, limit: 20),
-          ).thenAnswer(
-            (_) async => TaxpayerIssuerPage(
-              items: [_issuer('XAXX010101000')],
-              total: 1,
-            ),
-          );
+      test('build(filter) maps the filter to repository query params and '
+          'performs exactly one listDetail call — no per-row get() (FR-026, '
+          'SC-006)', () async {
+        when(
+          () => repository.listDetail(search: null, skip: 0, limit: 20),
+        ).thenAnswer(
+          (_) async =>
+              TaxpayerIssuerPage(items: [_issuer('XAXX010101000')], total: 1),
+        );
 
-          const filter = TaxpayerIssuerFilter();
-          final result = await container.read(
-            taxpayerIssuersListControllerProvider(filter).future,
-          );
+        const filter = TaxpayerIssuerFilter();
+        final result = await container.read(
+          taxpayerIssuersListControllerProvider(filter).future,
+        );
 
-          expect(result.items, hasLength(1));
-          expect(result.total, 1);
-          verify(
-            () => repository.listDetail(search: null, skip: 0, limit: 20),
-          ).called(1);
-          verifyNever(() => repository.get(any()));
-        },
-      );
+        expect(result.items, hasLength(1));
+        expect(result.total, 1);
+        verify(
+          () => repository.listDetail(search: null, skip: 0, limit: 20),
+        ).called(1);
+        verifyNever(() => repository.get(any()));
+      });
 
       test(
         'a different pageIndex maps to skip = pageIndex * pageSize',
@@ -91,18 +86,14 @@ void main() {
           when(
             () => repository.listDetail(search: null, skip: 0, limit: 20),
           ).thenAnswer(
-            (_) async => TaxpayerIssuerPage(
-              items: [_issuer('AAA010101000')],
-              total: 21,
-            ),
+            (_) async =>
+                TaxpayerIssuerPage(items: [_issuer('AAA010101000')], total: 21),
           );
           when(
             () => repository.listDetail(search: null, skip: 20, limit: 20),
           ).thenAnswer(
-            (_) async => TaxpayerIssuerPage(
-              items: [_issuer('BBB010101000')],
-              total: 21,
-            ),
+            (_) async =>
+                TaxpayerIssuerPage(items: [_issuer('BBB010101000')], total: 21),
           );
 
           final page0 = await container.read(
@@ -131,10 +122,8 @@ void main() {
           when(
             () => repository.listDetail(search: null, skip: 20, limit: 20),
           ).thenAnswer(
-            (_) async => TaxpayerIssuerPage(
-              items: [_issuer('BBB010101000')],
-              total: 21,
-            ),
+            (_) async =>
+                TaxpayerIssuerPage(items: [_issuer('BBB010101000')], total: 21),
           );
 
           await container.read(
@@ -144,10 +133,8 @@ void main() {
           when(
             () => repository.listDetail(search: null, skip: 20, limit: 20),
           ).thenAnswer(
-            (_) async => TaxpayerIssuerPage(
-              items: [_issuer('ZZZ010101000')],
-              total: 21,
-            ),
+            (_) async =>
+                TaxpayerIssuerPage(items: [_issuer('ZZZ010101000')], total: 21),
           );
           container.invalidate(taxpayerIssuersListControllerProvider(filter));
 

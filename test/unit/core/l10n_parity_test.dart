@@ -8,7 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// enforce key parity itself — a key present only in `app_en.arb` compiles
 /// fine and silently falls back to English at runtime.
 Set<String> _keysOf(String path) {
-  final json = jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
+  final json =
+      jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
   return json.keys.where((k) => !k.startsWith('@')).toSet();
 }
 
@@ -23,12 +24,14 @@ void main() {
     expect(
       onlyInEn,
       isEmpty,
-      reason: 'Keys present in app_en.arb but missing from app_es.arb: $onlyInEn',
+      reason:
+          'Keys present in app_en.arb but missing from app_es.arb: $onlyInEn',
     );
     expect(
       onlyInEs,
       isEmpty,
-      reason: 'Keys present in app_es.arb but missing from app_en.arb: $onlyInEs',
+      reason:
+          'Keys present in app_es.arb but missing from app_en.arb: $onlyInEs',
     );
   });
 }

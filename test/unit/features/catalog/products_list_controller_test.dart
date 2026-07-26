@@ -135,9 +135,7 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer(
-        (_) async => ProductListResult(items: [_item(1)], total: 1),
-      );
+      ).thenAnswer((_) async => ProductListResult(items: [_item(1)], total: 1));
 
       const filter = ProductFilter();
       final result = await container.read(
@@ -187,10 +185,7 @@ void main() {
         );
         final second = await container.read(
           productsListControllerProvider(
-            const ProductFilter(
-              search: 'widget',
-              status: EntityStatus.active,
-            ),
+            const ProductFilter(search: 'widget', status: EntityStatus.active),
           ).future,
         );
 
@@ -296,76 +291,10 @@ void main() {
     );
   });
 
-  group('productLabelFacetsProvider (spec 009, a family keyed by ProductFilter)', () {
-    test('maps the repository response to a label-id -> count map', () async {
-      when(
-        () => repository.productLabelFacets(
-          search: any(named: 'search'),
-          status: any(named: 'status'),
-          stockable: any(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          labels: any(named: 'labels'),
-        ),
-      ).thenAnswer(
-        (_) async => const [
-          ProductLabelFacet(labelId: 3, count: 42),
-          ProductLabelFacet(labelId: 7, count: 12),
-        ],
-      );
-
-      const filter = ProductFilter();
-      final result = await container.read(
-        productLabelFacetsProvider(filter).future,
-      );
-
-      expect(result, {3: 42, 7: 12});
-    });
-
-    test('refetches when the ProductFilter changes (FR-003)', () async {
-      when(
-        () => repository.productLabelFacets(
-          search: null,
-          status: null,
-          stockable: null,
-          salable: null,
-          purchasable: null,
-          labels: const [],
-        ),
-      ).thenAnswer(
-        (_) async => const [ProductLabelFacet(labelId: 1, count: 5)],
-      );
-      final first = await container.read(
-        productLabelFacetsProvider(const ProductFilter()).future,
-      );
-      expect(first, {1: 5});
-
-      when(
-        () => repository.productLabelFacets(
-          search: null,
-          status: null,
-          stockable: null,
-          salable: null,
-          purchasable: null,
-          labels: const [1],
-        ),
-      ).thenAnswer(
-        (_) async => const [
-          ProductLabelFacet(labelId: 1, count: 5),
-          ProductLabelFacet(labelId: 2, count: 3),
-        ],
-      );
-
-      final second = await container.read(
-        productLabelFacetsProvider(const ProductFilter(labels: [1])).future,
-      );
-
-      expect(second, {1: 5, 2: 3});
-    });
-
-    test(
-      'an empty facet response yields an empty map (nothing available)',
-      () async {
+  group(
+    'productLabelFacetsProvider (spec 009, a family keyed by ProductFilter)',
+    () {
+      test('maps the repository response to a label-id -> count map', () async {
         when(
           () => repository.productLabelFacets(
             search: any(named: 'search'),
@@ -375,14 +304,83 @@ void main() {
             purchasable: any(named: 'purchasable'),
             labels: any(named: 'labels'),
           ),
-        ).thenAnswer((_) async => const []);
-
-        final result = await container.read(
-          productLabelFacetsProvider(const ProductFilter()).future,
+        ).thenAnswer(
+          (_) async => const [
+            ProductLabelFacet(labelId: 3, count: 42),
+            ProductLabelFacet(labelId: 7, count: 12),
+          ],
         );
 
-        expect(result, isEmpty);
-      },
-    );
-  });
+        const filter = ProductFilter();
+        final result = await container.read(
+          productLabelFacetsProvider(filter).future,
+        );
+
+        expect(result, {3: 42, 7: 12});
+      });
+
+      test('refetches when the ProductFilter changes (FR-003)', () async {
+        when(
+          () => repository.productLabelFacets(
+            search: null,
+            status: null,
+            stockable: null,
+            salable: null,
+            purchasable: null,
+            labels: const [],
+          ),
+        ).thenAnswer(
+          (_) async => const [ProductLabelFacet(labelId: 1, count: 5)],
+        );
+        final first = await container.read(
+          productLabelFacetsProvider(const ProductFilter()).future,
+        );
+        expect(first, {1: 5});
+
+        when(
+          () => repository.productLabelFacets(
+            search: null,
+            status: null,
+            stockable: null,
+            salable: null,
+            purchasable: null,
+            labels: const [1],
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            ProductLabelFacet(labelId: 1, count: 5),
+            ProductLabelFacet(labelId: 2, count: 3),
+          ],
+        );
+
+        final second = await container.read(
+          productLabelFacetsProvider(const ProductFilter(labels: [1])).future,
+        );
+
+        expect(second, {1: 5, 2: 3});
+      });
+
+      test(
+        'an empty facet response yields an empty map (nothing available)',
+        () async {
+          when(
+            () => repository.productLabelFacets(
+              search: any(named: 'search'),
+              status: any(named: 'status'),
+              stockable: any(named: 'stockable'),
+              salable: any(named: 'salable'),
+              purchasable: any(named: 'purchasable'),
+              labels: any(named: 'labels'),
+            ),
+          ).thenAnswer((_) async => const []);
+
+          final result = await container.read(
+            productLabelFacetsProvider(const ProductFilter()).future,
+          );
+
+          expect(result, isEmpty);
+        },
+      );
+    },
+  );
 }

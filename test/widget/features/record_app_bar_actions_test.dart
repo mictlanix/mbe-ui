@@ -166,139 +166,126 @@ void main() {
     );
   }
 
-  group('no record detail screen renders a non-empty AppBar.actions (SC-001)', () {
-    testWidgets('ExpenseDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const ExpenseDetailScreen(), [
-        expenseRepositoryProvider.overrideWithValue(MockExpenseRepository()),
-      ]);
-    });
+  group(
+    'no record detail screen renders a non-empty AppBar.actions (SC-001)',
+    () {
+      testWidgets('ExpenseDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const ExpenseDetailScreen(), [
+          expenseRepositoryProvider.overrideWithValue(MockExpenseRepository()),
+        ]);
+      });
 
-    testWidgets('LabelDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const LabelDetailScreen(), [
-        labelRepositoryProvider.overrideWithValue(MockLabelRepository()),
-      ]);
-    });
+      testWidgets('LabelDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const LabelDetailScreen(), [
+          labelRepositoryProvider.overrideWithValue(MockLabelRepository()),
+        ]);
+      });
 
-    testWidgets('SupplierDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const SupplierDetailScreen(), [
-        supplierRepositoryProvider.overrideWithValue(MockSupplierRepository()),
-      ]);
-    });
+      testWidgets('SupplierDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const SupplierDetailScreen(), [
+          supplierRepositoryProvider.overrideWithValue(
+            MockSupplierRepository(),
+          ),
+        ]);
+      });
 
-    testWidgets('VehicleDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const VehicleDetailScreen(), [
-        vehicleRepositoryProvider.overrideWithValue(MockVehicleRepository()),
-      ]);
-    });
+      testWidgets('VehicleDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const VehicleDetailScreen(), [
+          vehicleRepositoryProvider.overrideWithValue(MockVehicleRepository()),
+        ]);
+      });
 
-    testWidgets('VehicleOperatorDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(
-        tester,
-        const VehicleOperatorDetailScreen(),
-        [
-          vehicleOperatorRepositoryProvider.overrideWithValue(
-            MockVehicleOperatorRepository(),
+      testWidgets('VehicleOperatorDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(
+          tester,
+          const VehicleOperatorDetailScreen(),
+          [
+            vehicleOperatorRepositoryProvider.overrideWithValue(
+              MockVehicleOperatorRepository(),
+            ),
+            employeeRepositoryProvider.overrideWithValue(
+              MockEmployeeRepository(),
+            ),
+          ],
+        );
+      });
+
+      testWidgets('CashDrawerDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const CashDrawerDetailScreen(), [
+          cashDrawerRepositoryProvider.overrideWithValue(
+            MockCashDrawerRepository(),
+          ),
+          facilityRepositoryProvider.overrideWithValue(
+            MockFacilityRepository(),
+          ),
+        ]);
+      });
+
+      testWidgets('WarehouseDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const WarehouseDetailScreen(), [
+          warehouseRepositoryProvider.overrideWithValue(
+            MockWarehouseRepository(),
+          ),
+          facilityRepositoryProvider.overrideWithValue(
+            MockFacilityRepository(),
+          ),
+        ]);
+      });
+
+      testWidgets('FacilityDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const FacilityDetailScreen(), [
+          facilityRepositoryProvider.overrideWithValue(
+            MockFacilityRepository(),
+          ),
+          addressRepositoryProvider.overrideWithValue(MockAddressRepository()),
+          satCatalogRepositoryProvider.overrideWithValue(
+            MockSatCatalogRepository(),
+          ),
+          taxpayerIssuerRepositoryProvider.overrideWithValue(
+            MockTaxpayerIssuerRepository(),
+          ),
+        ]);
+      });
+
+      testWidgets('CustomerDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const CustomerDetailScreen(), [
+          customerRepositoryProvider.overrideWithValue(
+            MockCustomerRepository(),
           ),
           employeeRepositoryProvider.overrideWithValue(
             MockEmployeeRepository(),
           ),
-        ],
-      );
-    });
+          priceListRepositoryProvider.overrideWithValue(
+            MockPriceListRepository(),
+          ),
+        ]);
+      });
 
-    testWidgets('CashDrawerDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const CashDrawerDetailScreen(), [
-        cashDrawerRepositoryProvider.overrideWithValue(
-          MockCashDrawerRepository(),
-        ),
-        facilityRepositoryProvider.overrideWithValue(
-          MockFacilityRepository(),
-        ),
-      ]);
-    });
+      testWidgets('EmployeeDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const EmployeeDetailScreen(), [
+          employeeRepositoryProvider.overrideWithValue(
+            MockEmployeeRepository(),
+          ),
+        ]);
+      });
 
-    testWidgets('WarehouseDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const WarehouseDetailScreen(), [
-        warehouseRepositoryProvider.overrideWithValue(
-          MockWarehouseRepository(),
-        ),
-        facilityRepositoryProvider.overrideWithValue(
-          MockFacilityRepository(),
-        ),
-      ]);
-    });
+      testWidgets('ProductDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const ProductDetailScreen(), [
+          productRepositoryProvider.overrideWithValue(MockProductRepository()),
+          labelRepositoryProvider.overrideWithValue(MockLabelRepository()),
+          satCatalogRepositoryProvider.overrideWithValue(
+            MockSatCatalogRepository(),
+          ),
+          supplierRepositoryProvider.overrideWithValue(
+            MockSupplierRepository(),
+          ),
+        ]);
+      });
 
-    testWidgets('FacilityDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const FacilityDetailScreen(), [
-        facilityRepositoryProvider.overrideWithValue(
-          MockFacilityRepository(),
-        ),
-        addressRepositoryProvider.overrideWithValue(MockAddressRepository()),
-        satCatalogRepositoryProvider.overrideWithValue(
-          MockSatCatalogRepository(),
-        ),
-        taxpayerIssuerRepositoryProvider.overrideWithValue(
-          MockTaxpayerIssuerRepository(),
-        ),
-      ]);
-    });
-
-    testWidgets('CustomerDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const CustomerDetailScreen(), [
-        customerRepositoryProvider.overrideWithValue(
-          MockCustomerRepository(),
-        ),
-        employeeRepositoryProvider.overrideWithValue(
-          MockEmployeeRepository(),
-        ),
-        priceListRepositoryProvider.overrideWithValue(
-          MockPriceListRepository(),
-        ),
-      ]);
-    });
-
-    testWidgets('EmployeeDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const EmployeeDetailScreen(), [
-        employeeRepositoryProvider.overrideWithValue(
-          MockEmployeeRepository(),
-        ),
-      ]);
-    });
-
-    testWidgets('ProductDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const ProductDetailScreen(), [
-        productRepositoryProvider.overrideWithValue(MockProductRepository()),
-        labelRepositoryProvider.overrideWithValue(MockLabelRepository()),
-        satCatalogRepositoryProvider.overrideWithValue(
-          MockSatCatalogRepository(),
-        ),
-        supplierRepositoryProvider.overrideWithValue(
-          MockSupplierRepository(),
-        ),
-      ]);
-    });
-
-    testWidgets('PointSaleDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const PointSaleDetailScreen(), [
-        pointSaleRepositoryProvider.overrideWithValue(
-          MockPointSaleRepository(),
-        ),
-        facilityRepositoryProvider.overrideWithValue(
-          MockFacilityRepository(),
-        ),
-        warehouseRepositoryProvider.overrideWithValue(
-          MockWarehouseRepository(),
-        ),
-      ]);
-    });
-
-    testWidgets('PaymentMethodOptionDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(
-        tester,
-        const PaymentMethodOptionDetailScreen(),
-        [
-          paymentMethodOptionRepositoryProvider.overrideWithValue(
-            MockPaymentMethodOptionRepository(),
+      testWidgets('PointSaleDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const PointSaleDetailScreen(), [
+          pointSaleRepositoryProvider.overrideWithValue(
+            MockPointSaleRepository(),
           ),
           facilityRepositoryProvider.overrideWithValue(
             MockFacilityRepository(),
@@ -306,69 +293,87 @@ void main() {
           warehouseRepositoryProvider.overrideWithValue(
             MockWarehouseRepository(),
           ),
-        ],
-      );
-    });
+        ]);
+      });
 
-    testWidgets('TaxpayerRecipientDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(
-        tester,
-        const TaxpayerRecipientDetailScreen(),
-        [
-          taxpayerRecipientRepositoryProvider.overrideWithValue(
-            MockTaxpayerRecipientRepository(),
-          ),
-          satCatalogRepositoryProvider.overrideWithValue(
-            MockSatCatalogRepository(),
-          ),
-        ],
-      );
-    });
+      testWidgets('PaymentMethodOptionDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(
+          tester,
+          const PaymentMethodOptionDetailScreen(),
+          [
+            paymentMethodOptionRepositoryProvider.overrideWithValue(
+              MockPaymentMethodOptionRepository(),
+            ),
+            facilityRepositoryProvider.overrideWithValue(
+              MockFacilityRepository(),
+            ),
+            warehouseRepositoryProvider.overrideWithValue(
+              MockWarehouseRepository(),
+            ),
+          ],
+        );
+      });
 
-    testWidgets('TaxpayerIssuerDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(
-        tester,
-        const TaxpayerIssuerDetailScreen(),
-        [
-          taxpayerIssuerRepositoryProvider.overrideWithValue(
-            MockTaxpayerIssuerRepository(),
-          ),
-          satCatalogRepositoryProvider.overrideWithValue(
-            MockSatCatalogRepository(),
-          ),
-        ],
-      );
-    });
+      testWidgets('TaxpayerRecipientDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(
+          tester,
+          const TaxpayerRecipientDetailScreen(),
+          [
+            taxpayerRecipientRepositoryProvider.overrideWithValue(
+              MockTaxpayerRecipientRepository(),
+            ),
+            satCatalogRepositoryProvider.overrideWithValue(
+              MockSatCatalogRepository(),
+            ),
+          ],
+        );
+      });
 
-    testWidgets('ExchangeRateDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(
-        tester,
-        const ExchangeRateDetailScreen(),
-        [
-          exchangeRateRepositoryProvider.overrideWithValue(
-            MockExchangeRateRepository(),
+      testWidgets('TaxpayerIssuerDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(
+          tester,
+          const TaxpayerIssuerDetailScreen(),
+          [
+            taxpayerIssuerRepositoryProvider.overrideWithValue(
+              MockTaxpayerIssuerRepository(),
+            ),
+            satCatalogRepositoryProvider.overrideWithValue(
+              MockSatCatalogRepository(),
+            ),
+          ],
+        );
+      });
+
+      testWidgets('ExchangeRateDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(
+          tester,
+          const ExchangeRateDetailScreen(),
+          [
+            exchangeRateRepositoryProvider.overrideWithValue(
+              MockExchangeRateRepository(),
+            ),
+          ],
+        );
+      });
+
+      testWidgets('PriceListDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const PriceListDetailScreen(), [
+          priceListRepositoryProvider.overrideWithValue(
+            MockPriceListRepository(),
           ),
-        ],
-      );
-    });
+        ]);
+      });
 
-    testWidgets('PriceListDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const PriceListDetailScreen(), [
-        priceListRepositoryProvider.overrideWithValue(
-          MockPriceListRepository(),
-        ),
-      ]);
-    });
-
-    testWidgets('UserDetailScreen', (tester) async {
-      await expectEmptyAppBarActions(tester, const UserDetailScreen(), [
-        userRepositoryProvider.overrideWithValue(MockUserRepository()),
-        employeeRepositoryProvider.overrideWithValue(
-          MockEmployeeRepository(),
-        ),
-      ]);
-    });
-  });
+      testWidgets('UserDetailScreen', (tester) async {
+        await expectEmptyAppBarActions(tester, const UserDetailScreen(), [
+          userRepositoryProvider.overrideWithValue(MockUserRepository()),
+          employeeRepositoryProvider.overrideWithValue(
+            MockEmployeeRepository(),
+          ),
+        ]);
+      });
+    },
+  );
 
   // pricing_screen_test.dart's `edit_price_button_1` is a pricing-table row
   // action inside a per-product price list, not a record's own edit toggle

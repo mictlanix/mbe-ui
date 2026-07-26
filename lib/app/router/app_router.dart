@@ -224,9 +224,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/cash-drawers',
-                builder: (context, state) => CashDrawersListScreen(
-                  query: ListQuery.fromUri(state.uri),
-                ),
+                builder: (context, state) =>
+                    CashDrawersListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -234,9 +233,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/points-of-sale',
-                builder: (context, state) => PointsOfSaleListScreen(
-                  query: ListQuery.fromUri(state.uri),
-                ),
+                builder: (context, state) =>
+                    PointsOfSaleListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),

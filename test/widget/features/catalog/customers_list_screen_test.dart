@@ -236,8 +236,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, state) =>
-                Scaffold(body: CustomersListScreen(query: ListQuery.fromUri(state.uri))),
+            builder: (_, state) => Scaffold(
+              body: CustomersListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/customers/:customerId',
@@ -279,31 +280,30 @@ void main() {
   });
 
   group('URL-driven filters (017-ui-consistency-filters US3)', () {
-    testWidgets(
-      'a status facet in the URL is passed to the repository',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          query: const ListQuery(
-            facets: {
-              'status': ['inactive'],
-            },
-          ),
-        );
+    testWidgets('a status facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(
+          facets: {
+            'status': ['inactive'],
+          },
+        ),
+      );
 
-        verify(
-          () => repository.list(
-            search: any(named: 'search'),
-            status: EntityStatus.inactive,
-            priceList: any(named: 'priceList'),
-            salesperson: any(named: 'salesperson'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThanOrEqualTo(1));
-      },
-    );
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: EntityStatus.inactive,
+          priceList: any(named: 'priceList'),
+          salesperson: any(named: 'salesperson'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
 
     testWidgets(
       'a priceList facet in the URL is passed to the repository, and its '
@@ -426,9 +426,7 @@ void main() {
               priceListRepositoryProvider.overrideWithValue(
                 priceListRepository,
               ),
-              employeeRepositoryProvider.overrideWithValue(
-                employeeRepository,
-              ),
+              employeeRepositoryProvider.overrideWithValue(employeeRepository),
               accessControlProvider.overrideWithValue(
                 _accessFor(_fullAccessUser),
               ),

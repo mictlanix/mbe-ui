@@ -75,9 +75,7 @@ void main() {
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
           ),
-        ).thenAnswer(
-          (_) async => const ProductListResult(items: [], total: 0),
-        );
+        ).thenAnswer((_) async => const ProductListResult(items: [], total: 0));
         when(
           () => repository.productLabelFacets(
             search: any(named: 'search'),
@@ -223,9 +221,7 @@ void main() {
           ProviderScope(
             overrides: [
               warehouseRepositoryProvider.overrideWithValue(repository),
-              facilityRepositoryProvider.overrideWithValue(
-                facilityRepository,
-              ),
+              facilityRepositoryProvider.overrideWithValue(facilityRepository),
               accessControlProvider.overrideWithValue(
                 _accessFor(_fullAccessUser),
               ),
@@ -341,9 +337,7 @@ void main() {
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
           ),
-        ).thenAnswer(
-          (_) async => const ProductListResult(items: [], total: 0),
-        );
+        ).thenAnswer((_) async => const ProductListResult(items: [], total: 0));
         when(
           () => repository.productLabelFacets(
             search: any(named: 'search'),
@@ -409,180 +403,174 @@ void main() {
     );
   });
 
-  group(
-    'Back navigation restores the previous filtered view '
-    '(FR-019, FR-022, spec.md US3 Acceptance Scenario 8)',
-    () {
-      testWidgets(
-        'applying filter A, then B, then C, then going Back twice restores '
-        'exactly filter A\'s state — not merely that context.go fired',
-        (tester) async {
-          final repository = MockProductRepository();
-          when(
-            () => repository.list(
-              search: any(named: 'search'),
-              status: any(named: 'status'),
-              stockable: any(named: 'stockable'),
-              salable: any(named: 'salable'),
-              purchasable: any(named: 'purchasable'),
-              supplier: any(named: 'supplier'),
-              labels: any(named: 'labels'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async => const ProductListResult(items: [], total: 0),
-          );
-          when(
-            () => repository.productLabelFacets(
-              search: any(named: 'search'),
-              status: any(named: 'status'),
-              stockable: any(named: 'stockable'),
-              salable: any(named: 'salable'),
-              purchasable: any(named: 'purchasable'),
-              labels: any(named: 'labels'),
-            ),
-          ).thenAnswer((_) async => const []);
+  group('Back navigation restores the previous filtered view '
+      '(FR-019, FR-022, spec.md US3 Acceptance Scenario 8)', () {
+    testWidgets(
+      'applying filter A, then B, then C, then going Back twice restores '
+      'exactly filter A\'s state — not merely that context.go fired',
+      (tester) async {
+        final repository = MockProductRepository();
+        when(
+          () => repository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer((_) async => const ProductListResult(items: [], total: 0));
+        when(
+          () => repository.productLabelFacets(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: any(named: 'labels'),
+          ),
+        ).thenAnswer((_) async => const []);
 
-          final router = GoRouter(
-            initialLocation: '/products',
-            routes: [
-              StatefulShellRoute.indexedStack(
-                builder: (context, state, shell) => shell,
-                branches: [
-                  StatefulShellBranch(
-                    routes: [
-                      GoRoute(
-                        path: '/products',
-                        builder: (_, state) => Scaffold(
-                          body: ProductsListScreen(
-                            query: ListQuery.fromUri(state.uri),
-                          ),
+        final router = GoRouter(
+          initialLocation: '/products',
+          routes: [
+            StatefulShellRoute.indexedStack(
+              builder: (context, state, shell) => shell,
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: '/products',
+                      builder: (_, state) => Scaffold(
+                        body: ProductsListScreen(
+                          query: ListQuery.fromUri(state.uri),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          );
-
-          await tester.pumpWidget(
-            ProviderScope(
-              overrides: [
-                productRepositoryProvider.overrideWithValue(repository),
-                allLabelsProvider.overrideWith((_) async => []),
-                accessControlProvider.overrideWithValue(
-                  _accessFor(_fullAccessUser),
+                    ),
+                  ],
                 ),
               ],
-              child: MaterialApp.router(
-                routerConfig: router,
-                localizationsDelegates:
-                    AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              productRepositoryProvider.overrideWithValue(repository),
+              allLabelsProvider.overrideWith((_) async => []),
+              accessControlProvider.overrideWithValue(
+                _accessFor(_fullAccessUser),
               ),
+            ],
+            child: MaterialApp.router(
+              routerConfig: router,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
             ),
-          );
-          await tester.pumpAndSettle();
+          ),
+        );
+        await tester.pumpAndSettle();
 
-          // Filter A.
-          const filterA = ListQuery(
-            facets: {
-              'status': ['active'],
-            },
-          );
-          router.go(filterA.toUri('/products').toString());
-          await tester.pumpAndSettle();
-          expect(
-            router.routeInformationProvider.value.uri.toString(),
-            '/products?status=active',
-          );
+        // Filter A.
+        const filterA = ListQuery(
+          facets: {
+            'status': ['active'],
+          },
+        );
+        router.go(filterA.toUri('/products').toString());
+        await tester.pumpAndSettle();
+        expect(
+          router.routeInformationProvider.value.uri.toString(),
+          '/products?status=active',
+        );
 
-          // Filter B.
-          const filterB = ListQuery(
-            facets: {
-              'status': ['inactive'],
-            },
-          );
-          router.go(filterB.toUri('/products').toString());
-          await tester.pumpAndSettle();
-          expect(
-            router.routeInformationProvider.value.uri.toString(),
-            '/products?status=inactive',
-          );
+        // Filter B.
+        const filterB = ListQuery(
+          facets: {
+            'status': ['inactive'],
+          },
+        );
+        router.go(filterB.toUri('/products').toString());
+        await tester.pumpAndSettle();
+        expect(
+          router.routeInformationProvider.value.uri.toString(),
+          '/products?status=inactive',
+        );
 
-          // Filter C.
-          const filterC = ListQuery(
-            facets: {
-              'status': ['inactive'],
-              'stockable': ['true'],
-            },
-          );
-          router.go(filterC.toUri('/products').toString());
-          await tester.pumpAndSettle();
-          verify(
-            () => repository.list(
-              search: any(named: 'search'),
-              status: EntityStatus.inactive,
-              stockable: true,
-              salable: any(named: 'salable'),
-              purchasable: any(named: 'purchasable'),
-              supplier: any(named: 'supplier'),
-              labels: any(named: 'labels'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(greaterThanOrEqualTo(1));
+        // Filter C.
+        const filterC = ListQuery(
+          facets: {
+            'status': ['inactive'],
+            'stockable': ['true'],
+          },
+        );
+        router.go(filterC.toUri('/products').toString());
+        await tester.pumpAndSettle();
+        verify(
+          () => repository.list(
+            search: any(named: 'search'),
+            status: EntityStatus.inactive,
+            stockable: true,
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
 
-          // Simulate the browser's Back button twice — the mechanism a real
-          // Back button uses (`GoRouteInformationProvider.didPushRouteInformation`,
-          // the same callback go_router's own delivers when replaying a
-          // prior history entry), not another forward `go()` call.
-          await router.routeInformationProvider.didPushRouteInformation(
-            RouteInformation(uri: Uri.parse('/products?status=inactive')),
-          );
-          await tester.pumpAndSettle();
-          await router.routeInformationProvider.didPushRouteInformation(
-            RouteInformation(uri: Uri.parse('/products?status=active')),
-          );
-          await tester.pumpAndSettle();
+        // Simulate the browser's Back button twice — the mechanism a real
+        // Back button uses (`GoRouteInformationProvider.didPushRouteInformation`,
+        // the same callback go_router's own delivers when replaying a
+        // prior history entry), not another forward `go()` call.
+        await router.routeInformationProvider.didPushRouteInformation(
+          RouteInformation(uri: Uri.parse('/products?status=inactive')),
+        );
+        await tester.pumpAndSettle();
+        await router.routeInformationProvider.didPushRouteInformation(
+          RouteInformation(uri: Uri.parse('/products?status=active')),
+        );
+        await tester.pumpAndSettle();
 
-          // The address is back to exactly filter A's address...
-          expect(
-            router.routeInformationProvider.value.uri.toString(),
-            '/products?status=active',
-          );
-          // ...and the view actually re-fetched with filter A's params —
-          // proving the restore is real, not just a URL string coincidence.
-          verify(
-            () => repository.list(
-              search: any(named: 'search'),
-              status: EntityStatus.active,
-              stockable: any(named: 'stockable', that: isNull),
-              salable: any(named: 'salable'),
-              purchasable: any(named: 'purchasable'),
-              supplier: any(named: 'supplier'),
-              labels: any(named: 'labels'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(greaterThanOrEqualTo(1));
+        // The address is back to exactly filter A's address...
+        expect(
+          router.routeInformationProvider.value.uri.toString(),
+          '/products?status=active',
+        );
+        // ...and the view actually re-fetched with filter A's params —
+        // proving the restore is real, not just a URL string coincidence.
+        verify(
+          () => repository.list(
+            search: any(named: 'search'),
+            status: EntityStatus.active,
+            stockable: any(named: 'stockable', that: isNull),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
 
-          // And the restored filter chip in the controls reflects filter A,
-          // not B or C (FR-018 — visible in the controls, not just results).
-          await tester.tap(find.byKey(const Key('products_filter_button')));
-          await tester.pumpAndSettle();
-          final activeChip = tester.widget<ChoiceChip>(
-            find.byKey(const Key('products_filter_status_active')),
-          );
-          expect(activeChip.selected, isTrue);
-          final stockableChip = tester.widget<FilterChip>(
-            find.byKey(const Key('products_filter_stockable')),
-          );
-          expect(stockableChip.selected, isFalse);
-        },
-      );
-    },
-  );
+        // And the restored filter chip in the controls reflects filter A,
+        // not B or C (FR-018 — visible in the controls, not just results).
+        await tester.tap(find.byKey(const Key('products_filter_button')));
+        await tester.pumpAndSettle();
+        final activeChip = tester.widget<ChoiceChip>(
+          find.byKey(const Key('products_filter_status_active')),
+        );
+        expect(activeChip.selected, isTrue);
+        final stockableChip = tester.widget<FilterChip>(
+          find.byKey(const Key('products_filter_stockable')),
+        );
+        expect(stockableChip.selected, isFalse);
+      },
+    );
+  });
 }

@@ -37,80 +37,79 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group('PaymentMethodOptionFilter.fromQuery (017-ui-consistency-filters FR-017)', () {
-    test('derives every field from a ListQuery', () {
-      final filter = PaymentMethodOptionFilter.fromQuery(
-        const ListQuery(
-          search: 'cash',
-          pageIndex: 2,
-          facets: {
-            'facility': ['9'],
-            'status': ['inactive'],
-          },
-        ),
-      );
+  group(
+    'PaymentMethodOptionFilter.fromQuery (017-ui-consistency-filters FR-017)',
+    () {
+      test('derives every field from a ListQuery', () {
+        final filter = PaymentMethodOptionFilter.fromQuery(
+          const ListQuery(
+            search: 'cash',
+            pageIndex: 2,
+            facets: {
+              'facility': ['9'],
+              'status': ['inactive'],
+            },
+          ),
+        );
 
-      expect(filter.search, 'cash');
-      expect(filter.pageIndex, 2);
-      expect(filter.facilityId, 9);
-      expect(filter.status, EntityStatus.inactive);
-    });
+        expect(filter.search, 'cash');
+        expect(filter.pageIndex, 2);
+        expect(filter.facilityId, 9);
+        expect(filter.status, EntityStatus.inactive);
+      });
 
-    test('defaults from an empty ListQuery', () {
-      final filter = PaymentMethodOptionFilter.fromQuery(const ListQuery());
+      test('defaults from an empty ListQuery', () {
+        final filter = PaymentMethodOptionFilter.fromQuery(const ListQuery());
 
-      expect(filter.search, isEmpty);
-      expect(filter.pageIndex, 0);
-      expect(filter.facilityId, isNull);
-      expect(filter.status, isNull);
-    });
-  });
+        expect(filter.search, isEmpty);
+        expect(filter.pageIndex, 0);
+        expect(filter.facilityId, isNull);
+        expect(filter.status, isNull);
+      });
+    },
+  );
 
   group(
     'PaymentMethodOptionsListController (a family keyed by PaymentMethodOptionFilter)',
     () {
-      test(
-        'build(filter) maps the current filter to repository query params '
-        'and performs exactly one list call (FR-026, SC-006)',
-        () async {
-          when(
-            () => repository.list(
-              search: null,
-              facilityId: null,
-              status: null,
-              skip: 0,
-              limit: 20,
-            ),
-          ).thenAnswer(
-            (_) async =>
-                PaymentMethodOptionPage(items: [_option(1)], total: 1),
-          );
+      test('build(filter) maps the current filter to repository query params '
+          'and performs exactly one list call (FR-026, SC-006)', () async {
+        when(
+          () => repository.list(
+            search: null,
+            facilityId: null,
+            status: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => PaymentMethodOptionPage(items: [_option(1)], total: 1),
+        );
 
-          const filter = PaymentMethodOptionFilter();
-          final result = await container.read(
-            paymentMethodOptionsListControllerProvider(filter).future,
-          );
+        const filter = PaymentMethodOptionFilter();
+        final result = await container.read(
+          paymentMethodOptionsListControllerProvider(filter).future,
+        );
 
-          expect(result.items, hasLength(1));
-          expect(result.total, 1);
-          verify(
-            () => repository.list(
-              search: null,
-              facilityId: null,
-              status: null,
-              skip: 0,
-              limit: 20,
-            ),
-          ).called(1);
-          // No per-row lookup: only the one list() call above touched the
-          // repository — no get() for any row.
-          verifyNever(
-            () => repository.get(
-              paymentMethodOptionId: any(named: 'paymentMethodOptionId'),
-            ),
-          );
-        },
-      );
+        expect(result.items, hasLength(1));
+        expect(result.total, 1);
+        verify(
+          () => repository.list(
+            search: null,
+            facilityId: null,
+            status: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).called(1);
+        // No per-row lookup: only the one list() call above touched the
+        // repository — no get() for any row.
+        verifyNever(
+          () => repository.get(
+            paymentMethodOptionId: any(named: 'paymentMethodOptionId'),
+          ),
+        );
+      });
 
       test(
         'a different pageIndex maps to skip = pageIndex * pageSize',

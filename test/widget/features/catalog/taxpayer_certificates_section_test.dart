@@ -138,9 +138,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            taxpayerCertificateRepositoryProvider.overrideWithValue(
-              repository,
-            ),
+            taxpayerCertificateRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(_accessFor(_createUser)),
           ],
           child: MaterialApp(

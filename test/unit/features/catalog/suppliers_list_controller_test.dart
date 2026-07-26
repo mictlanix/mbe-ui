@@ -52,9 +52,7 @@ void main() {
     test('build(filter) maps the filter to repository query params', () async {
       when(
         () => repository.listDetailed(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => SupplierPage(items: [_supplier(1)], total: 1),
-      );
+      ).thenAnswer((_) async => SupplierPage(items: [_supplier(1)], total: 1));
 
       const filter = SupplierFilter();
       final result = await container.read(
@@ -96,14 +94,10 @@ void main() {
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
         () => repository.listDetailed(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => SupplierPage(items: [_supplier(1)], total: 21),
-      );
+      ).thenAnswer((_) async => SupplierPage(items: [_supplier(1)], total: 21));
       when(
         () => repository.listDetailed(search: null, skip: 20, limit: 20),
-      ).thenAnswer(
-        (_) async => SupplierPage(items: [_supplier(2)], total: 21),
-      );
+      ).thenAnswer((_) async => SupplierPage(items: [_supplier(2)], total: 21));
 
       final page0 = await container.read(
         suppliersListControllerProvider(const SupplierFilter()).future,

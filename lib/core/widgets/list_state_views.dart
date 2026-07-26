@@ -148,11 +148,7 @@ class _FilteredEmptyListView extends StatelessWidget {
         key: const Key('list_state_filtered_empty'),
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.search_off,
-            size: 48,
-            color: theme.colorScheme.outline,
-          ),
+          Icon(Icons.search_off, size: 48, color: theme.colorScheme.outline),
           const SizedBox(height: 12),
           Text(l10n.filteredEmptyTitle, style: theme.textTheme.bodyLarge),
           const SizedBox(height: 4),

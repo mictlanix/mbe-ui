@@ -57,9 +57,7 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('loading renders a centered progress indicator', (
-    tester,
-  ) async {
+  testWidgets('loading renders a centered progress indicator', (tester) async {
     await pumpState(
       tester,
       state: const AsyncValue.loading(),
@@ -99,51 +97,52 @@ void main() {
         isFiltered: true,
       );
 
-      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      expect(
+        find.byKey(const Key('list_state_filtered_empty')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('list_state_empty')), findsNothing);
       expect(find.text('No matches found'), findsOneWidget);
     },
   );
 
-  testWidgets(
-    'the create affordance is present with a create label/callback',
-    (tester) async {
-      var created = false;
-      await pumpState(
-        tester,
-        state: AsyncValue.data(_page(const [])),
-        isFiltered: false,
-        createLabel: 'New Product',
-        onCreate: () => created = true,
-      );
+  testWidgets('the create affordance is present with a create label/callback', (
+    tester,
+  ) async {
+    var created = false;
+    await pumpState(
+      tester,
+      state: AsyncValue.data(_page(const [])),
+      isFiltered: false,
+      createLabel: 'New Product',
+      onCreate: () => created = true,
+    );
 
-      expect(
-        find.byKey(const Key('list_state_empty_create_button')),
-        findsOneWidget,
-      );
-      expect(find.text('New Product'), findsOneWidget);
+    expect(
+      find.byKey(const Key('list_state_empty_create_button')),
+      findsOneWidget,
+    );
+    expect(find.text('New Product'), findsOneWidget);
 
-      await tester.tap(find.byKey(const Key('list_state_empty_create_button')));
-      expect(created, isTrue);
-    },
-  );
+    await tester.tap(find.byKey(const Key('list_state_empty_create_button')));
+    expect(created, isTrue);
+  });
 
-  testWidgets(
-    'the create affordance is ABSENT without the create privilege '
-    '(createLabel/onCreate null) — absent, not disabled (FR-029)',
-    (tester) async {
-      await pumpState(
-        tester,
-        state: AsyncValue.data(_page(const [])),
-        isFiltered: false,
-      );
+  testWidgets('the create affordance is ABSENT without the create privilege '
+      '(createLabel/onCreate null) — absent, not disabled (FR-029)', (
+    tester,
+  ) async {
+    await pumpState(
+      tester,
+      state: AsyncValue.data(_page(const [])),
+      isFiltered: false,
+    );
 
-      expect(
-        find.byKey(const Key('list_state_empty_create_button')),
-        findsNothing,
-      );
-    },
-  );
+    expect(
+      find.byKey(const Key('list_state_empty_create_button')),
+      findsNothing,
+    );
+  });
 
   testWidgets('Clear filters navigates via the supplied callback', (
     tester,

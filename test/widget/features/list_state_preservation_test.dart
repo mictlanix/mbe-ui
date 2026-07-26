@@ -63,7 +63,10 @@ void main() {
     facilityRepository = MockFacilityRepository();
   });
 
-  Future<void> pump(WidgetTester tester, {required String initialLocation}) async {
+  Future<void> pump(
+    WidgetTester tester, {
+    required String initialLocation,
+  }) async {
     router = GoRouter(
       initialLocation: initialLocation,
       routes: [
@@ -116,60 +119,56 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group(
-    'viewing a record and going back preserves the list (FR-024) — '
-    'already true today via GoRouter push/pop; pinned so Phase 4 cannot '
-    'regress it',
-    () {
-      testWidgets(
-        'the address, and the selected status facet, survive a round trip '
-        'into a record and back',
-        (tester) async {
-          when(
-            () => repository.list(
-              search: any(named: 'search'),
-              facilityId: any(named: 'facilityId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async =>
-                WarehouseListResult(items: [_warehouse(1)], total: 1),
-          );
-          when(
-            () => repository.get(warehouseId: 1),
-          ).thenAnswer((_) async => _warehouse(1));
+  group('viewing a record and going back preserves the list (FR-024) — '
+      'already true today via GoRouter push/pop; pinned so Phase 4 cannot '
+      'regress it', () {
+    testWidgets(
+      'the address, and the selected status facet, survive a round trip '
+      'into a record and back',
+      (tester) async {
+        when(
+          () => repository.list(
+            search: any(named: 'search'),
+            facilityId: any(named: 'facilityId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => WarehouseListResult(items: [_warehouse(1)], total: 1),
+        );
+        when(
+          () => repository.get(warehouseId: 1),
+        ).thenAnswer((_) async => _warehouse(1));
 
-          await pump(tester, initialLocation: '/warehouses?status=inactive');
-          expect(
-            router.routeInformationProvider.value.uri.toString(),
-            '/warehouses?status=inactive',
-          );
+        await pump(tester, initialLocation: '/warehouses?status=inactive');
+        expect(
+          router.routeInformationProvider.value.uri.toString(),
+          '/warehouses?status=inactive',
+        );
 
-          await tester.tap(find.text('Main Warehouse'));
-          await tester.pumpAndSettle();
-          expect(find.byType(WarehouseDetailScreen), findsOneWidget);
+        await tester.tap(find.text('Main Warehouse'));
+        await tester.pumpAndSettle();
+        expect(find.byType(WarehouseDetailScreen), findsOneWidget);
 
-          router.pop();
-          await tester.pumpAndSettle();
+        router.pop();
+        await tester.pumpAndSettle();
 
-          expect(find.byType(WarehousesListScreen), findsOneWidget);
-          expect(
-            router.routeInformationProvider.value.uri.toString(),
-            '/warehouses?status=inactive',
-          );
+        expect(find.byType(WarehousesListScreen), findsOneWidget);
+        expect(
+          router.routeInformationProvider.value.uri.toString(),
+          '/warehouses?status=inactive',
+        );
 
-          await tester.tap(find.byKey(const Key('warehouses_filter_button')));
-          await tester.pumpAndSettle();
-          expect(
-            find.byKey(const Key('warehouses_filter_status_inactive')),
-            findsOneWidget,
-          );
-        },
-      );
-    },
-  );
+        await tester.tap(find.byKey(const Key('warehouses_filter_button')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('warehouses_filter_status_inactive')),
+          findsOneWidget,
+        );
+      },
+    );
+  });
 
   group(
     'returning after a mutation shows the same page refreshed (FR-025)',

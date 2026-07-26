@@ -13,7 +13,8 @@ const _pageSize = 20;
 
 /// Parses an ISO `yyyy-MM-dd` facet value, degrading to `null` (absent) on
 /// any unparseable input (contracts/list-query.md §5) rather than throwing.
-DateTime? _parseIsoDate(String? raw) => raw != null ? DateTime.tryParse(raw) : null;
+DateTime? _parseIsoDate(String? raw) =>
+    raw != null ? DateTime.tryParse(raw) : null;
 
 /// Encodes [date] as the `yyyy-MM-dd` facet value [ExchangeRateFilter.fromQuery]
 /// expects — used by the screen when writing `dateFrom`/`dateTo` into the URL.
@@ -66,9 +67,7 @@ class ExchangeRatesListController extends _$ExchangeRatesListController {
     );
   }
 
-  Future<CatalogPage<ExchangeRate>> _fetch(
-    ExchangeRateFilter filter,
-  ) async {
+  Future<CatalogPage<ExchangeRate>> _fetch(ExchangeRateFilter filter) async {
     final result = await ref
         .read(exchangeRateRepositoryProvider)
         .list(

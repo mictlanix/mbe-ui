@@ -153,7 +153,9 @@ class _LabelDetailScreenState extends ConsumerState<LabelDetailScreen> {
                     ? () => context.replace('/labels/${widget.labelId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

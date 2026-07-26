@@ -447,7 +447,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ? () => context.replace('/products/${widget.productId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(
@@ -479,7 +481,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     if (file == null || bytes == null) return;
     controller.photoPicked(bytes, file.name);
   }
-
 }
 
 /// Lays the boolean attribute [switches] and the (optional) [labels] section

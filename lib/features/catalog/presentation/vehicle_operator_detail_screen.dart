@@ -281,7 +281,9 @@ class _VehicleOperatorDetailScreenState
                       )
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(
@@ -291,7 +293,9 @@ class _VehicleOperatorDetailScreenState
                   ),
                   confirmLabel: l10n.deleteButton,
                   cancelLabel: l10n.cancelButton,
-                  confirmKey: const Key('confirm_delete_vehicle_operator_button'),
+                  confirmKey: const Key(
+                    'confirm_delete_vehicle_operator_button',
+                  ),
                 ),
               ),
             ),

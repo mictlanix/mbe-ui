@@ -229,10 +229,14 @@ class _ExchangeRateDetailScreenState
                 saveKey: const Key('save_button'),
                 deleteKey: const Key('delete_exchange_rate_button'),
                 onEdit: (canUpdate && widget.exchangeRateId != null)
-                    ? () => context.replace('/exchange-rates/${widget.exchangeRateId}')
+                    ? () => context.replace(
+                        '/exchange-rates/${widget.exchangeRateId}',
+                      )
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

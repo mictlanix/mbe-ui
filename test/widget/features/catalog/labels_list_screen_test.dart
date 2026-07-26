@@ -72,8 +72,9 @@ void main() {
       routes: [
         GoRoute(
           path: '/labels',
-          builder: (_, state) =>
-              Scaffold(body: LabelsListScreen(query: ListQuery.fromUri(state.uri))),
+          builder: (_, state) => Scaffold(
+            body: LabelsListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
         ),
       ],
     );
@@ -145,8 +146,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, state) =>
-                Scaffold(body: LabelsListScreen(query: ListQuery.fromUri(state.uri))),
+            builder: (_, state) => Scaffold(
+              body: LabelsListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/labels/:labelId',

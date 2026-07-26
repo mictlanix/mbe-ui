@@ -226,10 +226,14 @@ class _PointSaleDetailScreenState extends ConsumerState<PointSaleDetailScreen> {
                 saveKey: const Key('save_button'),
                 deleteKey: const Key('delete_point_sale_button'),
                 onEdit: (canUpdate && widget.pointSaleId != null)
-                    ? () => context.replace('/points-of-sale/${widget.pointSaleId}')
+                    ? () => context.replace(
+                        '/points-of-sale/${widget.pointSaleId}',
+                      )
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

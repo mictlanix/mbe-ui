@@ -32,7 +32,9 @@ class WarehouseFilter with _$WarehouseFilter {
     return WarehouseFilter(
       search: query.search,
       facilityId: facilityRaw != null ? int.tryParse(facilityRaw) : null,
-      status: statusRaw != null ? EntityStatus.values.byNameOrNull(statusRaw) : null,
+      status: statusRaw != null
+          ? EntityStatus.values.byNameOrNull(statusRaw)
+          : null,
       pageIndex: query.pageIndex,
     );
   }

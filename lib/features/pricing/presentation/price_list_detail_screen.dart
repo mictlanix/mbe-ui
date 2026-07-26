@@ -178,10 +178,13 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
                 saveKey: const Key('save_button'),
                 deleteKey: const Key('delete_price_list_button'),
                 onEdit: (canUpdate && widget.priceListId != null)
-                    ? () => context.replace('/price-lists/${widget.priceListId}')
+                    ? () =>
+                          context.replace('/price-lists/${widget.priceListId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

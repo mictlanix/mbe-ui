@@ -267,10 +267,11 @@ class ProductRepositoryImpl implements ProductRepository {
     required int duplicateId,
   }) async {
     try {
-      final response = await _api.previewProductMergeApiV1ProductsMergePreviewGet(
-        productId: productId,
-        duplicateId: duplicateId,
-      );
+      final response = await _api
+          .previewProductMergeApiV1ProductsMergePreviewGet(
+            productId: productId,
+            duplicateId: duplicateId,
+          );
       return MergePreview.fromResponse(response.data!);
     } on DioException catch (e) {
       throw _toAppError(e);

@@ -62,7 +62,8 @@ const _clientDir = 'lib/generated/openapi/lib/src/api';
 final _entities = [
   const _Entity(
     name: 'Vehicles',
-    repoPath: 'lib/features/catalog/domain/repositories/vehicle_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/vehicle_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/vehicles_api.dart',
     clientMarker: 'listVehiclesApiV1VehiclesGet({',
@@ -89,7 +90,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Products',
-    repoPath: 'lib/features/catalog/domain/repositories/product_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/product_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/products_api.dart',
     clientMarker: 'listProductsApiV1ProductsGet({',
@@ -108,7 +110,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Customers',
-    repoPath: 'lib/features/catalog/domain/repositories/customer_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/customer_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/customers_api.dart',
     clientMarker: 'listCustomersApiV1CustomersGet({',
@@ -121,7 +124,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Employees',
-    repoPath: 'lib/features/catalog/domain/repositories/employee_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/employee_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/employees_api.dart',
     clientMarker: 'listEmployeesApiV1EmployeesGet({',
@@ -133,7 +137,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Warehouses',
-    repoPath: 'lib/features/catalog/domain/repositories/warehouse_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/warehouse_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/warehouses_api.dart',
     clientMarker: 'listWarehousesApiV1WarehousesGet({',
@@ -158,7 +163,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Points of Sale',
-    repoPath: 'lib/features/catalog/domain/repositories/point_sale_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/point_sale_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/points_of_sale_api.dart',
     clientMarker: 'listPointsOfSaleApiV1PointsOfSaleGet({',
@@ -171,7 +177,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Facilities',
-    repoPath: 'lib/features/catalog/domain/repositories/facility_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/facility_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/facilities_api.dart',
     clientMarker: 'listFacilitiesApiV1FacilitiesGet({',
@@ -220,7 +227,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Suppliers',
-    repoPath: 'lib/features/catalog/domain/repositories/supplier_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/supplier_repository.dart',
     repoMarker: 'listDetailed({',
     clientPath: '$_clientDir/suppliers_api.dart',
     clientMarker: 'listSuppliersApiV1SuppliersGet({',
@@ -228,7 +236,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Expenses',
-    repoPath: 'lib/features/catalog/domain/repositories/expense_repository.dart',
+    repoPath:
+        'lib/features/catalog/domain/repositories/expense_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/expenses_api.dart',
     clientMarker: 'listExpensesApiV1ExpensesGet({',
@@ -236,7 +245,8 @@ final _entities = [
   ),
   const _Entity(
     name: 'Price Lists',
-    repoPath: 'lib/features/pricing/domain/repositories/price_list_repository.dart',
+    repoPath:
+        'lib/features/pricing/domain/repositories/price_list_repository.dart',
     repoMarker: 'list({',
     clientPath: '$_clientDir/price_lists_api.dart',
     clientMarker: 'listPriceListsApiV1PriceListsGet({',

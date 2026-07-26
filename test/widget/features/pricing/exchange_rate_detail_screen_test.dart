@@ -102,8 +102,14 @@ void main() {
       await pumpScreen(tester, exchangeRateId: 1, forceReadOnly: true);
 
       expect(find.byKey(const Key('save_button')), findsNothing);
-      expect(find.byKey(const Key('delete_exchange_rate_button')), findsNothing);
-      expect(find.byKey(const Key('edit_exchange_rate_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('delete_exchange_rate_button')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('edit_exchange_rate_button')),
+        findsOneWidget,
+      );
 
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect(appBar.actions, anyOf(isNull, isEmpty));

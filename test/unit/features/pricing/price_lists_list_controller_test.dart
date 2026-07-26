@@ -49,9 +49,7 @@ void main() {
 
   group('PriceListsListController (a family keyed by PriceListFilter)', () {
     test('build(filter) maps the filter to repository query params', () async {
-      when(
-        () => repository.list(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
+      when(() => repository.list(search: null, skip: 0, limit: 20)).thenAnswer(
         (_) async => PriceListResult(items: [_priceList(1)], total: 1),
       );
 
@@ -93,14 +91,10 @@ void main() {
     );
 
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
-      when(
-        () => repository.list(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
+      when(() => repository.list(search: null, skip: 0, limit: 20)).thenAnswer(
         (_) async => PriceListResult(items: [_priceList(1)], total: 21),
       );
-      when(
-        () => repository.list(search: null, skip: 20, limit: 20),
-      ).thenAnswer(
+      when(() => repository.list(search: null, skip: 20, limit: 20)).thenAnswer(
         (_) async => PriceListResult(items: [_priceList(2)], total: 21),
       );
 

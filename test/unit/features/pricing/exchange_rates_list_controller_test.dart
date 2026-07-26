@@ -31,52 +31,49 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group(
-    'ExchangeRateFilter.fromQuery (017-ui-consistency-filters FR-017)',
-    () {
-      test('derives every field from a ListQuery', () {
-        final filter = ExchangeRateFilter.fromQuery(
-          const ListQuery(
-            pageIndex: 2,
-            facets: {
-              'dateFrom': ['2026-01-01'],
-              'dateTo': ['2026-12-31'],
-              'base': ['1'],
-              'target': ['0'],
-            },
-          ),
-        );
+  group('ExchangeRateFilter.fromQuery (017-ui-consistency-filters FR-017)', () {
+    test('derives every field from a ListQuery', () {
+      final filter = ExchangeRateFilter.fromQuery(
+        const ListQuery(
+          pageIndex: 2,
+          facets: {
+            'dateFrom': ['2026-01-01'],
+            'dateTo': ['2026-12-31'],
+            'base': ['1'],
+            'target': ['0'],
+          },
+        ),
+      );
 
-        expect(filter.dateFrom, DateTime(2026, 1, 1));
-        expect(filter.dateTo, DateTime(2026, 12, 31));
-        expect(filter.base, 1);
-        expect(filter.target, 0);
-        expect(filter.pageIndex, 2);
-      });
+      expect(filter.dateFrom, DateTime(2026, 1, 1));
+      expect(filter.dateTo, DateTime(2026, 12, 31));
+      expect(filter.base, 1);
+      expect(filter.target, 0);
+      expect(filter.pageIndex, 2);
+    });
 
-      test('defaults from an empty ListQuery', () {
-        final filter = ExchangeRateFilter.fromQuery(const ListQuery());
+    test('defaults from an empty ListQuery', () {
+      final filter = ExchangeRateFilter.fromQuery(const ListQuery());
 
-        expect(filter.dateFrom, isNull);
-        expect(filter.dateTo, isNull);
-        expect(filter.base, isNull);
-        expect(filter.target, isNull);
-        expect(filter.pageIndex, 0);
-      });
+      expect(filter.dateFrom, isNull);
+      expect(filter.dateTo, isNull);
+      expect(filter.base, isNull);
+      expect(filter.target, isNull);
+      expect(filter.pageIndex, 0);
+    });
 
-      test('an unparseable date degrades to null (absent)', () {
-        final filter = ExchangeRateFilter.fromQuery(
-          const ListQuery(
-            facets: {
-              'dateFrom': ['not-a-date'],
-            },
-          ),
-        );
+    test('an unparseable date degrades to null (absent)', () {
+      final filter = ExchangeRateFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'dateFrom': ['not-a-date'],
+          },
+        ),
+      );
 
-        expect(filter.dateFrom, isNull);
-      });
-    },
-  );
+      expect(filter.dateFrom, isNull);
+    });
+  });
 
   group(
     'ExchangeRatesListController (a family keyed by ExchangeRateFilter)',

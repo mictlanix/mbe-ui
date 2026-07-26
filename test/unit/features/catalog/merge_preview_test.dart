@@ -33,8 +33,11 @@ void main() {
 
       expect(
         preview.categories.map((c) => c.key),
-        ['sales_order_detail.product', 'purchase_order_detail.product',
-         'product_price.product'],
+        [
+          'sales_order_detail.product',
+          'purchase_order_detail.product',
+          'product_price.product',
+        ],
         reason: 'largest-first ordering comes from the server',
       );
       expect(preview.categories.map((c) => c.count), [42, 18, 3]);
@@ -65,8 +68,10 @@ void main() {
       // A merge moves every reference except product_price, which it deletes
       // outright — the one category the summary must not call "reassigned".
       expect(
-        const MergePreviewCategory(key: 'product_price.product', count: 1)
-            .isDestroyed,
+        const MergePreviewCategory(
+          key: 'product_price.product',
+          count: 1,
+        ).isDestroyed,
         isTrue,
       );
       for (final key in [

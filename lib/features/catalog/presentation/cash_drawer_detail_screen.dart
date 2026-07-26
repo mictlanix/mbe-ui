@@ -200,10 +200,14 @@ class _CashDrawerDetailScreenState
                 saveKey: const Key('save_button'),
                 deleteKey: const Key('delete_cash_drawer_button'),
                 onEdit: (canUpdate && widget.cashDrawerId != null)
-                    ? () => context.replace('/cash-drawers/${widget.cashDrawerId}')
+                    ? () => context.replace(
+                        '/cash-drawers/${widget.cashDrawerId}',
+                      )
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(

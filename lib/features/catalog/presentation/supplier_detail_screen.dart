@@ -213,7 +213,9 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
                     ? () => context.replace('/suppliers/${widget.supplierId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(
@@ -230,7 +232,6 @@ class _SupplierDetailScreenState extends ConsumerState<SupplierDetailScreen> {
       ),
     );
   }
-
 }
 
 String _localizeFormError(AppLocalizations l10n, String code) {

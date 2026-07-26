@@ -75,12 +75,7 @@ void main() {
   group('VehiclesListController (a family keyed by VehicleFilter)', () {
     test('build(filter) maps the filter to repository query params', () async {
       when(
-        () => repository.list(
-          search: null,
-          status: null,
-          skip: 0,
-          limit: 20,
-        ),
+        () => repository.list(search: null, status: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async => VehicleListResult(items: [_vehicle(1)], total: 1),
       );
@@ -125,31 +120,38 @@ void main() {
       },
     );
 
-    test('a different search maps to a different provider instance and query', () async {
-      when(
-        () => repository.list(search: null, status: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => VehicleListResult(items: [_vehicle(1)], total: 1),
-      );
-      when(
-        () =>
-            repository.list(search: 'PLATE-2', status: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => VehicleListResult(items: [_vehicle(2)], total: 1),
-      );
+    test(
+      'a different search maps to a different provider instance and query',
+      () async {
+        when(
+          () => repository.list(search: null, status: null, skip: 0, limit: 20),
+        ).thenAnswer(
+          (_) async => VehicleListResult(items: [_vehicle(1)], total: 1),
+        );
+        when(
+          () => repository.list(
+            search: 'PLATE-2',
+            status: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => VehicleListResult(items: [_vehicle(2)], total: 1),
+        );
 
-      final first = await container.read(
-        vehiclesListControllerProvider(const VehicleFilter()).future,
-      );
-      final second = await container.read(
-        vehiclesListControllerProvider(
-          const VehicleFilter(search: 'PLATE-2'),
-        ).future,
-      );
+        final first = await container.read(
+          vehiclesListControllerProvider(const VehicleFilter()).future,
+        );
+        final second = await container.read(
+          vehiclesListControllerProvider(
+            const VehicleFilter(search: 'PLATE-2'),
+          ).future,
+        );
 
-      expect(first.items.single.vehicleId, 1);
-      expect(second.items.single.vehicleId, 2);
-    });
+        expect(first.items.single.vehicleId, 1);
+        expect(second.items.single.vehicleId, 2);
+      },
+    );
 
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
@@ -179,35 +181,32 @@ void main() {
       expect(page1.total, 21);
     });
 
-    test(
-      'invalidating the provider re-fetches the SAME page rather than '
-      'resetting to page 0 (017-ui-consistency-filters FR-025, research §3 — '
-      'this is the mechanism that fixes the page-reset-on-mutation bug '
-      '"for free" once page index is part of the family key)',
-      () async {
-        const filter = VehicleFilter(pageIndex: 1);
-        when(
-          () => repository.list(search: null, status: null, skip: 20, limit: 20),
-        ).thenAnswer(
-          (_) async => VehicleListResult(items: [_vehicle(2)], total: 21),
-        );
+    test('invalidating the provider re-fetches the SAME page rather than '
+        'resetting to page 0 (017-ui-consistency-filters FR-025, research §3 — '
+        'this is the mechanism that fixes the page-reset-on-mutation bug '
+        '"for free" once page index is part of the family key)', () async {
+      const filter = VehicleFilter(pageIndex: 1);
+      when(
+        () => repository.list(search: null, status: null, skip: 20, limit: 20),
+      ).thenAnswer(
+        (_) async => VehicleListResult(items: [_vehicle(2)], total: 21),
+      );
 
-        await container.read(vehiclesListControllerProvider(filter).future);
+      await container.read(vehiclesListControllerProvider(filter).future);
 
-        // Simulate what a form controller does after a successful mutation.
-        when(
-          () => repository.list(search: null, status: null, skip: 20, limit: 20),
-        ).thenAnswer(
-          (_) async => VehicleListResult(items: [_vehicle(99)], total: 21),
-        );
-        container.invalidate(vehiclesListControllerProvider(filter));
+      // Simulate what a form controller does after a successful mutation.
+      when(
+        () => repository.list(search: null, status: null, skip: 20, limit: 20),
+      ).thenAnswer(
+        (_) async => VehicleListResult(items: [_vehicle(99)], total: 21),
+      );
+      container.invalidate(vehiclesListControllerProvider(filter));
 
-        final refreshed = await container.read(
-          vehiclesListControllerProvider(filter).future,
-        );
-        expect(refreshed.pageIndex, 1);
-        expect(refreshed.items.single.vehicleId, 99);
-      },
-    );
+      final refreshed = await container.read(
+        vehiclesListControllerProvider(filter).future,
+      );
+      expect(refreshed.pageIndex, 1);
+      expect(refreshed.items.single.vehicleId, 99);
+    });
   });
 }

@@ -68,30 +68,33 @@ void main() {
     expect(comparison.deleted.code, 'DUP');
   });
 
-  test('issues both fetches concurrently rather than one after the other', () async {
-    var inFlight = 0;
-    var maxInFlight = 0;
+  test(
+    'issues both fetches concurrently rather than one after the other',
+    () async {
+      var inFlight = 0;
+      var maxInFlight = 0;
 
-    Future<Product> delayed(int productId) async {
-      inFlight++;
-      maxInFlight = inFlight > maxInFlight ? inFlight : maxInFlight;
-      await Future<void>.delayed(const Duration(milliseconds: 10));
-      inFlight--;
-      return _product(productId: productId, code: 'C$productId');
-    }
+      Future<Product> delayed(int productId) async {
+        inFlight++;
+        maxInFlight = inFlight > maxInFlight ? inFlight : maxInFlight;
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        inFlight--;
+        return _product(productId: productId, code: 'C$productId');
+      }
 
-    when(() => repository.get(productId: 1)).thenAnswer((_) => delayed(1));
-    when(() => repository.get(productId: 2)).thenAnswer((_) => delayed(2));
+      when(() => repository.get(productId: 1)).thenAnswer((_) => delayed(1));
+      when(() => repository.get(productId: 2)).thenAnswer((_) => delayed(2));
 
-    final container = _containerWith(repository);
-    addTearDown(container.dispose);
+      final container = _containerWith(repository);
+      addTearDown(container.dispose);
 
-    await container.read(
-      mergeComparisonProvider(canonicalId: 1, duplicateId: 2).future,
-    );
+      await container.read(
+        mergeComparisonProvider(canonicalId: 1, duplicateId: 2).future,
+      );
 
-    expect(maxInFlight, 2, reason: 'both gets should overlap (Future.wait)');
-  });
+      expect(maxInFlight, 2, reason: 'both gets should overlap (Future.wait)');
+    },
+  );
 
   test('surfaces a NotFoundError on either id as an error', () async {
     when(

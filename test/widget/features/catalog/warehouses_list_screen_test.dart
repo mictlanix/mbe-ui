@@ -265,39 +265,36 @@ void main() {
   });
 
   group('URL-driven filters (017-ui-consistency-filters US3)', () {
-    testWidgets(
-      'a status facet in the URL is passed to the repository',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          warehouses: _testWarehouses,
-          query: const ListQuery(
-            facets: {
-              'status': ['inactive'],
-            },
-          ),
-        );
+    testWidgets('a status facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        warehouses: _testWarehouses,
+        query: const ListQuery(
+          facets: {
+            'status': ['inactive'],
+          },
+        ),
+      );
 
-        verify(
-          () => repository.list(
-            search: any(named: 'search'),
-            facilityId: any(named: 'facilityId'),
-            status: EntityStatus.inactive,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThanOrEqualTo(1));
-      },
-    );
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          facilityId: any(named: 'facilityId'),
+          status: EntityStatus.inactive,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
 
     testWidgets(
       'a facility facet in the URL is passed to the repository, and its '
       'name is resolved for cold-load display (data-model.md §4)',
       (tester) async {
-        when(
-          () => facilityRepository.get(facilityId: 9),
-        ).thenAnswer(
+        when(() => facilityRepository.get(facilityId: 9)).thenAnswer(
           (_) async => const Facility(
             facilityId: 9,
             code: 'F-9',
@@ -369,17 +366,14 @@ void main() {
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
-          (_) async =>
-              WarehouseListResult(items: _testWarehouses, total: 2),
+          (_) async => WarehouseListResult(items: _testWarehouses, total: 2),
         );
 
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
               warehouseRepositoryProvider.overrideWithValue(repository),
-              facilityRepositoryProvider.overrideWithValue(
-                facilityRepository,
-              ),
+              facilityRepositoryProvider.overrideWithValue(facilityRepository),
               accessControlProvider.overrideWithValue(
                 _accessFor(_fullAccessUser),
               ),

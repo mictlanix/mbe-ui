@@ -167,32 +167,31 @@ void main() {
       },
     );
 
-    testWidgets(
-      'a date range facet in the URL is passed to the repository',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          query: const ListQuery(
-            facets: {
-              'dateFrom': ['2026-01-01'],
-              'dateTo': ['2026-12-31'],
-            },
-          ),
-        );
+    testWidgets('a date range facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(
+          facets: {
+            'dateFrom': ['2026-01-01'],
+            'dateTo': ['2026-12-31'],
+          },
+        ),
+      );
 
-        verify(
-          () => repository.list(
-            dateFrom: DateTime(2026, 1, 1),
-            dateTo: DateTime(2026, 12, 31),
-            base: any(named: 'base'),
-            target: any(named: 'target'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThanOrEqualTo(1));
-      },
-    );
+      verify(
+        () => repository.list(
+          dateFrom: DateTime(2026, 1, 1),
+          dateTo: DateTime(2026, 12, 31),
+          base: any(named: 'base'),
+          target: any(named: 'target'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
 
     testWidgets(
       'selecting a base currency navigates to a URL carrying that facet',

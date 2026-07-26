@@ -120,7 +120,9 @@ extension ListQueryX on ListQuery {
     if (pageIndex > 0) query['page'] = '${pageIndex + 1}';
     for (final entry in facets.entries) {
       if (entry.value.isEmpty) continue;
-      query[entry.key] = entry.value.length == 1 ? entry.value.single : entry.value;
+      query[entry.key] = entry.value.length == 1
+          ? entry.value.single
+          : entry.value;
     }
     if (query.isEmpty) return Uri.parse(path);
     return Uri(path: path, queryParameters: query);

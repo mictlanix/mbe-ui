@@ -240,7 +240,9 @@ class _TaxpayerRecipientDetailScreenState
                       )
                     : null,
                 onSave: canSave
-                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
                     : null,
                 onDelete: canDelete ? controller.delete : null,
                 deleteConfirmation: RecordDeleteConfirmation(
@@ -250,7 +252,9 @@ class _TaxpayerRecipientDetailScreenState
                   ),
                   confirmLabel: l10n.deleteButton,
                   cancelLabel: l10n.cancelButton,
-                  confirmKey: const Key('confirm_delete_taxpayer_recipient_button'),
+                  confirmKey: const Key(
+                    'confirm_delete_taxpayer_recipient_button',
+                  ),
                 ),
               ),
             ),

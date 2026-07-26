@@ -222,7 +222,9 @@ void main() {
 
       // Recover Password sits above the shared action row; within that row,
       // Delete is to the left of Save (contract §2 fixed order).
-      final saveTopLeft = tester.getTopLeft(find.byKey(const Key('save_button')));
+      final saveTopLeft = tester.getTopLeft(
+        find.byKey(const Key('save_button')),
+      );
       final recoverY = tester
           .getTopLeft(find.byKey(const Key('recover_password_button')))
           .dy;
