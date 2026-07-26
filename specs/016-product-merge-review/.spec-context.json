@@ -3,7 +3,7 @@
   "specName": "Merge Products — Explicit Kept/Deleted Review",
   "branch": "016-product-merge-review",
   "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,14 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-25T19:05:52.953Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-26T02:32:57.383Z"
     }
-  ]
+  ],
+  "telemetryInstanceId": "99d796b6-a8ec-4575-80b6-51436d555707"
 }
