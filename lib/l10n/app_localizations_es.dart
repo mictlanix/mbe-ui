@@ -351,12 +351,117 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mergeConfirmTitle => '¿Fusionar productos permanentemente?';
 
   @override
-  String mergeConfirmMessage(String canonicalName, String duplicateName) {
-    return '¿Está seguro de que desea fusionar \"$duplicateName\" en \"$canonicalName\"? Esta acción no se puede deshacer: \"$duplicateName\" se eliminará por completo y su historial se transferirá a \"$canonicalName\".';
+  String mergeConfirmMessage(
+    String canonicalName,
+    String canonicalCode,
+    String duplicateName,
+    String duplicateCode,
+  ) {
+    return 'Se conserva \"$canonicalName\" ($canonicalCode).\nSe elimina \"$duplicateName\" ($duplicateCode) y su historial pasa al producto conservado. Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String mergeConfirmTotalLine(int total) {
+    return 'Registros que se moverán: $total.';
   }
 
   @override
   String get mergeSuccess => 'Productos fusionados correctamente.';
+
+  @override
+  String get mergeKeptLabel => 'Se conserva';
+
+  @override
+  String get mergeDeletedLabel => 'Se elimina';
+
+  @override
+  String get mergeSwapTooltip =>
+      'Invertir: intercambiar cuál se conserva y cuál se elimina';
+
+  @override
+  String get mergeComparisonTitle => 'Comparación de datos';
+
+  @override
+  String get mergeComparisonFieldHeader => 'Campo';
+
+  @override
+  String get mergeDiffBadge => 'Difiere';
+
+  @override
+  String mergeAcknowledgeLabel(String duplicateName) {
+    return 'Entiendo que \"$duplicateName\" se eliminará permanentemente.';
+  }
+
+  @override
+  String get mergeFieldId => 'ID interno';
+
+  @override
+  String get mergeFieldCode => 'Código';
+
+  @override
+  String get mergeFieldSku => 'SKU';
+
+  @override
+  String get mergeFieldModel => 'Modelo';
+
+  @override
+  String get mergeFieldBrand => 'Marca';
+
+  @override
+  String get mergeFieldUom => 'Unidad de medida';
+
+  @override
+  String get mergeFieldTaxRate => 'Tasa de impuesto';
+
+  @override
+  String get mergeFieldStatus => 'Estado';
+
+  @override
+  String get mergeRelatedRecordsTitle =>
+      'Registros ligados al producto que se elimina';
+
+  @override
+  String get mergeRelatedDestroyedNote => 'se eliminan, no se mueven';
+
+  @override
+  String get mergeRelatedTotalLabel => 'Total';
+
+  @override
+  String get mergeCategorySalesOrderDetail => 'Líneas de venta';
+
+  @override
+  String get mergeCategoryPurchaseOrderDetail => 'Líneas de compra';
+
+  @override
+  String get mergeCategoryInventoryReceiptDetail =>
+      'Líneas de entrada de inventario';
+
+  @override
+  String get mergeCategoryInventoryIssueDetail =>
+      'Líneas de salida de inventario';
+
+  @override
+  String get mergeCategoryInventoryTransferDetail =>
+      'Líneas de traspaso de inventario';
+
+  @override
+  String get mergeCategoryLotSerialTracking => 'Seguimiento de lotes y series';
+
+  @override
+  String get mergeCategoryProductPrice => 'Listas de precios';
+
+  @override
+  String get mergeCategoryProductLabel => 'Etiquetas';
+
+  @override
+  String get mergeCategoryFiscalDocumentDetail =>
+      'Líneas de comprobantes fiscales';
+
+  @override
+  String get mergeCategoryCommissionProduct => 'Comisiones';
+
+  @override
+  String get mergeCategoryCustomerDiscount => 'Descuentos de cliente';
 
   @override
   String get editUserTitle => 'Editar usuario';

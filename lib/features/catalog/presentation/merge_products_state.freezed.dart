@@ -37,6 +37,13 @@ mixin _$MergeProductsState {
   /// too).
   bool get merged => throw _privateConstructorUsedError;
 
+  /// `true` once the operator has acknowledged that the product currently
+  /// in [duplicate] will be deleted (specs/016 FR-007). Reset to `false`
+  /// by every mutator that changes [canonical] or [duplicate] — including
+  /// [MergeProductsController.swap] — so an acknowledgment can never
+  /// outlive the record it named (FR-008).
+  bool get acknowledged => throw _privateConstructorUsedError;
+
   /// Create a copy of MergeProductsState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -56,6 +63,7 @@ abstract class $MergeProductsStateCopyWith<$Res> {
     ProductListItem? duplicate,
     AsyncValue<void> submission,
     bool merged,
+    bool acknowledged,
   });
 
   $ProductListItemCopyWith<$Res>? get canonical;
@@ -81,6 +89,7 @@ class _$MergeProductsStateCopyWithImpl<$Res, $Val extends MergeProductsState>
     Object? duplicate = freezed,
     Object? submission = null,
     Object? merged = null,
+    Object? acknowledged = null,
   }) {
     return _then(
       _value.copyWith(
@@ -99,6 +108,10 @@ class _$MergeProductsStateCopyWithImpl<$Res, $Val extends MergeProductsState>
             merged: null == merged
                 ? _value.merged
                 : merged // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            acknowledged: null == acknowledged
+                ? _value.acknowledged
+                : acknowledged // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -148,6 +161,7 @@ abstract class _$$MergeProductsStateImplCopyWith<$Res>
     ProductListItem? duplicate,
     AsyncValue<void> submission,
     bool merged,
+    bool acknowledged,
   });
 
   @override
@@ -174,6 +188,7 @@ class __$$MergeProductsStateImplCopyWithImpl<$Res>
     Object? duplicate = freezed,
     Object? submission = null,
     Object? merged = null,
+    Object? acknowledged = null,
   }) {
     return _then(
       _$MergeProductsStateImpl(
@@ -193,6 +208,10 @@ class __$$MergeProductsStateImplCopyWithImpl<$Res>
             ? _value.merged
             : merged // ignore: cast_nullable_to_non_nullable
                   as bool,
+        acknowledged: null == acknowledged
+            ? _value.acknowledged
+            : acknowledged // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -206,6 +225,7 @@ class _$MergeProductsStateImpl extends _MergeProductsState {
     this.duplicate,
     this.submission = const AsyncValue<void>.data(null),
     this.merged = false,
+    this.acknowledged = false,
   }) : super._();
 
   /// The "Product" selection — kept after a merge. `null` until chosen.
@@ -234,9 +254,18 @@ class _$MergeProductsStateImpl extends _MergeProductsState {
   @JsonKey()
   final bool merged;
 
+  /// `true` once the operator has acknowledged that the product currently
+  /// in [duplicate] will be deleted (specs/016 FR-007). Reset to `false`
+  /// by every mutator that changes [canonical] or [duplicate] — including
+  /// [MergeProductsController.swap] — so an acknowledgment can never
+  /// outlive the record it named (FR-008).
+  @override
+  @JsonKey()
+  final bool acknowledged;
+
   @override
   String toString() {
-    return 'MergeProductsState(canonical: $canonical, duplicate: $duplicate, submission: $submission, merged: $merged)';
+    return 'MergeProductsState(canonical: $canonical, duplicate: $duplicate, submission: $submission, merged: $merged, acknowledged: $acknowledged)';
   }
 
   @override
@@ -250,12 +279,20 @@ class _$MergeProductsStateImpl extends _MergeProductsState {
                 other.duplicate == duplicate) &&
             (identical(other.submission, submission) ||
                 other.submission == submission) &&
-            (identical(other.merged, merged) || other.merged == merged));
+            (identical(other.merged, merged) || other.merged == merged) &&
+            (identical(other.acknowledged, acknowledged) ||
+                other.acknowledged == acknowledged));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, canonical, duplicate, submission, merged);
+  int get hashCode => Object.hash(
+    runtimeType,
+    canonical,
+    duplicate,
+    submission,
+    merged,
+    acknowledged,
+  );
 
   /// Create a copy of MergeProductsState
   /// with the given fields replaced by the non-null parameter values.
@@ -275,6 +312,7 @@ abstract class _MergeProductsState extends MergeProductsState {
     final ProductListItem? duplicate,
     final AsyncValue<void> submission,
     final bool merged,
+    final bool acknowledged,
   }) = _$MergeProductsStateImpl;
   const _MergeProductsState._() : super._();
 
@@ -301,6 +339,14 @@ abstract class _MergeProductsState extends MergeProductsState {
   /// too).
   @override
   bool get merged;
+
+  /// `true` once the operator has acknowledged that the product currently
+  /// in [duplicate] will be deleted (specs/016 FR-007). Reset to `false`
+  /// by every mutator that changes [canonical] or [duplicate] — including
+  /// [MergeProductsController.swap] — so an acknowledgment can never
+  /// outlive the record it named (FR-008).
+  @override
+  bool get acknowledged;
 
   /// Create a copy of MergeProductsState
   /// with the given fields replaced by the non-null parameter values.

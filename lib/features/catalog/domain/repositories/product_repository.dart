@@ -1,6 +1,7 @@
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'dart:typed_data';
 
+import 'package:mbe_ui/features/catalog/domain/entities/merge_preview.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -150,6 +151,30 @@ abstract class ProductRepository {
   /// - `ServerError` / `NetworkError` on other backend/transport failures
   ///   (FR-011) — surfaced with mbe-api's `detail` message where present.
   Future<void> mergeProducts({
+    required int productId,
+    required int duplicateId,
+  });
+
+  /// `GET /api/v1/products/merge/preview` (specs/016-product-merge-review
+  /// FR-006). Reports every category of record attached to [duplicateId] with
+  /// its count and a server-computed total — the blast radius of merging
+  /// [duplicateId] into [productId] — without modifying anything.
+  ///
+  /// Categories come back as raw `table.column` keys off mbe-api's mapped
+  /// metadata, so the set grows on its own as new relations are added; the UI
+  /// resolves display labels and must tolerate keys it doesn't recognize.
+  /// Note the preview counts `product_price` rows, which a merge *deletes*
+  /// rather than moves (see [MergePreviewCategory.isDestroyed]).
+  ///
+  /// Server-side this validates the pair through the same guard the merge
+  /// itself uses, and requires the merge privilege at read level (the merge
+  /// requires create), so any user who can reach the merge screen can call it.
+  ///
+  /// Throws `NotFoundError` on `404`, `ServerError` on a rejected pair or
+  /// other backend failure, `NetworkError` on transport failure. Callers treat
+  /// any failure as "omit the summary" — it is informational context and MUST
+  /// NOT block a merge.
+  Future<MergePreview> mergePreview({
     required int productId,
     required int duplicateId,
   });

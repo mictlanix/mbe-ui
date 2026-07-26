@@ -16,7 +16,9 @@ Two panels, laid out side by side above the compact-width breakpoint and stacked
 
 ## 3. `MergeComparisonTable` (new widget, `widgets/merge_comparison_table.dart`)
 
-Renders once the comparison provider resolves (`AsyncData`). Two-column value layout (kept / deleted) with a persistent header row labeling each column — never a per-row label that could scroll out of view (research.md §5). One row per field: internal id, code, SKU, model, brand, unit of measure, tax rate, status (FR-005, data-model.md). A row whose kept/deleted values differ is visually flagged (`Key('merge_diff_row')` on flagged rows, for widget-test targeting), e.g. a badge or background tint distinct from the kept/deleted panel colors (so "this field differs" is never confused with "which side is kept").
+Renders once the comparison provider resolves (`AsyncData`). Two-column value layout (kept / deleted) with a persistent header row labeling each column — never a per-row label that could scroll out of view (research.md §5). One row per field: internal id, code, SKU, model, brand, unit of measure, tax rate, status (FR-005, data-model.md). A row whose kept/deleted values differ is visually flagged with both a badge and a background tint distinct from the kept/deleted panel colors (so "this field differs" is never confused with "which side is kept").
+
+**Test targeting**: each row carries a per-field key `Key('merge_row_<fieldLabel>')` — Flutter requires sibling keys to be unique, so a single shared `merge_diff_row` key across flagged rows is not usable. Flagged rows are identified instead by their `Key('merge_diff_badge')` marker, which repeats across rows but never among siblings; widget tests count badges to assert how many and which fields differ.
 
 - `AsyncLoading` → the table area shows a loading indicator (`Key('merge_comparison_loading')`).
 - `AsyncError` → the shared `ErrorBanner` renders in the table's place (reusing spec 008's existing error-banner pattern); the acknowledgment checkbox and merge button remain disabled (FR-011 extended to this fetch).
@@ -48,6 +50,12 @@ A `CheckboxListTile`-style control below the panels/table, visible whenever `sta
 - content: `l10n.mergeConfirmMessage(keptName, keptCode, deletedName, deletedCode)` (arb key signature extended with two new placeholders).
 - When the merge preview has resolved, the total is appended via a separate localized line (`l10n.mergeConfirmTotalLine(total)`) rather than being folded into the main message — so a pending or failed preview simply omits that line instead of forcing a placeholder into the sentence (FR-009's "when available").
 
-## 7. Compact-width layout
+## 7. Picker suggestion subtitle — amends spec 008
+
+`specs/008-merge-products/contracts/ui-contracts.md` §2 specifies the suggestion subtitle as "code, model, and SKU joined with ` · `, omitting any blank part". That format is **superseded here**: each value is now prefixed with its localized field name (`Code: 292699 · Model: 292699 · SKU: 292699`), matching the review panels (§2).
+
+Rationale: this catalog routinely carries the same string in all three fields, so the unlabelled form (`292699 · 292699 · 292699`) cannot tell the operator which identifier they matched on — the identification failure the review step downstream exists to catch. Blank-part omission is unchanged. Spec 008's FR-003 ("display the product's photo thumbnail together with identifying text (name, code, model, SKU)") is still satisfied; only the rendering changed.
+
+## 8. Compact-width layout
 
 Below the compact breakpoint, panels stack vertically (kept above deleted, matching the reference design's compact mock) and the comparison table's two value columns remain side by side within the narrower width (wrapping/truncating long values with a tooltip/expand fallback per constitution §VI, rather than introducing horizontal scroll).
