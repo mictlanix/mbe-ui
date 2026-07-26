@@ -219,8 +219,9 @@ class _PaymentMethodOptionDetailScreenState
                 ],
                 onChanged: fieldsEnabled
                     ? (value) {
-                        if (value != null)
+                        if (value != null) {
                           controller.paymentMethodChanged(value);
+                        }
                       }
                     : null,
               ),
@@ -240,8 +241,9 @@ class _PaymentMethodOptionDetailScreenState
                 enabled: fieldsEnabled,
                 onChanged: (v) {
                   final parsed = int.tryParse(v.trim());
-                  if (parsed != null)
+                  if (parsed != null) {
                     controller.numberOfPaymentsChanged(parsed);
+                  }
                 },
               ),
             ),

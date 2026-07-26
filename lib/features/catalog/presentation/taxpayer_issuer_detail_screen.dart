@@ -243,8 +243,9 @@ class _TaxpayerIssuerDetailScreenState
                     ],
                     onChanged: fieldsEnabled
                         ? (value) {
-                            if (value != null)
+                            if (value != null) {
                               controller.providerChanged(value);
+                            }
                           }
                         : null,
                   ),
