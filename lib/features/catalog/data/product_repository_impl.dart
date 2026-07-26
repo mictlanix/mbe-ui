@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/merge_preview.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -253,6 +254,22 @@ class ProductRepositoryImpl implements ProductRepository {
             ..duplicateId = duplicateId,
         ),
       );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<MergePreview> mergePreview({
+    required int productId,
+    required int duplicateId,
+  }) async {
+    try {
+      final response = await _api.previewProductMergeApiV1ProductsMergePreviewGet(
+        productId: productId,
+        duplicateId: duplicateId,
+      );
+      return MergePreview.fromResponse(response.data!);
     } on DioException catch (e) {
       throw _toAppError(e);
     }

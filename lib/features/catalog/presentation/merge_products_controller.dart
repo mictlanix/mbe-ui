@@ -14,15 +14,37 @@ class MergeProductsController extends _$MergeProductsController {
   @override
   MergeProductsState build() => const MergeProductsState();
 
+  // Every mutator below resets `acknowledged`: the acknowledgment names a
+  // specific product, so changing either side must invalidate it rather than
+  // let it carry over to a record the operator never confirmed (specs/016
+  // FR-008).
+
   void canonicalSelected(ProductListItem item) =>
-      state = state.copyWith(canonical: item);
+      state = state.copyWith(canonical: item, acknowledged: false);
 
   void duplicateSelected(ProductListItem item) =>
-      state = state.copyWith(duplicate: item);
+      state = state.copyWith(duplicate: item, acknowledged: false);
 
-  void canonicalCleared() => state = state.copyWith(canonical: null);
+  void canonicalCleared() =>
+      state = state.copyWith(canonical: null, acknowledged: false);
 
-  void duplicateCleared() => state = state.copyWith(duplicate: null);
+  void duplicateCleared() =>
+      state = state.copyWith(duplicate: null, acknowledged: false);
+
+  /// Exchanges which selection is kept and which is deleted (specs/016
+  /// FR-004). The two fields already *mean* "kept" and "deleted", so the swap
+  /// is the exchange itself — no separate role flag to keep in sync
+  /// (research.md §2). Whatever lands in [MergeProductsState.canonical] is
+  /// what [submit] sends as `productId`.
+  void swap() => state = state.copyWith(
+    canonical: state.duplicate,
+    duplicate: state.canonical,
+    acknowledged: false,
+  );
+
+  /// Flips the deletion acknowledgment (specs/016 FR-007).
+  void acknowledgeToggled() =>
+      state = state.copyWith(acknowledged: !state.acknowledged);
 
   /// Submits the merge (FR-008). No-ops if [MergeProductsState.canSubmit]
   /// is `false` — the screen is expected to have already gated this behind

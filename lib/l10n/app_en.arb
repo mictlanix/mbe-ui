@@ -335,16 +335,116 @@
   "mergeConfirmTitle": "Merge products permanently?",
   "@mergeConfirmTitle": {},
 
-  "mergeConfirmMessage": "Are you sure you want to merge \"{duplicateName}\" into \"{canonicalName}\"? This cannot be undone — \"{duplicateName}\" will be permanently deleted and its history transferred to \"{canonicalName}\".",
+  "mergeConfirmMessage": "\"{canonicalName}\" ({canonicalCode}) is kept.\n\"{duplicateName}\" ({duplicateCode}) is deleted and its history moves to the kept product. This cannot be undone.",
   "@mergeConfirmMessage": {
     "placeholders": {
       "canonicalName": {"type": "String"},
-      "duplicateName": {"type": "String"}
+      "canonicalCode": {"type": "String"},
+      "duplicateName": {"type": "String"},
+      "duplicateCode": {"type": "String"}
+    }
+  },
+
+  "mergeConfirmTotalLine": "Records that will move: {total}.",
+  "@mergeConfirmTotalLine": {
+    "placeholders": {
+      "total": {"type": "int"}
     }
   },
 
   "mergeSuccess": "Products merged successfully.",
   "@mergeSuccess": {},
+
+  "mergeKeptLabel": "Kept",
+  "@mergeKeptLabel": {},
+
+  "mergeDeletedLabel": "Deleted",
+  "@mergeDeletedLabel": {},
+
+  "mergeSwapTooltip": "Swap which product is kept and which is deleted",
+  "@mergeSwapTooltip": {},
+
+  "mergeComparisonTitle": "Data comparison",
+  "@mergeComparisonTitle": {},
+
+  "mergeComparisonFieldHeader": "Field",
+  "@mergeComparisonFieldHeader": {},
+
+  "mergeDiffBadge": "Differs",
+  "@mergeDiffBadge": {},
+
+  "mergeAcknowledgeLabel": "I understand \"{duplicateName}\" will be permanently deleted.",
+  "@mergeAcknowledgeLabel": {
+    "placeholders": {
+      "duplicateName": {"type": "String"}
+    }
+  },
+
+  "mergeFieldId": "Internal ID",
+  "@mergeFieldId": {},
+
+  "mergeFieldCode": "Code",
+  "@mergeFieldCode": {},
+
+  "mergeFieldSku": "SKU",
+  "@mergeFieldSku": {},
+
+  "mergeFieldModel": "Model",
+  "@mergeFieldModel": {},
+
+  "mergeFieldBrand": "Brand",
+  "@mergeFieldBrand": {},
+
+  "mergeFieldUom": "Unit of measurement",
+  "@mergeFieldUom": {},
+
+  "mergeFieldTaxRate": "Tax rate",
+  "@mergeFieldTaxRate": {},
+
+  "mergeFieldStatus": "Status",
+  "@mergeFieldStatus": {},
+
+  "mergeRelatedRecordsTitle": "Records attached to the product being deleted",
+  "@mergeRelatedRecordsTitle": {},
+
+  "mergeRelatedDestroyedNote": "deleted, not moved",
+  "@mergeRelatedDestroyedNote": {},
+
+  "mergeRelatedTotalLabel": "Total",
+  "@mergeRelatedTotalLabel": {},
+
+  "mergeCategorySalesOrderDetail": "Sales order lines",
+  "@mergeCategorySalesOrderDetail": {},
+
+  "mergeCategoryPurchaseOrderDetail": "Purchase order lines",
+  "@mergeCategoryPurchaseOrderDetail": {},
+
+  "mergeCategoryInventoryReceiptDetail": "Inventory receipt lines",
+  "@mergeCategoryInventoryReceiptDetail": {},
+
+  "mergeCategoryInventoryIssueDetail": "Inventory issue lines",
+  "@mergeCategoryInventoryIssueDetail": {},
+
+  "mergeCategoryInventoryTransferDetail": "Inventory transfer lines",
+  "@mergeCategoryInventoryTransferDetail": {},
+
+  "mergeCategoryLotSerialTracking": "Lot and serial tracking",
+  "@mergeCategoryLotSerialTracking": {},
+
+  "mergeCategoryProductPrice": "Price lists",
+  "@mergeCategoryProductPrice": {},
+
+  "mergeCategoryProductLabel": "Labels",
+  "@mergeCategoryProductLabel": {},
+
+  "mergeCategoryFiscalDocumentDetail": "Fiscal document lines",
+  "@mergeCategoryFiscalDocumentDetail": {},
+
+  "mergeCategoryCommissionProduct": "Commissions",
+  "@mergeCategoryCommissionProduct": {},
+
+  "mergeCategoryCustomerDiscount": "Customer discounts",
+  "@mergeCategoryCustomerDiscount": {},
 
   "editUserTitle": "Edit User",
   "@editUserTitle": {},

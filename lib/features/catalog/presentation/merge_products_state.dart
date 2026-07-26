@@ -31,6 +31,13 @@ class MergeProductsState with _$MergeProductsState {
     /// from "never submitted", since idle state starts as `AsyncData(null)`
     /// too).
     @Default(false) bool merged,
+
+    /// `true` once the operator has acknowledged that the product currently
+    /// in [duplicate] will be deleted (specs/016 FR-007). Reset to `false`
+    /// by every mutator that changes [canonical] or [duplicate] — including
+    /// [MergeProductsController.swap] — so an acknowledgment can never
+    /// outlive the record it named (FR-008).
+    @Default(false) bool acknowledged,
   }) = _MergeProductsState;
 
   const MergeProductsState._();
@@ -42,9 +49,13 @@ class MergeProductsState with _$MergeProductsState {
       duplicate != null &&
       canonical!.productId == duplicate!.productId;
 
-  /// FR-005, FR-006, FR-009: both selected, distinct, and not already
-  /// submitting.
-  bool get canSubmit => bothSelected && !isSameProduct && !submission.isLoading;
+  /// Whether the review step (panels, comparison, acknowledgment) renders at
+  /// all (specs/016 FR-001): two products are selected and they are distinct.
+  bool get reviewReady => bothSelected && !isSameProduct;
+
+  /// FR-005, FR-006, FR-009 (spec 008) plus FR-007 (spec 016): reviewable,
+  /// acknowledged, and not already submitting.
+  bool get canSubmit => reviewReady && acknowledged && !submission.isLoading;
 
   /// A code identifying which client-side guard is blocking submission, or
   /// `null` when none applies. Localized in the UI layer (no

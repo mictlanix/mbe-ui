@@ -118,6 +118,8 @@ export 'package:mbe_api_client/src/model/privilege_update.dart';
 export 'package:mbe_api_client/src/model/product_create.dart';
 export 'package:mbe_api_client/src/model/product_label_facet.dart';
 export 'package:mbe_api_client/src/model/product_list_item.dart';
+export 'package:mbe_api_client/src/model/product_merge_preview_item.dart';
+export 'package:mbe_api_client/src/model/product_merge_preview_response.dart';
 export 'package:mbe_api_client/src/model/product_merge_request.dart';
 export 'package:mbe_api_client/src/model/product_price_create.dart';
 export 'package:mbe_api_client/src/model/product_price_response.dart';

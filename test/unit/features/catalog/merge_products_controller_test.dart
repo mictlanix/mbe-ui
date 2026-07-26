@@ -118,7 +118,7 @@ void main() {
       expect(state.validationMessageCode, MergeValidationCode.sameProduct);
     });
 
-    test('can submit with two distinct selections', () {
+    test('two distinct selections are reviewable but not yet submittable', () {
       final container = _containerWith(repository);
       addTearDown(container.dispose);
       final controller = container.read(
@@ -127,6 +127,25 @@ void main() {
 
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_duplicate);
+
+      final state = container.read(mergeProductsControllerProvider);
+      // specs/016 FR-007: valid selections open the review step, but the
+      // destructive action stays locked until the deletion is acknowledged.
+      expect(state.reviewReady, isTrue);
+      expect(state.canSubmit, isFalse);
+      expect(state.validationMessageCode, isNull);
+    });
+
+    test('can submit once the deletion is acknowledged', () {
+      final container = _containerWith(repository);
+      addTearDown(container.dispose);
+      final controller = container.read(
+        mergeProductsControllerProvider.notifier,
+      );
+
+      controller.canonicalSelected(_canonical);
+      controller.duplicateSelected(_duplicate);
+      controller.acknowledgeToggled();
 
       final state = container.read(mergeProductsControllerProvider);
       expect(state.canSubmit, isTrue);
@@ -150,6 +169,7 @@ void main() {
       );
       controller.canonicalSelected(_canonical);
       controller.duplicateSelected(_duplicate);
+      controller.acknowledgeToggled();
 
       await controller.submit();
 
@@ -177,6 +197,7 @@ void main() {
         );
         controller.canonicalSelected(_canonical);
         controller.duplicateSelected(_duplicate);
+        controller.acknowledgeToggled();
 
         await controller.submit();
 

@@ -351,12 +351,113 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mergeConfirmTitle => 'Merge products permanently?';
 
   @override
-  String mergeConfirmMessage(String canonicalName, String duplicateName) {
-    return 'Are you sure you want to merge \"$duplicateName\" into \"$canonicalName\"? This cannot be undone — \"$duplicateName\" will be permanently deleted and its history transferred to \"$canonicalName\".';
+  String mergeConfirmMessage(
+    String canonicalName,
+    String canonicalCode,
+    String duplicateName,
+    String duplicateCode,
+  ) {
+    return '\"$canonicalName\" ($canonicalCode) is kept.\n\"$duplicateName\" ($duplicateCode) is deleted and its history moves to the kept product. This cannot be undone.';
+  }
+
+  @override
+  String mergeConfirmTotalLine(int total) {
+    return 'Records that will move: $total.';
   }
 
   @override
   String get mergeSuccess => 'Products merged successfully.';
+
+  @override
+  String get mergeKeptLabel => 'Kept';
+
+  @override
+  String get mergeDeletedLabel => 'Deleted';
+
+  @override
+  String get mergeSwapTooltip =>
+      'Swap which product is kept and which is deleted';
+
+  @override
+  String get mergeComparisonTitle => 'Data comparison';
+
+  @override
+  String get mergeComparisonFieldHeader => 'Field';
+
+  @override
+  String get mergeDiffBadge => 'Differs';
+
+  @override
+  String mergeAcknowledgeLabel(String duplicateName) {
+    return 'I understand \"$duplicateName\" will be permanently deleted.';
+  }
+
+  @override
+  String get mergeFieldId => 'Internal ID';
+
+  @override
+  String get mergeFieldCode => 'Code';
+
+  @override
+  String get mergeFieldSku => 'SKU';
+
+  @override
+  String get mergeFieldModel => 'Model';
+
+  @override
+  String get mergeFieldBrand => 'Brand';
+
+  @override
+  String get mergeFieldUom => 'Unit of measurement';
+
+  @override
+  String get mergeFieldTaxRate => 'Tax rate';
+
+  @override
+  String get mergeFieldStatus => 'Status';
+
+  @override
+  String get mergeRelatedRecordsTitle =>
+      'Records attached to the product being deleted';
+
+  @override
+  String get mergeRelatedDestroyedNote => 'deleted, not moved';
+
+  @override
+  String get mergeRelatedTotalLabel => 'Total';
+
+  @override
+  String get mergeCategorySalesOrderDetail => 'Sales order lines';
+
+  @override
+  String get mergeCategoryPurchaseOrderDetail => 'Purchase order lines';
+
+  @override
+  String get mergeCategoryInventoryReceiptDetail => 'Inventory receipt lines';
+
+  @override
+  String get mergeCategoryInventoryIssueDetail => 'Inventory issue lines';
+
+  @override
+  String get mergeCategoryInventoryTransferDetail => 'Inventory transfer lines';
+
+  @override
+  String get mergeCategoryLotSerialTracking => 'Lot and serial tracking';
+
+  @override
+  String get mergeCategoryProductPrice => 'Price lists';
+
+  @override
+  String get mergeCategoryProductLabel => 'Labels';
+
+  @override
+  String get mergeCategoryFiscalDocumentDetail => 'Fiscal document lines';
+
+  @override
+  String get mergeCategoryCommissionProduct => 'Commissions';
+
+  @override
+  String get mergeCategoryCustomerDiscount => 'Customer discounts';
 
   @override
   String get editUserTitle => 'Edit User';
