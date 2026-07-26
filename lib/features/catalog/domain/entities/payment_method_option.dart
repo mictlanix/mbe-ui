@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    hide EntityStatus, PaymentMethod;
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
