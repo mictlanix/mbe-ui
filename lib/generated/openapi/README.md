@@ -79,6 +79,30 @@ Class | Method | HTTP request | Description
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**getCashDrawerApiV1CashDrawersCashDrawerIdGet**](doc/CashDrawersApi.md#getcashdrawerapiv1cashdrawerscashdraweridget) | **GET** /api/v1/cash-drawers/{cash_drawer_id} | Get Cash Drawer
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**listCashDrawersApiV1CashDrawersGet**](doc/CashDrawersApi.md#listcashdrawersapiv1cashdrawersget) | **GET** /api/v1/cash-drawers | List Cash Drawers
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**updateCashDrawerApiV1CashDrawersCashDrawerIdPut**](doc/CashDrawersApi.md#updatecashdrawerapiv1cashdrawerscashdraweridput) | **PUT** /api/v1/cash-drawers/{cash_drawer_id} | Update Cash Drawer
+[*CashSessionsApi*](doc/CashSessionsApi.md) | [**closeCashSessionApiV1CashSessionsCashSessionIdClosePost**](doc/CashSessionsApi.md#closecashsessionapiv1cashsessionscashsessionidclosepost) | **POST** /api/v1/cash-sessions/{cash_session_id}/close | Close Cash Session
+[*CashSessionsApi*](doc/CashSessionsApi.md) | [**getCashSessionApiV1CashSessionsCashSessionIdGet**](doc/CashSessionsApi.md#getcashsessionapiv1cashsessionscashsessionidget) | **GET** /api/v1/cash-sessions/{cash_session_id} | Get Cash Session
+[*CashSessionsApi*](doc/CashSessionsApi.md) | [**getCurrentSessionApiV1CashSessionsCurrentGet**](doc/CashSessionsApi.md#getcurrentsessionapiv1cashsessionscurrentget) | **GET** /api/v1/cash-sessions/current | Get Current Session
+[*CashSessionsApi*](doc/CashSessionsApi.md) | [**listCashSessionsApiV1CashSessionsGet**](doc/CashSessionsApi.md#listcashsessionsapiv1cashsessionsget) | **GET** /api/v1/cash-sessions | List Cash Sessions
+[*CashSessionsApi*](doc/CashSessionsApi.md) | [**openCashSessionApiV1CashSessionsPost**](doc/CashSessionsApi.md#opencashsessionapiv1cashsessionspost) | **POST** /api/v1/cash-sessions | Open Cash Session
+[*CreditNotesApi*](doc/CreditNotesApi.md) | [**getCreditNoteApiV1CreditNotesCreditNoteIdGet**](doc/CreditNotesApi.md#getcreditnoteapiv1creditnotescreditnoteidget) | **GET** /api/v1/credit-notes/{credit_note_id} | Get Credit Note
+[*CreditNotesApi*](doc/CreditNotesApi.md) | [**listCreditNotesApiV1CreditNotesGet**](doc/CreditNotesApi.md#listcreditnotesapiv1creditnotesget) | **GET** /api/v1/credit-notes | List Credit Notes
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**applyCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdApplicationsPost**](doc/CustomerPaymentsApi.md#applycustomerpaymentapiv1customerpaymentscustomerpaymentidapplicationspost) | **POST** /api/v1/customer-payments/{customer_payment_id}/applications | Apply Customer Payment
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**createCustomerPaymentApiV1CustomerPaymentsPost**](doc/CustomerPaymentsApi.md#createcustomerpaymentapiv1customerpaymentspost) | **POST** /api/v1/customer-payments | Create Customer Payment
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**getCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdGet**](doc/CustomerPaymentsApi.md#getcustomerpaymentapiv1customerpaymentscustomerpaymentidget) | **GET** /api/v1/customer-payments/{customer_payment_id} | Get Customer Payment
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**listCustomerPaymentsApiV1CustomerPaymentsGet**](doc/CustomerPaymentsApi.md#listcustomerpaymentsapiv1customerpaymentsget) | **GET** /api/v1/customer-payments | List Customer Payments
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**listOutstandingOrdersApiV1CustomerPaymentsOutstandingOrdersGet**](doc/CustomerPaymentsApi.md#listoutstandingordersapiv1customerpaymentsoutstandingordersget) | **GET** /api/v1/customer-payments/outstanding-orders | List Outstanding Orders
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**listPaymentApplicationsApiV1CustomerPaymentsCustomerPaymentIdApplicationsGet**](doc/CustomerPaymentsApi.md#listpaymentapplicationsapiv1customerpaymentscustomerpaymentidapplicationsget) | **GET** /api/v1/customer-payments/{customer_payment_id}/applications | List Payment Applications
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**listUnverifiedPaymentsApiV1CustomerPaymentsUnverifiedGet**](doc/CustomerPaymentsApi.md#listunverifiedpaymentsapiv1customerpaymentsunverifiedget) | **GET** /api/v1/customer-payments/unverified | List Unverified Payments
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**rejectCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdRejectPost**](doc/CustomerPaymentsApi.md#rejectcustomerpaymentapiv1customerpaymentscustomerpaymentidrejectpost) | **POST** /api/v1/customer-payments/{customer_payment_id}/reject | Reject Customer Payment
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**reverseCustomerPaymentApplicationApiV1CustomerPaymentsCustomerPaymentIdApplicationsApplicationIdReversePost**](doc/CustomerPaymentsApi.md#reversecustomerpaymentapplicationapiv1customerpaymentscustomerpaymentidapplicationsapplicationidreversepost) | **POST** /api/v1/customer-payments/{customer_payment_id}/applications/{application_id}/reverse | Reverse Customer Payment Application
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**searchPaymentsAcrossFacilitiesApiV1CustomerPaymentsSearchGet**](doc/CustomerPaymentsApi.md#searchpaymentsacrossfacilitiesapiv1customerpaymentssearchget) | **GET** /api/v1/customer-payments/search | Search Payments Across Facilities
+[*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**verifyCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdVerifyPost**](doc/CustomerPaymentsApi.md#verifycustomerpaymentapiv1customerpaymentscustomerpaymentidverifypost) | **POST** /api/v1/customer-payments/{customer_payment_id}/verify | Verify Customer Payment
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**cancelCustomerRefundApiV1CustomerRefundsCustomerRefundIdCancelPost**](doc/CustomerRefundsApi.md#cancelcustomerrefundapiv1customerrefundscustomerrefundidcancelpost) | **POST** /api/v1/customer-refunds/{customer_refund_id}/cancel | Cancel Customer Refund
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**confirmCustomerRefundApiV1CustomerRefundsCustomerRefundIdConfirmPost**](doc/CustomerRefundsApi.md#confirmcustomerrefundapiv1customerrefundscustomerrefundidconfirmpost) | **POST** /api/v1/customer-refunds/{customer_refund_id}/confirm | Confirm Customer Refund
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**getCustomerRefundApiV1CustomerRefundsCustomerRefundIdGet**](doc/CustomerRefundsApi.md#getcustomerrefundapiv1customerrefundscustomerrefundidget) | **GET** /api/v1/customer-refunds/{customer_refund_id} | Get Customer Refund
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**listCustomerRefundsApiV1CustomerRefundsGet**](doc/CustomerRefundsApi.md#listcustomerrefundsapiv1customerrefundsget) | **GET** /api/v1/customer-refunds | List Customer Refunds
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**openCustomerRefundApiV1CustomerRefundsPost**](doc/CustomerRefundsApi.md#opencustomerrefundapiv1customerrefundspost) | **POST** /api/v1/customer-refunds | Open Customer Refund
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**updateCustomerRefundLineApiV1CustomerRefundsCustomerRefundIdLinesLineIdPut**](doc/CustomerRefundsApi.md#updatecustomerrefundlineapiv1customerrefundscustomerrefundidlineslineidput) | **PUT** /api/v1/customer-refunds/{customer_refund_id}/lines/{line_id} | Update Customer Refund Line
 [*CustomersApi*](doc/CustomersApi.md) | [**createCustomerApiV1CustomersPost**](doc/CustomersApi.md#createcustomerapiv1customerspost) | **POST** /api/v1/customers | Create Customer
 [*CustomersApi*](doc/CustomersApi.md) | [**deleteCustomerApiV1CustomersCustomerIdDelete**](doc/CustomersApi.md#deletecustomerapiv1customerscustomeriddelete) | **DELETE** /api/v1/customers/{customer_id} | Delete Customer
 [*CustomersApi*](doc/CustomersApi.md) | [**getCustomerApiV1CustomersCustomerIdGet**](doc/CustomersApi.md#getcustomerapiv1customerscustomeridget) | **GET** /api/v1/customers/{customer_id} | Get Customer
@@ -140,6 +164,27 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**previewProductMergeApiV1ProductsMergePreviewGet**](doc/ProductsApi.md#previewproductmergeapiv1productsmergepreviewget) | **GET** /api/v1/products/merge/preview | Preview Product Merge
 [*ProductsApi*](doc/ProductsApi.md) | [**updateProductApiV1ProductsProductIdPut**](doc/ProductsApi.md#updateproductapiv1productsproductidput) | **PUT** /api/v1/products/{product_id} | Update Product
 [*ProductsApi*](doc/ProductsApi.md) | [**uploadProductImageApiV1ProductsProductIdImagePost**](doc/ProductsApi.md#uploadproductimageapiv1productsproductidimagepost) | **POST** /api/v1/products/{product_id}/image | Upload Product Image
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**addSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesPost**](doc/SalesOrdersApi.md#addsalesorderlineapiv1salesorderssalesorderidlinespost) | **POST** /api/v1/sales-orders/{sales_order_id}/lines | Add Sales Order Line
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**cancelSalesOrderApiV1SalesOrdersSalesOrderIdCancelPost**](doc/SalesOrdersApi.md#cancelsalesorderapiv1salesorderssalesorderidcancelpost) | **POST** /api/v1/sales-orders/{sales_order_id}/cancel | Cancel Sales Order
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**confirmSalesOrderApiV1SalesOrdersSalesOrderIdConfirmPost**](doc/SalesOrdersApi.md#confirmsalesorderapiv1salesorderssalesorderidconfirmpost) | **POST** /api/v1/sales-orders/{sales_order_id}/confirm | Confirm Sales Order
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**createSalesOrderApiV1SalesOrdersPost**](doc/SalesOrdersApi.md#createsalesorderapiv1salesorderspost) | **POST** /api/v1/sales-orders | Create Sales Order
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**getSalesOrderApiV1SalesOrdersSalesOrderIdGet**](doc/SalesOrdersApi.md#getsalesorderapiv1salesorderssalesorderidget) | **GET** /api/v1/sales-orders/{sales_order_id} | Get Sales Order
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**listSalesOrdersApiV1SalesOrdersGet**](doc/SalesOrdersApi.md#listsalesordersapiv1salesordersget) | **GET** /api/v1/sales-orders | List Sales Orders
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**lookupProductsApiV1SalesOrdersProductLookupGet**](doc/SalesOrdersApi.md#lookupproductsapiv1salesordersproductlookupget) | **GET** /api/v1/sales-orders/product-lookup | Lookup Products
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**removeSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesLineIdDelete**](doc/SalesOrdersApi.md#removesalesorderlineapiv1salesorderssalesorderidlineslineiddelete) | **DELETE** /api/v1/sales-orders/{sales_order_id}/lines/{line_id} | Remove Sales Order Line
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**updateSalesOrderApiV1SalesOrdersSalesOrderIdPut**](doc/SalesOrdersApi.md#updatesalesorderapiv1salesorderssalesorderidput) | **PUT** /api/v1/sales-orders/{sales_order_id} | Update Sales Order
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**updateSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesLineIdPut**](doc/SalesOrdersApi.md#updatesalesorderlineapiv1salesorderssalesorderidlineslineidput) | **PUT** /api/v1/sales-orders/{sales_order_id}/lines/{line_id} | Update Sales Order Line
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**addSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesPost**](doc/SalesQuotesApi.md#addsalesquotelineapiv1salesquotessalesquoteidlinespost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/lines | Add Sales Quote Line
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**cancelSalesQuoteApiV1SalesQuotesSalesQuoteIdCancelPost**](doc/SalesQuotesApi.md#cancelsalesquoteapiv1salesquotessalesquoteidcancelpost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/cancel | Cancel Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**confirmSalesQuoteApiV1SalesQuotesSalesQuoteIdConfirmPost**](doc/SalesQuotesApi.md#confirmsalesquoteapiv1salesquotessalesquoteidconfirmpost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/confirm | Confirm Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**convertSalesQuoteApiV1SalesQuotesSalesQuoteIdConvertPost**](doc/SalesQuotesApi.md#convertsalesquoteapiv1salesquotessalesquoteidconvertpost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/convert | Convert Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**createSalesQuoteApiV1SalesQuotesPost**](doc/SalesQuotesApi.md#createsalesquoteapiv1salesquotespost) | **POST** /api/v1/sales-quotes | Create Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**duplicateSalesQuoteApiV1SalesQuotesSalesQuoteIdDuplicatePost**](doc/SalesQuotesApi.md#duplicatesalesquoteapiv1salesquotessalesquoteidduplicatepost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/duplicate | Duplicate Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**getSalesQuoteApiV1SalesQuotesSalesQuoteIdGet**](doc/SalesQuotesApi.md#getsalesquoteapiv1salesquotessalesquoteidget) | **GET** /api/v1/sales-quotes/{sales_quote_id} | Get Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**listSalesQuotesApiV1SalesQuotesGet**](doc/SalesQuotesApi.md#listsalesquotesapiv1salesquotesget) | **GET** /api/v1/sales-quotes | List Sales Quotes
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**removeSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesLineIdDelete**](doc/SalesQuotesApi.md#removesalesquotelineapiv1salesquotessalesquoteidlineslineiddelete) | **DELETE** /api/v1/sales-quotes/{sales_quote_id}/lines/{line_id} | Remove Sales Quote Line
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**updateSalesQuoteApiV1SalesQuotesSalesQuoteIdPut**](doc/SalesQuotesApi.md#updatesalesquoteapiv1salesquotessalesquoteidput) | **PUT** /api/v1/sales-quotes/{sales_quote_id} | Update Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**updateSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesLineIdPut**](doc/SalesQuotesApi.md#updatesalesquotelineapiv1salesquotessalesquoteidlineslineidput) | **PUT** /api/v1/sales-quotes/{sales_quote_id}/lines/{line_id} | Update Sales Quote Line
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCfdiUsagesApiV1SatCfdiUsagesIdGet**](doc/SatCatalogsApi.md#getcfdiusagesapiv1satcfdiusagesidget) | **GET** /api/v1/sat/cfdi-usages/{id} | Get Cfdi Usages
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCfdiUsagesApiV1SatCfdiUsagesIdGet_0**](doc/SatCatalogsApi.md#getcfdiusagesapiv1satcfdiusagesidget_0) | **GET** /api/v1/sat/cfdi-usages/{id} | Get Cfdi Usages
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**getCountriesApiV1SatCountriesIdGet**](doc/SatCatalogsApi.md#getcountriesapiv1satcountriesidget) | **GET** /api/v1/sat/countries/{id} | Get Countries
@@ -219,19 +264,44 @@ Class | Method | HTTP request | Description
  - [AddressResponse](doc/AddressResponse.md)
  - [AddressType](doc/AddressType.md)
  - [AddressUpdate](doc/AddressUpdate.md)
+ - [Amount](doc/Amount.md)
+ - [AmountChange](doc/AmountChange.md)
+ - [AmountMax](doc/AmountMax.md)
+ - [AmountMin](doc/AmountMin.md)
+ - [ApplicationCreate](doc/ApplicationCreate.md)
+ - [ApplicationResponse](doc/ApplicationResponse.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerUpdate](doc/CashDrawerUpdate.md)
+ - [CashSessionClose](doc/CashSessionClose.md)
+ - [CashSessionOpen](doc/CashSessionOpen.md)
+ - [CashSessionResponse](doc/CashSessionResponse.md)
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [Commission](doc/Commission.md)
  - [Commission1](doc/Commission1.md)
  - [ConfirmRecoveryRequest](doc/ConfirmRecoveryRequest.md)
  - [CreditLimit](doc/CreditLimit.md)
  - [CreditLimit1](doc/CreditLimit1.md)
+ - [CreditNoteResponse](doc/CreditNoteResponse.md)
+ - [CurrencyCode](doc/CurrencyCode.md)
+ - [CurrentSessionResponse](doc/CurrentSessionResponse.md)
  - [CustomerCreate](doc/CustomerCreate.md)
  - [CustomerListItem](doc/CustomerListItem.md)
+ - [CustomerPaymentCreate](doc/CustomerPaymentCreate.md)
+ - [CustomerPaymentResponse](doc/CustomerPaymentResponse.md)
+ - [CustomerRefundConfirm](doc/CustomerRefundConfirm.md)
+ - [CustomerRefundCreate](doc/CustomerRefundCreate.md)
+ - [CustomerRefundLineResponse](doc/CustomerRefundLineResponse.md)
+ - [CustomerRefundLineUpdate](doc/CustomerRefundLineUpdate.md)
+ - [CustomerRefundResponse](doc/CustomerRefundResponse.md)
+ - [CustomerRefundSummary](doc/CustomerRefundSummary.md)
  - [CustomerResponse](doc/CustomerResponse.md)
  - [CustomerUpdate](doc/CustomerUpdate.md)
+ - [Denomination](doc/Denomination.md)
+ - [DenominationCount](doc/DenominationCount.md)
+ - [DiscountRate](doc/DiscountRate.md)
+ - [DiscountRate1](doc/DiscountRate1.md)
+ - [DocumentStatus](doc/DocumentStatus.md)
  - [EmployeeCreate](doc/EmployeeCreate.md)
  - [EmployeeResponse](doc/EmployeeResponse.md)
  - [EmployeeUpdate](doc/EmployeeUpdate.md)
@@ -258,17 +328,24 @@ Class | Method | HTTP request | Description
  - [LabelUpdate](doc/LabelUpdate.md)
  - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
+ - [ListResponseCashSessionResponse](doc/ListResponseCashSessionResponse.md)
+ - [ListResponseCreditNoteResponse](doc/ListResponseCreditNoteResponse.md)
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
+ - [ListResponseCustomerPaymentResponse](doc/ListResponseCustomerPaymentResponse.md)
+ - [ListResponseCustomerRefundSummary](doc/ListResponseCustomerRefundSummary.md)
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)
  - [ListResponseExchangeRateResponse](doc/ListResponseExchangeRateResponse.md)
  - [ListResponseExpenseResponse](doc/ListResponseExpenseResponse.md)
  - [ListResponseFacilityResponse](doc/ListResponseFacilityResponse.md)
  - [ListResponseLabelResponse](doc/ListResponseLabelResponse.md)
+ - [ListResponseOutstandingOrderResponse](doc/ListResponseOutstandingOrderResponse.md)
  - [ListResponsePaymentMethodOptionResponse](doc/ListResponsePaymentMethodOptionResponse.md)
  - [ListResponsePointSaleResponse](doc/ListResponsePointSaleResponse.md)
  - [ListResponsePriceListResponse](doc/ListResponsePriceListResponse.md)
  - [ListResponseProductListItem](doc/ListResponseProductListItem.md)
  - [ListResponseProductPriceResponse](doc/ListResponseProductPriceResponse.md)
+ - [ListResponseSalesOrderSummary](doc/ListResponseSalesOrderSummary.md)
+ - [ListResponseSalesQuoteSummary](doc/ListResponseSalesQuoteSummary.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
  - [ListResponseTaxpayerCertificateResponse](doc/ListResponseTaxpayerCertificateResponse.md)
@@ -282,22 +359,32 @@ Class | Method | HTTP request | Description
  - [LowProfit1](doc/LowProfit1.md)
  - [LowProfitMargin](doc/LowProfitMargin.md)
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
+ - [MethodTotal](doc/MethodTotal.md)
+ - [OpeningAmount](doc/OpeningAmount.md)
+ - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
+ - [PaymentMethod](doc/PaymentMethod.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)
  - [PaymentMethodOptionResponse](doc/PaymentMethodOptionResponse.md)
  - [PaymentMethodOptionUpdate](doc/PaymentMethodOptionUpdate.md)
+ - [PaymentTerms](doc/PaymentTerms.md)
+ - [PaymentType](doc/PaymentType.md)
  - [PointSaleCreate](doc/PointSaleCreate.md)
  - [PointSaleResponse](doc/PointSaleResponse.md)
  - [PointSaleUpdate](doc/PointSaleUpdate.md)
  - [Price](doc/Price.md)
  - [Price1](doc/Price1.md)
+ - [PriceAdjustment](doc/PriceAdjustment.md)
+ - [PriceAdjustment1](doc/PriceAdjustment1.md)
  - [PriceListCreate](doc/PriceListCreate.md)
  - [PriceListResponse](doc/PriceListResponse.md)
  - [PriceListUpdate](doc/PriceListUpdate.md)
+ - [Priority](doc/Priority.md)
  - [PrivilegeResponse](doc/PrivilegeResponse.md)
  - [PrivilegeUpdate](doc/PrivilegeUpdate.md)
  - [ProductCreate](doc/ProductCreate.md)
  - [ProductLabelFacet](doc/ProductLabelFacet.md)
  - [ProductListItem](doc/ProductListItem.md)
+ - [ProductLookupResponse](doc/ProductLookupResponse.md)
  - [ProductMergePreviewItem](doc/ProductMergePreviewItem.md)
  - [ProductMergePreviewResponse](doc/ProductMergePreviewResponse.md)
  - [ProductMergeRequest](doc/ProductMergeRequest.md)
@@ -305,12 +392,33 @@ Class | Method | HTTP request | Description
  - [ProductPriceResponse](doc/ProductPriceResponse.md)
  - [ProductPriceUpdate](doc/ProductPriceUpdate.md)
  - [ProductResponse](doc/ProductResponse.md)
+ - [ProductStockResponse](doc/ProductStockResponse.md)
  - [ProductUpdate](doc/ProductUpdate.md)
+ - [Quantity](doc/Quantity.md)
+ - [Quantity1](doc/Quantity1.md)
  - [Rate](doc/Rate.md)
  - [Rate1](doc/Rate1.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
+ - [RefundPayout](doc/RefundPayout.md)
+ - [RejectionRequest](doc/RejectionRequest.md)
+ - [ReversalRequest](doc/ReversalRequest.md)
+ - [SalesOrderCreate](doc/SalesOrderCreate.md)
+ - [SalesOrderLineCreate](doc/SalesOrderLineCreate.md)
+ - [SalesOrderLineResponse](doc/SalesOrderLineResponse.md)
+ - [SalesOrderLineUpdate](doc/SalesOrderLineUpdate.md)
+ - [SalesOrderResponse](doc/SalesOrderResponse.md)
+ - [SalesOrderSummary](doc/SalesOrderSummary.md)
+ - [SalesOrderUpdate](doc/SalesOrderUpdate.md)
+ - [SalesQuoteCreate](doc/SalesQuoteCreate.md)
+ - [SalesQuoteLineCreate](doc/SalesQuoteLineCreate.md)
+ - [SalesQuoteLineResponse](doc/SalesQuoteLineResponse.md)
+ - [SalesQuoteLineUpdate](doc/SalesQuoteLineUpdate.md)
+ - [SalesQuoteResponse](doc/SalesQuoteResponse.md)
+ - [SalesQuoteSummary](doc/SalesQuoteSummary.md)
+ - [SalesQuoteUpdate](doc/SalesQuoteUpdate.md)
  - [SatCatalogResponse](doc/SatCatalogResponse.md)
  - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
+ - [SessionState](doc/SessionState.md)
  - [SupplierCreate](doc/SupplierCreate.md)
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)
