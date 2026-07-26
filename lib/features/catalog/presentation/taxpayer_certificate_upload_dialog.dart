@@ -217,10 +217,7 @@ class _FilePickerField extends StatelessWidget {
             key: ValueKey(fileName),
             readOnly: true,
             initialValue: fileName,
-            decoration: InputDecoration(
-              labelText: label,
-              errorText: errorText,
-            ),
+            decoration: InputDecoration(labelText: label, errorText: errorText),
           ),
         ),
         const SizedBox(width: 8),

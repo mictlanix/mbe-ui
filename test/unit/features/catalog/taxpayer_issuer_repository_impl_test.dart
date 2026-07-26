@@ -13,23 +13,26 @@ const _jsonHeaders = {
 void main() {
   group('TaxpayerIssuerRepositoryImpl — regression: pre-existing list-only '
       'consumers keep working (research §13)', () {
-    test('list() still returns TaxpayerIssuerListItem (spec 014 autocomplete)', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [_issuerJson()],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'list() still returns TaxpayerIssuerListItem (spec 014 autocomplete)',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'items': [_issuerJson()],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final result = await repository.list();
+        final result = await repository.list();
 
-      expect(result.total, 1);
-      expect(result.items.single.rfc, 'XAXX010101000');
-    });
+        expect(result.total, 1);
+        expect(result.items.single.rfc, 'XAXX010101000');
+      },
+    );
 
     test('the lightweight get() still resolves an RFC to a display name '
         '(FR-034b)', () async {
@@ -86,31 +89,31 @@ void main() {
       expect(body['postal_code'], '06500');
     });
 
-    test('a duplicate RFC rejection maps to AppError.validation (FR-017)', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'detail': [
-              {
-                'loc': ['body', 'taxpayer_issuer_id'],
-                'msg': 'Taxpayer issuer already exists',
-                'type': 'value_error',
-              },
-            ],
-          }),
-          422,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'a duplicate RFC rejection maps to AppError.validation (FR-017)',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': [
+                {
+                  'loc': ['body', 'taxpayer_issuer_id'],
+                  'msg': 'Taxpayer issuer already exists',
+                  'type': 'value_error',
+                },
+              ],
+            }),
+            422,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      await expectLater(
-        () => repository.create(
-          rfc: 'XAXX010101000',
-          regime: '601',
-        ),
-        throwsA(isA<ValidationError>()),
-      );
-    });
+        await expectLater(
+          () => repository.create(rfc: 'XAXX010101000', regime: '601'),
+          throwsA(isA<ValidationError>()),
+        );
+      },
+    );
   });
 
   group('TaxpayerIssuerRepositoryImpl.update (new, FR-012, FR-015)', () {

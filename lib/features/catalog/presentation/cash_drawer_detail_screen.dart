@@ -37,7 +37,8 @@ class CashDrawerDetailScreen extends ConsumerStatefulWidget {
       _CashDrawerDetailScreenState();
 }
 
-class _CashDrawerDetailScreenState extends ConsumerState<CashDrawerDetailScreen> {
+class _CashDrawerDetailScreenState
+    extends ConsumerState<CashDrawerDetailScreen> {
   bool get _isEdit => widget.cashDrawerId != null;
 
   @override

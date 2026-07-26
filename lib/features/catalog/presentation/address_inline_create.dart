@@ -25,9 +25,7 @@ class _AddressInlineCreateDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(addressInlineCreateControllerProvider);
-    final controller = ref.read(
-      addressInlineCreateControllerProvider.notifier,
-    );
+    final controller = ref.read(addressInlineCreateControllerProvider.notifier);
     final l10n = AppLocalizations.of(context)!;
 
     if (state.created != null) {

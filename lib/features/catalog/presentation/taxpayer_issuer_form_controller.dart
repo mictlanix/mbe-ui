@@ -39,7 +39,8 @@ class TaxpayerIssuerFormState with _$TaxpayerIssuerFormState {
     @Default('') String name,
     @Default('') String regime,
     @Default('') String regimeDisplayText,
-    @Default(FiscalCertificationProvider.number0) FiscalCertificationProvider provider,
+    @Default(FiscalCertificationProvider.number0)
+    FiscalCertificationProvider provider,
     @Default('') String postalCode,
     @Default('') String postalCodeDisplayText,
     @Default('') String comment,
@@ -71,8 +72,8 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
   void providerChanged(FiscalCertificationProvider v) =>
       state = state.copyWith(provider: v);
 
-  void postalCodeSelected(String code, String displayText) =>
-      state = state.copyWith(postalCode: code, postalCodeDisplayText: displayText);
+  void postalCodeSelected(String code, String displayText) => state = state
+      .copyWith(postalCode: code, postalCodeDisplayText: displayText);
 
   void commentChanged(String v) => state = state.copyWith(comment: v);
 
@@ -91,7 +92,8 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
         rfc: issuer.rfc,
         name: issuer.name,
         regime: issuer.regime?.code ?? '',
-        regimeDisplayText: issuer.regime?.description ?? issuer.regime?.code ?? '',
+        regimeDisplayText:
+            issuer.regime?.description ?? issuer.regime?.code ?? '',
         provider: issuer.provider,
         postalCode: issuer.postalCode?.code ?? '',
         postalCodeDisplayText:

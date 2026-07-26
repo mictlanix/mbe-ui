@@ -37,14 +37,8 @@ class PointsOfSaleListScreen extends ConsumerWidget {
       pointSaleFilterControllerProvider.notifier,
     );
     final access = ref.watch(accessControlProvider);
-    final canCreate = access.can(
-      SystemObject.pointsOfSale,
-      AccessRight.create,
-    );
-    final canUpdate = access.can(
-      SystemObject.pointsOfSale,
-      AccessRight.update,
-    );
+    final canCreate = access.can(SystemObject.pointsOfSale, AccessRight.create);
+    final canUpdate = access.can(SystemObject.pointsOfSale, AccessRight.update);
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
@@ -92,8 +86,7 @@ class PointsOfSaleListScreen extends ConsumerWidget {
         Expanded(
           child: pageAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) =>
-                Center(child: Text(l10n.pointsOfSaleLoadError(e))),
+            error: (e, _) => Center(child: Text(l10n.pointsOfSaleLoadError(e))),
             data: (CatalogPage<PointSale> page) => page.items.isEmpty
                 ? Center(child: Text(l10n.noPointsOfSaleFound))
                 : DataTableView<PointSale>(

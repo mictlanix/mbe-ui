@@ -29,9 +29,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          addressRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [addressRepositoryProvider.overrideWithValue(repository)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -59,7 +57,10 @@ void main() {
   }
 
   Future<void> fillRequired(WidgetTester tester) async {
-    await tester.enterText(find.byKey(const Key('address_street_field')), 'Reforma');
+    await tester.enterText(
+      find.byKey(const Key('address_street_field')),
+      'Reforma',
+    );
     await tester.enterText(
       find.byKey(const Key('address_exterior_number_field')),
       '100',
@@ -76,7 +77,10 @@ void main() {
       find.byKey(const Key('address_borough_field')),
       'Cuauhtémoc',
     );
-    await tester.enterText(find.byKey(const Key('address_state_field')), 'CDMX');
+    await tester.enterText(
+      find.byKey(const Key('address_state_field')),
+      'CDMX',
+    );
     await tester.enterText(
       find.byKey(const Key('address_country_field')),
       'México',

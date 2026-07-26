@@ -749,14 +749,199 @@ abstract class AppLocalizations {
   /// No description provided for @mergeConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to merge \"{duplicateName}\" into \"{canonicalName}\"? This cannot be undone — \"{duplicateName}\" will be permanently deleted and its history transferred to \"{canonicalName}\".'**
-  String mergeConfirmMessage(String canonicalName, String duplicateName);
+  /// **'\"{canonicalName}\" ({canonicalCode}) is kept.\n\"{duplicateName}\" ({duplicateCode}) is deleted and its history moves to the kept product. This cannot be undone.'**
+  String mergeConfirmMessage(
+    String canonicalName,
+    String canonicalCode,
+    String duplicateName,
+    String duplicateCode,
+  );
+
+  /// No description provided for @mergeConfirmTotalLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Records that will move: {total}.'**
+  String mergeConfirmTotalLine(int total);
 
   /// No description provided for @mergeSuccess.
   ///
   /// In en, this message translates to:
   /// **'Products merged successfully.'**
   String get mergeSuccess;
+
+  /// No description provided for @mergeKeptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept'**
+  String get mergeKeptLabel;
+
+  /// No description provided for @mergeDeletedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get mergeDeletedLabel;
+
+  /// No description provided for @mergeSwapTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap which product is kept and which is deleted'**
+  String get mergeSwapTooltip;
+
+  /// No description provided for @mergeComparisonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data comparison'**
+  String get mergeComparisonTitle;
+
+  /// No description provided for @mergeComparisonFieldHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Field'**
+  String get mergeComparisonFieldHeader;
+
+  /// No description provided for @mergeDiffBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Differs'**
+  String get mergeDiffBadge;
+
+  /// No description provided for @mergeAcknowledgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand \"{duplicateName}\" will be permanently deleted.'**
+  String mergeAcknowledgeLabel(String duplicateName);
+
+  /// No description provided for @mergeFieldId.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal ID'**
+  String get mergeFieldId;
+
+  /// No description provided for @mergeFieldCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get mergeFieldCode;
+
+  /// No description provided for @mergeFieldSku.
+  ///
+  /// In en, this message translates to:
+  /// **'SKU'**
+  String get mergeFieldSku;
+
+  /// No description provided for @mergeFieldModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get mergeFieldModel;
+
+  /// No description provided for @mergeFieldBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get mergeFieldBrand;
+
+  /// No description provided for @mergeFieldUom.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit of measurement'**
+  String get mergeFieldUom;
+
+  /// No description provided for @mergeFieldTaxRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax rate'**
+  String get mergeFieldTaxRate;
+
+  /// No description provided for @mergeFieldStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get mergeFieldStatus;
+
+  /// No description provided for @mergeRelatedRecordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Records attached to the product being deleted'**
+  String get mergeRelatedRecordsTitle;
+
+  /// No description provided for @mergeRelatedDestroyedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted, not moved'**
+  String get mergeRelatedDestroyedNote;
+
+  /// No description provided for @mergeRelatedTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get mergeRelatedTotalLabel;
+
+  /// No description provided for @mergeCategorySalesOrderDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales order lines'**
+  String get mergeCategorySalesOrderDetail;
+
+  /// No description provided for @mergeCategoryPurchaseOrderDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order lines'**
+  String get mergeCategoryPurchaseOrderDetail;
+
+  /// No description provided for @mergeCategoryInventoryReceiptDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory receipt lines'**
+  String get mergeCategoryInventoryReceiptDetail;
+
+  /// No description provided for @mergeCategoryInventoryIssueDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory issue lines'**
+  String get mergeCategoryInventoryIssueDetail;
+
+  /// No description provided for @mergeCategoryInventoryTransferDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory transfer lines'**
+  String get mergeCategoryInventoryTransferDetail;
+
+  /// No description provided for @mergeCategoryLotSerialTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Lot and serial tracking'**
+  String get mergeCategoryLotSerialTracking;
+
+  /// No description provided for @mergeCategoryProductPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price lists'**
+  String get mergeCategoryProductPrice;
+
+  /// No description provided for @mergeCategoryProductLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get mergeCategoryProductLabel;
+
+  /// No description provided for @mergeCategoryFiscalDocumentDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiscal document lines'**
+  String get mergeCategoryFiscalDocumentDetail;
+
+  /// No description provided for @mergeCategoryCommissionProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions'**
+  String get mergeCategoryCommissionProduct;
+
+  /// No description provided for @mergeCategoryCustomerDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer discounts'**
+  String get mergeCategoryCustomerDiscount;
 
   /// No description provided for @editUserTitle.
   ///

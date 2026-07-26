@@ -96,20 +96,19 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets(
-    'the warehouse field is disabled until a facility is selected',
-    (tester) async {
-      await pumpScreen(tester);
+  testWidgets('the warehouse field is disabled until a facility is selected', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
 
-      // `CatalogEntityPicker` itself carries the key; when disabled it
-      // internally renders a plain `TextFormField`, so its own `enabled`
-      // flag — not a nested-widget cast — is what the test asserts on.
-      final warehouseField = tester.widget<CatalogEntityPicker<Warehouse>>(
-        find.byKey(const Key('warehouse_field')),
-      );
-      expect(warehouseField.enabled, isFalse);
-    },
-  );
+    // `CatalogEntityPicker` itself carries the key; when disabled it
+    // internally renders a plain `TextFormField`, so its own `enabled`
+    // flag — not a nested-widget cast — is what the test asserts on.
+    final warehouseField = tester.widget<CatalogEntityPicker<Warehouse>>(
+      find.byKey(const Key('warehouse_field')),
+    );
+    expect(warehouseField.enabled, isFalse);
+  });
 
   testWidgets(
     'the warehouse picker query is scoped to the selected facility (FR-022)',
@@ -145,10 +144,7 @@ void main() {
 
       controller.facilitySelected(9, 'Main Store');
       controller.warehouseSelected(5, 'Main Warehouse');
-      expect(
-        container.read(pointSaleFormControllerProvider).warehouseId,
-        5,
-      );
+      expect(container.read(pointSaleFormControllerProvider).warehouseId, 5);
 
       controller.facilitySelected(10, 'North Plant');
 
@@ -158,21 +154,18 @@ void main() {
     },
   );
 
-  testWidgets(
-    're-selecting the same facility does not clear the warehouse',
-    (tester) async {
-      await pumpScreen(tester);
-      final controller = container.read(
-        pointSaleFormControllerProvider.notifier,
-      );
+  testWidgets('re-selecting the same facility does not clear the warehouse', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+    final controller = container.read(pointSaleFormControllerProvider.notifier);
 
-      controller.facilitySelected(9, 'Main Store');
-      controller.warehouseSelected(5, 'Main Warehouse');
-      controller.facilitySelected(9, 'Main Store');
+    controller.facilitySelected(9, 'Main Store');
+    controller.warehouseSelected(5, 'Main Warehouse');
+    controller.facilitySelected(9, 'Main Store');
 
-      expect(container.read(pointSaleFormControllerProvider).warehouseId, 5);
-    },
-  );
+    expect(container.read(pointSaleFormControllerProvider).warehouseId, 5);
+  });
 
   testWidgets(
     'a legacy cross-facility record still loads without being cleared '
@@ -244,17 +237,14 @@ void main() {
   testWidgets('delete requires a confirmation dialog before submit (FR-007)', (
     tester,
   ) async {
-    when(
-      () => repository.delete(pointSaleId: 1),
-    ).thenAnswer((_) async {});
+    when(() => repository.delete(pointSaleId: 1)).thenAnswer((_) async {});
 
     final router = GoRouter(
       initialLocation: '/points-of-sale',
       routes: [
         GoRoute(
           path: '/points-of-sale',
-          builder: (_, _) =>
-              const Scaffold(body: Text('points of sale list')),
+          builder: (_, _) => const Scaffold(body: Text('points of sale list')),
         ),
         GoRoute(
           path: '/points-of-sale/:pointSaleId',
@@ -289,9 +279,7 @@ void main() {
     expect(find.byType(AlertDialog), findsOneWidget);
     verifyNever(() => repository.delete(pointSaleId: 1));
 
-    await tester.tap(
-      find.byKey(const Key('confirm_delete_point_sale_button')),
-    );
+    await tester.tap(find.byKey(const Key('confirm_delete_point_sale_button')));
     await tester.pumpAndSettle();
 
     verify(() => repository.delete(pointSaleId: 1)).called(1);

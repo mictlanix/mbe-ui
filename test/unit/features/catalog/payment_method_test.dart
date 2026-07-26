@@ -39,15 +39,21 @@ void main() {
       }
     });
 
-    test('an unmapped code falls back to null (caller renders the raw value)', () {
-      expect(PaymentMethod.fromCode(9999), isNull);
-    });
+    test(
+      'an unmapped code falls back to null (caller renders the raw value)',
+      () {
+        expect(PaymentMethod.fromCode(9999), isNull);
+      },
+    );
 
-    test('every PaymentMethod.values member round-trips through its own code', () {
-      for (final method in PaymentMethod.values) {
-        expect(PaymentMethod.fromCode(method.code), method);
-      }
-    });
+    test(
+      'every PaymentMethod.values member round-trips through its own code',
+      () {
+        for (final method in PaymentMethod.values) {
+          expect(PaymentMethod.fromCode(method.code), method);
+        }
+      },
+    );
 
     test('the provisional 1001 GovernmentFunding member is present', () {
       // research §5: a non-SAT mbe extension, kept with a // FIXME marker for

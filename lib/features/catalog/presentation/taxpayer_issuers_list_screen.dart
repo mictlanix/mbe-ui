@@ -69,8 +69,7 @@ class TaxpayerIssuersListScreen extends ConsumerWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) =>
                 Center(child: Text(l10n.taxpayerIssuersLoadError(e))),
-            data: (CatalogPage<TaxpayerIssuer> page) =>
-                page.items.isEmpty
+            data: (CatalogPage<TaxpayerIssuer> page) => page.items.isEmpty
                 ? Center(child: Text(l10n.noTaxpayerIssuersFound))
                 : DataTableView<TaxpayerIssuer>(
                     key: const Key('taxpayer_issuers_table'),

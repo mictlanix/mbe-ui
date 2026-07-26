@@ -134,9 +134,7 @@ void main() {
     when(
       () => repository.get(warehouseId: 1),
     ).thenAnswer((_) async => _warehouse);
-    when(
-      () => repository.delete(warehouseId: 1),
-    ).thenAnswer((_) async {});
+    when(() => repository.delete(warehouseId: 1)).thenAnswer((_) async {});
 
     // Router-wrapped so the post-delete `context.pop()` (constitution §VI —
     // return to the list on success) has somewhere to go, mirroring the list
@@ -162,9 +160,7 @@ void main() {
         overrides: [
           warehouseRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
-          accessControlProvider.overrideWithValue(
-            _accessFor(_fullAccessUser),
-          ),
+          accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -184,9 +180,7 @@ void main() {
     expect(find.byType(AlertDialog), findsOneWidget);
     verifyNever(() => repository.delete(warehouseId: 1));
 
-    await tester.tap(
-      find.byKey(const Key('confirm_delete_warehouse_button')),
-    );
+    await tester.tap(find.byKey(const Key('confirm_delete_warehouse_button')));
     await tester.pumpAndSettle();
 
     verify(() => repository.delete(warehouseId: 1)).called(1);
@@ -204,7 +198,9 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
 
-    verifyNever(() => repository.delete(warehouseId: any(named: 'warehouseId')));
+    verifyNever(
+      () => repository.delete(warehouseId: any(named: 'warehouseId')),
+    );
   });
 
   testWidgets('a duplicate-code server rejection is surfaced on the form '

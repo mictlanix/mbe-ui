@@ -14,51 +14,70 @@ const _jsonHeaders = {
 
 void main() {
   group('CashDrawer.fromResponse (via CashDrawerRepositoryImpl.list)', () {
-    test('maps the pre-expanded facility summary to facilityId/facilityName', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [_cashDrawerJson(id: 1, facilityId: 9, facilityName: 'Main Store')],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'maps the pre-expanded facility summary to facilityId/facilityName',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                _cashDrawerJson(
+                  id: 1,
+                  facilityId: 9,
+                  facilityName: 'Main Store',
+                ),
+              ],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final result = await repository.list();
-      final cashDrawer = result.items.single;
+        final result = await repository.list();
+        final cashDrawer = result.items.single;
 
-      expect(cashDrawer.cashDrawerId, 1);
-      expect(cashDrawer.facilityId, 9);
-      expect(cashDrawer.facilityName, 'Main Store');
-      expect(cashDrawer.code, 'CD-1');
-      expect(cashDrawer.status, EntityStatus.active);
-      expect(result.total, 1);
-    });
+        expect(cashDrawer.cashDrawerId, 1);
+        expect(cashDrawer.facilityId, 9);
+        expect(cashDrawer.facilityName, 'Main Store');
+        expect(cashDrawer.code, 'CD-1');
+        expect(cashDrawer.status, EntityStatus.active);
+        expect(result.total, 1);
+      },
+    );
 
-    test('an empty facility name falls back to the unknown-facility label', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'items': [_cashDrawerJson(id: 1, facilityId: 9, facilityName: '')],
-            'total': 1,
-          }),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'an empty facility name falls back to the unknown-facility label',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                _cashDrawerJson(id: 1, facilityId: 9, facilityName: ''),
+              ],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final cashDrawer = (await repository.list()).items.single;
+        final cashDrawer = (await repository.list()).items.single;
 
-      expect(cashDrawer.facilityDisplayName('Unknown facility'), 'Unknown facility');
-    });
+        expect(
+          cashDrawer.facilityDisplayName('Unknown facility'),
+          'Unknown facility',
+        );
+      },
+    );
 
     test('a resolved facility name is shown as-is, not the fallback', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
           jsonEncode({
-            'items': [_cashDrawerJson(id: 1, facilityId: 9, facilityName: 'Main Store')],
+            'items': [
+              _cashDrawerJson(id: 1, facilityId: 9, facilityName: 'Main Store'),
+            ],
             'total': 1,
           }),
           200,

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus, ValidationError;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    hide EntityStatus, ValidationError;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -171,13 +172,13 @@ void main() {
       routes: [
         GoRoute(
           path: '/taxpayer-issuers',
-          builder: (_, _) => const Scaffold(body: Text('taxpayer issuers list')),
+          builder: (_, _) =>
+              const Scaffold(body: Text('taxpayer issuers list')),
         ),
         GoRoute(
           path: '/taxpayer-issuers/:rfc',
-          builder: (_, state) => TaxpayerIssuerDetailScreen(
-            rfc: state.pathParameters['rfc'],
-          ),
+          builder: (_, state) =>
+              TaxpayerIssuerDetailScreen(rfc: state.pathParameters['rfc']),
         ),
       ],
     );
@@ -266,10 +267,7 @@ void main() {
     container
         .read(taxpayerIssuerFormControllerProvider.notifier)
         .regimeSelected('601', 'General de Ley');
-    await tester.enterText(
-      find.byKey(const Key('rfc_field')),
-      'XAXX010101000',
-    );
+    await tester.enterText(find.byKey(const Key('rfc_field')), 'XAXX010101000');
     await tester.enterText(find.byKey(const Key('name_field')), 'Duplicate');
 
     await tester.tap(find.byKey(const Key('save_button')));

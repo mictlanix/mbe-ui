@@ -13,28 +13,46 @@ void main() {
   });
 
   group('fiscalCertificationProviderLabel', () {
-    test('resolves each confirmed provider ordinal (mbe-api docs/constants.md)', () {
-      expect(
-        fiscalCertificationProviderLabel(l10n, FiscalCertificationProvider.number0),
-        l10n.fiscalCertificationProviderNone,
-      );
-      expect(
-        fiscalCertificationProviderLabel(l10n, FiscalCertificationProvider.number1),
-        l10n.fiscalCertificationProviderDiverza,
-      );
-      expect(
-        fiscalCertificationProviderLabel(l10n, FiscalCertificationProvider.number2),
-        l10n.fiscalCertificationProviderFiscoClic,
-      );
-      expect(
-        fiscalCertificationProviderLabel(l10n, FiscalCertificationProvider.number3),
-        l10n.fiscalCertificationProviderServisim,
-      );
-      expect(
-        fiscalCertificationProviderLabel(l10n, FiscalCertificationProvider.number4),
-        l10n.fiscalCertificationProviderProFact,
-      );
-    });
+    test(
+      'resolves each confirmed provider ordinal (mbe-api docs/constants.md)',
+      () {
+        expect(
+          fiscalCertificationProviderLabel(
+            l10n,
+            FiscalCertificationProvider.number0,
+          ),
+          l10n.fiscalCertificationProviderNone,
+        );
+        expect(
+          fiscalCertificationProviderLabel(
+            l10n,
+            FiscalCertificationProvider.number1,
+          ),
+          l10n.fiscalCertificationProviderDiverza,
+        );
+        expect(
+          fiscalCertificationProviderLabel(
+            l10n,
+            FiscalCertificationProvider.number2,
+          ),
+          l10n.fiscalCertificationProviderFiscoClic,
+        );
+        expect(
+          fiscalCertificationProviderLabel(
+            l10n,
+            FiscalCertificationProvider.number3,
+          ),
+          l10n.fiscalCertificationProviderServisim,
+        );
+        expect(
+          fiscalCertificationProviderLabel(
+            l10n,
+            FiscalCertificationProvider.number4,
+          ),
+          l10n.fiscalCertificationProviderProFact,
+        );
+      },
+    );
 
     test('an unmapped provider falls back to its raw wire name', () {
       // All 5 generated ordinals are mapped today; this asserts the
