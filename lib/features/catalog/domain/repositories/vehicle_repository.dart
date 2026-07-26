@@ -8,6 +8,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
 abstract class VehicleRepository {
   Future<VehicleListResult> list({
     String? search,
+    EntityStatus? status,
     int skip = 0,
     int limit = 20,
   });

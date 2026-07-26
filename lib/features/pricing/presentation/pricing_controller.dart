@@ -30,7 +30,7 @@ class PricingState with _$PricingState {
     String? productDisplayText,
     @Default(<ProductPriceRow>[]) List<ProductPriceRow> rows,
     @Default(false) bool loading,
-    String? error,
+    AppError? error,
   }) = _PricingState;
 }
 
@@ -99,12 +99,21 @@ class PricingController extends _$PricingController {
         clearSelection();
         return;
       }
-      state = state.copyWith(loading: false, error: e.serverMessage ?? 'error');
+      state = state.copyWith(loading: false, error: e);
     }
   }
 
   /// Clears the current selection back to the empty state (US2 §8).
   void clearSelection() => state = const PricingState();
+
+  /// Re-fetches the current product's price grid unchanged, for the
+  /// `failed` state's Retry action (FR-032).
+  Future<void> retry() async {
+    final productId = state.productId;
+    if (productId == null) return;
+    state = state.copyWith(loading: true, error: null);
+    await _load(productId);
+  }
 
   /// Client-side validation (FR-011) for a row's price/low-profit/
   /// high-profit inputs.

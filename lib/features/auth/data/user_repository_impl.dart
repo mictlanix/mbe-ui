@@ -25,12 +25,14 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<UserListResult> list({
     String? search,
+    EntityStatus? status,
     int skip = 0,
     int limit = 20,
   }) async {
     try {
       final response = await _api.listUsersApiV1UsersGet(
         search: search,
+        status: status?.toApi(),
         skip: skip,
         limit: limit,
       );

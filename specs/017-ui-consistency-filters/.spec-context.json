@@ -1,0 +1,38 @@
+{
+  "workflow": "speckit",
+  "specName": "Cross-Screen UX Consistency & Filtering Backfill",
+  "branch": "017-ui-consistency-filters",
+  "currentStep": "tasks",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T19:34:17.106Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T19:54:44.891Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-25T20:02:14.419Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-07-26T21:32:07.463Z"
+    }
+  ],
+  "telemetryInstanceId": "422e51cc-1c11-4348-b1fd-2e716f69e1c8"
+}

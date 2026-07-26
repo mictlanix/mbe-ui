@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Renders an [AppError] as a dismissible banner. `ValidationError` lists
 /// each field-level message; other variants show a generic message
@@ -59,18 +60,15 @@ class ErrorBanner extends StatelessWidget {
   }
 
   List<String> _messagesFor(BuildContext context, AppError error) {
+    final l10n = AppLocalizations.of(context)!;
     return switch (error) {
       ValidationError(errors: final errors) when errors.isNotEmpty =>
         errors.map((e) => e.msg).toList(),
-      ValidationError() => const ['Please correct the highlighted fields.'],
-      AuthError() => const ['Invalid username or password.'],
-      NotFoundError() => const ['The requested item was not found.'],
-      ServerError() => const [
-        'Something went wrong on the server. Please try again later.',
-      ],
-      NetworkError() => const [
-        'Could not reach the server. Check your connection and try again.',
-      ],
+      ValidationError() => [l10n.errorValidationGeneric],
+      AuthError() => [l10n.errorAuthGeneric],
+      NotFoundError() => [l10n.errorNotFoundGeneric],
+      ServerError() => [l10n.errorServerGeneric],
+      NetworkError() => [l10n.errorNetworkGeneric],
     };
   }
 }

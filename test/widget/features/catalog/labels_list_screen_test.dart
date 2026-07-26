@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label.dart';
@@ -56,6 +57,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<Label> labels = _testLabels,
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.listDetailed(
@@ -65,16 +67,28 @@ void main() {
       ),
     ).thenAnswer((_) async => LabelPage(items: labels, total: labels.length));
 
+    final router = GoRouter(
+      initialLocation: query.toUri('/labels').toString(),
+      routes: [
+        GoRoute(
+          path: '/labels',
+          builder: (_, state) => Scaffold(
+            body: LabelsListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           labelRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: LabelsListScreen()),
         ),
       ),
     );
@@ -132,7 +146,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: LabelsListScreen()),
+            builder: (_, state) => Scaffold(
+              body: LabelsListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/labels/:labelId',

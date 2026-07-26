@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
@@ -17,22 +18,46 @@ part 'users_controller.g.dart';
 
 const _pageSize = 20;
 
-/// The Users catalog's search selection (data-model.md "UserFilter"),
-/// mirroring `ProductFilterController` (FR-001). Local UI state, not
-/// persisted (constitution §II).
-@freezed
-class UserFilter with _$UserFilter {
-  const factory UserFilter({@Default('') String search}) = _UserFilter;
+extension _EntityStatusByName on List<EntityStatus> {
+  EntityStatus? byNameOrNull(String name) {
+    for (final value in this) {
+      if (value.name == name) return value;
+    }
+    return null;
+  }
 }
 
-/// Holds the current search selection for the Users catalog (FR-001).
-/// Only updated on explicit submit — see `CatalogSearchBar` (FR-010).
-@riverpod
-class UserFilterController extends _$UserFilterController {
-  @override
-  UserFilter build() => const UserFilter();
+/// The Users list screen's addressable view state
+/// (017-ui-consistency-filters FR-011, FR-017, data-model.md "UserFilter"):
+/// search and a status facet. Derived from the route's [ListQuery] — the
+/// URL, not a mutable notifier, is the source of truth.
+@freezed
+class UserFilter with _$UserFilter {
+  const factory UserFilter({
+    @Default('') String search,
+    EntityStatus? status,
+    @Default(0) int pageIndex,
+  }) = _UserFilter;
 
-  void searchChanged(String value) => state = state.copyWith(search: value);
+  factory UserFilter.fromQuery(ListQuery query) {
+    final statusRaw = query.facet('status');
+    return UserFilter(
+      search: query.search,
+      status: statusRaw != null
+          ? EntityStatus.values.byNameOrNull(statusRaw)
+          : null,
+      pageIndex: query.pageIndex,
+    );
+  }
+}
+
+/// Derived facet-filter summary for the Users list's Filters button badge,
+/// mirroring `VehicleFilterBadge.activeFilterCount`. [search] has its own
+/// always-visible box and is excluded.
+extension UserFilterBadge on UserFilter {
+  int get activeFilterCount => status != null ? 1 : 0;
+
+  bool get hasActiveFilters => activeFilterCount > 0;
 }
 
 /// Error codes for [UserFormState.error], mapped to localized text in the
@@ -88,51 +113,37 @@ class UserFormState with _$UserFormState {
   }) = _UserFormState;
 }
 
-/// Fetches and holds the admin users list (FR-001, FR-002, FR-011),
-/// re-fetching page 0 whenever [UserFilterController]'s state changes.
-/// Supports page-based navigation via [goToPage], consumed by
-/// `DataTableView`'s `pagination` parameter (data-model.md
-/// "CatalogPage`<T>`", mirrors `ProductsListController`).
+/// Fetches and holds the admin users list (FR-001, FR-002, FR-011) for the
+/// given [UserFilter]. A family keyed by the filter value: a different URL
+/// is a different provider instance, and `ref.invalidate` after a mutation
+/// re-fetches the *same* page rather than resetting to page 0 (FR-025,
+/// research §3).
 @riverpod
 class UsersController extends _$UsersController {
   @override
-  Future<CatalogPage<UserSummary>> build() {
-    final filter = ref.watch(userFilterControllerProvider);
-    return _fetch(filter, pageIndex: 0);
+  Future<CatalogPage<UserSummary>> build(UserFilter filter) {
+    return fetchClampedPage(
+      pageIndex: filter.pageIndex,
+      pageSize: _pageSize,
+      fetch: (pageIndex) => _fetch(filter.copyWith(pageIndex: pageIndex)),
+    );
   }
 
-  Future<CatalogPage<UserSummary>> _fetch(
-    UserFilter filter, {
-    required int pageIndex,
-  }) async {
+  Future<CatalogPage<UserSummary>> _fetch(UserFilter filter) async {
     final result = await ref
         .read(userRepositoryProvider)
         .list(
           search: filter.search.isEmpty ? null : filter.search,
-          skip: pageIndex * _pageSize,
+          status: filter.status,
+          skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
         );
     return CatalogPage(
       items: result.items,
       total: result.total,
-      pageIndex: pageIndex,
+      pageIndex: filter.pageIndex,
       pageSize: _pageSize,
     );
-  }
-
-  /// Fetches [pageIndex] and replaces the current page with it.
-  Future<void> goToPage(int pageIndex) async {
-    final filter = ref.read(userFilterControllerProvider);
-    state = const AsyncLoading<CatalogPage<UserSummary>>().copyWithPrevious(
-      state,
-    );
-    state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
-  }
-
-  /// Re-fetches the current page (e.g. after a row is deleted).
-  Future<void> refresh() async {
-    final current = state.valueOrNull;
-    await goToPage(current?.pageIndex ?? 0);
   }
 }
 
@@ -328,7 +339,7 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
       await ref.read(userRepositoryProvider).delete(userId: userId);
-      ref.read(usersControllerProvider.notifier).refresh();
+      ref.invalidate(usersControllerProvider);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {

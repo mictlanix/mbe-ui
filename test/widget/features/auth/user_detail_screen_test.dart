@@ -165,6 +165,9 @@ void main() {
             .enabled,
         isFalse,
       );
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, anyOf(isNull, isEmpty));
     },
   );
 
@@ -178,8 +181,9 @@ void main() {
   });
 
   testWidgets(
-    'shows Recover password and Delete as buttons below Save, not in the '
-    'app bar, in the editable case for a user with delete rights',
+    'shows Recover password above the shared Delete/Save action row, not in '
+    'the app bar, in the editable case for a user with delete rights '
+    '(017-ui-consistency-filters, constitution v1.10.0)',
     (tester) async {
       await pumpScreen(tester, signedInAs: _fullAccessUser, userId: 'jdoe');
 
@@ -198,28 +202,37 @@ void main() {
         ),
         findsNothing,
       );
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, anyOf(isNull, isEmpty));
 
-      // Both render as full labeled buttons, below Save.
       expect(find.byKey(const Key('recover_password_button')), findsOneWidget);
       expect(find.byKey(const Key('delete_user_button')), findsOneWidget);
       expect(
         tester.widget(find.byKey(const Key('recover_password_button'))),
         isA<OutlinedButton>(),
       );
+      // Delete is an OutlinedButton now too (contracts/record-form-actions.md
+      // §2) — an error-colored filled block was the loudest thing on an
+      // otherwise read-only-looking form; outlined-in-error stays
+      // unmistakable without dominating.
       expect(
         tester.widget(find.byKey(const Key('delete_user_button'))),
-        isA<FilledButton>(),
+        isA<OutlinedButton>(),
       );
 
-      final saveY = tester.getTopLeft(find.byKey(const Key('save_button'))).dy;
+      // Recover Password sits above the shared action row; within that row,
+      // Delete is to the left of Save (contract §2 fixed order).
+      final saveTopLeft = tester.getTopLeft(
+        find.byKey(const Key('save_button')),
+      );
       final recoverY = tester
           .getTopLeft(find.byKey(const Key('recover_password_button')))
           .dy;
-      final deleteY = tester
-          .getTopLeft(find.byKey(const Key('delete_user_button')))
-          .dy;
-      expect(recoverY, greaterThan(saveY));
-      expect(deleteY, greaterThan(recoverY));
+      final deleteTopLeft = tester.getTopLeft(
+        find.byKey(const Key('delete_user_button')),
+      );
+      expect(recoverY, lessThan(saveTopLeft.dy));
+      expect(deleteTopLeft.dx, lessThan(saveTopLeft.dx));
     },
   );
 

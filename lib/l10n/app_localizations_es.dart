@@ -15,6 +15,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get fieldMinLength6 => 'Debe tener al menos 6 caracteres';
 
   @override
+  String get errorValidationGeneric => 'Corrige los campos marcados.';
+
+  @override
+  String get errorAuthGeneric => 'Usuario o contraseña incorrectos.';
+
+  @override
+  String get errorNotFoundGeneric => 'No se encontró el elemento solicitado.';
+
+  @override
+  String get errorServerGeneric =>
+      'Ocurrió un error en el servidor. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get errorNetworkGeneric =>
+      'No se pudo conectar con el servidor. Verifica tu conexión e inténtalo de nuevo.';
+
+  @override
   String get viewActionTooltip => 'Ver';
 
   @override
@@ -128,11 +145,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get usersSearchLabel => 'Buscar por usuario o correo';
 
   @override
-  String usersLoadError(Object error) {
-    return 'Error al cargar usuarios: $error';
-  }
-
-  @override
   String get noUsersFound => 'No se encontraron usuarios.';
 
   @override
@@ -190,6 +202,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsPurchasableFilter => 'Comprable';
 
   @override
+  String get productsSupplierFilter => 'Proveedor';
+
+  @override
   String get productsLabelFilter => 'Etiquetas';
 
   @override
@@ -213,9 +228,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get applyFilters => 'Aplicar';
 
   @override
-  String productsLoadError(Object error) {
-    return 'Error al cargar productos: $error';
-  }
+  String get retryButton => 'Reintentar';
+
+  @override
+  String get clearFiltersButton => 'Limpiar filtros';
+
+  @override
+  String get filteredEmptyTitle => 'No se encontraron coincidencias';
+
+  @override
+  String get filteredEmptyMessage => 'Intenta ajustar o borrar tus filtros.';
+
+  @override
+  String get loadErrorTitle => 'No se pudo cargar la lista';
 
   @override
   String get noProductsFound => 'No se encontraron productos.';
@@ -657,11 +682,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noPriceListsFound => 'No se encontraron listas de precios.';
 
   @override
-  String priceListsLoadError(Object error) {
-    return 'No se pudieron cargar las listas de precios: $error';
-  }
-
-  @override
   String get columnHighProfitMargin => 'Margen alto';
 
   @override
@@ -746,11 +766,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pricingPriceNotSet => 'Sin definir';
 
   @override
-  String pricingLoadError(Object error) {
-    return 'No se pudieron cargar los precios: $error';
-  }
-
-  @override
   String get pricingSaveFailedError => 'No se pudo guardar el precio.';
 
   @override
@@ -787,11 +802,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noExchangeRatesFound => 'No se encontraron tipos de cambio.';
-
-  @override
-  String exchangeRatesLoadError(Object error) {
-    return 'No se pudieron cargar los tipos de cambio: $error';
-  }
 
   @override
   String get columnDate => 'Fecha';
@@ -942,11 +952,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noSuppliersFound => 'No se encontraron proveedores.';
 
   @override
-  String suppliersLoadError(Object error) {
-    return 'No se pudieron cargar los proveedores: $error';
-  }
-
-  @override
   String get newSupplierTitle => 'Nuevo proveedor';
 
   @override
@@ -1006,11 +1011,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noLabelsFound => 'No se encontraron etiquetas.';
 
   @override
-  String labelsLoadError(Object error) {
-    return 'No se pudieron cargar las etiquetas: $error';
-  }
-
-  @override
   String get newLabelTitle => 'Nueva etiqueta';
 
   @override
@@ -1065,11 +1065,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noExpensesFound => 'No se encontraron gastos.';
-
-  @override
-  String expensesLoadError(Object error) {
-    return 'Error al cargar los gastos: $error';
-  }
 
   @override
   String get newExpenseTitle => 'Nuevo gasto';
@@ -1132,11 +1127,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noVehiclesFound => 'No se encontraron vehículos.';
-
-  @override
-  String vehiclesLoadError(Object error) {
-    return 'Error al cargar los vehículos: $error';
-  }
 
   @override
   String get newVehicleTitle => 'Nuevo vehículo';
@@ -1242,11 +1232,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noVehicleOperatorsFound =>
       'No se encontraron operadores de vehículo.';
-
-  @override
-  String vehicleOperatorsLoadError(Object error) {
-    return 'Error al cargar los operadores de vehículo: $error';
-  }
 
   @override
   String get newVehicleOperatorTitle => 'Nuevo operador de vehículo';
@@ -1374,11 +1359,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noEmployeesFound => 'No se encontraron empleados.';
 
   @override
-  String employeesLoadError(Object error) {
-    return 'No se pudieron cargar los empleados: $error';
-  }
-
-  @override
   String get employeesSalesPersonFilter => 'Vendedor';
 
   @override
@@ -1474,11 +1454,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noCustomersFound => 'No se encontraron clientes.';
 
   @override
-  String customersLoadError(Object error) {
-    return 'No se pudieron cargar los clientes: $error';
-  }
-
-  @override
   String get customersPriceListFilterLabel => 'Lista de precios';
 
   @override
@@ -1559,11 +1534,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noTaxpayerRecipientsFound =>
       'No se encontraron receptores fiscales.';
-
-  @override
-  String taxpayerRecipientsLoadError(Object error) {
-    return 'No se pudieron cargar los receptores fiscales: $error';
-  }
 
   @override
   String get newTaxpayerRecipientTitle => 'Nuevo receptor fiscal';
@@ -1672,11 +1642,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get newWarehouseTooltip => 'Nuevo almacén';
 
   @override
-  String warehousesLoadError(Object error) {
-    return 'No se pudieron cargar los almacenes: $error';
-  }
-
-  @override
   String get noWarehousesFound => 'No se encontraron almacenes.';
 
   @override
@@ -1740,11 +1705,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newCashDrawerTooltip => 'Nueva caja';
-
-  @override
-  String cashDrawersLoadError(Object error) {
-    return 'No se pudieron cargar las cajas: $error';
-  }
 
   @override
   String get noCashDrawersFound => 'No se encontraron cajas.';
@@ -1811,11 +1771,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newPointSaleTooltip => 'Nuevo punto de venta';
-
-  @override
-  String pointsOfSaleLoadError(Object error) {
-    return 'No se pudieron cargar los puntos de venta: $error';
-  }
 
   @override
   String get noPointsOfSaleFound => 'No se encontraron puntos de venta.';
@@ -1887,11 +1842,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newFacilityTooltip => 'Nueva instalación';
-
-  @override
-  String facilitiesLoadError(Object error) {
-    return 'No se pudieron cargar las instalaciones: $error';
-  }
 
   @override
   String get noFacilitiesFound => 'No se encontraron instalaciones.';
@@ -2070,11 +2020,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noPaymentMethodOptionsFound => 'No se encontraron formas de pago.';
 
   @override
-  String paymentMethodOptionsLoadError(Object error) {
-    return 'Error al cargar las formas de pago: $error';
-  }
-
-  @override
   String get viewPaymentMethodOptionTitle => 'Ver Forma de Pago';
 
   @override
@@ -2216,11 +2161,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noTaxpayerIssuersFound => 'No se encontraron razones sociales.';
 
   @override
-  String taxpayerIssuersLoadError(Object error) {
-    return 'Error al cargar las razones sociales: $error';
-  }
-
-  @override
   String get viewTaxpayerIssuerTitle => 'Ver Razón Social';
 
   @override
@@ -2310,11 +2250,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noCertificatesFound => 'No hay certificados registrados.';
-
-  @override
-  String certificatesLoadError(Object error) {
-    return 'Error al cargar los certificados: $error';
-  }
 
   @override
   String get newCertificateDialogTitle => 'Registrar Certificado';

@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_controller.dart';
@@ -100,9 +101,13 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
                 : state.loading
                 ? const Center(child: CircularProgressIndicator())
                 : state.error != null
-                ? Center(child: Text(l10n.pricingLoadError(state.error!)))
+                ? ListFailedView(
+                    error: state.error!,
+                    retryLabel: l10n.retryButton,
+                    onRetry: controller.retry,
+                  )
                 : state.rows.isEmpty
-                ? Center(child: Text(l10n.pricingNoPriceListsEmptyState))
+                ? ListEmptyView(message: l10n.pricingNoPriceListsEmptyState)
                 : _PricingTable(rows: state.rows, canUpdate: canUpdate),
           ),
         ],

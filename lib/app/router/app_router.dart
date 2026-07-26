@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart'
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
@@ -83,7 +84,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/users',
-                builder: (context, state) => const UsersListScreen(),
+                builder: (context, state) =>
+                    UsersListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -91,7 +93,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/products',
-                builder: (context, state) => const ProductsListScreen(),
+                builder: (context, state) =>
+                    ProductsListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -99,7 +102,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/price-lists',
-                builder: (context, state) => const PriceListsListScreen(),
+                builder: (context, state) =>
+                    PriceListsListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -115,7 +119,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/exchange-rates',
-                builder: (context, state) => const ExchangeRatesListScreen(),
+                builder: (context, state) => ExchangeRatesListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
               ),
             ],
           ),
@@ -127,7 +133,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/suppliers',
-                builder: (context, state) => const SuppliersListScreen(),
+                builder: (context, state) =>
+                    SuppliersListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -135,7 +142,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/labels',
-                builder: (context, state) => const LabelsListScreen(),
+                builder: (context, state) =>
+                    LabelsListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -143,7 +151,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/employees',
-                builder: (context, state) => const EmployeesListScreen(),
+                builder: (context, state) =>
+                    EmployeesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -151,7 +160,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/customers',
-                builder: (context, state) => const CustomersListScreen(),
+                builder: (context, state) =>
+                    CustomersListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -159,8 +169,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/taxpayer-recipients',
-                builder: (context, state) =>
-                    const TaxpayerRecipientsListScreen(),
+                builder: (context, state) => TaxpayerRecipientsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
               ),
             ],
           ),
@@ -172,7 +183,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/expenses',
-                builder: (context, state) => const ExpensesListScreen(),
+                builder: (context, state) =>
+                    ExpensesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -180,7 +192,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/vehicles',
-                builder: (context, state) => const VehiclesListScreen(),
+                builder: (context, state) =>
+                    VehiclesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -188,7 +201,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/vehicle-operators',
-                builder: (context, state) => const VehicleOperatorsListScreen(),
+                builder: (context, state) => VehicleOperatorsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
               ),
             ],
           ),
@@ -200,7 +215,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/warehouses',
-                builder: (context, state) => const WarehousesListScreen(),
+                builder: (context, state) =>
+                    WarehousesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -208,7 +224,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/cash-drawers',
-                builder: (context, state) => const CashDrawersListScreen(),
+                builder: (context, state) =>
+                    CashDrawersListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -216,7 +233,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/points-of-sale',
-                builder: (context, state) => const PointsOfSaleListScreen(),
+                builder: (context, state) =>
+                    PointsOfSaleListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -224,7 +242,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/facilities',
-                builder: (context, state) => const FacilitiesListScreen(),
+                builder: (context, state) =>
+                    FacilitiesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -238,8 +257,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/payment-method-options',
-                builder: (context, state) =>
-                    const PaymentMethodOptionsListScreen(),
+                builder: (context, state) => PaymentMethodOptionsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
               ),
             ],
           ),
@@ -247,7 +267,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/taxpayer-issuers',
-                builder: (context, state) => const TaxpayerIssuersListScreen(),
+                builder: (context, state) => TaxpayerIssuersListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
               ),
             ],
           ),

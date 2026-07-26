@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
@@ -68,6 +69,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<EmployeeListItem> employees = _testEmployees,
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -82,16 +84,46 @@ void main() {
           EmployeeListResult(items: employees, total: employees.length),
     );
 
+    // Mirrors production's shape (app_router.dart): the list lives inside
+    // its own `StatefulShellBranch`, with its own nested Navigator distinct
+    // from the outer/root one. The filter sheet attaches to the root
+    // Navigator (`useRootNavigator: true`, catalog_filter_sheet.dart) so it
+    // survives a same-branch `context.go` on every live filter change — a
+    // flat single-Navigator router would conflate the two and tear the
+    // sheet down after the first change.
+    final router = GoRouter(
+      initialLocation: query.toUri('/employees').toString(),
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => navigationShell,
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/employees',
+                  builder: (_, state) => Scaffold(
+                    body: EmployeesListScreen(
+                      query: ListQuery.fromUri(state.uri),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           employeeRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: EmployeesListScreen()),
         ),
       ),
     );
@@ -178,7 +210,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: EmployeesListScreen()),
+            builder: (_, state) => Scaffold(
+              body: EmployeesListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/employees/:employeeId',
@@ -215,5 +249,113 @@ void main() {
     await pumpScreen(tester, signedInAs: _fullAccessUser, employees: const []);
 
     expect(find.byKey(const Key('employees_table')), findsNothing);
+  });
+
+  group('URL-driven filters (017-ui-consistency-filters US3)', () {
+    testWidgets('a status facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(
+          facets: {
+            'status': ['inactive'],
+          },
+        ),
+      );
+
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: EntityStatus.inactive,
+          salesPerson: any(named: 'salesPerson'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
+
+    testWidgets('a salesPerson facet in the URL is passed to the repository', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(
+          facets: {
+            'salesPerson': ['true'],
+          },
+        ),
+      );
+
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          salesPerson: true,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
+
+    testWidgets(
+      'selecting a status filter navigates to a URL carrying that facet',
+      (tester) async {
+        final router = GoRouter(
+          initialLocation: '/employees',
+          routes: [
+            GoRoute(
+              path: '/employees',
+              builder: (_, state) => Scaffold(
+                body: EmployeesListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ),
+          ],
+        );
+        when(
+          () => repository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            salesPerson: any(named: 'salesPerson'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => EmployeeListResult(items: _testEmployees, total: 2),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              employeeRepositoryProvider.overrideWithValue(repository),
+              accessControlProvider.overrideWithValue(
+                _accessFor(_fullAccessUser),
+              ),
+            ],
+            child: MaterialApp.router(
+              routerConfig: router,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('employees_filter_button')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const Key('employees_filter_status_inactive')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          router.routerDelegate.currentConfiguration.uri.toString(),
+          '/employees?status=inactive',
+        );
+      },
+    );
   });
 }

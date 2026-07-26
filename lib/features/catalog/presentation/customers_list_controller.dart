@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
@@ -11,19 +12,46 @@ part 'customers_list_controller.g.dart';
 
 const _pageSize = 20;
 
-/// The Customers list screen's search/filter selection (FR-022): a
-/// status filter and price-list/salesperson FK filters, independent of
-/// each other and of search.
+extension _EntityStatusByName on List<EntityStatus> {
+  EntityStatus? byNameOrNull(String name) {
+    for (final value in this) {
+      if (value.name == name) return value;
+    }
+    return null;
+  }
+}
+
+/// The Customers list screen's addressable view state
+/// (017-ui-consistency-filters FR-017, FR-022): a status filter and
+/// price-list/salesperson FK filters, independent of each other and of
+/// search. Derived from the route's [ListQuery] — the URL, not a mutable
+/// notifier, is the source of truth.
 @freezed
 class CustomerFilter with _$CustomerFilter {
   const factory CustomerFilter({
     @Default('') String search,
     EntityStatus? status,
     int? priceListId,
-    String? priceListDisplayText,
     int? salespersonId,
-    String? salespersonDisplayText,
+    @Default(0) int pageIndex,
   }) = _CustomerFilter;
+
+  factory CustomerFilter.fromQuery(ListQuery query) {
+    final statusRaw = query.facet('status');
+    final priceListRaw = query.facet('priceList');
+    final salespersonRaw = query.facet('salesperson');
+    return CustomerFilter(
+      search: query.search,
+      status: statusRaw != null
+          ? EntityStatus.values.byNameOrNull(statusRaw)
+          : null,
+      priceListId: priceListRaw != null ? int.tryParse(priceListRaw) : null,
+      salespersonId: salespersonRaw != null
+          ? int.tryParse(salespersonRaw)
+          : null,
+      pageIndex: query.pageIndex,
+    );
+  }
 }
 
 /// Derived facet-filter summary for the Customers list's Filters button
@@ -40,46 +68,23 @@ extension CustomerFilterBadge on CustomerFilter {
   bool get hasActiveFilters => activeFilterCount > 0;
 }
 
-/// Holds the current search/filter selection for the Customers list
-/// (FR-002, FR-022).
-@riverpod
-class CustomerFilterController extends _$CustomerFilterController {
-  @override
-  CustomerFilter build() => const CustomerFilter();
-
-  void searchChanged(String value) => state = state.copyWith(search: value);
-
-  /// `null` is "All" — no `?status=` param; any other value narrows to that
-  /// single status, mirroring `ProductFilterController.statusChanged`.
-  void statusChanged(EntityStatus? value) =>
-      state = state.copyWith(status: value);
-
-  void priceListChanged(int? id, String? displayText) => state = state.copyWith(
-    priceListId: id,
-    priceListDisplayText: displayText,
-  );
-
-  void salespersonChanged(int? id, String? displayText) => state = state
-      .copyWith(salespersonId: id, salespersonDisplayText: displayText);
-
-  /// Resets every facet filter while preserving the current search text.
-  void reset() => state = CustomerFilter(search: state.search);
-}
-
-/// Fetches and holds the Customers list (FR-001, FR-022), re-fetching page 0
-/// whenever [CustomerFilterController]'s state changes.
+/// Fetches and holds the Customers list (FR-001, FR-022) for the given
+/// [CustomerFilter]. A family keyed by the filter value: a different URL is
+/// a different provider instance, and `ref.invalidate` after a mutation
+/// re-fetches the *same* page rather than resetting to page 0 (FR-025,
+/// research §3).
 @riverpod
 class CustomersListController extends _$CustomersListController {
   @override
-  Future<CatalogPage<CustomerListItem>> build() {
-    final filter = ref.watch(customerFilterControllerProvider);
-    return _fetch(filter, pageIndex: 0);
+  Future<CatalogPage<CustomerListItem>> build(CustomerFilter filter) {
+    return fetchClampedPage(
+      pageIndex: filter.pageIndex,
+      pageSize: _pageSize,
+      fetch: (pageIndex) => _fetch(filter.copyWith(pageIndex: pageIndex)),
+    );
   }
 
-  Future<CatalogPage<CustomerListItem>> _fetch(
-    CustomerFilter filter, {
-    required int pageIndex,
-  }) async {
+  Future<CatalogPage<CustomerListItem>> _fetch(CustomerFilter filter) async {
     final result = await ref
         .read(customerRepositoryProvider)
         .list(
@@ -87,22 +92,14 @@ class CustomersListController extends _$CustomersListController {
           status: filter.status,
           priceList: filter.priceListId,
           salesperson: filter.salespersonId,
-          skip: pageIndex * _pageSize,
+          skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
         );
     return CatalogPage(
       items: result.items,
       total: result.total,
-      pageIndex: pageIndex,
+      pageIndex: filter.pageIndex,
       pageSize: _pageSize,
     );
-  }
-
-  /// Fetches [pageIndex] and replaces the current page with it.
-  Future<void> goToPage(int pageIndex) async {
-    final filter = ref.read(customerFilterControllerProvider);
-    state = const AsyncLoading<CatalogPage<CustomerListItem>>()
-        .copyWithPrevious(state);
-    state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }

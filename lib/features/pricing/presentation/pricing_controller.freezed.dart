@@ -21,7 +21,7 @@ mixin _$PricingState {
   String? get productDisplayText => throw _privateConstructorUsedError;
   List<ProductPriceRow> get rows => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
+  AppError? get error => throw _privateConstructorUsedError;
 
   /// Create a copy of PricingState
   /// with the given fields replaced by the non-null parameter values.
@@ -42,8 +42,10 @@ abstract class $PricingStateCopyWith<$Res> {
     String? productDisplayText,
     List<ProductPriceRow> rows,
     bool loading,
-    String? error,
+    AppError? error,
   });
+
+  $AppErrorCopyWith<$Res>? get error;
 }
 
 /// @nodoc
@@ -88,10 +90,24 @@ class _$PricingStateCopyWithImpl<$Res, $Val extends PricingState>
             error: freezed == error
                 ? _value.error
                 : error // ignore: cast_nullable_to_non_nullable
-                      as String?,
+                      as AppError?,
           )
           as $Val,
     );
+  }
+
+  /// Create a copy of PricingState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $AppErrorCopyWith<$Res>? get error {
+    if (_value.error == null) {
+      return null;
+    }
+
+    return $AppErrorCopyWith<$Res>(_value.error!, (value) {
+      return _then(_value.copyWith(error: value) as $Val);
+    });
   }
 }
 
@@ -109,8 +125,11 @@ abstract class _$$PricingStateImplCopyWith<$Res>
     String? productDisplayText,
     List<ProductPriceRow> rows,
     bool loading,
-    String? error,
+    AppError? error,
   });
+
+  @override
+  $AppErrorCopyWith<$Res>? get error;
 }
 
 /// @nodoc
@@ -154,7 +173,7 @@ class __$$PricingStateImplCopyWithImpl<$Res>
         error: freezed == error
             ? _value.error
             : error // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as AppError?,
       ),
     );
   }
@@ -188,7 +207,7 @@ class _$PricingStateImpl implements _PricingState {
   @JsonKey()
   final bool loading;
   @override
-  final String? error;
+  final AppError? error;
 
   @override
   String toString() {
@@ -234,7 +253,7 @@ abstract class _PricingState implements PricingState {
     final String? productDisplayText,
     final List<ProductPriceRow> rows,
     final bool loading,
-    final String? error,
+    final AppError? error,
   }) = _$PricingStateImpl;
 
   @override
@@ -246,7 +265,7 @@ abstract class _PricingState implements PricingState {
   @override
   bool get loading;
   @override
-  String? get error;
+  AppError? get error;
 
   /// Create a copy of PricingState
   /// with the given fields replaced by the non-null parameter values.

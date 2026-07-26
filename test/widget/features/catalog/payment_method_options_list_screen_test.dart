@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
@@ -85,6 +86,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<PaymentMethodOption> options = const [],
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -99,6 +101,36 @@ void main() {
           PaymentMethodOptionPage(items: options, total: options.length),
     );
 
+    // Mirrors production's shape (app_router.dart): the list lives inside
+    // its own `StatefulShellBranch`, with its own nested Navigator distinct
+    // from the outer/root one. The filter sheet attaches to the root
+    // Navigator (`useRootNavigator: true`, catalog_filter_sheet.dart) so it
+    // survives a same-branch `context.go` on every live filter change — a
+    // flat single-Navigator router would conflate the two and tear the
+    // sheet down after the first change.
+    final router = GoRouter(
+      initialLocation: query.toUri('/payment-method-options').toString(),
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => navigationShell,
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/payment-method-options',
+                  builder: (_, state) => Scaffold(
+                    body: PaymentMethodOptionsListScreen(
+                      query: ListQuery.fromUri(state.uri),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -106,10 +138,10 @@ void main() {
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: PaymentMethodOptionsListScreen()),
         ),
       ),
     );
@@ -204,8 +236,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) =>
-                const Scaffold(body: PaymentMethodOptionsListScreen()),
+            builder: (_, state) => Scaffold(
+              body: PaymentMethodOptionsListScreen(
+                query: ListQuery.fromUri(state.uri),
+              ),
+            ),
           ),
           GoRoute(
             path: '/payment-method-options/:paymentMethodOptionId',
@@ -243,5 +278,29 @@ void main() {
     await pumpScreen(tester, signedInAs: _fullAccessUser, options: const []);
 
     expect(find.byKey(const Key('payment_method_options_table')), findsNothing);
+  });
+
+  testWidgets('a status facet in the URL is passed to the repository '
+      '(017-ui-consistency-filters US3)', (tester) async {
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      options: _testOptions,
+      query: const ListQuery(
+        facets: {
+          'status': ['inactive'],
+        },
+      ),
+    );
+
+    verify(
+      () => repository.list(
+        search: any(named: 'search'),
+        facilityId: any(named: 'facilityId'),
+        status: EntityStatus.inactive,
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).called(greaterThanOrEqualTo(1));
   });
 }

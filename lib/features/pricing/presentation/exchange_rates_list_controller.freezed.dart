@@ -21,6 +21,7 @@ mixin _$ExchangeRateFilter {
   DateTime? get dateTo => throw _privateConstructorUsedError;
   int? get base => throw _privateConstructorUsedError;
   int? get target => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of ExchangeRateFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -36,7 +37,13 @@ abstract class $ExchangeRateFilterCopyWith<$Res> {
     $Res Function(ExchangeRateFilter) then,
   ) = _$ExchangeRateFilterCopyWithImpl<$Res, ExchangeRateFilter>;
   @useResult
-  $Res call({DateTime? dateFrom, DateTime? dateTo, int? base, int? target});
+  $Res call({
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? base,
+    int? target,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -58,6 +65,7 @@ class _$ExchangeRateFilterCopyWithImpl<$Res, $Val extends ExchangeRateFilter>
     Object? dateTo = freezed,
     Object? base = freezed,
     Object? target = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -77,6 +85,10 @@ class _$ExchangeRateFilterCopyWithImpl<$Res, $Val extends ExchangeRateFilter>
                 ? _value.target
                 : target // ignore: cast_nullable_to_non_nullable
                       as int?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -92,7 +104,13 @@ abstract class _$$ExchangeRateFilterImplCopyWith<$Res>
   ) = __$$ExchangeRateFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime? dateFrom, DateTime? dateTo, int? base, int? target});
+  $Res call({
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? base,
+    int? target,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -113,6 +131,7 @@ class __$$ExchangeRateFilterImplCopyWithImpl<$Res>
     Object? dateTo = freezed,
     Object? base = freezed,
     Object? target = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$ExchangeRateFilterImpl(
@@ -132,6 +151,10 @@ class __$$ExchangeRateFilterImplCopyWithImpl<$Res>
             ? _value.target
             : target // ignore: cast_nullable_to_non_nullable
                   as int?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -145,6 +168,7 @@ class _$ExchangeRateFilterImpl implements _ExchangeRateFilter {
     this.dateTo,
     this.base,
     this.target,
+    this.pageIndex = 0,
   });
 
   @override
@@ -155,10 +179,13 @@ class _$ExchangeRateFilterImpl implements _ExchangeRateFilter {
   final int? base;
   @override
   final int? target;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'ExchangeRateFilter(dateFrom: $dateFrom, dateTo: $dateTo, base: $base, target: $target)';
+    return 'ExchangeRateFilter(dateFrom: $dateFrom, dateTo: $dateTo, base: $base, target: $target, pageIndex: $pageIndex)';
   }
 
   @override
@@ -170,11 +197,14 @@ class _$ExchangeRateFilterImpl implements _ExchangeRateFilter {
                 other.dateFrom == dateFrom) &&
             (identical(other.dateTo, dateTo) || other.dateTo == dateTo) &&
             (identical(other.base, base) || other.base == base) &&
-            (identical(other.target, target) || other.target == target));
+            (identical(other.target, target) || other.target == target) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, dateFrom, dateTo, base, target);
+  int get hashCode =>
+      Object.hash(runtimeType, dateFrom, dateTo, base, target, pageIndex);
 
   /// Create a copy of ExchangeRateFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -194,6 +224,7 @@ abstract class _ExchangeRateFilter implements ExchangeRateFilter {
     final DateTime? dateTo,
     final int? base,
     final int? target,
+    final int pageIndex,
   }) = _$ExchangeRateFilterImpl;
 
   @override
@@ -204,6 +235,8 @@ abstract class _ExchangeRateFilter implements ExchangeRateFilter {
   int? get base;
   @override
   int? get target;
+  @override
+  int get pageIndex;
 
   /// Create a copy of ExchangeRateFilter
   /// with the given fields replaced by the non-null parameter values.

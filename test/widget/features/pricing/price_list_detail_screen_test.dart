@@ -97,21 +97,30 @@ void main() {
   });
 
   group('view mode (forceReadOnly)', () {
-    testWidgets('renders fields disabled with no Save/Delete', (tester) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        priceListId: 1,
-        forceReadOnly: true,
-      );
+    testWidgets(
+      'renders fields disabled with no Save/Delete, and the edit toggle '
+      'appears in the record action area, not the AppBar '
+      '(017-ui-consistency-filters, constitution v1.10.0)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          priceListId: 1,
+          forceReadOnly: true,
+        );
 
-      final nameField = tester.widget<TextFormField>(
-        find.byKey(const Key('price_list_name_field')),
-      );
-      expect(nameField.enabled, isFalse);
-      expect(find.byKey(const Key('save_button')), findsNothing);
-      expect(find.byKey(const Key('delete_price_list_button')), findsNothing);
-    });
+        final nameField = tester.widget<TextFormField>(
+          find.byKey(const Key('price_list_name_field')),
+        );
+        expect(nameField.enabled, isFalse);
+        expect(find.byKey(const Key('save_button')), findsNothing);
+        expect(find.byKey(const Key('delete_price_list_button')), findsNothing);
+        expect(find.byKey(const Key('edit_price_list_button')), findsOneWidget);
+
+        final appBar = tester.widget<AppBar>(find.byType(AppBar));
+        expect(appBar.actions, anyOf(isNull, isEmpty));
+      },
+    );
 
     testWidgets('margins display as percentages, not raw decimals', (
       tester,

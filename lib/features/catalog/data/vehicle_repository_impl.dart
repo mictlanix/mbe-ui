@@ -21,12 +21,14 @@ class VehicleRepositoryImpl implements VehicleRepository {
   @override
   Future<VehicleListResult> list({
     String? search,
+    EntityStatus? status,
     int skip = 0,
     int limit = 20,
   }) async {
     try {
       final response = await _api.listVehiclesApiV1VehiclesGet(
         search: search,
+        status: status?.toApi(),
         skip: skip,
         limit: limit,
       );

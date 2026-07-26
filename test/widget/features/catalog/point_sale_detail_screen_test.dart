@@ -77,7 +77,11 @@ void main() {
 
   tearDown(() => container.dispose());
 
-  Future<void> pumpScreen(WidgetTester tester, {int? pointSaleId}) async {
+  Future<void> pumpScreen(
+    WidgetTester tester, {
+    int? pointSaleId,
+    bool forceReadOnly = false,
+  }) async {
     if (pointSaleId != null) {
       when(
         () => repository.get(pointSaleId: pointSaleId),
@@ -89,12 +93,37 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: PointSaleDetailScreen(pointSaleId: pointSaleId)),
+          home: Scaffold(
+            body: PointSaleDetailScreen(
+              pointSaleId: pointSaleId,
+              forceReadOnly: forceReadOnly,
+            ),
+          ),
         ),
       ),
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'view mode (forceReadOnly) renders fields disabled with no Save/Delete, '
+    'and the edit toggle appears in the record action area, not the AppBar '
+    '(017-ui-consistency-filters, constitution v1.10.0)',
+    (tester) async {
+      await pumpScreen(tester, pointSaleId: 1, forceReadOnly: true);
+
+      final codeField = tester.widget<TextFormField>(
+        find.byKey(const Key('code_field')),
+      );
+      expect(codeField.enabled, isFalse);
+      expect(find.byKey(const Key('save_button')), findsNothing);
+      expect(find.byKey(const Key('delete_point_sale_button')), findsNothing);
+      expect(find.byKey(const Key('edit_point_sale_button')), findsOneWidget);
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, anyOf(isNull, isEmpty));
+    },
+  );
 
   testWidgets('the warehouse field is disabled until a facility is selected', (
     tester,

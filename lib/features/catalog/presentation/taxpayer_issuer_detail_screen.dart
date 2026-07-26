@@ -8,7 +8,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/fiscal_certification_provider_label.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
@@ -100,20 +100,12 @@ class _TaxpayerIssuerDetailScreenState
         !readOnly &&
         access.can(SystemObject.taxpayers, AccessRight.delete);
 
+    final mode = !_isEdit
+        ? RecordFormMode.create
+        : (readOnly ? RecordFormMode.view : RecordFormMode.edit);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          if (readOnly && canUpdate && widget.rfc != null)
-            IconButton(
-              key: const Key('edit_taxpayer_issuer_button'),
-              icon: Icon(CatalogAction.edit.icon),
-              tooltip: l10n.editRecordTooltip,
-              onPressed: () =>
-                  context.replace('/taxpayer-issuers/${widget.rfc}'),
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -251,8 +243,9 @@ class _TaxpayerIssuerDetailScreenState
                     ],
                     onChanged: fieldsEnabled
                         ? (value) {
-                            if (value != null)
+                            if (value != null) {
                               controller.providerChanged(value);
+                            }
                           }
                         : null,
                   ),
@@ -268,44 +261,40 @@ class _TaxpayerIssuerDetailScreenState
                     maxLines: 3,
                   ),
                 ),
-                if (canSave)
-                  FormGridChild(
-                    span: FormGridSpan.full,
-                    FilledButton(
-                      key: const Key('save_button'),
-                      onPressed: formState.submitting
-                          ? null
-                          : (_isEdit
-                                ? controller.submitUpdate
-                                : controller.submitCreate),
-                      child: formState.submitting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(l10n.saveButton),
-                    ),
-                  ),
-                if (canDelete)
-                  FormGridChild(
-                    span: FormGridSpan.full,
-                    FilledButton(
-                      key: const Key('delete_taxpayer_issuer_button'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.error,
-                        foregroundColor: Theme.of(context).colorScheme.onError,
+                FormGridChild(
+                  span: FormGridSpan.full,
+                  RecordFormActions(
+                    mode: mode,
+                    saveLabel: l10n.saveButton,
+                    editLabel: l10n.editRecordTooltip,
+                    deleteLabel: l10n.deleteTaxpayerIssuerButton,
+                    isSubmitting: formState.submitting,
+                    editKey: const Key('edit_taxpayer_issuer_button'),
+                    saveKey: const Key('save_button'),
+                    deleteKey: const Key('delete_taxpayer_issuer_button'),
+                    onEdit: (canUpdate && widget.rfc != null)
+                        ? () =>
+                              context.replace('/taxpayer-issuers/${widget.rfc}')
+                        : null,
+                    onSave: canSave
+                        ? (_isEdit
+                              ? controller.submitUpdate
+                              : controller.submitCreate)
+                        : null,
+                    onDelete: canDelete ? controller.delete : null,
+                    deleteConfirmation: RecordDeleteConfirmation(
+                      title: l10n.deleteTaxpayerIssuerConfirmTitle,
+                      message: l10n.deleteTaxpayerIssuerConfirmMessage(
+                        formState.name,
                       ),
-                      onPressed: formState.submitting
-                          ? null
-                          : () => _confirmDelete(
-                              context,
-                              controller,
-                              formState.name,
-                            ),
-                      child: Text(l10n.deleteTaxpayerIssuerButton),
+                      confirmLabel: l10n.deleteButton,
+                      cancelLabel: l10n.cancelButton,
+                      confirmKey: const Key(
+                        'confirm_delete_taxpayer_issuer_button',
+                      ),
                     ),
                   ),
+                ),
               ],
             ),
             // Certificates section (US3, FR-019, FR-025): only for a
@@ -328,37 +317,6 @@ class _TaxpayerIssuerDetailScreenState
         ),
       ),
     );
-  }
-
-  Future<void> _confirmDelete(
-    BuildContext context,
-    TaxpayerIssuerFormController controller,
-    String name,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteTaxpayerIssuerConfirmTitle),
-        content: Text(l10n.deleteTaxpayerIssuerConfirmMessage(name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_delete_taxpayer_issuer_button'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) controller.delete();
   }
 }
 

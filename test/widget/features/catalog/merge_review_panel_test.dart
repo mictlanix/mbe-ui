@@ -55,11 +55,7 @@ Future<void> _pump(
       home: Scaffold(
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: MergeReviewPanels(
-            kept: kept,
-            deleted: deleted,
-            onSwap: () {},
-          ),
+          child: MergeReviewPanels(kept: kept, deleted: deleted, onSwap: () {}),
         ),
       ),
     ),

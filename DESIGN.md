@@ -326,11 +326,12 @@ every catalog/list screen's row exposes exactly one row-level icon action,
 **Edit** — no per-row View or Delete icon. Clicking anywhere else on the row
 opens the same detail screen **read-only** (titled as a "View" screen, not
 "Edit"); from there, a user holding the update privilege gets an explicit
-control to switch to the editable form. Create stays toolbar-only. Delete/
-soft-delete moves off the list entirely onto the record's own detail screen —
-typically a warning-styled button in the form body, though a module may keep
-it as a detail-screen app-bar action if a form-body button doesn't fit (the
-Users admin screen does this).
+control, in the record's shared action area (§4.2.2, §4.3), to switch to the
+editable form. Create stays toolbar-only. Delete/soft-delete moves off the
+list entirely onto the record's own detail screen — typically a
+warning-styled button in the form body, though a module may keep it as a
+detail-screen app-bar action if a form-body button doesn't fit (the Users
+admin screen does this).
 
 **Rationale**: an earlier version of this rule (through constitution v1.4.0)
 put View, Edit, and Delete all on the row as three separate icons. Usage
@@ -342,10 +343,11 @@ resistance while keeping editing and deletion one deliberate step away.
 
 ### 4.2.2 Screen-level actions — buttons in the body, not AppBar icons
 
-**Decision** (constitution §VI, amended 2026-07-19): `AppBar.actions` is
-reserved for exactly one thing — the read-only-to-edit toggle from §4.2.1
-(and, optionally, a detail screen's own delete action, per the Users admin
-screen precedent). Every other screen-level action — Create, a bulk
+**Decision** (constitution §VI, amended 2026-07-19, **superseded**
+2026-07-25 per specs/017-ui-consistency-filters — see below): `AppBar.actions`
+was reserved for exactly one thing — the read-only-to-edit toggle from
+§4.2.1 (and, optionally, a detail screen's own delete action, per the Users
+admin screen precedent). Every other screen-level action — Create, a bulk
 operation like Merge, or a shortcut into a related feature's own screen —
 is a `FilledButton`/`OutlinedButton` in the screen body: beside the search
 bar via `CatalogFilterBar`'s `actions` slot on list screens (as
@@ -360,6 +362,45 @@ since that's where the one legitimate icon action already lives. Naming the
 AppBar as reserved, and the button-in-body placement as the default for
 everything else, avoids re-litigating this per feature.
 
+**Superseding decision** (constitution §VI, amended 2026-07-25 per
+specs/017-ui-consistency-filters): the read-only-to-edit toggle **also**
+moves out of `AppBar.actions`, into the record's own form body, as a labeled
+`OutlinedButton` sitting alongside Save and Delete rather than as an
+unlabeled app-bar icon separated from the actions it precedes. A record
+detail screen's `AppBar.actions` is now empty by default; the previously-
+allowed app-bar delete exception (Users admin screen precedent) is retained
+verbatim for a module whose body genuinely cannot fit a delete button, but
+no module uses it today.
+
+This is implemented once, in `core/widgets/record_form_actions.dart`
+(`RecordFormActions`, §4.3), and adopted by every one of the 18 record
+detail screens — not reimplemented per screen. `RecordFormActions` renders,
+in fixed left-to-right order: `[ Delete ]` (only while editing, only with
+the delete privilege) then either `[ Edit ]` (read-only, only with the
+update privilege) or `[ Save ]` (editable/create), so the same action area
+holds the record's entire command surface across all three states, in the
+same on-screen position, rather than splitting Edit into the app bar and
+Save/Delete into the form. `Edit` renders as an `OutlinedButton` — visually
+a lighter sibling of the `FilledButton` Save, ranking it correctly as a mode
+switch rather than a commit. `Delete` also became `OutlinedButton`-styled in
+the error color, rather than a filled error block, so the destructive action
+reads as unmistakable without being the loudest thing on an otherwise
+read-only-looking form.
+
+**Rationale for the reversal**: user feedback found the split itself to be
+the friction — the one control a user needs to *start* acting on a record
+sat in a different visual location (an unlabeled top-right icon) from the
+controls that appear the moment they do (bottom-of-form buttons), forcing
+the user to learn two places for one continuous task. Centralizing the
+whole action set in `RecordFormActions` also converts "move the affordance"
+from an 18-screen edit into a one-component edit, the same lesson the
+2026-07-19 amendment itself was trying to teach — it just drew the reserved
+boundary one iteration too early, around the app bar, rather than around a
+shared component. See specs/017-ui-consistency-filters/research.md §2 and §7
+for the full before/after comparison and the amendment sequencing (the rule
+change lands with the first converted screen, so no shipped screen is ever
+mid-flight between the two rules).
+
 ### 4.3 Shared component library
 
 Build a small `core/widgets/` library early for things every module needs:
@@ -367,6 +408,15 @@ data tables with sorting/pagination, currency/quantity formatted fields, date
 pickers, status badges (e.g. invoice status), and form field wrappers with
 consistent validation-error display. This avoids four slightly-different
 implementations across sales/inventory/invoicing/accounting.
+
+**Record action area** (`core/widgets/record_form_actions.dart`,
+`RecordFormActions`, added specs/017-ui-consistency-filters per §4.2.2):
+the Edit/Save/Delete action set every record detail screen offers, plus the
+delete confirmation dialog, defined once instead of hand-copied per screen.
+Takes the screen's RBAC-derived callbacks (`null` ⇒ that action is absent,
+never disabled) and its current `RecordFormMode` (`create`/`view`/`edit`),
+and renders the mode-appropriate subset in fixed order, right-aligned and
+content-sized rather than stretched across the form.
 
 **Responsive forms — use space, don't waste it**: multi-field create/edit/
 detail forms MUST NOT stretch single-column, full-width fields across a wide

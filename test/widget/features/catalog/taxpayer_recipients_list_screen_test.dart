@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
@@ -69,6 +70,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<TaxpayerRecipientListItem> taxpayers = _testTaxpayers,
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -81,16 +83,30 @@ void main() {
           TaxpayerRecipientPage(items: taxpayers, total: taxpayers.length),
     );
 
+    final router = GoRouter(
+      initialLocation: query.toUri('/taxpayer-recipients').toString(),
+      routes: [
+        GoRoute(
+          path: '/taxpayer-recipients',
+          builder: (_, state) => Scaffold(
+            body: TaxpayerRecipientsListScreen(
+              query: ListQuery.fromUri(state.uri),
+            ),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: TaxpayerRecipientsListScreen()),
         ),
       ),
     );
@@ -160,8 +176,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) =>
-                const Scaffold(body: TaxpayerRecipientsListScreen()),
+            builder: (_, state) => Scaffold(
+              body: TaxpayerRecipientsListScreen(
+                query: ListQuery.fromUri(state.uri),
+              ),
+            ),
           ),
           GoRoute(
             path: '/taxpayer-recipients/:taxpayerRecipientId',

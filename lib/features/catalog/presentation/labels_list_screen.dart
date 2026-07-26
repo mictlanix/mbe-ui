@@ -6,27 +6,35 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
-import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label.dart';
 import 'package:mbe_ui/features/catalog/presentation/labels_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+const _labelsPath = '/labels';
 
 /// Labels catalog list screen (FR-001, FR-002, US2). Gated by
 /// `can(SystemObject.labels, AccessRight.read)` in the router. Search-only
 /// (no filter drawer): the list endpoint exposes no facets beyond `search`
 /// (plan.md Constitution Check note on §VI).
+///
+/// [query] is decoded from the route by the router builder
+/// (017-ui-consistency-filters FR-017) — the URL is this screen's only
+/// source of view state; there is no local filter notifier.
 class LabelsListScreen extends ConsumerWidget {
-  const LabelsListScreen({super.key});
+  const LabelsListScreen({super.key, required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pageAsync = ref.watch(labelsListControllerProvider);
-    final search = ref.watch(labelSearchControllerProvider);
-    final searchController = ref.read(labelSearchControllerProvider.notifier);
+    final filter = LabelFilter.fromQuery(query);
+    final pageAsync = ref.watch(labelsListControllerProvider(filter));
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.labels, AccessRight.create);
     final canUpdate = access.can(SystemObject.labels, AccessRight.update);
@@ -41,8 +49,13 @@ class LabelsListScreen extends ConsumerWidget {
               key: const Key('labels_search_field'),
               label: l10n.labelsSearchLabel,
               searchTooltip: l10n.searchButtonTooltip,
-              initialValue: search,
-              onSubmitted: searchController.searchChanged,
+              initialValue: filter.search,
+              onSubmitted: (value) => context.go(
+                query
+                    .copyWith(search: value, pageIndex: 0)
+                    .toUri(_labelsPath)
+                    .toString(),
+              ),
             ),
             actions: [
               if (canCreate)
@@ -56,39 +69,46 @@ class LabelsListScreen extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: pageAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(l10n.labelsLoadError(e))),
-            data: (CatalogPage<Label> page) => page.items.isEmpty
-                ? Center(child: Text(l10n.noLabelsFound))
-                : DataTableView<Label>(
-                    key: const Key('labels_table'),
-                    columns: [
-                      DataTableColumn.text(
-                        label: l10n.nameLabel,
-                        text: (lb) => lb.name,
-                        size: ColumnSize.L,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.commentLabel,
-                        text: (lb) => lb.comment ?? '',
-                        size: ColumnSize.L,
-                      ),
-                    ],
-                    rows: page.items,
-                    pagination: page,
-                    onPageChanged: (pageIndex) => ref
-                        .read(labelsListControllerProvider.notifier)
-                        .goToPage(pageIndex),
-                    onRowTap: (lb) =>
-                        context.push('/labels/${lb.labelId}?view=true'),
-                    rowActionsBuilder: (context, lb) => buildCatalogRowActions(
-                      editTooltip: l10n.editActionTooltip,
-                      onEdit: canUpdate
-                          ? () => context.push('/labels/${lb.labelId}')
-                          : null,
-                    ),
-                  ),
+          child: CatalogListStateView<Label>(
+            state: pageAsync,
+            isFiltered: query.isFiltered,
+            emptyMessage: l10n.noLabelsFound,
+            createLabel: canCreate ? l10n.newLabelTooltip : null,
+            onCreate: canCreate ? () => context.push('/labels/new') : null,
+            clearFiltersLabel: l10n.clearFiltersButton,
+            onClearFilters: () => context.go(_labelsPath),
+            retryLabel: l10n.retryButton,
+            onRetry: () => ref.invalidate(labelsListControllerProvider(filter)),
+            onData: (page) => DataTableView<Label>(
+              key: const Key('labels_table'),
+              columns: [
+                DataTableColumn.text(
+                  label: l10n.nameLabel,
+                  text: (lb) => lb.name,
+                  size: ColumnSize.L,
+                ),
+                DataTableColumn.text(
+                  label: l10n.commentLabel,
+                  text: (lb) => lb.comment ?? '',
+                  size: ColumnSize.L,
+                ),
+              ],
+              rows: page.items,
+              pagination: page,
+              onPageChanged: (pageIndex) => context.go(
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_labelsPath)
+                    .toString(),
+              ),
+              onRowTap: (lb) => context.push('/labels/${lb.labelId}?view=true'),
+              rowActionsBuilder: (context, lb) => buildCatalogRowActions(
+                editTooltip: l10n.editActionTooltip,
+                onEdit: canUpdate
+                    ? () => context.push('/labels/${lb.labelId}')
+                    : null,
+              ),
+            ),
           ),
         ),
       ],

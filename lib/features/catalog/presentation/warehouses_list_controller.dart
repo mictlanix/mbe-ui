@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
@@ -11,16 +12,32 @@ part 'warehouses_list_controller.g.dart';
 
 const _pageSize = 20;
 
-/// The Warehouses list screen's search/filter selection (FR-003): a facility
-/// facet and a status facet, independent of search.
+/// The Warehouses list screen's addressable view state
+/// (017-ui-consistency-filters FR-017), derived from the route's
+/// [ListQuery] — the URL, not a mutable notifier, is the source of truth
+/// (data-model.md §2). Display text for the facility facet is resolved
+/// separately (presentation-only, data-model.md §4), not carried here.
 @freezed
 class WarehouseFilter with _$WarehouseFilter {
   const factory WarehouseFilter({
     @Default('') String search,
     int? facilityId,
-    @Default('') String facilityDisplayText,
     EntityStatus? status,
+    @Default(0) int pageIndex,
   }) = _WarehouseFilter;
+
+  factory WarehouseFilter.fromQuery(ListQuery query) {
+    final facilityRaw = query.facet('facility');
+    final statusRaw = query.facet('status');
+    return WarehouseFilter(
+      search: query.search,
+      facilityId: facilityRaw != null ? int.tryParse(facilityRaw) : null,
+      status: statusRaw != null
+          ? EntityStatus.values.byNameOrNull(statusRaw)
+          : null,
+      pageIndex: query.pageIndex,
+    );
+  }
 }
 
 /// Derived facet-filter summary for the Warehouses list's Filters button
@@ -37,63 +54,46 @@ extension WarehouseFilterBadge on WarehouseFilter {
   bool get hasActiveFilters => activeFilterCount > 0;
 }
 
-/// Holds the current search/filter selection for the Warehouses list
-/// (FR-002, FR-003).
-@riverpod
-class WarehouseFilterController extends _$WarehouseFilterController {
-  @override
-  WarehouseFilter build() => const WarehouseFilter();
-
-  void searchChanged(String value) => state = state.copyWith(search: value);
-
-  void facilitySelected(int facilityId, String facilityName) => state = state
-      .copyWith(facilityId: facilityId, facilityDisplayText: facilityName);
-
-  void statusChanged(EntityStatus? value) =>
-      state = state.copyWith(status: value);
-
-  /// Resets every facet filter to its default while preserving the current
-  /// search text (FR-002; the search box stays outside the filter sheet).
-  void reset() => state = WarehouseFilter(search: state.search);
+extension _EntityStatusByName on List<EntityStatus> {
+  EntityStatus? byNameOrNull(String name) {
+    for (final value in this) {
+      if (value.name == name) return value;
+    }
+    return null;
+  }
 }
 
-/// Fetches and holds the Warehouses list (FR-001, FR-003), re-fetching page 0
-/// whenever [WarehouseFilterController]'s state changes.
+/// Fetches and holds the Warehouses list (FR-001, FR-003) for the given
+/// [WarehouseFilter]. A family keyed by the filter value: a different URL is
+/// a different provider instance, and `ref.invalidate` after a mutation
+/// re-fetches the *same* page rather than resetting to page 0 (FR-025,
+/// research §3).
 @riverpod
 class WarehousesListController extends _$WarehousesListController {
   @override
-  Future<CatalogPage<Warehouse>> build() {
-    final filter = ref.watch(warehouseFilterControllerProvider);
-    return _fetch(filter, pageIndex: 0);
+  Future<CatalogPage<Warehouse>> build(WarehouseFilter filter) {
+    return fetchClampedPage(
+      pageIndex: filter.pageIndex,
+      pageSize: _pageSize,
+      fetch: (pageIndex) => _fetch(filter.copyWith(pageIndex: pageIndex)),
+    );
   }
 
-  Future<CatalogPage<Warehouse>> _fetch(
-    WarehouseFilter filter, {
-    required int pageIndex,
-  }) async {
+  Future<CatalogPage<Warehouse>> _fetch(WarehouseFilter filter) async {
     final result = await ref
         .read(warehouseRepositoryProvider)
         .list(
           search: filter.search.isEmpty ? null : filter.search,
           facilityId: filter.facilityId,
           status: filter.status,
-          skip: pageIndex * _pageSize,
+          skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
         );
     return CatalogPage(
       items: result.items,
       total: result.total,
-      pageIndex: pageIndex,
+      pageIndex: filter.pageIndex,
       pageSize: _pageSize,
     );
-  }
-
-  /// Fetches [pageIndex] and replaces the current page with it.
-  Future<void> goToPage(int pageIndex) async {
-    final filter = ref.read(warehouseFilterControllerProvider);
-    state = const AsyncLoading<CatalogPage<Warehouse>>().copyWithPrevious(
-      state,
-    );
-    state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }

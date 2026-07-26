@@ -233,5 +233,10 @@ void main() {
 
     expect(find.byKey(const Key('edit_facility_button')), findsNothing);
     expect(find.byKey(const Key('delete_facility_button')), findsNothing);
+
+    // 017-ui-consistency-filters / constitution v1.10.0: the edit toggle
+    // lives in the record action area now, not the AppBar.
+    final appBar = tester.widget<AppBar>(find.byType(AppBar));
+    expect(appBar.actions, anyOf(isNull, isEmpty));
   });
 }

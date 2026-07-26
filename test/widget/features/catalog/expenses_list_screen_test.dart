@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/expense_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/expense.dart';
@@ -56,6 +57,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<Expense> expenses = _testExpenses,
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -67,16 +69,28 @@ void main() {
       (_) async => ExpenseListResult(items: expenses, total: expenses.length),
     );
 
+    final router = GoRouter(
+      initialLocation: query.toUri('/expenses').toString(),
+      routes: [
+        GoRoute(
+          path: '/expenses',
+          builder: (_, state) => Scaffold(
+            body: ExpensesListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           expenseRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: ExpensesListScreen()),
         ),
       ),
     );
@@ -137,7 +151,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: ExpensesListScreen()),
+            builder: (_, state) => Scaffold(
+              body: ExpensesListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/expenses/:expenseId',

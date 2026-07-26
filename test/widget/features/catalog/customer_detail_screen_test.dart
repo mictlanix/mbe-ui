@@ -136,8 +136,8 @@ void main() {
 
   group('view mode (forceReadOnly)', () {
     testWidgets(
-      'renders the price-list and salesperson names, and the AppBar carries '
-      'only the edit toggle (constitution v1.8.0)',
+      'renders the price-list and salesperson names, with the edit toggle '
+      'in the record action area, not the AppBar (constitution v1.10.0)',
       (tester) async {
         await pumpScreen(
           tester,
@@ -163,6 +163,9 @@ void main() {
         expect(find.byKey(const Key('save_button')), findsNothing);
         expect(find.byKey(const Key('delete_customer_button')), findsNothing);
         expect(find.byKey(const Key('edit_customer_button')), findsOneWidget);
+
+        final appBar = tester.widget<AppBar>(find.byType(AppBar));
+        expect(appBar.actions, anyOf(isNull, isEmpty));
       },
     );
 

@@ -19,7 +19,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$VehicleOperatorFilter {
   String get search => throw _privateConstructorUsedError;
   int? get driverId => throw _privateConstructorUsedError;
-  String get driverDisplayText => throw _privateConstructorUsedError;
+  EntityStatus? get status => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of VehicleOperatorFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +36,12 @@ abstract class $VehicleOperatorFilterCopyWith<$Res> {
     $Res Function(VehicleOperatorFilter) then,
   ) = _$VehicleOperatorFilterCopyWithImpl<$Res, VehicleOperatorFilter>;
   @useResult
-  $Res call({String search, int? driverId, String driverDisplayText});
+  $Res call({
+    String search,
+    int? driverId,
+    EntityStatus? status,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -58,7 +64,8 @@ class _$VehicleOperatorFilterCopyWithImpl<
   $Res call({
     Object? search = null,
     Object? driverId = freezed,
-    Object? driverDisplayText = null,
+    Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -70,10 +77,14 @@ class _$VehicleOperatorFilterCopyWithImpl<
                 ? _value.driverId
                 : driverId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            driverDisplayText: null == driverDisplayText
-                ? _value.driverDisplayText
-                : driverDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -89,7 +100,12 @@ abstract class _$$VehicleOperatorFilterImplCopyWith<$Res>
   ) = __$$VehicleOperatorFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String search, int? driverId, String driverDisplayText});
+  $Res call({
+    String search,
+    int? driverId,
+    EntityStatus? status,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -109,7 +125,8 @@ class __$$VehicleOperatorFilterImplCopyWithImpl<$Res>
   $Res call({
     Object? search = null,
     Object? driverId = freezed,
-    Object? driverDisplayText = null,
+    Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$VehicleOperatorFilterImpl(
@@ -121,10 +138,14 @@ class __$$VehicleOperatorFilterImplCopyWithImpl<$Res>
             ? _value.driverId
             : driverId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        driverDisplayText: null == driverDisplayText
-            ? _value.driverDisplayText
-            : driverDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -136,7 +157,8 @@ class _$VehicleOperatorFilterImpl implements _VehicleOperatorFilter {
   const _$VehicleOperatorFilterImpl({
     this.search = '',
     this.driverId,
-    this.driverDisplayText = '',
+    this.status,
+    this.pageIndex = 0,
   });
 
   @override
@@ -145,12 +167,14 @@ class _$VehicleOperatorFilterImpl implements _VehicleOperatorFilter {
   @override
   final int? driverId;
   @override
+  final EntityStatus? status;
+  @override
   @JsonKey()
-  final String driverDisplayText;
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'VehicleOperatorFilter(search: $search, driverId: $driverId, driverDisplayText: $driverDisplayText)';
+    return 'VehicleOperatorFilter(search: $search, driverId: $driverId, status: $status, pageIndex: $pageIndex)';
   }
 
   @override
@@ -161,13 +185,14 @@ class _$VehicleOperatorFilterImpl implements _VehicleOperatorFilter {
             (identical(other.search, search) || other.search == search) &&
             (identical(other.driverId, driverId) ||
                 other.driverId == driverId) &&
-            (identical(other.driverDisplayText, driverDisplayText) ||
-                other.driverDisplayText == driverDisplayText));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, search, driverId, driverDisplayText);
+      Object.hash(runtimeType, search, driverId, status, pageIndex);
 
   /// Create a copy of VehicleOperatorFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -186,7 +211,8 @@ abstract class _VehicleOperatorFilter implements VehicleOperatorFilter {
   const factory _VehicleOperatorFilter({
     final String search,
     final int? driverId,
-    final String driverDisplayText,
+    final EntityStatus? status,
+    final int pageIndex,
   }) = _$VehicleOperatorFilterImpl;
 
   @override
@@ -194,7 +220,9 @@ abstract class _VehicleOperatorFilter implements VehicleOperatorFilter {
   @override
   int? get driverId;
   @override
-  String get driverDisplayText;
+  EntityStatus? get status;
+  @override
+  int get pageIndex;
 
   /// Create a copy of VehicleOperatorFilter
   /// with the given fields replaced by the non-null parameter values.

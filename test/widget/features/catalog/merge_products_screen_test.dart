@@ -612,18 +612,19 @@ void main() {
       await tester.tap(find.byKey(const Key('merge_submit_button')));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const Key('merge_confirm_total_line')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('merge_confirm_total_line')), findsOneWidget);
       expect(find.text('Records that will move: 10.'), findsOneWidget);
       // Both records restated by name *and* code (FR-009).
       expect(
-        find.textContaining('"${_fullCanonical.name}" (${_fullCanonical.code})'),
+        find.textContaining(
+          '"${_fullCanonical.name}" (${_fullCanonical.code})',
+        ),
         findsOneWidget,
       );
       expect(
-        find.textContaining('"${_fullDuplicate.name}" (${_fullDuplicate.code})'),
+        find.textContaining(
+          '"${_fullDuplicate.name}" (${_fullDuplicate.code})',
+        ),
         findsOneWidget,
       );
     });
@@ -695,8 +696,10 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(
-          find.text('I understand "${_duplicate.name}" will be permanently '
-              'deleted.'),
+          find.text(
+            'I understand "${_duplicate.name}" will be permanently '
+            'deleted.',
+          ),
           findsOneWidget,
         );
       },
@@ -724,8 +727,10 @@ void main() {
       );
       // The label now names the other product — the one newly at risk.
       expect(
-        find.text('I understand "${_canonical.name}" will be permanently '
-            'deleted.'),
+        find.text(
+          'I understand "${_canonical.name}" will be permanently '
+          'deleted.',
+        ),
         findsOneWidget,
       );
     });

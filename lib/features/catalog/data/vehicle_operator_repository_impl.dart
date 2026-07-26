@@ -25,6 +25,7 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
   Future<VehicleOperatorListResult> list({
     String? search,
     int? driverId,
+    EntityStatus? status,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -32,6 +33,7 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
       final response = await _api.listVehicleOperatorsApiV1VehicleOperatorsGet(
         search: search,
         employee: driverId,
+        status: status?.toApi(),
         skip: skip,
         limit: limit,
       );

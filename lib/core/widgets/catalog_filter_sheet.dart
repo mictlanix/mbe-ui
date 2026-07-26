@@ -12,6 +12,17 @@ import 'package:mbe_ui/core/layout/breakpoints.dart';
 /// is wired to the footer's "Clear all" action; the primary "Apply" button just
 /// dismisses the panel. Implemented once here so every catalog inherits the
 /// same responsive behavior.
+///
+/// Pushed onto the **root** navigator (`useRootNavigator: true`), not the
+/// nearest one — [builder]'s live-apply controls call `context.go` on every
+/// change (017-ui-consistency-filters US3), and each catalog list lives
+/// inside its own `StatefulShellBranch` with its own nested Navigator. A
+/// sheet attached to that nested (branch) Navigator would be torn down by
+/// `go`'s declarative page-stack rebuild the moment the first filter
+/// changes; attaching to the true root Navigator (above the shell) keeps it
+/// open across live filter changes, matching `showGeneralDialog`'s own
+/// default (`useRootNavigator: true`) — explicit here so both presentation
+/// paths agree instead of one accidentally relying on a library default.
 Future<void> showCatalogFilterSheet(
   BuildContext context, {
   required String title,
@@ -25,6 +36,7 @@ Future<void> showCatalogFilterSheet(
   if (width < LayoutBreakpoints.expanded) {
     return showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       showDragHandle: true,
       builder: (ctx) => _CatalogFilterSheet(
@@ -40,6 +52,7 @@ Future<void> showCatalogFilterSheet(
 
   return showGeneralDialog<void>(
     context: context,
+    useRootNavigator: true,
     barrierDismissible: true,
     barrierLabel: title,
     barrierColor: Colors.black54,

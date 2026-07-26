@@ -137,8 +137,10 @@ void main() {
 
   group('humanizeCategoryKey', () {
     test('turns a snake_case table into readable text', () {
-      expect(humanizeCategoryKey('inventory_receipt_detail'),
-          'Inventory receipt detail');
+      expect(
+        humanizeCategoryKey('inventory_receipt_detail'),
+        'Inventory receipt detail',
+      );
       expect(humanizeCategoryKey('warranty_claim_line'), 'Warranty claim line');
       expect(humanizeCategoryKey('widgets'), 'Widgets');
     });

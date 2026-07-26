@@ -6,8 +6,8 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/label_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -81,19 +81,12 @@ class _LabelDetailScreenState extends ConsumerState<LabelDetailScreen> {
         !readOnly &&
         access.can(SystemObject.labels, AccessRight.delete);
 
+    final mode = !_isEdit
+        ? RecordFormMode.create
+        : (readOnly ? RecordFormMode.view : RecordFormMode.edit);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          if (readOnly && canUpdate && widget.labelId != null)
-            IconButton(
-              key: const Key('edit_label_button'),
-              icon: Icon(CatalogAction.edit.icon),
-              tooltip: l10n.editRecordTooltip,
-              onPressed: () => context.replace('/labels/${widget.labelId}'),
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: ResponsiveFormGrid(
@@ -145,76 +138,39 @@ class _LabelDetailScreenState extends ConsumerState<LabelDetailScreen> {
                 maxLines: 3,
               ),
             ),
-            if (canSave)
-              FormGridChild(
-                span: FormGridSpan.full,
-                FilledButton(
-                  key: const Key('save_button'),
-                  onPressed: formState.submitting
-                      ? null
-                      : (_isEdit
-                            ? controller.submitUpdate
-                            : controller.submitCreate),
-                  child: formState.submitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.saveButton),
+            FormGridChild(
+              span: FormGridSpan.full,
+              RecordFormActions(
+                mode: mode,
+                saveLabel: l10n.saveButton,
+                editLabel: l10n.editRecordTooltip,
+                deleteLabel: l10n.deleteLabelButton,
+                isSubmitting: formState.submitting,
+                editKey: const Key('edit_label_button'),
+                saveKey: const Key('save_button'),
+                deleteKey: const Key('delete_label_button'),
+                onEdit: (canUpdate && widget.labelId != null)
+                    ? () => context.replace('/labels/${widget.labelId}')
+                    : null,
+                onSave: canSave
+                    ? (_isEdit
+                          ? controller.submitUpdate
+                          : controller.submitCreate)
+                    : null,
+                onDelete: canDelete ? controller.delete : null,
+                deleteConfirmation: RecordDeleteConfirmation(
+                  title: l10n.deleteLabelConfirmTitle,
+                  message: l10n.deleteLabelConfirmMessage(formState.name),
+                  confirmLabel: l10n.deleteButton,
+                  cancelLabel: l10n.cancelButton,
+                  confirmKey: const Key('confirm_delete_label_button'),
                 ),
               ),
-            if (canDelete)
-              FormGridChild(
-                span: FormGridSpan.full,
-                FilledButton(
-                  key: const Key('delete_label_button'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    foregroundColor: Theme.of(context).colorScheme.onError,
-                  ),
-                  onPressed: formState.submitting
-                      ? null
-                      : () =>
-                            _confirmDelete(context, controller, formState.name),
-                  child: Text(l10n.deleteLabelButton),
-                ),
-              ),
+            ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _confirmDelete(
-    BuildContext context,
-    LabelFormController controller,
-    String name,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteLabelConfirmTitle),
-        content: Text(l10n.deleteLabelConfirmMessage(name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_delete_label_button'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) controller.delete();
   }
 }
 

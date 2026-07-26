@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
@@ -229,6 +230,46 @@ void main() {
 
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       expect(find.text(l10n.pricingNoPriceListsEmptyState), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'a server error shows the shared failed state (not a raw exception '
+    'string), and Retry re-fetches the same product (017-ui-consistency-'
+    'filters US5, FR-031, FR-032)',
+    (tester) async {
+      when(
+        () => priceListRepository.list(limit: 100),
+      ).thenThrow(const AppError.server());
+
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(PricingScreen)),
+      );
+      await container
+          .read(pricingControllerProvider.notifier)
+          .selectProduct(productId: 1, displayText: 'SKU-1');
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
+      expect(find.textContaining('Failed to load prices'), findsNothing);
+
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productPriceRepository.listByProduct(
+          productId: 1,
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer((_) async => []);
+
+      await tester.tap(find.byKey(const Key('list_state_retry_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('list_state_failed')), findsNothing);
+      expect(find.text('Retail'), findsOneWidget);
     },
   );
 

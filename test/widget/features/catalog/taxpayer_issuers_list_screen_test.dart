@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
@@ -70,6 +71,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<TaxpayerIssuer> issuers = const [],
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.listDetail(
@@ -81,16 +83,30 @@ void main() {
       (_) async => TaxpayerIssuerPage(items: issuers, total: issuers.length),
     );
 
+    final router = GoRouter(
+      initialLocation: query.toUri('/taxpayer-issuers').toString(),
+      routes: [
+        GoRoute(
+          path: '/taxpayer-issuers',
+          builder: (_, state) => Scaffold(
+            body: TaxpayerIssuersListScreen(
+              query: ListQuery.fromUri(state.uri),
+            ),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: TaxpayerIssuersListScreen()),
         ),
       ),
     );
@@ -181,8 +197,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) =>
-                const Scaffold(body: TaxpayerIssuersListScreen()),
+            builder: (_, state) => Scaffold(
+              body: TaxpayerIssuersListScreen(
+                query: ListQuery.fromUri(state.uri),
+              ),
+            ),
           ),
           GoRoute(
             path: '/taxpayer-issuers/:rfc',

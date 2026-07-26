@@ -20,6 +20,7 @@ mixin _$EmployeeFilter {
   String get search => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
   bool? get salesPerson => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of EmployeeFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +36,12 @@ abstract class $EmployeeFilterCopyWith<$Res> {
     $Res Function(EmployeeFilter) then,
   ) = _$EmployeeFilterCopyWithImpl<$Res, EmployeeFilter>;
   @useResult
-  $Res call({String search, EntityStatus? status, bool? salesPerson});
+  $Res call({
+    String search,
+    EntityStatus? status,
+    bool? salesPerson,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -56,6 +62,7 @@ class _$EmployeeFilterCopyWithImpl<$Res, $Val extends EmployeeFilter>
     Object? search = null,
     Object? status = freezed,
     Object? salesPerson = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -71,6 +78,10 @@ class _$EmployeeFilterCopyWithImpl<$Res, $Val extends EmployeeFilter>
                 ? _value.salesPerson
                 : salesPerson // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -86,7 +97,12 @@ abstract class _$$EmployeeFilterImplCopyWith<$Res>
   ) = __$$EmployeeFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String search, EntityStatus? status, bool? salesPerson});
+  $Res call({
+    String search,
+    EntityStatus? status,
+    bool? salesPerson,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -106,6 +122,7 @@ class __$$EmployeeFilterImplCopyWithImpl<$Res>
     Object? search = null,
     Object? status = freezed,
     Object? salesPerson = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$EmployeeFilterImpl(
@@ -121,6 +138,10 @@ class __$$EmployeeFilterImplCopyWithImpl<$Res>
             ? _value.salesPerson
             : salesPerson // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -129,7 +150,12 @@ class __$$EmployeeFilterImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$EmployeeFilterImpl implements _EmployeeFilter {
-  const _$EmployeeFilterImpl({this.search = '', this.status, this.salesPerson});
+  const _$EmployeeFilterImpl({
+    this.search = '',
+    this.status,
+    this.salesPerson,
+    this.pageIndex = 0,
+  });
 
   @override
   @JsonKey()
@@ -138,10 +164,13 @@ class _$EmployeeFilterImpl implements _EmployeeFilter {
   final EntityStatus? status;
   @override
   final bool? salesPerson;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'EmployeeFilter(search: $search, status: $status, salesPerson: $salesPerson)';
+    return 'EmployeeFilter(search: $search, status: $status, salesPerson: $salesPerson, pageIndex: $pageIndex)';
   }
 
   @override
@@ -152,11 +181,14 @@ class _$EmployeeFilterImpl implements _EmployeeFilter {
             (identical(other.search, search) || other.search == search) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.salesPerson, salesPerson) ||
-                other.salesPerson == salesPerson));
+                other.salesPerson == salesPerson) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, search, status, salesPerson);
+  int get hashCode =>
+      Object.hash(runtimeType, search, status, salesPerson, pageIndex);
 
   /// Create a copy of EmployeeFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -175,6 +207,7 @@ abstract class _EmployeeFilter implements EmployeeFilter {
     final String search,
     final EntityStatus? status,
     final bool? salesPerson,
+    final int pageIndex,
   }) = _$EmployeeFilterImpl;
 
   @override
@@ -183,6 +216,8 @@ abstract class _EmployeeFilter implements EmployeeFilter {
   EntityStatus? get status;
   @override
   bool? get salesPerson;
+  @override
+  int get pageIndex;
 
   /// Create a copy of EmployeeFilter
   /// with the given fields replaced by the non-null parameter values.

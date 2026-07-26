@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
@@ -71,6 +72,7 @@ void main() {
     when(
       () => userRepository.list(
         search: any(named: 'search'),
+        status: any(named: 'status'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -82,10 +84,23 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
+    ListQuery query = const ListQuery(),
   }) async {
     final token = 'test-token';
     when(() => tokenStorage.read()).thenAnswer((_) async => token);
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
+
+    final router = GoRouter(
+      initialLocation: query.toUri('/users').toString(),
+      routes: [
+        GoRoute(
+          path: '/users',
+          builder: (_, state) => Scaffold(
+            body: UsersListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
+        ),
+      ],
+    );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -94,11 +109,10 @@ void main() {
           userRepositoryProvider.overrideWithValue(userRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          // The shell owns the Scaffold in the app; the screen is body-only.
-          home: const Scaffold(body: UsersListScreen()),
         ),
       ),
     );
@@ -120,7 +134,9 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (_, _) => const Scaffold(body: UsersListScreen()),
+          builder: (_, state) => Scaffold(
+            body: UsersListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
         ),
         GoRoute(
           path: '/users/:userId',
@@ -210,6 +226,7 @@ void main() {
       verifyNever(
         () => userRepository.list(
           search: any(named: 'search'),
+          status: any(named: 'status'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -219,7 +236,12 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(
-        () => userRepository.list(search: 'jdoe', skip: 0, limit: 20),
+        () => userRepository.list(
+          search: 'jdoe',
+          status: null,
+          skip: 0,
+          limit: 20,
+        ),
       ).called(1);
     },
   );
@@ -239,6 +261,7 @@ void main() {
     when(
       () => userRepository.list(
         search: any(named: 'search'),
+        status: any(named: 'status'),
         skip: 0,
         limit: any(named: 'limit'),
       ),
@@ -246,6 +269,7 @@ void main() {
     when(
       () => userRepository.list(
         search: any(named: 'search'),
+        status: any(named: 'status'),
         skip: 20,
         limit: any(named: 'limit'),
       ),
@@ -258,7 +282,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     verify(
-      () => userRepository.list(search: null, skip: 20, limit: 20),
+      () =>
+          userRepository.list(search: null, status: null, skip: 20, limit: 20),
     ).called(1);
   });
 
@@ -324,5 +349,64 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('/users/admin'), findsOneWidget);
+  });
+
+  group('URL-driven filters (017-ui-consistency-filters US2, FR-011)', () {
+    testWidgets(
+      'a status facet in the URL is passed to the repository, and the '
+      'filtered total/page count comes from the server response, not '
+      'items.length (FR-014)',
+      (tester) async {
+        when(
+          () => userRepository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => UserListResult(items: [_testUsers.first], total: 1),
+        );
+
+        await pumpScreen(
+          tester,
+          signedInAs: _adminUser,
+          query: const ListQuery(
+            facets: {
+              'status': ['inactive'],
+            },
+          ),
+        );
+
+        verify(
+          () => userRepository.list(
+            search: any(named: 'search'),
+            status: EntityStatus.inactive,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+      },
+    );
+
+    testWidgets(
+      'the status facet renders via the shared EntityStatusFilterChips, not '
+      'a bespoke widget (FR-013)',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _adminUser);
+
+        await tester.tap(find.byKey(const Key('users_filter_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('users_filter_status_active')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('users_filter_status_inactive')),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

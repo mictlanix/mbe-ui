@@ -66,7 +66,17 @@ class _CatalogEntityPickerState<T extends Object>
   @override
   Widget build(BuildContext context) {
     if (!widget.enabled) {
+      // Keyed on the resolved text: a plain `TextFormField.initialValue`
+      // (like `Autocomplete.initialValue` below) only ever seeds on first
+      // mount, so a value that arrives *after* this widget is already on
+      // screen — a cold-loaded record's display name resolving, or a
+      // shared list URL's facet id resolving to a label
+      // (017-ui-consistency-filters data-model.md §4) — would otherwise be
+      // silently dropped. Forcing a remount when the value actually changes
+      // re-seeds it; this generalizes the `ValueKey(formState.isEdit)`
+      // workaround already used ad hoc in a couple of detail screens.
       return TextFormField(
+        key: ValueKey('ro-${widget.initialDisplayText}'),
         initialValue: widget.initialDisplayText ?? '',
         decoration: InputDecoration(labelText: widget.label),
         enabled: false,
@@ -74,6 +84,7 @@ class _CatalogEntityPickerState<T extends Object>
     }
 
     return Autocomplete<T>(
+      key: ValueKey('rw-${widget.initialDisplayText}'),
       initialValue: TextEditingValue(text: widget.initialDisplayText ?? ''),
       displayStringForOption: widget.displayStringForOption,
       optionsBuilder: (textEditingValue) {

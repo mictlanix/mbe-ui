@@ -107,11 +107,9 @@ void main() {
       for (final entry in cases.entries) {
         final rows = buildComparisonRows(l10n, base, entry.value);
         final flagged = rows.where((r) => r.differs).map((r) => r.label);
-        expect(
-          flagged,
-          [entry.key],
-          reason: 'changing ${entry.key} must flag that row and only it',
-        );
+        expect(flagged, [
+          entry.key,
+        ], reason: 'changing ${entry.key} must flag that row and only it');
       }
     });
 
@@ -190,7 +188,9 @@ void main() {
 
       final pointer = TestPointer(1, PointerDeviceKind.mouse);
       await tester.sendEventToBinding(
-        pointer.hover(tester.getCenter(find.byKey(const Key('merge_row_Code')))),
+        pointer.hover(
+          tester.getCenter(find.byKey(const Key('merge_row_Code'))),
+        ),
       );
       await tester.pumpAndSettle();
       final hovered = decorationOf(tester, 'Code').color;

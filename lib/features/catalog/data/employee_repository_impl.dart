@@ -14,6 +14,26 @@ final employeeRepositoryProvider = Provider<EmployeeRepository>((ref) {
   return EmployeeRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves an employee id to its display name — for a list screen's facet
+/// filter picker on a cold load (a shared link/bookmark/refresh carrying
+/// only `salesperson=<id>` in the URL, 017-ui-consistency-filters
+/// data-model.md §4). `null` on any failure (e.g. the id no longer exists),
+/// so a caller falls back to displaying the raw id rather than blocking the
+/// list.
+final employeeDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  employeeId,
+) async {
+  try {
+    final employee = await ref
+        .watch(employeeRepositoryProvider)
+        .get(employeeId: employeeId);
+    return '${employee.firstName} ${employee.lastName}';
+  } catch (_) {
+    return null;
+  }
+});
+
 class EmployeeRepositoryImpl implements EmployeeRepository {
   EmployeeRepositoryImpl(Dio dio)
     : _api = EmployeesApi(dio, standardSerializers);

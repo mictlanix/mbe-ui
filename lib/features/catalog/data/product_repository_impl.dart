@@ -39,6 +39,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? supplier,
     List<int> labels = const [],
     int skip = 0,
     int limit = 20,
@@ -50,6 +51,7 @@ class ProductRepositoryImpl implements ProductRepository {
         stockable: stockable,
         salable: salable,
         purchasable: purchasable,
+        supplier: supplier,
         label: labels.isEmpty ? null : BuiltList<int>(labels),
         skip: skip,
         limit: limit,
@@ -265,10 +267,11 @@ class ProductRepositoryImpl implements ProductRepository {
     required int duplicateId,
   }) async {
     try {
-      final response = await _api.previewProductMergeApiV1ProductsMergePreviewGet(
-        productId: productId,
-        duplicateId: duplicateId,
-      );
+      final response = await _api
+          .previewProductMergeApiV1ProductsMergePreviewGet(
+            productId: productId,
+            duplicateId: duplicateId,
+          );
       return MergePreview.fromResponse(response.data!);
     } on DioException catch (e) {
       throw _toAppError(e);

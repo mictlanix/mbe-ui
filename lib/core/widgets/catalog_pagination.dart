@@ -27,3 +27,25 @@ class CatalogPage<T> {
   /// Fixed at 20 across catalogs (matches the existing Products page size).
   final int pageSize;
 }
+
+/// Fetches [pageIndex] via [fetch]; if that page comes back empty despite a
+/// non-zero known total, refetches the nearest valid (last) page instead of
+/// surfacing an empty view (017-ui-consistency-filters FR-026) — the address
+/// named a page beyond the result set (e.g. a bookmark taken before items on
+/// later pages were deleted, or `?page=999` typed by hand). A page that is
+/// merely empty because [total] itself is 0 (no matches at all) is left
+/// alone — that is `ListPresentationState.empty`/`filteredEmpty`, not a
+/// clamping case.
+Future<CatalogPage<T>> fetchClampedPage<T>({
+  required int pageIndex,
+  required int pageSize,
+  required Future<CatalogPage<T>> Function(int pageIndex) fetch,
+}) async {
+  final page = await fetch(pageIndex);
+  if (page.items.isNotEmpty || page.total == 0 || pageIndex == 0) {
+    return page;
+  }
+  final lastPageIndex = (page.total - 1) ~/ pageSize;
+  if (lastPageIndex == pageIndex) return page;
+  return fetch(lastPageIndex);
+}

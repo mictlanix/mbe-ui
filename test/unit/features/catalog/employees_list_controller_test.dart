@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
@@ -30,47 +31,62 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group('EmployeeFilterController', () {
-    test('starts with no filters', () {
-      final filter = container.read(employeeFilterControllerProvider);
-      expect(filter.search, '');
-      expect(filter.status, isNull);
-      expect(filter.salesPerson, isNull);
-      expect(filter.hasActiveFilters, isFalse);
-    });
-
-    test('activeChanged/salesPersonChanged set independently', () {
-      final notifier = container.read(
-        employeeFilterControllerProvider.notifier,
+  group('EmployeeFilter.fromQuery (017-ui-consistency-filters FR-017)', () {
+    test('derives every field from a ListQuery', () {
+      final filter = EmployeeFilter.fromQuery(
+        const ListQuery(
+          search: 'Jane',
+          pageIndex: 2,
+          facets: {
+            'status': ['active'],
+            'salesPerson': ['false'],
+          },
+        ),
       );
-      notifier.statusChanged(EntityStatus.active);
-      notifier.salesPersonChanged(false);
 
-      final filter = container.read(employeeFilterControllerProvider);
+      expect(filter.search, 'Jane');
+      expect(filter.pageIndex, 2);
       expect(filter.status, EntityStatus.active);
       expect(filter.salesPerson, isFalse);
       expect(filter.activeFilterCount, 2);
     });
 
-    test('reset clears facets but preserves search', () {
-      final notifier = container.read(
-        employeeFilterControllerProvider.notifier,
-      );
-      notifier
-        ..searchChanged('Jane')
-        ..statusChanged(EntityStatus.active);
+    test('defaults from an empty ListQuery', () {
+      final filter = EmployeeFilter.fromQuery(const ListQuery());
 
-      notifier.reset();
-
-      final filter = container.read(employeeFilterControllerProvider);
-      expect(filter.search, 'Jane');
+      expect(filter.search, '');
+      expect(filter.pageIndex, 0);
       expect(filter.status, isNull);
+      expect(filter.salesPerson, isNull);
+      expect(filter.hasActiveFilters, isFalse);
     });
   });
 
-  group('EmployeesListController', () {
+  group('EmployeesListController (a family keyed by EmployeeFilter)', () {
+    test('build(filter) maps the filter to repository query params', () async {
+      when(
+        () => repository.list(
+          search: null,
+          status: null,
+          salesPerson: null,
+          skip: 0,
+          limit: 20,
+        ),
+      ).thenAnswer(
+        (_) async => EmployeeListResult(items: [_employee(1)], total: 1),
+      );
+
+      const filter = EmployeeFilter();
+      final result = await container.read(
+        employeesListControllerProvider(filter).future,
+      );
+
+      expect(result.items, hasLength(1));
+      expect(result.total, 1);
+    });
+
     test(
-      'build() maps the current filter to repository query params',
+      'a different status filter maps to a different provider instance and query',
       () async {
         when(
           () => repository.list(
@@ -83,52 +99,33 @@ void main() {
         ).thenAnswer(
           (_) async => EmployeeListResult(items: [_employee(1)], total: 1),
         );
-
-        final result = await container.read(
-          employeesListControllerProvider.future,
+        when(
+          () => repository.list(
+            search: null,
+            status: EntityStatus.active,
+            salesPerson: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => EmployeeListResult(items: [_employee(2)], total: 1),
         );
 
-        expect(result.items, hasLength(1));
-        expect(result.total, 1);
+        final first = await container.read(
+          employeesListControllerProvider(const EmployeeFilter()).future,
+        );
+        final second = await container.read(
+          employeesListControllerProvider(
+            const EmployeeFilter(status: EntityStatus.active),
+          ).future,
+        );
+
+        expect(first.items.single.employeeId, 1);
+        expect(second.items.single.employeeId, 2);
       },
     );
 
-    test('changing the active filter re-fetches from skip=0', () async {
-      when(
-        () => repository.list(
-          search: null,
-          status: null,
-          salesPerson: null,
-          skip: 0,
-          limit: 20,
-        ),
-      ).thenAnswer(
-        (_) async => EmployeeListResult(items: [_employee(1)], total: 1),
-      );
-      await container.read(employeesListControllerProvider.future);
-
-      when(
-        () => repository.list(
-          search: null,
-          status: EntityStatus.active,
-          salesPerson: null,
-          skip: 0,
-          limit: 20,
-        ),
-      ).thenAnswer(
-        (_) async => EmployeeListResult(items: [_employee(2)], total: 1),
-      );
-      container
-          .read(employeeFilterControllerProvider.notifier)
-          .statusChanged(EntityStatus.active);
-
-      final result = await container.read(
-        employeesListControllerProvider.future,
-      );
-      expect(result.items.single.employeeId, 2);
-    });
-
-    test('goToPage replaces the current page with the requested one', () async {
+    test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
         () => repository.list(
           search: null,
@@ -140,8 +137,6 @@ void main() {
       ).thenAnswer(
         (_) async => EmployeeListResult(items: [_employee(1)], total: 21),
       );
-      await container.read(employeesListControllerProvider.future);
-
       when(
         () => repository.list(
           search: null,
@@ -154,13 +149,60 @@ void main() {
         (_) async => EmployeeListResult(items: [_employee(2)], total: 21),
       );
 
-      await container
-          .read(employeesListControllerProvider.notifier)
-          .goToPage(1);
+      final page0 = await container.read(
+        employeesListControllerProvider(const EmployeeFilter()).future,
+      );
+      final page1 = await container.read(
+        employeesListControllerProvider(
+          const EmployeeFilter(pageIndex: 1),
+        ).future,
+      );
 
-      final page = container.read(employeesListControllerProvider).value!;
-      expect(page.items.map((e) => e.employeeId), [2]);
-      expect(page.pageIndex, 1);
+      expect(page0.items.map((e) => e.employeeId), [1]);
+      expect(page0.pageIndex, 0);
+      expect(page1.items.map((e) => e.employeeId), [2]);
+      expect(page1.pageIndex, 1);
+      expect(page1.total, 21);
     });
+
+    test(
+      'invalidating the provider re-fetches the SAME page rather than '
+      'resetting to page 0 (017-ui-consistency-filters FR-025, research §3)',
+      () async {
+        const filter = EmployeeFilter(pageIndex: 1);
+        when(
+          () => repository.list(
+            search: null,
+            status: null,
+            salesPerson: null,
+            skip: 20,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => EmployeeListResult(items: [_employee(2)], total: 21),
+        );
+
+        await container.read(employeesListControllerProvider(filter).future);
+
+        when(
+          () => repository.list(
+            search: null,
+            status: null,
+            salesPerson: null,
+            skip: 20,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => EmployeeListResult(items: [_employee(99)], total: 21),
+        );
+        container.invalidate(employeesListControllerProvider(filter));
+
+        final refreshed = await container.read(
+          employeesListControllerProvider(filter).future,
+        );
+        expect(refreshed.pageIndex, 1);
+        expect(refreshed.items.single.employeeId, 99);
+      },
+    );
   });
 }
