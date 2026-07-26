@@ -40,7 +40,7 @@ things follow from that:
 
 - [ ] T001 Verify baseline is green: run `flutter analyze` and `flutter test` at repo root, record the pass count in the PR description
 - [ ] T002 Verify codegen is current: run `dart run build_runner build --delete-conflicting-outputs` and confirm no `lib/**/*.g.dart` or `*.freezed.dart` file changes
-- [ ] T003 [P] Add an l10n key-parity check to `test/unit/core/l10n_parity_test.dart` asserting `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` have identical key sets (671 each today) — this guards FR-036 for every later task
+- [ ] T003 [P] Add an l10n key-parity check to `test/unit/core/l10n_parity_test.dart` asserting `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` have identical key sets (701 each as of the `main` merge — assert set equality, not this literal count) — this guards FR-036 for every later task
 
 ---
 
@@ -148,7 +148,7 @@ session → same view, with the values visible in the filter controls.
 
 *(Vehicles was already converted in T008.)*
 
-- [ ] T052 [US3] Add a shared list-URL round-trip widget test in `test/widget/features/list_url_state_test.dart` asserting, for a representative screen per facet type, that filters restore from the URL **into the controls** (FR-018) and that changing a filter updates the URL
+- [ ] T052 [US3] Add a shared list-URL round-trip widget test in `test/widget/features/list_url_state_test.dart` asserting, for a representative screen per facet type, that filters restore from the URL **into the controls** (FR-018) and that changing a filter updates the URL; also assert **browser Back navigation** (FR-022, spec.md US3 Acceptance Scenario 8): apply filter A, then filter B, then filter C via `context.go`, pop router history twice, and confirm the restored view matches filter A's state — not merely that `context.go` fires
 
 **Checkpoint**: every list view is linkable, bookmarkable, and refresh-safe.
 
@@ -189,23 +189,23 @@ result/page count reflects the filtered total; repeat for the other three.
 
 - [ ] T057 [P] [US2] Add `EntityStatus? status` to `VehicleRepository.list` in `lib/features/catalog/domain/repositories/vehicle_repository.dart` and forward it in `lib/features/catalog/data/vehicle_repository_impl.dart`
 - [ ] T058 [US2] Add the first filter sheet to `lib/features/catalog/presentation/vehicles_list_screen.dart` (filter button + badge + `showCatalogFilterSheet` + `EntityStatusFilterChips`), wire the `status` facet through `ListQuery`, and **correct the stale comment at `vehicles_list_screen.dart:19-22`** which wrongly claims the endpoint has no facets beyond `search`
-- [ ] T059 [US2] Add the Vehicles filter-sheet title key to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, and extend `test/widget/features/catalog/vehicles_list_screen_test.dart` to assert the repository receives the status value and that it round-trips through the URL
+- [ ] T059 [US2] Add the Vehicles filter-sheet title key to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, and extend `test/widget/features/catalog/vehicles_list_screen_test.dart` to assert: the repository receives the status value and it round-trips through the URL; the facet renders via `EntityStatusFilterChips` (FR-013 — no bespoke widget); and a filtered result's displayed total/page count comes from the mocked server response, not `items.length` (FR-014)
 
 ### Vehicle Operators — status (FR-010)
 
 - [ ] T060 [P] [US2] Add `EntityStatus? status` to `VehicleOperatorRepository.list` in `lib/features/catalog/domain/repositories/vehicle_operator_repository.dart` and forward it in `lib/features/catalog/data/vehicle_operator_repository_impl.dart`
-- [ ] T061 [US2] Add `EntityStatusFilterChips` to the existing filter sheet in `lib/features/catalog/presentation/vehicle_operators_list_screen.dart`, combinable with the operator facet, and update the badge count; extend `test/widget/features/catalog/vehicle_operators_list_screen_test.dart` to assert both facets apply together
+- [ ] T061 [US2] Add `EntityStatusFilterChips` to the existing filter sheet in `lib/features/catalog/presentation/vehicle_operators_list_screen.dart`, combinable with the operator facet, and update the badge count; extend `test/widget/features/catalog/vehicle_operators_list_screen_test.dart` to assert both facets apply together (FR-013) and that the filtered total/page count comes from the server response, not `items.length` (FR-014)
 
 ### Users — status (FR-011)
 
 - [ ] T062 [P] [US2] Add `EntityStatus? status` to `UserRepository.list` in `lib/features/auth/domain/repositories/user_repository.dart` and forward it to `listUsersApiV1UsersGet` in `lib/features/auth/data/user_repository_impl.dart`
-- [ ] T063 [US2] Add the first filter sheet to `lib/features/auth/presentation/admin/users_list_screen.dart` with `EntityStatusFilterChips`, add its title key to both `.arb` files, and extend `test/widget/features/auth/users_list_screen_test.dart`
+- [ ] T063 [US2] Add the first filter sheet to `lib/features/auth/presentation/admin/users_list_screen.dart` with `EntityStatusFilterChips`, add its title key to both `.arb` files, and extend `test/widget/features/auth/users_list_screen_test.dart` to assert the shared-control usage (FR-013) and that the filtered total/page count comes from the server response, not `items.length` (FR-014)
 
 ### Products — supplier (FR-012)
 
 - [ ] T064 [P] [US2] Add `int? supplier` to `ProductRepository.list` in `lib/features/catalog/domain/repositories/product_repository.dart` and forward it in `lib/features/catalog/data/product_repository_impl.dart`
 - [ ] T065 [US2] Add a `CatalogEntityPicker<Supplier>` supplier facet to the existing filter sheet in `lib/features/catalog/presentation/products_list_screen.dart`, fed by `SupplierRepository`, using the T034 cold-load resolution; add its label key to both `.arb` files
-- [ ] T066 [US2] Extend `test/widget/features/catalog/products_list_screen_test.dart` to assert the supplier facet reaches the repository, combines with label + status, and round-trips through the URL including its resolved display name
+- [ ] T066 [US2] Extend `test/widget/features/catalog/products_list_screen_test.dart` to assert the supplier facet reaches the repository, combines with label + status, round-trips through the URL including its resolved display name, uses `CatalogEntityPicker` rather than a bespoke widget (FR-013), and that a filtered result's total/page count comes from the mocked server response, not `items.length` (FR-014)
 
 **Checkpoint**: no catalog ignores a facet its endpoint accepts.
 

@@ -326,8 +326,10 @@ no shipped screen is retroactively non-compliant.
 
 ## §8 — Decision: localization strategy and volume
 
-New keys land in both `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` (671 keys
-each today, exactly in sync — that parity is itself worth asserting).
+New keys land in both `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` (701 keys
+each as of the `main` merge that landed spec 016, exactly in sync — that parity is
+itself worth asserting, and is exactly what T003's key-parity test checks: set
+equality, not this specific count, since it will keep moving).
 
 Estimated additions:
 - 5 — `ErrorBanner` message variants (§6).
