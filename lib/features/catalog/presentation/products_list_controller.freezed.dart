@@ -22,7 +22,9 @@ mixin _$ProductFilter {
   bool? get stockable => throw _privateConstructorUsedError;
   bool? get salable => throw _privateConstructorUsedError;
   bool? get purchasable => throw _privateConstructorUsedError;
+  int? get supplier => throw _privateConstructorUsedError;
   List<int> get labels => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -44,7 +46,9 @@ abstract class $ProductFilterCopyWith<$Res> {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? supplier,
     List<int> labels,
+    int pageIndex,
   });
 }
 
@@ -68,7 +72,9 @@ class _$ProductFilterCopyWithImpl<$Res, $Val extends ProductFilter>
     Object? stockable = freezed,
     Object? salable = freezed,
     Object? purchasable = freezed,
+    Object? supplier = freezed,
     Object? labels = null,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -92,10 +98,18 @@ class _$ProductFilterCopyWithImpl<$Res, $Val extends ProductFilter>
                 ? _value.purchasable
                 : purchasable // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            supplier: freezed == supplier
+                ? _value.supplier
+                : supplier // ignore: cast_nullable_to_non_nullable
+                      as int?,
             labels: null == labels
                 ? _value.labels
                 : labels // ignore: cast_nullable_to_non_nullable
                       as List<int>,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -117,7 +131,9 @@ abstract class _$$ProductFilterImplCopyWith<$Res>
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? supplier,
     List<int> labels,
+    int pageIndex,
   });
 }
 
@@ -140,7 +156,9 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
     Object? stockable = freezed,
     Object? salable = freezed,
     Object? purchasable = freezed,
+    Object? supplier = freezed,
     Object? labels = null,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$ProductFilterImpl(
@@ -164,10 +182,18 @@ class __$$ProductFilterImplCopyWithImpl<$Res>
             ? _value.purchasable
             : purchasable // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        supplier: freezed == supplier
+            ? _value.supplier
+            : supplier // ignore: cast_nullable_to_non_nullable
+                  as int?,
         labels: null == labels
             ? _value._labels
             : labels // ignore: cast_nullable_to_non_nullable
                   as List<int>,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -182,7 +208,9 @@ class _$ProductFilterImpl implements _ProductFilter {
     this.stockable,
     this.salable,
     this.purchasable,
+    this.supplier,
     final List<int> labels = const <int>[],
+    this.pageIndex = 0,
   }) : _labels = labels;
 
   @override
@@ -196,6 +224,8 @@ class _$ProductFilterImpl implements _ProductFilter {
   final bool? salable;
   @override
   final bool? purchasable;
+  @override
+  final int? supplier;
   final List<int> _labels;
   @override
   @JsonKey()
@@ -206,8 +236,12 @@ class _$ProductFilterImpl implements _ProductFilter {
   }
 
   @override
+  @JsonKey()
+  final int pageIndex;
+
+  @override
   String toString() {
-    return 'ProductFilter(search: $search, status: $status, stockable: $stockable, salable: $salable, purchasable: $purchasable, labels: $labels)';
+    return 'ProductFilter(search: $search, status: $status, stockable: $stockable, salable: $salable, purchasable: $purchasable, supplier: $supplier, labels: $labels, pageIndex: $pageIndex)';
   }
 
   @override
@@ -222,7 +256,11 @@ class _$ProductFilterImpl implements _ProductFilter {
             (identical(other.salable, salable) || other.salable == salable) &&
             (identical(other.purchasable, purchasable) ||
                 other.purchasable == purchasable) &&
-            const DeepCollectionEquality().equals(other._labels, _labels));
+            (identical(other.supplier, supplier) ||
+                other.supplier == supplier) &&
+            const DeepCollectionEquality().equals(other._labels, _labels) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
@@ -233,7 +271,9 @@ class _$ProductFilterImpl implements _ProductFilter {
     stockable,
     salable,
     purchasable,
+    supplier,
     const DeepCollectionEquality().hash(_labels),
+    pageIndex,
   );
 
   /// Create a copy of ProductFilter
@@ -252,7 +292,9 @@ abstract class _ProductFilter implements ProductFilter {
     final bool? stockable,
     final bool? salable,
     final bool? purchasable,
+    final int? supplier,
     final List<int> labels,
+    final int pageIndex,
   }) = _$ProductFilterImpl;
 
   @override
@@ -266,7 +308,11 @@ abstract class _ProductFilter implements ProductFilter {
   @override
   bool? get purchasable;
   @override
+  int? get supplier;
+  @override
   List<int> get labels;
+  @override
+  int get pageIndex;
 
   /// Create a copy of ProductFilter
   /// with the given fields replaced by the non-null parameter values.

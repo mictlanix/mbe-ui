@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
@@ -8,6 +9,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
@@ -53,6 +55,7 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -78,16 +81,28 @@ void main() {
       ),
     );
 
+    final router = GoRouter(
+      initialLocation: query.toUri('/exchange-rates').toString(),
+      routes: [
+        GoRoute(
+          path: '/exchange-rates',
+          builder: (_, state) => Scaffold(
+            body: ExchangeRatesListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           exchangeRateRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: ExchangeRatesListScreen()),
         ),
       ),
     );
@@ -123,5 +138,88 @@ void main() {
     await pumpScreen(tester, signedInAs: _readOnlyUser);
 
     expect(find.byKey(const Key('new_exchange_rate_button')), findsNothing);
+  });
+
+  group('URL-driven filters (017-ui-consistency-filters US3)', () {
+    testWidgets(
+      'a base currency facet in the URL is passed to the repository',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          query: const ListQuery(
+            facets: {
+              'base': ['1'],
+            },
+          ),
+        );
+
+        verify(
+          () => repository.list(
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            base: 1,
+            target: any(named: 'target'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+      },
+    );
+
+    testWidgets(
+      'a date range facet in the URL is passed to the repository',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          query: const ListQuery(
+            facets: {
+              'dateFrom': ['2026-01-01'],
+              'dateTo': ['2026-12-31'],
+            },
+          ),
+        );
+
+        verify(
+          () => repository.list(
+            dateFrom: DateTime(2026, 1, 1),
+            dateTo: DateTime(2026, 12, 31),
+            base: any(named: 'base'),
+            target: any(named: 'target'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+      },
+    );
+
+    testWidgets(
+      'selecting a base currency navigates to a URL carrying that facet',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+        await tester.tap(find.byKey(const Key('exchange_rate_base_filter')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('USD — US Dollar').last);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('exchange_rate_base_filter')),
+          findsOneWidget,
+        );
+        verify(
+          () => repository.list(
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            base: any(named: 'base', that: isNotNull),
+            target: any(named: 'target'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+      },
+    );
   });
 }

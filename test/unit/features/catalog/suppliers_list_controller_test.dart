@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
@@ -29,75 +30,123 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group('SupplierSearchController', () {
-    test('starts empty', () {
-      expect(container.read(supplierSearchControllerProvider), '');
+  group('SupplierFilter.fromQuery (017-ui-consistency-filters FR-017)', () {
+    test('derives every field from a ListQuery', () {
+      final filter = SupplierFilter.fromQuery(
+        const ListQuery(search: 'Acme', pageIndex: 2),
+      );
+
+      expect(filter.search, 'Acme');
+      expect(filter.pageIndex, 2);
     });
 
-    test('updates on searchChanged', () {
-      container
-          .read(supplierSearchControllerProvider.notifier)
-          .searchChanged('Acme');
-      expect(container.read(supplierSearchControllerProvider), 'Acme');
+    test('defaults from an empty ListQuery', () {
+      final filter = SupplierFilter.fromQuery(const ListQuery());
+
+      expect(filter.search, '');
+      expect(filter.pageIndex, 0);
     });
   });
 
-  group('SuppliersListController', () {
+  group('SuppliersListController (a family keyed by SupplierFilter)', () {
+    test('build(filter) maps the filter to repository query params', () async {
+      when(
+        () => repository.listDetailed(search: null, skip: 0, limit: 20),
+      ).thenAnswer(
+        (_) async => SupplierPage(items: [_supplier(1)], total: 1),
+      );
+
+      const filter = SupplierFilter();
+      final result = await container.read(
+        suppliersListControllerProvider(filter).future,
+      );
+
+      expect(result.items, hasLength(1));
+      expect(result.total, 1);
+    });
+
     test(
-      'build() maps the current search to repository query params',
+      'a different search maps to a different provider instance and query',
       () async {
         when(
           () => repository.listDetailed(search: null, skip: 0, limit: 20),
         ).thenAnswer(
           (_) async => SupplierPage(items: [_supplier(1)], total: 1),
         );
-
-        final result = await container.read(
-          suppliersListControllerProvider.future,
+        when(
+          () => repository.listDetailed(search: 'Acme', skip: 0, limit: 20),
+        ).thenAnswer(
+          (_) async => SupplierPage(items: [_supplier(2)], total: 1),
         );
 
-        expect(result.items, hasLength(1));
-        expect(result.total, 1);
+        final first = await container.read(
+          suppliersListControllerProvider(const SupplierFilter()).future,
+        );
+        final second = await container.read(
+          suppliersListControllerProvider(
+            const SupplierFilter(search: 'Acme'),
+          ).future,
+        );
+
+        expect(first.items.single.supplierId, 1);
+        expect(second.items.single.supplierId, 2);
       },
     );
 
-    test('changing the search text re-fetches from skip=0', () async {
+    test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
         () => repository.listDetailed(search: null, skip: 0, limit: 20),
-      ).thenAnswer((_) async => SupplierPage(items: [_supplier(1)], total: 1));
-      await container.read(suppliersListControllerProvider.future);
-
-      when(
-        () => repository.listDetailed(search: 'Acme', skip: 0, limit: 20),
-      ).thenAnswer((_) async => SupplierPage(items: [_supplier(2)], total: 1));
-      container
-          .read(supplierSearchControllerProvider.notifier)
-          .searchChanged('Acme');
-
-      final result = await container.read(
-        suppliersListControllerProvider.future,
+      ).thenAnswer(
+        (_) async => SupplierPage(items: [_supplier(1)], total: 21),
       );
-      expect(result.items.single.supplierId, 2);
-    });
-
-    test('goToPage replaces the current page with the requested one', () async {
-      when(
-        () => repository.listDetailed(search: null, skip: 0, limit: 20),
-      ).thenAnswer((_) async => SupplierPage(items: [_supplier(1)], total: 21));
-      await container.read(suppliersListControllerProvider.future);
-
       when(
         () => repository.listDetailed(search: null, skip: 20, limit: 20),
-      ).thenAnswer((_) async => SupplierPage(items: [_supplier(2)], total: 21));
+      ).thenAnswer(
+        (_) async => SupplierPage(items: [_supplier(2)], total: 21),
+      );
 
-      await container
-          .read(suppliersListControllerProvider.notifier)
-          .goToPage(1);
+      final page0 = await container.read(
+        suppliersListControllerProvider(const SupplierFilter()).future,
+      );
+      final page1 = await container.read(
+        suppliersListControllerProvider(
+          const SupplierFilter(pageIndex: 1),
+        ).future,
+      );
 
-      final page = container.read(suppliersListControllerProvider).value!;
-      expect(page.items.map((s) => s.supplierId), [2]);
-      expect(page.pageIndex, 1);
-      expect(page.total, 21);
+      expect(page0.items.map((s) => s.supplierId), [1]);
+      expect(page0.pageIndex, 0);
+      expect(page1.items.map((s) => s.supplierId), [2]);
+      expect(page1.pageIndex, 1);
+      expect(page1.total, 21);
     });
+
+    test(
+      'invalidating the provider re-fetches the SAME page rather than '
+      'resetting to page 0 (017-ui-consistency-filters FR-025, research §3)',
+      () async {
+        const filter = SupplierFilter(pageIndex: 1);
+        when(
+          () => repository.listDetailed(search: null, skip: 20, limit: 20),
+        ).thenAnswer(
+          (_) async => SupplierPage(items: [_supplier(2)], total: 21),
+        );
+
+        await container.read(suppliersListControllerProvider(filter).future);
+
+        when(
+          () => repository.listDetailed(search: null, skip: 20, limit: 20),
+        ).thenAnswer(
+          (_) async => SupplierPage(items: [_supplier(99)], total: 21),
+        );
+        container.invalidate(suppliersListControllerProvider(filter));
+
+        final refreshed = await container.read(
+          suppliersListControllerProvider(filter).future,
+        );
+        expect(refreshed.pageIndex, 1);
+        expect(refreshed.items.single.supplierId, 99);
+      },
+    );
   });
 }

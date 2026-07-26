@@ -6,14 +6,15 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
-import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
@@ -22,20 +23,25 @@ import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+const _customersPath = '/customers';
+
 /// Customers catalog list screen (FR-001, FR-002, FR-022, US4). Gated by
 /// `can(SystemObject.customers, AccessRight.read)` in the router. Ships a
 /// filter drawer (active tri-state + price-list/salesperson FK pickers)
 /// since the list endpoint exposes those facets, per constitution §VI.
+///
+/// [query] is decoded from the route by the router builder
+/// (017-ui-consistency-filters FR-017) — the URL is this screen's only
+/// source of view state; there is no local filter notifier.
 class CustomersListScreen extends ConsumerWidget {
-  const CustomersListScreen({super.key});
+  const CustomersListScreen({super.key, required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pageAsync = ref.watch(customersListControllerProvider);
-    final filter = ref.watch(customerFilterControllerProvider);
-    final filterController = ref.read(
-      customerFilterControllerProvider.notifier,
-    );
+    final filter = CustomerFilter.fromQuery(query);
+    final pageAsync = ref.watch(customersListControllerProvider(filter));
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.customers, AccessRight.create);
     final canUpdate = access.can(SystemObject.customers, AccessRight.update);
@@ -51,7 +57,12 @@ class CustomersListScreen extends ConsumerWidget {
               label: l10n.customersSearchLabel,
               searchTooltip: l10n.searchButtonTooltip,
               initialValue: filter.search,
-              onSubmitted: filterController.searchChanged,
+              onSubmitted: (value) => context.go(
+                query
+                    .copyWith(search: value, pageIndex: 0)
+                    .toUri(_customersPath)
+                    .toString(),
+              ),
             ),
             actions: [
               if (canCreate)
@@ -75,8 +86,11 @@ class CustomersListScreen extends ConsumerWidget {
                     title: l10n.filtersButton,
                     clearAllLabel: l10n.clearAllFilters,
                     applyLabel: l10n.applyFilters,
-                    onClearAll: filterController.reset,
-                    builder: (_) => const _CustomerFiltersPanel(),
+                    onClearAll: () => context.go(_customersPath),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, query) =>
+                          _CustomerFiltersPanel(query: query),
+                    ),
                   ),
                 ),
               ),
@@ -84,56 +98,64 @@ class CustomersListScreen extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: pageAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(l10n.customersLoadError(e))),
-            data: (CatalogPage<CustomerListItem> page) => page.items.isEmpty
-                ? Center(child: Text(l10n.noCustomersFound))
-                : DataTableView<CustomerListItem>(
-                    key: const Key('customers_table'),
-                    columns: [
-                      DataTableColumn.text(
-                        label: l10n.columnCode,
-                        text: (c) => c.code,
-                        size: ColumnSize.S,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnName,
-                        text: (c) => c.name,
-                        size: ColumnSize.L,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnSalesperson,
-                        text: (c) =>
-                            c.salesperson?.name ?? l10n.noneAssignedLabel,
-                        size: ColumnSize.M,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnPriceList,
-                        text: (c) => c.priceList.name,
-                        size: ColumnSize.M,
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnStatus,
-                        fixedWidth: 130,
-                        cellBuilder: (context, c) =>
-                            EntityStatusCell(status: c.status),
-                      ),
-                    ],
-                    rows: page.items,
-                    pagination: page,
-                    onPageChanged: (pageIndex) => ref
-                        .read(customersListControllerProvider.notifier)
-                        .goToPage(pageIndex),
-                    onRowTap: (c) =>
-                        context.push('/customers/${c.customerId}?view=true'),
-                    rowActionsBuilder: (context, c) => buildCatalogRowActions(
-                      editTooltip: l10n.editActionTooltip,
-                      onEdit: canUpdate
-                          ? () => context.push('/customers/${c.customerId}')
-                          : null,
-                    ),
-                  ),
+          child: CatalogListStateView<CustomerListItem>(
+            state: pageAsync,
+            isFiltered: query.isFiltered,
+            emptyMessage: l10n.noCustomersFound,
+            createLabel: canCreate ? l10n.newCustomerTooltip : null,
+            onCreate: canCreate ? () => context.push('/customers/new') : null,
+            clearFiltersLabel: l10n.clearFiltersButton,
+            onClearFilters: () => context.go(_customersPath),
+            retryLabel: l10n.retryButton,
+            onRetry: () =>
+                ref.invalidate(customersListControllerProvider(filter)),
+            onData: (page) => DataTableView<CustomerListItem>(
+              key: const Key('customers_table'),
+              columns: [
+                DataTableColumn.text(
+                  label: l10n.columnCode,
+                  text: (c) => c.code,
+                  size: ColumnSize.S,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnName,
+                  text: (c) => c.name,
+                  size: ColumnSize.L,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnSalesperson,
+                  text: (c) => c.salesperson?.name ?? l10n.noneAssignedLabel,
+                  size: ColumnSize.M,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnPriceList,
+                  text: (c) => c.priceList.name,
+                  size: ColumnSize.M,
+                ),
+                DataTableColumn(
+                  label: l10n.columnStatus,
+                  fixedWidth: 130,
+                  cellBuilder: (context, c) =>
+                      EntityStatusCell(status: c.status),
+                ),
+              ],
+              rows: page.items,
+              pagination: page,
+              onPageChanged: (pageIndex) => context.go(
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_customersPath)
+                    .toString(),
+              ),
+              onRowTap: (c) =>
+                  context.push('/customers/${c.customerId}?view=true'),
+              rowActionsBuilder: (context, c) => buildCatalogRowActions(
+                editTooltip: l10n.editActionTooltip,
+                onEdit: canUpdate
+                    ? () => context.push('/customers/${c.customerId}')
+                    : null,
+              ),
+            ),
           ),
         ),
       ],
@@ -142,19 +164,37 @@ class CustomersListScreen extends ConsumerWidget {
 }
 
 /// The Customers catalog's facet filters (active tri-state, price-list and
-/// salesperson FK pickers), rendered inside the filter panel (FR-022).
+/// salesperson FK pickers), rendered inside the filter panel (FR-022). A
+/// [ConsumerWidget] so the controls stay reactive as the URL changes while
+/// the sheet — which lives on its own navigator route — is open. Each
+/// change navigates immediately via `context.go`; the panel itself holds no
+/// state.
 class _CustomerFiltersPanel extends ConsumerWidget {
-  const _CustomerFiltersPanel();
+  const _CustomerFiltersPanel({required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(customerFilterControllerProvider);
-    final filterController = ref.read(
-      customerFilterControllerProvider.notifier,
-    );
+    final filter = CustomerFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final employeeRepo = ref.read(employeeRepositoryProvider);
+    final priceListDisplayText = filter.priceListId != null
+        ? ref
+                  .watch(priceListDisplayNameProvider(filter.priceListId!))
+                  .valueOrNull ??
+              '${filter.priceListId}'
+        : '';
+    final salespersonDisplayText = filter.salespersonId != null
+        ? ref
+                  .watch(employeeDisplayNameProvider(filter.salespersonId!))
+                  .valueOrNull ??
+              '${filter.salespersonId}'
+        : '';
+
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_customersPath).toString());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -171,37 +211,45 @@ class _CustomerFiltersPanel extends ConsumerWidget {
         EntityStatusFilterChips(
           filterKey: 'customers_filter_status',
           value: filter.status,
-          onChanged: filterController.statusChanged,
+          onChanged: (status) => goTo(
+            query.withFacet('status', status?.name).copyWith(pageIndex: 0),
+          ),
         ),
         const SizedBox(height: 12),
         CatalogEntityPicker<PriceList>(
           key: const Key('customers_filter_price_list'),
           label: l10n.customersPriceListFilterLabel,
           displayStringForOption: (p) => p.name,
-          optionsBuilder: (query) async {
+          optionsBuilder: (search) async {
             final result = await priceListRepo.list(
-              search: query.isEmpty ? null : query,
+              search: search.isEmpty ? null : search,
             );
             return result.items;
           },
-          onSelected: (p) =>
-              filterController.priceListChanged(p.priceListId, p.name),
-          initialDisplayText: filter.priceListDisplayText ?? '',
+          onSelected: (p) => goTo(
+            query
+                .withFacet('priceList', '${p.priceListId}')
+                .copyWith(pageIndex: 0),
+          ),
+          initialDisplayText: priceListDisplayText,
         ),
         const SizedBox(height: 12),
         CatalogEntityPicker<EmployeeListItem>(
           key: const Key('customers_filter_salesperson'),
           label: l10n.customersSalespersonFilterLabel,
           displayStringForOption: (e) => e.fullName,
-          optionsBuilder: (query) async {
+          optionsBuilder: (search) async {
             final result = await employeeRepo.list(
-              search: query.isEmpty ? null : query,
+              search: search.isEmpty ? null : search,
             );
             return result.items;
           },
-          onSelected: (e) =>
-              filterController.salespersonChanged(e.employeeId, e.fullName),
-          initialDisplayText: filter.salespersonDisplayText ?? '',
+          onSelected: (e) => goTo(
+            query
+                .withFacet('salesperson', '${e.employeeId}')
+                .copyWith(pageIndex: 0),
+          ),
+          initialDisplayText: salespersonDisplayText,
         ),
       ],
     );

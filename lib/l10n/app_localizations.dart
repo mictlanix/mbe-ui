@@ -110,6 +110,36 @@ abstract class AppLocalizations {
   /// **'Must be at least 6 characters'**
   String get fieldMinLength6;
 
+  /// Generic ValidationError message shown when no field-level errors are provided
+  ///
+  /// In en, this message translates to:
+  /// **'Please correct the highlighted fields.'**
+  String get errorValidationGeneric;
+
+  /// Generic AuthError message
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password.'**
+  String get errorAuthGeneric;
+
+  /// Generic NotFoundError message
+  ///
+  /// In en, this message translates to:
+  /// **'The requested item was not found.'**
+  String get errorNotFoundGeneric;
+
+  /// Generic ServerError message
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong on the server. Please try again later.'**
+  String get errorServerGeneric;
+
+  /// Generic NetworkError message
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check your connection and try again.'**
+  String get errorNetworkGeneric;
+
   /// No description provided for @viewActionTooltip.
   ///
   /// In en, this message translates to:
@@ -320,12 +350,6 @@ abstract class AppLocalizations {
   /// **'Search by username or email'**
   String get usersSearchLabel;
 
-  /// No description provided for @usersLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load users: {error}'**
-  String usersLoadError(Object error);
-
   /// No description provided for @noUsersFound.
   ///
   /// In en, this message translates to:
@@ -440,6 +464,12 @@ abstract class AppLocalizations {
   /// **'Purchasable'**
   String get productsPurchasableFilter;
 
+  /// No description provided for @productsSupplierFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get productsSupplierFilter;
+
   /// No description provided for @productsLabelFilter.
   ///
   /// In en, this message translates to:
@@ -482,11 +512,35 @@ abstract class AppLocalizations {
   /// **'Apply'**
   String get applyFilters;
 
-  /// No description provided for @productsLoadError.
+  /// Shared list `failed` state's retry action (017-ui-consistency-filters US5)
   ///
   /// In en, this message translates to:
-  /// **'Failed to load products: {error}'**
-  String productsLoadError(Object error);
+  /// **'Retry'**
+  String get retryButton;
+
+  /// Shared list `filteredEmpty` state's clear-filters action (017-ui-consistency-filters US5)
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFiltersButton;
+
+  /// Shared list `filteredEmpty` state's title, shown when a filtered/searched list has zero results
+  ///
+  /// In en, this message translates to:
+  /// **'No matches found'**
+  String get filteredEmptyTitle;
+
+  /// Shared list `filteredEmpty` state's subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting or clearing your filters.'**
+  String get filteredEmptyMessage;
+
+  /// Shared list `failed` state's title, shown above the mapped ErrorBanner
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this list'**
+  String get loadErrorTitle;
 
   /// No description provided for @noProductsFound.
   ///
@@ -1297,12 +1351,6 @@ abstract class AppLocalizations {
   /// **'No price lists found.'**
   String get noPriceListsFound;
 
-  /// No description provided for @priceListsLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load price lists: {error}'**
-  String priceListsLoadError(Object error);
-
   /// No description provided for @columnHighProfitMargin.
   ///
   /// In en, this message translates to:
@@ -1447,12 +1495,6 @@ abstract class AppLocalizations {
   /// **'Not set'**
   String get pricingPriceNotSet;
 
-  /// No description provided for @pricingLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load prices: {error}'**
-  String pricingLoadError(Object error);
-
   /// No description provided for @pricingSaveFailedError.
   ///
   /// In en, this message translates to:
@@ -1524,12 +1566,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No exchange rates found.'**
   String get noExchangeRatesFound;
-
-  /// No description provided for @exchangeRatesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load exchange rates: {error}'**
-  String exchangeRatesLoadError(Object error);
 
   /// No description provided for @columnDate.
   ///
@@ -1807,12 +1843,6 @@ abstract class AppLocalizations {
   /// **'No suppliers found.'**
   String get noSuppliersFound;
 
-  /// No description provided for @suppliersLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load suppliers: {error}'**
-  String suppliersLoadError(Object error);
-
   /// No description provided for @newSupplierTitle.
   ///
   /// In en, this message translates to:
@@ -1921,12 +1951,6 @@ abstract class AppLocalizations {
   /// **'No labels found.'**
   String get noLabelsFound;
 
-  /// No description provided for @labelsLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load labels: {error}'**
-  String labelsLoadError(Object error);
-
   /// No description provided for @newLabelTitle.
   ///
   /// In en, this message translates to:
@@ -2028,12 +2052,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No expenses found.'**
   String get noExpensesFound;
-
-  /// No description provided for @expensesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load expenses: {error}'**
-  String expensesLoadError(Object error);
 
   /// No description provided for @newExpenseTitle.
   ///
@@ -2148,12 +2166,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No vehicles found.'**
   String get noVehiclesFound;
-
-  /// No description provided for @vehiclesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load vehicles: {error}'**
-  String vehiclesLoadError(Object error);
 
   /// No description provided for @newVehicleTitle.
   ///
@@ -2340,12 +2352,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No vehicle operators found.'**
   String get noVehicleOperatorsFound;
-
-  /// No description provided for @vehicleOperatorsLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load vehicle operators: {error}'**
-  String vehicleOperatorsLoadError(Object error);
 
   /// No description provided for @newVehicleOperatorTitle.
   ///
@@ -2563,12 +2569,6 @@ abstract class AppLocalizations {
   /// **'No employees found.'**
   String get noEmployeesFound;
 
-  /// No description provided for @employeesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load employees: {error}'**
-  String employeesLoadError(Object error);
-
   /// No description provided for @employeesSalesPersonFilter.
   ///
   /// In en, this message translates to:
@@ -2743,12 +2743,6 @@ abstract class AppLocalizations {
   /// **'No customers found.'**
   String get noCustomersFound;
 
-  /// No description provided for @customersLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load customers: {error}'**
-  String customersLoadError(Object error);
-
   /// No description provided for @customersPriceListFilterLabel.
   ///
   /// In en, this message translates to:
@@ -2898,12 +2892,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No taxpayer recipients found.'**
   String get noTaxpayerRecipientsFound;
-
-  /// No description provided for @taxpayerRecipientsLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load taxpayer recipients: {error}'**
-  String taxpayerRecipientsLoadError(Object error);
 
   /// No description provided for @newTaxpayerRecipientTitle.
   ///
@@ -3097,12 +3085,6 @@ abstract class AppLocalizations {
   /// **'New warehouse'**
   String get newWarehouseTooltip;
 
-  /// No description provided for @warehousesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load warehouses: {error}'**
-  String warehousesLoadError(Object error);
-
   /// No description provided for @noWarehousesFound.
   ///
   /// In en, this message translates to:
@@ -3223,12 +3205,6 @@ abstract class AppLocalizations {
   /// **'New cash drawer'**
   String get newCashDrawerTooltip;
 
-  /// No description provided for @cashDrawersLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load cash drawers: {error}'**
-  String cashDrawersLoadError(Object error);
-
   /// No description provided for @noCashDrawersFound.
   ///
   /// In en, this message translates to:
@@ -3348,12 +3324,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New point of sale'**
   String get newPointSaleTooltip;
-
-  /// No description provided for @pointsOfSaleLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load points of sale: {error}'**
-  String pointsOfSaleLoadError(Object error);
 
   /// No description provided for @noPointsOfSaleFound.
   ///
@@ -3480,12 +3450,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New facility'**
   String get newFacilityTooltip;
-
-  /// No description provided for @facilitiesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load facilities: {error}'**
-  String facilitiesLoadError(Object error);
 
   /// No description provided for @noFacilitiesFound.
   ///
@@ -3817,12 +3781,6 @@ abstract class AppLocalizations {
   /// **'No payment method options found.'**
   String get noPaymentMethodOptionsFound;
 
-  /// No description provided for @paymentMethodOptionsLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load payment method options: {error}'**
-  String paymentMethodOptionsLoadError(Object error);
-
   /// No description provided for @viewPaymentMethodOptionTitle.
   ///
   /// In en, this message translates to:
@@ -4075,12 +4033,6 @@ abstract class AppLocalizations {
   /// **'No taxpayer issuers found.'**
   String get noTaxpayerIssuersFound;
 
-  /// No description provided for @taxpayerIssuersLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load taxpayer issuers: {error}'**
-  String taxpayerIssuersLoadError(Object error);
-
   /// No description provided for @viewTaxpayerIssuerTitle.
   ///
   /// In en, this message translates to:
@@ -4242,12 +4194,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No certificates registered.'**
   String get noCertificatesFound;
-
-  /// No description provided for @certificatesLoadError.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load certificates: {error}'**
-  String certificatesLoadError(Object error);
 
   /// No description provided for @newCertificateDialogTitle.
   ///

@@ -155,10 +155,10 @@ than the app bar — the key is unchanged, only its location moved.
 
 ## Definition of done
 
-- [ ] Zero record screens have a non-empty `AppBar.actions` (SC-001).
-- [ ] `grep -rn "LoadError(e)" lib/features` returns nothing (SC-008).
-- [ ] Every list route round-trips its filters through the URL (SC-004).
-- [ ] The repository-parameter audit test passes and covers every list repository
+- [x] Zero record screens have a non-empty `AppBar.actions` (SC-001).
+- [x] `grep -rn "LoadError(e)" lib/features` returns nothing (SC-008).
+- [x] Every list route round-trips its filters through the URL (SC-004).
+- [x] The repository-parameter audit test passes and covers every list repository
       (SC-003).
-- [ ] Constitution is at v1.10.0 and DESIGN.md agrees (SC-009).
-- [ ] `app_en.arb` and `app_es.arb` have identical key sets.
+- [x] Constitution is at v1.10.0 and DESIGN.md agrees (SC-009).
+- [x] `app_en.arb` and `app_es.arb` have identical key sets.

@@ -7,31 +7,42 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
-import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
+import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+const _productsPath = '/products';
+
 /// Product catalog list screen (FR-001, FR-002). Gated by
 /// `can(SystemObject.products, AccessRight.read)` in the router.
+///
+/// [query] is decoded from the route by the router builder
+/// (017-ui-consistency-filters FR-017) — the URL is this screen's only
+/// source of view state; there is no local filter notifier.
 class ProductsListScreen extends ConsumerWidget {
-  const ProductsListScreen({super.key});
+  const ProductsListScreen({super.key, required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productsAsync = ref.watch(productsListControllerProvider);
-    final filter = ref.watch(productFilterControllerProvider);
-    final filterController = ref.read(productFilterControllerProvider.notifier);
+    final filter = ProductFilter.fromQuery(query);
+    final productsAsync = ref.watch(productsListControllerProvider(filter));
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.products, AccessRight.create);
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
@@ -51,7 +62,12 @@ class ProductsListScreen extends ConsumerWidget {
               label: l10n.productsSearchLabel,
               searchTooltip: l10n.searchButtonTooltip,
               initialValue: filter.search,
-              onSubmitted: filterController.searchChanged,
+              onSubmitted: (value) => context.go(
+                query
+                    .copyWith(search: value, pageIndex: 0)
+                    .toUri(_productsPath)
+                    .toString(),
+              ),
             ),
             actions: [
               if (canCreate)
@@ -82,8 +98,11 @@ class ProductsListScreen extends ConsumerWidget {
                     title: l10n.filtersButton,
                     clearAllLabel: l10n.clearAllFilters,
                     applyLabel: l10n.applyFilters,
-                    onClearAll: filterController.reset,
-                    builder: (_) => const _ProductFiltersPanel(),
+                    onClearAll: () => context.go(_productsPath),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, query) =>
+                          _ProductFiltersPanel(query: query),
+                    ),
                   ),
                 ),
               ),
@@ -91,94 +110,102 @@ class ProductsListScreen extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: productsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(l10n.productsLoadError(e))),
-            data: (CatalogPage<ProductListItem> page) => page.items.isEmpty
-                ? Center(child: Text(l10n.noProductsFound))
-                : DataTableView<ProductListItem>(
-                    key: const Key('products_table'),
-                    columns: [
-                      DataTableColumn(
-                        label: '',
-                        fixedWidth: 120,
-                        cellBuilder: (context, p) =>
-                            ProductPhoto(photoUrl: p.photo),
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnCode,
-                        fixedWidth: 200,
-                        cellBuilder: (context, p) => Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(p.code),
-                            IconButton(
-                              key: Key('copy_code_button_${p.productId}'),
-                              icon: const Icon(Icons.copy, size: 16),
-                              tooltip: l10n.copyCodeTooltip,
-                              visualDensity: VisualDensity.compact,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(
-                                minWidth: 28,
-                                minHeight: 28,
-                              ),
-                              onPressed: () => _copyCode(context, p.code, l10n),
-                            ),
-                          ],
+          child: CatalogListStateView<ProductListItem>(
+            state: productsAsync,
+            isFiltered: query.isFiltered,
+            emptyMessage: l10n.noProductsFound,
+            createLabel: canCreate ? l10n.newProductTooltip : null,
+            onCreate: canCreate ? () => context.push('/products/new') : null,
+            clearFiltersLabel: l10n.clearFiltersButton,
+            onClearFilters: () => context.go(_productsPath),
+            retryLabel: l10n.retryButton,
+            onRetry: () =>
+                ref.invalidate(productsListControllerProvider(filter)),
+            onData: (page) => DataTableView<ProductListItem>(
+              key: const Key('products_table'),
+              columns: [
+                DataTableColumn(
+                  label: '',
+                  fixedWidth: 120,
+                  cellBuilder: (context, p) => ProductPhoto(photoUrl: p.photo),
+                ),
+                DataTableColumn(
+                  label: l10n.columnCode,
+                  fixedWidth: 200,
+                  cellBuilder: (context, p) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(p.code),
+                      IconButton(
+                        key: Key('copy_code_button_${p.productId}'),
+                        icon: const Icon(Icons.copy, size: 16),
+                        tooltip: l10n.copyCodeTooltip,
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 28,
+                          minHeight: 28,
                         ),
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnName,
-                        text: (p) => p.name,
-                        size: ColumnSize.L,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnBrand,
-                        text: (p) => p.brand ?? '',
-                        size: ColumnSize.S,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnUnit,
-                        text: (p) => p.unitOfMeasurementName,
-                        size: ColumnSize.M,
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnStatus,
-                        fixedWidth: 130,
-                        cellBuilder: (context, p) =>
-                            EntityStatusCell(status: p.status),
+                        onPressed: () => _copyCode(context, p.code, l10n),
                       ),
                     ],
-                    rows: page.items,
-                    pagination: page,
-                    onPageChanged: (pageIndex) => ref
-                        .read(productsListControllerProvider.notifier)
-                        .goToPage(pageIndex),
-                    onRowTap: (p) =>
-                        context.push('/products/${p.productId}?view=true'),
-                    rowActionsBuilder: (context, p) => buildCatalogRowActions(
-                      editTooltip: l10n.editActionTooltip,
-                      onEdit: canUpdate
-                          ? () => context.push('/products/${p.productId}')
-                          : null,
-                      extraActions: [
-                        if (canViewPricing)
-                          CatalogRowAction(
-                            key: Key('view_pricing_button_${p.productId}'),
-                            icon: Icons.sell_outlined,
-                            tooltip: l10n.viewPricingButton,
-                            onPressed: () => context.push(
-                              Uri(
-                                path: '/products/${p.productId}/pricing',
-                                queryParameters: {
-                                  'productDisplayText': '${p.code} — ${p.name}',
-                                },
-                              ).toString(),
-                            ),
-                          ),
-                      ],
-                    ),
                   ),
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnName,
+                  text: (p) => p.name,
+                  size: ColumnSize.L,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnBrand,
+                  text: (p) => p.brand ?? '',
+                  size: ColumnSize.S,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnUnit,
+                  text: (p) => p.unitOfMeasurementName,
+                  size: ColumnSize.M,
+                ),
+                DataTableColumn(
+                  label: l10n.columnStatus,
+                  fixedWidth: 130,
+                  cellBuilder: (context, p) =>
+                      EntityStatusCell(status: p.status),
+                ),
+              ],
+              rows: page.items,
+              pagination: page,
+              onPageChanged: (pageIndex) => context.go(
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_productsPath)
+                    .toString(),
+              ),
+              onRowTap: (p) =>
+                  context.push('/products/${p.productId}?view=true'),
+              rowActionsBuilder: (context, p) => buildCatalogRowActions(
+                editTooltip: l10n.editActionTooltip,
+                onEdit: canUpdate
+                    ? () => context.push('/products/${p.productId}')
+                    : null,
+                extraActions: [
+                  if (canViewPricing)
+                    CatalogRowAction(
+                      key: Key('view_pricing_button_${p.productId}'),
+                      icon: Icons.sell_outlined,
+                      tooltip: l10n.viewPricingButton,
+                      onPressed: () => context.push(
+                        Uri(
+                          path: '/products/${p.productId}/pricing',
+                          queryParameters: {
+                            'productDisplayText': '${p.code} — ${p.name}',
+                          },
+                        ).toString(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
@@ -203,20 +230,34 @@ class ProductsListScreen extends ConsumerWidget {
 /// The products catalog's facet filters (show-inactive, the three tri-state
 /// attribute chips, and the label selector), rendered inside the filter panel
 /// opened from the Filters button (FR-001). A [ConsumerWidget] so the controls
-/// stay reactive to [ProductFilterController] changes while the sheet — which
-/// lives on its own navigator route — is open.
+/// stay reactive as the URL changes while the sheet — which lives on its own
+/// navigator route — is open. Each change navigates immediately via
+/// `context.go`; the panel itself holds no state.
 class _ProductFiltersPanel extends ConsumerWidget {
-  const _ProductFiltersPanel();
+  const _ProductFiltersPanel({required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(productFilterControllerProvider);
-    final filterController = ref.read(productFilterControllerProvider.notifier);
+    final filter = ProductFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
     final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
     // `null` while loading/errored => every chip stays enabled (fail open,
     // spec 009 FR-010) rather than blocking the user on a facet failure.
-    final labelCounts = ref.watch(productLabelFacetsProvider).valueOrNull;
+    final labelCounts = ref
+        .watch(productLabelFacetsProvider(filter))
+        .valueOrNull;
+    final supplierRepo = ref.read(supplierRepositoryProvider);
+    final supplierDisplayText = filter.supplier != null
+        ? ref
+                  .watch(supplierDisplayNameProvider(filter.supplier!))
+                  .valueOrNull ??
+              '${filter.supplier}'
+        : '';
+
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_productsPath).toString());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -230,7 +271,9 @@ class _ProductFiltersPanel extends ConsumerWidget {
         EntityStatusFilterChips(
           filterKey: 'products_filter_status',
           value: filter.status,
-          onChanged: filterController.statusChanged,
+          onChanged: (status) => goTo(
+            query.withFacet('status', status?.name).copyWith(pageIndex: 0),
+          ),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -241,19 +284,31 @@ class _ProductFiltersPanel extends ConsumerWidget {
               chipKey: const Key('products_filter_stockable'),
               label: l10n.productsStockableFilter,
               value: filter.stockable,
-              onChanged: filterController.stockableChanged,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('stockable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
             ),
             _TriStateFilterChip(
               chipKey: const Key('products_filter_salable'),
               label: l10n.productsSalableFilter,
               value: filter.salable,
-              onChanged: filterController.salableChanged,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('salable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
             ),
             _TriStateFilterChip(
               chipKey: const Key('products_filter_purchasable'),
               label: l10n.productsPurchasableFilter,
               value: filter.purchasable,
-              onChanged: filterController.purchasableChanged,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('purchasable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
             ),
           ],
         ),
@@ -269,9 +324,34 @@ class _ProductFiltersPanel extends ConsumerWidget {
             labels: allLabels,
             selectedIds: filter.labels,
             labelCounts: labelCounts,
-            onChanged: filterController.labelsChanged,
+            onChanged: (labelIds) => goTo(
+              query
+                  .withFacetValues(
+                    'label',
+                    labelIds.map((id) => '$id').toList(),
+                  )
+                  .copyWith(pageIndex: 0),
+            ),
           ),
         ],
+        const SizedBox(height: 12),
+        CatalogEntityPicker<SupplierListItem>(
+          key: const Key('products_filter_supplier'),
+          label: l10n.productsSupplierFilter,
+          displayStringForOption: (s) => '${s.code} — ${s.name}',
+          optionsBuilder: (search) async {
+            final result = await supplierRepo.list(
+              search: search.isEmpty ? null : search,
+            );
+            return result.items;
+          },
+          onSelected: (s) => goTo(
+            query
+                .withFacet('supplier', '${s.supplierId}')
+                .copyWith(pageIndex: 0),
+          ),
+          initialDisplayText: supplierDisplayText,
+        ),
       ],
     );
   }

@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
@@ -125,6 +126,43 @@ void main() {
     expect(find.text(l10n.noCertificatesFound), findsOneWidget);
     expect(find.byKey(const Key('taxpayer_certificates_table')), findsNothing);
   });
+
+  testWidgets(
+    'a load failure shows the shared failed state, not a raw exception '
+    'string (017-ui-consistency-filters US5, FR-031, SC-008)',
+    (tester) async {
+      when(
+        () => repository.listForIssuer('XAXX010101000'),
+      ).thenThrow(const AppError.server());
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            taxpayerCertificateRepositoryProvider.overrideWithValue(
+              repository,
+            ),
+            accessControlProvider.overrideWithValue(_accessFor(_createUser)),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: TaxpayerCertificatesSection(
+                  rfc: 'XAXX010101000',
+                  readOnly: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
+      expect(find.textContaining('Failed to load certificates'), findsNothing);
+    },
+  );
 
   testWidgets('the Agregar action is hidden without taxpayers create '
       'privilege (FR-025)', (tester) async {

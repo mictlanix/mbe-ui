@@ -18,6 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$UserFilter {
   String get search => throw _privateConstructorUsedError;
+  EntityStatus? get status => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of UserFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +35,7 @@ abstract class $UserFilterCopyWith<$Res> {
     $Res Function(UserFilter) then,
   ) = _$UserFilterCopyWithImpl<$Res, UserFilter>;
   @useResult
-  $Res call({String search});
+  $Res call({String search, EntityStatus? status, int pageIndex});
 }
 
 /// @nodoc
@@ -50,13 +52,25 @@ class _$UserFilterCopyWithImpl<$Res, $Val extends UserFilter>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? search = null}) {
+  $Res call({
+    Object? search = null,
+    Object? status = freezed,
+    Object? pageIndex = null,
+  }) {
     return _then(
       _value.copyWith(
             search: null == search
                 ? _value.search
                 : search // ignore: cast_nullable_to_non_nullable
                       as String,
+            status: freezed == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                      as EntityStatus?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -72,7 +86,7 @@ abstract class _$$UserFilterImplCopyWith<$Res>
   ) = __$$UserFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String search});
+  $Res call({String search, EntityStatus? status, int pageIndex});
 }
 
 /// @nodoc
@@ -88,13 +102,25 @@ class __$$UserFilterImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? search = null}) {
+  $Res call({
+    Object? search = null,
+    Object? status = freezed,
+    Object? pageIndex = null,
+  }) {
     return _then(
       _$UserFilterImpl(
         search: null == search
             ? _value.search
             : search // ignore: cast_nullable_to_non_nullable
                   as String,
+        status: freezed == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
+                  as EntityStatus?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -103,15 +129,20 @@ class __$$UserFilterImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$UserFilterImpl implements _UserFilter {
-  const _$UserFilterImpl({this.search = ''});
+  const _$UserFilterImpl({this.search = '', this.status, this.pageIndex = 0});
 
   @override
   @JsonKey()
   final String search;
+  @override
+  final EntityStatus? status;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'UserFilter(search: $search)';
+    return 'UserFilter(search: $search, status: $status, pageIndex: $pageIndex)';
   }
 
   @override
@@ -119,11 +150,14 @@ class _$UserFilterImpl implements _UserFilter {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserFilterImpl &&
-            (identical(other.search, search) || other.search == search));
+            (identical(other.search, search) || other.search == search) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, search);
+  int get hashCode => Object.hash(runtimeType, search, status, pageIndex);
 
   /// Create a copy of UserFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -135,10 +169,18 @@ class _$UserFilterImpl implements _UserFilter {
 }
 
 abstract class _UserFilter implements UserFilter {
-  const factory _UserFilter({final String search}) = _$UserFilterImpl;
+  const factory _UserFilter({
+    final String search,
+    final EntityStatus? status,
+    final int pageIndex,
+  }) = _$UserFilterImpl;
 
   @override
   String get search;
+  @override
+  EntityStatus? get status;
+  @override
+  int get pageIndex;
 
   /// Create a copy of UserFilter
   /// with the given fields replaced by the non-null parameter values.

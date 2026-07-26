@@ -9,7 +9,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
-import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
@@ -102,19 +102,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         formState.pendingPhotoBytes != null ||
         (formState.photo != null && !formState.photoMarkedForRemoval);
 
+    final mode = !_isEdit
+        ? RecordFormMode.create
+        : (readOnly ? RecordFormMode.view : RecordFormMode.edit);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          if (readOnly && canUpdate && widget.productId != null)
-            IconButton(
-              key: const Key('edit_product_button'),
-              icon: Icon(CatalogAction.edit.icon),
-              tooltip: l10n.editRecordTooltip,
-              onPressed: () => context.replace('/products/${widget.productId}'),
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: ResponsiveFormGrid(
@@ -439,41 +432,33 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               span: FormGridSpan.full,
               Divider(key: Key('attributes_divider_bottom')),
             ),
-            if (canSave)
-              FormGridChild(
-                span: FormGridSpan.full,
-                FilledButton(
-                  key: const Key('save_button'),
-                  onPressed: formState.submitting
-                      ? null
-                      : (_isEdit
-                            ? controller.submitUpdate
-                            : controller.submitCreate),
-                  child: formState.submitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.saveButton),
+            FormGridChild(
+              span: FormGridSpan.full,
+              RecordFormActions(
+                mode: mode,
+                saveLabel: l10n.saveButton,
+                editLabel: l10n.editRecordTooltip,
+                deleteLabel: l10n.deleteProductButton,
+                isSubmitting: formState.submitting,
+                editKey: const Key('edit_product_button'),
+                saveKey: const Key('save_button'),
+                deleteKey: const Key('delete_product_button'),
+                onEdit: (canUpdate && widget.productId != null)
+                    ? () => context.replace('/products/${widget.productId}')
+                    : null,
+                onSave: canSave
+                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    : null,
+                onDelete: canDelete ? controller.delete : null,
+                deleteConfirmation: RecordDeleteConfirmation(
+                  title: l10n.deleteProductConfirmTitle,
+                  message: l10n.deleteProductConfirmMessage(formState.code),
+                  confirmLabel: l10n.deleteButton,
+                  cancelLabel: l10n.cancelButton,
+                  confirmKey: const Key('confirm_delete_product_button'),
                 ),
               ),
-            if (canDelete)
-              FormGridChild(
-                span: FormGridSpan.full,
-                FilledButton(
-                  key: const Key('delete_product_button'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    foregroundColor: Theme.of(context).colorScheme.onError,
-                  ),
-                  onPressed: formState.submitting
-                      ? null
-                      : () =>
-                            _confirmDelete(context, controller, formState.code),
-                  child: Text(l10n.deleteProductButton),
-                ),
-              ),
+            ),
           ],
         ),
       ),
@@ -495,38 +480,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     controller.photoPicked(bytes, file.name);
   }
 
-  /// Confirms the permanent, irreversible hard delete (FR-016) before
-  /// calling [ProductFormController.delete].
-  Future<void> _confirmDelete(
-    BuildContext context,
-    ProductFormController controller,
-    String code,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteProductConfirmTitle),
-        content: Text(l10n.deleteProductConfirmMessage(code)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_delete_product_button'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) controller.delete();
-  }
 }
 
 /// Lays the boolean attribute [switches] and the (optional) [labels] section

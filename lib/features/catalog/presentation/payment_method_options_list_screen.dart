@@ -7,33 +7,37 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
-import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
 import 'package:mbe_ui/features/catalog/presentation/payment_method_options_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+const _paymentMethodOptionsPath = '/payment-method-options';
+
 /// Payment Method Options catalog list screen (FR-001, FR-002, FR-031, US1).
 /// Gated by `can(SystemObject.paymentMethodOptions, AccessRight.read)` in the
 /// router. Ships a filter drawer (facility picker + status) since the list
 /// endpoint exposes both facets, per constitution §VI.
 class PaymentMethodOptionsListScreen extends ConsumerWidget {
-  const PaymentMethodOptionsListScreen({super.key});
+  const PaymentMethodOptionsListScreen({super.key, required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pageAsync = ref.watch(paymentMethodOptionsListControllerProvider);
-    final filter = ref.watch(paymentMethodOptionFilterControllerProvider);
-    final filterController = ref.read(
-      paymentMethodOptionFilterControllerProvider.notifier,
+    final filter = PaymentMethodOptionFilter.fromQuery(query);
+    final pageAsync = ref.watch(
+      paymentMethodOptionsListControllerProvider(filter),
     );
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(
@@ -56,7 +60,12 @@ class PaymentMethodOptionsListScreen extends ConsumerWidget {
               label: l10n.paymentMethodOptionsSearchLabel,
               searchTooltip: l10n.searchButtonTooltip,
               initialValue: filter.search,
-              onSubmitted: filterController.searchChanged,
+              onSubmitted: (value) => context.go(
+                query
+                    .copyWith(search: value, pageIndex: 0)
+                    .toUri(_paymentMethodOptionsPath)
+                    .toString(),
+              ),
             ),
             actions: [
               if (canCreate)
@@ -80,8 +89,11 @@ class PaymentMethodOptionsListScreen extends ConsumerWidget {
                     title: l10n.filtersButton,
                     clearAllLabel: l10n.clearAllFilters,
                     applyLabel: l10n.applyFilters,
-                    onClearAll: filterController.reset,
-                    builder: (_) => const _PaymentMethodOptionFiltersPanel(),
+                    onClearAll: () => context.go(_paymentMethodOptionsPath),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, query) =>
+                          _PaymentMethodOptionFiltersPanel(query: query),
+                    ),
                   ),
                 ),
               ),
@@ -89,64 +101,71 @@ class PaymentMethodOptionsListScreen extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: pageAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) =>
-                Center(child: Text(l10n.paymentMethodOptionsLoadError(e))),
-            data: (CatalogPage<PaymentMethodOption> page) => page.items.isEmpty
-                ? Center(child: Text(l10n.noPaymentMethodOptionsFound))
-                : DataTableView<PaymentMethodOption>(
-                    key: const Key('payment_method_options_table'),
-                    columns: [
-                      DataTableColumn.text(
-                        label: l10n.columnFacility,
-                        text: (o) =>
-                            o.facilityDisplayName(l10n.unknownFacilityLabel),
-                        size: ColumnSize.M,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnName,
-                        text: (o) => o.name,
-                        size: ColumnSize.L,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnPaymentMethod,
-                        text: (o) => _paymentMethodLabel(l10n, o.paymentMethod),
-                        size: ColumnSize.M,
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnNumberOfPayments,
-                        numeric: true,
-                        fixedWidth: 100,
-                        cellBuilder: (context, o) =>
-                            Text('${o.numberOfPayments}'),
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnStatus,
-                        fixedWidth: 130,
-                        cellBuilder: (context, o) =>
-                            EntityStatusCell(status: o.status),
-                      ),
-                    ],
-                    rows: page.items,
-                    pagination: page,
-                    onPageChanged: (pageIndex) => ref
-                        .read(
-                          paymentMethodOptionsListControllerProvider.notifier,
-                        )
-                        .goToPage(pageIndex),
-                    onRowTap: (o) => context.push(
-                      '/payment-method-options/${o.paymentMethodOptionId}?view=true',
-                    ),
-                    rowActionsBuilder: (context, o) => buildCatalogRowActions(
-                      editTooltip: l10n.editActionTooltip,
-                      onEdit: canUpdate
-                          ? () => context.push(
-                              '/payment-method-options/${o.paymentMethodOptionId}',
-                            )
-                          : null,
-                    ),
-                  ),
+          child: CatalogListStateView<PaymentMethodOption>(
+            state: pageAsync,
+            isFiltered: query.isFiltered,
+            emptyMessage: l10n.noPaymentMethodOptionsFound,
+            createLabel: canCreate ? l10n.newPaymentMethodOptionTooltip : null,
+            onCreate: canCreate
+                ? () => context.push('/payment-method-options/new')
+                : null,
+            clearFiltersLabel: l10n.clearFiltersButton,
+            onClearFilters: () => context.go(_paymentMethodOptionsPath),
+            retryLabel: l10n.retryButton,
+            onRetry: () => ref.invalidate(
+              paymentMethodOptionsListControllerProvider(filter),
+            ),
+            onData: (page) => DataTableView<PaymentMethodOption>(
+              key: const Key('payment_method_options_table'),
+              columns: [
+                DataTableColumn.text(
+                  label: l10n.columnFacility,
+                  text: (o) => o.facilityDisplayName(l10n.unknownFacilityLabel),
+                  size: ColumnSize.M,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnName,
+                  text: (o) => o.name,
+                  size: ColumnSize.L,
+                ),
+                DataTableColumn.text(
+                  label: l10n.columnPaymentMethod,
+                  text: (o) => _paymentMethodLabel(l10n, o.paymentMethod),
+                  size: ColumnSize.M,
+                ),
+                DataTableColumn(
+                  label: l10n.columnNumberOfPayments,
+                  numeric: true,
+                  fixedWidth: 100,
+                  cellBuilder: (context, o) => Text('${o.numberOfPayments}'),
+                ),
+                DataTableColumn(
+                  label: l10n.columnStatus,
+                  fixedWidth: 130,
+                  cellBuilder: (context, o) =>
+                      EntityStatusCell(status: o.status),
+                ),
+              ],
+              rows: page.items,
+              pagination: page,
+              onPageChanged: (pageIndex) => context.go(
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_paymentMethodOptionsPath)
+                    .toString(),
+              ),
+              onRowTap: (o) => context.push(
+                '/payment-method-options/${o.paymentMethodOptionId}?view=true',
+              ),
+              rowActionsBuilder: (context, o) => buildCatalogRowActions(
+                editTooltip: l10n.editActionTooltip,
+                onEdit: canUpdate
+                    ? () => context.push(
+                        '/payment-method-options/${o.paymentMethodOptionId}',
+                      )
+                    : null,
+              ),
+            ),
           ),
         ),
       ],
@@ -157,16 +176,22 @@ class PaymentMethodOptionsListScreen extends ConsumerWidget {
 /// The Payment Method Options catalog's facet filters (facility picker +
 /// status), rendered inside the filter panel (FR-002).
 class _PaymentMethodOptionFiltersPanel extends ConsumerWidget {
-  const _PaymentMethodOptionFiltersPanel();
+  const _PaymentMethodOptionFiltersPanel({required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = ref.watch(paymentMethodOptionFilterControllerProvider);
-    final filterController = ref.read(
-      paymentMethodOptionFilterControllerProvider.notifier,
-    );
+    final filter = PaymentMethodOptionFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
     final facilityRepo = ref.read(facilityRepositoryProvider);
+
+    final resolvedFacilityName = filter.facilityId != null
+        ? ref.watch(facilityDisplayNameProvider(filter.facilityId!)).valueOrNull
+        : null;
+
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_paymentMethodOptionsPath).toString());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -176,15 +201,19 @@ class _PaymentMethodOptionFiltersPanel extends ConsumerWidget {
           key: const Key('payment_method_options_filter_facility'),
           label: l10n.facilityFieldLabel,
           displayStringForOption: (f) => f.name,
-          optionsBuilder: (query) async {
+          optionsBuilder: (searchQuery) async {
             final result = await facilityRepo.list(
-              search: query.isEmpty ? null : query,
+              search: searchQuery.isEmpty ? null : searchQuery,
             );
             return result.items;
           },
-          onSelected: (f) =>
-              filterController.facilitySelected(f.facilityId, f.name),
-          initialDisplayText: filter.facilityDisplayText,
+          onSelected: (f) => goTo(
+            query
+                .withFacet('facility', '${f.facilityId}')
+                .copyWith(pageIndex: 0),
+          ),
+          initialDisplayText:
+              resolvedFacilityName ?? filter.facilityId?.toString(),
         ),
         const SizedBox(height: 12),
         Text(
@@ -195,7 +224,9 @@ class _PaymentMethodOptionFiltersPanel extends ConsumerWidget {
         EntityStatusFilterChips(
           filterKey: 'payment_method_options_filter_status',
           value: filter.status,
-          onChanged: filterController.statusChanged,
+          onChanged: (status) => goTo(
+            query.withFacet('status', status?.name).copyWith(pageIndex: 0),
+          ),
         ),
       ],
     );

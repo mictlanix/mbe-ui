@@ -1,7 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -11,9 +13,26 @@ part 'products_list_controller.g.dart';
 
 const _pageSize = 20;
 
-/// The products list screen's search/filter selection (data-model.md
-/// "ProductFilter"), translated 1:1 into `GET /products` query params
-/// (research.md §6). Local UI state, not persisted (constitution §II).
+bool? _parseTriState(String? raw) {
+  if (raw == 'true') return true;
+  if (raw == 'false') return false;
+  return null;
+}
+
+extension _EntityStatusByName on List<EntityStatus> {
+  EntityStatus? byNameOrNull(String name) {
+    for (final value in this) {
+      if (value.name == name) return value;
+    }
+    return null;
+  }
+}
+
+/// The products list screen's addressable view state
+/// (017-ui-consistency-filters FR-017, data-model.md "ProductFilter"),
+/// translated 1:1 into `GET /products` query params (research.md §6).
+/// Derived from the route's [ListQuery] — the URL, not a mutable notifier,
+/// is the source of truth.
 @freezed
 class ProductFilter with _$ProductFilter {
   const factory ProductFilter({
@@ -22,8 +41,31 @@ class ProductFilter with _$ProductFilter {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? supplier,
     @Default(<int>[]) List<int> labels,
+    @Default(0) int pageIndex,
   }) = _ProductFilter;
+
+  factory ProductFilter.fromQuery(ListQuery query) {
+    final statusRaw = query.facet('status');
+    final supplierRaw = query.facet('supplier');
+    return ProductFilter(
+      search: query.search,
+      status: statusRaw != null
+          ? EntityStatus.values.byNameOrNull(statusRaw)
+          : null,
+      stockable: _parseTriState(query.facet('stockable')),
+      salable: _parseTriState(query.facet('salable')),
+      purchasable: _parseTriState(query.facet('purchasable')),
+      supplier: supplierRaw != null ? int.tryParse(supplierRaw) : null,
+      labels: query
+          .facetValues('label')
+          .map(int.tryParse)
+          .whereType<int>()
+          .toList(),
+      pageIndex: query.pageIndex,
+    );
+  }
 }
 
 /// Derived facet-filter summary used by the products list's Filters button
@@ -40,6 +82,7 @@ extension ProductFilterBadge on ProductFilter {
     if (stockable != null) count++;
     if (salable != null) count++;
     if (purchasable != null) count++;
+    if (supplier != null) count++;
     count += labels.length;
     return count;
   }
@@ -47,55 +90,23 @@ extension ProductFilterBadge on ProductFilter {
   bool get hasActiveFilters => activeFilterCount > 0;
 }
 
-/// Holds the current search/filter selection for the products list
-/// (FR-001, FR-002).
-@riverpod
-class ProductFilterController extends _$ProductFilterController {
-  @override
-  ProductFilter build() => const ProductFilter();
-
-  void searchChanged(String value) => state = state.copyWith(search: value);
-
-  /// `null` is "All" — no `?status=` param, so every lifecycle state is
-  /// returned (FR-011's "include disabled" filter); any other value narrows
-  /// to that single status (FR-002's "active only" filter).
-  void statusChanged(EntityStatus? value) =>
-      state = state.copyWith(status: value);
-
-  void stockableChanged(bool? value) =>
-      state = state.copyWith(stockable: value);
-
-  void salableChanged(bool? value) => state = state.copyWith(salable: value);
-
-  void purchasableChanged(bool? value) =>
-      state = state.copyWith(purchasable: value);
-
-  void labelsChanged(List<int> value) => state = state.copyWith(labels: value);
-
-  /// Resets every facet filter to its default while preserving the current
-  /// [ProductFilter.search] text (FR-004; the search box stays outside the
-  /// filter panel). Wired to the panel's "Clear all" action.
-  void reset() => state = ProductFilter(search: state.search);
-}
-
-/// Fetches and holds the products list (FR-001, FR-002), re-fetching page
-/// 0 whenever [ProductFilterController]'s state changes. Supports
-/// page-based navigation via [goToPage], consumed by `DataTableView`'s
-/// `pagination` parameter (data-model.md "CatalogPage`<T>`", research.md
-/// §2 — replaces the prior `_skip`/`loadMore()` incremental-fetch
-/// pattern).
+/// Fetches and holds the products list (FR-001, FR-002) for the given
+/// [ProductFilter]. A family keyed by the filter value: a different URL is
+/// a different provider instance, and `ref.invalidate` after a mutation
+/// re-fetches the *same* page rather than resetting to page 0 (FR-025,
+/// research §3).
 @riverpod
 class ProductsListController extends _$ProductsListController {
   @override
-  Future<CatalogPage<ProductListItem>> build() {
-    final filter = ref.watch(productFilterControllerProvider);
-    return _fetch(filter, pageIndex: 0);
+  Future<CatalogPage<ProductListItem>> build(ProductFilter filter) {
+    return fetchClampedPage(
+      pageIndex: filter.pageIndex,
+      pageSize: _pageSize,
+      fetch: (pageIndex) => _fetch(filter.copyWith(pageIndex: pageIndex)),
+    );
   }
 
-  Future<CatalogPage<ProductListItem>> _fetch(
-    ProductFilter filter, {
-    required int pageIndex,
-  }) async {
+  Future<CatalogPage<ProductListItem>> _fetch(ProductFilter filter) async {
     final result = await ref
         .read(productRepositoryProvider)
         .list(
@@ -104,25 +115,17 @@ class ProductsListController extends _$ProductsListController {
           stockable: filter.stockable,
           salable: filter.salable,
           purchasable: filter.purchasable,
+          supplier: filter.supplier,
           labels: filter.labels,
-          skip: pageIndex * _pageSize,
+          skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
         );
     return CatalogPage(
       items: result.items,
       total: result.total,
-      pageIndex: pageIndex,
+      pageIndex: filter.pageIndex,
       pageSize: _pageSize,
     );
-  }
-
-  /// Fetches [pageIndex] and replaces the current page with it.
-  Future<void> goToPage(int pageIndex) async {
-    final filter = ref.read(productFilterControllerProvider);
-    state = const AsyncLoading<CatalogPage<ProductListItem>>().copyWithPrevious(
-      state,
-    );
-    state = await AsyncValue.guard(() => _fetch(filter, pageIndex: pageIndex));
   }
 }
 
@@ -130,7 +133,8 @@ class ProductsListController extends _$ProductsListController {
 /// least one product matching the current [ProductFilter] — i.e. labels that
 /// would *further* narrow the present results under the list's AND semantics
 /// (spec 009 FR-003, FR-009). Drives the filter drawer's per-chip enabled
-/// state and count display via `LabelMultiPicker`.
+/// state and count display via `LabelMultiPicker`. A family keyed by
+/// [ProductFilter] — the filter drawer passes the same filter it's showing.
 ///
 /// `autoDispose`, so the facet lookup fires only while the filter drawer
 /// (`_ProductFiltersPanel`) is watching it, and re-runs on every filter change
@@ -138,8 +142,10 @@ class ProductsListController extends _$ProductsListController {
 /// and treat `null` (loading/error) as "availability unknown" → all chips
 /// enabled, so a facet failure never blocks filtering (FR-010).
 @riverpod
-Future<Map<int, int>> productLabelFacets(ProductLabelFacetsRef ref) async {
-  final filter = ref.watch(productFilterControllerProvider);
+Future<Map<int, int>> productLabelFacets(
+  Ref ref,
+  ProductFilter filter,
+) async {
   final facets = await ref
       .read(productRepositoryProvider)
       .productLabelFacets(

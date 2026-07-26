@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
@@ -19,10 +20,14 @@ import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -31,6 +36,8 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 class MockTokenStorage extends Mock implements TokenStorage {}
 
 class MockProductRepository extends Mock implements ProductRepository {}
+
+class MockSupplierRepository extends Mock implements SupplierRepository {}
 
 const _readOnlyUser = User(
   userId: 'reader',
@@ -88,11 +95,13 @@ void main() {
   late MockAuthRepository authRepository;
   late MockTokenStorage tokenStorage;
   late MockProductRepository productRepository;
+  late MockSupplierRepository supplierRepository;
 
   setUp(() {
     authRepository = MockAuthRepository();
     tokenStorage = MockTokenStorage();
     productRepository = MockProductRepository();
+    supplierRepository = MockSupplierRepository();
     when(() => tokenStorage.read()).thenAnswer((_) async => 'test-token');
   });
 
@@ -105,6 +114,7 @@ void main() {
     // existing/unrelated tests keep today's all-enabled behavior. Tests
     // exercising the facet-driven enable/disable pass an explicit list.
     List<ProductLabelFacet>? labelFacets,
+    ListQuery query = const ListQuery(),
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
     when(
@@ -114,6 +124,7 @@ void main() {
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
+        supplier: any(named: 'supplier'),
         labels: any(named: 'labels'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -137,19 +148,49 @@ void main() {
       ),
     ).thenAnswer((_) async => effectiveFacets);
 
+    // Mirrors production's shape (app_router.dart): the list lives inside
+    // its own `StatefulShellBranch`, with its own nested Navigator distinct
+    // from the outer/root one. The filter sheet attaches to the root
+    // Navigator (`useRootNavigator: true`, catalog_filter_sheet.dart) so it
+    // survives a same-branch `context.go` on every live filter change — a
+    // flat single-Navigator router would conflate the two and tear the
+    // sheet down after the first change.
+    final router = GoRouter(
+      initialLocation: query.toUri('/products').toString(),
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => navigationShell,
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/products',
+                  builder: (_, state) => Scaffold(
+                    body: ProductsListScreen(
+                      query: ListQuery.fromUri(state.uri),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
           productRepositoryProvider.overrideWithValue(productRepository),
+          supplierRepositoryProvider.overrideWithValue(supplierRepository),
           allLabelsProvider.overrideWith((_) async => labels),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          // The shell owns the Scaffold in the app; the screen is body-only.
-          home: const Scaffold(body: ProductsListScreen()),
         ),
       ),
     );
@@ -173,6 +214,8 @@ void main() {
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
+        supplier: any(named: 'supplier'),
+        labels: any(named: 'labels'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -185,7 +228,9 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (_, _) => const Scaffold(body: ProductsListScreen()),
+          builder: (_, state) => Scaffold(
+            body: ProductsListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
         ),
         GoRoute(
           path: '/products/:productId',
@@ -386,6 +431,7 @@ void main() {
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
+          supplier: any(named: 'supplier'),
           labels: any(named: 'labels'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
@@ -402,6 +448,7 @@ void main() {
           stockable: null,
           salable: null,
           purchasable: null,
+          supplier: null,
           labels: const [],
           skip: 0,
           limit: 20,
@@ -479,6 +526,7 @@ void main() {
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
+          supplier: any(named: 'supplier'),
           labels: [1],
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
@@ -495,6 +543,7 @@ void main() {
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
+          supplier: any(named: 'supplier'),
           labels: [1, 2],
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
@@ -522,6 +571,7 @@ void main() {
           stockable: any(named: 'stockable'),
           salable: any(named: 'salable'),
           purchasable: any(named: 'purchasable'),
+          supplier: any(named: 'supplier'),
           labels: [1, 2],
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
@@ -1104,4 +1154,180 @@ void main() {
       expect(find.byKey(const Key('merge_products_button')), findsNothing);
     },
   );
+
+  group('supplier facet (017-ui-consistency-filters US2, FR-012)', () {
+    testWidgets(
+      'renders via the shared CatalogEntityPicker, not a bespoke widget '
+      '(FR-013)',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+        await tester.tap(find.byKey(const Key('products_filter_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('products_filter_supplier')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'combines with the label and status facets, reaching the repository '
+      'together, and round-trips through the URL with its resolved display '
+      'name (data-model.md §4)',
+      (tester) async {
+        when(() => supplierRepository.get(supplierId: 5)).thenAnswer(
+          (_) async => const Supplier(
+            supplierId: 5,
+            code: 'SUP-005',
+            name: 'Acme Supplies',
+            creditLimit: '0',
+            creditDays: 0,
+          ),
+        );
+
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          products: [_testProducts.first],
+          query: const ListQuery(
+            facets: {
+              'status': ['active'],
+              'supplier': ['5'],
+              'label': ['3'],
+            },
+          ),
+        );
+
+        verify(
+          () => productRepository.list(
+            search: any(named: 'search'),
+            status: EntityStatus.active,
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: 5,
+            labels: [3],
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+        expect(find.text('1–1 of 1'), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('products_filter_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('products_filter_supplier')),
+            matching: find.text('SUP-005 — Acme Supplies'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'selecting a supplier navigates to a URL carrying that facet',
+      (tester) async {
+        when(
+          () => supplierRepository.list(search: any(named: 'search')),
+        ).thenAnswer(
+          (_) async => const SupplierListResult(
+            items: [SupplierListItem(supplierId: 5, code: 'SUP-005', name: 'Acme Supplies')],
+            total: 1,
+          ),
+        );
+
+        final router = GoRouter(
+          initialLocation: '/products',
+          routes: [
+            StatefulShellRoute.indexedStack(
+              builder: (context, state, navigationShell) => navigationShell,
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: '/products',
+                      builder: (_, state) => Scaffold(
+                        body: ProductsListScreen(
+                          query: ListQuery.fromUri(state.uri),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        );
+        when(() => authRepository.me()).thenAnswer((_) async => _fullAccessUser);
+        when(
+          () => productRepository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async =>
+              ProductListResult(items: _testProducts, total: _testProducts.length),
+        );
+        when(
+          () => productRepository.productLabelFacets(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            labels: any(named: 'labels'),
+          ),
+        ).thenAnswer((_) async => const []);
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              authRepositoryProvider.overrideWithValue(authRepository),
+              tokenStorageProvider.overrideWithValue(tokenStorage),
+              productRepositoryProvider.overrideWithValue(productRepository),
+              supplierRepositoryProvider.overrideWithValue(supplierRepository),
+              allLabelsProvider.overrideWith((_) async => []),
+            ],
+            child: MaterialApp.router(
+              routerConfig: router,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('products_filter_button')));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+          find.descendant(
+            of: find.byKey(const Key('products_filter_supplier')),
+            matching: find.byType(TextFormField),
+          ),
+          'Acme',
+        );
+        await tester.pumpAndSettle(const Duration(milliseconds: 400));
+
+        await tester.tap(find.text('SUP-005 — Acme Supplies').last);
+        await tester.pumpAndSettle();
+
+        expect(
+          router.routeInformationProvider.value.uri.toString(),
+          '/products?supplier=5',
+        );
+      },
+    );
+  });
 }

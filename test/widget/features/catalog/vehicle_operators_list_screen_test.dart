@@ -10,9 +10,12 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
@@ -89,17 +92,49 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<VehicleOperator> operators = const [],
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
         search: any(named: 'search'),
         driverId: any(named: 'driverId'),
+        status: any(named: 'status'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
       (_) async =>
           VehicleOperatorListResult(items: operators, total: operators.length),
+    );
+
+    // Mirrors production's shape (app_router.dart): the list lives inside
+    // its own `StatefulShellBranch`, with its own nested Navigator distinct
+    // from the outer/root one. The filter sheet attaches to the root
+    // Navigator (`useRootNavigator: true`, catalog_filter_sheet.dart) so it
+    // survives a same-branch `context.go` on every live filter change — a
+    // flat single-Navigator router would conflate the two and tear the
+    // sheet down after the first change.
+    final router = GoRouter(
+      initialLocation: query.toUri('/vehicle-operators').toString(),
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => navigationShell,
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/vehicle-operators',
+                  builder: (_, state) => Scaffold(
+                    body: VehicleOperatorsListScreen(
+                      query: ListQuery.fromUri(state.uri),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
 
     await tester.pumpWidget(
@@ -109,10 +144,10 @@ void main() {
           employeeRepositoryProvider.overrideWithValue(employeeRepository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: VehicleOperatorsListScreen()),
         ),
       ),
     );
@@ -189,6 +224,7 @@ void main() {
         () => repository.list(
           search: any(named: 'search'),
           driverId: any(named: 'driverId'),
+          status: any(named: 'status'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -204,8 +240,11 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) =>
-                const Scaffold(body: VehicleOperatorsListScreen()),
+            builder: (_, state) => Scaffold(
+              body: VehicleOperatorsListScreen(
+                query: ListQuery.fromUri(state.uri),
+              ),
+            ),
           ),
           GoRoute(
             path: '/vehicle-operators/:vehicleOperatorId',
@@ -243,5 +282,206 @@ void main() {
     await pumpScreen(tester, signedInAs: _fullAccessUser, operators: const []);
 
     expect(find.byKey(const Key('vehicle_operators_table')), findsNothing);
+  });
+
+  group('URL-driven filters (017-ui-consistency-filters US3)', () {
+    testWidgets(
+      'a driver facet in the URL is passed to the repository, and its name '
+      'is resolved for cold-load display (data-model.md §4)',
+      (tester) async {
+        when(() => employeeRepository.get(employeeId: 7)).thenAnswer(
+          (_) async => Employee(
+            employeeId: 7,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            nickname: 'Jane',
+            gender: null,
+            birthday: DateTime(1990),
+            salesPerson: false,
+            status: EntityStatus.active,
+            startJobDate: DateTime(2020),
+          ),
+        );
+
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          operators: _testOperators,
+          query: const ListQuery(
+            facets: {
+              'driver': ['7'],
+            },
+          ),
+        );
+
+        verify(
+          () => repository.list(
+            search: any(named: 'search'),
+            driverId: 7,
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+
+        await tester.tap(
+          find.byKey(const Key('vehicle_operators_filter_button')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('vehicle_operators_filter_driver')),
+            matching: find.text('Jane Doe'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'a status facet combines with the driver facet (FR-010, FR-013), and '
+      'the filtered total/page count comes from the server response, not '
+      'items.length (FR-014)',
+      (tester) async {
+        when(() => employeeRepository.get(employeeId: 7)).thenAnswer(
+          (_) async => Employee(
+            employeeId: 7,
+            firstName: 'Jane',
+            lastName: 'Doe',
+            nickname: 'Jane',
+            gender: null,
+            birthday: DateTime(1990),
+            salesPerson: false,
+            status: EntityStatus.active,
+            startJobDate: DateTime(2020),
+          ),
+        );
+
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          operators: [_testOperators.first],
+          query: const ListQuery(
+            facets: {
+              'driver': ['7'],
+              'status': ['active'],
+            },
+          ),
+        );
+
+        verify(
+          () => repository.list(
+            search: any(named: 'search'),
+            driverId: 7,
+            status: EntityStatus.active,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+        expect(find.text('1–1 of 1'), findsOneWidget);
+
+        await tester.tap(
+          find.byKey(const Key('vehicle_operators_filter_button')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('vehicle_operators_filter_status_active')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'selecting a driver filter navigates to a URL carrying that facet',
+      (tester) async {
+        final router = GoRouter(
+          initialLocation: '/vehicle-operators',
+          routes: [
+            GoRoute(
+              path: '/vehicle-operators',
+              builder: (_, state) => Scaffold(
+                body: VehicleOperatorsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ),
+          ],
+        );
+        when(
+          () => repository.list(
+            search: any(named: 'search'),
+            driverId: any(named: 'driverId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => VehicleOperatorListResult(
+            items: _testOperators,
+            total: _testOperators.length,
+          ),
+        );
+        when(
+          () => employeeRepository.list(search: any(named: 'search')),
+        ).thenAnswer(
+          (_) async => EmployeeListResult(
+            items: [
+              EmployeeListItem(
+                employeeId: 7,
+                fullName: 'Jane Doe',
+                nickname: 'Jane',
+                status: EntityStatus.active,
+                salesPerson: false,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              vehicleOperatorRepositoryProvider.overrideWithValue(repository),
+              employeeRepositoryProvider.overrideWithValue(
+                employeeRepository,
+              ),
+              accessControlProvider.overrideWithValue(
+                _accessFor(_fullAccessUser),
+              ),
+            ],
+            child: MaterialApp.router(
+              routerConfig: router,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const Key('vehicle_operators_filter_button')),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+          find.descendant(
+            of: find.byKey(const Key('vehicle_operators_filter_driver')),
+            matching: find.byType(TextFormField),
+          ),
+          'Jane',
+        );
+        await tester.pumpAndSettle(const Duration(milliseconds: 400));
+
+        await tester.tap(find.text('Jane Doe').last);
+        await tester.pumpAndSettle();
+
+        expect(
+          router.routerDelegate.currentConfiguration.uri.toString(),
+          '/vehicle-operators?driver=7',
+        );
+      },
+    );
   });
 }

@@ -6,10 +6,10 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -79,19 +79,12 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
       });
     }
 
+    final mode = !_isEdit
+        ? RecordFormMode.create
+        : (readOnly ? RecordFormMode.view : RecordFormMode.edit);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          if (readOnly && canUpdate && widget.userId != null)
-            IconButton(
-              key: const Key('edit_user_button'),
-              icon: Icon(CatalogAction.edit.icon),
-              tooltip: l10n.editRecordTooltip,
-              onPressed: () => context.replace('/users/${widget.userId}'),
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -210,22 +203,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 onChanged: fieldsEnabled ? controller.privilegeChanged : null,
               ),
               const SizedBox(height: 24),
-              if (canUpdate && !widget.forceReadOnly)
-                FilledButton(
-                  key: const Key('save_button'),
-                  onPressed: formState.submitting
-                      ? null
-                      : () => _submit(controller),
-                  child: formState.submitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.saveButton),
-                ),
               if (_isEdit && canUpdate && !widget.forceReadOnly) ...[
-                const SizedBox(height: 12),
                 OutlinedButton.icon(
                   key: const Key('recover_password_button'),
                   icon: const Icon(Icons.lock_reset),
@@ -234,21 +212,38 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                       ? null
                       : () => controller.recoverPassword(widget.userId!),
                 ),
-              ],
-              if (canDelete) ...[
                 const SizedBox(height: 12),
-                FilledButton(
-                  key: const Key('delete_user_button'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    foregroundColor: Theme.of(context).colorScheme.onError,
-                  ),
-                  onPressed: formState.submitting
-                      ? null
-                      : () => _confirmDelete(context, controller),
-                  child: Text(l10n.deleteUserTooltip),
-                ),
               ],
+              RecordFormActions(
+                mode: mode,
+                saveLabel: l10n.saveButton,
+                editLabel: l10n.editRecordTooltip,
+                deleteLabel: l10n.deleteUserTooltip,
+                isSubmitting: formState.submitting,
+                editKey: const Key('edit_user_button'),
+                saveKey: const Key('save_button'),
+                deleteKey: const Key('delete_user_button'),
+                onEdit: (canUpdate && widget.userId != null)
+                    ? () => context.replace('/users/${widget.userId}')
+                    : null,
+                onSave: (canUpdate && !widget.forceReadOnly)
+                    ? () => _submit(controller)
+                    : null,
+                onDelete: canDelete
+                    ? () => controller.deleteUser(widget.userId!)
+                    : null,
+                deleteConfirmation: RecordDeleteConfirmation(
+                  title: l10n.deleteUserConfirmTitle,
+                  // `RecordFormActions` builds this eagerly regardless of
+                  // mode (it's only ever *shown* when `onDelete` is
+                  // non-null, i.e. an existing user), so this must not
+                  // force-unwrap a null `widget.userId` in create mode.
+                  message: l10n.deleteUserConfirmMessage(widget.userId ?? ''),
+                  confirmLabel: l10n.deleteButton,
+                  cancelLabel: l10n.cancelButton,
+                  confirmKey: const Key('confirm_delete_button'),
+                ),
+              ),
             ],
           ),
         ),
@@ -260,32 +255,6 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       controller.save(existingUserId: widget.userId);
     }
-  }
-
-  Future<void> _confirmDelete(
-    BuildContext context,
-    UserFormController controller,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteUserConfirmTitle),
-        content: Text(l10n.deleteUserConfirmMessage(widget.userId!)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_delete_button'),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) controller.deleteUser(widget.userId!);
   }
 }
 

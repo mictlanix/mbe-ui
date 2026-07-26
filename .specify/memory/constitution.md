@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.9.0
+Version change: 1.0.0 → 1.10.0
 Modified principles:
   - III. Contract-Driven API Integration — materially expanded with a rule
     on binary file uploads (`multipart/form-data`): the dio generator has
@@ -61,7 +61,18 @@ Modified principles:
     toolbar pattern already used for Create/Merge on
     `products_list_screen.dart` — prompted by specs/011-product-pricing
     initially placing a "view pricing" shortcut as a product-detail AppBar
-    icon before it was corrected to a products-list row action [1.8.0]
+    icon before it was corrected to a products-list row action [1.8.0], then
+    the v1.8.0 `AppBar.actions` reservation for the read-only-to-edit toggle
+    was **reversed**: a record detail screen's `AppBar.actions` MUST now be
+    empty by default, and that toggle moves into the record's shared,
+    fixed-order action area alongside Save and Delete
+    (`core/widgets/record_form_actions.dart`, `RecordFormActions`), rendered
+    as a labeled `OutlinedButton` rather than an unlabeled app-bar icon —
+    prompted by specs/017-ui-consistency-filters, where user feedback found
+    that splitting one continuous task (view → edit → save/delete) across
+    two screen regions was itself the friction the v1.8.0 rule hadn't
+    addressed; the previously-allowed app-bar delete exception (Users admin
+    screen precedent) is retained verbatim [1.10.0]
 Added sections: none (redefinition of an existing principle's operative
   rule, not a new principle)
 Removed sections: none
@@ -74,11 +85,18 @@ Templates requiring updates:
     constitution amendment, per the Governance section's amendment process.
   - DESIGN.md §3.3 ✅ (1.9.0) updated with the multipart file-upload
     codegen-gap note ahead of this amendment.
+  - DESIGN.md §4.2.2/§4.3 ✅ (1.10.0) updated with the record action area
+    reversal and the new `RecordFormActions` shared component ahead of this
+    amendment, landing in the same change as the first converted detail
+    screen (specs/017-ui-consistency-filters plan.md Phase 3) so no shipped
+    screen is ever mid-flight between the two rules.
 Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
   updated to "switches|labels" once specs/007-catalog-ui-improvements-2
   shipped the labels-in-place-of-prices change. specs/008-merge-products'
   mbe-api dependency (mictlanix/mbe-api#76, sku on ProductListItem) remains
-  open and unaffected by this amendment.
+  open and unaffected by this amendment. specs/017-ui-consistency-filters'
+  remaining 17 detail-screen conversions are tracked in that feature's own
+  tasks.md, not here.
 -->
 
 # MBE-UI Constitution
@@ -298,16 +316,29 @@ multi-column forms.
   scanability or reclaims otherwise-wasted vertical space, and naturally
   related blocks SHOULD be paired side by side (a two-column band) on wide
   tiers rather than each stacked full-width.
-- `AppBar.actions` MUST be reserved for the single read-only-to-edit toggle
-  affordance already codified above (and, where applicable, the record's own
-  delete action per the detail-screen delete rule above). Every other
-  screen-level action — creating a record, a shortcut into a related
-  record's own screen, a bulk operation, or any other entity-level command —
-  MUST be rendered as a `FilledButton`/`OutlinedButton` (with `.icon` where a
-  leading icon helps) placed in the screen body: beside the search bar via
-  `CatalogFilterBar`'s `actions` slot on list screens, or in the form body on
-  detail screens. A module MUST NOT add a new `AppBar` icon action as a
-  shortcut to another feature's screen.
+- A record detail screen's `AppBar.actions` MUST be empty by default.
+  Every screen-level action — creating a record, the read-only-to-edit
+  toggle, Save, Delete, a shortcut into a related record's own screen, a
+  bulk operation, or any other entity-level command — MUST be rendered as a
+  `FilledButton`/`OutlinedButton` (with `.icon` where a leading icon helps)
+  placed in the screen body: beside the search bar via `CatalogFilterBar`'s
+  `actions` slot on list screens, or in the record's shared action area
+  (below) on detail screens. A module MUST NOT add a new `AppBar` icon
+  action as a shortcut to another feature's screen. The one allowed
+  exception is a detail screen's own delete action, where a module's layout
+  genuinely cannot accommodate a form-body delete button (the Users admin
+  screen precedent) — no module MUST place the read-only-to-edit toggle
+  itself back in the app bar.
+- A record detail screen's Edit, Save, and Delete actions MUST be rendered
+  by one shared component (`core/widgets/record_form_actions.dart`,
+  `RecordFormActions`), not reimplemented per screen, in one fixed
+  left-to-right order — Delete, then Edit-or-Save — regardless of module.
+  The read-only-to-edit toggle MUST render as a labeled control of lighter
+  visual weight than Save (e.g. an outlined button beside a filled one),
+  never as an unlabeled icon separated from the rest of the record's
+  actions. As with every other RBAC-gated action in this principle, an
+  action the current user lacks the privilege for MUST be absent from this
+  area, never shown disabled.
 
 **Rationale**: avoids four slightly-different implementations across
 sales/inventory/invoicing/accounting and keeps a future mobile tier viable
@@ -318,12 +349,20 @@ construction instead of
 each one being corrected after the fact. The truncation rule follows
 standard ellipsis UX guidance: always give users a way to recover the full
 text, and never hide information they need to act. The `AppBar.actions` rule
-was added after specs/011-product-pricing initially placed a "view pricing"
-shortcut as a product-detail-screen AppBar icon before it was corrected to a
-products-list row action — codifying the correction (matching how the
-`FilledButton`/`OutlinedButton` toolbar pattern was already used for Create/
-Merge on `products_list_screen.dart`) so the same mistake isn't repeated per
-module.
+was added (v1.8.0) after specs/011-product-pricing initially placed a "view
+pricing" shortcut as a product-detail-screen AppBar icon before it was
+corrected to a products-list row action — codifying the correction (matching
+how the `FilledButton`/`OutlinedButton` toolbar pattern was already used for
+Create/Merge on `products_list_screen.dart`) so the same mistake isn't
+repeated per module. That rule reserved the app bar for the read-only-to-edit
+toggle specifically; v1.10.0 (specs/017-ui-consistency-filters) moved the
+toggle itself out of the app bar too, into the same shared, fixed-order
+action area as Save and Delete — user feedback found that splitting one
+continuous task (view → edit → save/delete) across two screen regions (an
+app-bar icon, then form-body buttons) was itself the friction the v1.8.0 rule
+hadn't addressed. Centralizing all three actions in one component
+(`RecordFormActions`) also means the next such change is a one-file edit
+across all 18 record screens, not an 18-screen edit.
 
 ### VII. Online-Only, Server-Rendered Documents
 
@@ -386,4 +425,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.9.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-22
+**Version**: 1.10.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-25

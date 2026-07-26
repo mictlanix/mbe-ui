@@ -159,6 +159,7 @@ void main() {
         stockable: any(named: 'stockable'),
         salable: any(named: 'salable'),
         purchasable: any(named: 'purchasable'),
+        supplier: any(named: 'supplier'),
         labels: any(named: 'labels'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -169,6 +170,7 @@ void main() {
     when(
       () => userRepository.list(
         search: any(named: 'search'),
+        status: any(named: 'status'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),

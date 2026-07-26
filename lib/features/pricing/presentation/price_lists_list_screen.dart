@@ -6,28 +6,34 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
-import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_controller.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+const _priceListsPath = '/price-lists';
+
 /// Price-lists catalog list screen (FR-001, FR-005). Gated by
 /// `can(SystemObject.priceLists, AccessRight.read)` in the router.
+///
+/// [query] is decoded from the route by the router builder
+/// (017-ui-consistency-filters FR-017) — the URL is this screen's only
+/// source of view state; there is no local filter notifier.
 class PriceListsListScreen extends ConsumerWidget {
-  const PriceListsListScreen({super.key});
+  const PriceListsListScreen({super.key, required this.query});
+
+  final ListQuery query;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pageAsync = ref.watch(priceListsListControllerProvider);
-    final search = ref.watch(priceListSearchControllerProvider);
-    final searchController = ref.read(
-      priceListSearchControllerProvider.notifier,
-    );
+    final filter = PriceListFilter.fromQuery(query);
+    final pageAsync = ref.watch(priceListsListControllerProvider(filter));
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.priceLists, AccessRight.create);
     final canUpdate = access.can(SystemObject.priceLists, AccessRight.update);
@@ -42,8 +48,13 @@ class PriceListsListScreen extends ConsumerWidget {
               key: const Key('price_lists_search_field'),
               label: l10n.priceListsSearchLabel,
               searchTooltip: l10n.searchButtonTooltip,
-              initialValue: search,
-              onSubmitted: searchController.searchChanged,
+              initialValue: filter.search,
+              onSubmitted: (value) => context.go(
+                query
+                    .copyWith(search: value, pageIndex: 0)
+                    .toUri(_priceListsPath)
+                    .toString(),
+              ),
             ),
             actions: [
               if (canCreate)
@@ -57,48 +68,57 @@ class PriceListsListScreen extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: pageAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(l10n.priceListsLoadError(e))),
-            data: (CatalogPage<PriceList> page) => page.items.isEmpty
-                ? Center(child: Text(l10n.noPriceListsFound))
-                : DataTableView<PriceList>(
-                    key: const Key('price_lists_table'),
-                    columns: [
-                      DataTableColumn.text(
-                        label: l10n.priceListNameLabel,
-                        text: (p) => p.name,
-                        size: ColumnSize.L,
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnHighProfitMargin,
-                        numeric: true,
-                        fixedWidth: 140,
-                        cellBuilder: (context, p) =>
-                            Text(PricingFormatters.percent(p.highProfitMargin)),
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnLowProfitMargin,
-                        numeric: true,
-                        fixedWidth: 140,
-                        cellBuilder: (context, p) =>
-                            Text(PricingFormatters.percent(p.lowProfitMargin)),
-                      ),
-                    ],
-                    rows: page.items,
-                    pagination: page,
-                    onPageChanged: (pageIndex) => ref
-                        .read(priceListsListControllerProvider.notifier)
-                        .goToPage(pageIndex),
-                    onRowTap: (p) =>
-                        context.push('/price-lists/${p.priceListId}?view=true'),
-                    rowActionsBuilder: (context, p) => buildCatalogRowActions(
-                      editTooltip: l10n.editActionTooltip,
-                      onEdit: canUpdate
-                          ? () => context.push('/price-lists/${p.priceListId}')
-                          : null,
-                    ),
-                  ),
+          child: CatalogListStateView<PriceList>(
+            state: pageAsync,
+            isFiltered: query.isFiltered,
+            emptyMessage: l10n.noPriceListsFound,
+            createLabel: canCreate ? l10n.newPriceListTooltip : null,
+            onCreate: canCreate ? () => context.push('/price-lists/new') : null,
+            clearFiltersLabel: l10n.clearFiltersButton,
+            onClearFilters: () => context.go(_priceListsPath),
+            retryLabel: l10n.retryButton,
+            onRetry: () =>
+                ref.invalidate(priceListsListControllerProvider(filter)),
+            onData: (page) => DataTableView<PriceList>(
+              key: const Key('price_lists_table'),
+              columns: [
+                DataTableColumn.text(
+                  label: l10n.priceListNameLabel,
+                  text: (p) => p.name,
+                  size: ColumnSize.L,
+                ),
+                DataTableColumn(
+                  label: l10n.columnHighProfitMargin,
+                  numeric: true,
+                  fixedWidth: 140,
+                  cellBuilder: (context, p) =>
+                      Text(PricingFormatters.percent(p.highProfitMargin)),
+                ),
+                DataTableColumn(
+                  label: l10n.columnLowProfitMargin,
+                  numeric: true,
+                  fixedWidth: 140,
+                  cellBuilder: (context, p) =>
+                      Text(PricingFormatters.percent(p.lowProfitMargin)),
+                ),
+              ],
+              rows: page.items,
+              pagination: page,
+              onPageChanged: (pageIndex) => context.go(
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_priceListsPath)
+                    .toString(),
+              ),
+              onRowTap: (p) =>
+                  context.push('/price-lists/${p.priceListId}?view=true'),
+              rowActionsBuilder: (context, p) => buildCatalogRowActions(
+                editTooltip: l10n.editActionTooltip,
+                onEdit: canUpdate
+                    ? () => context.push('/price-lists/${p.priceListId}')
+                    : null,
+              ),
+            ),
           ),
         ),
       ],

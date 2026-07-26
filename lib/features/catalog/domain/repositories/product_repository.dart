@@ -30,6 +30,7 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    int? supplier,
     List<int> labels = const [],
     int skip = 0,
     int limit = 20,

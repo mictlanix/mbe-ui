@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/catalog/data/expense_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/expense.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/expense_repository.dart';
@@ -23,75 +24,123 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group('ExpenseSearchController', () {
-    test('starts empty', () {
-      expect(container.read(expenseSearchControllerProvider), '');
+  group('ExpenseFilter.fromQuery (017-ui-consistency-filters FR-017)', () {
+    test('derives every field from a ListQuery', () {
+      final filter = ExpenseFilter.fromQuery(
+        const ListQuery(search: 'Rent', pageIndex: 2),
+      );
+
+      expect(filter.search, 'Rent');
+      expect(filter.pageIndex, 2);
     });
 
-    test('updates on searchChanged', () {
-      container
-          .read(expenseSearchControllerProvider.notifier)
-          .searchChanged('Rent');
-      expect(container.read(expenseSearchControllerProvider), 'Rent');
+    test('defaults from an empty ListQuery', () {
+      final filter = ExpenseFilter.fromQuery(const ListQuery());
+
+      expect(filter.search, '');
+      expect(filter.pageIndex, 0);
     });
   });
 
-  group('ExpensesListController', () {
+  group('ExpensesListController (a family keyed by ExpenseFilter)', () {
+    test('build(filter) maps the filter to repository query params', () async {
+      when(
+        () => repository.list(search: null, skip: 0, limit: 20),
+      ).thenAnswer(
+        (_) async => ExpenseListResult(items: [_expense(1)], total: 1),
+      );
+
+      const filter = ExpenseFilter();
+      final result = await container.read(
+        expensesListControllerProvider(filter).future,
+      );
+
+      expect(result.items, hasLength(1));
+      expect(result.total, 1);
+    });
+
     test(
-      'build() maps the current search to repository query params',
+      'a different search maps to a different provider instance and query',
       () async {
         when(
           () => repository.list(search: null, skip: 0, limit: 20),
         ).thenAnswer(
           (_) async => ExpenseListResult(items: [_expense(1)], total: 1),
         );
-
-        final result = await container.read(
-          expensesListControllerProvider.future,
+        when(
+          () => repository.list(search: 'Rent', skip: 0, limit: 20),
+        ).thenAnswer(
+          (_) async => ExpenseListResult(items: [_expense(2)], total: 1),
         );
 
-        expect(result.items, hasLength(1));
-        expect(result.total, 1);
+        final first = await container.read(
+          expensesListControllerProvider(const ExpenseFilter()).future,
+        );
+        final second = await container.read(
+          expensesListControllerProvider(
+            const ExpenseFilter(search: 'Rent'),
+          ).future,
+        );
+
+        expect(first.items.single.expenseId, 1);
+        expect(second.items.single.expenseId, 2);
       },
     );
 
-    test('changing the search text re-fetches from skip=0', () async {
-      when(() => repository.list(search: null, skip: 0, limit: 20)).thenAnswer(
-        (_) async => ExpenseListResult(items: [_expense(1)], total: 1),
-      );
-      await container.read(expensesListControllerProvider.future);
-
+    test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
-        () => repository.list(search: 'Rent', skip: 0, limit: 20),
+        () => repository.list(search: null, skip: 0, limit: 20),
       ).thenAnswer(
-        (_) async => ExpenseListResult(items: [_expense(2)], total: 1),
-      );
-      container
-          .read(expenseSearchControllerProvider.notifier)
-          .searchChanged('Rent');
-
-      final result = await container.read(
-        expensesListControllerProvider.future,
-      );
-      expect(result.items.single.expenseId, 2);
-    });
-
-    test('goToPage replaces the current page with the requested one', () async {
-      when(() => repository.list(search: null, skip: 0, limit: 20)).thenAnswer(
         (_) async => ExpenseListResult(items: [_expense(1)], total: 21),
       );
-      await container.read(expensesListControllerProvider.future);
-
-      when(() => repository.list(search: null, skip: 20, limit: 20)).thenAnswer(
+      when(
+        () => repository.list(search: null, skip: 20, limit: 20),
+      ).thenAnswer(
         (_) async => ExpenseListResult(items: [_expense(2)], total: 21),
       );
 
-      await container.read(expensesListControllerProvider.notifier).goToPage(1);
+      final page0 = await container.read(
+        expensesListControllerProvider(const ExpenseFilter()).future,
+      );
+      final page1 = await container.read(
+        expensesListControllerProvider(
+          const ExpenseFilter(pageIndex: 1),
+        ).future,
+      );
 
-      final page = container.read(expensesListControllerProvider).value!;
-      expect(page.items.map((e) => e.expenseId), [2]);
-      expect(page.pageIndex, 1);
-      expect(page.total, 21);
+      expect(page0.items.map((e) => e.expenseId), [1]);
+      expect(page0.pageIndex, 0);
+      expect(page1.items.map((e) => e.expenseId), [2]);
+      expect(page1.pageIndex, 1);
+      expect(page1.total, 21);
     });
+
+    test(
+      'invalidating the provider re-fetches the SAME page rather than '
+      'resetting to page 0 (017-ui-consistency-filters FR-025, research §3)',
+      () async {
+        const filter = ExpenseFilter(pageIndex: 1);
+        when(
+          () => repository.list(search: null, skip: 20, limit: 20),
+        ).thenAnswer(
+          (_) async => ExpenseListResult(items: [_expense(2)], total: 21),
+        );
+
+        await container.read(expensesListControllerProvider(filter).future);
+
+        when(
+          () => repository.list(search: null, skip: 20, limit: 20),
+        ).thenAnswer(
+          (_) async => ExpenseListResult(items: [_expense(99)], total: 21),
+        );
+        container.invalidate(expensesListControllerProvider(filter));
+
+        final refreshed = await container.read(
+          expensesListControllerProvider(filter).future,
+        );
+        expect(refreshed.pageIndex, 1);
+        expect(refreshed.items.single.expenseId, 99);
+      },
+    );
   });
 }

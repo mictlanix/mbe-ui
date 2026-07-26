@@ -118,8 +118,9 @@ void main() {
   });
 
   group('view mode (forceReadOnly)', () {
-    testWidgets('renders the id read-only, with no Save/Delete, and the AppBar '
-        'carries only the edit toggle (constitution v1.8.0)', (tester) async {
+    testWidgets('renders the id read-only, with no Save/Delete, and the edit '
+        'toggle in the record action area, not the AppBar (constitution v1.10.0)',
+        (tester) async {
       await pumpScreen(
         tester,
         signedInAs: _fullAccessUser,
@@ -141,6 +142,9 @@ void main() {
         find.byKey(const Key('edit_taxpayer_recipient_button')),
         findsOneWidget,
       );
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, anyOf(isNull, isEmpty));
     });
   });
 

@@ -10,6 +10,7 @@ abstract class VehicleOperatorRepository {
   Future<VehicleOperatorListResult> list({
     String? search,
     int? driverId,
+    EntityStatus? status,
     int skip = 0,
     int limit = 20,
   });

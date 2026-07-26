@@ -19,10 +19,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$PointSaleFilter {
   String get search => throw _privateConstructorUsedError;
   int? get facilityId => throw _privateConstructorUsedError;
-  String get facilityDisplayText => throw _privateConstructorUsedError;
   int? get warehouseId => throw _privateConstructorUsedError;
-  String get warehouseDisplayText => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of PointSaleFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -41,10 +40,9 @@ abstract class $PointSaleFilterCopyWith<$Res> {
   $Res call({
     String search,
     int? facilityId,
-    String facilityDisplayText,
     int? warehouseId,
-    String warehouseDisplayText,
     EntityStatus? status,
+    int pageIndex,
   });
 }
 
@@ -65,10 +63,9 @@ class _$PointSaleFilterCopyWithImpl<$Res, $Val extends PointSaleFilter>
   $Res call({
     Object? search = null,
     Object? facilityId = freezed,
-    Object? facilityDisplayText = null,
     Object? warehouseId = freezed,
-    Object? warehouseDisplayText = null,
     Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -80,22 +77,18 @@ class _$PointSaleFilterCopyWithImpl<$Res, $Val extends PointSaleFilter>
                 ? _value.facilityId
                 : facilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            facilityDisplayText: null == facilityDisplayText
-                ? _value.facilityDisplayText
-                : facilityDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String,
             warehouseId: freezed == warehouseId
                 ? _value.warehouseId
                 : warehouseId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            warehouseDisplayText: null == warehouseDisplayText
-                ? _value.warehouseDisplayText
-                : warehouseDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String,
             status: freezed == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -114,10 +107,9 @@ abstract class _$$PointSaleFilterImplCopyWith<$Res>
   $Res call({
     String search,
     int? facilityId,
-    String facilityDisplayText,
     int? warehouseId,
-    String warehouseDisplayText,
     EntityStatus? status,
+    int pageIndex,
   });
 }
 
@@ -137,10 +129,9 @@ class __$$PointSaleFilterImplCopyWithImpl<$Res>
   $Res call({
     Object? search = null,
     Object? facilityId = freezed,
-    Object? facilityDisplayText = null,
     Object? warehouseId = freezed,
-    Object? warehouseDisplayText = null,
     Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$PointSaleFilterImpl(
@@ -152,22 +143,18 @@ class __$$PointSaleFilterImplCopyWithImpl<$Res>
             ? _value.facilityId
             : facilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        facilityDisplayText: null == facilityDisplayText
-            ? _value.facilityDisplayText
-            : facilityDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String,
         warehouseId: freezed == warehouseId
             ? _value.warehouseId
             : warehouseId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        warehouseDisplayText: null == warehouseDisplayText
-            ? _value.warehouseDisplayText
-            : warehouseDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String,
         status: freezed == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -179,10 +166,9 @@ class _$PointSaleFilterImpl implements _PointSaleFilter {
   const _$PointSaleFilterImpl({
     this.search = '',
     this.facilityId,
-    this.facilityDisplayText = '',
     this.warehouseId,
-    this.warehouseDisplayText = '',
     this.status,
+    this.pageIndex = 0,
   });
 
   @override
@@ -191,19 +177,16 @@ class _$PointSaleFilterImpl implements _PointSaleFilter {
   @override
   final int? facilityId;
   @override
-  @JsonKey()
-  final String facilityDisplayText;
-  @override
   final int? warehouseId;
   @override
-  @JsonKey()
-  final String warehouseDisplayText;
-  @override
   final EntityStatus? status;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'PointSaleFilter(search: $search, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, warehouseId: $warehouseId, warehouseDisplayText: $warehouseDisplayText, status: $status)';
+    return 'PointSaleFilter(search: $search, facilityId: $facilityId, warehouseId: $warehouseId, status: $status, pageIndex: $pageIndex)';
   }
 
   @override
@@ -214,13 +197,11 @@ class _$PointSaleFilterImpl implements _PointSaleFilter {
             (identical(other.search, search) || other.search == search) &&
             (identical(other.facilityId, facilityId) ||
                 other.facilityId == facilityId) &&
-            (identical(other.facilityDisplayText, facilityDisplayText) ||
-                other.facilityDisplayText == facilityDisplayText) &&
             (identical(other.warehouseId, warehouseId) ||
                 other.warehouseId == warehouseId) &&
-            (identical(other.warehouseDisplayText, warehouseDisplayText) ||
-                other.warehouseDisplayText == warehouseDisplayText) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
@@ -228,10 +209,9 @@ class _$PointSaleFilterImpl implements _PointSaleFilter {
     runtimeType,
     search,
     facilityId,
-    facilityDisplayText,
     warehouseId,
-    warehouseDisplayText,
     status,
+    pageIndex,
   );
 
   /// Create a copy of PointSaleFilter
@@ -250,10 +230,9 @@ abstract class _PointSaleFilter implements PointSaleFilter {
   const factory _PointSaleFilter({
     final String search,
     final int? facilityId,
-    final String facilityDisplayText,
     final int? warehouseId,
-    final String warehouseDisplayText,
     final EntityStatus? status,
+    final int pageIndex,
   }) = _$PointSaleFilterImpl;
 
   @override
@@ -261,13 +240,11 @@ abstract class _PointSaleFilter implements PointSaleFilter {
   @override
   int? get facilityId;
   @override
-  String get facilityDisplayText;
-  @override
   int? get warehouseId;
   @override
-  String get warehouseDisplayText;
-  @override
   EntityStatus? get status;
+  @override
+  int get pageIndex;
 
   /// Create a copy of PointSaleFilter
   /// with the given fields replaced by the non-null parameter values.

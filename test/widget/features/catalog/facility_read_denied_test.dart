@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
@@ -89,7 +90,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: WarehousesListScreen()),
+          home: const Scaffold(body: WarehousesListScreen(query: ListQuery())),
         ),
       ),
     );
@@ -134,7 +135,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: CashDrawersListScreen()),
+          home: const Scaffold(body: CashDrawersListScreen(query: ListQuery())),
         ),
       ),
     );
@@ -181,7 +182,9 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: PointsOfSaleListScreen()),
+          home: const Scaffold(
+            body: PointsOfSaleListScreen(query: ListQuery()),
+          ),
         ),
       ),
     );

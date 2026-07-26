@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
@@ -66,6 +67,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<PriceList> lists = _testLists,
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -77,16 +79,28 @@ void main() {
       (_) async => PriceListResult(items: lists, total: lists.length),
     );
 
+    final router = GoRouter(
+      initialLocation: query.toUri('/price-lists').toString(),
+      routes: [
+        GoRoute(
+          path: '/price-lists',
+          builder: (_, state) => Scaffold(
+            body: PriceListsListScreen(query: ListQuery.fromUri(state.uri)),
+          ),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           priceListRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: PriceListsListScreen()),
         ),
       ),
     );
@@ -156,7 +170,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: PriceListsListScreen()),
+            builder: (_, state) => Scaffold(
+              body: PriceListsListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/price-lists/:priceListId',

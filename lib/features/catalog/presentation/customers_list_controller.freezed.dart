@@ -20,9 +20,8 @@ mixin _$CustomerFilter {
   String get search => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
   int? get priceListId => throw _privateConstructorUsedError;
-  String? get priceListDisplayText => throw _privateConstructorUsedError;
   int? get salespersonId => throw _privateConstructorUsedError;
-  String? get salespersonDisplayText => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of CustomerFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -42,9 +41,8 @@ abstract class $CustomerFilterCopyWith<$Res> {
     String search,
     EntityStatus? status,
     int? priceListId,
-    String? priceListDisplayText,
     int? salespersonId,
-    String? salespersonDisplayText,
+    int pageIndex,
   });
 }
 
@@ -66,9 +64,8 @@ class _$CustomerFilterCopyWithImpl<$Res, $Val extends CustomerFilter>
     Object? search = null,
     Object? status = freezed,
     Object? priceListId = freezed,
-    Object? priceListDisplayText = freezed,
     Object? salespersonId = freezed,
-    Object? salespersonDisplayText = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -84,18 +81,14 @@ class _$CustomerFilterCopyWithImpl<$Res, $Val extends CustomerFilter>
                 ? _value.priceListId
                 : priceListId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            priceListDisplayText: freezed == priceListDisplayText
-                ? _value.priceListDisplayText
-                : priceListDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String?,
             salespersonId: freezed == salespersonId
                 ? _value.salespersonId
                 : salespersonId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            salespersonDisplayText: freezed == salespersonDisplayText
-                ? _value.salespersonDisplayText
-                : salespersonDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -115,9 +108,8 @@ abstract class _$$CustomerFilterImplCopyWith<$Res>
     String search,
     EntityStatus? status,
     int? priceListId,
-    String? priceListDisplayText,
     int? salespersonId,
-    String? salespersonDisplayText,
+    int pageIndex,
   });
 }
 
@@ -138,9 +130,8 @@ class __$$CustomerFilterImplCopyWithImpl<$Res>
     Object? search = null,
     Object? status = freezed,
     Object? priceListId = freezed,
-    Object? priceListDisplayText = freezed,
     Object? salespersonId = freezed,
-    Object? salespersonDisplayText = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$CustomerFilterImpl(
@@ -156,18 +147,14 @@ class __$$CustomerFilterImplCopyWithImpl<$Res>
             ? _value.priceListId
             : priceListId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        priceListDisplayText: freezed == priceListDisplayText
-            ? _value.priceListDisplayText
-            : priceListDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String?,
         salespersonId: freezed == salespersonId
             ? _value.salespersonId
             : salespersonId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        salespersonDisplayText: freezed == salespersonDisplayText
-            ? _value.salespersonDisplayText
-            : salespersonDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -180,9 +167,8 @@ class _$CustomerFilterImpl implements _CustomerFilter {
     this.search = '',
     this.status,
     this.priceListId,
-    this.priceListDisplayText,
     this.salespersonId,
-    this.salespersonDisplayText,
+    this.pageIndex = 0,
   });
 
   @override
@@ -193,15 +179,14 @@ class _$CustomerFilterImpl implements _CustomerFilter {
   @override
   final int? priceListId;
   @override
-  final String? priceListDisplayText;
-  @override
   final int? salespersonId;
   @override
-  final String? salespersonDisplayText;
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'CustomerFilter(search: $search, status: $status, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText)';
+    return 'CustomerFilter(search: $search, status: $status, priceListId: $priceListId, salespersonId: $salespersonId, pageIndex: $pageIndex)';
   }
 
   @override
@@ -213,12 +198,10 @@ class _$CustomerFilterImpl implements _CustomerFilter {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.priceListId, priceListId) ||
                 other.priceListId == priceListId) &&
-            (identical(other.priceListDisplayText, priceListDisplayText) ||
-                other.priceListDisplayText == priceListDisplayText) &&
             (identical(other.salespersonId, salespersonId) ||
                 other.salespersonId == salespersonId) &&
-            (identical(other.salespersonDisplayText, salespersonDisplayText) ||
-                other.salespersonDisplayText == salespersonDisplayText));
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
@@ -227,9 +210,8 @@ class _$CustomerFilterImpl implements _CustomerFilter {
     search,
     status,
     priceListId,
-    priceListDisplayText,
     salespersonId,
-    salespersonDisplayText,
+    pageIndex,
   );
 
   /// Create a copy of CustomerFilter
@@ -249,9 +231,8 @@ abstract class _CustomerFilter implements CustomerFilter {
     final String search,
     final EntityStatus? status,
     final int? priceListId,
-    final String? priceListDisplayText,
     final int? salespersonId,
-    final String? salespersonDisplayText,
+    final int pageIndex,
   }) = _$CustomerFilterImpl;
 
   @override
@@ -261,11 +242,9 @@ abstract class _CustomerFilter implements CustomerFilter {
   @override
   int? get priceListId;
   @override
-  String? get priceListDisplayText;
-  @override
   int? get salespersonId;
   @override
-  String? get salespersonDisplayText;
+  int get pageIndex;
 
   /// Create a copy of CustomerFilter
   /// with the given fields replaced by the non-null parameter values.

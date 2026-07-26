@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
@@ -88,6 +89,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     List<PointSale> pointsOfSale = const [],
+    ListQuery query = const ListQuery(),
   }) async {
     when(
       () => repository.list(
@@ -103,6 +105,36 @@ void main() {
           PointSaleListResult(items: pointsOfSale, total: pointsOfSale.length),
     );
 
+    // Mirrors production's shape (app_router.dart): the list lives inside
+    // its own `StatefulShellBranch`, with its own nested Navigator distinct
+    // from the outer/root one. The filter sheet attaches to the root
+    // Navigator (`useRootNavigator: true`, catalog_filter_sheet.dart) so it
+    // survives a same-branch `context.go` on every live filter change — a
+    // flat single-Navigator router would conflate the two and tear the
+    // sheet down after the first change.
+    final router = GoRouter(
+      initialLocation: query.toUri('/points-of-sale').toString(),
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => navigationShell,
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/points-of-sale',
+                  builder: (_, state) => Scaffold(
+                    body: PointsOfSaleListScreen(
+                      query: ListQuery.fromUri(state.uri),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -111,10 +143,10 @@ void main() {
           warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
-        child: MaterialApp(
+        child: MaterialApp.router(
+          routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: PointsOfSaleListScreen()),
         ),
       ),
     );
@@ -211,7 +243,9 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: PointsOfSaleListScreen()),
+            builder: (_, state) => Scaffold(
+              body: PointsOfSaleListScreen(query: ListQuery.fromUri(state.uri)),
+            ),
           ),
           GoRoute(
             path: '/points-of-sale/:pointSaleId',
@@ -255,4 +289,34 @@ void main() {
 
     expect(find.byKey(const Key('points_of_sale_table')), findsNothing);
   });
+
+  testWidgets(
+    'combined facility, warehouse, and status facets in the URL all reach '
+    'the repository together (017-ui-consistency-filters US3)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        pointsOfSale: _testPointsOfSale,
+        query: const ListQuery(
+          facets: {
+            'facility': ['9'],
+            'warehouse': ['5'],
+            'status': ['active'],
+          },
+        ),
+      );
+
+      verify(
+        () => repository.list(
+          search: any(named: 'search'),
+          facilityId: 9,
+          warehouseId: 5,
+          status: EntityStatus.active,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    },
+  );
 }

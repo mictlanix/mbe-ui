@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart'
     show FiscalCertificationProvider;
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
@@ -32,65 +33,131 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group('TaxpayerIssuerSearchController', () {
-    test('starts empty', () {
-      expect(container.read(taxpayerIssuerSearchControllerProvider), '');
-    });
+  group(
+    'TaxpayerIssuerFilter.fromQuery (017-ui-consistency-filters FR-017)',
+    () {
+      test('derives every field from a ListQuery', () {
+        final filter = TaxpayerIssuerFilter.fromQuery(
+          const ListQuery(search: 'Acme', pageIndex: 2),
+        );
 
-    test('updates on searchChanged', () {
-      container
-          .read(taxpayerIssuerSearchControllerProvider.notifier)
-          .searchChanged('Acme');
-      expect(container.read(taxpayerIssuerSearchControllerProvider), 'Acme');
-    });
-  });
+        expect(filter.search, 'Acme');
+        expect(filter.pageIndex, 2);
+      });
 
-  group('TaxpayerIssuersListController', () {
-    test('build() maps the current search to repository query params and '
+      test('defaults from an empty ListQuery', () {
+        final filter = TaxpayerIssuerFilter.fromQuery(const ListQuery());
+
+        expect(filter.search, '');
+        expect(filter.pageIndex, 0);
+      });
+    },
+  );
+
+  group(
+    'TaxpayerIssuersListController (a family keyed by TaxpayerIssuerFilter)',
+    () {
+      test(
+        'build(filter) maps the filter to repository query params and '
         'performs exactly one listDetail call — no per-row get() (FR-026, '
-        'SC-006)', () async {
-      when(
-        () => repository.listDetail(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            TaxpayerIssuerPage(items: [_issuer('XAXX010101000')], total: 1),
+        'SC-006)',
+        () async {
+          when(
+            () => repository.listDetail(search: null, skip: 0, limit: 20),
+          ).thenAnswer(
+            (_) async => TaxpayerIssuerPage(
+              items: [_issuer('XAXX010101000')],
+              total: 1,
+            ),
+          );
+
+          const filter = TaxpayerIssuerFilter();
+          final result = await container.read(
+            taxpayerIssuersListControllerProvider(filter).future,
+          );
+
+          expect(result.items, hasLength(1));
+          expect(result.total, 1);
+          verify(
+            () => repository.listDetail(search: null, skip: 0, limit: 20),
+          ).called(1);
+          verifyNever(() => repository.get(any()));
+        },
       );
 
-      final result = await container.read(
-        taxpayerIssuersListControllerProvider.future,
+      test(
+        'a different pageIndex maps to skip = pageIndex * pageSize',
+        () async {
+          when(
+            () => repository.listDetail(search: null, skip: 0, limit: 20),
+          ).thenAnswer(
+            (_) async => TaxpayerIssuerPage(
+              items: [_issuer('AAA010101000')],
+              total: 21,
+            ),
+          );
+          when(
+            () => repository.listDetail(search: null, skip: 20, limit: 20),
+          ).thenAnswer(
+            (_) async => TaxpayerIssuerPage(
+              items: [_issuer('BBB010101000')],
+              total: 21,
+            ),
+          );
+
+          final page0 = await container.read(
+            taxpayerIssuersListControllerProvider(
+              const TaxpayerIssuerFilter(),
+            ).future,
+          );
+          final page1 = await container.read(
+            taxpayerIssuersListControllerProvider(
+              const TaxpayerIssuerFilter(pageIndex: 1),
+            ).future,
+          );
+
+          expect(page0.items.map((t) => t.rfc), ['AAA010101000']);
+          expect(page0.pageIndex, 0);
+          expect(page1.items.map((t) => t.rfc), ['BBB010101000']);
+          expect(page1.pageIndex, 1);
+        },
       );
 
-      expect(result.items, hasLength(1));
-      expect(result.total, 1);
-      verify(
-        () => repository.listDetail(search: null, skip: 0, limit: 20),
-      ).called(1);
-      verifyNever(() => repository.get(any()));
-    });
+      test(
+        'invalidating the provider re-fetches the SAME page rather than '
+        'resetting to page 0 (017-ui-consistency-filters FR-025, research §3)',
+        () async {
+          const filter = TaxpayerIssuerFilter(pageIndex: 1);
+          when(
+            () => repository.listDetail(search: null, skip: 20, limit: 20),
+          ).thenAnswer(
+            (_) async => TaxpayerIssuerPage(
+              items: [_issuer('BBB010101000')],
+              total: 21,
+            ),
+          );
 
-    test('goToPage replaces the current page with the requested one', () async {
-      when(
-        () => repository.listDetail(search: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            TaxpayerIssuerPage(items: [_issuer('AAA010101000')], total: 21),
+          await container.read(
+            taxpayerIssuersListControllerProvider(filter).future,
+          );
+
+          when(
+            () => repository.listDetail(search: null, skip: 20, limit: 20),
+          ).thenAnswer(
+            (_) async => TaxpayerIssuerPage(
+              items: [_issuer('ZZZ010101000')],
+              total: 21,
+            ),
+          );
+          container.invalidate(taxpayerIssuersListControllerProvider(filter));
+
+          final refreshed = await container.read(
+            taxpayerIssuersListControllerProvider(filter).future,
+          );
+          expect(refreshed.pageIndex, 1);
+          expect(refreshed.items.single.rfc, 'ZZZ010101000');
+        },
       );
-      await container.read(taxpayerIssuersListControllerProvider.future);
-
-      when(
-        () => repository.listDetail(search: null, skip: 20, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            TaxpayerIssuerPage(items: [_issuer('BBB010101000')], total: 21),
-      );
-
-      await container
-          .read(taxpayerIssuersListControllerProvider.notifier)
-          .goToPage(1);
-
-      final page = container.read(taxpayerIssuersListControllerProvider).value!;
-      expect(page.items.map((t) => t.rfc), ['BBB010101000']);
-      expect(page.pageIndex, 1);
-    });
-  });
+    },
+  );
 }

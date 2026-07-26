@@ -19,8 +19,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CashDrawerFilter {
   String get search => throw _privateConstructorUsedError;
   int? get facilityId => throw _privateConstructorUsedError;
-  String get facilityDisplayText => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of CashDrawerFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -39,8 +39,8 @@ abstract class $CashDrawerFilterCopyWith<$Res> {
   $Res call({
     String search,
     int? facilityId,
-    String facilityDisplayText,
     EntityStatus? status,
+    int pageIndex,
   });
 }
 
@@ -61,8 +61,8 @@ class _$CashDrawerFilterCopyWithImpl<$Res, $Val extends CashDrawerFilter>
   $Res call({
     Object? search = null,
     Object? facilityId = freezed,
-    Object? facilityDisplayText = null,
     Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -74,14 +74,14 @@ class _$CashDrawerFilterCopyWithImpl<$Res, $Val extends CashDrawerFilter>
                 ? _value.facilityId
                 : facilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            facilityDisplayText: null == facilityDisplayText
-                ? _value.facilityDisplayText
-                : facilityDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String,
             status: freezed == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -100,8 +100,8 @@ abstract class _$$CashDrawerFilterImplCopyWith<$Res>
   $Res call({
     String search,
     int? facilityId,
-    String facilityDisplayText,
     EntityStatus? status,
+    int pageIndex,
   });
 }
 
@@ -121,8 +121,8 @@ class __$$CashDrawerFilterImplCopyWithImpl<$Res>
   $Res call({
     Object? search = null,
     Object? facilityId = freezed,
-    Object? facilityDisplayText = null,
     Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$CashDrawerFilterImpl(
@@ -134,14 +134,14 @@ class __$$CashDrawerFilterImplCopyWithImpl<$Res>
             ? _value.facilityId
             : facilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        facilityDisplayText: null == facilityDisplayText
-            ? _value.facilityDisplayText
-            : facilityDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String,
         status: freezed == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -153,8 +153,8 @@ class _$CashDrawerFilterImpl implements _CashDrawerFilter {
   const _$CashDrawerFilterImpl({
     this.search = '',
     this.facilityId,
-    this.facilityDisplayText = '',
     this.status,
+    this.pageIndex = 0,
   });
 
   @override
@@ -163,14 +163,14 @@ class _$CashDrawerFilterImpl implements _CashDrawerFilter {
   @override
   final int? facilityId;
   @override
-  @JsonKey()
-  final String facilityDisplayText;
-  @override
   final EntityStatus? status;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'CashDrawerFilter(search: $search, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, status: $status)';
+    return 'CashDrawerFilter(search: $search, facilityId: $facilityId, status: $status, pageIndex: $pageIndex)';
   }
 
   @override
@@ -181,14 +181,14 @@ class _$CashDrawerFilterImpl implements _CashDrawerFilter {
             (identical(other.search, search) || other.search == search) &&
             (identical(other.facilityId, facilityId) ||
                 other.facilityId == facilityId) &&
-            (identical(other.facilityDisplayText, facilityDisplayText) ||
-                other.facilityDisplayText == facilityDisplayText) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, search, facilityId, facilityDisplayText, status);
+      Object.hash(runtimeType, search, facilityId, status, pageIndex);
 
   /// Create a copy of CashDrawerFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -206,8 +206,8 @@ abstract class _CashDrawerFilter implements CashDrawerFilter {
   const factory _CashDrawerFilter({
     final String search,
     final int? facilityId,
-    final String facilityDisplayText,
     final EntityStatus? status,
+    final int pageIndex,
   }) = _$CashDrawerFilterImpl;
 
   @override
@@ -215,9 +215,9 @@ abstract class _CashDrawerFilter implements CashDrawerFilter {
   @override
   int? get facilityId;
   @override
-  String get facilityDisplayText;
-  @override
   EntityStatus? get status;
+  @override
+  int get pageIndex;
 
   /// Create a copy of CashDrawerFilter
   /// with the given fields replaced by the non-null parameter values.

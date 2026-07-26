@@ -6,7 +6,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
@@ -100,21 +100,12 @@ class _TaxpayerRecipientDetailScreenState
         !readOnly &&
         access.can(SystemObject.taxpayerRecipients, AccessRight.delete);
 
+    final mode = !_isEdit
+        ? RecordFormMode.create
+        : (readOnly ? RecordFormMode.view : RecordFormMode.edit);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: [
-          if (readOnly && canUpdate && widget.taxpayerRecipientId != null)
-            IconButton(
-              key: const Key('edit_taxpayer_recipient_button'),
-              icon: Icon(CatalogAction.edit.icon),
-              tooltip: l10n.editRecordTooltip,
-              onPressed: () => context.replace(
-                '/taxpayer-recipients/${widget.taxpayerRecipientId}',
-              ),
-            ),
-        ],
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: ResponsiveFormGrid(
@@ -232,76 +223,41 @@ class _TaxpayerRecipientDetailScreenState
                 enabled: fieldsEnabled,
               ),
             ),
-            if (canSave)
-              FormGridChild(
-                span: FormGridSpan.full,
-                FilledButton(
-                  key: const Key('save_button'),
-                  onPressed: formState.submitting
-                      ? null
-                      : (_isEdit
-                            ? controller.submitUpdate
-                            : controller.submitCreate),
-                  child: formState.submitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10n.saveButton),
-                ),
-              ),
-            if (canDelete)
-              FormGridChild(
-                span: FormGridSpan.full,
-                FilledButton(
-                  key: const Key('delete_taxpayer_recipient_button'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    foregroundColor: Theme.of(context).colorScheme.onError,
+            FormGridChild(
+              span: FormGridSpan.full,
+              RecordFormActions(
+                mode: mode,
+                saveLabel: l10n.saveButton,
+                editLabel: l10n.editRecordTooltip,
+                deleteLabel: l10n.deleteTaxpayerRecipientButton,
+                isSubmitting: formState.submitting,
+                editKey: const Key('edit_taxpayer_recipient_button'),
+                saveKey: const Key('save_button'),
+                deleteKey: const Key('delete_taxpayer_recipient_button'),
+                onEdit: (canUpdate && widget.taxpayerRecipientId != null)
+                    ? () => context.replace(
+                        '/taxpayer-recipients/${widget.taxpayerRecipientId}',
+                      )
+                    : null,
+                onSave: canSave
+                    ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                    : null,
+                onDelete: canDelete ? controller.delete : null,
+                deleteConfirmation: RecordDeleteConfirmation(
+                  title: l10n.deleteTaxpayerRecipientConfirmTitle,
+                  message: l10n.deleteTaxpayerRecipientConfirmMessage(
+                    formState.name,
                   ),
-                  onPressed: formState.submitting
-                      ? null
-                      : () =>
-                            _confirmDelete(context, controller, formState.name),
-                  child: Text(l10n.deleteTaxpayerRecipientButton),
+                  confirmLabel: l10n.deleteButton,
+                  cancelLabel: l10n.cancelButton,
+                  confirmKey: const Key('confirm_delete_taxpayer_recipient_button'),
                 ),
               ),
+            ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _confirmDelete(
-    BuildContext context,
-    TaxpayerRecipientFormController controller,
-    String name,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteTaxpayerRecipientConfirmTitle),
-        content: Text(l10n.deleteTaxpayerRecipientConfirmMessage(name)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.cancelButton),
-          ),
-          FilledButton(
-            key: const Key('confirm_delete_taxpayer_recipient_button'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.deleteButton),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) controller.delete();
   }
 }
 

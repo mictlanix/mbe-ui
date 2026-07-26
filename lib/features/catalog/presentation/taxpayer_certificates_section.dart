@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_certificate.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_certificate_upload_dialog.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_certificates_controller.dart';
@@ -72,7 +73,13 @@ class TaxpayerCertificatesSection extends ConsumerWidget {
         const SizedBox(height: 8),
         certificatesAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text(l10n.certificatesLoadError(e)),
+          error: (e, _) => ListFailedView(
+            error: toAppError(e),
+            retryLabel: l10n.retryButton,
+            onRetry: () => ref.invalidate(
+              taxpayerCertificatesControllerProvider(rfc),
+            ),
+          ),
           data: (certificates) => certificates.isEmpty
               ? Text(l10n.noCertificatesFound)
               // DataTable2 (the unpaginated variant DataTableView renders

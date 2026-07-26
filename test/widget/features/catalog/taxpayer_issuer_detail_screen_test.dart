@@ -159,6 +159,27 @@ void main() {
     expect(find.byKey(const Key('edit_taxpayer_issuer_button')), findsNothing);
   });
 
+  testWidgets(
+    'a privileged user sees the edit toggle in the record action area, not '
+    'the AppBar (017-ui-consistency-filters, constitution v1.10.0)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        rfc: 'XAXX010101000',
+        forceReadOnly: true,
+      );
+
+      expect(
+        find.byKey(const Key('edit_taxpayer_issuer_button')),
+        findsOneWidget,
+      );
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, anyOf(isNull, isEmpty));
+    },
+  );
+
   testWidgets('delete requires a confirmation dialog before submit (FR-016)', (
     tester,
   ) async {

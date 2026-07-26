@@ -95,6 +95,22 @@ void main() {
   });
 
   testWidgets(
+    'view mode (forceReadOnly) shows no Save/Delete, and the edit toggle '
+    'appears in the record action area, not the AppBar '
+    '(017-ui-consistency-filters, constitution v1.10.0)',
+    (tester) async {
+      await pumpScreen(tester, exchangeRateId: 1, forceReadOnly: true);
+
+      expect(find.byKey(const Key('save_button')), findsNothing);
+      expect(find.byKey(const Key('delete_exchange_rate_button')), findsNothing);
+      expect(find.byKey(const Key('edit_exchange_rate_button')), findsOneWidget);
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.actions, anyOf(isNull, isEmpty));
+    },
+  );
+
+  testWidgets(
     'the date field opens showDatePicker and displays the selected date '
     'formatted per locale',
     (tester) async {

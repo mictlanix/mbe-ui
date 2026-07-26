@@ -13,6 +13,26 @@ final priceListRepositoryProvider = Provider<PriceListRepository>((ref) {
   return PriceListRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves a price list id to its display name — for a list screen's facet
+/// filter picker on a cold load (a shared link/bookmark/refresh carrying
+/// only `priceList=<id>` in the URL, 017-ui-consistency-filters
+/// data-model.md §4). `null` on any failure (e.g. the id no longer exists),
+/// so a caller falls back to displaying the raw id rather than blocking the
+/// list.
+final priceListDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  priceListId,
+) async {
+  try {
+    final priceList = await ref
+        .watch(priceListRepositoryProvider)
+        .get(priceListId: priceListId);
+    return priceList.name;
+  } catch (_) {
+    return null;
+  }
+});
+
 /// `PriceListRepository` backed by the generated `mbe_api_client`
 /// `PriceListsApi` (contracts/mbe-api-pricing.md §1).
 class PriceListRepositoryImpl implements PriceListRepository {

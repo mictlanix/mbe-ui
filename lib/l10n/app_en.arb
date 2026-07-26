@@ -7,6 +7,21 @@
   "fieldMinLength6": "Must be at least 6 characters",
   "@fieldMinLength6": {"description": "Password minimum length validation"},
 
+  "errorValidationGeneric": "Please correct the highlighted fields.",
+  "@errorValidationGeneric": {"description": "Generic ValidationError message shown when no field-level errors are provided"},
+
+  "errorAuthGeneric": "Invalid username or password.",
+  "@errorAuthGeneric": {"description": "Generic AuthError message"},
+
+  "errorNotFoundGeneric": "The requested item was not found.",
+  "@errorNotFoundGeneric": {"description": "Generic NotFoundError message"},
+
+  "errorServerGeneric": "Something went wrong on the server. Please try again later.",
+  "@errorServerGeneric": {"description": "Generic ServerError message"},
+
+  "errorNetworkGeneric": "Could not reach the server. Check your connection and try again.",
+  "@errorNetworkGeneric": {"description": "Generic NetworkError message"},
+
   "viewActionTooltip": "View",
   "@viewActionTooltip": {},
   "editActionTooltip": "Edit",
@@ -100,13 +115,6 @@
   "usersSearchLabel": "Search by username or email",
   "@usersSearchLabel": {},
 
-  "usersLoadError": "Failed to load users: {error}",
-  "@usersLoadError": {
-    "placeholders": {
-      "error": {"type": "Object"}
-    }
-  },
-
   "noUsersFound": "No users found.",
   "@noUsersFound": {},
 
@@ -166,6 +174,9 @@
   "productsPurchasableFilter": "Purchasable",
   "@productsPurchasableFilter": {},
 
+  "productsSupplierFilter": "Supplier",
+  "@productsSupplierFilter": {},
+
   "productsLabelFilter": "Labels",
   "@productsLabelFilter": {},
 
@@ -193,12 +204,20 @@
   "applyFilters": "Apply",
   "@applyFilters": {"description": "Filter panel primary action that dismisses the panel"},
 
-  "productsLoadError": "Failed to load products: {error}",
-  "@productsLoadError": {
-    "placeholders": {
-      "error": {"type": "Object"}
-    }
-  },
+  "retryButton": "Retry",
+  "@retryButton": {"description": "Shared list `failed` state's retry action (017-ui-consistency-filters US5)"},
+
+  "clearFiltersButton": "Clear filters",
+  "@clearFiltersButton": {"description": "Shared list `filteredEmpty` state's clear-filters action (017-ui-consistency-filters US5)"},
+
+  "filteredEmptyTitle": "No matches found",
+  "@filteredEmptyTitle": {"description": "Shared list `filteredEmpty` state's title, shown when a filtered/searched list has zero results"},
+
+  "filteredEmptyMessage": "Try adjusting or clearing your filters.",
+  "@filteredEmptyMessage": {"description": "Shared list `filteredEmpty` state's subtitle"},
+
+  "loadErrorTitle": "Couldn't load this list",
+  "@loadErrorTitle": {"description": "Shared list `failed` state's title, shown above the mapped ErrorBanner"},
 
   "noProductsFound": "No products found.",
   "@noProductsFound": {},
@@ -623,10 +642,6 @@
   "@newPriceListTooltip": {},
   "noPriceListsFound": "No price lists found.",
   "@noPriceListsFound": {},
-  "priceListsLoadError": "Failed to load price lists: {error}",
-  "@priceListsLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "columnHighProfitMargin": "High margin",
   "@columnHighProfitMargin": {},
   "columnLowProfitMargin": "Low margin",
@@ -678,10 +693,6 @@
   "@pricingNoPriceListsEmptyState": {},
   "pricingPriceNotSet": "Not set",
   "@pricingPriceNotSet": {},
-  "pricingLoadError": "Failed to load prices: {error}",
-  "@pricingLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "pricingSaveFailedError": "Failed to save price.",
   "@pricingSaveFailedError": {},
   "pricingUpdatePermissionDeniedError": "You no longer have permission to edit prices.",
@@ -707,10 +718,6 @@
   "@newExchangeRateTooltip": {},
   "noExchangeRatesFound": "No exchange rates found.",
   "@noExchangeRatesFound": {},
-  "exchangeRatesLoadError": "Failed to load exchange rates: {error}",
-  "@exchangeRatesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "columnDate": "Date",
   "@columnDate": {},
   "columnBaseCurrency": "Base",
@@ -807,10 +814,6 @@
   "@newSupplierTooltip": {},
   "noSuppliersFound": "No suppliers found.",
   "@noSuppliersFound": {},
-  "suppliersLoadError": "Failed to load suppliers: {error}",
-  "@suppliersLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newSupplierTitle": "New supplier",
   "@newSupplierTitle": {},
   "editSupplierTitle": "Edit supplier",
@@ -850,10 +853,6 @@
   "@newLabelTooltip": {},
   "noLabelsFound": "No labels found.",
   "@noLabelsFound": {},
-  "labelsLoadError": "Failed to load labels: {error}",
-  "@labelsLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newLabelTitle": "New label",
   "@newLabelTitle": {},
   "editLabelTitle": "Edit label",
@@ -891,10 +890,6 @@
   "@newExpenseTooltip": {},
   "noExpensesFound": "No expenses found.",
   "@noExpensesFound": {},
-  "expensesLoadError": "Failed to load expenses: {error}",
-  "@expensesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newExpenseTitle": "New expense",
   "@newExpenseTitle": {},
   "editExpenseTitle": "Edit expense",
@@ -937,10 +932,6 @@
   "@newVehicleTooltip": {},
   "noVehiclesFound": "No vehicles found.",
   "@noVehiclesFound": {},
-  "vehiclesLoadError": "Failed to load vehicles: {error}",
-  "@vehiclesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newVehicleTitle": "New vehicle",
   "@newVehicleTitle": {},
   "editVehicleTitle": "Edit vehicle",
@@ -1011,10 +1002,6 @@
   "@newVehicleOperatorTooltip": {},
   "noVehicleOperatorsFound": "No vehicle operators found.",
   "@noVehicleOperatorsFound": {},
-  "vehicleOperatorsLoadError": "Failed to load vehicle operators: {error}",
-  "@vehicleOperatorsLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newVehicleOperatorTitle": "New vehicle operator",
   "@newVehicleOperatorTitle": {},
   "editVehicleOperatorTitle": "Edit vehicle operator",
@@ -1091,10 +1078,6 @@
   "@newEmployeeTooltip": {},
   "noEmployeesFound": "No employees found.",
   "@noEmployeesFound": {},
-  "employeesLoadError": "Failed to load employees: {error}",
-  "@employeesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "employeesSalesPersonFilter": "Sales person",
   "@employeesSalesPersonFilter": {},
   "newEmployeeTitle": "New employee",
@@ -1159,10 +1142,6 @@
   "@newCustomerTooltip": {},
   "noCustomersFound": "No customers found.",
   "@noCustomersFound": {},
-  "customersLoadError": "Failed to load customers: {error}",
-  "@customersLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "customersPriceListFilterLabel": "Price list",
   "@customersPriceListFilterLabel": {},
   "customersSalespersonFilterLabel": "Salesperson",
@@ -1217,10 +1196,6 @@
   "@newTaxpayerRecipientTooltip": {},
   "noTaxpayerRecipientsFound": "No taxpayer recipients found.",
   "@noTaxpayerRecipientsFound": {},
-  "taxpayerRecipientsLoadError": "Failed to load taxpayer recipients: {error}",
-  "@taxpayerRecipientsLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newTaxpayerRecipientTitle": "New taxpayer recipient",
   "@newTaxpayerRecipientTitle": {},
   "editTaxpayerRecipientTitle": "Edit taxpayer recipient",
@@ -1289,10 +1264,6 @@
   "@warehousesSearchLabel": {},
   "newWarehouseTooltip": "New warehouse",
   "@newWarehouseTooltip": {},
-  "warehousesLoadError": "Failed to load warehouses: {error}",
-  "@warehousesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "noWarehousesFound": "No warehouses found.",
   "@noWarehousesFound": {},
   "viewWarehouseTitle": "View Warehouse",
@@ -1336,10 +1307,6 @@
   "@cashDrawersSearchLabel": {},
   "newCashDrawerTooltip": "New cash drawer",
   "@newCashDrawerTooltip": {},
-  "cashDrawersLoadError": "Failed to load cash drawers: {error}",
-  "@cashDrawersLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "noCashDrawersFound": "No cash drawers found.",
   "@noCashDrawersFound": {},
   "viewCashDrawerTitle": "View Cash Drawer",
@@ -1383,10 +1350,6 @@
   "@pointsOfSaleSearchLabel": {},
   "newPointSaleTooltip": "New point of sale",
   "@newPointSaleTooltip": {},
-  "pointsOfSaleLoadError": "Failed to load points of sale: {error}",
-  "@pointsOfSaleLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "noPointsOfSaleFound": "No points of sale found.",
   "@noPointsOfSaleFound": {},
   "viewPointSaleTitle": "View Point of Sale",
@@ -1432,10 +1395,6 @@
   "@facilitiesSearchLabel": {},
   "newFacilityTooltip": "New facility",
   "@newFacilityTooltip": {},
-  "facilitiesLoadError": "Failed to load facilities: {error}",
-  "@facilitiesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "noFacilitiesFound": "No facilities found.",
   "@noFacilitiesFound": {},
   "viewFacilityTitle": "View Facility",
@@ -1549,10 +1508,6 @@
   "@paymentMethodOptionsSearchLabel": {},
   "noPaymentMethodOptionsFound": "No payment method options found.",
   "@noPaymentMethodOptionsFound": {},
-  "paymentMethodOptionsLoadError": "Failed to load payment method options: {error}",
-  "@paymentMethodOptionsLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "viewPaymentMethodOptionTitle": "View Payment Method Option",
   "@viewPaymentMethodOptionTitle": {},
   "editPaymentMethodOptionTitle": "Edit Payment Method Option",
@@ -1641,10 +1596,6 @@
   "@taxpayerIssuersSearchLabel": {},
   "noTaxpayerIssuersFound": "No taxpayer issuers found.",
   "@noTaxpayerIssuersFound": {},
-  "taxpayerIssuersLoadError": "Failed to load taxpayer issuers: {error}",
-  "@taxpayerIssuersLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "viewTaxpayerIssuerTitle": "View Taxpayer Issuer",
   "@viewTaxpayerIssuerTitle": {},
   "editTaxpayerIssuerTitle": "Edit Taxpayer Issuer",
@@ -1703,10 +1654,6 @@
   "@addCertificateButton": {},
   "noCertificatesFound": "No certificates registered.",
   "@noCertificatesFound": {},
-  "certificatesLoadError": "Failed to load certificates: {error}",
-  "@certificatesLoadError": {
-    "placeholders": {"error": {"type": "Object"}}
-  },
   "newCertificateDialogTitle": "Register Certificate",
   "@newCertificateDialogTitle": {},
   "certificateFileLabel": "Certificate file (.cer)",

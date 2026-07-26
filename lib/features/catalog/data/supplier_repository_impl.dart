@@ -14,6 +14,28 @@ final supplierRepositoryProvider = Provider<SupplierRepository>((ref) {
   return SupplierRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves a supplier id to its display name — for a list screen's facet
+/// filter picker on a cold load (a shared link/bookmark/refresh carrying
+/// only `supplier=<id>` in the URL, 017-ui-consistency-filters
+/// data-model.md §4). `null` on any failure (e.g. the id no longer exists),
+/// so a caller falls back to displaying the raw id rather than blocking the
+/// list. Matches `product_detail_screen.dart`'s supplier picker's own
+/// `'${code} — ${name}'` display format, so the resolved text is identical
+/// whether it arrived via cold-load or via picking from the dropdown.
+final supplierDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  supplierId,
+) async {
+  try {
+    final supplier = await ref
+        .watch(supplierRepositoryProvider)
+        .get(supplierId: supplierId);
+    return '${supplier.code} — ${supplier.name}';
+  } catch (_) {
+    return null;
+  }
+});
+
 class SupplierRepositoryImpl implements SupplierRepository {
   SupplierRepositoryImpl(Dio dio)
     : _api = SuppliersApi(dio, standardSerializers);

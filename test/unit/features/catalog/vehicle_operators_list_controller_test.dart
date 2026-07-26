@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
@@ -37,114 +38,245 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  group('VehicleOperatorFilterController', () {
-    test('starts with no filters', () {
-      final filter = container.read(vehicleOperatorFilterControllerProvider);
-      expect(filter.search, '');
-      expect(filter.driverId, isNull);
-      expect(filter.activeFilterCount, 0);
-    });
-
-    test('driverSelected sets driverId and the badge count', () {
-      container
-          .read(vehicleOperatorFilterControllerProvider.notifier)
-          .driverSelected(7, 'Jane Doe');
-
-      final filter = container.read(vehicleOperatorFilterControllerProvider);
-      expect(filter.driverId, 7);
-      expect(filter.driverDisplayText, 'Jane Doe');
-      expect(filter.activeFilterCount, 1);
-    });
-
-    test('reset clears the driver filter but keeps search', () {
-      final notifier = container.read(
-        vehicleOperatorFilterControllerProvider.notifier,
-      );
-      notifier.searchChanged('Jane');
-      notifier.driverSelected(7, 'Jane Doe');
-
-      notifier.reset();
-
-      final filter = container.read(vehicleOperatorFilterControllerProvider);
-      expect(filter.search, 'Jane');
-      expect(filter.driverId, isNull);
-    });
-  });
-
-  group('VehicleOperatorsListController', () {
-    test(
-      'build() maps the current filter to repository query params',
-      () async {
-        when(
-          () =>
-              repository.list(search: null, driverId: null, skip: 0, limit: 20),
-        ).thenAnswer(
-          (_) async =>
-              VehicleOperatorListResult(items: [_operator(1)], total: 1),
+  group(
+    'VehicleOperatorFilter.fromQuery (017-ui-consistency-filters FR-010, FR-017)',
+    () {
+      test('derives every field from a ListQuery', () {
+        final filter = VehicleOperatorFilter.fromQuery(
+          const ListQuery(
+            search: 'Jane',
+            pageIndex: 2,
+            facets: {
+              'driver': ['7'],
+              'status': ['inactive'],
+            },
+          ),
         );
 
-        final result = await container.read(
-          vehicleOperatorsListControllerProvider.future,
-        );
+        expect(filter.search, 'Jane');
+        expect(filter.pageIndex, 2);
+        expect(filter.driverId, 7);
+        expect(filter.status, EntityStatus.inactive);
+        expect(filter.activeFilterCount, 2);
+      });
 
-        expect(result.items, hasLength(1));
-        expect(result.total, 1);
-      },
-    );
+      test('defaults from an empty ListQuery', () {
+        final filter = VehicleOperatorFilter.fromQuery(const ListQuery());
 
-    test('selecting a driver filter re-fetches from skip=0', () async {
-      when(
-        () => repository.list(search: null, driverId: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => VehicleOperatorListResult(items: [_operator(1)], total: 1),
-      );
-      await container.read(vehicleOperatorsListControllerProvider.future);
+        expect(filter.search, '');
+        expect(filter.pageIndex, 0);
+        expect(filter.driverId, isNull);
+        expect(filter.status, isNull);
+        expect(filter.activeFilterCount, 0);
+      });
+    },
+  );
 
-      when(
-        () => repository.list(search: null, driverId: 7, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async => VehicleOperatorListResult(
-          items: [_operator(2, driverId: 7)],
-          total: 1,
-        ),
-      );
-      container
-          .read(vehicleOperatorFilterControllerProvider.notifier)
-          .driverSelected(7, 'Jane Doe');
+  group(
+    'VehicleOperatorsListController (a family keyed by VehicleOperatorFilter)',
+    () {
+      test(
+        'build(filter) maps the filter to repository query params',
+        () async {
+          when(
+            () => repository.list(
+              search: null,
+              driverId: null,
+              status: null,
+              skip: 0,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                VehicleOperatorListResult(items: [_operator(1)], total: 1),
+          );
 
-      final result = await container.read(
-        vehicleOperatorsListControllerProvider.future,
-      );
-      expect(result.items.single.vehicleOperatorId, 2);
-    });
+          const filter = VehicleOperatorFilter();
+          final result = await container.read(
+            vehicleOperatorsListControllerProvider(filter).future,
+          );
 
-    test('goToPage replaces the current page with the requested one', () async {
-      when(
-        () => repository.list(search: null, driverId: null, skip: 0, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            VehicleOperatorListResult(items: [_operator(1)], total: 21),
-      );
-      await container.read(vehicleOperatorsListControllerProvider.future);
-
-      when(
-        () =>
-            repository.list(search: null, driverId: null, skip: 20, limit: 20),
-      ).thenAnswer(
-        (_) async =>
-            VehicleOperatorListResult(items: [_operator(2)], total: 21),
+          expect(result.items, hasLength(1));
+          expect(result.total, 1);
+        },
       );
 
-      await container
-          .read(vehicleOperatorsListControllerProvider.notifier)
-          .goToPage(1);
+      test(
+        'a driver facet and a status facet both reach the repository '
+        'together (FR-010, FR-013)',
+        () async {
+          when(
+            () => repository.list(
+              search: null,
+              driverId: 7,
+              status: EntityStatus.active,
+              skip: 0,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async => VehicleOperatorListResult(
+              items: [_operator(2, driverId: 7)],
+              total: 1,
+            ),
+          );
 
-      final page = container
-          .read(vehicleOperatorsListControllerProvider)
-          .value!;
-      expect(page.items.map((o) => o.vehicleOperatorId), [2]);
-      expect(page.pageIndex, 1);
-      expect(page.total, 21);
-    });
-  });
+          const filter = VehicleOperatorFilter(
+            driverId: 7,
+            status: EntityStatus.active,
+          );
+          final result = await container.read(
+            vehicleOperatorsListControllerProvider(filter).future,
+          );
+
+          expect(result.items.single.vehicleOperatorId, 2);
+          verify(
+            () => repository.list(
+              search: null,
+              driverId: 7,
+              status: EntityStatus.active,
+              skip: 0,
+              limit: 20,
+            ),
+          ).called(1);
+        },
+      );
+
+      test(
+        'a different driver filter maps to a different provider instance and query',
+        () async {
+          when(
+            () => repository.list(
+              search: null,
+              driverId: null,
+              status: null,
+              skip: 0,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                VehicleOperatorListResult(items: [_operator(1)], total: 1),
+          );
+          when(
+            () => repository.list(
+              search: null,
+              driverId: 7,
+              status: null,
+              skip: 0,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async => VehicleOperatorListResult(
+              items: [_operator(2, driverId: 7)],
+              total: 1,
+            ),
+          );
+
+          final first = await container.read(
+            vehicleOperatorsListControllerProvider(
+              const VehicleOperatorFilter(),
+            ).future,
+          );
+          final second = await container.read(
+            vehicleOperatorsListControllerProvider(
+              const VehicleOperatorFilter(driverId: 7),
+            ).future,
+          );
+
+          expect(first.items.single.vehicleOperatorId, 1);
+          expect(second.items.single.vehicleOperatorId, 2);
+        },
+      );
+
+      test(
+        'a different pageIndex maps to skip = pageIndex * pageSize',
+        () async {
+          when(
+            () => repository.list(
+              search: null,
+              driverId: null,
+              status: null,
+              skip: 0,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                VehicleOperatorListResult(items: [_operator(1)], total: 21),
+          );
+          when(
+            () => repository.list(
+              search: null,
+              driverId: null,
+              status: null,
+              skip: 20,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                VehicleOperatorListResult(items: [_operator(2)], total: 21),
+          );
+
+          final page0 = await container.read(
+            vehicleOperatorsListControllerProvider(
+              const VehicleOperatorFilter(),
+            ).future,
+          );
+          final page1 = await container.read(
+            vehicleOperatorsListControllerProvider(
+              const VehicleOperatorFilter(pageIndex: 1),
+            ).future,
+          );
+
+          expect(page0.items.map((o) => o.vehicleOperatorId), [1]);
+          expect(page0.pageIndex, 0);
+          expect(page1.items.map((o) => o.vehicleOperatorId), [2]);
+          expect(page1.pageIndex, 1);
+          expect(page1.total, 21);
+        },
+      );
+
+      test(
+        'invalidating the provider re-fetches the SAME page rather than '
+        'resetting to page 0 (017-ui-consistency-filters FR-025, research §3)',
+        () async {
+          const filter = VehicleOperatorFilter(pageIndex: 1);
+          when(
+            () => repository.list(
+              search: null,
+              driverId: null,
+              status: null,
+              skip: 20,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                VehicleOperatorListResult(items: [_operator(2)], total: 21),
+          );
+
+          await container.read(
+            vehicleOperatorsListControllerProvider(filter).future,
+          );
+
+          when(
+            () => repository.list(
+              search: null,
+              driverId: null,
+              status: null,
+              skip: 20,
+              limit: 20,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                VehicleOperatorListResult(items: [_operator(99)], total: 21),
+          );
+          container.invalidate(vehicleOperatorsListControllerProvider(filter));
+
+          final refreshed = await container.read(
+            vehicleOperatorsListControllerProvider(filter).future,
+          );
+          expect(refreshed.pageIndex, 1);
+          expect(refreshed.items.single.vehicleOperatorId, 99);
+        },
+      );
+    },
+  );
 }

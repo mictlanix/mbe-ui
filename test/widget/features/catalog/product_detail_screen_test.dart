@@ -732,6 +732,11 @@ void main() {
               .enabled,
           isFalse,
         );
+
+        // 017-ui-consistency-filters / constitution v1.10.0: the edit
+        // toggle lives in the record action area now, not the AppBar.
+        final appBar = tester.widget<AppBar>(find.byType(AppBar));
+        expect(appBar.actions, anyOf(isNull, isEmpty));
       },
     );
 
@@ -830,8 +835,9 @@ void main() {
     });
 
     testWidgets(
-      'shows a warning-styled Delete button below Save for a user with '
-      'products.delete (FR-015)',
+      'shows a warning-styled Delete button to the left of Save, in the '
+      'shared record action area, for a user with products.delete '
+      '(FR-015; 017-ui-consistency-filters contracts/record-form-actions.md §2)',
       (tester) async {
         when(
           () => productRepository.get(productId: 1),
@@ -839,20 +845,20 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _deleteUser, productId: 1);
 
-        final saveTop = tester
+        final saveLeft = tester
             .getTopLeft(find.byKey(const Key('save_button')))
-            .dy;
-        final deleteTop = tester
+            .dx;
+        final deleteLeft = tester
             .getTopLeft(find.byKey(const Key('delete_product_button')))
-            .dy;
-        expect(deleteTop, greaterThan(saveTop));
+            .dx;
+        expect(deleteLeft, lessThan(saveLeft));
 
-        final button = tester.widget<FilledButton>(
+        final button = tester.widget<OutlinedButton>(
           find.byKey(const Key('delete_product_button')),
         );
         final theme = Theme.of(tester.element(find.byType(Scaffold).first));
         expect(
-          button.style?.backgroundColor?.resolve({}),
+          button.style?.foregroundColor?.resolve({}),
           theme.colorScheme.error,
         );
       },

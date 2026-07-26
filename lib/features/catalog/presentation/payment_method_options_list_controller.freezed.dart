@@ -19,8 +19,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$PaymentMethodOptionFilter {
   String get search => throw _privateConstructorUsedError;
   int? get facilityId => throw _privateConstructorUsedError;
-  String get facilityDisplayText => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of PaymentMethodOptionFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -39,8 +39,8 @@ abstract class $PaymentMethodOptionFilterCopyWith<$Res> {
   $Res call({
     String search,
     int? facilityId,
-    String facilityDisplayText,
     EntityStatus? status,
+    int pageIndex,
   });
 }
 
@@ -64,8 +64,8 @@ class _$PaymentMethodOptionFilterCopyWithImpl<
   $Res call({
     Object? search = null,
     Object? facilityId = freezed,
-    Object? facilityDisplayText = null,
     Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _value.copyWith(
@@ -77,14 +77,14 @@ class _$PaymentMethodOptionFilterCopyWithImpl<
                 ? _value.facilityId
                 : facilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
-            facilityDisplayText: null == facilityDisplayText
-                ? _value.facilityDisplayText
-                : facilityDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String,
             status: freezed == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -103,8 +103,8 @@ abstract class _$$PaymentMethodOptionFilterImplCopyWith<$Res>
   $Res call({
     String search,
     int? facilityId,
-    String facilityDisplayText,
     EntityStatus? status,
+    int pageIndex,
   });
 }
 
@@ -128,8 +128,8 @@ class __$$PaymentMethodOptionFilterImplCopyWithImpl<$Res>
   $Res call({
     Object? search = null,
     Object? facilityId = freezed,
-    Object? facilityDisplayText = null,
     Object? status = freezed,
+    Object? pageIndex = null,
   }) {
     return _then(
       _$PaymentMethodOptionFilterImpl(
@@ -141,14 +141,14 @@ class __$$PaymentMethodOptionFilterImplCopyWithImpl<$Res>
             ? _value.facilityId
             : facilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
-        facilityDisplayText: null == facilityDisplayText
-            ? _value.facilityDisplayText
-            : facilityDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String,
         status: freezed == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -160,8 +160,8 @@ class _$PaymentMethodOptionFilterImpl implements _PaymentMethodOptionFilter {
   const _$PaymentMethodOptionFilterImpl({
     this.search = '',
     this.facilityId,
-    this.facilityDisplayText = '',
     this.status,
+    this.pageIndex = 0,
   });
 
   @override
@@ -170,14 +170,14 @@ class _$PaymentMethodOptionFilterImpl implements _PaymentMethodOptionFilter {
   @override
   final int? facilityId;
   @override
-  @JsonKey()
-  final String facilityDisplayText;
-  @override
   final EntityStatus? status;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'PaymentMethodOptionFilter(search: $search, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, status: $status)';
+    return 'PaymentMethodOptionFilter(search: $search, facilityId: $facilityId, status: $status, pageIndex: $pageIndex)';
   }
 
   @override
@@ -188,14 +188,14 @@ class _$PaymentMethodOptionFilterImpl implements _PaymentMethodOptionFilter {
             (identical(other.search, search) || other.search == search) &&
             (identical(other.facilityId, facilityId) ||
                 other.facilityId == facilityId) &&
-            (identical(other.facilityDisplayText, facilityDisplayText) ||
-                other.facilityDisplayText == facilityDisplayText) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, search, facilityId, facilityDisplayText, status);
+      Object.hash(runtimeType, search, facilityId, status, pageIndex);
 
   /// Create a copy of PaymentMethodOptionFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -213,8 +213,8 @@ abstract class _PaymentMethodOptionFilter implements PaymentMethodOptionFilter {
   const factory _PaymentMethodOptionFilter({
     final String search,
     final int? facilityId,
-    final String facilityDisplayText,
     final EntityStatus? status,
+    final int pageIndex,
   }) = _$PaymentMethodOptionFilterImpl;
 
   @override
@@ -222,9 +222,9 @@ abstract class _PaymentMethodOptionFilter implements PaymentMethodOptionFilter {
   @override
   int? get facilityId;
   @override
-  String get facilityDisplayText;
-  @override
   EntityStatus? get status;
+  @override
+  int get pageIndex;
 
   /// Create a copy of PaymentMethodOptionFilter
   /// with the given fields replaced by the non-null parameter values.

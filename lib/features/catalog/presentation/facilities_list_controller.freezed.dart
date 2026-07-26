@@ -19,6 +19,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$FacilityFilter {
   String get search => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
+  int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of FacilityFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -34,7 +35,7 @@ abstract class $FacilityFilterCopyWith<$Res> {
     $Res Function(FacilityFilter) then,
   ) = _$FacilityFilterCopyWithImpl<$Res, FacilityFilter>;
   @useResult
-  $Res call({String search, EntityStatus? status});
+  $Res call({String search, EntityStatus? status, int pageIndex});
 }
 
 /// @nodoc
@@ -51,7 +52,11 @@ class _$FacilityFilterCopyWithImpl<$Res, $Val extends FacilityFilter>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? search = null, Object? status = freezed}) {
+  $Res call({
+    Object? search = null,
+    Object? status = freezed,
+    Object? pageIndex = null,
+  }) {
     return _then(
       _value.copyWith(
             search: null == search
@@ -62,6 +67,10 @@ class _$FacilityFilterCopyWithImpl<$Res, $Val extends FacilityFilter>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus?,
+            pageIndex: null == pageIndex
+                ? _value.pageIndex
+                : pageIndex // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -77,7 +86,7 @@ abstract class _$$FacilityFilterImplCopyWith<$Res>
   ) = __$$FacilityFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String search, EntityStatus? status});
+  $Res call({String search, EntityStatus? status, int pageIndex});
 }
 
 /// @nodoc
@@ -93,7 +102,11 @@ class __$$FacilityFilterImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? search = null, Object? status = freezed}) {
+  $Res call({
+    Object? search = null,
+    Object? status = freezed,
+    Object? pageIndex = null,
+  }) {
     return _then(
       _$FacilityFilterImpl(
         search: null == search
@@ -104,6 +117,10 @@ class __$$FacilityFilterImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus?,
+        pageIndex: null == pageIndex
+            ? _value.pageIndex
+            : pageIndex // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -112,17 +129,24 @@ class __$$FacilityFilterImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FacilityFilterImpl implements _FacilityFilter {
-  const _$FacilityFilterImpl({this.search = '', this.status});
+  const _$FacilityFilterImpl({
+    this.search = '',
+    this.status,
+    this.pageIndex = 0,
+  });
 
   @override
   @JsonKey()
   final String search;
   @override
   final EntityStatus? status;
+  @override
+  @JsonKey()
+  final int pageIndex;
 
   @override
   String toString() {
-    return 'FacilityFilter(search: $search, status: $status)';
+    return 'FacilityFilter(search: $search, status: $status, pageIndex: $pageIndex)';
   }
 
   @override
@@ -131,11 +155,13 @@ class _$FacilityFilterImpl implements _FacilityFilter {
         (other.runtimeType == runtimeType &&
             other is _$FacilityFilterImpl &&
             (identical(other.search, search) || other.search == search) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.pageIndex, pageIndex) ||
+                other.pageIndex == pageIndex));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, search, status);
+  int get hashCode => Object.hash(runtimeType, search, status, pageIndex);
 
   /// Create a copy of FacilityFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -153,12 +179,15 @@ abstract class _FacilityFilter implements FacilityFilter {
   const factory _FacilityFilter({
     final String search,
     final EntityStatus? status,
+    final int pageIndex,
   }) = _$FacilityFilterImpl;
 
   @override
   String get search;
   @override
   EntityStatus? get status;
+  @override
+  int get pageIndex;
 
   /// Create a copy of FacilityFilter
   /// with the given fields replaced by the non-null parameter values.

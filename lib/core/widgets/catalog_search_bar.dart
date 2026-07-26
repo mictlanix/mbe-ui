@@ -29,6 +29,21 @@ class _CatalogSearchBarState extends State<CatalogSearchBar> {
   );
 
   @override
+  void didUpdateWidget(covariant CatalogSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keeps the box in sync when `initialValue` changes out from under an
+    // already-mounted state (017-ui-consistency-filters FR-018) — e.g. a
+    // list screen's own widget is rebuilt with a new value decoded from the
+    // URL (browser Back, a shared link, "clear filters") while this stable-
+    // keyed child survives the rebuild. Guarded so it never clobbers text
+    // the user is mid-typing for an unrelated reason.
+    if (widget.initialValue != oldWidget.initialValue &&
+        widget.initialValue != _controller.text) {
+      _controller.text = widget.initialValue;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

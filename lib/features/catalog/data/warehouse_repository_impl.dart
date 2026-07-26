@@ -13,6 +13,24 @@ final warehouseRepositoryProvider = Provider<WarehouseRepository>((ref) {
   return WarehouseRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves a warehouse id to its display name — for a list screen's facet
+/// filter picker on a cold load (017-ui-consistency-filters data-model.md
+/// §4). `null` on any failure, so a caller falls back to displaying the raw
+/// id rather than blocking the list.
+final warehouseDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  warehouseId,
+) async {
+  try {
+    final warehouse = await ref
+        .watch(warehouseRepositoryProvider)
+        .get(warehouseId: warehouseId);
+    return warehouse.name;
+  } catch (_) {
+    return null;
+  }
+});
+
 class WarehouseRepositoryImpl implements WarehouseRepository {
   WarehouseRepositoryImpl(Dio dio)
     : _api = WarehousesApi(dio, standardSerializers);

@@ -16,6 +16,25 @@ final facilityRepositoryProvider = Provider<FacilityRepository>((ref) {
   return FacilityRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves a facility id to its display name — for a list screen's facet
+/// filter picker on a cold load (a shared link/bookmark/refresh carrying
+/// only `facility=<id>` in the URL, 017-ui-consistency-filters data-model.md
+/// §4). `null` on any failure (e.g. the id no longer exists), so a caller
+/// falls back to displaying the raw id rather than blocking the list.
+final facilityDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  facilityId,
+) async {
+  try {
+    final facility = await ref
+        .watch(facilityRepositoryProvider)
+        .get(facilityId: facilityId);
+    return facility.name;
+  } catch (_) {
+    return null;
+  }
+});
+
 class FacilityRepositoryImpl implements FacilityRepository {
   FacilityRepositoryImpl(Dio dio)
     : _api = FacilitiesApi(dio, standardSerializers);

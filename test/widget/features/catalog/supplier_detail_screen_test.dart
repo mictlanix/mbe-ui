@@ -99,8 +99,8 @@ void main() {
 
   group('view mode (forceReadOnly)', () {
     testWidgets(
-      'renders fields disabled with no Save/Delete, and the AppBar carries '
-      'only the edit toggle (constitution v1.8.0)',
+      'renders fields disabled with no Save/Delete, and the edit toggle '
+      'appears in the record action area, not the AppBar (constitution v1.10.0)',
       (tester) async {
         await pumpScreen(
           tester,
@@ -116,6 +116,9 @@ void main() {
         expect(find.byKey(const Key('save_button')), findsNothing);
         expect(find.byKey(const Key('delete_supplier_button')), findsNothing);
         expect(find.byKey(const Key('edit_supplier_button')), findsOneWidget);
+
+        final appBar = tester.widget<AppBar>(find.byType(AppBar));
+        expect(appBar.actions, anyOf(isNull, isEmpty));
       },
     );
   });
