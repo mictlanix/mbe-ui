@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#0C0B0F; }
+  * { box-sizing: border-box; }
+  a { color:#C6C2FF; text-decoration:none; }
+  a:hover { color:#DEDBFF; }
+  .msym { font-family:'Material Symbols Outlined'; font-weight:400; font-style:normal; line-height:1; letter-spacing:normal; text-transform:none; display:inline-block; white-space:nowrap; direction:ltr; -webkit-font-feature-settings:'liga'; -webkit-font-smoothing:antialiased; }
+  ::-webkit-scrollbar { width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb { background:#332F3B; border-radius:8px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+</style>
+</helmet>
+<div style="padding: 56px; display: flex; gap: 56px; align-items: flex-start; background: #0C0B0F; font-family: Roboto, Helvetica, Arial, sans-serif; color: #E6E1E9; width: 603px; height: 1046px">
+
+  <div style="display:flex; flex-direction:column; gap:14px; flex:none;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:15px; font-weight:500;">Móvil</span>
+      <span style="font-size:12px; color:#7C7589; font-family:'Roboto Mono', monospace;">390 × 844 · compacto</span>
+    </div>
+
+    <div style="width:390px; height:844px; border-radius:28px; background:#141218; border:1px solid #2A2634; overflow:hidden; display:flex; flex-direction:column;">
+      <div style="flex:none; padding:14px 16px 10px; background:#1A1720; border-bottom:1px solid #262230; display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:20px; font-weight:400;">Instalaciones</span>
+          <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#B9B6F5; background:#2C2740; padding:3px 8px; border-radius:6px;">14</span>
+          <div style="margin-left:auto; display:flex; gap:4px;">
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:22px; color:#C9C3D2;" style-hover="background:#241F2C;"><span class="msym" style="font-size:22px;">search</span></div>
+            <div style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:22px; color:#C9C3D2;" style-hover="background:#241F2C;"><span class="msym" style="font-size:22px;">tune</span></div>
+          </div>
+        </div>
+        
+      </div>
+
+      <div style="flex:1; min-height:0; overflow-y:auto; padding:12px 12px 96px; display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ mobile }}" as="f" hint-placeholder-count="5">
+          <div style="flex:none; background:#1A1720; border:1px solid #2A2634; border-radius:16px; overflow:hidden;">
+            <div onClick="{{ f.toggle }}" style="display:flex; align-items:center; gap:12px; padding:12px 12px 12px 14px; min-height:64px; cursor:pointer; user-select:none;" style-hover="background:#211D29;">
+              <div style="width:40px; height:40px; flex:none; border-radius:12px; background:#2C2740; display:flex; align-items:center; justify-content:center;">
+                <span class="msym" style="font-size:21px; color:#CFCBFF;">{{ f.icon }}</span>
+              </div>
+              <div style="min-width:0; flex:1; display:flex; flex-direction:column; gap:5px;">
+                <span style="font-size:14px; font-weight:500; line-height:1.25; text-wrap:pretty;">{{ f.name }}</span>
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                  <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#948CA3; background:#26222F; padding:2px 7px; border-radius:5px;">{{ f.code }}</span>
+                  <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:#9A93A8;"><span class="msym" style="font-size:14px;">warehouse</span>{{ f.wCount }}</span>
+                  <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                    <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:#9A93A8;"><span class="msym" style="font-size:14px;">point_of_sale</span>{{ f.pCount }}</span>
+                  </sc-if>
+                  <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                    <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:#9A93A8;"><span class="msym" style="font-size:14px;">local_atm</span>{{ f.cCount }}</span>
+                  </sc-if>
+                  <sc-if value="{{ f.production }}">
+                    <span style="font-size:11px; color:#9FD3C7;">Producción</span>
+                  </sc-if>
+                </div>
+              </div>
+              <div style="flex:none; display:flex; align-items:center; gap:6px;">
+                <sc-if value="{{ f.active }}" hint-placeholder-val="{{ true }}">
+                  <span style="width:8px; height:8px; border-radius:5px; background:#5FCB8C;"></span>
+                </sc-if>
+                <sc-if value="{{ f.inactive }}">
+                  <span style="width:8px; height:8px; border-radius:5px; background:#E06A6A;"></span>
+                </sc-if>
+                <span class="msym" style="font-size:24px; color:#8B8397; width:24px;">{{ f.chevron }}</span>
+              </div>
+            </div>
+
+            <sc-if value="{{ f.expanded }}">
+              <div style="padding:0 12px 14px; display:flex; flex-direction:column; gap:14px;">
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <div style="display:flex; align-items:center; gap:8px; padding:0 2px;">
+                    <span class="msym" style="font-size:16px; color:#9FD3C7;">warehouse</span>
+                    <span style="font-size:11px; letter-spacing:0.7px; text-transform:uppercase; color:#7C7589;">Almacenes · {{ f.wCount }}</span>
+                    <div style="flex:1; height:1px; background:#26222F;"></div>
+                  </div>
+                  <sc-for list="{{ f.warehouses }}" as="w" hint-placeholder-count="1">
+                    <div style="display:flex; align-items:center; gap:10px; min-height:52px; padding:10px 12px; border-radius:12px; background:#201C28; border:1px solid #2E2939;">
+                      <div style="min-width:0; flex:1; display:flex; flex-direction:column; gap:3px;">
+                        <span style="font-size:13px; color:#EDE8F2; line-height:1.3;">{{ w.name }}</span>
+                        <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#8B8397;">{{ w.code }}</span>
+                      </div>
+                      <sc-if value="{{ w.active }}" hint-placeholder-val="{{ true }}">
+                        <span style="width:8px; height:8px; border-radius:5px; background:#5FCB8C;"></span>
+                      </sc-if>
+                      <sc-if value="{{ w.inactive }}">
+                        <span style="width:8px; height:8px; border-radius:5px; background:#E06A6A;"></span>
+                      </sc-if>
+                      <div style="width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:22px; color:#7C7589;" style-hover="background:#2A2534;"><span class="msym" style="font-size:20px;">edit</span></div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ f.noWarehouses }}">
+                    <div style="padding:12px; border:1px dashed #332D40; border-radius:12px; font-size:12px; color:#7C7589;">Sin almacenes registrados.</div>
+                  </sc-if>
+                </div>
+
+                <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="display:flex; align-items:center; gap:8px; padding:0 2px;">
+                      <span class="msym" style="font-size:16px; color:#D4B9E8;">point_of_sale</span>
+                      <span style="font-size:11px; letter-spacing:0.7px; text-transform:uppercase; color:#7C7589;">Puntos de venta · {{ f.pCount }}</span>
+                      <div style="flex:1; height:1px; background:#26222F;"></div>
+                    </div>
+                    <sc-for list="{{ f.pos }}" as="p" hint-placeholder-count="1">
+                      <div style="display:flex; align-items:center; gap:10px; min-height:52px; padding:10px 12px; border-radius:12px; background:#201C28; border:1px solid #2E2939;">
+                        <div style="min-width:0; flex:1; display:flex; flex-direction:column; gap:4px;">
+                          <span style="font-size:13px; color:#EDE8F2; line-height:1.3;">{{ p.name }}</span>
+                          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#8B8397;">{{ p.code }}</span>
+                            <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:#9A93A8;"><span class="msym" style="font-size:14px;">inventory_2</span>{{ p.stock }}</span>
+                            <sc-if value="{{ p.foreign }}">
+                              <span style="display:flex; align-items:center; gap:4px; font-size:10px; color:#E8C99A; background:#332818; padding:2px 7px; border-radius:5px;"><span class="msym" style="font-size:12px;">link</span>Otra instalación</span>
+                            </sc-if>
+                          </div>
+                        </div>
+                        <sc-if value="{{ p.active }}" hint-placeholder-val="{{ true }}">
+                          <span style="width:8px; height:8px; border-radius:5px; background:#5FCB8C;"></span>
+                        </sc-if>
+                        <sc-if value="{{ p.inactive }}">
+                          <span style="width:8px; height:8px; border-radius:5px; background:#E06A6A;"></span>
+                        </sc-if>
+                        <div style="width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:22px; color:#7C7589;" style-hover="background:#2A2534;"><span class="msym" style="font-size:20px;">edit</span></div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ f.noPos }}">
+                      <div style="padding:12px; border:1px dashed #332D40; border-radius:12px; font-size:12px; color:#7C7589;">Sin puntos de venta.</div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="display:flex; align-items:center; gap:8px; padding:0 2px;">
+                      <span class="msym" style="font-size:16px; color:#F0C48C;">local_atm</span>
+                      <span style="font-size:11px; letter-spacing:0.7px; text-transform:uppercase; color:#7C7589;">Cajas · {{ f.cCount }}</span>
+                      <div style="flex:1; height:1px; background:#26222F;"></div>
+                    </div>
+                    <sc-for list="{{ f.cajas }}" as="c" hint-placeholder-count="1">
+                      <div style="display:flex; align-items:center; gap:10px; min-height:52px; padding:10px 12px; border-radius:12px; background:#201C28; border:1px solid #2E2939;">
+                        <div style="min-width:0; flex:1; display:flex; flex-direction:column; gap:3px;">
+                          <span style="font-size:13px; color:#EDE8F2; line-height:1.3;">{{ c.name }}</span>
+                          <span style="font-family:'Roboto Mono', monospace; font-size:10px; color:#8B8397;">{{ c.code }}</span>
+                        </div>
+                        <sc-if value="{{ c.active }}" hint-placeholder-val="{{ true }}">
+                          <span style="width:8px; height:8px; border-radius:5px; background:#5FCB8C;"></span>
+                        </sc-if>
+                        <sc-if value="{{ c.inactive }}">
+                          <span style="width:8px; height:8px; border-radius:5px; background:#E06A6A;"></span>
+                        </sc-if>
+                        <div style="width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:22px; color:#7C7589;" style-hover="background:#2A2534;"><span class="msym" style="font-size:20px;">edit</span></div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ f.noCajas }}">
+                      <div style="padding:12px; border:1px dashed #332D40; border-radius:12px; font-size:12px; color:#7C7589;">Sin cajas registradas.</div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ f.production }}">
+                  <div style="display:flex; gap:8px; padding:10px 12px; border-radius:12px; background:#1D1B24; border:1px solid #2A2634; font-size:11px; color:#8B8397; line-height:1.45;">
+                    <span class="msym" style="font-size:16px; color:#9FD3C7;">info</span>Los sitios de producción solo administran almacenes.
+                  </div>
+                </sc-if>
+
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <div style="display:flex; align-items:center; gap:6px; height:40px; padding:0 14px; border-radius:20px; border:1px solid #454052; font-size:12px; color:#C9C3D2;"><span class="msym" style="font-size:16px;">add</span>Almacén</div>
+                  <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex; align-items:center; gap:6px; height:40px; padding:0 14px; border-radius:20px; border:1px solid #454052; font-size:12px; color:#C9C3D2;"><span class="msym" style="font-size:16px;">add</span>Punto de venta</div>
+                  </sc-if>
+                  <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex; align-items:center; gap:6px; height:40px; padding:0 14px; border-radius:20px; border:1px solid #454052; font-size:12px; color:#C9C3D2;"><span class="msym" style="font-size:16px;">add</span>Caja</div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="flex:none; height:0; position:relative;">
+        <div style="position:absolute; right:16px; bottom:24px; display:flex; align-items:center; gap:10px; height:56px; padding:0 22px 0 18px; border-radius:18px; background:#CFCBFF; color:#221F33; font-size:14px; font-weight:500; box-shadow:0 6px 20px rgba(0,0,0,0.45);">
+          <span class="msym" style="font-size:22px;">add</span>Instalación
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const RAW = [
+  { code:'CMVI', name:'CASA MAESTRA', type:'Tienda',
+    warehouses:[{code:'CMVIAL1', name:'ALMACÉN (01)', active:false}],
+    pos:[{code:'PVVI01', name:'PV VIRTUAL (01)', active:true, stock:'ZUMPANGO 1 (Materiales)', foreign:true}],
+    cajas:[{code:'CCVI01', name:'CC VIRTUAL (01)', active:true}], active:true },
+  { code:'CMZU', name:'CASA MAESTRA ZUMPANGO', type:'Tienda',
+    warehouses:[{code:'CMZUAL01', name:'ZUMPANGO 1 (Materiales)', active:true}],
+    pos:[{code:'PVZU01', name:'PV ZUMPANGO (01)', active:true, stock:'ZUMPANGO 1 (Materiales)'},
+         {code:'PVVI01', name:'PV VIRTUAL (01)', active:true, stock:'ZUMPANGO 1 (Materiales)', foreign:true}],
+    cajas:[{code:'CCZU01', name:'CC ZUMPANGO (01)', active:true}], active:true },
+  { code:'FERRE', name:'FERRETERIA RAMOS HNOS', type:'Tienda',
+    warehouses:[{code:'FERRE', name:'FERRETERIA', active:false}],
+    pos:[{code:'PVF3', name:'Mostrador Ferretería 3', active:false, stock:'FERRETERIA'},
+         {code:'PVFO', name:'Oficina (PV)', active:false, stock:'FERRETERIA'}],
+    cajas:[{code:'CajaF', name:'CAJA FERRETERIA', active:false}], active:false },
+  { code:'CMC1', name:'CASA MAESTRA CONCRETO 1', type:'Tienda',
+    warehouses:[{code:'CMCOAL01', name:'CONCRETO 1 (Agregados)', active:true}],
+    pos:[{code:'PVP101', name:'PV PLANTA 1 (01)', active:true, stock:'CONCRETO 1 (Agregados)'}],
+    cajas:[{code:'CCP101', name:'CC PLANTA 1 (01)', active:true}], active:true },
+  { code:'CMC3', name:'CASA MAESTRA CONCRETO 3', type:'Tienda',
+    warehouses:[{code:'CMCOAL03', name:'CONCRETO 3 (Agregados)', active:true}],
+    pos:[{code:'PVP301', name:'PV PLANTA 3 (01)', active:true, stock:'CONCRETO 3 (Agregados)'}],
+    cajas:[{code:'CCP301', name:'CC PLANTA 3 (01)', active:true}], active:true },
+  { code:'CMC4', name:'CASA MAESTRA CONCRETO 4', type:'Sitio de producción',
+    warehouses:[], pos:[], cajas:[], active:true },
+  { code:'CMHU', name:'CASA MAESTRA HUEYPOXTLA', type:'Tienda',
+    warehouses:[{code:'CMHUAL01', name:'HUEYPOXTLA 1 (Artículos y Materiales)', active:true}],
+    pos:[{code:'PVHU01', name:'PV HUEYPOXTLA (01)', active:true, stock:'HUEYPOXTLA 1 (Artículos y Materiales)'}],
+    cajas:[{code:'CCHU01', name:'CC HUEYPOXTLA (01)', active:true}], active:true },
+  { code:'CMZI', name:'CASA MAESTRA ZITLALTEPEC', type:'Tienda',
+    warehouses:[{code:'CMZIAL01', name:'ZITLALTEPEC 1 (Artículos y Materiales)', active:true}],
+    pos:[{code:'PVZI01', name:'PV ZITLALTEPEC (01)', active:true, stock:'ZITLALTEPEC 1 (Artículos y Materiales)'}],
+    cajas:[{code:'CCZI01', name:'CC ZITLALTEPEC (01)', active:true}], active:true },
+  { code:'BLOCK', name:'FABRICA RAMOS HNOS', type:'Sitio de producción',
+    warehouses:[{code:'002', name:'BLOCKERA', active:false}], pos:[], cajas:[], active:false },
+  { code:'DISTRI', name:'DISTRIBUIDORA RAMOS HNOS', type:'Tienda',
+    warehouses:[{code:'DIS', name:'DISTRIBUIDORA', active:false}],
+    pos:[{code:'PVD', name:'Distribuidora (PV)', active:false, stock:'DISTRIBUIDORA'}],
+    cajas:[{code:'CajaD', name:'CAJA DISTRIBUIDORA', active:false}], active:false },
+  { code:'ACABADOS', name:'Tienda de Acabados', type:'Tienda',
+    warehouses:[{code:'ARH', name:'ACABADOS RUSTICOS', active:false}],
+    pos:[{code:'PVA', name:'Acabados (PV)', active:false, stock:'ACABADOS RUSTICOS'}],
+    cajas:[{code:'CajaA', name:'TIENDA ACABADOS', active:false}], active:false },
+  { code:'ANIMAS', name:'COYOTEPEC', type:'Tienda',
+    warehouses:[{code:'COYOTE', name:'BODEGA FORTALEZA COYOTEPEC', active:false}],
+    pos:[{code:'COYOTE', name:'FORTALEZA COYOTEPEC', active:false, stock:'BODEGA FORTALEZA COYOTEPEC'}],
+    cajas:[{code:'CAJACOYO', name:'CAJA COYOTEPEC', active:false}], active:false }
+];
+
+function shape(f) {
+  const production = f.type !== 'Tienda';
+  const pos = production ? [] : f.pos;
+  const cajas = production ? [] : f.cajas;
+  const nw = f.warehouses.length;
+  const parts = [nw + (nw === 1 ? ' almacén' : ' almacenes')];
+  if (!production) { parts.push(pos.length + ' PV'); parts.push(cajas.length + (cajas.length === 1 ? ' caja' : ' cajas')); }
+  return {
+    ...f, production, store: !production, inactive: !f.active,
+    icon: production ? 'factory' : 'storefront',
+    wCount: f.warehouses.length, pCount: pos.length, cCount: cajas.length,
+    noWarehouses: f.warehouses.length === 0, noPos: !production && pos.length === 0, noCajas: !production && cajas.length === 0,
+    warehouses: f.warehouses.map(w => ({ ...w, inactive: !w.active })),
+    pos: pos.map(p => ({ ...p, inactive: !p.active, foreign: !!p.foreign })),
+    cajas: cajas.map(c => ({ ...c, inactive: !c.active })),
+    summary: parts.join(' · ')
+  };
+}
+
+class Component extends DCLogic {
+  state = { open: { CMVI: true }, selected: 'CMZU' };
+
+  renderVals() {
+    const shaped = RAW.map(shape);
+    const sel = shaped.find(f => f.code === this.state.selected) || shaped[0];
+    return {
+      filters: [
+        { label: 'Todas', on: true },
+        { label: 'Tiendas' },
+        { label: 'Producción' },
+        { label: 'Solo activas' }
+      ],
+      mobile: shaped.map(f => ({
+        ...f,
+        expanded: !!this.state.open[f.code],
+        chevron: this.state.open[f.code] ? 'expand_less' : 'expand_more',
+        toggle: () => this.setState(s => ({ open: { ...s.open, [f.code]: !s.open[f.code] } }))
+      })),
+      list: shaped.map(f => ({
+        ...f,
+        selected: f.code === sel.code,
+        select: () => this.setState({ selected: f.code })
+      })),
+      sel
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#111014; }
+  * { box-sizing: border-box; }
+  a { color:#C6C2FF; text-decoration:none; }
+  a:hover { color:#DEDBFF; }
+  .msym { font-family:'Material Symbols Outlined'; font-weight:400; font-style:normal; line-height:1; letter-spacing:normal; text-transform:none; display:inline-block; white-space:nowrap; direction:ltr; -webkit-font-feature-settings:'liga'; -webkit-font-smoothing:antialiased; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:#332F3B; border-radius:8px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+</style>
+</helmet>
+<div style="display:flex; height:100vh; min-height:760px; width:100%; background:#111014; font-family:Roboto, Helvetica, Arial, sans-serif; color:#E6E1E9;">
+
+  
+
+  <main style="flex:1; min-width:0; display:flex; flex-direction:column;">
+    <header style="height:64px; flex:none; display:flex; align-items:center; gap:16px; padding:0 28px; background:#1A1720; border-bottom:1px solid #262230;">
+      <h1 style="margin:0; font-size:21px; font-weight:400; letter-spacing:0.1px;">Instalaciones</h1>
+      <span style="font-size:13px; color:#8B8397;">Almacenes, puntos de venta y cajas de cada instalación</span>
+    </header>
+
+    <div style="flex:none; display:flex; flex-wrap:wrap; align-items:center; padding:18px 28px 14px; gap:12px 16px;">
+      <div style="flex:1 1 240px; min-width:180px; display:flex; align-items:center; gap:12px; height:48px; padding:0 18px; background:#1E1B24; border:1px solid #2E2A38; border-radius:24px; max-width:{{ searchMaxWidth }};">
+        <span class="msym" style="font-size:20px; color:#9A93A8;">search</span>
+        <span style="font-size:14px; color:#8B8397;">Buscar instalación, almacén, PV o caja</span>
+      </div>
+      
+      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:12px {{ actionsGap }};">
+      <div onClick="{{ toggleAll }}" style="display:flex; align-items:center; gap:8px; height:40px; padding:0 16px; border-radius:20px; border:1px solid #454052; color:#C9C3D2; font-size:13px; cursor:pointer; user-select:none;" style-hover="background:#221F2A;">
+        <span class="msym" style="font-size:18px;">{{ toggleAllIcon }}</span>{{ toggleAllLabel }}
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:8px; height:40px; padding:0 20px 0 16px; border-radius:20px; background:#CFCBFF; color:#221F33; font-size:14px; font-weight:500; cursor:pointer;" style-hover="background:#DEDBFF;">
+          <span class="msym" style="font-size:19px;">add</span>Nueva instalación
+        </div>
+        <div style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:20px; border:1px solid #454052; color:#C9C3D2; cursor:pointer;" style-hover="background:#221F2A;">
+          <span class="msym" style="font-size:19px;">tune</span>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div style="flex:1; min-height:0; overflow-y:auto; padding:4px 28px 40px; display:flex; flex-direction:column; gap:10px;">
+      <sc-for list="{{ facilities }}" as="f" hint-placeholder-count="6">
+        <div style="flex:none; background:#1A1720; border:1px solid #2A2634; border-radius:16px; overflow:hidden;">
+
+          <div onClick="{{ f.toggle }}" style="display:flex; align-items:center; gap:16px; padding:14px 20px; cursor:pointer; user-select:none;" style-hover="background:#211D29;">
+            <span class="msym" style="font-size:22px; color:#9A93A8; width:22px;">{{ f.chevron }}</span>
+            <div style="width:42px; height:42px; flex:none; border-radius:12px; background:#2C2740; display:flex; align-items:center; justify-content:center;">
+              <span class="msym" style="font-size:22px; color:#CFCBFF;">{{ f.icon }}</span>
+            </div>
+            <div style="min-width:0; display:flex; flex-direction:column; gap:3px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:15px; font-weight:500; letter-spacing:0.1px;">{{ f.name }}</span>
+                <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#948CA3; background:#26222F; padding:2px 8px; border-radius:6px;">{{ f.code }}</span>
+              </div>
+              <span style="display:flex; align-items:center; gap:6px; font-size:12px; color:#8B8397;"><span class="msym" style="font-size:14px;">{{ f.icon }}</span>{{ f.type }}</span>
+            </div>
+            <div style="margin-left:auto; display:flex; align-items:center; gap:22px;">
+              <div style="display:flex; align-items:center; gap:18px; color:#9A93A8; font-size:13px;">
+                <span style="display:flex; align-items:center; gap:7px;"><span class="msym" style="font-size:18px;">warehouse</span>{{ f.wCount }}</span>
+                <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                  <span style="display:flex; align-items:center; gap:7px;"><span class="msym" style="font-size:18px;">point_of_sale</span>{{ f.pCount }}</span>
+                </sc-if>
+                <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                  <span style="display:flex; align-items:center; gap:7px;"><span class="msym" style="font-size:18px;">local_atm</span>{{ f.cCount }}</span>
+                </sc-if>
+              </div>
+              <sc-if value="{{ f.active }}" hint-placeholder-val="{{ true }}">
+                <span style="display:flex; align-items:center; gap:7px; padding:5px 12px 5px 10px; border-radius:8px; background:#1D3226; color:#8FE0AC; font-size:12px; font-weight:500;"><span style="width:7px; height:7px; border-radius:4px; background:#5FCB8C;"></span>Activo</span>
+              </sc-if>
+              <sc-if value="{{ f.inactive }}">
+                <span style="display:flex; align-items:center; gap:7px; padding:5px 12px 5px 10px; border-radius:8px; background:#3A1F22; color:#F2A6A6; font-size:12px; font-weight:500;"><span style="width:7px; height:7px; border-radius:4px; background:#E06A6A;"></span>Inactivo</span>
+              </sc-if>
+              <span class="msym" style="font-size:19px; color:#8B8397; cursor:pointer;" style-hover="color:#E6E1E9;">edit</span>
+            </div>
+          </div>
+
+          <sc-if value="{{ f.expanded }}">
+            <div style="padding:4px 20px 20px 54px; display:flex; flex-direction:column; gap:18px;">
+
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:10px; padding-left:4px;">
+                  <span style="font-size:11px; letter-spacing:0.8px; text-transform:uppercase; color:#7C7589;">Almacenes</span>
+                  <span style="font-size:11px; font-family:'Roboto Mono', monospace; color:#5F5A6B;">{{ f.wCount }}</span>
+                  <div style="flex:1; height:1px; background:#26222F;"></div>
+                  <span style="display:flex; align-items:center; gap:6px; height:32px; padding:0 14px 0 11px; border:1px solid #6C6580; border-radius:16px; font-size:12px; font-weight:500; color:#CFCBFF; cursor:pointer;" style-hover="background:#2A2540; border-color:#CFCBFF;"><span class="msym" style="font-size:16px;">add</span>Almacén</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; border-left:1px solid #322D3E; padding-left:18px; margin-left:6px;">
+                  <sc-for list="{{ f.warehouses }}" as="w" hint-placeholder-count="2">
+                    <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; background:#201C28; border:1px solid #2E2939; border-radius:12px;" style-hover="border-color:#3C3650;">
+                      <span class="msym" style="font-size:20px; color:#9FD3C7;">warehouse</span>
+                      <span style="font-size:14px; color:#EDE8F2;">{{ w.name }}</span>
+                      <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#948CA3; background:#2A2534; padding:2px 8px; border-radius:6px;">{{ w.code }}</span>
+                      <div style="margin-left:auto; display:flex; align-items:center; gap:18px;">
+                        <sc-if value="{{ w.active }}" hint-placeholder-val="{{ true }}">
+                          <span style="padding:3px 10px; border-radius:7px; background:#1D3226; color:#8FE0AC; font-size:11px; font-weight:500;">Activo</span>
+                        </sc-if>
+                        <sc-if value="{{ w.inactive }}">
+                          <span style="padding:3px 10px; border-radius:7px; background:#3A1F22; color:#F2A6A6; font-size:11px; font-weight:500;">Inactivo</span>
+                        </sc-if>
+                        <span class="msym" style="font-size:18px; color:#7C7589; cursor:pointer;" style-hover="color:#E6E1E9;">edit</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ f.noWarehouses }}">
+                    <div style="padding:14px 16px; border:1px dashed #332D40; border-radius:12px; font-size:13px; color:#7C7589;">Sin almacenes registrados.</div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <sc-if value="{{ f.store }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="display:flex; align-items:center; gap:10px; padding-left:4px;">
+                    <span style="font-size:11px; letter-spacing:0.8px; text-transform:uppercase; color:#7C7589;">Puntos de Venta</span>
+                    <span style="font-size:11px; font-family:'Roboto Mono', monospace; color:#5F5A6B;">{{ f.pCount }}</span>
+                    <div style="flex:1; height:1px; background:#26222F;"></div>
+                    <span style="display:flex; align-items:center; gap:6px; height:32px; padding:0 14px 0 11px; border:1px solid #6C6580; border-radius:16px; font-size:12px; font-weight:500; color:#CFCBFF; cursor:pointer;" style-hover="background:#2A2540; border-color:#CFCBFF;"><span class="msym" style="font-size:16px;">add</span>Punto de venta</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:6px; border-left:1px solid #322D3E; padding-left:18px; margin-left:6px;">
+                    <sc-for list="{{ f.pos }}" as="p" hint-placeholder-count="1">
+                      <div style="display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:12px; background:#201C28; border:1px solid #2E2939;" style-hover="border-color:#3C3650;">
+                        <span class="msym" style="font-size:19px; color:#D4B9E8;">point_of_sale</span>
+                        <span style="font-size:14px; color:#EDE8F2;">{{ p.name }}</span>
+                        <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#948CA3; background:#2A2534; padding:2px 8px; border-radius:6px;">{{ p.code }}</span>
+                        <div style="margin-left:auto; display:flex; align-items:center; gap:18px;">
+                          <span style="display:flex; align-items:center; gap:7px; font-size:12px; color:#9A93A8;"><span class="msym" style="font-size:16px;">inventory_2</span>{{ p.stock }}</span>
+                          <sc-if value="{{ p.foreignStock }}">
+                            <span style="display:flex; align-items:center; gap:6px; font-size:11px; color:#E8C99A; background:#332818; padding:3px 9px; border-radius:6px;"><span class="msym" style="font-size:14px;">link</span>Otra instalación</span>
+                          </sc-if>
+                          <sc-if value="{{ p.active }}" hint-placeholder-val="{{ true }}">
+                            <span style="padding:3px 10px; border-radius:7px; background:#1D3226; color:#8FE0AC; font-size:11px; font-weight:500;">Activo</span>
+                          </sc-if>
+                          <sc-if value="{{ p.inactive }}">
+                            <span style="padding:3px 10px; border-radius:7px; background:#3A1F22; color:#F2A6A6; font-size:11px; font-weight:500;">Inactivo</span>
+                          </sc-if>
+                          <span class="msym" style="font-size:18px; color:#7C7589; cursor:pointer;" style-hover="color:#E6E1E9;">edit</span>
+                        </div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ f.noPos }}">
+                      <div style="padding:14px 16px; border:1px dashed #332D40; border-radius:12px; font-size:13px; color:#7C7589;">Sin puntos de venta.</div>
+                    </sc-if>
+                  </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="display:flex; align-items:center; gap:10px; padding-left:4px;">
+                    <span style="font-size:11px; letter-spacing:0.8px; text-transform:uppercase; color:#7C7589;">Cajas</span>
+                  <span style="font-size:11px; font-family:'Roboto Mono', monospace; color:#5F5A6B;">{{ f.cCount }}</span>
+                  <div style="flex:1; height:1px; background:#26222F;"></div>
+                  <span style="display:flex; align-items:center; gap:6px; height:32px; padding:0 14px 0 11px; border:1px solid #6C6580; border-radius:16px; font-size:12px; font-weight:500; color:#CFCBFF; cursor:pointer;" style-hover="background:#2A2540; border-color:#CFCBFF;"><span class="msym" style="font-size:16px;">add</span>Caja</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; border-left:1px solid #322D3E; padding-left:18px; margin-left:6px;">
+                  <sc-for list="{{ f.cajas }}" as="c" hint-placeholder-count="1">
+                    <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:12px; background:#201C28; border:1px solid #2E2939;" style-hover="border-color:#3C3650;">
+                      <span class="msym" style="font-size:20px; color:#F0C48C;">local_atm</span>
+                      <span style="font-size:14px; color:#EDE8F2;">{{ c.name }}</span>
+                      <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#948CA3; background:#2A2534; padding:2px 8px; border-radius:6px;">{{ c.code }}</span>
+                      <div style="margin-left:auto; display:flex; align-items:center; gap:18px;">
+                        <sc-if value="{{ c.active }}" hint-placeholder-val="{{ true }}">
+                          <span style="padding:3px 10px; border-radius:7px; background:#1D3226; color:#8FE0AC; font-size:11px; font-weight:500;">Activo</span>
+                        </sc-if>
+                        <sc-if value="{{ c.inactive }}">
+                          <span style="padding:3px 10px; border-radius:7px; background:#3A1F22; color:#F2A6A6; font-size:11px; font-weight:500;">Inactivo</span>
+                        </sc-if>
+                        <span class="msym" style="font-size:18px; color:#7C7589; cursor:pointer;" style-hover="color:#E6E1E9;">edit</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ f.noCajas }}">
+                    <div style="padding:12px 16px; border:1px dashed #332D40; border-radius:12px; font-size:13px; color:#7C7589;">Sin cajas registradas.</div>
+                  </sc-if>
+                </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ f.production }}">
+                <div style="display:flex; align-items:center; gap:10px; padding:11px 16px; border-radius:12px; background:#1D1B24; border:1px solid #2A2634; font-size:12px; color:#8B8397;">
+                  <span class="msym" style="font-size:18px; color:#9FD3C7;">info</span>Los sitios de producción solo administran almacenes: no tienen puntos de venta ni cajas.
+                </div>
+              </sc-if>
+
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+
+      <div style="flex:none; display:flex; align-items:center; justify-content:flex-end; gap:20px; padding:8px 4px; font-size:13px; color:#8B8397;">
+        <span>1–14 de 14 instalaciones</span>
+        <span class="msym" style="font-size:20px;">chevron_left</span>
+        <span class="msym" style="font-size:20px;">chevron_right</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;searchMaxWidth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:900,&quot;min&quot;:320,&quot;max&quot;:1400,&quot;step&quot;:20,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Barra de herramientas&quot;},&quot;actionsGap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:16,&quot;min&quot;:0,&quot;max&quot;:32,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Barra de herramientas&quot;}}">
+const RAW = [
+  { code:'CMVI', name:'CASA MAESTRA', type:'Tienda', active:true,
+    warehouses:[{code:'CMVIAL1', name:'ALMACÉN (01)', active:false, pos:[]}],
+    orphanPos:[{code:'PVVI01', name:'PV VIRTUAL (01)', active:true, crossedLabel:'Almacén ZUMPANGO 1'}],
+    cajas:[{code:'CCVI01', name:'CC VIRTUAL (01)', active:true}] },
+  { code:'CMZU', name:'CASA MAESTRA ZUMPANGO', type:'Tienda', active:true,
+    warehouses:[{code:'CMZUAL01', name:'ZUMPANGO 1 (Materiales)', active:true, pos:[
+      {code:'PVZU01', name:'PV ZUMPANGO (01)', active:true},
+      {code:'PVVI01', name:'PV VIRTUAL (01)', active:true, crossedLabel:'Instalación CASA MAESTRA'}]}],
+    cajas:[{code:'CCZU01', name:'CC ZUMPANGO (01)', active:true}] },
+  { code:'CMC1', name:'CASA MAESTRA CONCRETO 1', type:'Tienda', active:true,
+    warehouses:[{code:'CMCOAL01', name:'CONCRETO 1 (Agregados)', active:true, pos:[{code:'PVP101', name:'PV PLANTA 1 (01)', active:true}]}],
+    cajas:[{code:'CCP101', name:'CC PLANTA 1 (01)', active:true}] },
+  { code:'CMC3', name:'CASA MAESTRA CONCRETO 3', type:'Tienda', active:true,
+    warehouses:[{code:'CMCOAL03', name:'CONCRETO 3 (Agregados)', active:true, pos:[{code:'PVP301', name:'PV PLANTA 3 (01)', active:true}]}],
+    cajas:[{code:'CCP301', name:'CC PLANTA 3 (01)', active:true}] },
+  { code:'CMC4', name:'CASA MAESTRA CONCRETO 4', type:'Sitio de producción', active:true, warehouses:[], cajas:[] },
+  { code:'CMHU', name:'CASA MAESTRA HUEYPOXTLA', type:'Tienda', active:true,
+    warehouses:[{code:'CMHUAL01', name:'HUEYPOXTLA 1 (Artículos y Materiales)', active:true, pos:[{code:'PVHU01', name:'PV HUEYPOXTLA (01)', active:true}]}],
+    cajas:[{code:'CCHU01', name:'CC HUEYPOXTLA (01)', active:true}] },
+  { code:'CMZI', name:'CASA MAESTRA ZITLALTEPEC', type:'Tienda', active:true,
+    warehouses:[{code:'CMZIAL01', name:'ZITLALTEPEC 1 (Artículos y Materiales)', active:true, pos:[{code:'PVZI01', name:'PV ZITLALTEPEC (01)', active:true}]}],
+    cajas:[{code:'CCZI01', name:'CC ZITLALTEPEC (01)', active:true}] },
+  { code:'FERRE', name:'FERRETERIA RAMOS HNOS', type:'Tienda', active:false,
+    warehouses:[{code:'FERRE', name:'FERRETERIA', active:false, pos:[
+      {code:'PVF3', name:'Mostrador Ferretería 3', active:false},
+      {code:'PVFO', name:'Oficina (PV)', active:false}]}],
+    cajas:[{code:'CajaF', name:'CAJA FERRETERIA', active:false}] },
+  { code:'DISTRI', name:'DISTRIBUIDORA RAMOS HNOS', type:'Tienda', active:false,
+    warehouses:[{code:'DIS', name:'DISTRIBUIDORA', active:false, pos:[{code:'PVD', name:'Distribuidora (PV)', active:false}]}],
+    cajas:[{code:'CajaD', name:'CAJA DISTRIBUIDORA', active:false}] },
+  { code:'BLOCK', name:'FABRICA RAMOS HNOS', type:'Sitio de producción', active:false,
+    warehouses:[{code:'002', name:'BLOCKERA', active:false, pos:[]}], cajas:[] },
+  { code:'ACABADOS', name:'Tienda de Acabados', type:'Tienda', active:false,
+    warehouses:[{code:'ARH', name:'ACABADOS RUSTICOS', active:false, pos:[{code:'PVA', name:'Acabados (PV)', active:false}]}],
+    cajas:[{code:'CajaA', name:'TIENDA ACABADOS', active:false}] },
+  { code:'ANIMAS', name:'COYOTEPEC', type:'Tienda', active:false,
+    warehouses:[{code:'COYOTE', name:'BODEGA FORTALEZA COYOTEPEC', active:false, pos:[{code:'COYOTE', name:'FORTALEZA COYOTEPEC', active:false}]}],
+    cajas:[{code:'CAJACOYO', name:'CAJA COYOTEPEC', active:false}] },
+  { code:'PVZ01RH03', name:'RH CONCRETOS ZUMPANGO 01', type:'Tienda', active:false,
+    warehouses:[{code:'PVZ01RH03', name:'RH CONCRETOS ZUMPANGO 01', active:false, pos:[{code:'PVZ01RH03', name:'RH CONCRETOS ZUMPANGO 01', active:false}]}],
+    cajas:[{code:'PVZ01RH03', name:'RH CONCRETOS ZUMPANGO 01', active:false}] },
+  { code:'EDGAR', name:'Construcciones SOLANO', type:'Tienda', active:false,
+    warehouses:[{code:'EDGAR', name:'construcciones SOLANO', active:false, pos:[{code:'EDGAR', name:'construcciones solano', active:false}]}],
+    cajas:[{code:'edgar', name:'caja edgar', active:false}] }
+];
+
+const DATA = RAW.map(f => {
+  const production = f.type !== 'Tienda';
+  const pos = [];
+  f.warehouses.forEach(w => (w.pos || []).forEach(p => pos.push({ ...p, stock: w.name, foreign: false })));
+  (f.orphanPos || []).forEach(p => pos.push({ ...p, stock: p.crossedLabel.replace('Almacén ', ''), foreign: true }));
+  return { ...f, production, store: !production, pos: production ? [] : pos, cajas: production ? [] : f.cajas };
+});
+
+class Component extends DCLogic {
+  state = { openF: { CMVI: true, CMC4: true } };
+
+  toggleF(code) { this.setState(s => ({ openF: { ...s.openF, [code]: !s.openF[code] } })); }
+
+  renderVals() {
+    const allOpen = DATA.every(f => this.state.openF[f.code]);
+    const facilities = DATA.map(f => {
+      const expanded = !!this.state.openF[f.code];
+      return {
+        ...f, expanded, inactive: !f.active,
+        chevron: expanded ? 'expand_more' : 'chevron_right',
+        icon: f.production ? 'factory' : 'storefront',
+        wCount: f.warehouses.length, pCount: f.pos.length, cCount: f.cajas.length,
+        noWarehouses: f.warehouses.length === 0,
+        noPos: f.store && f.pos.length === 0,
+        noCajas: f.store && f.cajas.length === 0,
+        warehouses: f.warehouses.map(w => ({ ...w, inactive: !w.active })),
+        pos: f.pos.map(p => ({ ...p, inactive: !p.active, foreignStock: p.foreign })),
+        cajas: f.cajas.map(c => ({ ...c, inactive: !c.active })),
+        toggle: () => this.toggleF(f.code)
+      };
+    });
+    return {
+      searchMaxWidth: (this.props.searchMaxWidth ?? 900) + 'px',
+      actionsGap: (this.props.actionsGap ?? 16) + 'px',
+      facilities,
+      navTop: [
+        { icon: 'local_shipping', label: 'Proveedores' },
+        { icon: 'sell', label: 'Etiquetas' },
+        { icon: 'badge', label: 'Empleados' },
+        { icon: 'group', label: 'Clientes' },
+        { icon: 'receipt_long', label: 'Receptores Fiscales' },
+        { icon: 'payments', label: 'Gastos' },
+        { icon: 'airport_shuttle', label: 'Vehículos' },
+        { icon: 'assignment_ind', label: 'Operadores de Vehículo' }
+      ],
+      movedItems: [
+        { icon: 'warehouse', label: 'Almacenes' },
+        { icon: 'local_atm', label: 'Cajas' },
+        { icon: 'point_of_sale', label: 'Puntos de Venta' }
+      ],
+      navBottom: [
+        { icon: 'credit_card', label: 'Formas de Pago' },
+        { icon: 'price_change', label: 'Precios' },
+        { icon: 'corporate_fare', label: 'Razones Sociales' }
+      ],
+      toggleAllLabel: allOpen ? 'Contraer todo' : 'Expandir todo',
+      toggleAllIcon: allOpen ? 'unfold_less' : 'unfold_more',
+      toggleAll: () => this.setState(() => {
+        const openF = {}; if (!allOpen) DATA.forEach(f => { openF[f.code] = true; });
+        return { openF };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
