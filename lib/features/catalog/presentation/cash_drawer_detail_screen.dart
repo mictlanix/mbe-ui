@@ -23,6 +23,7 @@ class CashDrawerDetailScreen extends ConsumerStatefulWidget {
     super.key,
     this.cashDrawerId,
     this.forceReadOnly = false,
+    this.facilityId,
   });
 
   final int? cashDrawerId;
@@ -31,6 +32,12 @@ class CashDrawerDetailScreen extends ConsumerStatefulWidget {
   /// rather than Edit (constitution §VI), read from the `?view=true` query
   /// parameter.
   final bool forceReadOnly;
+
+  /// Pre-selects the facility picker in create mode — set from the
+  /// `?facility=<id>` query parameter when reached from a facility card's
+  /// "+ Caja" (018-nested-facility-management FR-022/FR-023). Ignored in
+  /// edit mode, where [loadForEdit] supplies the real facility.
+  final int? facilityId;
 
   @override
   ConsumerState<CashDrawerDetailScreen> createState() =>
@@ -49,6 +56,17 @@ class _CashDrawerDetailScreenState
         ref
             .read(cashDrawerFormControllerProvider.notifier)
             .loadForEdit(widget.cashDrawerId!);
+      });
+    } else if (widget.facilityId != null) {
+      final facilityId = widget.facilityId!;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final name = await ref.read(
+          facilityDisplayNameProvider(facilityId).future,
+        );
+        if (!mounted) return;
+        ref
+            .read(cashDrawerFormControllerProvider.notifier)
+            .facilitySelected(facilityId, name ?? '');
       });
     }
   }

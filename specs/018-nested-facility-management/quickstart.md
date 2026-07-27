@@ -161,12 +161,27 @@ untouched — the repositories did not change.
 
 ```bash
 flutter test test/integration/facility_catalogs_flow_test.dart --dart-define-from-file=.env
+flutter test test/integration/facility_children_controller_live_test.dart --dart-define-from-file=.env
 flutter test test/integration/navigation_shell_flow_test.dart --dart-define-from-file=.env
 ```
 
-Both need a reachable mbe-api; they skip rather than fail when `.env` values are
-blank. `facility_catalogs_flow_test.dart` currently drives the three deleted list
-screens and must be reworked to drive the tree instead.
+All three skip rather than fail when `.env` values are blank.
+
+- `facility_catalogs_flow_test.dart` operates entirely at the repository/API
+  level — create a facility, a warehouse under it, a point of sale drawing from
+  that warehouse, and a cash drawer, then verify and clean up. It never touched
+  the deleted list screens (an earlier note here claimed otherwise; corrected
+  during implementation once the file was actually read), so it needed no rework
+  for this feature.
+- `facility_children_controller_live_test.dart` is new, added during this
+  feature's implementation: `FacilityChildrenController` is new code that no
+  other test exercises against real wire data. It fetches the real first page of
+  facilities and runs the actual fetch-by-type logic (research §2) against each
+  one, concurrently — matching how the real screen watches every card's provider
+  at once (research §1) — asserting a production site never returns points of
+  sale or cash drawers and that the cross-facility check never throws.
+- `navigation_shell_flow_test.dart` needs no live backend (its data sources are
+  mocked) and needed no changes for this feature.
 
 ---
 

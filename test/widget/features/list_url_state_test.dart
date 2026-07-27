@@ -7,19 +7,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
-import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
-import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/warehouses_list_screen.dart';
 import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -34,12 +27,12 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// view actually restores to the state two changes back. Individual screens'
 /// own test files cover their full behavior; this file only proves the
 /// shared mechanism generalizes across facet types (enum status, tri-state
-/// bool, multi-valued FK-less list, single-valued FK, ISO date range).
+/// bool, multi-valued FK-less list, ISO date range). The single-valued-FK
+/// case previously lived here using the now-deleted standalone Warehouses
+/// screen (018-nested-facility-management) — that facet type is still
+/// proven, just from `products_list_screen_test.dart`'s own supplier-facet
+/// coverage instead of from this cross-cutting file.
 class MockProductRepository extends Mock implements ProductRepository {}
-
-class MockWarehouseRepository extends Mock implements WarehouseRepository {}
-
-class MockFacilityRepository extends Mock implements FacilityRepository {}
 
 class MockExchangeRateRepository extends Mock
     implements ExchangeRateRepository {}
@@ -153,102 +146,6 @@ void main() {
         expect(stockableChip.selected, isTrue);
         expect(stockableChip.avatar, isA<Icon>());
         expect((stockableChip.avatar as Icon).icon, Icons.check);
-      },
-    );
-
-    testWidgets(
-      'Warehouses: a facility (FK) facet restores as the resolved name, '
-      'and status restores as the selected chip',
-      (tester) async {
-        final repository = MockWarehouseRepository();
-        final facilityRepository = MockFacilityRepository();
-        when(
-          () => repository.list(
-            search: any(named: 'search'),
-            facilityId: any(named: 'facilityId'),
-            status: any(named: 'status'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          (_) async => const WarehouseListResult(items: [], total: 0),
-        );
-        when(() => facilityRepository.get(facilityId: 9)).thenAnswer(
-          (_) async => const Facility(
-            facilityId: 9,
-            code: 'F-9',
-            name: 'Main Store',
-            type: FacilityType.store,
-            locationId: 'MX',
-            locationLabel: 'Mexico',
-            addressId: 1,
-            addressLabel: 'Main St',
-            taxpayerRfc: 'AAA010101AAA',
-            status: EntityStatus.active,
-          ),
-        );
-
-        final query = const ListQuery(
-          facets: {
-            'facility': ['9'],
-            'status': ['inactive'],
-          },
-        );
-        final router = GoRouter(
-          initialLocation: query.toUri('/warehouses').toString(),
-          routes: [
-            StatefulShellRoute.indexedStack(
-              builder: (context, state, shell) => shell,
-              branches: [
-                StatefulShellBranch(
-                  routes: [
-                    GoRoute(
-                      path: '/warehouses',
-                      builder: (_, state) => Scaffold(
-                        body: WarehousesListScreen(
-                          query: ListQuery.fromUri(state.uri),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        );
-
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              warehouseRepositoryProvider.overrideWithValue(repository),
-              facilityRepositoryProvider.overrideWithValue(facilityRepository),
-              accessControlProvider.overrideWithValue(
-                _accessFor(_fullAccessUser),
-              ),
-            ],
-            child: MaterialApp.router(
-              routerConfig: router,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byKey(const Key('warehouses_filter_button')));
-        await tester.pumpAndSettle();
-
-        expect(
-          find.descendant(
-            of: find.byKey(const Key('warehouses_filter_facility')),
-            matching: find.text('Main Store'),
-          ),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('warehouses_filter_status_inactive')),
-          findsOneWidget,
-        );
       },
     );
 

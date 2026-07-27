@@ -1889,6 +1889,52 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter a valid RFC (up to 13 characters).';
 
   @override
+  String get facilitiesExpandAll => 'Expand all';
+
+  @override
+  String get facilitiesCollapseAll => 'Collapse all';
+
+  @override
+  String get noWarehousesInFacility => 'No warehouses registered.';
+
+  @override
+  String get noPointsOfSaleInFacility => 'No points of sale.';
+
+  @override
+  String get noCashDrawersInFacility => 'No cash drawers registered.';
+
+  @override
+  String get productionSiteChildrenNote =>
+      'Production sites only manage warehouses: they have no points of sale or cash drawers.';
+
+  @override
+  String get pointSaleForeignFacilityBadge => 'Other facility';
+
+  @override
+  String get newWarehouseInFacility => 'Warehouse';
+
+  @override
+  String get newPointSaleInFacility => 'Point of sale';
+
+  @override
+  String get newCashDrawerInFacility => 'Cash drawer';
+
+  @override
+  String get facilityChildrenLoadFailed =>
+      'Could not load this facility\'s items.';
+
+  @override
+  String facilitiesPaginationSummary(int start, int end, int total) {
+    return '$start–$end of $total facilities';
+  }
+
+  @override
+  String get previousPageTooltip => 'Previous page';
+
+  @override
+  String get nextPageTooltip => 'Next page';
+
+  @override
   String get newAddressTooltip => 'New address';
 
   @override

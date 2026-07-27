@@ -19,6 +19,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$PointSaleFormState {
   int? get pointSaleId => throw _privateConstructorUsedError;
   int? get facilityId => throw _privateConstructorUsedError;
+
+  /// The facility this point of sale belonged to when the form was opened
+  /// for editing — `null` in create mode. Captured once by [loadForEdit]
+  /// and never touched by [facilitySelected], so a save that moved the
+  /// point of sale to a different facility can invalidate both the old
+  /// and the new card (018-nested-facility-management research §6).
+  int? get originalFacilityId => throw _privateConstructorUsedError;
   String get facilityDisplayText => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -51,6 +58,7 @@ abstract class $PointSaleFormStateCopyWith<$Res> {
   $Res call({
     int? pointSaleId,
     int? facilityId,
+    int? originalFacilityId,
     String facilityDisplayText,
     String code,
     String name,
@@ -85,6 +93,7 @@ class _$PointSaleFormStateCopyWithImpl<$Res, $Val extends PointSaleFormState>
   $Res call({
     Object? pointSaleId = freezed,
     Object? facilityId = freezed,
+    Object? originalFacilityId = freezed,
     Object? facilityDisplayText = null,
     Object? code = null,
     Object? name = null,
@@ -109,6 +118,10 @@ class _$PointSaleFormStateCopyWithImpl<$Res, $Val extends PointSaleFormState>
             facilityId: freezed == facilityId
                 ? _value.facilityId
                 : facilityId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            originalFacilityId: freezed == originalFacilityId
+                ? _value.originalFacilityId
+                : originalFacilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
             facilityDisplayText: null == facilityDisplayText
                 ? _value.facilityDisplayText
@@ -184,6 +197,7 @@ abstract class _$$PointSaleFormStateImplCopyWith<$Res>
   $Res call({
     int? pointSaleId,
     int? facilityId,
+    int? originalFacilityId,
     String facilityDisplayText,
     String code,
     String name,
@@ -217,6 +231,7 @@ class __$$PointSaleFormStateImplCopyWithImpl<$Res>
   $Res call({
     Object? pointSaleId = freezed,
     Object? facilityId = freezed,
+    Object? originalFacilityId = freezed,
     Object? facilityDisplayText = null,
     Object? code = null,
     Object? name = null,
@@ -241,6 +256,10 @@ class __$$PointSaleFormStateImplCopyWithImpl<$Res>
         facilityId: freezed == facilityId
             ? _value.facilityId
             : facilityId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        originalFacilityId: freezed == originalFacilityId
+            ? _value.originalFacilityId
+            : originalFacilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
         facilityDisplayText: null == facilityDisplayText
             ? _value.facilityDisplayText
@@ -309,6 +328,7 @@ class _$PointSaleFormStateImpl implements _PointSaleFormState {
   const _$PointSaleFormStateImpl({
     this.pointSaleId,
     this.facilityId,
+    this.originalFacilityId,
     this.facilityDisplayText = '',
     this.code = '',
     this.name = '',
@@ -329,6 +349,14 @@ class _$PointSaleFormStateImpl implements _PointSaleFormState {
   final int? pointSaleId;
   @override
   final int? facilityId;
+
+  /// The facility this point of sale belonged to when the form was opened
+  /// for editing — `null` in create mode. Captured once by [loadForEdit]
+  /// and never touched by [facilitySelected], so a save that moved the
+  /// point of sale to a different facility can invalidate both the old
+  /// and the new card (018-nested-facility-management research §6).
+  @override
+  final int? originalFacilityId;
   @override
   @JsonKey()
   final String facilityDisplayText;
@@ -376,7 +404,7 @@ class _$PointSaleFormStateImpl implements _PointSaleFormState {
 
   @override
   String toString() {
-    return 'PointSaleFormState(pointSaleId: $pointSaleId, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, warehouseId: $warehouseId, warehouseDisplayText: $warehouseDisplayText, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'PointSaleFormState(pointSaleId: $pointSaleId, facilityId: $facilityId, originalFacilityId: $originalFacilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, warehouseId: $warehouseId, warehouseDisplayText: $warehouseDisplayText, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -388,6 +416,8 @@ class _$PointSaleFormStateImpl implements _PointSaleFormState {
                 other.pointSaleId == pointSaleId) &&
             (identical(other.facilityId, facilityId) ||
                 other.facilityId == facilityId) &&
+            (identical(other.originalFacilityId, originalFacilityId) ||
+                other.originalFacilityId == originalFacilityId) &&
             (identical(other.facilityDisplayText, facilityDisplayText) ||
                 other.facilityDisplayText == facilityDisplayText) &&
             (identical(other.code, code) || other.code == code) &&
@@ -417,6 +447,7 @@ class _$PointSaleFormStateImpl implements _PointSaleFormState {
     runtimeType,
     pointSaleId,
     facilityId,
+    originalFacilityId,
     facilityDisplayText,
     code,
     name,
@@ -449,6 +480,7 @@ abstract class _PointSaleFormState implements PointSaleFormState {
   const factory _PointSaleFormState({
     final int? pointSaleId,
     final int? facilityId,
+    final int? originalFacilityId,
     final String facilityDisplayText,
     final String code,
     final String name,
@@ -469,6 +501,14 @@ abstract class _PointSaleFormState implements PointSaleFormState {
   int? get pointSaleId;
   @override
   int? get facilityId;
+
+  /// The facility this point of sale belonged to when the form was opened
+  /// for editing — `null` in create mode. Captured once by [loadForEdit]
+  /// and never touched by [facilitySelected], so a save that moved the
+  /// point of sale to a different facility can invalidate both the old
+  /// and the new card (018-nested-facility-management research §6).
+  @override
+  int? get originalFacilityId;
   @override
   String get facilityDisplayText;
   @override

@@ -79,12 +79,16 @@ from "not readable" only within the sections a facility's type actually permits.
 **File**: `lib/features/catalog/presentation/facility_children_controller.dart`
 
 ```
-facilityChildrenControllerProvider(int facilityId) -> AsyncValue<FacilityChildren>
+facilityChildrenControllerProvider(int facilityId, FacilityType facilityType) -> AsyncValue<FacilityChildren>
 ```
 
-- **Keyed by** `facilityId` alone. Not by filter, page or facility type: the child
-  set of a facility does not depend on how its parent was found, so a facility
-  appearing under a different search keeps its cached children.
+- **Keyed by** `facilityId` and `facilityType` together — not by filter or page: the
+  child set of a facility does not depend on how its parent was found, so a
+  facility appearing under a different search keeps its cached children. The type
+  is part of the key (rather than looked up inside the provider) because it
+  decides which child types are fetched at all (research §2); passing it in lets
+  the caller supply it from the `FacilityListItem` it already holds, at zero extra
+  requests, instead of the provider issuing its own "get this facility" call.
 - **Watched by** each facility card. Because the card list is non-lazy
   (research §1), every facility on the page starts loading on first paint —
   this is what implements FR-017.

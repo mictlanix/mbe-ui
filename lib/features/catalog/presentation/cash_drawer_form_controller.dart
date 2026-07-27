@@ -7,8 +7,9 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
-import 'package:mbe_ui/features/catalog/presentation/cash_drawers_list_controller.dart';
+import 'package:mbe_ui/features/catalog/presentation/facility_children_controller.dart';
 
 part 'cash_drawer_form_controller.freezed.dart';
 part 'cash_drawer_form_controller.g.dart';
@@ -35,6 +36,13 @@ class CashDrawerFormState with _$CashDrawerFormState {
   const factory CashDrawerFormState({
     int? cashDrawerId,
     int? facilityId,
+
+    /// The facility this cash drawer belonged to when the form was opened
+    /// for editing — `null` in create mode. Captured once by [loadForEdit]
+    /// and never touched by [facilitySelected], so a save that moved the
+    /// cash drawer to a different facility can invalidate both the old and
+    /// the new card (018-nested-facility-management research §6).
+    int? originalFacilityId,
     @Default('') String facilityDisplayText,
     @Default('') String code,
     @Default('') String name,
@@ -93,6 +101,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
       state = CashDrawerFormState(
         cashDrawerId: cashDrawer.cashDrawerId,
         facilityId: cashDrawer.facilityId,
+        originalFacilityId: cashDrawer.facilityId,
         facilityDisplayText: cashDrawer.facilityName,
         code: cashDrawer.code,
         name: cashDrawer.name,
@@ -122,8 +131,32 @@ class CashDrawerFormController extends _$CashDrawerFormController {
     return errors;
   }
 
-  void _invalidateCaches() {
-    ref.invalidate(cashDrawersListControllerProvider);
+  /// Invalidates the affected facility's/facilities' children so its card
+  /// refreshes in place (018-nested-facility-management FR-027) — see
+  /// `WarehouseFormController._invalidateCaches` for the full rationale.
+  Future<void> _invalidateCaches() async {
+    final facilityId = state.facilityId;
+    if (facilityId != null) {
+      await _invalidateFacilityChildren(facilityId);
+    }
+    final originalFacilityId = state.originalFacilityId;
+    if (originalFacilityId != null && originalFacilityId != facilityId) {
+      await _invalidateFacilityChildren(originalFacilityId);
+    }
+  }
+
+  Future<void> _invalidateFacilityChildren(int facilityId) async {
+    try {
+      final facility = await ref
+          .read(facilityRepositoryProvider)
+          .get(facilityId: facilityId);
+      ref.invalidate(
+        facilityChildrenControllerProvider(facilityId, facility.type),
+      );
+    } on AppError {
+      // Best-effort — if the facility can no longer be resolved (e.g.
+      // deleted concurrently), there is no live card to refresh.
+    }
   }
 
   /// Creates the cash drawer (FR-016, FR-017). Re-checks the caller's
@@ -166,7 +199,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
             comment: state.comment.isEmpty ? null : state.comment,
             status: state.status,
           );
-      _invalidateCaches();
+      await _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError) {
@@ -226,7 +259,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
             comment: state.comment,
             status: state.status,
           );
-      _invalidateCaches();
+      await _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError) {
@@ -266,7 +299,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
       await ref
           .read(cashDrawerRepositoryProvider)
           .delete(cashDrawerId: cashDrawerId);
-      _invalidateCaches();
+      await _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       state = state.copyWith(

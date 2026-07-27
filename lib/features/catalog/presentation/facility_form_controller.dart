@@ -11,6 +11,7 @@ import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
 import 'package:mbe_ui/features/catalog/presentation/facilities_list_controller.dart';
+import 'package:mbe_ui/features/catalog/presentation/facility_children_controller.dart';
 
 part 'facility_form_controller.freezed.dart';
 part 'facility_form_controller.g.dart';
@@ -190,6 +191,15 @@ class FacilityFormController extends _$FacilityFormController {
     ref.invalidate(facilitiesListControllerProvider);
   }
 
+  /// Additionally invalidates this facility's own children instance
+  /// (018-nested-facility-management research §6) so a deleted-then-
+  /// recreated id cannot serve stale children. Unlike the three child form
+  /// controllers, no extra request is needed — the facility's own `type` is
+  /// already part of this form's state.
+  void _invalidateOwnChildren(int facilityId, FacilityType type) {
+    ref.invalidate(facilityChildrenControllerProvider(facilityId, type));
+  }
+
   /// Creates the facility (FR-028, FR-029). Re-checks create privilege
   /// immediately before submitting.
   Future<void> submitCreate() async {
@@ -210,7 +220,7 @@ class FacilityFormController extends _$FacilityFormController {
 
     state = _clear(state).copyWith(submitting: true);
     try {
-      await ref
+      final created = await ref
           .read(facilityRepositoryProvider)
           .create(
             code: state.code,
@@ -229,6 +239,7 @@ class FacilityFormController extends _$FacilityFormController {
             status: state.status,
           );
       _invalidateCaches();
+      _invalidateOwnChildren(created.facilityId, created.type);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.createFailed);
@@ -273,6 +284,7 @@ class FacilityFormController extends _$FacilityFormController {
             status: state.status,
           );
       _invalidateCaches();
+      _invalidateOwnChildren(facilityId, state.type);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.updateFailed);
@@ -314,6 +326,7 @@ class FacilityFormController extends _$FacilityFormController {
     try {
       await ref.read(facilityRepositoryProvider).delete(facilityId: facilityId);
       _invalidateCaches();
+      _invalidateOwnChildren(facilityId, state.type);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       state = state.copyWith(

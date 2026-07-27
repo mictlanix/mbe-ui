@@ -33,18 +33,15 @@ import 'package:mbe_ui/features/catalog/presentation/vehicle_detail_screen.dart'
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/cash_drawer_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/cash_drawers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facilities_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/payment_method_option_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/payment_method_options_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/point_sale_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/points_of_sale_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/warehouse_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/warehouses_list_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
@@ -208,36 +205,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           // Branch index continues positionally from spec 013's last branch
-          // (vehicleOperators = 13): spec 014 appends Warehouses(14)→
-          // CashDrawers(15)→PointsOfSale(16)→Facilities(17) in build order
-          // (contracts/routes.md).
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/warehouses',
-                builder: (context, state) =>
-                    WarehousesListScreen(query: ListQuery.fromUri(state.uri)),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/cash-drawers',
-                builder: (context, state) =>
-                    CashDrawersListScreen(query: ListQuery.fromUri(state.uri)),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/points-of-sale',
-                builder: (context, state) =>
-                    PointsOfSaleListScreen(query: ListQuery.fromUri(state.uri)),
-              ),
-            ],
-          ),
+          // (vehicleOperators = 13): 018-nested-facility-management removed
+          // the standalone Warehouses/CashDrawers/PointsOfSale branches spec
+          // 014 had appended here — those catalogs no longer have their own
+          // list screens, only their record detail routes survive (below) —
+          // so Facilities is now this branch, followed by
+          // PaymentMethodOptions and TaxpayerIssuers from spec 015
+          // (contracts/routes.md §2). There is NO taxpayerCertificates
+          // branch — Taxpayer Certificates is a child section of the
+          // Taxpayer Issuer detail, not a standalone catalog (spec 015
+          // research.md §9).
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -247,12 +224,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // Branch index continues positionally from spec 014's last branch
-          // (facilities = 17): spec 015 appends PaymentMethodOptions(18)→
-          // TaxpayerIssuers(19) in build order (contracts/routes.md). There is
-          // NO taxpayerCertificates branch — Taxpayer Certificates is a child
-          // section of the Taxpayer Issuer detail, not a standalone catalog
-          // (spec 015 research.md §9).
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -438,7 +409,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/warehouses/new',
-        builder: (context, state) => const WarehouseDetailScreen(),
+        // `?facility=<id>` pre-selects the parent facility when reached from
+        // a facility card's "+ Almacén" (018-nested-facility-management
+        // FR-022/FR-023, contracts/routes.md §4). Absent/unparseable is
+        // `null` — the form opens with an empty picker, unchanged.
+        builder: (context, state) => WarehouseDetailScreen(
+          facilityId: int.tryParse(state.uri.queryParameters['facility'] ?? ''),
+        ),
       ),
       GoRoute(
         path: '/warehouses/:warehouseId',
@@ -449,7 +426,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/cash-drawers/new',
-        builder: (context, state) => const CashDrawerDetailScreen(),
+        builder: (context, state) => CashDrawerDetailScreen(
+          facilityId: int.tryParse(state.uri.queryParameters['facility'] ?? ''),
+        ),
       ),
       GoRoute(
         path: '/cash-drawers/:cashDrawerId',
@@ -460,7 +439,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/points-of-sale/new',
-        builder: (context, state) => const PointSaleDetailScreen(),
+        builder: (context, state) => PointSaleDetailScreen(
+          facilityId: int.tryParse(state.uri.queryParameters['facility'] ?? ''),
+        ),
       ),
       GoRoute(
         path: '/points-of-sale/:pointSaleId',

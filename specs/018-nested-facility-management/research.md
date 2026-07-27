@@ -32,9 +32,27 @@ watch its own instance. The card list is rendered **non-lazily**.
 be correct on first paint without the user expanding anything. A
 `ListView.builder` only builds visible children, so off-screen cards would never
 watch their provider, their children would never be requested, and counts would
-pop in during scroll. The card list must therefore be a `ListView(children: [...])`
-or `SingleChildScrollView` + `Column` — non-lazy by construction. This is safe
-because the list is hard-bounded at the facilities page size (20).
+pop in during scroll.
+
+**Status: corrected during implementation (2026-07-26).** The card list is
+`SingleChildScrollView` wrapping a plain `Column` — **not** `ListView(children:
+[...])`, despite an earlier version of this document naming both as equally safe.
+They are not. `ListView` — even given a literal `List<Widget>` rather than a
+builder callback — still renders through Flutter's sliver viewport protocol
+(`SliverList`/`RenderSliverList`), which only materializes `Element`s for children
+within the visible area plus a small cache extent. A `ref.watch()` inside an
+off-screen card's `build()` simply never runs, for exactly the same underlying
+reason `ListView.builder` was ruled out.
+
+This was caught by a widget test, not by inspection: with two facilities on
+screen, expanding the first grew it tall enough to push the second past the
+default cache extent, and the second card's `FacilityCard` silently unmounted —
+`find.byKey` for its content returned zero matches with no error, no exception, no
+warning. `Column` has no viewport concept at all; every child becomes a real
+`Element` on first build regardless of size or position, which is what FR-017
+actually requires. Safe here because the list is hard-bounded at the facilities
+page size (20) — a large `Column` is not scored on scroll performance the way an
+unbounded one would be.
 
 **Alternatives considered**:
 
@@ -218,6 +236,33 @@ up to 60 requests on every save, discarding the main benefit of §1.
 `facilitiesListControllerProvider` and needs no change — the facility list
 provider survives. It should additionally invalidate that facility's children
 instance so a deleted-then-recreated id cannot serve stale children.
+
+**Status: a second bug corrected during implementation (2026-07-26).**
+`_invalidateCaches()` resolves each facility's type via
+`facilityRepositoryProvider.get()` before it can invalidate the precise
+`(facilityId, facilityType)` family member — an unavoidable extra request per
+save (see "the family key needs a type" note below). The first version of this
+method was called fire-and-forget (`_invalidateCaches();`, not awaited) on the
+theory that the save had already succeeded and the affected card could catch up
+asynchronously. That was wrong in a way a unit test caught directly: `submitUpdate`
+returned — and with it the `saved: true` transition that pops the screen — before
+the *second* `_invalidateFacilityChildren` call (the original facility, reached
+only after awaiting the first) had even started. Only the new facility's card
+ever refreshed; the original facility's card kept showing the moved record until
+an unrelated reload. All nine call sites (`submitCreate`/`submitUpdate`/`delete`
+× three controllers) now `await _invalidateCaches();`. The added latency is one
+small GET, paid once per save, not per page render — a fair trade for FR-027
+actually holding.
+
+**The family key needs a type, which forced a design change no one had
+anticipated**: `facilityChildrenControllerProvider` is keyed by `(facilityId,
+FacilityType)`, not `facilityId` alone (data-model.md §3 was corrected to match).
+A child form only ever holds a `facilityId` — never a type — so invalidating the
+*exact* family member costs the one extra request above. The alternative,
+invalidating the whole family with `ref.invalidate(facilityChildrenControllerProvider)`
+(no arguments), was rejected: it refetches every currently-watched card on the
+page, reintroducing precisely the up-to-60-request cost per save this family
+design exists to avoid.
 
 ---
 

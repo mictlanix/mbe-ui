@@ -25,6 +25,7 @@ class PointSaleDetailScreen extends ConsumerStatefulWidget {
     super.key,
     this.pointSaleId,
     this.forceReadOnly = false,
+    this.facilityId,
   });
 
   final int? pointSaleId;
@@ -33,6 +34,12 @@ class PointSaleDetailScreen extends ConsumerStatefulWidget {
   /// rather than Edit (constitution §VI), read from the `?view=true` query
   /// parameter.
   final bool forceReadOnly;
+
+  /// Pre-selects the facility picker in create mode — set from the
+  /// `?facility=<id>` query parameter when reached from a facility card's
+  /// "+ Punto de venta" (018-nested-facility-management FR-022/FR-023).
+  /// Ignored in edit mode, where [loadForEdit] supplies the real facility.
+  final int? facilityId;
 
   @override
   ConsumerState<PointSaleDetailScreen> createState() =>
@@ -50,6 +57,17 @@ class _PointSaleDetailScreenState extends ConsumerState<PointSaleDetailScreen> {
         ref
             .read(pointSaleFormControllerProvider.notifier)
             .loadForEdit(widget.pointSaleId!);
+      });
+    } else if (widget.facilityId != null) {
+      final facilityId = widget.facilityId!;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final name = await ref.read(
+          facilityDisplayNameProvider(facilityId).future,
+        );
+        if (!mounted) return;
+        ref
+            .read(pointSaleFormControllerProvider.notifier)
+            .facilitySelected(facilityId, name ?? '');
       });
     }
   }

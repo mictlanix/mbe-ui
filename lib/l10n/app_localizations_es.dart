@@ -1922,6 +1922,52 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ingresa un RFC válido (hasta 13 caracteres).';
 
   @override
+  String get facilitiesExpandAll => 'Expandir todo';
+
+  @override
+  String get facilitiesCollapseAll => 'Contraer todo';
+
+  @override
+  String get noWarehousesInFacility => 'Sin almacenes registrados.';
+
+  @override
+  String get noPointsOfSaleInFacility => 'Sin puntos de venta.';
+
+  @override
+  String get noCashDrawersInFacility => 'Sin cajas registradas.';
+
+  @override
+  String get productionSiteChildrenNote =>
+      'Los sitios de producción solo administran almacenes: no tienen puntos de venta ni cajas.';
+
+  @override
+  String get pointSaleForeignFacilityBadge => 'Otra instalación';
+
+  @override
+  String get newWarehouseInFacility => 'Almacén';
+
+  @override
+  String get newPointSaleInFacility => 'Punto de venta';
+
+  @override
+  String get newCashDrawerInFacility => 'Caja';
+
+  @override
+  String get facilityChildrenLoadFailed =>
+      'No se pudieron cargar los elementos de esta instalación.';
+
+  @override
+  String facilitiesPaginationSummary(int start, int end, int total) {
+    return '$start–$end de $total instalaciones';
+  }
+
+  @override
+  String get previousPageTooltip => 'Página anterior';
+
+  @override
+  String get nextPageTooltip => 'Página siguiente';
+
+  @override
   String get newAddressTooltip => 'Nueva dirección';
 
   @override

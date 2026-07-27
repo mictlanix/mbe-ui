@@ -9,11 +9,13 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/cash_drawer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/cash_drawer_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/cash_drawer_detail_screen.dart';
@@ -51,6 +53,19 @@ final _cashDrawer = CashDrawer(
   status: EntityStatus.active,
 );
 
+Facility _facility(int id) => Facility(
+  facilityId: id,
+  code: 'FAC-$id',
+  name: 'Facility $id',
+  type: FacilityType.store,
+  locationId: '55600',
+  locationLabel: '55600',
+  addressId: 1,
+  addressLabel: 'Address',
+  taxpayerRfc: 'AAA010101AAA',
+  status: EntityStatus.active,
+);
+
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
@@ -74,6 +89,12 @@ void main() {
         () => repository.get(cashDrawerId: cashDrawerId),
       ).thenAnswer((_) async => _cashDrawer);
     }
+    when(
+      () => facilityRepository.get(facilityId: any(named: 'facilityId')),
+    ).thenAnswer((invocation) async {
+      final id = invocation.namedArguments[#facilityId] as int;
+      return _facility(id);
+    });
 
     await tester.pumpWidget(
       ProviderScope(
@@ -140,6 +161,12 @@ void main() {
       () => repository.get(cashDrawerId: 1),
     ).thenAnswer((_) async => _cashDrawer);
     when(() => repository.delete(cashDrawerId: 1)).thenAnswer((_) async {});
+    when(
+      () => facilityRepository.get(facilityId: any(named: 'facilityId')),
+    ).thenAnswer((invocation) async {
+      final id = invocation.namedArguments[#facilityId] as int;
+      return _facility(id);
+    });
 
     // Router-wrapped so the post-delete `context.pop()` (constitution §VI —
     // return to the list on success) has somewhere to go, mirroring the list
@@ -277,4 +304,36 @@ void main() {
     expect(find.text('Duplicate'), findsOneWidget);
     expect(find.text('Code already in use'), findsOneWidget);
   });
+
+  testWidgets(
+    'a ?facility=<id> cold load pre-selects the parent facility '
+    '(018-nested-facility-management FR-022/FR-023)',
+    (tester) async {
+      when(
+        () => facilityRepository.get(facilityId: 9),
+      ).thenAnswer((_) async => _facility(9));
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cashDrawerRepositoryProvider.overrideWithValue(repository),
+            facilityRepositoryProvider.overrideWithValue(facilityRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Scaffold(
+              body: CashDrawerDetailScreen(facilityId: 9),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Facility 9'), findsOneWidget);
+    },
+  );
 }

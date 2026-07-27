@@ -23,6 +23,7 @@ class WarehouseDetailScreen extends ConsumerStatefulWidget {
     super.key,
     this.warehouseId,
     this.forceReadOnly = false,
+    this.facilityId,
   });
 
   final int? warehouseId;
@@ -31,6 +32,12 @@ class WarehouseDetailScreen extends ConsumerStatefulWidget {
   /// rather than Edit (constitution §VI), read from the `?view=true` query
   /// parameter.
   final bool forceReadOnly;
+
+  /// Pre-selects the facility picker in create mode — set from the
+  /// `?facility=<id>` query parameter when reached from a facility card's
+  /// "+ Almacén" (018-nested-facility-management FR-022/FR-023). Ignored in
+  /// edit mode, where [loadForEdit] supplies the real facility.
+  final int? facilityId;
 
   @override
   ConsumerState<WarehouseDetailScreen> createState() =>
@@ -48,6 +55,17 @@ class _WarehouseDetailScreenState extends ConsumerState<WarehouseDetailScreen> {
         ref
             .read(warehouseFormControllerProvider.notifier)
             .loadForEdit(widget.warehouseId!);
+      });
+    } else if (widget.facilityId != null) {
+      final facilityId = widget.facilityId!;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final name = await ref.read(
+          facilityDisplayNameProvider(facilityId).future,
+        );
+        if (!mounted) return;
+        ref
+            .read(warehouseFormControllerProvider.notifier)
+            .facilitySelected(facilityId, name ?? '');
       });
     }
   }

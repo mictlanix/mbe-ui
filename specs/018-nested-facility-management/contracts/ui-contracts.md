@@ -19,7 +19,8 @@ FacilitiesListScreen                       (rewritten, same file)
 │   ├── actions: [ExpandAllButton, NewFacilityButton]
 │   └── filters: [FilterSheetButton]       key: facilities_filter_button
 ├── CatalogListStateView<FacilityListItem> (reused — loading/empty/error/retry)
-│   └── non-lazy card list                 (research §1 — NOT ListView.builder)
+│   └── non-lazy card list                 (research §1 — SingleChildScrollView
+│                                            + Column, NOT ListView/ListView.builder)
 │       └── FacilityCard × page size
 └── pagination footer                      (reused)
 
@@ -163,6 +164,14 @@ tooltip**, and code, status and name are never truncated (FR-033).
 | `newPointSaleInFacility` | Punto de venta |
 | `newCashDrawerInFacility` | Caja |
 | `facilityChildrenLoadFailed` | No se pudieron cargar los elementos de esta instalación. |
+| `facilitiesPaginationSummary` | {start}–{end} de {total} instalaciones |
+| `previousPageTooltip` | Página anterior |
+| `nextPageTooltip` | Página siguiente |
+
+The last three were added during implementation: `DataTableView`'s pagination
+footer is `data_table_2`-specific and cannot render a non-table card list, so the
+card list needed its own minimal pagination footer (prev/next + a summary line),
+which needed its own strings — not anticipated when this contract was written.
 
 The search placeholder keeps the existing `facilitiesSearchLabel` and MUST NOT be
 reworded to promise child search (FR-014).
