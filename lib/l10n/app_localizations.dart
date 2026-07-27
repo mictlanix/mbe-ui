@@ -3589,6 +3589,90 @@ abstract class AppLocalizations {
   /// **'Enter a valid RFC (up to 13 characters).'**
   String get facilityTaxpayerInvalidError;
 
+  /// No description provided for @facilitiesExpandAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand all'**
+  String get facilitiesExpandAll;
+
+  /// No description provided for @facilitiesCollapseAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse all'**
+  String get facilitiesCollapseAll;
+
+  /// No description provided for @noWarehousesInFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'No warehouses registered.'**
+  String get noWarehousesInFacility;
+
+  /// No description provided for @noPointsOfSaleInFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'No points of sale.'**
+  String get noPointsOfSaleInFacility;
+
+  /// No description provided for @noCashDrawersInFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'No cash drawers registered.'**
+  String get noCashDrawersInFacility;
+
+  /// No description provided for @productionSiteChildrenNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Production sites only manage warehouses: they have no points of sale or cash drawers.'**
+  String get productionSiteChildrenNote;
+
+  /// No description provided for @pointSaleForeignFacilityBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Other facility'**
+  String get pointSaleForeignFacilityBadge;
+
+  /// No description provided for @newWarehouseInFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get newWarehouseInFacility;
+
+  /// No description provided for @newPointSaleInFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'Point of sale'**
+  String get newPointSaleInFacility;
+
+  /// No description provided for @newCashDrawerInFacility.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash drawer'**
+  String get newCashDrawerInFacility;
+
+  /// No description provided for @facilityChildrenLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this facility\'s items.'**
+  String get facilityChildrenLoadFailed;
+
+  /// No description provided for @facilitiesPaginationSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{start}–{end} of {total} facilities'**
+  String facilitiesPaginationSummary(int start, int end, int total);
+
+  /// No description provided for @previousPageTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get previousPageTooltip;
+
+  /// No description provided for @nextPageTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get nextPageTooltip;
+
   /// No description provided for @newAddressTooltip.
   ///
   /// In en, this message translates to:

@@ -9,12 +9,14 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/point_sale.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
@@ -52,6 +54,19 @@ final _pointSale = PointSale(
   status: EntityStatus.active,
 );
 
+Facility _facility(int id) => Facility(
+  facilityId: id,
+  code: 'FAC-$id',
+  name: 'Facility $id',
+  type: FacilityType.store,
+  locationId: '55600',
+  locationLabel: '55600',
+  addressId: 1,
+  addressLabel: 'Address',
+  taxpayerRfc: 'AAA010101AAA',
+  status: EntityStatus.active,
+);
+
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
@@ -73,6 +88,14 @@ void main() {
         accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
       ],
     );
+    // Post-save invalidation resolves the affected facility's type
+    // (018-nested-facility-management research §6).
+    when(
+      () => facilityRepository.get(facilityId: any(named: 'facilityId')),
+    ).thenAnswer((invocation) async {
+      final id = invocation.namedArguments[#facilityId] as int;
+      return _facility(id);
+    });
   });
 
   tearDown(() => container.dispose());
@@ -314,4 +337,24 @@ void main() {
     verify(() => repository.delete(pointSaleId: 1)).called(1);
     expect(find.text('points of sale list'), findsOneWidget);
   });
+
+  testWidgets(
+    'a ?facility=<id> cold load pre-selects the parent facility '
+    '(018-nested-facility-management FR-022/FR-023)',
+    (tester) async {
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Scaffold(body: PointSaleDetailScreen(facilityId: 9)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Facility 9'), findsOneWidget);
+    },
+  );
 }

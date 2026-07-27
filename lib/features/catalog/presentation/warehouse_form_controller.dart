@@ -6,9 +6,10 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
-import 'package:mbe_ui/features/catalog/presentation/warehouses_list_controller.dart';
+import 'package:mbe_ui/features/catalog/presentation/facility_children_controller.dart';
 
 part 'warehouse_form_controller.freezed.dart';
 part 'warehouse_form_controller.g.dart';
@@ -35,6 +36,13 @@ class WarehouseFormState with _$WarehouseFormState {
   const factory WarehouseFormState({
     int? warehouseId,
     int? facilityId,
+
+    /// The facility this warehouse belonged to when the form was opened for
+    /// editing — `null` in create mode. Captured once by [loadForEdit] and
+    /// never touched by [facilitySelected], so a save that moved the
+    /// warehouse to a different facility can invalidate both the old and
+    /// the new card (018-nested-facility-management research §6).
+    int? originalFacilityId,
     @Default('') String facilityDisplayText,
     @Default('') String code,
     @Default('') String name,
@@ -93,6 +101,7 @@ class WarehouseFormController extends _$WarehouseFormController {
       state = WarehouseFormState(
         warehouseId: warehouse.warehouseId,
         facilityId: warehouse.facilityId,
+        originalFacilityId: warehouse.facilityId,
         facilityDisplayText: warehouse.facilityName,
         code: warehouse.code,
         name: warehouse.name,
@@ -122,8 +131,46 @@ class WarehouseFormController extends _$WarehouseFormController {
     return errors;
   }
 
-  void _invalidateCaches() {
-    ref.invalidate(warehousesListControllerProvider);
+  /// Invalidates the affected facility's/facilities' children so its card
+  /// refreshes in place (018-nested-facility-management FR-027). The
+  /// standalone warehouses list is gone, so there is no page-level list to
+  /// invalidate any more — only the specific `(facilityId, facilityType)`
+  /// card(s) this save touched.
+  ///
+  /// Resolving the facility's type costs one extra request per save (not
+  /// per page render) — cheap, and the only way to target the exact family
+  /// member without invalidating every card on the page (research §6).
+  ///
+  /// Callers MUST await this: a fire-and-forget call let `submitUpdate`
+  /// return (and the screen pop) before the original facility's invalidation
+  /// had even started — the second `_invalidateFacilityChildren` call was
+  /// still sitting behind its first `await` when the caller moved on, so
+  /// only the new facility's card ever refreshed. Caught by a unit test
+  /// (`facility_children_controller_test.dart`, "moving a record between
+  /// facilities"), not by inspection.
+  Future<void> _invalidateCaches() async {
+    final facilityId = state.facilityId;
+    if (facilityId != null) {
+      await _invalidateFacilityChildren(facilityId);
+    }
+    final originalFacilityId = state.originalFacilityId;
+    if (originalFacilityId != null && originalFacilityId != facilityId) {
+      await _invalidateFacilityChildren(originalFacilityId);
+    }
+  }
+
+  Future<void> _invalidateFacilityChildren(int facilityId) async {
+    try {
+      final facility = await ref
+          .read(facilityRepositoryProvider)
+          .get(facilityId: facilityId);
+      ref.invalidate(
+        facilityChildrenControllerProvider(facilityId, facility.type),
+      );
+    } on AppError {
+      // Best-effort — if the facility can no longer be resolved (e.g.
+      // deleted concurrently), there is no live card to refresh.
+    }
   }
 
   /// Creates the warehouse (FR-013, FR-014). Re-checks the caller's
@@ -166,7 +213,7 @@ class WarehouseFormController extends _$WarehouseFormController {
             comment: state.comment.isEmpty ? null : state.comment,
             status: state.status,
           );
-      _invalidateCaches();
+      await _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError) {
@@ -226,7 +273,7 @@ class WarehouseFormController extends _$WarehouseFormController {
             comment: state.comment,
             status: state.status,
           );
-      _invalidateCaches();
+      await _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError) {
@@ -266,7 +313,7 @@ class WarehouseFormController extends _$WarehouseFormController {
       await ref
           .read(warehouseRepositoryProvider)
           .delete(warehouseId: warehouseId);
-      _invalidateCaches();
+      await _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       state = state.copyWith(

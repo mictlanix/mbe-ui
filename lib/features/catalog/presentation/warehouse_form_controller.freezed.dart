@@ -19,6 +19,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$WarehouseFormState {
   int? get warehouseId => throw _privateConstructorUsedError;
   int? get facilityId => throw _privateConstructorUsedError;
+
+  /// The facility this warehouse belonged to when the form was opened for
+  /// editing — `null` in create mode. Captured once by [loadForEdit] and
+  /// never touched by [facilitySelected], so a save that moved the
+  /// warehouse to a different facility can invalidate both the old and
+  /// the new card (018-nested-facility-management research §6).
+  int? get originalFacilityId => throw _privateConstructorUsedError;
   String get facilityDisplayText => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -49,6 +56,7 @@ abstract class $WarehouseFormStateCopyWith<$Res> {
   $Res call({
     int? warehouseId,
     int? facilityId,
+    int? originalFacilityId,
     String facilityDisplayText,
     String code,
     String name,
@@ -81,6 +89,7 @@ class _$WarehouseFormStateCopyWithImpl<$Res, $Val extends WarehouseFormState>
   $Res call({
     Object? warehouseId = freezed,
     Object? facilityId = freezed,
+    Object? originalFacilityId = freezed,
     Object? facilityDisplayText = null,
     Object? code = null,
     Object? name = null,
@@ -103,6 +112,10 @@ class _$WarehouseFormStateCopyWithImpl<$Res, $Val extends WarehouseFormState>
             facilityId: freezed == facilityId
                 ? _value.facilityId
                 : facilityId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            originalFacilityId: freezed == originalFacilityId
+                ? _value.originalFacilityId
+                : originalFacilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
             facilityDisplayText: null == facilityDisplayText
                 ? _value.facilityDisplayText
@@ -170,6 +183,7 @@ abstract class _$$WarehouseFormStateImplCopyWith<$Res>
   $Res call({
     int? warehouseId,
     int? facilityId,
+    int? originalFacilityId,
     String facilityDisplayText,
     String code,
     String name,
@@ -201,6 +215,7 @@ class __$$WarehouseFormStateImplCopyWithImpl<$Res>
   $Res call({
     Object? warehouseId = freezed,
     Object? facilityId = freezed,
+    Object? originalFacilityId = freezed,
     Object? facilityDisplayText = null,
     Object? code = null,
     Object? name = null,
@@ -223,6 +238,10 @@ class __$$WarehouseFormStateImplCopyWithImpl<$Res>
         facilityId: freezed == facilityId
             ? _value.facilityId
             : facilityId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        originalFacilityId: freezed == originalFacilityId
+            ? _value.originalFacilityId
+            : originalFacilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
         facilityDisplayText: null == facilityDisplayText
             ? _value.facilityDisplayText
@@ -283,6 +302,7 @@ class _$WarehouseFormStateImpl implements _WarehouseFormState {
   const _$WarehouseFormStateImpl({
     this.warehouseId,
     this.facilityId,
+    this.originalFacilityId,
     this.facilityDisplayText = '',
     this.code = '',
     this.name = '',
@@ -301,6 +321,14 @@ class _$WarehouseFormStateImpl implements _WarehouseFormState {
   final int? warehouseId;
   @override
   final int? facilityId;
+
+  /// The facility this warehouse belonged to when the form was opened for
+  /// editing — `null` in create mode. Captured once by [loadForEdit] and
+  /// never touched by [facilitySelected], so a save that moved the
+  /// warehouse to a different facility can invalidate both the old and
+  /// the new card (018-nested-facility-management research §6).
+  @override
+  final int? originalFacilityId;
   @override
   @JsonKey()
   final String facilityDisplayText;
@@ -343,7 +371,7 @@ class _$WarehouseFormStateImpl implements _WarehouseFormState {
 
   @override
   String toString() {
-    return 'WarehouseFormState(warehouseId: $warehouseId, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'WarehouseFormState(warehouseId: $warehouseId, facilityId: $facilityId, originalFacilityId: $originalFacilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -355,6 +383,8 @@ class _$WarehouseFormStateImpl implements _WarehouseFormState {
                 other.warehouseId == warehouseId) &&
             (identical(other.facilityId, facilityId) ||
                 other.facilityId == facilityId) &&
+            (identical(other.originalFacilityId, originalFacilityId) ||
+                other.originalFacilityId == originalFacilityId) &&
             (identical(other.facilityDisplayText, facilityDisplayText) ||
                 other.facilityDisplayText == facilityDisplayText) &&
             (identical(other.code, code) || other.code == code) &&
@@ -380,6 +410,7 @@ class _$WarehouseFormStateImpl implements _WarehouseFormState {
     runtimeType,
     warehouseId,
     facilityId,
+    originalFacilityId,
     facilityDisplayText,
     code,
     name,
@@ -410,6 +441,7 @@ abstract class _WarehouseFormState implements WarehouseFormState {
   const factory _WarehouseFormState({
     final int? warehouseId,
     final int? facilityId,
+    final int? originalFacilityId,
     final String facilityDisplayText,
     final String code,
     final String name,
@@ -428,6 +460,14 @@ abstract class _WarehouseFormState implements WarehouseFormState {
   int? get warehouseId;
   @override
   int? get facilityId;
+
+  /// The facility this warehouse belonged to when the form was opened for
+  /// editing — `null` in create mode. Captured once by [loadForEdit] and
+  /// never touched by [facilitySelected], so a save that moved the
+  /// warehouse to a different facility can invalidate both the old and
+  /// the new card (018-nested-facility-management research §6).
+  @override
+  int? get originalFacilityId;
   @override
   String get facilityDisplayText;
   @override

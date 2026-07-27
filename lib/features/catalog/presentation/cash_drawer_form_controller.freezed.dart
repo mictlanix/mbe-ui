@@ -19,6 +19,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$CashDrawerFormState {
   int? get cashDrawerId => throw _privateConstructorUsedError;
   int? get facilityId => throw _privateConstructorUsedError;
+
+  /// The facility this cash drawer belonged to when the form was opened
+  /// for editing — `null` in create mode. Captured once by [loadForEdit]
+  /// and never touched by [facilitySelected], so a save that moved the
+  /// cash drawer to a different facility can invalidate both the old and
+  /// the new card (018-nested-facility-management research §6).
+  int? get originalFacilityId => throw _privateConstructorUsedError;
   String get facilityDisplayText => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -49,6 +56,7 @@ abstract class $CashDrawerFormStateCopyWith<$Res> {
   $Res call({
     int? cashDrawerId,
     int? facilityId,
+    int? originalFacilityId,
     String facilityDisplayText,
     String code,
     String name,
@@ -81,6 +89,7 @@ class _$CashDrawerFormStateCopyWithImpl<$Res, $Val extends CashDrawerFormState>
   $Res call({
     Object? cashDrawerId = freezed,
     Object? facilityId = freezed,
+    Object? originalFacilityId = freezed,
     Object? facilityDisplayText = null,
     Object? code = null,
     Object? name = null,
@@ -103,6 +112,10 @@ class _$CashDrawerFormStateCopyWithImpl<$Res, $Val extends CashDrawerFormState>
             facilityId: freezed == facilityId
                 ? _value.facilityId
                 : facilityId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            originalFacilityId: freezed == originalFacilityId
+                ? _value.originalFacilityId
+                : originalFacilityId // ignore: cast_nullable_to_non_nullable
                       as int?,
             facilityDisplayText: null == facilityDisplayText
                 ? _value.facilityDisplayText
@@ -170,6 +183,7 @@ abstract class _$$CashDrawerFormStateImplCopyWith<$Res>
   $Res call({
     int? cashDrawerId,
     int? facilityId,
+    int? originalFacilityId,
     String facilityDisplayText,
     String code,
     String name,
@@ -201,6 +215,7 @@ class __$$CashDrawerFormStateImplCopyWithImpl<$Res>
   $Res call({
     Object? cashDrawerId = freezed,
     Object? facilityId = freezed,
+    Object? originalFacilityId = freezed,
     Object? facilityDisplayText = null,
     Object? code = null,
     Object? name = null,
@@ -223,6 +238,10 @@ class __$$CashDrawerFormStateImplCopyWithImpl<$Res>
         facilityId: freezed == facilityId
             ? _value.facilityId
             : facilityId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        originalFacilityId: freezed == originalFacilityId
+            ? _value.originalFacilityId
+            : originalFacilityId // ignore: cast_nullable_to_non_nullable
                   as int?,
         facilityDisplayText: null == facilityDisplayText
             ? _value.facilityDisplayText
@@ -283,6 +302,7 @@ class _$CashDrawerFormStateImpl implements _CashDrawerFormState {
   const _$CashDrawerFormStateImpl({
     this.cashDrawerId,
     this.facilityId,
+    this.originalFacilityId,
     this.facilityDisplayText = '',
     this.code = '',
     this.name = '',
@@ -301,6 +321,14 @@ class _$CashDrawerFormStateImpl implements _CashDrawerFormState {
   final int? cashDrawerId;
   @override
   final int? facilityId;
+
+  /// The facility this cash drawer belonged to when the form was opened
+  /// for editing — `null` in create mode. Captured once by [loadForEdit]
+  /// and never touched by [facilitySelected], so a save that moved the
+  /// cash drawer to a different facility can invalidate both the old and
+  /// the new card (018-nested-facility-management research §6).
+  @override
+  final int? originalFacilityId;
   @override
   @JsonKey()
   final String facilityDisplayText;
@@ -343,7 +371,7 @@ class _$CashDrawerFormStateImpl implements _CashDrawerFormState {
 
   @override
   String toString() {
-    return 'CashDrawerFormState(cashDrawerId: $cashDrawerId, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'CashDrawerFormState(cashDrawerId: $cashDrawerId, facilityId: $facilityId, originalFacilityId: $originalFacilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -355,6 +383,8 @@ class _$CashDrawerFormStateImpl implements _CashDrawerFormState {
                 other.cashDrawerId == cashDrawerId) &&
             (identical(other.facilityId, facilityId) ||
                 other.facilityId == facilityId) &&
+            (identical(other.originalFacilityId, originalFacilityId) ||
+                other.originalFacilityId == originalFacilityId) &&
             (identical(other.facilityDisplayText, facilityDisplayText) ||
                 other.facilityDisplayText == facilityDisplayText) &&
             (identical(other.code, code) || other.code == code) &&
@@ -380,6 +410,7 @@ class _$CashDrawerFormStateImpl implements _CashDrawerFormState {
     runtimeType,
     cashDrawerId,
     facilityId,
+    originalFacilityId,
     facilityDisplayText,
     code,
     name,
@@ -410,6 +441,7 @@ abstract class _CashDrawerFormState implements CashDrawerFormState {
   const factory _CashDrawerFormState({
     final int? cashDrawerId,
     final int? facilityId,
+    final int? originalFacilityId,
     final String facilityDisplayText,
     final String code,
     final String name,
@@ -428,6 +460,14 @@ abstract class _CashDrawerFormState implements CashDrawerFormState {
   int? get cashDrawerId;
   @override
   int? get facilityId;
+
+  /// The facility this cash drawer belonged to when the form was opened
+  /// for editing — `null` in create mode. Captured once by [loadForEdit]
+  /// and never touched by [facilitySelected], so a save that moved the
+  /// cash drawer to a different facility can invalidate both the old and
+  /// the new card (018-nested-facility-management research §6).
+  @override
+  int? get originalFacilityId;
   @override
   String get facilityDisplayText;
   @override

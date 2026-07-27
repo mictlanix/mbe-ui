@@ -9,12 +9,16 @@ import 'package:mbe_ui/app/router/app_router.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/navigation/nav_destination.dart';
+import 'package:mbe_ui/core/navigation/nav_destinations.dart';
+import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -23,6 +27,7 @@ import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dar
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/label_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
@@ -32,6 +37,8 @@ import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_r
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockProductRepository extends Mock implements ProductRepository {}
+
+class MockFacilityRepository extends Mock implements FacilityRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -132,6 +139,22 @@ const _fiscalCatalogsReaderUser = User(
   status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
+    Privilege(systemObject: SystemObject.paymentMethodOptions, rawValue: 2),
+    Privilege(systemObject: SystemObject.taxpayers, rawValue: 2),
+  ],
+);
+
+/// Holds read on the three renumbered branches
+/// (018-nested-facility-management contracts/routes.md §2:
+/// facilities=14, paymentMethodOptions=15, taxpayerIssuers=16).
+const _renumberedBranchesReaderUser = User(
+  userId: 'renumbered-branches-reader',
+  email: 'renumbered-branches-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.facilities, rawValue: 2),
     Privilege(systemObject: SystemObject.paymentMethodOptions, rawValue: 2),
     Privilege(systemObject: SystemObject.taxpayers, rawValue: 2),
   ],
@@ -257,6 +280,16 @@ void main() {
       ),
     ).thenAnswer((_) async => const TaxpayerIssuerPage(items: [], total: 0));
 
+    final facilityRepository = MockFacilityRepository();
+    when(
+      () => facilityRepository.list(
+        search: any(named: 'search'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const FacilityListResult(items: [], total: 0));
+
     final container = ProviderContainer(
       overrides: [
         authNotifierProvider.overrideWith(
@@ -285,6 +318,7 @@ void main() {
         taxpayerIssuerRepositoryProvider.overrideWithValue(
           taxpayerIssuerRepository,
         ),
+        facilityRepositoryProvider.overrideWithValue(facilityRepository),
       ],
     );
     addTearDown(container.dispose);
@@ -419,6 +453,148 @@ void main() {
       // Certificates section's own widget tests instead.
     },
   );
+
+  group(
+    '018-nested-facility-management — NavBranch renumbering matches the '
+    "shell's actual branch order (contracts/routes.md §2)",
+    () {
+      // The renumbering invariant (NavBranch.X == that destination's real
+      // position among StatefulShellRoute branches) has no compile-time
+      // enforcement — nav_destinations.dart and app_router.dart are two
+      // hand-maintained lists that must stay in lockstep. Scoped to the
+      // three destinations this feature actually renumbered (facilities,
+      // paymentMethodOptions, taxpayerIssuers) rather than every
+      // destination in kNavigationTree: the unrenumbered branches (pricing,
+      // exchangeRates, expenses, vehicles, …) aren't mocked in this file's
+      // `pumpAt`, and exhaustive coverage of branches this feature never
+      // touched belongs to a broader nav-tree regression test, not here.
+      final renumbered = _flattenDestinations(
+        kNavigationTree,
+      ).where((d) => const {'facilities', 'payment-method-options', 'taxpayer-issuers'}.contains(d.id));
+
+      for (final destination in renumbered) {
+        testWidgets(
+          '${destination.id} (branchIndex ${destination.branchIndex}) '
+          'activates that exact shell branch',
+          (tester) async {
+            final handle = await pumpAt(
+              tester,
+              _renumberedBranchesReaderUser,
+              destination.route,
+            );
+            expect(handle.router.state.uri.path, destination.route);
+            final shell = tester.widget<AppShell>(find.byType(AppShell));
+            expect(
+              shell.navigationShell.currentIndex,
+              destination.branchIndex,
+            );
+          },
+        );
+      }
+    },
+  );
+
+  group(
+    '018-nested-facility-management — removed list routes; surviving '
+    'detail routes keep their guards (contracts/routes.md §5)',
+    () {
+      // A reader who holds warehouses/cashDrawers/pointsOfSale read but not
+      // facilities:read (_childObjectsReaderUser) is the scenario FR-002's
+      // "no longer resolves" is really about — but that user is exactly the
+      // case the guard clause does NOT block, so GoRouter is left trying to
+      // match an authorized location against a route that no longer exists
+      // at all, which throws inside GoRouter itself rather than producing
+      // an observable redirect. `_noAccessUser` below proves the same
+      // FR-002 outcome (nothing resolves at these three bare paths) via the
+      // path GoRouter actually handles gracefully: deny-by-default redirect.
+      testWidgets(
+        '/warehouses no longer resolves to a list screen',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/warehouses');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        '/cash-drawers no longer resolves to a list screen',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/cash-drawers');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        '/points-of-sale no longer resolves to a list screen',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/points-of-sale',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      // The highest-risk edit in this feature (research §4): the three
+      // `_gateFor` clauses matching `startsWith('/warehouses')` etc. gate
+      // the record detail routes too, not just the deleted list route. It
+      // is the intuitive (and wrong) move to delete them alongside the list
+      // screens — doing so would silently strip RBAC from every surviving
+      // warehouse/cash-drawer/point-of-sale record screen with no crash and
+      // no other failing test. These three assertions are what stand
+      // between that mistake and a green suite.
+      testWidgets(
+        'a user without warehouses:read is redirected away from '
+        '/warehouses/5, not just /warehouses',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/warehouses/5');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'a user without cashDrawers:read is redirected away from '
+        '/cash-drawers/5',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/cash-drawers/5',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'a user without pointsOfSale:read is redirected away from '
+        '/points-of-sale/5',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/points-of-sale/5',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+    },
+  );
+}
+
+/// Flattens [kNavigationTree] to its leaf [NavDestination]s, in the same
+/// order the tree lists them — [NavGroup.children] is already a flat
+/// `List<NavDestination>` (no nested groups), so this is a single pass.
+List<NavDestination> _flattenDestinations(List<NavItem> tree) {
+  final result = <NavDestination>[];
+  for (final item in tree) {
+    switch (item) {
+      case NavDestination():
+        result.add(item);
+      case NavGroup():
+        result.addAll(item.children);
+    }
+  }
+  return result;
 }
 
 /// Thin wrapper so `pumpAt`'s return type stays self-describing at call
