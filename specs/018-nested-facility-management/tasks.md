@@ -47,8 +47,8 @@ feature's changes.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 [P] Create the `FacilityChildren` freezed entity in `lib/features/catalog/domain/entities/facility_children.dart` with fields `facilityId`, `warehouses`, `pointsOfSale`, `cashDrawers`, `warehousesReadable`, `pointsOfSaleReadable`, `cashDrawersReadable`, per [data-model.md](./data-model.md) §2
-- [ ] T004 [P] Add the derived-value extension to `lib/features/catalog/domain/entities/facility_children.dart`: `warehouseCount`, `pointSaleCount`, `cashDrawerCount` (list lengths) and `isCrossFacility(PointSale)` (warehouse not among this facility's warehouses, FR-009)
+- [ ] T003 Create the `FacilityChildren` freezed entity in `lib/features/catalog/domain/entities/facility_children.dart` with fields `facilityId`, `warehouses`, `pointsOfSale`, `cashDrawers`, `warehousesReadable`, `pointsOfSaleReadable`, `cashDrawersReadable`, per [data-model.md](./data-model.md) §2
+- [ ] T004 Add the derived-value extension to `lib/features/catalog/domain/entities/facility_children.dart`: `warehouseCount`, `pointSaleCount`, `cashDrawerCount` (list lengths) and `isCrossFacility(PointSale)` (warehouse not among this facility's warehouses, FR-009) — depends on T003 (same file, appends after the entity it extends); not parallelizable with it
 - [ ] T005 Create `facilityChildrenControllerProvider` as a `@riverpod` family keyed by `facilityId` in `lib/features/catalog/presentation/facility_children_controller.dart`, resolving which types to fetch by `FacilityType` first and `accessControlProvider` second, per [data-model.md](./data-model.md) §3 and [research.md](./research.md) §2
 - [ ] T006 In `lib/features/catalog/presentation/facility_children_controller.dart`, implement the complete-the-collection loop required by FR-019: request each child type with `limit: 100` and, while `total > loaded.length`, append subsequent pages by `skip`, with no user-facing control
 - [ ] T007 Run `dart run build_runner build --delete-conflicting-outputs` to generate the freezed and riverpod companions for T003–T006
@@ -78,7 +78,7 @@ empty sections say so. No record is created or edited.
 - [ ] T015 [US1] Rewrite `lib/features/catalog/presentation/facilities_list_screen.dart` as the hierarchy: keep `CatalogFilterBar`, `CatalogSearchBar`, the status facet panel and pagination unchanged, and replace `DataTableView` with a **non-lazy** card list — `ListView(children: [...])`, never `ListView.builder`, per [research.md](./research.md) §1
 - [ ] T016 [US1] Add the expand-all/collapse-all toolbar control and the view-local `Set<int> expandedFacilityIds` state to `lib/features/catalog/presentation/facilities_list_screen.dart` (FR-012, FR-013), keeping expansion out of the URL
 - [ ] T017 [US1] Ensure collapsed-card counts render a placeholder rather than `0` while children are loading (contracts §5) in `lib/features/catalog/presentation/widgets/facility_card.dart`
-- [ ] T018 [US1] Rewrite `test/widget/features/catalog/facilities_list_screen_test.dart` for the hierarchy: counts on collapsed cards, expansion revealing sections, empty-state placeholders, **a production-site facility showing only Warehouses plus the note** (fabricated data — no live rows exist, plan.md "Reference-tenant reality"), the cross-facility badge, and per-card error-with-retry isolation
+- [ ] T018 [US1] Rewrite `test/widget/features/catalog/facilities_list_screen_test.dart` for the hierarchy: counts on collapsed cards, expansion revealing sections, empty-state placeholders, **a production-site facility showing only Warehouses plus the note** (fabricated data — no live rows exist, plan.md "Reference-tenant reality"), the cross-facility badge, and per-card error-with-retry isolation. The rewrite MUST also **retain** equivalent coverage for behavior this feature does not change (FR-014/015/016): search-field presence, filter-button presence, and a status facet passed from the URL to the repository — replacing the existing `find.byType(PaginatedDataTable2)` assertion, which will fail outright once the table is gone, with an equivalent assertion against the new card list
 
 **Checkpoint**: US1 is independently shippable — the hierarchy renders read-only
 while the three old list screens still exist as a fallback.
@@ -187,6 +187,7 @@ sized, every action available.
 
 **Notable intra-phase dependencies**:
 
+- T004 depends on T003 — same file, not parallelizable.
 - T011 (`gen-l10n`) blocks T012–T016 — the widgets reference the new keys.
 - T014 depends on T012 and T013; T015 depends on T014.
 - T027 (`build_runner`) must follow T023–T025 and precede T031.
@@ -196,7 +197,6 @@ sized, every action available.
 
 | Phase | Parallel set | Why safe |
 |---|---|---|
-| 2 | T003, T004 | Same file, but T004 is an extension appended after T003 — serialize if the same agent |
 | 3 | T009, T010 | Different `.arb` files |
 | 3 | T012, T013 | Different widget files, neither imports the other |
 | 4 | T020, T021, T022 | Three independent detail screens |

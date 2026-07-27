@@ -58,7 +58,7 @@ Two smaller consequences the spec did not anticipate and this plan absorbs:
   l10n keys become the child-section headers — the mock's section titles are
   already exactly those strings.
 
-Net: 4 new files, 6 deleted (plus generated companions), and edits to the router,
+Net: 5 new files, 6 deleted (plus generated companions), and edits to the router,
 nav tree, four form controllers, three detail screens, both `.arb` files and the
 Facilities screen itself.
 
@@ -124,7 +124,7 @@ below.*
 |---|---|
 | Breakpoints centralized in `core/` | Uses `LayoutBreakpoints.isCompact`; no new breakpoint constant. |
 | Shared widgets in `core/widgets/` | Reuses `CatalogFilterBar`, `CatalogSearchBar`, `CatalogListStateView`, `EntityStatusCell`, `CatalogAction` icons, pagination, `RecordFormActions`. |
-| Mandatory pagination | Facilities stay paginated. Child sections are exempt under the "provably bounded" clause — bounded by one facility's children, and loaded to completion (FR-019). |
+| Mandatory pagination | Facilities stay paginated. Child sections carry no pagination control — recorded in Complexity Tracking rather than asserted as a clean exemption, since the constitution's "provably bounded" example (a small fixed enum-like list) is narrower than this case; the mitigating fact is FR-019's complete-the-collection loop, so nothing is ever hidden behind an unfetched page. |
 | Mandatory filtering | Search box and status facet retained unchanged. |
 | Edit is the primary row action, from shared iconography | Each card header and child row exposes exactly one action, `CatalogAction.edit`. |
 | At most two row icons | Every row has exactly one. No overflow menu is introduced. |
@@ -208,6 +208,8 @@ lib/
 
 test/
 ├── unit/app/router/app_router_test.dart         # M  renumbering + guard-survival assertions
+├── unit/features/catalog/
+│   └── facility_children_controller_test.dart   # +  fetch-by-type, complete-collection loop, invalidation
 ├── widget/core/widgets/app_navigation_test.dart # M  three fewer destinations
 ├── widget/features/catalog/
 │   ├── facilities_list_screen_test.dart         # M  rewritten
@@ -230,30 +232,32 @@ shared widget would be speculative.
 
 Ordered so every intermediate state is shippable, and so the destructive step
 lands only after the replacement is complete. This maps to the spec's user-story
-priorities.
+priorities. **Numbered to match tasks.md's phases exactly** — tasks.md brackets
+these five with its own Phase 1 (Setup) and Phase 7 (Polish & Cross-Cutting),
+which have no analog here since they involve no design decision.
 
-**Phase 1 — data foundation (no user-visible change).** `FacilityChildren` entity
+**Phase 2 — data foundation (no user-visible change).** `FacilityChildren` entity
 and `facilityChildrenControllerProvider`, including the complete-the-collection
 loop (FR-019) and the `*Readable` flags. Unit-tested against a fake repository.
 *Verify*: new unit tests pass; app unchanged.
 
-**Phase 2 — the hierarchy view (US1).** Rewrite `facilities_list_screen.dart` and
+**Phase 3 — the hierarchy view (US1).** Rewrite `facilities_list_screen.dart` and
 add the three widgets. Wide tier only, read-only: no create/edit wiring yet.
 *Verify*: quickstart Gate 1, including the scroll check for eager loading.
 
-**Phase 3 — wiring CRUD (US2).** `?facility=` parsing, the three detail-screen
+**Phase 4 — wiring CRUD (US2).** `?facility=` parsing, the three detail-screen
 prefills, `originalFacilityId` on three form states, repointed
 `_invalidateCaches`. *Verify*: quickstart Gate 2, especially the
 move-between-facilities case.
 
-**Phase 4 — navigation consolidation (US3).** Delete the three list screens,
+**Phase 5 — navigation consolidation (US3).** Delete the three list screens,
 controllers and branches; renumber `NavBranch`; **keep the three guards**; update
 router and navigation tests. *Verify*: quickstart Gate 3, both assertions.
 
-**Phase 5 — compact tier (US4).** Density branching and the FAB.
+**Phase 6 — compact tier (US4).** Density branching and the FAB.
 *Verify*: quickstart Gate 4.
 
-Phases 1–2 deliver the spec's P1 story on their own. Phase 4 is deliberately last:
+Phases 2–3 deliver the spec's P1 story on their own. Phase 5 is deliberately last:
 until it lands, the old screens remain as a fallback.
 
 ## Complexity Tracking
@@ -263,3 +267,4 @@ until it lands, the old screens remain as a fallback.
 | Create action in a child **section header**, where constitution §VI says "Create remains a toolbar-only action" | The screen manages four entity types at once. A single toolbar Create cannot express *which* child type, under *which* facility — the parent context is the entire value of the feature (FR-022, SC-001). The section header is the only place carrying both. | *One toolbar Create with a type+facility chooser*: reintroduces the facility re-selection this feature exists to remove. *A create icon on each row*: genuinely violates the row-action rule and attaches "create" to the wrong scope. The rule's purpose — bounding per-row icon count — is untouched: rows still carry exactly one icon. |
 | Up to 61 requests on first paint of a facilities page | FR-006/FR-017 require accurate counts on collapsed cards, and the facilities projection carries no counts. Eager per-page loading was chosen by the requester over lazy loading. | *Lazy on expand*: cannot show collapsed counts at all. *Child counts on the facilities projection*: the correct end state, but needs an mbe-api change, which is out of scope. The mitigation lever if it hurts in practice is a smaller facilities page size, not a switch to lazy. |
 | ~~A point of sale or cash drawer attached to a production site becomes invisible~~ — **resolved, no longer a deviation** | The facility type rule is a domain invariant (research §2): production sites have warehouses only. Applying it before fetching expresses that rule directly and saves two requests per production site. | Retained for the record: the concern was that mbe-api does not enforce the invariant, so a migrated row could be stranded. Production data was queried on 2026-07-26 and returned no such row, so *fetch all three types and render whatever comes back* would have added two always-empty requests per production site to guard against data that does not exist. |
+| Child sections (Warehouses/POS/Cash Drawers) carry no pagination control, where constitution §VI mandates pagination for any list "that can grow unbounded," exempting only a dataset that is "provably bounded (e.g. a small fixed enum-like list)" | A facility's children are bounded by real-world business shape, not by a small fixed set — the constitution's own example is narrower than this case. The bound here is FR-019's complete-the-collection loop: every child is always fetched to completion (up to mbe-api's 100-per-request cap, looped), so nothing is ever hidden behind an unfetched page, which is the actual harm the pagination rule guards against. | *A visible "load more" control per section*: rejected in spec.md's own edge-case reasoning (§Edge Cases, "A facility holds more children than one request returns") — a real store never approaches the 100-record cap, so a control would sit unused on every card, forever, adding UI weight for a case research confirms does not occur in the reference tenant (14 facilities, 0 with >20 children of any type). *A hard page-size cap on child sections with no loop*: would violate FR-019 outright by making some children genuinely unreachable once the standalone lists are gone. |
