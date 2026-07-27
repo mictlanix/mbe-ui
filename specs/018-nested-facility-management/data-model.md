@@ -34,11 +34,11 @@ The complete child set of one facility, as displayed under its card.
 |---|---|---|
 | `facilityId` | `int` | The family key this was loaded for |
 | `warehouses` | `List<Warehouse>` | Complete — see loading rule below |
-| `pointsOfSale` | `List<PointSale>` | Complete; empty when not readable |
-| `cashDrawers` | `List<CashDrawer>` | Complete; empty when not readable |
+| `pointsOfSale` | `List<PointSale>` | Complete; empty when not fetched |
+| `cashDrawers` | `List<CashDrawer>` | Complete; empty when not fetched |
 | `warehousesReadable` | `bool` | From `can(warehouses, read)` at load time |
-| `pointsOfSaleReadable` | `bool` | From `can(pointsOfSale, read)` |
-| `cashDrawersReadable` | `bool` | From `can(cashDrawers, read)` |
+| `pointsOfSaleReadable` | `bool` | From `can(pointsOfSale, read)`; always `false` for a production site, which has none by definition |
+| `cashDrawersReadable` | `bool` | From `can(cashDrawers, read)`; always `false` for a production site |
 
 **Why the `*Readable` flags exist**: an empty list is ambiguous — it means both
 "this facility has none" and "you may not see them". FR-010 requires an empty-state
@@ -51,7 +51,6 @@ the second. The flag disambiguates without the widget re-reading access control.
 |---|---|
 | `warehouseCount` / `pointSaleCount` / `cashDrawerCount` | `list.length` — the list is complete, so length is the true total |
 | `isCrossFacility(PointSale p)` | `!warehouses.any((w) => w.warehouseId == p.warehouseId)` — FR-009; see research §3 |
-| `hasAnySalesChildren` | `pointsOfSale.isNotEmpty \|\| cashDrawers.isNotEmpty` — decides whether a production site shows sections or the FR-011 note |
 
 ### Loading rule
 
@@ -60,9 +59,18 @@ Per research §7, each list is fetched with `limit: 100` and, while
 **`list.length` is the count** — there is no partial-load state to represent, which
 is why no `total` field appears above.
 
-Per research §2, all three types are requested for every facility regardless of
-`FacilityType`; a type the user cannot read is skipped and its `*Readable` flag set
-`false`.
+Which types are fetched is decided **before** any request, by facility type
+(research §2) and then by privilege:
+
+| Facility type | Fetched |
+|---|---|
+| `store` | warehouses, points of sale, cash drawers — each only if readable |
+| `productionSite` | warehouses only, and only if readable |
+
+A type that is not fetched has an empty list and a `false` `*Readable` flag. The
+card consults `FacilityType` first, so a production site never reaches the
+point-of-sale or cash-drawer branch at all; the flags disambiguate "none exist"
+from "not readable" only within the sections a facility's type actually permits.
 
 ---
 

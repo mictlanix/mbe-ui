@@ -196,9 +196,9 @@ every action available on the wide tier is reachable.
   rest of the page stays usable.
 - **A facility has zero children of every type.** The card is still expandable and
   each applicable section shows its empty placeholder.
-- **A production site nonetheless has points of sale or cash drawers** (legacy or
-  mid-migration data). Hiding those sections by type rule would strand the
-  records, so any that actually exist MUST be shown rather than silently hidden.
+- **A production site is expanded.** Only the Warehouses section is built, and no
+  point-of-sale or cash-drawer retrieval is issued at all — the type rule is
+  applied before requesting, not after.
 - **A user's privileges allow reading only some child types.** Only the permitted
   sections render, and the collapsed card's counts cover only those types.
 - **The last record on a page is deleted.** The page position is clamped to a page
@@ -243,9 +243,10 @@ every action available on the wide tier is reachable.
 - **FR-010**: A section with no children MUST render an explicit empty-state
   message naming the missing child type.
 - **FR-011**: A production-site facility MUST show only its Warehouses section,
-  accompanied by an explanation that production sites manage warehouses only —
-  unless points of sale or cash drawers actually exist under it, in which case
-  those MUST be shown rather than hidden.
+  accompanied by an explanation that production sites manage warehouses only.
+  Points of Sale and Cash Drawers sections MUST NOT be rendered for a production
+  site under any circumstance — the facility type determines which child types
+  exist, and only stores have points of sale and cash drawers.
 - **FR-012**: The screen MUST offer a control that expands and collapses every
   facility on the current page, whose label reflects which action it will perform.
 - **FR-013**: Expansion state MUST be view-local: it MUST NOT be encoded in the
@@ -322,9 +323,10 @@ every action available on the wide tier is reachable.
 
 ### Key Entities
 
-- **Facility**: An operating site, either a store or a production site. Owns
-  warehouses, and — when it is a store — points of sale and cash drawers. The
-  root of each card in the hierarchy.
+- **Facility**: An operating site, of exactly one of two types. A **store** owns
+  warehouses, points of sale and cash drawers. A **production site** owns
+  warehouses only — it has no points of sale and no cash drawers, by definition of
+  the type rather than by circumstance. The root of each card in the hierarchy.
 - **Warehouse**: A stock-holding location belonging to exactly one facility.
 - **Point of Sale**: A selling station belonging to exactly one facility and
   drawing stock from exactly one warehouse, which may belong to a *different*
@@ -361,6 +363,16 @@ every action available on the wide tier is reachable.
 
 ## Assumptions
 
+- **The facility type rule is a domain invariant, not a data observation.** A
+  store has warehouses, points of sale and cash drawers; a production site has
+  warehouses only. The UI treats this as given: for a production site it does not
+  render, and does not even request, the other two child types.
+- **mbe-api does not enforce that invariant**, so a migrated row could in
+  principle contradict it — and such a record would be invisible in this UI and,
+  with the standalone lists removed, unreachable. Checked against production data
+  on 2026-07-26: no point of sale and no cash drawer is attached to a production
+  site. The invariant holds in the real dataset, so no record is stranded by the
+  strict reading.
 - **Children are filterable by facility already.** Warehouses, points of sale and
   cash drawers can each be retrieved for a given facility today; no backend change
   is required to build the hierarchy. Verified against mbe-api, not assumed.
@@ -376,8 +388,8 @@ every action available on the wide tier is reachable.
   counts are therefore correct even for a section whose children were only
   partially loaded.
 - **Child loading is eager, per facilities page.** Chosen over lazy loading so
-  that counts and badges are correct on first paint. The cost is up to three
-  additional retrievals per facility on the page; if that proves too heavy in
+  that counts and badges are correct on first paint. The cost is three additional
+  retrievals per store and one per production site; if that proves too heavy in
   practice, reducing the facilities page size is the intended lever, not switching
   to lazy loading.
 - **Cross-facility points of sale are detected by comparing the point of sale's

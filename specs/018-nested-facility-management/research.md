@@ -47,38 +47,66 @@ because the list is hard-bounded at the facilities page size (20).
 
 ---
 
-## 2. FR-011 and FR-018 are in tension — FR-018 loses, narrowly
+## 2. The facility type rule is authoritative — fetch by type
 
-**The conflict**: FR-018 says child types that cannot exist for a facility's type
-MUST NOT be requested. FR-011 says a production site that nonetheless *has* points
-of sale or cash drawers MUST show them. You cannot know a record exists without
-asking for it.
+**Decision**: A facility's type determines which child types are requested at all.
+A **store** fetches warehouses, points of sale and cash drawers. A **production
+site** fetches warehouses only — the other two requests are never issued, and their
+sections are never rendered.
 
-**Finding**: `mbe-api` does **not** enforce the type rule. `app/models/core.py:78`
-stores `type` as a plain integer column, and neither
-`app/services/point_sale_service.py` nor `app/services/cash_drawer_service.py`
-validates the parent facility's type on create or update. "Production sites have
-no points of sale or cash drawers" is a **UI convention over legacy semantics**,
-not a database or API invariant — and this catalog is populated by a migration
-from the legacy C# monolith, which is exactly where a violating row would come
-from.
+**Rationale**: This is a domain invariant supplied by the product owner: stores
+have warehouses, points of sale and cash drawers; production sites have warehouses
+only. FR-011 and FR-018 both follow from it directly, and the type-conditional
+fetch is the natural expression of it. It also saves two requests per production
+site on every page load.
 
-**Decision**: Request all three child types for **every** facility, uniformly,
-regardless of type. For a production site, render the Points of Sale and Cash
-Drawers sections only when they come back non-empty; when both are empty, render
-the explanatory note from FR-011 instead.
+**Prior position, and why it changed**: an earlier revision of this document
+proposed fetching all three types uniformly and rendering a production site's extra
+sections only if they came back non-empty. That was a defensive response to the
+finding below, and it was overridden by the clarification above. The invariant is
+the specification; the UI implements it rather than second-guessing it.
 
-**Rationale**: The cost is two extra requests per production site — a minority of
-facilities — and those requests return `total: 0` immediately. The benefit is that
-FR-011 becomes implementable at all, and the code has one uniform fetch path
-instead of a type-conditional one. Uniformity here is both simpler and more
-correct.
+**Status: verified clean (2026-07-26).** The queries below were run by the product
+owner against production data and returned no rows — no point of sale and no cash
+drawer is attached to a production site. `SELECT type, COUNT(*) FROM facility
+GROUP BY type` returned a single row, `type 0 → 14`: the tenant has **no
+production sites at all**, so the invariant cannot currently be violated. The
+production-site path is still implemented — the type is selectable in the facility
+form — but it has no live data and must be verified by widget test (plan.md,
+Reference-tenant reality). The invariant holds in the real dataset,
+so the strict design carries no live data behind it. What follows is retained as
+the reason the check was needed and as the procedure to repeat if the migration is
+ever re-run.
 
-**Consequence for the spec**: FR-018's first clause ("child types that cannot
-exist for a facility's type") is superseded by this finding. Its second clause
-(types the user may not read are not requested) stands unchanged and is
-implemented. Recorded here rather than silently ignored; `/speckit-tasks` should
-treat FR-011 as the governing requirement.
+**mbe-api does not enforce the type rule.** `app/models/core.py:78` stores `type` as a plain integer column, and
+neither `app/services/point_sale_service.py` nor
+`app/services/cash_drawer_service.py` validates the parent facility's type on
+create or update. Because this catalog is populated by a migration from the legacy
+C# monolith, a violating row is representable.
+
+**Consequence had it been violated**: such a record would be invisible in this UI
+and, once the standalone list screens are deleted, unreachable. The check below
+established that no such record exists, so this is now a documented procedure
+rather than an open risk:
+
+```sql
+-- FacilityType: STORE = 0, PRODUCTION_SITE = 1 (app/enums.py:18)
+SELECT p.point_sale_id, p.code, f.name
+  FROM point_sale p JOIN facility f ON f.facility_id = p.facility
+ WHERE f.type = 1;
+
+SELECT c.cash_drawer_id, c.code, f.name
+  FROM cash_drawer c JOIN facility f ON f.facility_id = c.facility
+ WHERE f.type = 1;
+```
+
+Note the predicate: `type = 1` selects production sites. `type <> 1` selects
+stores and is the healthy population — an inverted first attempt at this check
+returned every point of sale in the database and looked alarming for the wrong
+reason.
+
+An empty result set closes the risk permanently. A non-empty one is a data-cleanup
+task for mbe-api, not a reason to reopen this design.
 
 ---
 

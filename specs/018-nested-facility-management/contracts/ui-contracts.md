@@ -115,8 +115,7 @@ anyone who can see the row at all.
 | Children loaded, section empty, readable | Dashed-border empty placeholder naming the type (FR-010) |
 | Section not readable | Section omitted entirely |
 | Children failed | Inline message + retry (`facility_children_retry_<id>`); other cards unaffected (FR-020) |
-| Production site, no POS and no cash drawers | Warehouses section + FR-011 note |
-| Production site **with** POS or cash drawers | Those sections rendered; note suppressed (research §2) |
+| Production site | Warehouses section + FR-011 note. The POS and Cash Drawers sections are never built and never requested — the type rule is applied before fetching (research §2) |
 | POS whose warehouse is not in this facility | Cross-facility badge on the row (FR-009, legacy data only — research §3) |
 
 Counts must never render as `0` while loading; a wrong count is worse than no

@@ -16,17 +16,45 @@ flutter gen-l10n                                            # after touching eit
 ```
 
 A running mbe-api and a user holding full privileges on Facilities, Warehouses,
-Cash Drawers and Points of Sale. Seed data should include, at minimum:
+Cash Drawers and Points of Sale.
 
-- one **store** facility with ≥2 warehouses, ≥1 point of sale and ≥1 cash drawer
-- one **production site** with warehouses and no points of sale
-- one facility with **no children at all**
-- more than 20 facilities, so pagination is exercised
+**What the reference tenant actually contains** (verified 2026-07-26): 14
+facilities, **all stores** — no production sites — which fits on one page. So two
+scenarios cannot be reached by clicking through live data and must be covered by
+widget tests with fabricated data instead:
 
-Optional but valuable: a facility whose type is `productionSite` but which has a
-point of sale (research §2), and a point of sale whose warehouse belongs to
-another facility (research §3). Neither can be created through the UI or the API —
-they must be inserted directly if you want to see those paths.
+| Scenario | Why it is unreachable live | Covered by |
+|---|---|---|
+| Production site: Warehouses-only card + FR-011 note | Zero rows of `type = 1` | Widget test |
+| Page preserved after a mutation (FR-027) | 14 facilities = a single page | Widget test |
+
+Reachable live, and expected in the seed data:
+
+- a store with ≥2 warehouses, ≥1 point of sale and ≥1 cash drawer
+- a facility with **no children at all**
+
+To exercise the two unreachable paths by hand instead, create a production-site
+facility from the facility form, or temporarily lower the facilities page size.
+
+Optional: a point of sale whose warehouse belongs to another facility, to see the
+cross-facility badge (research §3). mbe-api rejects that combination on write, so
+it must be inserted directly.
+
+**One-off data check before shipping** (research §2). The UI treats "production
+sites have warehouses only" as an invariant, but mbe-api does not enforce it, so a
+migrated row could contradict it and would then be unreachable:
+
+```sql
+-- STORE = 0, PRODUCTION_SITE = 1 — `= 1` is the violating side
+SELECT p.point_sale_id, p.code, f.name
+  FROM point_sale p JOIN facility f ON f.facility_id = p.facility
+ WHERE f.type = 1;
+SELECT c.cash_drawer_id, c.code, f.name
+  FROM cash_drawer c JOIN facility f ON f.facility_id = c.facility
+ WHERE f.type = 1;
+```
+
+Both empty → risk closed. Non-empty → data cleanup in mbe-api, not a UI change.
 
 ## Run
 

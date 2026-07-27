@@ -25,13 +25,15 @@ of the spec:
    their counts would pop in during scroll. That detail is load-bearing, not
    stylistic.
 
-2. **FR-018 is partly wrong and FR-011 wins** (research §2). mbe-api does not
-   enforce that production sites have no points of sale or cash drawers — no
-   validation exists in `point_sale_service.py` or `cash_drawer_service.py`, and
-   this catalog is populated by a migration from the legacy C# monolith. So "don't
-   request child types that cannot exist for this facility type" would make
-   FR-011's escape hatch unimplementable. All three types are requested for every
-   facility; a production site's extra sections render only when non-empty.
+2. **Facility type decides what is fetched, before any request** (research §2).
+   Stores have warehouses, points of sale and cash drawers; production sites have
+   warehouses only. This is a domain invariant, so a production site issues one
+   child request instead of three and never builds the other two sections. Note
+   that mbe-api does **not** enforce the invariant — no validation exists in
+   `point_sale_service.py` or `cash_drawer_service.py` — so a migrated row that
+   violates it would be invisible and, once the standalone lists are gone,
+   unreachable. Checked against production data on 2026-07-26 and confirmed clean:
+   no point of sale or cash drawer is attached to a production site (research §2).
 
 3. **The cross-facility POS badge is a legacy-data affordance** (research §3).
    `point_sale_service.py:71` rejects a warehouse belonging to a facility other
@@ -78,8 +80,10 @@ mbe-api
 **Project Type**: Single Flutter application, feature-first layering
 
 **Performance Goals**: Expanding a card is instantaneous (children already
-resident). First paint of a facilities page issues 1 + 3 × pageSize requests —
-up to 61 at pageSize 20.
+resident). First paint issues one facilities request plus three per store and one
+per production site — a worst case of 61 at pageSize 20. Against the reference
+tenant (14 facilities, all stores, verified 2026-07-26) it is **43 requests on a
+single page**, and pagination never engages.
 
 **Constraints**: mbe-api caps every list request at 100 records
 (`limit: Query(20, ge=1, le=100)`); no backend change is in scope; the
@@ -87,6 +91,17 @@ up to 61 at pageSize 20.
 
 **Scale/Scope**: 1 screen rewritten, 3 screens deleted, 3 detail screens extended,
 4 form controllers edited, 20 facilities per page.
+
+**Reference-tenant reality (verified 2026-07-26)**: 14 facilities, **all of type
+`store`; zero production sites**. Two consequences for verification, not for
+design — both paths stay implemented because a user can create a production site
+from the facility form at any time, and pagination is mandated by constitution §VI:
+
+- The production-site path (FR-011, the Warehouses-only card and its note) has no
+  live data. It MUST be covered by widget tests with fabricated data; it cannot be
+  signed off by clicking through the app.
+- The whole catalog fits on one page, so page-preservation after a mutation
+  (FR-027) is likewise not observable against live data and needs test coverage.
 
 ## Constitution Check
 
@@ -129,10 +144,9 @@ Complexity Tracking rather than waved through.
 Re-checked after data-model.md and the two contracts were written. No new
 violation. Two choices decided during Phase 1 are worth restating:
 
-- Requesting all three child types for every facility (research §2) increases
-  request volume beyond what FR-018 envisaged. It touches no principle — §VII
-  concerns caching, not request count — and the alternative was an unimplementable
-  requirement.
+- Fetching by facility type (research §2) means a production site's points of sale
+  and cash drawers are never requested. This touches no principle; it is the
+  domain invariant expressed in the fetch path, and it lowers request volume.
 - `FacilityChildren` carries three `*Readable` booleans so a widget can tell "none
   exist" from "you may not see them" without re-reading access control. This keeps
   RBAC resolution at the data-composition boundary rather than scattering
@@ -248,4 +262,4 @@ until it lands, the old screens remain as a fallback.
 |---|---|---|
 | Create action in a child **section header**, where constitution §VI says "Create remains a toolbar-only action" | The screen manages four entity types at once. A single toolbar Create cannot express *which* child type, under *which* facility — the parent context is the entire value of the feature (FR-022, SC-001). The section header is the only place carrying both. | *One toolbar Create with a type+facility chooser*: reintroduces the facility re-selection this feature exists to remove. *A create icon on each row*: genuinely violates the row-action rule and attaches "create" to the wrong scope. The rule's purpose — bounding per-row icon count — is untouched: rows still carry exactly one icon. |
 | Up to 61 requests on first paint of a facilities page | FR-006/FR-017 require accurate counts on collapsed cards, and the facilities projection carries no counts. Eager per-page loading was chosen by the requester over lazy loading. | *Lazy on expand*: cannot show collapsed counts at all. *Child counts on the facilities projection*: the correct end state, but needs an mbe-api change, which is out of scope. The mitigation lever if it hurts in practice is a smaller facilities page size, not a switch to lazy. |
-| All three child types requested even for production sites, contradicting FR-018's first clause | mbe-api does not enforce the type rule (research §2), so a production site with points of sale is representable data. Not requesting them makes FR-011 unimplementable. | *Trust the type as an invariant*: it is a UI convention over legacy data, not a constraint — a migrated violating row would silently vanish from the only screen that can reach it. *Probe with `limit: 1` first*: two round-trips instead of one, to save a request that returns `total: 0`. |
+| ~~A point of sale or cash drawer attached to a production site becomes invisible~~ — **resolved, no longer a deviation** | The facility type rule is a domain invariant (research §2): production sites have warehouses only. Applying it before fetching expresses that rule directly and saves two requests per production site. | Retained for the record: the concern was that mbe-api does not enforce the invariant, so a migrated row could be stranded. Production data was queried on 2026-07-26 and returned no such row, so *fetch all three types and render whatever comes back* would have added two always-empty requests per production site to guard against data that does not exist. |
