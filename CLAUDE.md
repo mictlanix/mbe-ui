@@ -71,5 +71,5 @@ You (Opus) are the orchestrator. Plan, decompose, synthesize. Reason through the
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/017-ui-consistency-filters/plan.md
+at specs/018-nested-facility-management/plan.md
 <!-- SPECKIT END -->
