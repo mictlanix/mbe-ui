@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Nested Facility Management",
   "branch": "018-nested-facility-management",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-07-27T00:56:09.592Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-27T01:25:15.648Z"
     }
   ]
 }
