@@ -168,7 +168,9 @@ class _Header extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isCompact = LayoutBreakpoints.isCompact(context);
-    final typeIcon = isStore ? Icons.storefront_outlined : Icons.factory_outlined;
+    final typeIcon = isStore
+        ? Icons.storefront_outlined
+        : Icons.factory_outlined;
     final typeLabel = isStore
         ? l10n.facilityTypeStore
         : l10n.facilityTypeProductionSite;
@@ -492,9 +494,8 @@ class _ExpandedBody extends StatelessWidget {
                 CashDrawerChildRow(
                   key: ValueKey('cash_drawer_${cashDrawer.cashDrawerId}'),
                   cashDrawer: cashDrawer,
-                  onTap: () => cashDrawerActions.onView(
-                    cashDrawer.cashDrawerId,
-                  ),
+                  onTap: () =>
+                      cashDrawerActions.onView(cashDrawer.cashDrawerId),
                   onEdit: cashDrawerActions.onEdit == null
                       ? null
                       : () =>
@@ -509,7 +510,10 @@ class _ExpandedBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final section in sections) ...[section, const SizedBox(height: 18)],
+        for (final section in sections) ...[
+          section,
+          const SizedBox(height: 18),
+        ],
         if (!isStore)
           Container(
             padding: const EdgeInsets.all(12),

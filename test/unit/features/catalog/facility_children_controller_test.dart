@@ -122,8 +122,7 @@ void main() {
       when(
         () => cashDrawerRepository.list(facilityId: 1, skip: 0, limit: 100),
       ).thenAnswer(
-        (_) async =>
-            CashDrawerListResult(items: [_cashDrawer(1, 1)], total: 1),
+        (_) async => CashDrawerListResult(items: [_cashDrawer(1, 1)], total: 1),
       );
 
       final container = containerFor(_fullAccessUser);
@@ -147,295 +146,285 @@ void main() {
       ).called(1);
     });
 
+    test('a production site issues only the warehouse fetch — points of sale '
+        'and cash drawers are never requested', () async {
+      when(
+        () => warehouseRepository.list(facilityId: 2, skip: 0, limit: 100),
+      ).thenAnswer(
+        (_) async => WarehouseListResult(items: [_warehouse(2, 2)], total: 1),
+      );
+
+      final container = containerFor(_fullAccessUser);
+      addTearDown(container.dispose);
+
+      final result = await container.read(
+        facilityChildrenControllerProvider(
+          2,
+          FacilityType.productionSite,
+        ).future,
+      );
+
+      expect(result.warehouses, hasLength(1));
+      expect(result.pointsOfSale, isEmpty);
+      expect(result.cashDrawers, isEmpty);
+      expect(result.pointsOfSaleReadable, isFalse);
+      expect(result.cashDrawersReadable, isFalse);
+      verifyNever(
+        () => pointSaleRepository.list(facilityId: any(named: 'facilityId')),
+      );
+      verifyNever(
+        () => cashDrawerRepository.list(facilityId: any(named: 'facilityId')),
+      );
+    });
+
+    test('a store with no cash-drawer read privilege does not request cash '
+        'drawers and reports the section unreadable', () async {
+      when(
+        () => warehouseRepository.list(facilityId: 3, skip: 0, limit: 100),
+      ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+
+      final container = containerFor(_warehousesOnlyUser);
+      addTearDown(container.dispose);
+
+      final result = await container.read(
+        facilityChildrenControllerProvider(3, FacilityType.store).future,
+      );
+
+      expect(result.warehousesReadable, isTrue);
+      expect(result.pointsOfSaleReadable, isFalse);
+      expect(result.cashDrawersReadable, isFalse);
+      expect(result.pointsOfSale, isEmpty);
+      expect(result.cashDrawers, isEmpty);
+      verifyNever(
+        () => pointSaleRepository.list(facilityId: any(named: 'facilityId')),
+      );
+      verifyNever(
+        () => cashDrawerRepository.list(facilityId: any(named: 'facilityId')),
+      );
+    });
+  });
+
+  group('FacilityChildrenController complete-the-collection loop (FR-019)', () {
     test(
-      'a production site issues only the warehouse fetch — points of sale '
-      'and cash drawers are never requested',
+      'a section whose total exceeds one page is loaded completely',
       () async {
         when(
-          () => warehouseRepository.list(facilityId: 2, skip: 0, limit: 100),
+          () => warehouseRepository.list(facilityId: 4, skip: 0, limit: 100),
         ).thenAnswer(
-          (_) async =>
-              WarehouseListResult(items: [_warehouse(2, 2)], total: 1),
+          (_) async => WarehouseListResult(
+            items: List.generate(100, (i) => _warehouse(i, 4)),
+            total: 137,
+          ),
+        );
+        when(
+          () => warehouseRepository.list(facilityId: 4, skip: 100, limit: 100),
+        ).thenAnswer(
+          (_) async => WarehouseListResult(
+            items: List.generate(37, (i) => _warehouse(100 + i, 4)),
+            total: 137,
+          ),
+        );
+        when(
+          () => pointSaleRepository.list(facilityId: 4, skip: 0, limit: 100),
+        ).thenAnswer(
+          (_) async => const PointSaleListResult(items: [], total: 0),
+        );
+        when(
+          () => cashDrawerRepository.list(facilityId: 4, skip: 0, limit: 100),
+        ).thenAnswer(
+          (_) async => const CashDrawerListResult(items: [], total: 0),
         );
 
         final container = containerFor(_fullAccessUser);
         addTearDown(container.dispose);
 
         final result = await container.read(
-          facilityChildrenControllerProvider(
-            2,
-            FacilityType.productionSite,
-          ).future,
+          facilityChildrenControllerProvider(4, FacilityType.store).future,
         );
 
-        expect(result.warehouses, hasLength(1));
-        expect(result.pointsOfSale, isEmpty);
-        expect(result.cashDrawers, isEmpty);
-        expect(result.pointsOfSaleReadable, isFalse);
-        expect(result.cashDrawersReadable, isFalse);
-        verifyNever(() => pointSaleRepository.list(facilityId: any(named: 'facilityId')));
-        verifyNever(() => cashDrawerRepository.list(facilityId: any(named: 'facilityId')));
+        expect(result.warehouses, hasLength(137));
+        expect(result.warehouseCount, 137);
+        verify(
+          () => warehouseRepository.list(facilityId: 4, skip: 100, limit: 100),
+        ).called(1);
       },
     );
-
-    test(
-      'a store with no cash-drawer read privilege does not request cash '
-      'drawers and reports the section unreadable',
-      () async {
-        when(
-          () => warehouseRepository.list(facilityId: 3, skip: 0, limit: 100),
-        ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
-
-        final container = containerFor(_warehousesOnlyUser);
-        addTearDown(container.dispose);
-
-        final result = await container.read(
-          facilityChildrenControllerProvider(3, FacilityType.store).future,
-        );
-
-        expect(result.warehousesReadable, isTrue);
-        expect(result.pointsOfSaleReadable, isFalse);
-        expect(result.cashDrawersReadable, isFalse);
-        expect(result.pointsOfSale, isEmpty);
-        expect(result.cashDrawers, isEmpty);
-        verifyNever(() => pointSaleRepository.list(facilityId: any(named: 'facilityId')));
-        verifyNever(() => cashDrawerRepository.list(facilityId: any(named: 'facilityId')));
-      },
-    );
-  });
-
-  group('FacilityChildrenController complete-the-collection loop (FR-019)', () {
-    test('a section whose total exceeds one page is loaded completely', () async {
-      when(
-        () => warehouseRepository.list(facilityId: 4, skip: 0, limit: 100),
-      ).thenAnswer(
-        (_) async => WarehouseListResult(
-          items: List.generate(100, (i) => _warehouse(i, 4)),
-          total: 137,
-        ),
-      );
-      when(
-        () => warehouseRepository.list(facilityId: 4, skip: 100, limit: 100),
-      ).thenAnswer(
-        (_) async => WarehouseListResult(
-          items: List.generate(37, (i) => _warehouse(100 + i, 4)),
-          total: 137,
-        ),
-      );
-      when(
-        () => pointSaleRepository.list(facilityId: 4, skip: 0, limit: 100),
-      ).thenAnswer((_) async => const PointSaleListResult(items: [], total: 0));
-      when(
-        () => cashDrawerRepository.list(facilityId: 4, skip: 0, limit: 100),
-      ).thenAnswer((_) async => const CashDrawerListResult(items: [], total: 0));
-
-      final container = containerFor(_fullAccessUser);
-      addTearDown(container.dispose);
-
-      final result = await container.read(
-        facilityChildrenControllerProvider(4, FacilityType.store).future,
-      );
-
-      expect(result.warehouses, hasLength(137));
-      expect(result.warehouseCount, 137);
-      verify(
-        () => warehouseRepository.list(facilityId: 4, skip: 100, limit: 100),
-      ).called(1);
-    });
   });
 
   group('FacilityChildrenController error isolation (FR-020)', () {
-    test('a repository failure surfaces as AsyncError, not a thrown exception', () async {
-      when(
-        () => warehouseRepository.list(facilityId: 5, skip: 0, limit: 100),
-      ).thenThrow(Exception('boom'));
-      when(
-        () => pointSaleRepository.list(facilityId: 5, skip: 0, limit: 100),
-      ).thenAnswer((_) async => const PointSaleListResult(items: [], total: 0));
-      when(
-        () => cashDrawerRepository.list(facilityId: 5, skip: 0, limit: 100),
-      ).thenAnswer((_) async => const CashDrawerListResult(items: [], total: 0));
+    test(
+      'a repository failure surfaces as AsyncError, not a thrown exception',
+      () async {
+        when(
+          () => warehouseRepository.list(facilityId: 5, skip: 0, limit: 100),
+        ).thenThrow(Exception('boom'));
+        when(
+          () => pointSaleRepository.list(facilityId: 5, skip: 0, limit: 100),
+        ).thenAnswer(
+          (_) async => const PointSaleListResult(items: [], total: 0),
+        );
+        when(
+          () => cashDrawerRepository.list(facilityId: 5, skip: 0, limit: 100),
+        ).thenAnswer(
+          (_) async => const CashDrawerListResult(items: [], total: 0),
+        );
 
-      final container = containerFor(_fullAccessUser);
-      addTearDown(container.dispose);
+        final container = containerFor(_fullAccessUser);
+        addTearDown(container.dispose);
 
-      await expectLater(
-        container.read(
-          facilityChildrenControllerProvider(5, FacilityType.store).future,
-        ),
-        throwsException,
-      );
+        await expectLater(
+          container.read(
+            facilityChildrenControllerProvider(5, FacilityType.store).future,
+          ),
+          throwsException,
+        );
 
-      final state = container.read(
-        facilityChildrenControllerProvider(5, FacilityType.store),
-      );
-      expect(state.hasError, isTrue);
-    });
+        final state = container.read(
+          facilityChildrenControllerProvider(5, FacilityType.store),
+        );
+        expect(state.hasError, isTrue);
+      },
+    );
   });
 
-  group(
-    'moving a record between facilities invalidates both cards '
-    '(research §6, originalFacilityId)',
-    () {
-      test(
-        'updating a warehouse to a different facility invalidates the '
-        "original facility's children AND the new facility's children",
-        () async {
-          final facilityRepository = MockFacilityRepository();
-          when(
-            () => facilityRepository.get(facilityId: 1),
-          ).thenAnswer((_) async => _facility(1));
-          when(
-            () => facilityRepository.get(facilityId: 2),
-          ).thenAnswer((_) async => _facility(2));
+  group('moving a record between facilities invalidates both cards '
+      '(research §6, originalFacilityId)', () {
+    test(
+      'updating a warehouse to a different facility invalidates the '
+      "original facility's children AND the new facility's children",
+      () async {
+        final facilityRepository = MockFacilityRepository();
+        when(
+          () => facilityRepository.get(facilityId: 1),
+        ).thenAnswer((_) async => _facility(1));
+        when(
+          () => facilityRepository.get(facilityId: 2),
+        ).thenAnswer((_) async => _facility(2));
 
-          final loaded = _warehouse(5, 1);
-          when(
-            () => warehouseRepository.get(warehouseId: 5),
-          ).thenAnswer((_) async => loaded);
-          when(
-            () => warehouseRepository.update(
-              warehouseId: 5,
-              facilityId: 2,
-              code: any(named: 'code'),
-              name: any(named: 'name'),
-              comment: any(named: 'comment'),
-              status: any(named: 'status'),
-            ),
-          ).thenAnswer((_) async => _warehouse(5, 2));
-          when(
-            () => warehouseRepository.list(
-              facilityId: 1,
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async => const WarehouseListResult(items: [], total: 0),
-          );
-          when(
-            () => warehouseRepository.list(
-              facilityId: 2,
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async => const WarehouseListResult(items: [], total: 0),
-          );
-          when(
-            () => pointSaleRepository.list(
-              facilityId: any(named: 'facilityId'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async => const PointSaleListResult(items: [], total: 0),
-          );
-          when(
-            () => cashDrawerRepository.list(
-              facilityId: any(named: 'facilityId'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async => const CashDrawerListResult(items: [], total: 0),
-          );
+        final loaded = _warehouse(5, 1);
+        when(
+          () => warehouseRepository.get(warehouseId: 5),
+        ).thenAnswer((_) async => loaded);
+        when(
+          () => warehouseRepository.update(
+            warehouseId: 5,
+            facilityId: 2,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            comment: any(named: 'comment'),
+            status: any(named: 'status'),
+          ),
+        ).thenAnswer((_) async => _warehouse(5, 2));
+        when(
+          () => warehouseRepository.list(
+            facilityId: 1,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const WarehouseListResult(items: [], total: 0),
+        );
+        when(
+          () => warehouseRepository.list(
+            facilityId: 2,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const WarehouseListResult(items: [], total: 0),
+        );
+        when(
+          () => pointSaleRepository.list(
+            facilityId: any(named: 'facilityId'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const PointSaleListResult(items: [], total: 0),
+        );
+        when(
+          () => cashDrawerRepository.list(
+            facilityId: any(named: 'facilityId'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CashDrawerListResult(items: [], total: 0),
+        );
 
-          final container = ProviderContainer(
-            overrides: [
-              warehouseRepositoryProvider.overrideWithValue(
-                warehouseRepository,
+        final container = ProviderContainer(
+          overrides: [
+            warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
+            pointSaleRepositoryProvider.overrideWithValue(pointSaleRepository),
+            cashDrawerRepositoryProvider.overrideWithValue(
+              cashDrawerRepository,
+            ),
+            facilityRepositoryProvider.overrideWithValue(facilityRepository),
+            accessControlProvider.overrideWithValue(
+              AccessControlService(
+                AuthState.authenticated(token: 't', user: _fullAccessUser),
               ),
-              pointSaleRepositoryProvider.overrideWithValue(
-                pointSaleRepository,
-              ),
-              cashDrawerRepositoryProvider.overrideWithValue(
-                cashDrawerRepository,
-              ),
-              facilityRepositoryProvider.overrideWithValue(
-                facilityRepository,
-              ),
-              accessControlProvider.overrideWithValue(
-                AccessControlService(
-                  AuthState.authenticated(token: 't', user: _fullAccessUser),
-                ),
-              ),
-            ],
-          );
-          addTearDown(container.dispose);
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-          // Keep both cards' providers alive (as their FacilityCard widgets
-          // would) so an invalidation triggers an observable rebuild rather
-          // than being silently dropped by auto-dispose.
-          container.listen(
-            facilityChildrenControllerProvider(1, FacilityType.store),
-            (_, _) {},
-            fireImmediately: true,
-          );
-          container.listen(
-            facilityChildrenControllerProvider(2, FacilityType.store),
-            (_, _) {},
-            fireImmediately: true,
-          );
-          await container.read(
-            facilityChildrenControllerProvider(1, FacilityType.store).future,
-          );
-          await container.read(
-            facilityChildrenControllerProvider(2, FacilityType.store).future,
-          );
-          verify(
-            () => warehouseRepository.list(
-              facilityId: 1,
-              skip: 0,
-              limit: 100,
-            ),
-          ).called(1);
-          verify(
-            () => warehouseRepository.list(
-              facilityId: 2,
-              skip: 0,
-              limit: 100,
-            ),
-          ).called(1);
-          // Reset the call log so the assertions below prove the *move*
-          // triggered exactly one fresh fetch per facility, not just that
-          // the cumulative count since warm-up happens to be >= 1.
-          clearInteractions(warehouseRepository);
+        // Keep both cards' providers alive (as their FacilityCard widgets
+        // would) so an invalidation triggers an observable rebuild rather
+        // than being silently dropped by auto-dispose.
+        container.listen(
+          facilityChildrenControllerProvider(1, FacilityType.store),
+          (_, _) {},
+          fireImmediately: true,
+        );
+        container.listen(
+          facilityChildrenControllerProvider(2, FacilityType.store),
+          (_, _) {},
+          fireImmediately: true,
+        );
+        await container.read(
+          facilityChildrenControllerProvider(1, FacilityType.store).future,
+        );
+        await container.read(
+          facilityChildrenControllerProvider(2, FacilityType.store).future,
+        );
+        verify(
+          () => warehouseRepository.list(facilityId: 1, skip: 0, limit: 100),
+        ).called(1);
+        verify(
+          () => warehouseRepository.list(facilityId: 2, skip: 0, limit: 100),
+        ).called(1);
+        // Reset the call log so the assertions below prove the *move*
+        // triggered exactly one fresh fetch per facility, not just that
+        // the cumulative count since warm-up happens to be >= 1.
+        clearInteractions(warehouseRepository);
 
-          await container
-              .read(warehouseFormControllerProvider.notifier)
-              .loadForEdit(5);
-          container
-              .read(warehouseFormControllerProvider.notifier)
-              .facilitySelected(2, 'Facility 2');
-          await container
-              .read(warehouseFormControllerProvider.notifier)
-              .submitUpdate();
+        await container
+            .read(warehouseFormControllerProvider.notifier)
+            .loadForEdit(5);
+        container
+            .read(warehouseFormControllerProvider.notifier)
+            .facilitySelected(2, 'Facility 2');
+        await container
+            .read(warehouseFormControllerProvider.notifier)
+            .submitUpdate();
 
-          // Both facilities' children re-fetched — not just the new one.
-          await container.read(
-            facilityChildrenControllerProvider(1, FacilityType.store).future,
-          );
-          await container.read(
-            facilityChildrenControllerProvider(2, FacilityType.store).future,
-          );
-          verify(
-            () => warehouseRepository.list(
-              facilityId: 1,
-              skip: 0,
-              limit: 100,
-            ),
-          ).called(1);
-          verify(
-            () => warehouseRepository.list(
-              facilityId: 2,
-              skip: 0,
-              limit: 100,
-            ),
-          ).called(1);
-        },
-      );
-    },
-  );
+        // Both facilities' children re-fetched — not just the new one.
+        await container.read(
+          facilityChildrenControllerProvider(1, FacilityType.store).future,
+        );
+        await container.read(
+          facilityChildrenControllerProvider(2, FacilityType.store).future,
+        );
+        verify(
+          () => warehouseRepository.list(facilityId: 1, skip: 0, limit: 100),
+        ).called(1);
+        verify(
+          () => warehouseRepository.list(facilityId: 2, skip: 0, limit: 100),
+        ).called(1);
+      },
+    );
+  });
 }
 
 Facility _facility(int id) => Facility(

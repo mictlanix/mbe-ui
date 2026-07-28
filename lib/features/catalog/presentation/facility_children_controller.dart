@@ -32,7 +32,10 @@ const _pageLimit = 100;
 @riverpod
 class FacilityChildrenController extends _$FacilityChildrenController {
   @override
-  Future<FacilityChildren> build(int facilityId, FacilityType facilityType) async {
+  Future<FacilityChildren> build(
+    int facilityId,
+    FacilityType facilityType,
+  ) async {
     final access = ref.watch(accessControlProvider);
     final isStore = facilityType == FacilityType.store;
 

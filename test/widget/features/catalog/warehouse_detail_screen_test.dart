@@ -306,35 +306,28 @@ void main() {
     expect(find.text('Code already in use'), findsOneWidget);
   });
 
-  testWidgets(
-    'a ?facility=<id> cold load pre-selects the parent facility '
-    '(018-nested-facility-management FR-022/FR-023)',
-    (tester) async {
-      when(
-        () => facilityRepository.get(facilityId: 9),
-      ).thenAnswer((_) async => _facility(9));
+  testWidgets('a ?facility=<id> cold load pre-selects the parent facility '
+      '(018-nested-facility-management FR-022/FR-023)', (tester) async {
+    when(
+      () => facilityRepository.get(facilityId: 9),
+    ).thenAnswer((_) async => _facility(9));
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            warehouseRepositoryProvider.overrideWithValue(repository),
-            facilityRepositoryProvider.overrideWithValue(facilityRepository),
-            accessControlProvider.overrideWithValue(
-              _accessFor(_fullAccessUser),
-            ),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(
-              body: WarehouseDetailScreen(facilityId: 9),
-            ),
-          ),
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          warehouseRepositoryProvider.overrideWithValue(repository),
+          facilityRepositoryProvider.overrideWithValue(facilityRepository),
+          accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: WarehouseDetailScreen(facilityId: 9)),
         ),
-      );
-      await tester.pumpAndSettle();
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      expect(find.text('Facility 9'), findsOneWidget);
-    },
-  );
+    expect(find.text('Facility 9'), findsOneWidget);
+  });
 }

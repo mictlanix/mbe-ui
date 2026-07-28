@@ -454,131 +454,99 @@ void main() {
     },
   );
 
-  group(
-    '018-nested-facility-management — NavBranch renumbering matches the '
-    "shell's actual branch order (contracts/routes.md §2)",
-    () {
-      // The renumbering invariant (NavBranch.X == that destination's real
-      // position among StatefulShellRoute branches) has no compile-time
-      // enforcement — nav_destinations.dart and app_router.dart are two
-      // hand-maintained lists that must stay in lockstep. Scoped to the
-      // three destinations this feature actually renumbered (facilities,
-      // paymentMethodOptions, taxpayerIssuers) rather than every
-      // destination in kNavigationTree: the unrenumbered branches (pricing,
-      // exchangeRates, expenses, vehicles, …) aren't mocked in this file's
-      // `pumpAt`, and exhaustive coverage of branches this feature never
-      // touched belongs to a broader nav-tree regression test, not here.
-      final renumbered = _flattenDestinations(
-        kNavigationTree,
-      ).where((d) => const {'facilities', 'payment-method-options', 'taxpayer-issuers'}.contains(d.id));
+  group('018-nested-facility-management — NavBranch renumbering matches the '
+      "shell's actual branch order (contracts/routes.md §2)", () {
+    // The renumbering invariant (NavBranch.X == that destination's real
+    // position among StatefulShellRoute branches) has no compile-time
+    // enforcement — nav_destinations.dart and app_router.dart are two
+    // hand-maintained lists that must stay in lockstep. Scoped to the
+    // three destinations this feature actually renumbered (facilities,
+    // paymentMethodOptions, taxpayerIssuers) rather than every
+    // destination in kNavigationTree: the unrenumbered branches (pricing,
+    // exchangeRates, expenses, vehicles, …) aren't mocked in this file's
+    // `pumpAt`, and exhaustive coverage of branches this feature never
+    // touched belongs to a broader nav-tree regression test, not here.
+    final renumbered = _flattenDestinations(kNavigationTree).where(
+      (d) => const {
+        'facilities',
+        'payment-method-options',
+        'taxpayer-issuers',
+      }.contains(d.id),
+    );
 
-      for (final destination in renumbered) {
-        testWidgets(
-          '${destination.id} (branchIndex ${destination.branchIndex}) '
-          'activates that exact shell branch',
-          (tester) async {
-            final handle = await pumpAt(
-              tester,
-              _renumberedBranchesReaderUser,
-              destination.route,
-            );
-            expect(handle.router.state.uri.path, destination.route);
-            final shell = tester.widget<AppShell>(find.byType(AppShell));
-            expect(
-              shell.navigationShell.currentIndex,
-              destination.branchIndex,
-            );
-          },
+    for (final destination in renumbered) {
+      testWidgets('${destination.id} (branchIndex ${destination.branchIndex}) '
+          'activates that exact shell branch', (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _renumberedBranchesReaderUser,
+          destination.route,
         );
-      }
-    },
-  );
+        expect(handle.router.state.uri.path, destination.route);
+        final shell = tester.widget<AppShell>(find.byType(AppShell));
+        expect(shell.navigationShell.currentIndex, destination.branchIndex);
+      });
+    }
+  });
 
-  group(
-    '018-nested-facility-management — removed list routes; surviving '
-    'detail routes keep their guards (contracts/routes.md §5)',
-    () {
-      // A reader who holds warehouses/cashDrawers/pointsOfSale read but not
-      // facilities:read (_childObjectsReaderUser) is the scenario FR-002's
-      // "no longer resolves" is really about — but that user is exactly the
-      // case the guard clause does NOT block, so GoRouter is left trying to
-      // match an authorized location against a route that no longer exists
-      // at all, which throws inside GoRouter itself rather than producing
-      // an observable redirect. `_noAccessUser` below proves the same
-      // FR-002 outcome (nothing resolves at these three bare paths) via the
-      // path GoRouter actually handles gracefully: deny-by-default redirect.
-      testWidgets(
-        '/warehouses no longer resolves to a list screen',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/warehouses');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+  group('018-nested-facility-management — removed list routes; surviving '
+      'detail routes keep their guards (contracts/routes.md §5)', () {
+    // A reader who holds warehouses/cashDrawers/pointsOfSale read but not
+    // facilities:read (_childObjectsReaderUser) is the scenario FR-002's
+    // "no longer resolves" is really about — but that user is exactly the
+    // case the guard clause does NOT block, so GoRouter is left trying to
+    // match an authorized location against a route that no longer exists
+    // at all, which throws inside GoRouter itself rather than producing
+    // an observable redirect. `_noAccessUser` below proves the same
+    // FR-002 outcome (nothing resolves at these three bare paths) via the
+    // path GoRouter actually handles gracefully: deny-by-default redirect.
+    testWidgets('/warehouses no longer resolves to a list screen', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/warehouses');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        '/cash-drawers no longer resolves to a list screen',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/cash-drawers');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets('/cash-drawers no longer resolves to a list screen', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/cash-drawers');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        '/points-of-sale no longer resolves to a list screen',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/points-of-sale',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets('/points-of-sale no longer resolves to a list screen', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/points-of-sale');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      // The highest-risk edit in this feature (research §4): the three
-      // `_gateFor` clauses matching `startsWith('/warehouses')` etc. gate
-      // the record detail routes too, not just the deleted list route. It
-      // is the intuitive (and wrong) move to delete them alongside the list
-      // screens — doing so would silently strip RBAC from every surviving
-      // warehouse/cash-drawer/point-of-sale record screen with no crash and
-      // no other failing test. These three assertions are what stand
-      // between that mistake and a green suite.
-      testWidgets(
-        'a user without warehouses:read is redirected away from '
-        '/warehouses/5, not just /warehouses',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/warehouses/5');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    // The highest-risk edit in this feature (research §4): the three
+    // `_gateFor` clauses matching `startsWith('/warehouses')` etc. gate
+    // the record detail routes too, not just the deleted list route. It
+    // is the intuitive (and wrong) move to delete them alongside the list
+    // screens — doing so would silently strip RBAC from every surviving
+    // warehouse/cash-drawer/point-of-sale record screen with no crash and
+    // no other failing test. These three assertions are what stand
+    // between that mistake and a green suite.
+    testWidgets('a user without warehouses:read is redirected away from '
+        '/warehouses/5, not just /warehouses', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/warehouses/5');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'a user without cashDrawers:read is redirected away from '
-        '/cash-drawers/5',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/cash-drawers/5',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets('a user without cashDrawers:read is redirected away from '
+        '/cash-drawers/5', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/cash-drawers/5');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'a user without pointsOfSale:read is redirected away from '
-        '/points-of-sale/5',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/points-of-sale/5',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
-    },
-  );
+    testWidgets('a user without pointsOfSale:read is redirected away from '
+        '/points-of-sale/5', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/points-of-sale/5');
+      expect(handle.router.state.uri.path, '/');
+    });
+  });
 }
 
 /// Flattens [kNavigationTree] to its leaf [NavDestination]s, in the same

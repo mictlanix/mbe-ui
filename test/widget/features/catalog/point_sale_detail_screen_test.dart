@@ -338,23 +338,20 @@ void main() {
     expect(find.text('points of sale list'), findsOneWidget);
   });
 
-  testWidgets(
-    'a ?facility=<id> cold load pre-selects the parent facility '
-    '(018-nested-facility-management FR-022/FR-023)',
-    (tester) async {
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(body: PointSaleDetailScreen(facilityId: 9)),
-          ),
+  testWidgets('a ?facility=<id> cold load pre-selects the parent facility '
+      '(018-nested-facility-management FR-022/FR-023)', (tester) async {
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: PointSaleDetailScreen(facilityId: 9)),
         ),
-      );
-      await tester.pumpAndSettle();
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      expect(find.text('Facility 9'), findsOneWidget);
-    },
-  );
+    expect(find.text('Facility 9'), findsOneWidget);
+  });
 }

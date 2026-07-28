@@ -199,7 +199,11 @@ void main() {
           path: '/facilities/new',
           builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
         ),
-        for (final path in ['/warehouses', '/points-of-sale', '/cash-drawers']) ...[
+        for (final path in [
+          '/warehouses',
+          '/points-of-sale',
+          '/cash-drawers',
+        ]) ...[
           GoRoute(
             path: '$path/new',
             builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
@@ -218,9 +222,7 @@ void main() {
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
           warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
           pointSaleRepositoryProvider.overrideWithValue(pointSaleRepository),
-          cashDrawerRepositoryProvider.overrideWithValue(
-            cashDrawerRepository,
-          ),
+          cashDrawerRepositoryProvider.overrideWithValue(cashDrawerRepository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
         child: MaterialApp.router(
@@ -259,7 +261,11 @@ void main() {
             PointSaleListResult(items: [_pointSale(1, 1, 1)], total: 1),
       );
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
 
       expect(find.text('Main Store'), findsOneWidget);
       expect(find.text('FAC-1'), findsOneWidget);
@@ -268,7 +274,10 @@ void main() {
       expect(find.text('1'), findsOneWidget); // point-of-sale count
       expect(find.text('0'), findsOneWidget); // cash-drawer count
       // Expanded body not yet built.
-      expect(find.byKey(const Key('facility_section_warehouses_1')), findsNothing);
+      expect(
+        find.byKey(const Key('facility_section_warehouses_1')),
+        findsNothing,
+      );
     });
 
     testWidgets('shows an inactive badge for an inactive facility', (
@@ -285,9 +294,7 @@ void main() {
   });
 
   group('expanded card (US1, FR-007/FR-008/FR-011)', () {
-    testWidgets('reveals three sections with rows for a store', (
-      tester,
-    ) async {
+    testWidgets('reveals three sections with rows for a store', (tester) async {
       when(
         () => warehouseRepository.list(
           facilityId: 1,
@@ -304,17 +311,29 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
-        (_) async =>
-            CashDrawerListResult(items: [_cashDrawer(1, 1)], total: 1),
+        (_) async => CashDrawerListResult(items: [_cashDrawer(1, 1)], total: 1),
       );
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
       await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('facility_section_warehouses_1')), findsOneWidget);
-      expect(find.byKey(const Key('facility_section_points_of_sale_1')), findsOneWidget);
-      expect(find.byKey(const Key('facility_section_cash_drawers_1')), findsOneWidget);
+      expect(
+        find.byKey(const Key('facility_section_warehouses_1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('facility_section_points_of_sale_1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('facility_section_cash_drawers_1')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('warehouse_row_1')), findsOneWidget);
       expect(find.byKey(const Key('cash_drawer_row_1')), findsOneWidget);
       expect(find.text('Warehouse 1'), findsOneWidget);
@@ -332,8 +351,7 @@ void main() {
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
-          (_) async =>
-              WarehouseListResult(items: [_warehouse(1, 2)], total: 1),
+          (_) async => WarehouseListResult(items: [_warehouse(1, 2)], total: 1),
         );
 
         await pumpScreen(
@@ -358,8 +376,9 @@ void main() {
         );
         expect(
           find.text(
-            AppLocalizations.of(tester.element(find.byKey(const Key('facilities_search_field'))))!
-                .productionSiteChildrenNote,
+            AppLocalizations.of(
+              tester.element(find.byKey(const Key('facilities_search_field'))),
+            )!.productionSiteChildrenNote,
           ),
           findsOneWidget,
         );
@@ -374,60 +393,60 @@ void main() {
       },
     );
 
-    testWidgets('an empty section shows its named placeholder', (
-      tester,
-    ) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+    testWidgets('an empty section shows its named placeholder', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
       await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
       await tester.pumpAndSettle();
 
-      final l10n = AppLocalizations.of(tester.element(find.byKey(const Key('facilities_search_field'))))!;
+      final l10n = AppLocalizations.of(
+        tester.element(find.byKey(const Key('facilities_search_field'))),
+      )!;
       expect(find.text(l10n.noWarehousesInFacility), findsOneWidget);
       expect(find.text(l10n.noPointsOfSaleInFacility), findsOneWidget);
       expect(find.text(l10n.noCashDrawersInFacility), findsOneWidget);
     });
 
-    testWidgets(
-      'a point of sale drawing stock from another facility is badged '
-      '(FR-009, research §3)',
-      (tester) async {
-        when(
-          () => warehouseRepository.list(
-            facilityId: 1,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          (_) async =>
-              WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
-        );
-        when(
-          () => pointSaleRepository.list(
-            facilityId: 1,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          // Draws from warehouse 99, which is not among facility 1's own
-          // warehouses (only warehouse 1 is).
-          (_) async =>
-              PointSaleListResult(items: [_pointSale(1, 1, 99)], total: 1),
-        );
+    testWidgets('a point of sale drawing stock from another facility is badged '
+        '(FR-009, research §3)', (tester) async {
+      when(
+        () => warehouseRepository.list(
+          facilityId: 1,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
+      );
+      when(
+        () => pointSaleRepository.list(
+          facilityId: 1,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        // Draws from warehouse 99, which is not among facility 1's own
+        // warehouses (only warehouse 1 is).
+        (_) async =>
+            PointSaleListResult(items: [_pointSale(1, 1, 99)], total: 1),
+      );
 
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          facilities: [_store],
-        );
-        await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
-        await tester.pumpAndSettle();
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
+      await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
+      await tester.pumpAndSettle();
 
-        final l10n = AppLocalizations.of(
-          tester.element(find.byKey(const Key('facilities_search_field'))),
-        )!;
-        expect(find.text(l10n.pointSaleForeignFacilityBadge), findsOneWidget);
-      },
-    );
+      final l10n = AppLocalizations.of(
+        tester.element(find.byKey(const Key('facilities_search_field'))),
+      )!;
+      expect(find.text(l10n.pointSaleForeignFacilityBadge), findsOneWidget);
+    });
 
     testWidgets(
       'a failure loading one facility\'s children is isolated to that '
@@ -449,7 +468,10 @@ void main() {
         await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('facility_children_retry_1')), findsOneWidget);
+        expect(
+          find.byKey(const Key('facility_children_retry_1')),
+          findsOneWidget,
+        );
 
         when(
           () => warehouseRepository.list(
@@ -458,8 +480,7 @@ void main() {
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
-          (_) async =>
-              WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
+          (_) async => WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
         );
         await tester.tap(find.byKey(const Key('facility_children_retry_1')));
         await tester.pumpAndSettle();
@@ -479,14 +500,22 @@ void main() {
         facilities: [_store, _productionSite],
       );
 
-      final l10n = AppLocalizations.of(tester.element(find.byKey(const Key('facilities_search_field'))))!;
+      final l10n = AppLocalizations.of(
+        tester.element(find.byKey(const Key('facilities_search_field'))),
+      )!;
       expect(find.text(l10n.facilitiesExpandAll), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('facilities_expand_all')));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('facility_section_warehouses_1')), findsOneWidget);
-      expect(find.byKey(const Key('facility_section_warehouses_2')), findsOneWidget);
+      expect(
+        find.byKey(const Key('facility_section_warehouses_1')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('facility_section_warehouses_2')),
+        findsOneWidget,
+      );
       expect(find.text(l10n.facilitiesCollapseAll), findsOneWidget);
     });
   });
@@ -495,20 +524,25 @@ void main() {
     testWidgets('Create actions are hidden without the create privilege', (
       tester,
     ) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _readOnlyUser,
-        facilities: [_store],
-      );
+      await pumpScreen(tester, signedInAs: _readOnlyUser, facilities: [_store]);
 
       expect(find.byKey(const Key('new_facility_button')), findsNothing);
 
       await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('facility_create_warehouse_1')), findsNothing);
-      expect(find.byKey(const Key('facility_create_point_sale_1')), findsNothing);
-      expect(find.byKey(const Key('facility_create_cash_drawer_1')), findsNothing);
+      expect(
+        find.byKey(const Key('facility_create_warehouse_1')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('facility_create_point_sale_1')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('facility_create_cash_drawer_1')),
+        findsNothing,
+      );
       expect(find.byKey(const Key('facility_edit_1')), findsNothing);
     });
 
@@ -545,10 +579,12 @@ void main() {
   });
 
   group('navigation (FR-022/FR-024/FR-025)', () {
-    testWidgets('the header body opens the facility read-only', (
-      tester,
-    ) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+    testWidgets('the header body opens the facility read-only', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
 
       await tester.tap(find.text('Main Store'));
       await tester.pumpAndSettle();
@@ -567,7 +603,11 @@ void main() {
         (_) async => WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
       );
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
       await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
       await tester.pumpAndSettle();
 
@@ -577,36 +617,41 @@ void main() {
       expect(find.text('/warehouses/1?view=true'), findsOneWidget);
     });
 
-    testWidgets(
-      'a section create action opens the blank form with the parent '
-      'facility pre-selected via the URL (FR-022/FR-023)',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          facilities: [_store],
-        );
-        await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
-        await tester.pumpAndSettle();
+    testWidgets('a section create action opens the blank form with the parent '
+        'facility pre-selected via the URL (FR-022/FR-023)', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
+      await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.byKey(const Key('facility_create_warehouse_1')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('facility_create_warehouse_1')));
+      await tester.pumpAndSettle();
 
-        expect(find.text('/warehouses/new?facility=1'), findsOneWidget);
-      },
-    );
+      expect(find.text('/warehouses/new?facility=1'), findsOneWidget);
+    });
   });
 
   group('retained from before this feature (FR-014/FR-015/FR-016)', () {
     testWidgets('search box and filter button are present', (tester) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
 
       expect(find.byKey(const Key('facilities_search_field')), findsOneWidget);
       expect(find.byKey(const Key('facilities_filter_button')), findsOneWidget);
     });
 
     testWidgets('an empty result shows the empty state', (tester) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser, facilities: const []);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: const [],
+      );
 
       expect(find.byKey(const Key('facilities_card_list')), findsNothing);
       expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
@@ -667,9 +712,7 @@ void main() {
             skip: 0,
             limit: any(named: 'limit'),
           ),
-        ).thenAnswer(
-          (_) async => FacilityListResult(items: page0, total: 25),
-        );
+        ).thenAnswer((_) async => FacilityListResult(items: page0, total: 25));
         when(
           () => facilityRepository.list(
             search: any(named: 'search'),
@@ -677,19 +720,13 @@ void main() {
             skip: 20,
             limit: any(named: 'limit'),
           ),
-        ).thenAnswer(
-          (_) async => FacilityListResult(items: page1, total: 25),
-        );
+        ).thenAnswer((_) async => FacilityListResult(items: page1, total: 25));
 
         final container = ProviderContainer(
           overrides: [
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
-            warehouseRepositoryProvider.overrideWithValue(
-              warehouseRepository,
-            ),
-            pointSaleRepositoryProvider.overrideWithValue(
-              pointSaleRepository,
-            ),
+            warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
+            pointSaleRepositoryProvider.overrideWithValue(pointSaleRepository),
             cashDrawerRepositoryProvider.overrideWithValue(
               cashDrawerRepository,
             ),
@@ -707,9 +744,7 @@ void main() {
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               home: const Scaffold(
-                body: FacilitiesListScreen(
-                  query: ListQuery(pageIndex: 1),
-                ),
+                body: FacilitiesListScreen(query: ListQuery(pageIndex: 1)),
               ),
             ),
           ),
@@ -730,9 +765,7 @@ void main() {
         // `_invalidateCaches`-style invalidation of the facilities list) —
         // the screen itself never resets pageIndex or expansion state.
         container.invalidate(
-          facilitiesListControllerProvider(
-            const FacilityFilter(pageIndex: 1),
-          ),
+          facilitiesListControllerProvider(const FacilityFilter(pageIndex: 1)),
         );
         await tester.pumpAndSettle();
 
@@ -781,7 +814,11 @@ void main() {
             PointSaleListResult(items: [_pointSale(1, 1, 1)], total: 1),
       );
 
-      await pumpCompact(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+      await pumpCompact(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
       expect(tester.takeException(), isNull);
 
       await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
@@ -792,16 +829,22 @@ void main() {
     testWidgets('the create-facility FAB is present and RBAC-gated', (
       tester,
     ) async {
-      await pumpCompact(tester, signedInAs: _fullAccessUser, facilities: [_store]);
+      await pumpCompact(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
       expect(find.byKey(const Key('new_facility_fab')), findsOneWidget);
       // The wide-tier toolbar button is not also shown.
       expect(find.byKey(const Key('new_facility_button')), findsNothing);
     });
 
-    testWidgets('the FAB is absent without facilities:create', (
-      tester,
-    ) async {
-      await pumpCompact(tester, signedInAs: _readOnlyUser, facilities: [_store]);
+    testWidgets('the FAB is absent without facilities:create', (tester) async {
+      await pumpCompact(
+        tester,
+        signedInAs: _readOnlyUser,
+        facilities: [_store],
+      );
       expect(find.byKey(const Key('new_facility_fab')), findsNothing);
     });
 
