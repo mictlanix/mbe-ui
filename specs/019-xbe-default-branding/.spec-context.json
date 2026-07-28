@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "019-xbe-default-branding",
+  "branch": "019-xbe-default-branding",
+  "selectedAt": "2026-07-28T22:57:00.044Z",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-07-28T23:14:07.961Z"
+    }
+  ]
+}
