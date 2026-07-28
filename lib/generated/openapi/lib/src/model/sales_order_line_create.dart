@@ -4,7 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/price1.dart';
-import 'package:mbe_api_client/src/model/quantity1.dart';
+import 'package:mbe_api_client/src/model/quantity.dart';
 import 'package:mbe_api_client/src/model/discount_rate.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -19,7 +19,6 @@ part 'sales_order_line_create.g.dart';
 /// * [price]
 /// * [discountRate]
 /// * [warehouse]
-/// * [delivery]
 /// * [comment]
 @BuiltValue()
 abstract class SalesOrderLineCreate
@@ -28,7 +27,7 @@ abstract class SalesOrderLineCreate
   int get product;
 
   @BuiltValueField(wireName: r'quantity')
-  Quantity1? get quantity;
+  Quantity? get quantity;
 
   @BuiltValueField(wireName: r'price')
   Price1? get price;
@@ -39,9 +38,6 @@ abstract class SalesOrderLineCreate
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
 
-  @BuiltValueField(wireName: r'delivery')
-  bool? get delivery;
-
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
@@ -51,7 +47,7 @@ abstract class SalesOrderLineCreate
       _$SalesOrderLineCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(SalesOrderLineCreateBuilder b) => b..delivery = false;
+  static void _defaults(SalesOrderLineCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<SalesOrderLineCreate> get serializer =>
@@ -83,7 +79,7 @@ class _$SalesOrderLineCreateSerializer
       yield r'quantity';
       yield serializers.serialize(
         object.quantity,
-        specifiedType: const FullType.nullable(Quantity1),
+        specifiedType: const FullType.nullable(Quantity),
       );
     }
     if (object.price != null) {
@@ -105,13 +101,6 @@ class _$SalesOrderLineCreateSerializer
       yield serializers.serialize(
         object.warehouse,
         specifiedType: const FullType.nullable(int),
-      );
-    }
-    if (object.delivery != null) {
-      yield r'delivery';
-      yield serializers.serialize(
-        object.delivery,
-        specifiedType: const FullType(bool),
       );
     }
     if (object.comment != null) {
@@ -158,9 +147,9 @@ class _$SalesOrderLineCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Quantity1),
+                    specifiedType: const FullType.nullable(Quantity),
                   )
-                  as Quantity1?;
+                  as Quantity?;
           if (valueDes == null) continue;
           result.quantity.replace(valueDes);
           break;
@@ -192,15 +181,6 @@ class _$SalesOrderLineCreateSerializer
                   as int?;
           if (valueDes == null) continue;
           result.warehouse = valueDes;
-          break;
-        case r'delivery':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.delivery = valueDes;
           break;
         case r'comment':
           final valueDes =

@@ -3,33 +3,31 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price1.dart';
-import 'package:mbe_api_client/src/model/quantity.dart';
-import 'package:mbe_api_client/src/model/discount_rate1.dart';
+import 'package:mbe_api_client/src/model/date.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'sales_order_line_update.g.dart';
+part 'itinerary_create.g.dart';
 
-/// SalesOrderLineUpdate
+/// ItineraryCreate
 ///
 /// Properties:
-/// * [quantity]
-/// * [price]
-/// * [discountRate]
+/// * [date]
+/// * [vehicle]
+/// * [vehicleOperator]
 /// * [warehouse]
 /// * [comment]
 @BuiltValue()
-abstract class SalesOrderLineUpdate
-    implements Built<SalesOrderLineUpdate, SalesOrderLineUpdateBuilder> {
-  @BuiltValueField(wireName: r'quantity')
-  Quantity? get quantity;
+abstract class ItineraryCreate
+    implements Built<ItineraryCreate, ItineraryCreateBuilder> {
+  @BuiltValueField(wireName: r'date')
+  Date? get date;
 
-  @BuiltValueField(wireName: r'price')
-  Price1? get price;
+  @BuiltValueField(wireName: r'vehicle')
+  int? get vehicle;
 
-  @BuiltValueField(wireName: r'discount_rate')
-  DiscountRate1? get discountRate;
+  @BuiltValueField(wireName: r'vehicle_operator')
+  int? get vehicleOperator;
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
@@ -37,54 +35,51 @@ abstract class SalesOrderLineUpdate
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  SalesOrderLineUpdate._();
+  ItineraryCreate._();
 
-  factory SalesOrderLineUpdate([void updates(SalesOrderLineUpdateBuilder b)]) =
-      _$SalesOrderLineUpdate;
+  factory ItineraryCreate([void updates(ItineraryCreateBuilder b)]) =
+      _$ItineraryCreate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(SalesOrderLineUpdateBuilder b) => b;
+  static void _defaults(ItineraryCreateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<SalesOrderLineUpdate> get serializer =>
-      _$SalesOrderLineUpdateSerializer();
+  static Serializer<ItineraryCreate> get serializer =>
+      _$ItineraryCreateSerializer();
 }
 
-class _$SalesOrderLineUpdateSerializer
-    implements PrimitiveSerializer<SalesOrderLineUpdate> {
+class _$ItineraryCreateSerializer
+    implements PrimitiveSerializer<ItineraryCreate> {
   @override
-  final Iterable<Type> types = const [
-    SalesOrderLineUpdate,
-    _$SalesOrderLineUpdate,
-  ];
+  final Iterable<Type> types = const [ItineraryCreate, _$ItineraryCreate];
 
   @override
-  final String wireName = r'SalesOrderLineUpdate';
+  final String wireName = r'ItineraryCreate';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    SalesOrderLineUpdate object, {
+    ItineraryCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.quantity != null) {
-      yield r'quantity';
+    if (object.date != null) {
+      yield r'date';
       yield serializers.serialize(
-        object.quantity,
-        specifiedType: const FullType.nullable(Quantity),
+        object.date,
+        specifiedType: const FullType.nullable(Date),
       );
     }
-    if (object.price != null) {
-      yield r'price';
+    if (object.vehicle != null) {
+      yield r'vehicle';
       yield serializers.serialize(
-        object.price,
-        specifiedType: const FullType.nullable(Price1),
+        object.vehicle,
+        specifiedType: const FullType.nullable(int),
       );
     }
-    if (object.discountRate != null) {
-      yield r'discount_rate';
+    if (object.vehicleOperator != null) {
+      yield r'vehicle_operator';
       yield serializers.serialize(
-        object.discountRate,
-        specifiedType: const FullType.nullable(DiscountRate1),
+        object.vehicleOperator,
+        specifiedType: const FullType.nullable(int),
       );
     }
     if (object.warehouse != null) {
@@ -106,7 +101,7 @@ class _$SalesOrderLineUpdateSerializer
   @override
   Object serialize(
     Serializers serializers,
-    SalesOrderLineUpdate object, {
+    ItineraryCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -121,42 +116,42 @@ class _$SalesOrderLineUpdateSerializer
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required SalesOrderLineUpdateBuilder result,
+    required ItineraryCreateBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'quantity':
+        case r'date':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Quantity),
+                    specifiedType: const FullType.nullable(Date),
                   )
-                  as Quantity?;
+                  as Date?;
           if (valueDes == null) continue;
-          result.quantity.replace(valueDes);
+          result.date = valueDes;
           break;
-        case r'price':
+        case r'vehicle':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Price1),
+                    specifiedType: const FullType.nullable(int),
                   )
-                  as Price1?;
+                  as int?;
           if (valueDes == null) continue;
-          result.price.replace(valueDes);
+          result.vehicle = valueDes;
           break;
-        case r'discount_rate':
+        case r'vehicle_operator':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(DiscountRate1),
+                    specifiedType: const FullType.nullable(int),
                   )
-                  as DiscountRate1?;
+                  as int?;
           if (valueDes == null) continue;
-          result.discountRate.replace(valueDes);
+          result.vehicleOperator = valueDes;
           break;
         case r'warehouse':
           final valueDes =
@@ -187,12 +182,12 @@ class _$SalesOrderLineUpdateSerializer
   }
 
   @override
-  SalesOrderLineUpdate deserialize(
+  ItineraryCreate deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = SalesOrderLineUpdateBuilder();
+    final result = ItineraryCreateBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

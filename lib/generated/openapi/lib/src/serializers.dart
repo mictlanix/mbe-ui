@@ -33,6 +33,9 @@ import 'package:mbe_api_client/src/model/cash_session_response.dart';
 import 'package:mbe_api_client/src/model/change_password_request.dart';
 import 'package:mbe_api_client/src/model/commission.dart';
 import 'package:mbe_api_client/src/model/commission1.dart';
+import 'package:mbe_api_client/src/model/commit_line_request.dart';
+import 'package:mbe_api_client/src/model/commit_line_update.dart';
+import 'package:mbe_api_client/src/model/commit_order_request.dart';
 import 'package:mbe_api_client/src/model/confirm_recovery_request.dart';
 import 'package:mbe_api_client/src/model/credit_limit.dart';
 import 'package:mbe_api_client/src/model/credit_limit1.dart';
@@ -51,6 +54,14 @@ import 'package:mbe_api_client/src/model/customer_refund_response.dart';
 import 'package:mbe_api_client/src/model/customer_refund_summary.dart';
 import 'package:mbe_api_client/src/model/customer_response.dart';
 import 'package:mbe_api_client/src/model/customer_update.dart';
+import 'package:mbe_api_client/src/model/delivery_order_create.dart';
+import 'package:mbe_api_client/src/model/delivery_order_event_response.dart';
+import 'package:mbe_api_client/src/model/delivery_order_line_response.dart';
+import 'package:mbe_api_client/src/model/delivery_order_line_update.dart';
+import 'package:mbe_api_client/src/model/delivery_order_response.dart';
+import 'package:mbe_api_client/src/model/delivery_order_status.dart';
+import 'package:mbe_api_client/src/model/delivery_order_summary.dart';
+import 'package:mbe_api_client/src/model/delivery_order_update.dart';
 import 'package:mbe_api_client/src/model/denomination.dart';
 import 'package:mbe_api_client/src/model/denomination_count.dart';
 import 'package:mbe_api_client/src/model/discount_rate.dart';
@@ -72,11 +83,19 @@ import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:mbe_api_client/src/model/facility_update.dart';
 import 'package:mbe_api_client/src/model/fiscal_certification_provider.dart';
+import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:mbe_api_client/src/model/high_profit1.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin1.dart';
+import 'package:mbe_api_client/src/model/itinerary_create.dart';
+import 'package:mbe_api_client/src/model/itinerary_line_response.dart';
+import 'package:mbe_api_client/src/model/itinerary_response.dart';
+import 'package:mbe_api_client/src/model/itinerary_status.dart';
+import 'package:mbe_api_client/src/model/itinerary_stop_response.dart';
+import 'package:mbe_api_client/src/model/itinerary_summary.dart';
+import 'package:mbe_api_client/src/model/itinerary_update.dart';
 import 'package:mbe_api_client/src/model/label_create.dart';
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:mbe_api_client/src/model/label_update.dart';
@@ -87,10 +106,12 @@ import 'package:mbe_api_client/src/model/list_response_credit_note_response.dart
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_payment_response.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_refund_summary.dart';
+import 'package:mbe_api_client/src/model/list_response_delivery_order_summary.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
 import 'package:mbe_api_client/src/model/list_response_exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/list_response_expense_response.dart';
 import 'package:mbe_api_client/src/model/list_response_facility_response.dart';
+import 'package:mbe_api_client/src/model/list_response_itinerary_summary.dart';
 import 'package:mbe_api_client/src/model/list_response_label_response.dart';
 import 'package:mbe_api_client/src/model/list_response_outstanding_order_response.dart';
 import 'package:mbe_api_client/src/model/list_response_payment_method_option_response.dart';
@@ -122,6 +143,9 @@ import 'package:mbe_api_client/src/model/payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_update.dart';
 import 'package:mbe_api_client/src/model/payment_terms.dart';
 import 'package:mbe_api_client/src/model/payment_type.dart';
+import 'package:mbe_api_client/src/model/pending_deliveries_response.dart';
+import 'package:mbe_api_client/src/model/pending_delivery_bucket.dart';
+import 'package:mbe_api_client/src/model/pending_delivery_line.dart';
 import 'package:mbe_api_client/src/model/point_sale_create.dart';
 import 'package:mbe_api_client/src/model/point_sale_response.dart';
 import 'package:mbe_api_client/src/model/point_sale_update.dart';
@@ -148,10 +172,13 @@ import 'package:mbe_api_client/src/model/product_price_update.dart';
 import 'package:mbe_api_client/src/model/product_response.dart';
 import 'package:mbe_api_client/src/model/product_stock_response.dart';
 import 'package:mbe_api_client/src/model/product_update.dart';
+import 'package:mbe_api_client/src/model/proof_of_delivery_response.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
 import 'package:mbe_api_client/src/model/quantity1.dart';
+import 'package:mbe_api_client/src/model/quantity2.dart';
 import 'package:mbe_api_client/src/model/rate.dart';
 import 'package:mbe_api_client/src/model/rate1.dart';
+import 'package:mbe_api_client/src/model/reason_request.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 import 'package:mbe_api_client/src/model/refund_payout.dart';
 import 'package:mbe_api_client/src/model/rejection_request.dart';
@@ -173,6 +200,9 @@ import 'package:mbe_api_client/src/model/sales_quote_update.dart';
 import 'package:mbe_api_client/src/model/sat_catalog_response.dart';
 import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/session_state.dart';
+import 'package:mbe_api_client/src/model/shortfall_reason.dart';
+import 'package:mbe_api_client/src/model/stop_create.dart';
+import 'package:mbe_api_client/src/model/stop_outcome.dart';
 import 'package:mbe_api_client/src/model/supplier_create.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:mbe_api_client/src/model/supplier_update.dart';
@@ -226,6 +256,9 @@ part 'serializers.g.dart';
   ChangePasswordRequest,
   Commission,
   Commission1,
+  CommitLineRequest,
+  CommitLineUpdate,
+  CommitOrderRequest,
   ConfirmRecoveryRequest,
   CreditLimit,
   CreditLimit1,
@@ -244,6 +277,14 @@ part 'serializers.g.dart';
   CustomerRefundSummary,
   CustomerResponse,
   CustomerUpdate,
+  DeliveryOrderCreate,
+  DeliveryOrderEventResponse,
+  DeliveryOrderLineResponse,
+  DeliveryOrderLineUpdate,
+  DeliveryOrderResponse,
+  DeliveryOrderStatus,
+  DeliveryOrderSummary,
+  DeliveryOrderUpdate,
   Denomination,
   DenominationCount,
   DiscountRate,
@@ -265,11 +306,19 @@ part 'serializers.g.dart';
   FacilityType,
   FacilityUpdate,
   FiscalCertificationProvider,
+  FulfillmentType,
   HTTPValidationError,
   HighProfit,
   HighProfit1,
   HighProfitMargin,
   HighProfitMargin1,
+  ItineraryCreate,
+  ItineraryLineResponse,
+  ItineraryResponse,
+  ItineraryStatus,
+  ItineraryStopResponse,
+  ItinerarySummary,
+  ItineraryUpdate,
   LabelCreate,
   LabelResponse,
   LabelUpdate,
@@ -280,10 +329,12 @@ part 'serializers.g.dart';
   ListResponseCustomerListItem,
   ListResponseCustomerPaymentResponse,
   ListResponseCustomerRefundSummary,
+  ListResponseDeliveryOrderSummary,
   ListResponseEmployeeResponse,
   ListResponseExchangeRateResponse,
   ListResponseExpenseResponse,
   ListResponseFacilityResponse,
+  ListResponseItinerarySummary,
   ListResponseLabelResponse,
   ListResponseOutstandingOrderResponse,
   ListResponsePaymentMethodOptionResponse,
@@ -315,6 +366,9 @@ part 'serializers.g.dart';
   PaymentMethodOptionUpdate,
   PaymentTerms,
   PaymentType,
+  PendingDeliveriesResponse,
+  PendingDeliveryBucket,
+  PendingDeliveryLine,
   PointSaleCreate,
   PointSaleResponse,
   PointSaleUpdate,
@@ -341,10 +395,13 @@ part 'serializers.g.dart';
   ProductResponse,
   ProductStockResponse,
   ProductUpdate,
+  ProofOfDeliveryResponse,
   Quantity,
   Quantity1,
+  Quantity2,
   Rate,
   Rate1,
+  ReasonRequest,
   RecoverPasswordAdminResponse,
   RefundPayout,
   RejectionRequest,
@@ -366,6 +423,9 @@ part 'serializers.g.dart';
   SatCatalogResponse,
   SatUnitOfMeasurementResponse,
   SessionState,
+  ShortfallReason,
+  StopCreate,
+  StopOutcome,
   SupplierCreate,
   SupplierResponse,
   SupplierUpdate,
@@ -422,6 +482,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ApplicationResponse)]),
             () => ListBuilder<ApplicationResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DeliveryOrderEventResponse)]),
+            () => ListBuilder<DeliveryOrderEventResponse>(),
           )
           ..add(const OneOfSerializer())
           ..add(const AnyOfSerializer())

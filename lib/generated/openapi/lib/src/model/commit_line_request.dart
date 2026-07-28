@@ -3,77 +3,59 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price1.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
-import 'package:mbe_api_client/src/model/price_adjustment.dart';
-import 'package:mbe_api_client/src/model/discount_rate.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'sales_quote_line_create.g.dart';
+part 'commit_line_request.g.dart';
 
-/// SalesQuoteLineCreate
+/// CommitLineRequest
 ///
 /// Properties:
-/// * [product]
+/// * [deliveryOrderDetail]
 /// * [quantity]
-/// * [price]
-/// * [priceAdjustment]
-/// * [discountRate]
 /// * [comment]
 @BuiltValue()
-abstract class SalesQuoteLineCreate
-    implements Built<SalesQuoteLineCreate, SalesQuoteLineCreateBuilder> {
-  @BuiltValueField(wireName: r'product')
-  int get product;
+abstract class CommitLineRequest
+    implements Built<CommitLineRequest, CommitLineRequestBuilder> {
+  @BuiltValueField(wireName: r'delivery_order_detail')
+  int get deliveryOrderDetail;
 
   @BuiltValueField(wireName: r'quantity')
   Quantity? get quantity;
 
-  @BuiltValueField(wireName: r'price')
-  Price1? get price;
-
-  @BuiltValueField(wireName: r'price_adjustment')
-  PriceAdjustment? get priceAdjustment;
-
-  @BuiltValueField(wireName: r'discount_rate')
-  DiscountRate? get discountRate;
-
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  SalesQuoteLineCreate._();
+  CommitLineRequest._();
 
-  factory SalesQuoteLineCreate([void updates(SalesQuoteLineCreateBuilder b)]) =
-      _$SalesQuoteLineCreate;
+  factory CommitLineRequest([void updates(CommitLineRequestBuilder b)]) =
+      _$CommitLineRequest;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(SalesQuoteLineCreateBuilder b) => b;
+  static void _defaults(CommitLineRequestBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<SalesQuoteLineCreate> get serializer =>
-      _$SalesQuoteLineCreateSerializer();
+  static Serializer<CommitLineRequest> get serializer =>
+      _$CommitLineRequestSerializer();
 }
 
-class _$SalesQuoteLineCreateSerializer
-    implements PrimitiveSerializer<SalesQuoteLineCreate> {
+class _$CommitLineRequestSerializer
+    implements PrimitiveSerializer<CommitLineRequest> {
   @override
-  final Iterable<Type> types = const [
-    SalesQuoteLineCreate,
-    _$SalesQuoteLineCreate,
-  ];
+  final Iterable<Type> types = const [CommitLineRequest, _$CommitLineRequest];
 
   @override
-  final String wireName = r'SalesQuoteLineCreate';
+  final String wireName = r'CommitLineRequest';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    SalesQuoteLineCreate object, {
+    CommitLineRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'product';
+    yield r'delivery_order_detail';
     yield serializers.serialize(
-      object.product,
+      object.deliveryOrderDetail,
       specifiedType: const FullType(int),
     );
     if (object.quantity != null) {
@@ -81,27 +63,6 @@ class _$SalesQuoteLineCreateSerializer
       yield serializers.serialize(
         object.quantity,
         specifiedType: const FullType.nullable(Quantity),
-      );
-    }
-    if (object.price != null) {
-      yield r'price';
-      yield serializers.serialize(
-        object.price,
-        specifiedType: const FullType.nullable(Price1),
-      );
-    }
-    if (object.priceAdjustment != null) {
-      yield r'price_adjustment';
-      yield serializers.serialize(
-        object.priceAdjustment,
-        specifiedType: const FullType(PriceAdjustment),
-      );
-    }
-    if (object.discountRate != null) {
-      yield r'discount_rate';
-      yield serializers.serialize(
-        object.discountRate,
-        specifiedType: const FullType(DiscountRate),
       );
     }
     if (object.comment != null) {
@@ -116,7 +77,7 @@ class _$SalesQuoteLineCreateSerializer
   @override
   Object serialize(
     Serializers serializers,
-    SalesQuoteLineCreate object, {
+    CommitLineRequest object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -131,18 +92,18 @@ class _$SalesQuoteLineCreateSerializer
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required SalesQuoteLineCreateBuilder result,
+    required CommitLineRequestBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'product':
+        case r'delivery_order_detail':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
-          result.product = valueDes;
+          result.deliveryOrderDetail = valueDes;
           break;
         case r'quantity':
           final valueDes =
@@ -153,34 +114,6 @@ class _$SalesQuoteLineCreateSerializer
                   as Quantity?;
           if (valueDes == null) continue;
           result.quantity.replace(valueDes);
-          break;
-        case r'price':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(Price1),
-                  )
-                  as Price1?;
-          if (valueDes == null) continue;
-          result.price.replace(valueDes);
-          break;
-        case r'price_adjustment':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(PriceAdjustment),
-                  )
-                  as PriceAdjustment;
-          result.priceAdjustment.replace(valueDes);
-          break;
-        case r'discount_rate':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(DiscountRate),
-                  )
-                  as DiscountRate;
-          result.discountRate.replace(valueDes);
           break;
         case r'comment':
           final valueDes =
@@ -201,12 +134,12 @@ class _$SalesQuoteLineCreateSerializer
   }
 
   @override
-  SalesQuoteLineCreate deserialize(
+  CommitLineRequest deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = SalesQuoteLineCreateBuilder();
+    final result = CommitLineRequestBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

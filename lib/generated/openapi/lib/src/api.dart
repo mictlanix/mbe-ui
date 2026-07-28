@@ -17,6 +17,8 @@ import 'package:mbe_api_client/src/api/credit_notes_api.dart';
 import 'package:mbe_api_client/src/api/customer_payments_api.dart';
 import 'package:mbe_api_client/src/api/customer_refunds_api.dart';
 import 'package:mbe_api_client/src/api/customers_api.dart';
+import 'package:mbe_api_client/src/api/delivery_itineraries_api.dart';
+import 'package:mbe_api_client/src/api/delivery_orders_api.dart';
 import 'package:mbe_api_client/src/api/employees_api.dart';
 import 'package:mbe_api_client/src/api/exchange_rates_api.dart';
 import 'package:mbe_api_client/src/api/expenses_api.dart';
@@ -159,6 +161,18 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   CustomersApi getCustomersApi() {
     return CustomersApi(dio, serializers);
+  }
+
+  /// Get DeliveryItinerariesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  DeliveryItinerariesApi getDeliveryItinerariesApi() {
+    return DeliveryItinerariesApi(dio, serializers);
+  }
+
+  /// Get DeliveryOrdersApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  DeliveryOrdersApi getDeliveryOrdersApi() {
+    return DeliveryOrdersApi(dio, serializers);
   }
 
   /// Get EmployeesApi instance, base route and serializer can be overridden by a given but be careful,

@@ -14,6 +14,7 @@ part 'product_stock_response.g.dart';
 /// * [warehouse]
 /// * [warehouseName]
 /// * [onHand]
+/// * [available]
 @BuiltValue()
 abstract class ProductStockResponse
     implements Built<ProductStockResponse, ProductStockResponseBuilder> {
@@ -25,6 +26,9 @@ abstract class ProductStockResponse
 
   @BuiltValueField(wireName: r'on_hand')
   String get onHand;
+
+  @BuiltValueField(wireName: r'available')
+  String get available;
 
   ProductStockResponse._();
 
@@ -70,6 +74,11 @@ class _$ProductStockResponseSerializer
     yield r'on_hand';
     yield serializers.serialize(
       object.onHand,
+      specifiedType: const FullType(String),
+    );
+    yield r'available';
+    yield serializers.serialize(
+      object.available,
       specifiedType: const FullType(String),
     );
   }
@@ -123,6 +132,15 @@ class _$ProductStockResponseSerializer
                   )
                   as String;
           result.onHand = valueDes;
+          break;
+        case r'available':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.available = valueDes;
           break;
         default:
           unhandled.add(key);

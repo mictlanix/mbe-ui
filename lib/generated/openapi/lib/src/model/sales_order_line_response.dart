@@ -25,7 +25,6 @@ part 'sales_order_line_response.g.dart';
 /// * [currency]
 /// * [exchangeRate]
 /// * [warehouse]
-/// * [delivery]
 /// * [comment]
 /// * [subtotal]
 /// * [taxTotal]
@@ -72,9 +71,6 @@ abstract class SalesOrderLineResponse
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
-
-  @BuiltValueField(wireName: r'delivery')
-  bool get delivery;
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
@@ -185,11 +181,6 @@ class _$SalesOrderLineResponseSerializer
             object.warehouse,
             specifiedType: const FullType.nullable(int),
           );
-    yield r'delivery';
-    yield serializers.serialize(
-      object.delivery,
-      specifiedType: const FullType(bool),
-    );
     yield r'comment';
     yield object.comment == null
         ? null
@@ -350,15 +341,6 @@ class _$SalesOrderLineResponseSerializer
                   as int?;
           if (valueDes == null) continue;
           result.warehouse = valueDes;
-          break;
-        case r'delivery':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.delivery = valueDes;
           break;
         case r'comment':
           final valueDes =

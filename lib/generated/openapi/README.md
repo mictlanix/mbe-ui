@@ -108,6 +108,37 @@ Class | Method | HTTP request | Description
 [*CustomersApi*](doc/CustomersApi.md) | [**getCustomerApiV1CustomersCustomerIdGet**](doc/CustomersApi.md#getcustomerapiv1customerscustomeridget) | **GET** /api/v1/customers/{customer_id} | Get Customer
 [*CustomersApi*](doc/CustomersApi.md) | [**listCustomersApiV1CustomersGet**](doc/CustomersApi.md#listcustomersapiv1customersget) | **GET** /api/v1/customers | List Customers
 [*CustomersApi*](doc/CustomersApi.md) | [**updateCustomerApiV1CustomersCustomerIdPut**](doc/CustomersApi.md#updatecustomerapiv1customerscustomeridput) | **PUT** /api/v1/customers/{customer_id} | Update Customer
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**addStopApiV1DeliveryItinerariesItineraryIdStopsPost**](doc/DeliveryItinerariesApi.md#addstopapiv1deliveryitinerariesitineraryidstopspost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/stops | Add Stop
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**adjustCommitmentApiV1DeliveryItinerariesItineraryIdStopsStopIdLinesLineIdPut**](doc/DeliveryItinerariesApi.md#adjustcommitmentapiv1deliveryitinerariesitineraryidstopsstopidlineslineidput) | **PUT** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/lines/{line_id} | Adjust Commitment
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**cancelItineraryApiV1DeliveryItinerariesItineraryIdCancelPost**](doc/DeliveryItinerariesApi.md#cancelitineraryapiv1deliveryitinerariesitineraryidcancelpost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/cancel | Cancel Itinerary
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**closeStopApiV1DeliveryItinerariesItineraryIdStopsStopIdClosePost**](doc/DeliveryItinerariesApi.md#closestopapiv1deliveryitinerariesitineraryidstopsstopidclosepost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/close | Close Stop
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**commitLineApiV1DeliveryItinerariesItineraryIdStopsStopIdLinesPost**](doc/DeliveryItinerariesApi.md#commitlineapiv1deliveryitinerariesitineraryidstopsstopidlinespost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/lines | Commit Line
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**commitWholeOrderApiV1DeliveryItinerariesItineraryIdStopsStopIdLinesAllPost**](doc/DeliveryItinerariesApi.md#commitwholeorderapiv1deliveryitinerariesitineraryidstopsstopidlinesallpost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/lines/all | Commit Whole Order
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**createItineraryApiV1DeliveryItinerariesPost**](doc/DeliveryItinerariesApi.md#createitineraryapiv1deliveryitinerariespost) | **POST** /api/v1/delivery-itineraries | Create Itinerary
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**departApiV1DeliveryItinerariesItineraryIdDepartPost**](doc/DeliveryItinerariesApi.md#departapiv1deliveryitinerariesitineraryiddepartpost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/depart | Depart
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**getItineraryApiV1DeliveryItinerariesItineraryIdGet**](doc/DeliveryItinerariesApi.md#getitineraryapiv1deliveryitinerariesitineraryidget) | **GET** /api/v1/delivery-itineraries/{itinerary_id} | Get Itinerary
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**listItinerariesApiV1DeliveryItinerariesGet**](doc/DeliveryItinerariesApi.md#listitinerariesapiv1deliveryitinerariesget) | **GET** /api/v1/delivery-itineraries | List Itineraries
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**pendingDeliveriesApiV1DeliveryItinerariesDeliveriesGet**](doc/DeliveryItinerariesApi.md#pendingdeliveriesapiv1deliveryitinerariesdeliveriesget) | **GET** /api/v1/delivery-itineraries/deliveries | Pending Deliveries
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**releaseCommitmentApiV1DeliveryItinerariesItineraryIdStopsStopIdLinesLineIdDelete**](doc/DeliveryItinerariesApi.md#releasecommitmentapiv1deliveryitinerariesitineraryidstopsstopidlineslineiddelete) | **DELETE** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/lines/{line_id} | Release Commitment
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**removeStopApiV1DeliveryItinerariesItineraryIdStopsStopIdDelete**](doc/DeliveryItinerariesApi.md#removestopapiv1deliveryitinerariesitineraryidstopsstopiddelete) | **DELETE** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id} | Remove Stop
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**updateItineraryApiV1DeliveryItinerariesItineraryIdPut**](doc/DeliveryItinerariesApi.md#updateitineraryapiv1deliveryitinerariesitineraryidput) | **PUT** /api/v1/delivery-itineraries/{itinerary_id} | Update Itinerary
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**approveDeliveryOrderApiV1DeliveryOrdersApprovalDeliveryOrderIdApprovePost**](doc/DeliveryOrdersApi.md#approvedeliveryorderapiv1deliveryordersapprovaldeliveryorderidapprovepost) | **POST** /api/v1/delivery-orders/approval/{delivery_order_id}/approve | Approve Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**cancelDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdCancelPost**](doc/DeliveryOrdersApi.md#canceldeliveryorderapiv1deliveryordersdeliveryorderidcancelpost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/cancel | Cancel Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**confirmDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdConfirmPost**](doc/DeliveryOrdersApi.md#confirmdeliveryorderapiv1deliveryordersdeliveryorderidconfirmpost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/confirm | Confirm Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**confirmPickupApiV1DeliveryOrdersDeliveryOrderIdPickupPost**](doc/DeliveryOrdersApi.md#confirmpickupapiv1deliveryordersdeliveryorderidpickuppost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/pickup | Confirm Pickup
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**createDeliveryOrderApiV1DeliveryOrdersPost**](doc/DeliveryOrdersApi.md#createdeliveryorderapiv1deliveryorderspost) | **POST** /api/v1/delivery-orders | Create Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**deleteDeliveryOrderLineApiV1DeliveryOrdersDeliveryOrderIdLinesLineIdDelete**](doc/DeliveryOrdersApi.md#deletedeliveryorderlineapiv1deliveryordersdeliveryorderidlineslineiddelete) | **DELETE** /api/v1/delivery-orders/{delivery_order_id}/lines/{line_id} | Delete Delivery Order Line
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**getDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdGet**](doc/DeliveryOrdersApi.md#getdeliveryorderapiv1deliveryordersdeliveryorderidget) | **GET** /api/v1/delivery-orders/{delivery_order_id} | Get Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**getProofApiV1DeliveryOrdersDeliveryOrderIdProofGet**](doc/DeliveryOrdersApi.md#getproofapiv1deliveryordersdeliveryorderidproofget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/proof | Get Proof
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**getProofImageApiV1DeliveryOrdersDeliveryOrderIdProofImageGet**](doc/DeliveryOrdersApi.md#getproofimageapiv1deliveryordersdeliveryorderidproofimageget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/proof/image | Get Proof Image
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listApprovalQueueApiV1DeliveryOrdersApprovalGet**](doc/DeliveryOrdersApi.md#listapprovalqueueapiv1deliveryordersapprovalget) | **GET** /api/v1/delivery-orders/approval | List Approval Queue
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliveryOrderEventsApiV1DeliveryOrdersDeliveryOrderIdEventsGet**](doc/DeliveryOrdersApi.md#listdeliveryordereventsapiv1deliveryordersdeliveryorderideventsget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/events | List Delivery Order Events
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliveryOrdersApiV1DeliveryOrdersGet**](doc/DeliveryOrdersApi.md#listdeliveryordersapiv1deliveryordersget) | **GET** /api/v1/delivery-orders | List Delivery Orders
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**markReadyForPickupApiV1DeliveryOrdersDeliveryOrderIdReadyForPickupPost**](doc/DeliveryOrdersApi.md#markreadyforpickupapiv1deliveryordersdeliveryorderidreadyforpickuppost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/ready-for-pickup | Mark Ready For Pickup
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**rejectDeliveryOrderApiV1DeliveryOrdersApprovalDeliveryOrderIdRejectPost**](doc/DeliveryOrdersApi.md#rejectdeliveryorderapiv1deliveryordersapprovaldeliveryorderidrejectpost) | **POST** /api/v1/delivery-orders/approval/{delivery_order_id}/reject | Reject Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**requeueDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdRequeuePost**](doc/DeliveryOrdersApi.md#requeuedeliveryorderapiv1deliveryordersdeliveryorderidrequeuepost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/requeue | Requeue Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**updateDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdPut**](doc/DeliveryOrdersApi.md#updatedeliveryorderapiv1deliveryordersdeliveryorderidput) | **PUT** /api/v1/delivery-orders/{delivery_order_id} | Update Delivery Order
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**updateDeliveryOrderLineApiV1DeliveryOrdersDeliveryOrderIdLinesLineIdPut**](doc/DeliveryOrdersApi.md#updatedeliveryorderlineapiv1deliveryordersdeliveryorderidlineslineidput) | **PUT** /api/v1/delivery-orders/{delivery_order_id}/lines/{line_id} | Update Delivery Order Line
 [*EmployeesApi*](doc/EmployeesApi.md) | [**createEmployeeApiV1EmployeesPost**](doc/EmployeesApi.md#createemployeeapiv1employeespost) | **POST** /api/v1/employees | Create Employee
 [*EmployeesApi*](doc/EmployeesApi.md) | [**deleteEmployeeApiV1EmployeesEmployeeIdDelete**](doc/EmployeesApi.md#deleteemployeeapiv1employeesemployeeiddelete) | **DELETE** /api/v1/employees/{employee_id} | Delete Employee
 [*EmployeesApi*](doc/EmployeesApi.md) | [**getEmployeeApiV1EmployeesEmployeeIdGet**](doc/EmployeesApi.md#getemployeeapiv1employeesemployeeidget) | **GET** /api/v1/employees/{employee_id} | Get Employee
@@ -279,6 +310,9 @@ Class | Method | HTTP request | Description
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [Commission](doc/Commission.md)
  - [Commission1](doc/Commission1.md)
+ - [CommitLineRequest](doc/CommitLineRequest.md)
+ - [CommitLineUpdate](doc/CommitLineUpdate.md)
+ - [CommitOrderRequest](doc/CommitOrderRequest.md)
  - [ConfirmRecoveryRequest](doc/ConfirmRecoveryRequest.md)
  - [CreditLimit](doc/CreditLimit.md)
  - [CreditLimit1](doc/CreditLimit1.md)
@@ -297,6 +331,14 @@ Class | Method | HTTP request | Description
  - [CustomerRefundSummary](doc/CustomerRefundSummary.md)
  - [CustomerResponse](doc/CustomerResponse.md)
  - [CustomerUpdate](doc/CustomerUpdate.md)
+ - [DeliveryOrderCreate](doc/DeliveryOrderCreate.md)
+ - [DeliveryOrderEventResponse](doc/DeliveryOrderEventResponse.md)
+ - [DeliveryOrderLineResponse](doc/DeliveryOrderLineResponse.md)
+ - [DeliveryOrderLineUpdate](doc/DeliveryOrderLineUpdate.md)
+ - [DeliveryOrderResponse](doc/DeliveryOrderResponse.md)
+ - [DeliveryOrderStatus](doc/DeliveryOrderStatus.md)
+ - [DeliveryOrderSummary](doc/DeliveryOrderSummary.md)
+ - [DeliveryOrderUpdate](doc/DeliveryOrderUpdate.md)
  - [Denomination](doc/Denomination.md)
  - [DenominationCount](doc/DenominationCount.md)
  - [DiscountRate](doc/DiscountRate.md)
@@ -318,11 +360,19 @@ Class | Method | HTTP request | Description
  - [FacilityType](doc/FacilityType.md)
  - [FacilityUpdate](doc/FacilityUpdate.md)
  - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
+ - [FulfillmentType](doc/FulfillmentType.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfit1](doc/HighProfit1.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
  - [HighProfitMargin1](doc/HighProfitMargin1.md)
+ - [ItineraryCreate](doc/ItineraryCreate.md)
+ - [ItineraryLineResponse](doc/ItineraryLineResponse.md)
+ - [ItineraryResponse](doc/ItineraryResponse.md)
+ - [ItineraryStatus](doc/ItineraryStatus.md)
+ - [ItineraryStopResponse](doc/ItineraryStopResponse.md)
+ - [ItinerarySummary](doc/ItinerarySummary.md)
+ - [ItineraryUpdate](doc/ItineraryUpdate.md)
  - [LabelCreate](doc/LabelCreate.md)
  - [LabelResponse](doc/LabelResponse.md)
  - [LabelUpdate](doc/LabelUpdate.md)
@@ -333,10 +383,12 @@ Class | Method | HTTP request | Description
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
  - [ListResponseCustomerPaymentResponse](doc/ListResponseCustomerPaymentResponse.md)
  - [ListResponseCustomerRefundSummary](doc/ListResponseCustomerRefundSummary.md)
+ - [ListResponseDeliveryOrderSummary](doc/ListResponseDeliveryOrderSummary.md)
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)
  - [ListResponseExchangeRateResponse](doc/ListResponseExchangeRateResponse.md)
  - [ListResponseExpenseResponse](doc/ListResponseExpenseResponse.md)
  - [ListResponseFacilityResponse](doc/ListResponseFacilityResponse.md)
+ - [ListResponseItinerarySummary](doc/ListResponseItinerarySummary.md)
  - [ListResponseLabelResponse](doc/ListResponseLabelResponse.md)
  - [ListResponseOutstandingOrderResponse](doc/ListResponseOutstandingOrderResponse.md)
  - [ListResponsePaymentMethodOptionResponse](doc/ListResponsePaymentMethodOptionResponse.md)
@@ -368,6 +420,9 @@ Class | Method | HTTP request | Description
  - [PaymentMethodOptionUpdate](doc/PaymentMethodOptionUpdate.md)
  - [PaymentTerms](doc/PaymentTerms.md)
  - [PaymentType](doc/PaymentType.md)
+ - [PendingDeliveriesResponse](doc/PendingDeliveriesResponse.md)
+ - [PendingDeliveryBucket](doc/PendingDeliveryBucket.md)
+ - [PendingDeliveryLine](doc/PendingDeliveryLine.md)
  - [PointSaleCreate](doc/PointSaleCreate.md)
  - [PointSaleResponse](doc/PointSaleResponse.md)
  - [PointSaleUpdate](doc/PointSaleUpdate.md)
@@ -394,10 +449,13 @@ Class | Method | HTTP request | Description
  - [ProductResponse](doc/ProductResponse.md)
  - [ProductStockResponse](doc/ProductStockResponse.md)
  - [ProductUpdate](doc/ProductUpdate.md)
+ - [ProofOfDeliveryResponse](doc/ProofOfDeliveryResponse.md)
  - [Quantity](doc/Quantity.md)
  - [Quantity1](doc/Quantity1.md)
+ - [Quantity2](doc/Quantity2.md)
  - [Rate](doc/Rate.md)
  - [Rate1](doc/Rate1.md)
+ - [ReasonRequest](doc/ReasonRequest.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [RefundPayout](doc/RefundPayout.md)
  - [RejectionRequest](doc/RejectionRequest.md)
@@ -419,6 +477,9 @@ Class | Method | HTTP request | Description
  - [SatCatalogResponse](doc/SatCatalogResponse.md)
  - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
  - [SessionState](doc/SessionState.md)
+ - [ShortfallReason](doc/ShortfallReason.md)
+ - [StopCreate](doc/StopCreate.md)
+ - [StopOutcome](doc/StopOutcome.md)
  - [SupplierCreate](doc/SupplierCreate.md)
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)

@@ -3,94 +3,91 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price1.dart';
-import 'package:mbe_api_client/src/model/quantity.dart';
-import 'package:mbe_api_client/src/model/discount_rate1.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'sales_order_line_update.g.dart';
+part 'delivery_order_update.g.dart';
 
-/// SalesOrderLineUpdate
+/// DeliveryOrderUpdate
 ///
 /// Properties:
-/// * [quantity]
-/// * [price]
-/// * [discountRate]
-/// * [warehouse]
+/// * [date]
+/// * [priority]
+/// * [shipTo]
+/// * [contact]
 /// * [comment]
 @BuiltValue()
-abstract class SalesOrderLineUpdate
-    implements Built<SalesOrderLineUpdate, SalesOrderLineUpdateBuilder> {
-  @BuiltValueField(wireName: r'quantity')
-  Quantity? get quantity;
+abstract class DeliveryOrderUpdate
+    implements Built<DeliveryOrderUpdate, DeliveryOrderUpdateBuilder> {
+  @BuiltValueField(wireName: r'date')
+  DateTime? get date;
 
-  @BuiltValueField(wireName: r'price')
-  Price1? get price;
+  @BuiltValueField(wireName: r'priority')
+  int? get priority;
 
-  @BuiltValueField(wireName: r'discount_rate')
-  DiscountRate1? get discountRate;
+  @BuiltValueField(wireName: r'ship_to')
+  int? get shipTo;
 
-  @BuiltValueField(wireName: r'warehouse')
-  int? get warehouse;
+  @BuiltValueField(wireName: r'contact')
+  int? get contact;
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
-  SalesOrderLineUpdate._();
+  DeliveryOrderUpdate._();
 
-  factory SalesOrderLineUpdate([void updates(SalesOrderLineUpdateBuilder b)]) =
-      _$SalesOrderLineUpdate;
+  factory DeliveryOrderUpdate([void updates(DeliveryOrderUpdateBuilder b)]) =
+      _$DeliveryOrderUpdate;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(SalesOrderLineUpdateBuilder b) => b;
+  static void _defaults(DeliveryOrderUpdateBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<SalesOrderLineUpdate> get serializer =>
-      _$SalesOrderLineUpdateSerializer();
+  static Serializer<DeliveryOrderUpdate> get serializer =>
+      _$DeliveryOrderUpdateSerializer();
 }
 
-class _$SalesOrderLineUpdateSerializer
-    implements PrimitiveSerializer<SalesOrderLineUpdate> {
+class _$DeliveryOrderUpdateSerializer
+    implements PrimitiveSerializer<DeliveryOrderUpdate> {
   @override
   final Iterable<Type> types = const [
-    SalesOrderLineUpdate,
-    _$SalesOrderLineUpdate,
+    DeliveryOrderUpdate,
+    _$DeliveryOrderUpdate,
   ];
 
   @override
-  final String wireName = r'SalesOrderLineUpdate';
+  final String wireName = r'DeliveryOrderUpdate';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    SalesOrderLineUpdate object, {
+    DeliveryOrderUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.quantity != null) {
-      yield r'quantity';
+    if (object.date != null) {
+      yield r'date';
       yield serializers.serialize(
-        object.quantity,
-        specifiedType: const FullType.nullable(Quantity),
+        object.date,
+        specifiedType: const FullType.nullable(DateTime),
       );
     }
-    if (object.price != null) {
-      yield r'price';
+    if (object.priority != null) {
+      yield r'priority';
       yield serializers.serialize(
-        object.price,
-        specifiedType: const FullType.nullable(Price1),
+        object.priority,
+        specifiedType: const FullType.nullable(int),
       );
     }
-    if (object.discountRate != null) {
-      yield r'discount_rate';
+    if (object.shipTo != null) {
+      yield r'ship_to';
       yield serializers.serialize(
-        object.discountRate,
-        specifiedType: const FullType.nullable(DiscountRate1),
+        object.shipTo,
+        specifiedType: const FullType.nullable(int),
       );
     }
-    if (object.warehouse != null) {
-      yield r'warehouse';
+    if (object.contact != null) {
+      yield r'contact';
       yield serializers.serialize(
-        object.warehouse,
+        object.contact,
         specifiedType: const FullType.nullable(int),
       );
     }
@@ -106,7 +103,7 @@ class _$SalesOrderLineUpdateSerializer
   @override
   Object serialize(
     Serializers serializers,
-    SalesOrderLineUpdate object, {
+    DeliveryOrderUpdate object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -121,44 +118,24 @@ class _$SalesOrderLineUpdateSerializer
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required SalesOrderLineUpdateBuilder result,
+    required DeliveryOrderUpdateBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'quantity':
+        case r'date':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Quantity),
+                    specifiedType: const FullType.nullable(DateTime),
                   )
-                  as Quantity?;
+                  as DateTime?;
           if (valueDes == null) continue;
-          result.quantity.replace(valueDes);
+          result.date = valueDes;
           break;
-        case r'price':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(Price1),
-                  )
-                  as Price1?;
-          if (valueDes == null) continue;
-          result.price.replace(valueDes);
-          break;
-        case r'discount_rate':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(DiscountRate1),
-                  )
-                  as DiscountRate1?;
-          if (valueDes == null) continue;
-          result.discountRate.replace(valueDes);
-          break;
-        case r'warehouse':
+        case r'priority':
           final valueDes =
               serializers.deserialize(
                     value,
@@ -166,7 +143,27 @@ class _$SalesOrderLineUpdateSerializer
                   )
                   as int?;
           if (valueDes == null) continue;
-          result.warehouse = valueDes;
+          result.priority = valueDes;
+          break;
+        case r'ship_to':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.shipTo = valueDes;
+          break;
+        case r'contact':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.contact = valueDes;
           break;
         case r'comment':
           final valueDes =
@@ -187,12 +184,12 @@ class _$SalesOrderLineUpdateSerializer
   }
 
   @override
-  SalesOrderLineUpdate deserialize(
+  DeliveryOrderUpdate deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = SalesOrderLineUpdateBuilder();
+    final result = DeliveryOrderUpdateBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

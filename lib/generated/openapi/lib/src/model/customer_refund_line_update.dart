@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/quantity.dart';
+import 'package:mbe_api_client/src/model/quantity2.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -19,7 +19,7 @@ abstract class CustomerRefundLineUpdate
     implements
         Built<CustomerRefundLineUpdate, CustomerRefundLineUpdateBuilder> {
   @BuiltValueField(wireName: r'quantity')
-  Quantity? get quantity;
+  Quantity2? get quantity;
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
@@ -58,7 +58,7 @@ class _$CustomerRefundLineUpdateSerializer
       yield r'quantity';
       yield serializers.serialize(
         object.quantity,
-        specifiedType: const FullType.nullable(Quantity),
+        specifiedType: const FullType.nullable(Quantity2),
       );
     }
     if (object.warehouse != null) {
@@ -99,9 +99,9 @@ class _$CustomerRefundLineUpdateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Quantity),
+                    specifiedType: const FullType.nullable(Quantity2),
                   )
-                  as Quantity?;
+                  as Quantity2?;
           if (valueDes == null) continue;
           result.quantity.replace(valueDes);
           break;
