@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+body { margin:0; background:#0B0A09; color:#EFE9DF; font-family:Roboto, Helvetica, Arial, sans-serif; text-wrap:pretty; }
+a { color:#ECAB03; text-decoration:none; }
+a:hover { color:#FFD466; }
+.ms { font-family:'Material Symbols Outlined'; font-weight:400; font-style:normal; line-height:1; letter-spacing:normal; -webkit-font-feature-settings:'liga'; font-variation-settings:'FILL' 0; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; gap:80px; padding:64px; width:1600px; margin:0 auto; background:#0B0A09">
+
+  <header style="display:flex; align-items:flex-end; justify-content:space-between; gap:48px; padding-bottom:32px; border-bottom:1px solid #332E27">
+    <div style="display:flex; flex-direction:column; gap:16px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:#ECAB03">Propuesta de identidad en producto</span>
+      <h1 style="margin:0; font-family:Archivo, sans-serif; font-weight:700; font-size:56px; line-height:1.02; letter-spacing:-0.02em; color:#EFE9DF">Business Essentials<br>look &amp; feel</h1>
+      <p style="margin:0; max-width:720px; font-size:17px; line-height:1.6; color:#B4ACA0">Material 3 en modo oscuro, recoloreado sobre la paleta aprobada en la guía de identidad XBE: oro Pantone 124 C como color primario, naranja 165 C como acento y rojo 1795 C reservado para estados críticos. Incluye colocación del logotipo, tipografía y assets listos para Flutter.</p>
+    </div>
+    <img src="brand/xbe-lockup.svg" alt="XBE Business Essentials" style="width:260px; height:auto; flex:none">
+  </header>
+
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.18em; color:#8C857A">01 — COLOR</span>
+      <h2 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:32px; color:#EFE9DF">Esquema de color Material 3</h2>
+      <p style="margin:0; max-width:820px; font-size:15px; line-height:1.6; color:#B4ACA0">El morado por defecto de Material desaparece. Los neutros pasan de gris puro a un neutro cálido (mismo tono que el oro, croma mínima) para que la marca no compita con el fondo.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:20px">
+      <div style="display:flex; flex-direction:column; gap:12px; padding:20px; border-radius:16px; background:#1B1814; border:1px solid #332E27">
+        <div style="height:88px; border-radius:12px; background:#ECAB03; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; color:#241900; font-weight:700; font-family:Archivo, sans-serif">primary</div>
+        <div style="display:flex; flex-direction:column; gap:2px"><span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#EFE9DF">#ECAB03</span><span style="font-size:12px; color:#8C857A">Pantone 124 C · oro corporativo</span></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; padding:20px; border-radius:16px; background:#1B1814; border:1px solid #332E27">
+        <div style="height:88px; border-radius:12px; background:#EC672A; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; color:#2B0F00; font-weight:700; font-family:Archivo, sans-serif">tertiary</div>
+        <div style="display:flex; flex-direction:column; gap:2px"><span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#EFE9DF">#EC672A</span><span style="font-size:12px; color:#8C857A">Pantone 165 C · acento, gráficas</span></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; padding:20px; border-radius:16px; background:#1B1814; border:1px solid #332E27">
+        <div style="height:88px; border-radius:12px; background:#D8262E; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; color:#FFFFFF; font-weight:700; font-family:Archivo, sans-serif">error</div>
+        <div style="display:flex; flex-direction:column; gap:2px"><span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#EFE9DF">#D8262E</span><span style="font-size:12px; color:#8C857A">Pantone 1795 C · sólo estados</span></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; padding:20px; border-radius:16px; background:#1B1814; border:1px solid #332E27">
+        <div style="height:88px; border-radius:12px; background:#C7C7C8; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; color:#232323; font-weight:700; font-family:Archivo, sans-serif">wordmark</div>
+        <div style="display:flex; flex-direction:column; gap:2px"><span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#EFE9DF">#C7C7C8</span><span style="font-size:12px; color:#8C857A">Cool Gray 3 C · logotipo en oscuro</span></div>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(8, 1fr); gap:2px; border-radius:14px; overflow:hidden; border:1px solid #332E27">
+      <sc-for list="{{ neutrals }}" as="n" hint-placeholder-count="8">
+        <div style="padding:16px 14px 18px; display:flex; flex-direction:column; gap:6px; min-height:110px; box-sizing:border-box">
+          <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#B4ACA0">{{ n.hex }}</span>
+          <span style="font-size:12px; line-height:1.35; color:#8C857A">{{ n.role }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.18em; color:#8C857A">02 — TIPOGRAFÍA</span>
+      <h2 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:32px; color:#EFE9DF">Archivo + Roboto</h2>
+      <p style="margin:0; max-width:820px; font-size:15px; line-height:1.6; color:#B4ACA0">BentonSans Bold es la fuente corporativa (licencia de pago, ideal para el logotipo y material impreso). Para la app se propone <strong style="color:#EFE9DF">Archivo</strong> como sustituto de pantalla: misma familia grotesca, licencia abierta, disponible en Google Fonts para Flutter. Roboto se mantiene en cuerpo y tablas, y Roboto Mono para códigos.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+      <div style="padding:32px; border-radius:16px; background:#1B1814; border:1px solid #332E27; display:flex; flex-direction:column; gap:20px">
+        <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#ECAB03">Archivo · titulares y cifras</span>
+        <div style="font-family:Archivo, sans-serif; font-weight:700; font-size:52px; line-height:1.05; letter-spacing:-0.02em">Aa Bb Cc 0123</div>
+        <div style="display:flex; flex-direction:column; gap:10px; font-family:Archivo, sans-serif">
+          <span style="font-size:28px; font-weight:600">displaySmall · 28/600</span>
+          <span style="font-size:22px; font-weight:600">titleLarge · 22/600</span>
+          <span style="font-size:16px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase; color:#B4ACA0">labelLarge · 16/500</span>
+        </div>
+      </div>
+      <div style="padding:32px; border-radius:16px; background:#1B1814; border:1px solid #332E27; display:flex; flex-direction:column; gap:20px">
+        <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#ECAB03">Roboto · cuerpo · Roboto Mono · códigos</span>
+        <div style="font-size:16px; line-height:1.65; color:#EFE9DF">Listas de precios, instalaciones y catálogos mantienen Roboto por densidad y legibilidad en tablas largas. Los pesos 300 y 500 dan jerarquía sin cambiar de familia.</div>
+        <div style="display:flex; flex-direction:column; gap:8px; font-family:'Roboto Mono', monospace; font-size:15px; color:#B4ACA0">
+          <span>292699 · 292700 · 292701</span>
+          <span>PVZ01RH03 · CMC3 · ACABADOS</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.18em; color:#8C857A">03 — PANTALLAS</span>
+      <h2 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:32px; color:#EFE9DF">Rediseño de pantallas clave</h2>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px">
+      <span style="font-size:14px; color:#B4ACA0">Inicio de sesión — el logotipo entra aquí a tamaño grande, con su cuadrado de seguridad respetado.</span>
+      <div data-screen-label="Login" style="width:1472px; height:820px; display:flex; border-radius:20px; overflow:hidden; border:1px solid #332E27; background:#14120F">
+        <div style="width:620px; flex:none; background:#0F0D0B; padding:56px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; border-right:1px solid #241F19">
+          <img src="brand/xbe-lockup.svg" alt="XBE Business Essentials" style="width:236px; height:auto">
+          <div style="display:flex; flex-direction:column; gap:20px">
+            <h3 style="margin:0; font-family:Archivo, sans-serif; font-weight:700; font-size:44px; line-height:1.08; letter-spacing:-0.02em; color:#EFE9DF">Toda la operación,<br>en un solo lugar.</h3>
+            <p style="margin:0; max-width:420px; font-size:16px; line-height:1.6; color:#B4ACA0">Catálogos, precios, instalaciones y ventas de tus sucursales sincronizados en tiempo real.</p>
+            <div style="display:flex; gap:6px; margin-top:8px">
+              <div style="width:56px; height:4px; border-radius:2px; background:#D8262E"></div>
+              <div style="width:56px; height:4px; border-radius:2px; background:#EC672A"></div>
+              <div style="width:56px; height:4px; border-radius:2px; background:#ECAB03"></div>
+            </div>
+          </div>
+          <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#6B655C">v 2.4.0 · build 318</span>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:56px">
+          <div style="width:420px; display:flex; flex-direction:column; gap:24px">
+            <div style="display:flex; flex-direction:column; gap:8px">
+              <h4 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:30px; color:#EFE9DF">Iniciar sesión</h4>
+              <span style="font-size:15px; color:#B4ACA0">Usa las credenciales de tu instalación.</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:14px">
+              <div style="background:#221E19; border-radius:12px 12px 4px 4px; border-bottom:2px solid #ECAB03; padding:10px 16px 8px; display:flex; flex-direction:column; gap:2px">
+                <span style="font-size:12px; color:#ECAB03">Usuario</span>
+                <span style="font-size:16px; color:#EFE9DF">rramos</span>
+              </div>
+              <div style="background:#221E19; border-radius:12px 12px 4px 4px; border-bottom:1px solid #4E473D; padding:10px 16px 8px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px">
+                <div style="display:flex; flex-direction:column; gap:2px">
+                  <span style="font-size:12px; color:#B4ACA0">Contraseña</span>
+                  <span style="font-size:16px; letter-spacing:0.18em; color:#EFE9DF">••••••••</span>
+                </div>
+                <span class="ms" style="font-size:20px; color:#B4ACA0">visibility_off</span>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px">
+              <div style="width:18px; height:18px; border-radius:4px; background:#ECAB03; display:flex; align-items:center; justify-content:center"><span class="ms" style="font-size:14px; color:#241900">check</span></div>
+              <span style="font-size:14px; color:#B4ACA0">Mantener la sesión abierta</span>
+            </div>
+            <div style="height:48px; border-radius:24px; background:#ECAB03; display:flex; align-items:center; justify-content:center; font-family:Archivo, sans-serif; font-weight:600; font-size:16px; color:#241900">Iniciar sesión</div>
+            <div style="display:flex; justify-content:center"><span style="font-size:14px; color:#ECAB03">¿Olvidaste tu contraseña?</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px">
+      <span style="font-size:14px; color:#B4ACA0">Inicio — el bloque azul vacío se convierte en un encabezado de marca con accesos rápidos; el isologo queda como marca de agua monocroma al 8 %.</span>
+      <div data-screen-label="Inicio" style="width:1472px; height:900px; display:flex; border-radius:20px; overflow:hidden; border:1px solid #332E27; background:#14120F">
+        <nav style="width:288px; flex:none; background:#0F0D0B; border-right:1px solid #241F19; padding:20px 12px; box-sizing:border-box; display:flex; flex-direction:column; gap:6px">
+          <div style="display:flex; align-items:center; gap:12px; padding:8px 12px 20px">
+            <img src="brand/xbe-mark.svg" alt="XBE" style="height:34px; width:auto">
+            <div style="display:flex; flex-direction:column">
+              <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:14px; letter-spacing:0.02em; color:#EFE9DF">Business Essentials</span>
+              <span style="font-size:11px; color:#8C857A">Casa Maestra · CMC3</span>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:24px; background:#4B3703">
+            <span class="ms" style="font-size:22px; color:#FFD466">home</span>
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#FFD466">Inicio</span>
+          </div>
+          <span style="padding:20px 16px 8px; font-family:'Roboto Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#8C857A">Catálogos</span>
+          <sc-for list="{{ navCatalogos }}" as="item" hint-placeholder-count="8">
+            <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:24px">
+              <span class="ms" style="font-size:21px; color:#B4ACA0">{{ item.icon }}</span>
+              <span style="font-size:15px; color:#D9D2C7">{{ item.label }}</span>
+            </div>
+          </sc-for>
+        </nav>
+        <main style="flex:1; display:flex; flex-direction:column; overflow:hidden">
+          <div style="height:68px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 32px; border-bottom:1px solid #241F19">
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:22px; color:#EFE9DF">Inicio</span>
+            <div style="display:flex; align-items:center; gap:20px">
+              <span class="ms" style="font-size:22px; color:#B4ACA0">notifications</span>
+              <div style="display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:22px; background:#221E19">
+                <div style="width:30px; height:30px; border-radius:15px; background:#EC672A; display:flex; align-items:center; justify-content:center; font-family:Archivo, sans-serif; font-weight:700; font-size:13px; color:#2B0F00">RR</div>
+                <span style="font-size:14px; color:#EFE9DF">R. Ramos</span>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1; padding:32px; display:flex; flex-direction:column; gap:24px; overflow:hidden">
+            <div style="position:relative; overflow:hidden; border-radius:20px; background:#1B1814; border:1px solid #332E27; padding:40px 44px; display:flex; flex-direction:column; gap:14px">
+              <img src="brand/xbe-mark-white.svg" alt="" style="position:absolute; right:-40px; bottom:-70px; width:420px; opacity:0.07">
+              <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#ECAB03">Martes 28 de julio</span>
+              <h3 style="margin:0; font-family:Archivo, sans-serif; font-weight:700; font-size:38px; letter-spacing:-0.01em; color:#EFE9DF">Buen día, Rocío</h3>
+              <p style="margin:0; max-width:520px; font-size:16px; line-height:1.6; color:#B4ACA0">Tienes 3 listas de precios por autorizar y 2 instalaciones sin corte de caja de ayer.</p>
+              <div style="display:flex; gap:12px; margin-top:10px">
+                <div style="height:42px; padding:0 22px; border-radius:21px; background:#ECAB03; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#241900">Revisar pendientes</div>
+                <div style="height:42px; padding:0 22px; border-radius:21px; border:1px solid #4E473D; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#EFE9DF">Nueva venta</div>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px">
+              <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="4">
+                <div style="padding:22px; border-radius:16px; background:#1B1814; border:1px solid #332E27; display:flex; flex-direction:column; gap:14px; min-height:132px; box-sizing:border-box">
+                  <span class="ms" style="font-size:24px; color:#ECAB03">{{ t.icon }}</span>
+                  <div style="display:flex; flex-direction:column; gap:4px">
+                    <span style="font-family:Archivo, sans-serif; font-weight:700; font-size:26px; color:#EFE9DF">{{ t.value }}</span>
+                    <span style="font-size:13px; color:#B4ACA0">{{ t.label }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1; border-radius:16px; background:#1B1814; border:1px solid #332E27; padding:24px 28px; display:flex; flex-direction:column; gap:16px; overflow:hidden">
+              <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:17px; color:#EFE9DF">Actividad reciente</span>
+              <sc-for list="{{ activity }}" as="a" hint-placeholder-count="4">
+                <div style="display:flex; align-items:center; gap:16px; padding:10px 0; border-top:1px solid #241F19">
+                  <span class="ms" style="font-size:20px; color:#8C857A">{{ a.icon }}</span>
+                  <span style="flex:1; font-size:15px; color:#D9D2C7">{{ a.text }}</span>
+                  <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#8C857A">{{ a.time }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px">
+      <span style="font-size:14px; color:#B4ACA0">Productos — códigos en Roboto Mono, miniaturas con marco propio, estados con color semántico en lugar de texto plano.</span>
+      <div data-screen-label="Productos" style="width:1472px; height:900px; display:flex; border-radius:20px; overflow:hidden; border:1px solid #332E27; background:#14120F">
+        <nav style="width:288px; flex:none; background:#0F0D0B; border-right:1px solid #241F19; padding:20px 12px; box-sizing:border-box; display:flex; flex-direction:column; gap:6px">
+          <div style="display:flex; align-items:center; gap:12px; padding:8px 12px 20px">
+            <img src="brand/xbe-mark.svg" alt="XBE" style="height:34px; width:auto">
+            <div style="display:flex; flex-direction:column">
+              <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:14px; letter-spacing:0.02em; color:#EFE9DF">Business Essentials</span>
+              <span style="font-size:11px; color:#8C857A">Casa Maestra · CMC3</span>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:24px">
+            <span class="ms" style="font-size:21px; color:#B4ACA0">home</span>
+            <span style="font-size:15px; color:#D9D2C7">Inicio</span>
+          </div>
+          <span style="padding:20px 16px 8px; font-family:'Roboto Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#8C857A">Catálogos</span>
+          <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:24px">
+            <span class="ms" style="font-size:21px; color:#B4ACA0">group</span>
+            <span style="font-size:15px; color:#D9D2C7">Usuarios</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:24px; background:#4B3703">
+            <span class="ms" style="font-size:22px; color:#FFD466">inventory_2</span>
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#FFD466">Productos</span>
+          </div>
+          <sc-for list="{{ navAfterProducts }}" as="item" hint-placeholder-count="6">
+            <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:24px">
+              <span class="ms" style="font-size:21px; color:#B4ACA0">{{ item.icon }}</span>
+              <span style="font-size:15px; color:#D9D2C7">{{ item.label }}</span>
+            </div>
+          </sc-for>
+        </nav>
+        <main style="flex:1; display:flex; flex-direction:column; overflow:hidden">
+          <div style="height:68px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 32px; border-bottom:1px solid #241F19">
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:22px; color:#EFE9DF">Productos</span>
+            <span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#8C857A">21,542 registros</span>
+          </div>
+          <div style="flex:1; padding:24px 32px 32px; display:flex; flex-direction:column; gap:18px; overflow:hidden">
+            <div style="display:flex; align-items:center; gap:14px">
+              <div style="flex:1; height:48px; border-radius:24px; background:#221E19; display:flex; align-items:center; gap:12px; padding:0 20px">
+                <span class="ms" style="font-size:20px; color:#B4ACA0">search</span>
+                <span style="font-size:15px; color:#8C857A">Buscar por código, nombre, marca o modelo</span>
+              </div>
+              <div style="height:44px; padding:0 20px; border-radius:22px; background:#ECAB03; display:flex; align-items:center; gap:8px; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#241900"><span class="ms" style="font-size:18px">add</span>Nuevo producto</div>
+              <div style="width:44px; height:44px; border-radius:22px; border:1px solid #4E473D; display:flex; align-items:center; justify-content:center"><span class="ms" style="font-size:20px; color:#B4ACA0">tune</span></div>
+            </div>
+            <div style="flex:1; border-radius:16px; background:#1B1814; border:1px solid #332E27; overflow:hidden; display:flex; flex-direction:column">
+              <div style="display:grid; grid-template-columns:76px 130px 1fr 190px 130px 120px 96px; align-items:center; gap:16px; padding:14px 24px; background:#221E19; font-family:Archivo, sans-serif; font-weight:600; font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:#B4ACA0">
+                <span></span><span>Código</span><span>Nombre</span><span>Marca</span><span>Unidad</span><span>Estado</span><span></span>
+              </div>
+              <sc-for list="{{ products }}" as="p" hint-placeholder-count="10">
+                <div style="display:grid; grid-template-columns:76px 130px 1fr 190px 130px 120px 96px; align-items:center; gap:16px; padding:12px 24px; border-top:1px solid #241F19">
+                  <div style="width:48px; height:48px; border-radius:10px; background:repeating-linear-gradient(135deg,#2A251F,#2A251F 6px,#221E19 6px,#221E19 12px); border:1px solid #332E27"></div>
+                  <span style="font-family:'Roboto Mono', monospace; font-size:14px; color:#EFE9DF">{{ p.code }}</span>
+                  <span style="font-size:15px; color:#D9D2C7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ p.name }}</span>
+                  <span style="font-size:14px; color:#B4ACA0">{{ p.brand }}</span>
+                  <span style="font-size:14px; color:#B4ACA0">{{ p.unit }}</span>
+                  <span style="justify-self:start; padding:4px 12px; border-radius:12px; background:#22301D; font-size:12px; font-weight:500; color:#A7D18B">Activo</span>
+                  <div style="display:flex; gap:14px; justify-self:end">
+                    <span class="ms" style="font-size:19px; color:#8C857A">edit</span>
+                    <span class="ms" style="font-size:19px; color:#8C857A">sell</span>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="margin-top:auto; display:flex; align-items:center; justify-content:flex-end; gap:20px; padding:14px 24px; border-top:1px solid #241F19">
+                <span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#B4ACA0">1–20 de 21,542</span>
+                <span class="ms" style="font-size:20px; color:#8C857A">chevron_left</span>
+                <span class="ms" style="font-size:20px; color:#EFE9DF">chevron_right</span>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px">
+      <span style="font-size:14px; color:#B4ACA0">Instalaciones — el rojo Pantone 1795 C deja de pintar botones completos y se usa como chip tonal, que es su función semántica.</span>
+      <div data-screen-label="Instalaciones" style="width:1472px; height:760px; display:flex; border-radius:20px; overflow:hidden; border:1px solid #332E27; background:#14120F">
+        <nav style="width:288px; flex:none; background:#0F0D0B; border-right:1px solid #241F19; padding:20px 12px; box-sizing:border-box; display:flex; flex-direction:column; gap:6px">
+          <div style="display:flex; align-items:center; gap:12px; padding:8px 12px 20px">
+            <img src="brand/xbe-mark.svg" alt="XBE" style="height:34px; width:auto">
+            <div style="display:flex; flex-direction:column">
+              <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:14px; letter-spacing:0.02em; color:#EFE9DF">Business Essentials</span>
+              <span style="font-size:11px; color:#8C857A">Casa Maestra · CMC3</span>
+            </div>
+          </div>
+          <sc-for list="{{ navFacilities }}" as="item" hint-placeholder-count="7">
+            <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:24px">
+              <span class="ms" style="font-size:21px; color:#B4ACA0">{{ item.icon }}</span>
+              <span style="font-size:15px; color:#D9D2C7">{{ item.label }}</span>
+            </div>
+          </sc-for>
+          <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:24px; background:#4B3703">
+            <span class="ms" style="font-size:22px; color:#FFD466">apartment</span>
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#FFD466">Instalaciones</span>
+          </div>
+        </nav>
+        <main style="flex:1; display:flex; flex-direction:column; overflow:hidden">
+          <div style="height:68px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 32px; border-bottom:1px solid #241F19">
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:22px; color:#EFE9DF">Instalaciones</span>
+            <div style="display:flex; gap:12px">
+              <div style="height:40px; padding:0 18px; border-radius:20px; border:1px solid #4E473D; display:flex; align-items:center; gap:8px; font-size:14px; color:#EFE9DF"><span class="ms" style="font-size:18px; color:#B4ACA0">unfold_more</span>Expandir todo</div>
+              <div style="height:40px; padding:0 18px; border-radius:20px; background:#ECAB03; display:flex; align-items:center; gap:8px; font-family:Archivo, sans-serif; font-weight:600; font-size:14px; color:#241900"><span class="ms" style="font-size:18px">add</span>Nueva instalación</div>
+            </div>
+          </div>
+          <div style="flex:1; padding:24px 32px; display:flex; flex-direction:column; gap:12px; overflow:hidden">
+            <sc-for list="{{ facilities }}" as="f" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:18px; padding:16px 20px; border-radius:16px; background:#1B1814; border:1px solid #332E27">
+                <span class="ms" style="font-size:20px; color:#8C857A">chevron_right</span>
+                <div style="width:44px; height:44px; border-radius:12px; background:#2A251F; border:1px solid #3B342B; display:flex; align-items:center; justify-content:center"><span class="ms" style="font-size:22px; color:#ECAB03">storefront</span></div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:4px">
+                  <div style="display:flex; align-items:center; gap:10px">
+                    <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:16px; color:#EFE9DF">{{ f.name }}</span>
+                    <span style="padding:2px 10px; border-radius:8px; background:#2A251F; font-family:'Roboto Mono', monospace; font-size:11px; color:#B4ACA0">{{ f.code }}</span>
+                  </div>
+                  <span style="font-size:13px; color:#8C857A">Tienda · {{ f.city }}</span>
+                </div>
+                <div style="display:flex; gap:12px; color:#6B655C">
+                  <span class="ms" style="font-size:19px">warehouse</span>
+                  <span class="ms" style="font-size:19px">point_of_sale</span>
+                  <span class="ms" style="font-size:19px">account_balance_wallet</span>
+                </div>
+                <span style="width:96px; text-align:center; padding:5px 0; border-radius:12px; background:{{ f.chipBg }}; color:{{ f.chipFg }}; font-size:12px; font-weight:500">{{ f.status }}</span>
+                <span class="ms" style="font-size:19px; color:#8C857A">edit</span>
+              </div>
+            </sc-for>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.18em; color:#8C857A">04 — COLOCACIÓN DEL LOGOTIPO</span>
+      <h2 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:32px; color:#EFE9DF">Reglas aplicadas a la app</h2>
+      <p style="margin:0; max-width:820px; font-size:15px; line-height:1.6; color:#B4ACA0">Área de protección = un cuadrado proporcional a la altura de x de «Business Essentials». Tamaño mínimo web 51 px de ancho; por debajo de eso se usa sólo el isologo.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:1.15fr 1fr; gap:20px">
+      <div style="padding:36px; border-radius:16px; background:#1B1814; border:1px solid #332E27; display:flex; flex-direction:column; gap:20px">
+        <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#ECAB03">Área de seguridad</span>
+        <div style="align-self:flex-start; padding:26px; border:1px dashed #4E473D; border-radius:6px">
+          <img src="brand/xbe-lockup.svg" alt="XBE Business Essentials" style="width:300px; height:auto; display:block">
+        </div>
+        <span style="font-size:14px; line-height:1.6; color:#B4ACA0">Nada —ni iconos, ni bordes de tarjeta, ni texto— entra en el margen punteado. En la app equivale a 24 px de padding cuando el logotipo mide 300 px de ancho.</span>
+      </div>
+      <div style="padding:36px; border-radius:16px; background:#1B1814; border:1px solid #332E27; display:flex; flex-direction:column; gap:24px">
+        <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#ECAB03">Tamaños mínimos</span>
+        <div style="display:flex; align-items:flex-end; gap:36px">
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start">
+            <img src="brand/xbe-lockup.svg" alt="XBE" style="width:51px; height:auto">
+            <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#B4ACA0">51 px · mínimo web</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start">
+            <img src="brand/xbe-mark.svg" alt="XBE" style="width:37px; height:auto">
+            <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#B4ACA0">37 px · sólo isologo</span>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px; padding-top:8px; border-top:1px solid #332E27">
+          <sc-for list="{{ placements }}" as="p" hint-placeholder-count="6">
+            <div style="display:flex; gap:14px; font-size:14px; line-height:1.5">
+              <span style="width:150px; flex:none; font-family:Archivo, sans-serif; font-weight:600; color:#EFE9DF">{{ p.where }}</span>
+              <span style="color:#B4ACA0">{{ p.rule }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px">
+      <div style="padding:24px; border-radius:16px; background:#0F0D0B; border:1px solid #332E27; display:flex; flex-direction:column; gap:16px; align-items:center">
+        <div style="height:110px; display:flex; align-items:center"><img src="brand/xbe-lockup.svg" alt="XBE" style="width:220px"></div>
+        <span style="font-size:13px; color:#A7D18B">✓ Full color sobre fondo oscuro (#0F0D0B – #221E19)</span>
+      </div>
+      <div style="padding:24px; border-radius:16px; background:#FFFFFF; border:1px solid #332E27; display:flex; flex-direction:column; gap:16px; align-items:center">
+        <div style="height:110px; display:flex; align-items:center"><img src="brand/xbe-lockup-gray.svg" alt="XBE" style="width:220px; filter:none"></div>
+        <span style="font-size:13px; color:#2E7D32">✓ Versión fondo blanco (modo claro / PDF)</span>
+      </div>
+      <div style="padding:24px; border-radius:16px; background:#EC672A; border:1px solid #332E27; display:flex; flex-direction:column; gap:16px; align-items:center">
+        <div style="height:110px; display:flex; align-items:center"><img src="brand/xbe-lockup-white.svg" alt="XBE" style="width:220px"></div>
+        <span style="font-size:13px; color:#2B0F00">✓ Blanco a 1 tinta sobre color de marca</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.18em; color:#8C857A">05 — ASSETS GENERADOS</span>
+      <h2 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:32px; color:#EFE9DF">Archivos listos para Flutter</h2>
+      <p style="margin:0; max-width:820px; font-size:15px; line-height:1.6; color:#B4ACA0">SVG vectoriales en <code style="font-family:'Roboto Mono', monospace; color:#ECAB03">brand/</code> y PNG exportados en <code style="font-family:'Roboto Mono', monospace; color:#ECAB03">assets/</code>. Los SVG se usan con flutter_svg; los PNG alimentan flutter_launcher_icons y flutter_native_splash.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:20px">
+      <div style="border-radius:16px; background:#1B1814; border:1px solid #332E27; overflow:hidden; display:flex; flex-direction:column">
+        <div style="height:170px; display:flex; align-items:center; justify-content:center; background:#0F0D0B"><img src="assets/app_icon_dark_1024.png" alt="" style="width:112px; border-radius:24px"></div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:4px"><span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#EFE9DF">app_icon_dark_1024.png</span><span style="font-size:12px; color:#8C857A">iOS / macOS / Windows</span></div>
+      </div>
+      <div style="border-radius:16px; background:#1B1814; border:1px solid #332E27; overflow:hidden; display:flex; flex-direction:column">
+        <div style="height:170px; display:flex; align-items:center; justify-content:center; background:#0F0D0B"><img src="assets/app_icon_light_1024.png" alt="" style="width:112px; border-radius:24px"></div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:4px"><span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#EFE9DF">app_icon_light_1024.png</span><span style="font-size:12px; color:#8C857A">Variante fondo blanco</span></div>
+      </div>
+      <div style="border-radius:16px; background:#1B1814; border:1px solid #332E27; overflow:hidden; display:flex; flex-direction:column">
+        <div style="height:170px; display:flex; align-items:center; justify-content:center; background:repeating-linear-gradient(45deg,#221E19,#221E19 8px,#1B1814 8px,#1B1814 16px)"><img src="assets/android_adaptive_foreground_1024.png" alt="" style="width:112px"></div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:4px"><span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#EFE9DF">android_adaptive_foreground_1024.png</span><span style="font-size:12px; color:#8C857A">Fondo #14120F, zona segura 52 %</span></div>
+      </div>
+      <div style="border-radius:16px; background:#1B1814; border:1px solid #332E27; overflow:hidden; display:flex; flex-direction:column">
+        <div style="height:170px; display:flex; align-items:center; justify-content:center; background:#0F0D0B"><img src="assets/splash_lockup_1024.png" alt="" style="width:150px"></div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:4px"><span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#EFE9DF">splash_lockup_1024.png</span><span style="font-size:12px; color:#8C857A">Splash sobre #14120F</span></div>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start">
+      <div style="padding:28px; border-radius:16px; background:#1B1814; border:1px solid #332E27; display:flex; flex-direction:column; gap:14px">
+        <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:17px; color:#EFE9DF">Inventario de archivos</span>
+        <sc-for list="{{ assetList }}" as="a" hint-placeholder-count="10">
+          <div style="display:flex; justify-content:space-between; gap:20px; padding:7px 0; border-top:1px solid #241F19">
+            <span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#D9D2C7">{{ a.file }}</span>
+            <span style="font-size:13px; color:#8C857A; text-align:right">{{ a.use }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="padding:28px; border-radius:16px; background:#0F0D0B; border:1px solid #332E27; display:flex; flex-direction:column; gap:14px">
+        <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:17px; color:#EFE9DF">ColorScheme (Flutter)</span>
+        <pre style="margin:0; font-family:'Roboto Mono', monospace; font-size:12.5px; line-height:1.75; color:#B4ACA0; white-space:pre-wrap">{{ themeCode }}</pre>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.18em; color:#8C857A">06 — MODO CLARO</span>
+      <h2 style="margin:0; font-family:Archivo, sans-serif; font-weight:600; font-size:32px; color:#EFE9DF">Tema claro</h2>
+      <p style="margin:0; max-width:820px; font-size:15px; line-height:1.6; color:#B4ACA0">Mismos tres colores de marca, neutros cálidos invertidos. El oro puro (#ECAB03) no alcanza contraste como texto sobre blanco, así que en claro se usa como <strong style="color:#EFE9DF">relleno</strong> con tinta oscura, y para texto y iconos activos se baja a un oro tostado (#7A5600, 5.4:1). El logotipo cambia a la versión Cool Gray 3 C aprobada para fondo blanco.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:20px">
+      <sc-for list="{{ lightRoles }}" as="c" hint-placeholder-count="4">
+        <div style="display:flex; flex-direction:column; gap:12px; padding:20px; border-radius:16px; background:#1B1814; border:1px solid #332E27">
+          <div style="height:88px; border-radius:12px; background:{{ c.hex }}; border:1px solid #332E27; display:flex; align-items:flex-end; padding:12px; box-sizing:border-box; font-weight:700; font-family:Archivo, sans-serif; color:{{ c.ink }}">{{ c.role }}</div>
+          <div style="display:flex; flex-direction:column; gap:2px"><span style="font-family:'Roboto Mono', monospace; font-size:13px; color:#EFE9DF">{{ c.hex }}</span><span style="font-size:12px; color:#8C857A">{{ c.note }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(8, 1fr); gap:2px; border-radius:14px; overflow:hidden; border:1px solid #332E27">
+      <sc-for list="{{ lightNeutrals }}" as="n" hint-placeholder-count="8">
+        <div style="padding:16px 14px 18px; display:flex; flex-direction:column; gap:6px; min-height:110px; box-sizing:border-box">
+          <span style="font-family:'Roboto Mono', monospace; font-size:11px; color:#B4ACA0">{{ n.hex }}</span>
+          <span style="font-size:12px; line-height:1.35; color:#8C857A">{{ n.role }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:14px">
+      <span style="font-size:14px; color:#B4ACA0">Inicio en tema claro — misma retícula y jerarquía; la marca de agua pasa a isologo full color al 6 %.</span>
+      <div data-screen-label="Inicio claro" style="width:1472px; height:900px; display:flex; border-radius:20px; overflow:hidden; border:1px solid #332E27; background:#FBF8F3">
+        <nav style="width:288px; flex:none; background:#F3EDE3; border-right:1px solid #E3DACC; padding:20px 12px; box-sizing:border-box; display:flex; flex-direction:column; gap:6px">
+          <div style="display:flex; align-items:center; gap:12px; padding:8px 12px 20px">
+            <img src="brand/xbe-mark.svg" alt="XBE" style="height:34px; width:auto">
+            <div style="display:flex; flex-direction:column">
+              <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:14px; letter-spacing:0.02em; color:#241F19">Business Essentials</span>
+              <span style="font-size:11px; color:#7A736A">Casa Maestra · CMC3</span>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:24px; background:#FFE7A8">
+            <span class="ms" style="font-size:22px; color:#5C4000">home</span>
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#5C4000">Inicio</span>
+          </div>
+          <span style="padding:20px 16px 8px; font-family:'Roboto Mono', monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:#7A736A">Catálogos</span>
+          <sc-for list="{{ navCatalogos }}" as="item" hint-placeholder-count="8">
+            <div style="display:flex; align-items:center; gap:14px; padding:11px 16px; border-radius:24px">
+              <span class="ms" style="font-size:21px; color:#5A5349">{{ item.icon }}</span>
+              <span style="font-size:15px; color:#332E27">{{ item.label }}</span>
+            </div>
+          </sc-for>
+        </nav>
+        <main style="flex:1; display:flex; flex-direction:column; overflow:hidden">
+          <div style="height:68px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 32px; border-bottom:1px solid #E3DACC">
+            <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:22px; color:#241F19">Inicio</span>
+            <div style="display:flex; align-items:center; gap:20px">
+              <span class="ms" style="font-size:22px; color:#5A5349">notifications</span>
+              <div style="display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:22px; background:#F3EDE3">
+                <div style="width:30px; height:30px; border-radius:15px; background:#EC672A; display:flex; align-items:center; justify-content:center; font-family:Archivo, sans-serif; font-weight:700; font-size:13px; color:#FFFFFF">RR</div>
+                <span style="font-size:14px; color:#241F19">R. Ramos</span>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1; padding:32px; display:flex; flex-direction:column; gap:24px; overflow:hidden">
+            <div style="position:relative; overflow:hidden; border-radius:20px; background:#FFFFFF; border:1px solid #E3DACC; padding:40px 44px; display:flex; flex-direction:column; gap:14px">
+              <img src="brand/xbe-mark.svg" alt="" style="position:absolute; right:-40px; bottom:-70px; width:420px; opacity:0.06">
+              <span style="font-family:'Roboto Mono', monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:#7A5600">Martes 28 de julio</span>
+              <h3 style="margin:0; font-family:Archivo, sans-serif; font-weight:700; font-size:38px; letter-spacing:-0.01em; color:#1C1A16">Buen día, Rocío</h3>
+              <p style="margin:0; max-width:520px; font-size:16px; line-height:1.6; color:#5A5349">Tienes 3 listas de precios por autorizar y 2 instalaciones sin corte de caja de ayer.</p>
+              <div style="display:flex; gap:12px; margin-top:10px">
+                <div style="height:42px; padding:0 22px; border-radius:21px; background:#ECAB03; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#241900">Revisar pendientes</div>
+                <div style="height:42px; padding:0 22px; border-radius:21px; border:1px solid #C4BBAC; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#332E27">Nueva venta</div>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px">
+              <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="4">
+                <div style="padding:22px; border-radius:16px; background:#FFFFFF; border:1px solid #E3DACC; display:flex; flex-direction:column; gap:14px; min-height:132px; box-sizing:border-box">
+                  <span class="ms" style="font-size:24px; color:#7A5600">{{ t.icon }}</span>
+                  <div style="display:flex; flex-direction:column; gap:4px">
+                    <span style="font-family:Archivo, sans-serif; font-weight:700; font-size:26px; color:#1C1A16">{{ t.value }}</span>
+                    <span style="font-size:13px; color:#5A5349">{{ t.label }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1; border-radius:16px; background:#FFFFFF; border:1px solid #E3DACC; padding:24px 28px; display:flex; flex-direction:column; gap:16px; overflow:hidden">
+              <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:17px; color:#241F19">Actividad reciente</span>
+              <sc-for list="{{ activity }}" as="a" hint-placeholder-count="4">
+                <div style="display:flex; align-items:center; gap:16px; padding:10px 0; border-top:1px solid #EFE7DA">
+                  <span class="ms" style="font-size:20px; color:#7A736A">{{ a.icon }}</span>
+                  <span style="flex:1; font-size:15px; color:#332E27">{{ a.text }}</span>
+                  <span style="font-family:'Roboto Mono', monospace; font-size:12px; color:#7A736A">{{ a.time }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start">
+      <div style="padding:28px; border-radius:16px; background:#FBF8F3; border:1px solid #E3DACC; display:flex; flex-direction:column; gap:18px">
+        <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:17px; color:#241F19">Componentes en claro</span>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center">
+          <div style="height:44px; padding:0 22px; border-radius:22px; background:#ECAB03; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#241900">Filled</div>
+          <div style="height:44px; padding:0 22px; border-radius:22px; background:#FFE7A8; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#5C4000">Tonal</div>
+          <div style="height:44px; padding:0 22px; border-radius:22px; border:1px solid #C4BBAC; display:flex; align-items:center; font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#332E27">Outlined</div>
+          <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:15px; color:#7A5600">Texto de enlace</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px">
+          <span style="padding:5px 14px; border-radius:12px; background:#E4F0DC; color:#2F5B1E; font-size:12px; font-weight:500">Activo</span>
+          <span style="padding:5px 14px; border-radius:12px; background:#FBDEDF; color:#A31219; font-size:12px; font-weight:500">Inactivo</span>
+          <span style="padding:5px 14px; border-radius:12px; background:#FDE3D5; color:#8A3308; font-size:12px; font-weight:500">Pendiente</span>
+          <span style="padding:5px 14px; border-radius:12px; background:#F3EDE3; color:#5A5349; font-family:'Roboto Mono', monospace; font-size:12px">292699</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px; max-width:360px">
+          <div style="background:#F3EDE3; border-radius:12px 12px 4px 4px; border-bottom:2px solid #ECAB03; padding:10px 16px 8px; display:flex; flex-direction:column; gap:2px">
+            <span style="font-size:12px; color:#7A5600">Usuario</span>
+            <span style="font-size:16px; color:#241F19">rramos</span>
+          </div>
+          <div style="background:#F3EDE3; border-radius:12px 12px 4px 4px; border-bottom:1px solid #C4BBAC; padding:10px 16px 8px; display:flex; flex-direction:column; gap:2px">
+            <span style="font-size:12px; color:#5A5349">Contraseña</span>
+            <span style="font-size:16px; letter-spacing:0.18em; color:#241F19">••••••••</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:28px; border-radius:16px; background:#0F0D0B; border:1px solid #332E27; display:flex; flex-direction:column; gap:14px">
+        <span style="font-family:Archivo, sans-serif; font-weight:600; font-size:17px; color:#EFE9DF">ColorScheme.light (Flutter)</span>
+        <pre style="margin:0; font-family:'Roboto Mono', monospace; font-size:12.5px; line-height:1.75; color:#B4ACA0; white-space:pre-wrap">{{ themeCodeLight }}</pre>
+      </div>
+    </div>
+  </section>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const neutrals = [
+      { hex: '#0B0A09', role: 'scrim / fondo del shell' },
+      { hex: '#0F0D0B', role: 'surfaceContainerLowest · nav' },
+      { hex: '#14120F', role: 'surface' },
+      { hex: '#1B1814', role: 'surfaceContainerLow · tarjetas' },
+      { hex: '#221E19', role: 'surfaceContainer · campos' },
+      { hex: '#332E27', role: 'outlineVariant' },
+      { hex: '#B4ACA0', role: 'onSurfaceVariant' },
+      { hex: '#EFE9DF', role: 'onSurface' },
+    ];
+    const nav = (icon, label) => ({ icon, label });
+    const navCatalogos = [
+      nav('group', 'Usuarios'), nav('inventory_2', 'Productos'), nav('sell', 'Listas de Precios'),
+      nav('currency_exchange', 'Tipos de Cambio'), nav('local_shipping', 'Proveedores'),
+      nav('label', 'Etiquetas'), nav('badge', 'Empleados'), nav('groups', 'Clientes'),
+      nav('receipt_long', 'Receptores Fiscales'),
+    ];
+    const navAfterProducts = [
+      nav('sell', 'Listas de Precios'), nav('currency_exchange', 'Tipos de Cambio'),
+      nav('local_shipping', 'Proveedores'), nav('label', 'Etiquetas'), nav('badge', 'Empleados'),
+      nav('groups', 'Clientes'), nav('receipt_long', 'Receptores Fiscales'), nav('payments', 'Gastos'),
+    ];
+    const navFacilities = [
+      nav('inventory_2', 'Productos'), nav('sell', 'Listas de Precios'), nav('local_shipping', 'Proveedores'),
+      nav('badge', 'Empleados'), nav('groups', 'Clientes'), nav('payments', 'Gastos'), nav('directions_bus', 'Vehículos'),
+    ];
+    const products = [292699, 292697, 292698, 292700, 292701, 292702, 292703, 292704]
+      .map((c, i) => ({
+        code: String(c),
+        name: 'BROCA PARA METAL GREENFIELD HSS ' + (i + 3) + '/16"',
+        brand: 'GREENFIELD',
+        unit: i === 1 || i === 2 ? 'Pieza' : 'Pieza',
+      }));
+    const chip = (active) => active
+      ? { status: 'Activo', chipBg: '#22301D', chipFg: '#A7D18B' }
+      : { status: 'Inactivo', chipBg: '#3A1416', chipFg: '#FF8F93' };
+    const facilities = [
+      { name: 'FERRETERIA RAMOS HNOS', code: 'FERRE', city: 'Zumpango', ...chip(false) },
+      { name: 'DISTRIBUIDORA RAMOS HNOS', code: 'DISTRI', city: 'Zumpango', ...chip(false) },
+      { name: 'CASA MAESTRA CONCRETO 3', code: 'CMC3', city: 'Hueypoxtla', ...chip(true) },
+      { name: 'CASA MAESTRA HUEYPOXTLA', code: 'CMHU', city: 'Hueypoxtla', ...chip(true) },
+      { name: 'CASA MAESTRA CONCRETO 1', code: 'CMC1', city: 'Coyotepec', ...chip(true) },
+      { name: 'RH CONCRETOS ZUMPANGO 01', code: 'PVZ01RH03', city: 'Zumpango', ...chip(false) },
+    ];
+    const tiles = [
+      { icon: 'point_of_sale', value: '$184,320', label: 'Ventas de hoy' },
+      { icon: 'sell', value: '3', label: 'Listas por autorizar' },
+      { icon: 'inventory_2', value: '21,542', label: 'Productos activos' },
+      { icon: 'apartment', value: '9 / 14', label: 'Instalaciones activas' },
+    ];
+    const activity = [
+      { icon: 'sell', text: 'Lista de precios «Mayoreo Q3» enviada a autorización', time: '08:42' },
+      { icon: 'inventory_2', text: '38 productos GREENFIELD actualizados por importación', time: '08:15' },
+      { icon: 'point_of_sale', text: 'Corte de caja CMC3 cerrado', time: 'Ayer 21:10' },
+      { icon: 'badge', text: 'Alta de empleado: J. Domínguez · CMHU', time: 'Ayer 17:55' },
+    ];
+    const placements = [
+      { where: 'Splash', rule: 'Lockup completo centrado, 38 % del ancho de pantalla, sobre #14120F.' },
+      { where: 'Login', rule: 'Lockup completo, 236 px, esquina superior del panel de marca.' },
+      { where: 'Nav / AppBar', rule: 'Sólo isologo a 34 px + «Business Essentials» en Archivo 14/600.' },
+      { where: 'Nav colapsado', rule: 'Isologo a 37 px, sin texto.' },
+      { where: 'Marca de agua', rule: 'Isologo monocromo blanco al 7 % de opacidad, nunca sobre texto.' },
+      { where: 'Documentos PDF', rule: 'Versión escala de grises sobre fondo blanco, mínimo 2 cm de ancho.' },
+    ];
+    const assetList = [
+      { file: 'brand/xbe-lockup.svg', use: 'Lockup full color' },
+      { file: 'brand/xbe-mark.svg', use: 'Isologo full color' },
+      { file: 'brand/xbe-lockup-white.svg', use: '1 tinta blanco' },
+      { file: 'brand/xbe-lockup-gray.svg', use: 'Escala de grises' },
+      { file: 'brand/xbe-mark-white.svg', use: 'Marca de agua' },
+      { file: 'assets/app_icon_dark_1024.png', use: 'Icono principal' },
+      { file: 'assets/app_icon_light_1024.png', use: 'Icono fondo claro' },
+      { file: 'assets/android_adaptive_foreground_1024.png', use: 'Android adaptive' },
+      { file: 'assets/splash_lockup_1024.png', use: 'Native splash' },
+      { file: 'assets/login_lockup_1x–3x.png', use: 'Login (raster fallback)' },
+      { file: 'assets/nav_lockup_1x–3x.png', use: 'AppBar / drawer' },
+      { file: 'assets/favicon_512 · 192 · 32.png', use: 'Flutter web' },
+    ];
+    const themeCode = [
+      'const xbeGold   = Color(0xFFECAB03); // Pantone 124 C',
+      'const xbeOrange = Color(0xFFEC672A); // Pantone 165 C',
+      'const xbeRed    = Color(0xFFD8262E); // Pantone 1795 C',
+      '',
+      'final scheme = const ColorScheme.dark(',
+      '  primary: xbeGold,',
+      '  onPrimary: Color(0xFF241900),',
+      '  primaryContainer: Color(0xFF4B3703),',
+      '  onPrimaryContainer: Color(0xFFFFD466),',
+      '  secondary: Color(0xFFC7C7C8),',
+      '  onSecondary: Color(0xFF232323),',
+      '  tertiary: xbeOrange,',
+      '  onTertiary: Color(0xFF2B0F00),',
+      '  error: xbeRed,',
+      '  onError: Colors.white,',
+      '  errorContainer: Color(0xFF3A1416),',
+      '  onErrorContainer: Color(0xFFFF8F93),',
+      '  surface: Color(0xFF14120F),',
+      '  onSurface: Color(0xFFEFE9DF),',
+      '  onSurfaceVariant: Color(0xFFB4ACA0),',
+      '  outline: Color(0xFF4E473D),',
+      '  outlineVariant: Color(0xFF332E27),',
+      ');',
+      '',
+      'ThemeData(',
+      '  colorScheme: scheme,',
+      '  fontFamily: GoogleFonts.roboto().fontFamily,',
+      '  textTheme: base.textTheme.copyWith(',
+      '    displaySmall: GoogleFonts.archivo(fontWeight: FontWeight.w700),',
+      '    titleLarge:  GoogleFonts.archivo(fontWeight: FontWeight.w600),',
+      '    labelLarge:  GoogleFonts.archivo(fontWeight: FontWeight.w600),',
+      '  ),',
+      ');',
+    ].join('\n');
+    const lightRoles = [
+      { hex: '#ECAB03', ink: '#241900', role: 'primary', note: '124 C · relleno de botones y FAB' },
+      { hex: '#7A5600', ink: '#FFFFFF', role: 'onPrimaryFixed', note: 'Oro tostado · texto e iconos activos' },
+      { hex: '#EC672A', ink: '#FFFFFF', role: 'tertiary', note: '165 C · acento y gráficas' },
+      { hex: '#C4262E', ink: '#FFFFFF', role: 'error', note: '1795 C ajustado a 4.6:1 sobre blanco' },
+    ];
+    const lightNeutrals = [
+      { hex: '#FFFFFF', role: 'surfaceContainerLowest · tarjetas' },
+      { hex: '#FBF8F3', role: 'surface' },
+      { hex: '#F3EDE3', role: 'surfaceContainer · nav, campos' },
+      { hex: '#EFE7DA', role: 'divisores internos' },
+      { hex: '#E3DACC', role: 'outlineVariant' },
+      { hex: '#C4BBAC', role: 'outline' },
+      { hex: '#5A5349', role: 'onSurfaceVariant' },
+      { hex: '#1C1A16', role: 'onSurface' },
+    ];
+    const themeCodeLight = [
+      'final lightScheme = const ColorScheme.light(',
+      '  primary: xbeGold,            // relleno',
+      '  onPrimary: Color(0xFF241900),',
+      '  primaryContainer: Color(0xFFFFE7A8),',
+      '  onPrimaryContainer: Color(0xFF5C4000),',
+      '  secondary: Color(0xFF5A5349),',
+      '  onSecondary: Colors.white,',
+      '  tertiary: xbeOrange,',
+      '  onTertiary: Colors.white,',
+      '  error: Color(0xFFC4262E),    // 1795 C ajustado',
+      '  onError: Colors.white,',
+      '  errorContainer: Color(0xFFFBDEDF),',
+      '  onErrorContainer: Color(0xFFA31219),',
+      '  surface: Color(0xFFFBF8F3),',
+      '  onSurface: Color(0xFF1C1A16),',
+      '  surfaceContainerLowest: Colors.white,',
+      '  surfaceContainer: Color(0xFFF3EDE3),',
+      '  onSurfaceVariant: Color(0xFF5A5349),',
+      '  outline: Color(0xFFC4BBAC),',
+      '  outlineVariant: Color(0xFFE3DACC),',
+      ');',
+      '',
+      '// Texto/iconos de marca en claro: NO usar xbeGold puro',
+      'const xbeGoldInk = Color(0xFF7A5600); // 5.4:1 sobre blanco',
+      '',
+      'MaterialApp(',
+      '  theme: buildXbeTheme(lightScheme),',
+      '  darkTheme: buildXbeTheme(scheme),',
+      '  themeMode: ThemeMode.system,',
+      ');',
+    ].join('\n');
+    return { lightRoles, lightNeutrals, themeCodeLight, neutrals, navCatalogos, navAfterProducts, navFacilities, products, facilities, tiles, activity, placements, assetList, themeCode };
+  }
+}
+
+</script>
+</body>
+</html>
