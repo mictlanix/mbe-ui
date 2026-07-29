@@ -302,6 +302,7 @@ void main() {
             userId: any(named: 'userId'),
             password: any(named: 'password'),
             email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
           ),
         ).thenAnswer((_) async => _testUser);
         when(
@@ -318,6 +319,7 @@ void main() {
         notifier.userIdChanged('jdoe');
         notifier.passwordChanged('secret1');
         notifier.emailChanged('jdoe@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
         notifier.privilegeChanged(SystemObject.users, 2);
 
         await notifier.save();
@@ -327,6 +329,7 @@ void main() {
             userId: 'jdoe',
             password: 'secret1',
             email: 'jdoe@example.com',
+            employeeId: 7,
           ),
         ).called(1);
         verify(
@@ -356,6 +359,7 @@ void main() {
           userId: any(named: 'userId'),
           password: any(named: 'password'),
           email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
         ),
       );
     });

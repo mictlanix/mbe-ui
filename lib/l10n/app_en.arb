@@ -504,7 +504,7 @@
   "emailLabel": "Email",
   "@emailLabel": {},
 
-  "employeeIdLabel": "Employee (optional)",
+  "employeeIdLabel": "Employee",
   "@employeeIdLabel": {},
 
   "administratorLabel": "Administrator",
@@ -613,6 +613,9 @@
 
   "userUsernameRequiredError": "Username is required.",
   "@userUsernameRequiredError": {},
+
+  "userEmployeeRequiredError": "Employee is required.",
+  "@userEmployeeRequiredError": {},
 
   "userPasswordLengthError": "Password must be at least 6 characters.",
   "@userPasswordLengthError": {},

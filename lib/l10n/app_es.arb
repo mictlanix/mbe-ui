@@ -180,7 +180,7 @@
   "editRecordTooltip": "Cambiar al formulario editable",
   "viewPricingButton": "Ver precios",
   "emailLabel": "Correo electrónico",
-  "employeeIdLabel": "Empleado (opcional)",
+  "employeeIdLabel": "Empleado",
   "administratorLabel": "Administrador",
   "permissionsLabel": "Permisos",
   "saveButton": "Guardar",
@@ -218,6 +218,7 @@
 
   "userEmailRequiredError": "El correo electrónico es obligatorio.",
   "userUsernameRequiredError": "El nombre de usuario es obligatorio.",
+  "userEmployeeRequiredError": "El empleado es obligatorio.",
   "userPasswordLengthError": "La contraseña debe tener al menos 6 caracteres.",
   "userLoadFailedError": "No se pudo cargar el usuario.",
   "userSaveFailedError": "No se pudo guardar el usuario.",

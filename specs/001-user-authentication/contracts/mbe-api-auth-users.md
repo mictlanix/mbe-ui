@@ -28,7 +28,7 @@ this file should be updated.
 - Request: no body; `Authorization: Bearer <access_token>` (gated by
   `get_current_user` only — works for non-administrators, unlike
   `/users/{user_id}`).
-- Response `200`: `UserResponse { user_id, email, employee_id?,
+- Response `200`: `UserResponse { user_id, email, employee_id,
   administrator, disabled, session_version, settings?, privileges:
   PrivilegeResponse[] }`.
 - Response `401`: invalid/expired token ⇒
@@ -56,13 +56,13 @@ this file should be updated.
 ### `GET /api/v1/users`
 
 - Response `200`: `UserListResponse { items: UserListItem[], total: int }`.
-- `UserListItem { user_id, email, employee_id?, administrator, disabled }`.
+- `UserListItem { user_id, email, employee_id, administrator, disabled }`.
 - mbe-ui behavior: backs the admin Users list (FR-011). Access gated by
   `can(SystemObject.Users, AccessRight.read)`.
 
 ### `POST /api/v1/users`
 
-- Request: `UserCreate { user_id (4-20 chars), password (minLength 1), email, employee_id?, administrator? = false, disabled? = false }`.
+- Request: `UserCreate { user_id (4-20 chars), password (minLength 1), email, employee_id, administrator? = false, disabled? = false }`.
 - Response `201`: `UserResponse`.
 - Response `422`: `HTTPValidationError` (e.g., duplicate `user_id`).
 - mbe-ui behavior: admin "create user" form (FR-012), gated by
@@ -70,7 +70,7 @@ this file should be updated.
 
 ### `GET /api/v1/users/{user_id}`
 
-- Response `200`: `UserResponse { user_id, email, employee_id?, administrator, disabled, session_version, settings?, privileges: PrivilegeResponse[] }`.
+- Response `200`: `UserResponse { user_id, email, employee_id, administrator, disabled, session_version, settings?, privileges: PrivilegeResponse[] }`.
 - mbe-ui behavior: called by the admin Users detail screen for any user,
   gated by `can(SystemObject.Users, AccessRight.read)`. Session bootstrap
   uses `GET /api/v1/auth/me` instead (see Authentication section above).

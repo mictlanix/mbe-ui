@@ -321,6 +321,8 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.userEmailRequiredError;
     case UserFormErrorCode.usernameRequired:
       return l10n.userUsernameRequiredError;
+    case UserFormErrorCode.employeeRequired:
+      return l10n.userEmployeeRequiredError;
     case UserFormErrorCode.passwordLength:
       return l10n.userPasswordLengthError;
     case UserFormErrorCode.loadFailed:

@@ -530,7 +530,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get emailLabel => 'Correo electrónico';
 
   @override
-  String get employeeIdLabel => 'Empleado (opcional)';
+  String get employeeIdLabel => 'Empleado';
 
   @override
   String get administratorLabel => 'Administrador';
@@ -645,6 +645,9 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get userUsernameRequiredError =>
       'El nombre de usuario es obligatorio.';
+
+  @override
+  String get userEmployeeRequiredError => 'El empleado es obligatorio.';
 
   @override
   String get userPasswordLengthError =>

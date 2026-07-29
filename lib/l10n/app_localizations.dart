@@ -1078,7 +1078,7 @@ abstract class AppLocalizations {
   /// No description provided for @employeeIdLabel.
   ///
   /// In en, this message translates to:
-  /// **'Employee (optional)'**
+  /// **'Employee'**
   String get employeeIdLabel;
 
   /// No description provided for @administratorLabel.
@@ -1284,6 +1284,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Username is required.'**
   String get userUsernameRequiredError;
+
+  /// No description provided for @userEmployeeRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee is required.'**
+  String get userEmployeeRequiredError;
 
   /// No description provided for @userPasswordLengthError.
   ///
