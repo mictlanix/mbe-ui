@@ -30,7 +30,7 @@ abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   String get email;
 
   @BuiltValueField(wireName: r'employee_id')
-  int? get employeeId;
+  int get employeeId;
 
   @BuiltValueField(wireName: r'administrator')
   bool? get administrator;
@@ -79,13 +79,11 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
       object.email,
       specifiedType: const FullType(String),
     );
-    if (object.employeeId != null) {
-      yield r'employee_id';
-      yield serializers.serialize(
-        object.employeeId,
-        specifiedType: const FullType.nullable(int),
-      );
-    }
+    yield r'employee_id';
+    yield serializers.serialize(
+      object.employeeId,
+      specifiedType: const FullType(int),
+    );
     if (object.administrator != null) {
       yield r'administrator';
       yield serializers.serialize(
@@ -156,12 +154,8 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
           break;
         case r'employee_id':
           final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(int),
-                  )
-                  as int?;
-          if (valueDes == null) continue;
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.employeeId = valueDes;
           break;
         case r'administrator':

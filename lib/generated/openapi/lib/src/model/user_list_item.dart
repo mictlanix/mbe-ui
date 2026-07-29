@@ -27,7 +27,7 @@ abstract class UserListItem
   String get email;
 
   @BuiltValueField(wireName: r'employee_id')
-  int? get employeeId;
+  int get employeeId;
 
   @BuiltValueField(wireName: r'administrator')
   bool get administrator;
@@ -70,12 +70,10 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
       specifiedType: const FullType(String),
     );
     yield r'employee_id';
-    yield object.employeeId == null
-        ? null
-        : serializers.serialize(
-            object.employeeId,
-            specifiedType: const FullType.nullable(int),
-          );
+    yield serializers.serialize(
+      object.employeeId,
+      specifiedType: const FullType(int),
+    );
     yield r'administrator';
     yield serializers.serialize(
       object.administrator,
@@ -133,12 +131,8 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
           break;
         case r'employee_id':
           final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(int),
-                  )
-                  as int?;
-          if (valueDes == null) continue;
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
           result.employeeId = valueDes;
           break;
         case r'administrator':
