@@ -16,7 +16,7 @@ const _jsonHeaders = {
 const _userJson = {
   'user_id': 'jdoe',
   'email': 'jdoe@example.com',
-  'employee_id': null,
+  'employee_id': 7,
   'administrator': false,
   'status': 0,
   'session_version': 1,
@@ -43,14 +43,14 @@ void main() {
               {
                 'user_id': 'admin',
                 'email': 'admin@example.com',
-                'employee_id': null,
+                'employee_id': 3,
                 'administrator': true,
                 'status': 0,
               },
               {
                 'user_id': 'jdoe',
                 'email': 'jdoe@example.com',
-                'employee_id': null,
+                'employee_id': 7,
                 'administrator': false,
                 'status': 0,
               },
@@ -146,6 +146,7 @@ void main() {
         userId: 'jdoe',
         password: 'secret1',
         email: 'jdoe@example.com',
+        employeeId: 7,
       );
 
       expect(user.userId, 'jdoe');
@@ -172,6 +173,7 @@ void main() {
           userId: 'existing',
           password: 'pass1',
           email: 'x@example.com',
+          employeeId: 7,
         ),
         throwsA(isA<ValidationError>()),
       );

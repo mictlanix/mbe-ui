@@ -112,7 +112,7 @@ void main() {
           jsonEncode({
             'user_id': 'jdoe',
             'email': 'jdoe@example.com',
-            'employee_id': null,
+            'employee_id': 7,
             'administrator': false,
             'status': 0,
             'session_version': 3,

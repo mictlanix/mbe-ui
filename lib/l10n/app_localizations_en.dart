@@ -526,7 +526,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLabel => 'Email';
 
   @override
-  String get employeeIdLabel => 'Employee (optional)';
+  String get employeeIdLabel => 'Employee';
 
   @override
   String get administratorLabel => 'Administrator';
@@ -638,6 +638,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userUsernameRequiredError => 'Username is required.';
+
+  @override
+  String get userEmployeeRequiredError => 'Employee is required.';
 
   @override
   String get userPasswordLengthError =>

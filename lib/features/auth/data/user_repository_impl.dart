@@ -62,7 +62,7 @@ class UserRepositoryImpl implements UserRepository {
     required String userId,
     required String password,
     required String email,
-    int? employeeId,
+    required int employeeId,
     bool administrator = false,
     EntityStatus status = EntityStatus.active,
   }) async {

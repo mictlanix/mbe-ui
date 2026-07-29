@@ -68,6 +68,7 @@ extension UserFilterBadge on UserFilter {
 abstract final class UserFormErrorCode {
   static const emailRequired = 'emailRequired';
   static const usernameRequired = 'usernameRequired';
+  static const employeeRequired = 'employeeRequired';
   static const passwordLength = 'passwordLength';
   static const loadFailed = 'loadFailed';
   static const saveFailed = 'saveFailed';
@@ -256,6 +257,13 @@ class UserFormController extends _$UserFormController {
         );
         return;
       }
+      if (state.employeeId == null) {
+        state = state.copyWith(
+          error: UserFormErrorCode.employeeRequired,
+          errorDetail: null,
+        );
+        return;
+      }
     }
 
     state = state.copyWith(
@@ -282,7 +290,7 @@ class UserFormController extends _$UserFormController {
           userId: state.userId,
           password: state.password,
           email: state.email,
-          employeeId: state.employeeId,
+          employeeId: state.employeeId!,
           administrator: state.administrator,
           status: state.status,
         );
