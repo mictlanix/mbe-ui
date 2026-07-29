@@ -49,35 +49,85 @@ exactly where the brand guide requires them.
 
 ---
 
-## R2. Deriving the light scheme (spec's flagged design gap)
+## R2. Light scheme (resolved — sourced from the design project, not derived)
 
-**Question**: The brand guide specifies dark-mode tokens only. The spec
-flags the light counterpart as a gap to resolve here rather than inventing
-hex values.
+**Update (2026-07-28)**: the design project's "XBE Look and Feel" doc was
+updated to add a fully-specified §06 "Modo claro" (light mode) section after
+this feature's initial planning. The light scheme is now **transcribed
+directly from the brand guide**, the same way the dark scheme was — this
+supersedes the original plan (below, kept for the record) to derive it
+algorithmically.
 
-**Decision**: The **light scheme pins only the `error` family** (the brand
-red is semantically load-bearing and must read as *the* brand red in both
-modes); every other role — including `primary`, surfaces, and neutrals — is
-left to `fromSeed`'s derivation from the same gold seed under the same
-`fidelity` variant. The **dark scheme pins the roles the brand guide
-specifies numerically**.
+**Decision**: pin the light `ColorScheme` to the brand guide's exact light
+tokens through `fromSeed`'s role overrides, mirroring the dark scheme's
+approach (see R1):
 
-**Rationale**: raw gold #ECAB03 as a light-mode `primary` fill fails text
-contrast against both white and near-black foregrounds; Material's tonal
-derivation automatically picks an accessible darker gold tone for light
-surfaces while keeping the brand hue recognizable. This resolves the spec's
-gap **without inventing hex values** (per the spec's explicit instruction)
-and makes SC-005 (contrast) true by construction on the light side rather
-than by manual review. The gold hue still reads as the brand color because
-it derives from the same seed.
+| Role | Value | Note |
+|---|---|---|
+| `primary` | `#ECAB03` | same gold, used as a **fill** with dark ink |
+| `onPrimary` | `#241900` | |
+| `primaryContainer` | `#FFE7A8` | |
+| `onPrimaryContainer` | `#5C4000` | |
+| `secondary` | `#5A5349` | |
+| `onSecondary` | `#FFFFFF` | |
+| `tertiary` | `#EC672A` | |
+| `onTertiary` | `#FFFFFF` | |
+| `error` | `#C4262E` | Pantone 1795 C, adjusted for 4.6:1 contrast on white |
+| `onError` | `#FFFFFF` | |
+| `errorContainer` | `#FBDEDF` | |
+| `onErrorContainer` | `#A31219` | |
+| `surface` | `#FBF8F3` | |
+| `onSurface` | `#1C1A16` | |
+| `surfaceContainerLowest` | `#FFFFFF` | |
+| `surfaceContainer` | `#F3EDE3` | |
+| `onSurfaceVariant` | `#5A5349` | |
+| `outline` | `#C4BBAC` | |
+| `outlineVariant` | `#E3DACC` | |
+
+**Brand-color text on light surfaces**: the brand guide is explicit that raw
+gold fails as *text*: "El oro puro (#ECAB03) no alcanza contraste como texto
+sobre blanco … para texto y iconos activos se baja a un oro tostado
+(#7A5600, 5.4:1)." A new constant `xbeGoldInk = #7A5600` is used wherever
+gold would otherwise be used as *text or icon color* on a light surface
+(e.g. an active nav-item label) — never for fills, where raw `primary` gold
+is correct and already passes contrast against its `onPrimary` ink.
+
+**Logo variant on light**: the brand guide's light mockups use the
+grayscale lockup (`xbe-lockup-gray.svg`, approved Cool Gray 3 C), matching
+what R4/contracts already specify for light backgrounds — no change needed
+there.
+
+**Watermark opacity on light**: the light home mockup uses the **full-color**
+mark at **6%** opacity (vs. the dark mode's white mark at 7%) — see
+`data-model.md`'s placement constants for both.
+
+**Rationale**: identical to R1 — matching the approved corporate palette
+exactly takes priority, applied through `fromSeed`'s overrides so §V's "one
+seed, both schemes" still holds mechanically; only the roles the guide
+doesn't specify (fixed/dim variants, inverse colors, scrim, shadow,
+surfaceTint, surfaceBright, surfaceContainerHigh/Highest) are left to
+algorithmic derivation.
+
+<details>
+<summary>Original plan (superseded) — algorithmic light derivation</summary>
+
+Before the light scheme was added to the design project, the plan was to
+pin only `error` and derive everything else (including `primary`) from the
+gold seed via `fromSeed`'s `fidelity` variant, reasoning that raw gold fails
+contrast as a light-mode fill. The brand guide's actual answer differs
+subtly and is more correct: keep gold as the **fill** (contrast is against
+its dark `onPrimary` ink, which passes), but demote gold to a darker
+"toasted" ink (`#7A5600`) specifically when gold is used as *text*. This is
+adopted as the resolved decision above.
+
+</details>
 
 **Alternatives considered**:
 
-- *Mirror the dark pins into light* — rejected: produces documented contrast
-  failures on filled buttons and chips.
-- *Ask the designer for light-mode hexes before implementing* — rejected as
-  a blocker: derivable accessibly today, and the designer can supply exact
-  light tokens later as a pure token swap in one file.
+- *Keep the original algorithmic derivation now that real tokens exist* —
+  rejected: would ship a scheme that's recognizably not the approved
+  palette once compared side-by-side, for no remaining benefit (the
+  blocker — "no light tokens exist" — no longer applies).
 
 ---
 
@@ -122,8 +172,7 @@ regeneration source of truth. **No `flutter_svg` dependency is added.**
 target platforms including web with no SVG rasterization cost, and the
 design project already exported the rasters explicitly for this purpose.
 Every in-app placement in the spec is at a fixed, known size (login lockup
-~236 px, nav mark ~34 px, collapsed mark ~37 px), so arbitrary vector
-scaling buys nothing. The decorative watermark renders at ~7% opacity where
+~236 px, nav mark ~34 px), so arbitrary vector scaling buys nothing. The decorative watermark renders at ~7% opacity where
 raster softness is imperceptible.
 
 **Alternatives considered**:
@@ -190,7 +239,7 @@ is what makes FR-007's isolation guarantee true rather than aspirational.
 
 ---
 
-## R7. Single source for the display name (FR-013)
+## R7. Single source for the display name (FR-018)
 
 **Decision**: `BrandConfig.defaultDisplayName` is the single Dart-side
 constant; everything Dart-rendered (nav header, home welcome,
@@ -206,7 +255,7 @@ than a repo-wide search.
 values resolved at build time by their own toolchains. A generator script to
 sync them from Dart was considered and rejected as disproportionate for a
 value that changes approximately never; a documented checklist achieves
-FR-013's intent ("without touching every touchpoint individually" —
+FR-018's intent ("without touching every touchpoint individually" —
 i.e. without hunting for them) at a fraction of the machinery.
 
 **Per the resolved clarification**, all of these keep the value

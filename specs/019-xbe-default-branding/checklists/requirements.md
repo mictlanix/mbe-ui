@@ -31,8 +31,8 @@
 
 ## Notes
 
-- All checklist items pass. FR-012's clarification was resolved inline during
+- All checklist items pass. FR-017's clarification was resolved inline during
   `/speckit-specify`: the default display name stays "Mictlanix Business
-  Essentials" (only visual branding changes); FR-013 was added to require
+  Essentials" (only visual branding changes); FR-018 was added to require
   that value stay centralized/easily editable per the user's explicit ask.
 - Spec is ready for `/speckit-plan`.

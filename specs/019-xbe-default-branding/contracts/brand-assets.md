@@ -62,7 +62,8 @@ this is a correctness rule, not a preference:
 | Dark surfaces (`#0F0D0B`–`#221E19`) | full color (`xbe-lockup` / `xbe-mark`) |
 | White / light surfaces | grayscale (`xbe-lockup-gray`) |
 | A brand color fill (gold/orange/red) | white single-ink (`*-white`) |
-| Decorative watermark | white mark at 7% opacity |
+| Decorative watermark, dark surfaces | white mark at 7% opacity |
+| Decorative watermark, light surfaces | full-color mark at 6% opacity |
 
 ## Generator configuration
 

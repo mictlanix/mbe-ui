@@ -87,19 +87,20 @@ flutter run -d chrome --dart-define=BRAND_DISPLAY_NAME="ACME"
 
 ## 5. SC-004 — Logo placement rules
 
-On the login screen and in the nav (expanded, then narrowed until the rail
-collapses):
+On the login screen and in the nav (rail, then the drawer at the Compact
+tier — this app has no separate collapsed/icon-only rail state, see
+spec.md Assumptions):
 
 **Expected**:
 
 - Login lockup ~236 px wide with clear space (~8% of its width) free of
   other content on all sides.
-- Expanded nav: mark at ~34 px tall beside the display name.
-- Collapsed nav: mark only at ≥ 37 px, no wordmark.
+- Nav header (rail and drawer): mark at ~34 px tall beside the display
+  name.
 - Nothing renders a logo below its minimum (51 px lockup / 37 px mark).
 
-Narrow the browser window progressively to force the compact tier and
-confirm the mark never squashes, stretches, or clips.
+Narrow the browser window until the drawer presentation kicks in and
+confirm the mark never squashes, stretches, or clips there either.
 
 ## 6. SC-005 — Contrast
 
@@ -111,6 +112,29 @@ with a contrast checker.
 scheme derives its tones from the seed, so accessible pairings are produced
 by construction (research R2); the dark scheme's pinned pairs come from the
 approved guide.
+
+## 7. SC-006 — Login & Home match the brand proposal
+
+```bash
+flutter run -d chrome        # default build, no dart-defines
+```
+
+**Login** (`/auth/login`): confirm a two-pane layout — a dark branding pane
+(lockup, "Toda la operación, en un solo lugar." tagline, three accent-color
+bars, version string) beside the sign-in form. Submit valid/invalid
+credentials and confirm sign-in behavior (validation, error banner,
+redirect on success) is unchanged from `main`.
+
+**Home** (`/`): confirm a greeting card ("Buen día, {user}" + the guide's
+summary line and two action buttons), a row of 4 indicator tiles
+("Ventas de hoy" $184,320 / "Listas por autorizar" 3 / "Productos activos"
+21,542 / "Instalaciones activas" 9 / 14), and a 4-entry recent-activity
+panel — all matching `data-model.md`'s Static Home content table verbatim.
+
+**Expected**: nothing on Home appears blank, stuck loading, or backed by a
+network call (check DevTools Network tab — no request should fire for tile
+or activity data). Every other screen (nav, catalog lists, detail screens)
+is visually unchanged in layout from `main` — only color/type/assets.
 
 ## Rollback
 
