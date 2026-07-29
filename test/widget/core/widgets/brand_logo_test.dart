@@ -109,10 +109,10 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
             theme: ThemeData(brightness: Brightness.dark),
-            home: Scaffold(body: BrandWatermark(width: 100)),
+            home: const Scaffold(body: BrandWatermark(width: 100)),
           ),
         ),
       );
@@ -127,10 +127,10 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
             theme: ThemeData(brightness: Brightness.light),
-            home: Scaffold(body: BrandWatermark(width: 100)),
+            home: const Scaffold(body: BrandWatermark(width: 100)),
           ),
         ),
       );

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/branding/brand_config_provider.dart';
+import 'package:mbe_ui/core/branding/xbe_palette.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
+import 'package:mbe_ui/core/widgets/brand_logo.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// How [AppNavigation] renders the destination tree.
@@ -40,10 +43,38 @@ class AppNavigation extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tree = ref.watch(navDestinationsProvider);
     final l10n = AppLocalizations.of(context)!;
+    final displayName = ref.watch(brandConfigProvider).displayName;
     return switch (mode) {
-      AppNavigationMode.rail => _buildRail(context, tree, l10n),
-      AppNavigationMode.drawer => _buildDrawer(context, tree, l10n),
+      AppNavigationMode.rail => _buildRail(context, tree, l10n, displayName),
+      AppNavigationMode.drawer => _buildDrawer(context, tree, l10n, displayName),
     };
+  }
+
+  /// Brand mark + display name shown above the destination tree in both the
+  /// rail and drawer presentations (spec 019 FR-004). This app has no
+  /// collapsed/icon-only nav state, so the mark always renders alongside
+  /// the name (see spec.md Assumptions).
+  Widget _header(BuildContext context, String displayName) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      child: Row(
+        children: [
+          const BrandLogo(style: BrandLogoStyle.mark, height: XbePalette.markNavHeight),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              displayName,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: 'Archivo',
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // --- Rail --------------------------------------------------------------
@@ -52,8 +83,9 @@ class AppNavigation extends ConsumerWidget {
     BuildContext context,
     List<NavItem> tree,
     AppLocalizations l10n,
+    String displayName,
   ) {
-    final children = <Widget>[const SizedBox(height: 8)];
+    final children = <Widget>[_header(context, displayName)];
     for (final item in tree) {
       switch (item) {
         case NavDestination():
@@ -138,12 +170,13 @@ class AppNavigation extends ConsumerWidget {
     BuildContext context,
     List<NavItem> tree,
     AppLocalizations l10n,
+    String displayName,
   ) {
     // Destinations flattened in render order — `NavigationDrawer` reports the
     // selected index counting only its `NavigationDrawerDestination` children,
     // so this list maps that index back to a `branchIndex`.
     final flat = <NavDestination>[];
-    final children = <Widget>[const SizedBox(height: 12)];
+    final children = <Widget>[_header(context, displayName)];
 
     void addDestination(NavDestination d) {
       flat.add(d);

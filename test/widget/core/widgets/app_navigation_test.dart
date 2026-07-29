@@ -7,6 +7,8 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/branding/brand_config_provider.dart';
 import 'package:mbe_ui/core/widgets/app_navigation.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -88,10 +90,14 @@ void main() {
     AppNavigationMode mode = AppNavigationMode.rail,
     int currentIndex = 0,
     ValueChanged<int>? onSelected,
+    BrandConfig? brand,
   }) async {
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [accessControlProvider.overrideWithValue(_accessFor(user))],
+        overrides: [
+          accessControlProvider.overrideWithValue(_accessFor(user)),
+          if (brand != null) brandConfigProvider.overrideWithValue(brand),
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -221,4 +227,21 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'an overridden brand shows its own display name, not the XBE default (spec 019 US5, FR-007)',
+    (tester) async {
+      await pumpNav(
+        tester,
+        user: _bothUser,
+        brand: const BrandConfig(
+          displayName: 'CASA MAESTRA',
+          usesDefaultPalette: false,
+        ),
+      );
+
+      expect(find.text('CASA MAESTRA'), findsOneWidget);
+      expect(find.text('Mictlanix Business Essentials'), findsNothing);
+    },
+  );
 }
