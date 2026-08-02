@@ -53,6 +53,18 @@
             ]
         },
         {
+            "name": "mbe-ui Android",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-d",
+                "R52X401GAKH",
+                "--dart-define=ENABLE_FLUTTER_DRIVER_EXTENSION=false",
+                "--dart-define=API_BASE_URL=http://192.168.50.71:8000",
+                "--dart-define=PHOTOS_BASE_URL=http://192.168.50.71:8000"
+            ]
+        },
+        {
             "name": "mbe-ui macOS",
             "request": "launch",
             "type": "dart",
