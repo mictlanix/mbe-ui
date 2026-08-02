@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mbe_ui/features/auth/presentation/login/login_branding_pane.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -123,4 +124,16 @@ void main() {
     expect(find.text('Invalid username or password.'), findsOneWidget);
     expect(find.text('field required'), findsNothing);
   });
+
+  testWidgets(
+    'shows the branding pane beside the form on wide layouts (spec 019 FR-014)',
+    (tester) async {
+      await pumpLoginScreen(tester);
+
+      expect(find.byType(LoginBrandingPane), findsOneWidget);
+      // The existing form is still present, unaffected by the new pane.
+      expect(find.byKey(const Key('login_username_field')), findsOneWidget);
+      expect(find.byKey(const Key('login_password_field')), findsOneWidget);
+    },
+  );
 }

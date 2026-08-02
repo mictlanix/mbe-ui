@@ -48,6 +48,12 @@
   "forgotPasswordLink": "Forgot your password?",
   "@forgotPasswordLink": {},
 
+  "loginTagline": "All your operations, in one place.",
+  "@loginTagline": {"description": "XBE default-branding login screen headline (spec 019 FR-014)"},
+
+  "loginSubhead": "Catalogs, price lists, facilities, and sales for all your branches, synced in real time.",
+  "@loginSubhead": {"description": "XBE default-branding login screen subhead (spec 019 FR-014)"},
+
   "changePasswordMenuTitle": "Change password",
   "@changePasswordMenuTitle": {},
 
@@ -57,6 +63,21 @@
   "@homeMenuTitle": {},
   "homeWelcomeMessage": "Welcome",
   "@homeWelcomeMessage": {},
+
+  "homeGreeting": "Hello, {name}",
+  "@homeGreeting": {
+    "description": "XBE default-branding dashboard greeting (spec 019 FR-015)",
+    "placeholders": {"name": {"type": "String"}}
+  },
+
+  "homeSummary": "You have price lists pending approval and facilities with yesterday's cash cut still open.",
+  "@homeSummary": {"description": "XBE default-branding dashboard summary line — static placeholder copy (spec 019 FR-016)"},
+
+  "homeReviewPendingButton": "Review pending",
+  "@homeReviewPendingButton": {"description": "XBE default-branding dashboard hero action button"},
+
+  "homeNewSaleButton": "New sale",
+  "@homeNewSaleButton": {"description": "XBE default-branding dashboard hero action button"},
   "catalogsGroupTitle": "Catalogs",
   "@catalogsGroupTitle": {},
   "salesGroupTitle": "Sales",

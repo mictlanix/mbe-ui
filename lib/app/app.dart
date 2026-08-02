@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/app/router/app_router.dart';
 import 'package:mbe_ui/app/theme/app_theme.dart';
+import 'package:mbe_ui/core/branding/brand_config_provider.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Root widget: wires the redirect-guarded router (T022), the seeded
-/// light/dark theme + persisted `ThemeMode` (T021), and `es-MX` as the
-/// first-class locale (constitution §V).
+/// Root widget: wires the redirect-guarded router (T022), the brand-driven
+/// light/dark theme + persisted `ThemeMode` (T021; spec 019), and `es-MX`
+/// as the first-class locale (constitution §V).
 class App extends ConsumerWidget {
   const App({super.key});
 
@@ -15,12 +16,14 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
     final themeMode = ref.watch(themeModeControllerProvider);
+    final brand = ref.watch(brandConfigProvider);
+    final appTheme = ref.watch(appThemeProvider);
 
     return MaterialApp.router(
-      title: 'Mictlanix Business Essentials',
+      title: brand.displayName,
       routerConfig: router,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: appTheme.light,
+      darkTheme: appTheme.dark,
       themeMode: themeMode,
       locale: const Locale('es', 'MX'),
       supportedLocales: AppLocalizations.supportedLocales,

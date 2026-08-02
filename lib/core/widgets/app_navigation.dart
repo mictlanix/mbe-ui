@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
+import 'package:mbe_ui/core/widgets/brand_nav_header.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// How [AppNavigation] renders the destination tree.
@@ -36,6 +37,11 @@ class AppNavigation extends ConsumerWidget {
   /// Invoked with the selected destination's `branchIndex`.
   final ValueChanged<int> onDestinationSelected;
 
+  /// Width of the persistent rail — also used by `AppShell` to size the
+  /// fixed brand header in the app bar's leading zone so the two line up
+  /// (spec 019, logo placement follow-up).
+  static const double railWidth = 240.0;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tree = ref.watch(navDestinationsProvider);
@@ -53,7 +59,7 @@ class AppNavigation extends ConsumerWidget {
     List<NavItem> tree,
     AppLocalizations l10n,
   ) {
-    final children = <Widget>[const SizedBox(height: 8)];
+    final children = <Widget>[];
     for (final item in tree) {
       switch (item) {
         case NavDestination():
@@ -66,7 +72,7 @@ class AppNavigation extends ConsumerWidget {
       }
     }
     return SizedBox(
-      width: 240,
+      width: railWidth,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -143,7 +149,7 @@ class AppNavigation extends ConsumerWidget {
     // selected index counting only its `NavigationDrawerDestination` children,
     // so this list maps that index back to a `branchIndex`.
     final flat = <NavDestination>[];
-    final children = <Widget>[const SizedBox(height: 12)];
+    final children = <Widget>[const BrandNavHeader()];
 
     void addDestination(NavDestination d) {
       flat.add(d);

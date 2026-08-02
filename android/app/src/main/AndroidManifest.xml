@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="mbe_ui"
+        android:label="Mictlanix Business Essentials"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

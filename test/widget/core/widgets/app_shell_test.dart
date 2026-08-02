@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/widgets/app_navigation.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/core/widgets/brand_nav_header.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -149,4 +150,33 @@ void main() {
     final nav = tester.widget<AppNavigation>(find.byType(AppNavigation));
     expect(nav.mode, AppNavigationMode.rail);
   });
+
+  testWidgets(
+    'at wide width the brand header is fixed in the app bar leading zone, '
+    'matching the rail width (spec 019 logo placement follow-up)',
+    (tester) async {
+      await _pumpShell(tester, size: const Size(1200, 800));
+
+      expect(
+        find.descendant(of: find.byType(AppBar), matching: find.byType(BrandNavHeader)),
+        findsOneWidget,
+      );
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.leadingWidth, AppNavigation.railWidth);
+    },
+  );
+
+  testWidgets(
+    'at narrow width the app bar keeps its default hamburger menu button, '
+    'not the fixed brand header',
+    (tester) async {
+      await _pumpShell(tester, size: const Size(500, 900));
+
+      expect(
+        find.descendant(of: find.byType(AppBar), matching: find.byType(BrandNavHeader)),
+        findsNothing,
+      );
+      expect(find.byIcon(Icons.menu), findsOneWidget);
+    },
+  );
 }

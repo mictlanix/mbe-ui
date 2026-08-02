@@ -62,6 +62,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get forgotPasswordLink => '¿Olvidaste tu contraseña?';
 
   @override
+  String get loginTagline => 'Toda la operación, en un solo lugar.';
+
+  @override
+  String get loginSubhead =>
+      'Catálogos, precios, instalaciones y ventas de tus sucursales sincronizados en tiempo real.';
+
+  @override
   String get changePasswordMenuTitle => 'Cambiar contraseña';
 
   @override
@@ -72,6 +79,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get homeWelcomeMessage => 'Bienvenido';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Hola, $name';
+  }
+
+  @override
+  String get homeSummary =>
+      'Tienes listas de precios por autorizar e instalaciones con el corte de caja de ayer pendiente.';
+
+  @override
+  String get homeReviewPendingButton => 'Revisar pendientes';
+
+  @override
+  String get homeNewSaleButton => 'Nueva venta';
 
   @override
   String get catalogsGroupTitle => 'Catálogos';

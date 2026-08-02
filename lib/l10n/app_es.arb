@@ -23,9 +23,16 @@
   "forgotPasswordLink": "¿Olvidaste tu contraseña?",
   "changePasswordMenuTitle": "Cambiar contraseña",
 
+  "loginTagline": "Toda la operación, en un solo lugar.",
+  "loginSubhead": "Catálogos, precios, instalaciones y ventas de tus sucursales sincronizados en tiempo real.",
+
   "appTitle": "Mictlanix Business Essentials",
   "homeMenuTitle": "Inicio",
   "homeWelcomeMessage": "Bienvenido",
+  "homeGreeting": "Hola, {name}",
+  "homeSummary": "Tienes listas de precios por autorizar e instalaciones con el corte de caja de ayer pendiente.",
+  "homeReviewPendingButton": "Revisar pendientes",
+  "homeNewSaleButton": "Nueva venta",
   "catalogsGroupTitle": "Catálogos",
   "salesGroupTitle": "Ventas",
   "usersMenuTitle": "Usuarios",

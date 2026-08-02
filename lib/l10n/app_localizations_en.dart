@@ -62,6 +62,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get forgotPasswordLink => 'Forgot your password?';
 
   @override
+  String get loginTagline => 'All your operations, in one place.';
+
+  @override
+  String get loginSubhead =>
+      'Catalogs, price lists, facilities, and sales for all your branches, synced in real time.';
+
+  @override
   String get changePasswordMenuTitle => 'Change password';
 
   @override
@@ -72,6 +79,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeWelcomeMessage => 'Welcome';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Hello, $name';
+  }
+
+  @override
+  String get homeSummary =>
+      'You have price lists pending approval and facilities with yesterday\'s cash cut still open.';
+
+  @override
+  String get homeReviewPendingButton => 'Review pending';
+
+  @override
+  String get homeNewSaleButton => 'New sale';
 
   @override
   String get catalogsGroupTitle => 'Catalogs';

@@ -200,6 +200,18 @@ abstract class AppLocalizations {
   /// **'Forgot your password?'**
   String get forgotPasswordLink;
 
+  /// XBE default-branding login screen headline (spec 019 FR-014)
+  ///
+  /// In en, this message translates to:
+  /// **'All your operations, in one place.'**
+  String get loginTagline;
+
+  /// XBE default-branding login screen subhead (spec 019 FR-014)
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogs, price lists, facilities, and sales for all your branches, synced in real time.'**
+  String get loginSubhead;
+
   /// No description provided for @changePasswordMenuTitle.
   ///
   /// In en, this message translates to:
@@ -223,6 +235,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome'**
   String get homeWelcomeMessage;
+
+  /// XBE default-branding dashboard greeting (spec 019 FR-015)
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, {name}'**
+  String homeGreeting(String name);
+
+  /// XBE default-branding dashboard summary line — static placeholder copy (spec 019 FR-016)
+  ///
+  /// In en, this message translates to:
+  /// **'You have price lists pending approval and facilities with yesterday\'s cash cut still open.'**
+  String get homeSummary;
+
+  /// XBE default-branding dashboard hero action button
+  ///
+  /// In en, this message translates to:
+  /// **'Review pending'**
+  String get homeReviewPendingButton;
+
+  /// XBE default-branding dashboard hero action button
+  ///
+  /// In en, this message translates to:
+  /// **'New sale'**
+  String get homeNewSaleButton;
 
   /// No description provided for @catalogsGroupTitle.
   ///
