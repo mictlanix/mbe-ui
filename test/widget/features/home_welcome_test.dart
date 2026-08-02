@@ -70,25 +70,26 @@ void main() {
   }
 
   group('welcomeAsset configured — unchanged deployment-branded layout', () {
-    testWidgets('shows the configured display name and image, not the XBE dashboard', (
-      tester,
-    ) async {
-      await pumpWelcome(
-        tester,
-        brand: const BrandConfig(
-          displayName: 'CASA MAESTRA',
-          welcomeAsset: 'assets/branding/default_welcome.png',
-        ),
-      );
+    testWidgets(
+      'shows the configured display name and image, not the XBE dashboard',
+      (tester) async {
+        await pumpWelcome(
+          tester,
+          brand: const BrandConfig(
+            displayName: 'CASA MAESTRA',
+            welcomeAsset: 'assets/branding/default_welcome.png',
+          ),
+        );
 
-      expect(find.text('CASA MAESTRA'), findsOneWidget);
-      expect(find.byKey(const Key('home_welcome_default')), findsNothing);
-      // None of the XBE dashboard's static content leaks into a
-      // welcomeAsset-configured deployment (isolation — spec 019 FR-007).
-      expect(find.byKey(const Key('home_greeting_card')), findsNothing);
-      expect(find.byKey(const Key('home_dashboard_tiles')), findsNothing);
-      expect(find.byKey(const Key('home_activity_feed')), findsNothing);
-    });
+        expect(find.text('CASA MAESTRA'), findsOneWidget);
+        expect(find.byKey(const Key('home_welcome_default')), findsNothing);
+        // None of the XBE dashboard's static content leaks into a
+        // welcomeAsset-configured deployment (isolation — spec 019 FR-007).
+        expect(find.byKey(const Key('home_greeting_card')), findsNothing);
+        expect(find.byKey(const Key('home_dashboard_tiles')), findsNothing);
+        expect(find.byKey(const Key('home_activity_feed')), findsNothing);
+      },
+    );
 
     testWidgets('falls back to the bundled placeholder image on load failure', (
       tester,
@@ -105,64 +106,72 @@ void main() {
     });
   });
 
-  group('no welcomeAsset (XBE default build) — dashboard (spec 019 FR-015/016)', () {
-    const defaultBrand = BrandConfig(displayName: 'Mictlanix Business Essentials');
-
-    testWidgets('renders the greeting card instead of the old placeholder', (
-      tester,
-    ) async {
-      await pumpWelcome(tester, brand: defaultBrand);
-
-      expect(find.byKey(const Key('home_greeting_card')), findsOneWidget);
-      expect(find.byKey(const Key('home_welcome_default')), findsNothing);
-    });
-
-    testWidgets('greeting reflects the signed-in user, not a hardcoded name', (
-      tester,
-    ) async {
-      when(() => tokenStorage.read()).thenAnswer((_) async => 'token');
-      when(() => authRepository.me()).thenAnswer((_) async => _user);
-
-      await pumpWelcome(tester, brand: defaultBrand);
-
-      expect(find.textContaining('rramos'), findsOneWidget);
-    });
-
-    testWidgets('renders all 4 static indicator tiles verbatim', (tester) async {
-      await pumpWelcome(tester, brand: defaultBrand);
-
-      expect(find.byKey(const Key('home_dashboard_tiles')), findsOneWidget);
-      expect(find.text('Ventas de hoy'), findsOneWidget);
-      expect(find.text(r'$184,320'), findsOneWidget);
-      expect(find.text('Listas por autorizar'), findsOneWidget);
-      expect(find.text('3'), findsOneWidget);
-      expect(find.text('Productos activos'), findsOneWidget);
-      expect(find.text('21,542'), findsOneWidget);
-      expect(find.text('Instalaciones activas'), findsOneWidget);
-      expect(find.text('9 / 14'), findsOneWidget);
-    });
-
-    testWidgets('renders all 4 static recent-activity entries verbatim', (
-      tester,
-    ) async {
-      await pumpWelcome(tester, brand: defaultBrand);
-
-      expect(find.byKey(const Key('home_activity_feed')), findsOneWidget);
-      expect(
-        find.text('Lista de precios «Mayoreo Q3» enviada a autorización'),
-        findsOneWidget,
+  group(
+    'no welcomeAsset (XBE default build) — dashboard (spec 019 FR-015/016)',
+    () {
+      const defaultBrand = BrandConfig(
+        displayName: 'Mictlanix Business Essentials',
       );
-      expect(
-        find.text('38 productos GREENFIELD actualizados por importación'),
-        findsOneWidget,
+
+      testWidgets('renders the greeting card instead of the old placeholder', (
+        tester,
+      ) async {
+        await pumpWelcome(tester, brand: defaultBrand);
+
+        expect(find.byKey(const Key('home_greeting_card')), findsOneWidget);
+        expect(find.byKey(const Key('home_welcome_default')), findsNothing);
+      });
+
+      testWidgets(
+        'greeting reflects the signed-in user, not a hardcoded name',
+        (tester) async {
+          when(() => tokenStorage.read()).thenAnswer((_) async => 'token');
+          when(() => authRepository.me()).thenAnswer((_) async => _user);
+
+          await pumpWelcome(tester, brand: defaultBrand);
+
+          expect(find.textContaining('rramos'), findsOneWidget);
+        },
       );
-      expect(find.text('Corte de caja CMC3 cerrado'), findsOneWidget);
-      expect(
-        find.text('Alta de empleado: J. Domínguez · CMHU'),
-        findsOneWidget,
-      );
-    });
-  });
+
+      testWidgets('renders all 4 static indicator tiles verbatim', (
+        tester,
+      ) async {
+        await pumpWelcome(tester, brand: defaultBrand);
+
+        expect(find.byKey(const Key('home_dashboard_tiles')), findsOneWidget);
+        expect(find.text('Ventas de hoy'), findsOneWidget);
+        expect(find.text(r'$184,320'), findsOneWidget);
+        expect(find.text('Listas por autorizar'), findsOneWidget);
+        expect(find.text('3'), findsOneWidget);
+        expect(find.text('Productos activos'), findsOneWidget);
+        expect(find.text('21,542'), findsOneWidget);
+        expect(find.text('Instalaciones activas'), findsOneWidget);
+        expect(find.text('9 / 14'), findsOneWidget);
+      });
+
+      testWidgets('renders all 4 static recent-activity entries verbatim', (
+        tester,
+      ) async {
+        await pumpWelcome(tester, brand: defaultBrand);
+
+        expect(find.byKey(const Key('home_activity_feed')), findsOneWidget);
+        expect(
+          find.text('Lista de precios «Mayoreo Q3» enviada a autorización'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('38 productos GREENFIELD actualizados por importación'),
+          findsOneWidget,
+        );
+        expect(find.text('Corte de caja CMC3 cerrado'), findsOneWidget);
+        expect(
+          find.text('Alta de empleado: J. Domínguez · CMHU'),
+          findsOneWidget,
+        );
+      });
+    },
+  );
 
   testWidgets('renders no navigation list (regression: old Home nav)', (
     tester,

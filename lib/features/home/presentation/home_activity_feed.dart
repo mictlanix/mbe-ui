@@ -67,7 +67,9 @@ class HomeActivityFeed extends StatelessWidget {
                 border: i == 0
                     ? null
                     : Border(
-                        top: BorderSide(color: theme.colorScheme.outlineVariant),
+                        top: BorderSide(
+                          color: theme.colorScheme.outlineVariant,
+                        ),
                       ),
               ),
               child: Row(

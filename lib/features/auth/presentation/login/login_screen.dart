@@ -32,7 +32,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       body: isCompact
-          ? Center(child: _SignInForm(formKey: _formKey, onSubmit: _submit))
+          ? Center(
+              child: _SignInForm(formKey: _formKey, onSubmit: _submit),
+            )
           : Row(
               children: [
                 const Expanded(flex: 5, child: LoginBrandingPane()),
@@ -93,8 +95,9 @@ class _SignInForm extends ConsumerWidget {
                 textInputAction: TextInputAction.next,
                 enabled: !formState.submitting,
                 onChanged: controller.usernameChanged,
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? l10n.fieldRequired : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? l10n.fieldRequired
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -105,8 +108,9 @@ class _SignInForm extends ConsumerWidget {
                 textInputAction: TextInputAction.done,
                 enabled: !formState.submitting,
                 onChanged: controller.passwordChanged,
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? l10n.fieldRequired : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? l10n.fieldRequired
+                    : null,
                 onFieldSubmitted: (_) => onSubmit(controller),
               ),
               const SizedBox(height: 24),

@@ -7,7 +7,9 @@ import 'package:mbe_ui/core/widgets/brand_logo.dart';
 void main() {
   Future<void> pump(WidgetTester tester, Widget child) async {
     await tester.pumpWidget(
-      ProviderScope(child: MaterialApp(home: Scaffold(body: child))),
+      ProviderScope(
+        child: MaterialApp(home: Scaffold(body: child)),
+      ),
     );
     await tester.pump();
   }
@@ -36,14 +38,20 @@ void main() {
     testWidgets('mark below its minimum width (37px) renders nothing', (
       tester,
     ) async {
-      await pump(tester, const BrandLogo(style: BrandLogoStyle.mark, width: 20));
+      await pump(
+        tester,
+        const BrandLogo(style: BrandLogoStyle.mark, width: 20),
+      );
       expect(find.byType(Image), findsNothing);
     });
 
     testWidgets('mark at/above its minimum width (37px) renders', (
       tester,
     ) async {
-      await pump(tester, const BrandLogo(style: BrandLogoStyle.mark, width: 37));
+      await pump(
+        tester,
+        const BrandLogo(style: BrandLogoStyle.mark, width: 37),
+      );
       expect(find.byType(Image), findsOneWidget);
     });
 
@@ -98,7 +106,9 @@ void main() {
         const BrandLogo(style: BrandLogoStyle.lockup, width: 200),
       );
       final padding = tester.widget<Padding>(
-        find.ancestor(of: find.byType(Image), matching: find.byType(Padding)).first,
+        find
+            .ancestor(of: find.byType(Image), matching: find.byType(Padding))
+            .first,
       );
       expect(padding.padding, const EdgeInsets.all(16)); // 200 * 0.08
     });

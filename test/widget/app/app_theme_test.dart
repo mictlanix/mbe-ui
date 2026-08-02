@@ -12,7 +12,9 @@ void main() {
     // exercised directly via BrandConfig's public constructor instead,
     // which is what fromEnvironment() resolves to when no dart-defines are
     // set (usesDefaultPalette: true, seedColor: XbePalette.gold).
-    const defaultBrand = BrandConfig(displayName: 'Mictlanix Business Essentials');
+    const defaultBrand = BrandConfig(
+      displayName: 'Mictlanix Business Essentials',
+    );
 
     test('dark ColorScheme uses the pinned XBE brand roles', () {
       final theme = AppTheme.of(defaultBrand);

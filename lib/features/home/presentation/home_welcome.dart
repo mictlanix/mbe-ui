@@ -173,7 +173,10 @@ class _GreetingCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 520),
-                  child: Text(l10n.homeSummary, style: theme.textTheme.bodyLarge),
+                  child: Text(
+                    l10n.homeSummary,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Wrap(

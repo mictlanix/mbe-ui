@@ -158,7 +158,10 @@ void main() {
       await _pumpShell(tester, size: const Size(1200, 800));
 
       expect(
-        find.descendant(of: find.byType(AppBar), matching: find.byType(BrandNavHeader)),
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(BrandNavHeader),
+        ),
         findsOneWidget,
       );
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
@@ -173,7 +176,10 @@ void main() {
       await _pumpShell(tester, size: const Size(500, 900));
 
       expect(
-        find.descendant(of: find.byType(AppBar), matching: find.byType(BrandNavHeader)),
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.byType(BrandNavHeader),
+        ),
         findsNothing,
       );
       expect(find.byIcon(Icons.menu), findsOneWidget);

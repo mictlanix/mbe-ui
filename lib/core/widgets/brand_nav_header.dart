@@ -21,7 +21,10 @@ class BrandNavHeader extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          const BrandLogo(style: BrandLogoStyle.mark, height: XbePalette.markNavHeight),
+          const BrandLogo(
+            style: BrandLogoStyle.mark,
+            height: XbePalette.markNavHeight,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

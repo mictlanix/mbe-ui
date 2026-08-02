@@ -85,7 +85,9 @@ class BrandLogo extends ConsumerWidget {
     // placement (login) — 8% of rendered width, kept free of other
     // content. The height-driven mark placement (nav header) has no
     // documented clear-space rule.
-    final clearSpace = width != null ? width! * XbePalette.clearSpaceRatio : 0.0;
+    final clearSpace = width != null
+        ? width! * XbePalette.clearSpaceRatio
+        : 0.0;
     return Padding(padding: EdgeInsets.all(clearSpace), child: image);
   }
 }
@@ -106,7 +108,11 @@ class BrandWatermark extends ConsumerWidget {
     final brand = ref.watch(brandConfigProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    Widget image = Image.asset(brand.markAsset, width: width, fit: BoxFit.contain);
+    Widget image = Image.asset(
+      brand.markAsset,
+      width: width,
+      fit: BoxFit.contain,
+    );
     if (isDark) {
       image = ColorFiltered(
         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
