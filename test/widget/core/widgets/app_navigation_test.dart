@@ -231,9 +231,13 @@ void main() {
   testWidgets(
     'an overridden brand shows its own display name, not the XBE default (spec 019 US5, FR-007)',
     (tester) async {
+      // The rail no longer carries the brand header itself (it's fixed in
+      // AppShell's app bar instead — see app_shell_test.dart); the drawer
+      // still renders it via BrandNavHeader, so that's exercised here.
       await pumpNav(
         tester,
         user: _bothUser,
+        mode: AppNavigationMode.drawer,
         brand: const BrandConfig(
           displayName: 'CASA MAESTRA',
           usesDefaultPalette: false,

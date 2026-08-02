@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
 import 'package:mbe_ui/core/widgets/app_navigation.dart';
+import 'package:mbe_ui/core/widgets/brand_nav_header.dart';
 import 'package:mbe_ui/core/widgets/user_menu_button.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -44,11 +45,22 @@ class _AppShellState extends ConsumerState<AppShell> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(_titleFor(tree, currentIndex, l10n)),
-        // Exactly one trailing control — the user menu (FR-009).
-        actions: const [UserMenuButton(), SizedBox(width: 4)],
-      ),
+      appBar: isCompact
+          ? AppBar(
+              title: Text(_titleFor(tree, currentIndex, l10n)),
+              // Exactly one trailing control — the user menu (FR-009).
+              actions: const [UserMenuButton(), SizedBox(width: 4)],
+            )
+          : AppBar(
+              // A fixed brand header, exactly as wide as the persistent rail
+              // below it, so the logo reads as anchored top-left rather than
+              // scrolling away inside the rail (spec 019 follow-up).
+              leading: const BrandNavHeader(),
+              leadingWidth: AppNavigation.railWidth,
+              toolbarHeight: 64,
+              title: Text(_titleFor(tree, currentIndex, l10n)),
+              actions: const [UserMenuButton(), SizedBox(width: 4)],
+            ),
       drawer: isCompact
           ? AppNavigation(
               mode: AppNavigationMode.drawer,

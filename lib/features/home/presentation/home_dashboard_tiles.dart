@@ -44,50 +44,63 @@ const _tiles = [
 /// (spec 019 FR-015/016; data-model.md § Static Home content). Each tile
 /// sizes to its own content (no fixed aspect ratio), so it never overflows
 /// regardless of viewport width — narrower viewports simply wrap tiles onto
-/// additional rows.
+/// additional rows. Below the width of a single 220px tile, tiles stretch to
+/// fill the available width instead, so they line up edge-to-edge with the
+/// full-width activity feed panel underneath them.
 class HomeDashboardTiles extends StatelessWidget {
   const HomeDashboardTiles({super.key});
+
+  static const _tileWidth = 220.0;
+  static const _spacing = 16.0;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Wrap(
-      key: const Key('home_dashboard_tiles'),
-      spacing: 16,
-      runSpacing: 16,
-      children: [
-        for (final tile in _tiles)
-          Container(
-            width: 220,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(tile.icon, color: theme.colorScheme.primary),
-                const SizedBox(height: 12),
-                Text(
-                  tile.value,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontFamily: 'Archivo',
-                    fontWeight: FontWeight.w700,
-                  ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = (constraints.maxWidth / (_tileWidth + _spacing))
+            .floor()
+            .clamp(1, _tiles.length);
+        final tileWidth = columns == 1 ? constraints.maxWidth : _tileWidth;
+        return Wrap(
+          key: const Key('home_dashboard_tiles'),
+          spacing: _spacing,
+          runSpacing: _spacing,
+          children: [
+            for (final tile in _tiles)
+              Container(
+                width: tileWidth,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: theme.colorScheme.outlineVariant),
                 ),
-                Text(
-                  tile.label,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(tile.icon, color: theme.colorScheme.primary),
+                    const SizedBox(height: 12),
+                    Text(
+                      tile.value,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontFamily: 'Archivo',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      tile.label,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-      ],
+              ),
+          ],
+        );
+      },
     );
   }
 }
