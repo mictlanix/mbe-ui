@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "point of sale",
   "branch": "020-point-of-sale",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-04T04:32:04.814Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-04T22:44:33.833Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-04T22:49:49.225Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-04T22:54:11.938Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-04T22:54:48.433Z"
     }
   ],
   "coverage": {
@@ -88,7 +116,7 @@
       "title": "Each line MUST show the product name and code, the source warehouse, that warehouse's availability for the product, quantity, unit, unit price, discount, tax rate, and the line total."
     },
     "FR-023": {
-      "title": "Each line's quantity, unit price, discount rate, source warehouse and tax treatment MUST be editable in place, and quantity MUST additionally be adjustable by increment and decrement controls."
+      "title": "Each line's quantity, unit price, discount rate and source warehouse MUST be editable in place, and quantity MUST additionally be adjustable by increment and decrement controls. The line's tax rate MUST be displayed read-only — no supported operation can change it (planning finding, research §12)."
     },
     "FR-024": {
       "title": "Adding a product MUST default its source warehouse to the warehouse configured for the cashier's point of sale, and the cashier MUST be able to change it per line and see availability for the chosen warehouse."

@@ -418,9 +418,11 @@ without horizontal scrolling and with every control reachable.
 - **FR-022**: Each line MUST show the product name and code, the source
   warehouse, that warehouse's availability for the product, quantity, unit,
   unit price, discount, tax rate, and the line total.
-- **FR-023**: Each line's quantity, unit price, discount rate, source warehouse
-  and tax treatment MUST be editable in place, and quantity MUST additionally be
-  adjustable by increment and decrement controls.
+- **FR-023**: Each line's quantity, unit price, discount rate and source
+  warehouse MUST be editable in place, and quantity MUST additionally be
+  adjustable by increment and decrement controls. The line's tax rate MUST be
+  displayed read-only — no supported operation can change it (planning finding,
+  research §12).
 - **FR-024**: Adding a product MUST default its source warehouse to the
   warehouse configured for the cashier's point of sale, and the cashier MUST be
   able to change it per line and see availability for the chosen warehouse.
