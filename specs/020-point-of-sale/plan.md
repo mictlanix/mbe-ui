@@ -219,12 +219,12 @@ lib/
 └── l10n/{app_en.arb, app_es.arb}                 # + POS strings
 
 test/
-├── unit/sales/
+├── unit/features/sales/
 │   ├── destination_split_test.dart               # the highest-risk logic
 │   ├── money_test.dart
 │   ├── payment_method_rules_test.dart
 │   └── sale_mapping_test.dart
-├── widget/sales/
+├── widget/features/sales/
 │   ├── sale_line_row_test.dart
 │   ├── payment_step_gate_test.dart
 │   ├── step_indicator_test.dart

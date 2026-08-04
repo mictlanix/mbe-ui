@@ -134,7 +134,7 @@ pinned bottom bar, and **no horizontal scrolling anywhere**.
 
 ```bash
 flutter analyze
-flutter test test/unit/sales test/widget/sales          # fast, no server
+flutter test test/unit/features/sales test/widget/features/sales   # fast, no server
 flutter test test/integration/pos_counter_sale_flow_test.dart   # needs mbe-api
 ```
 

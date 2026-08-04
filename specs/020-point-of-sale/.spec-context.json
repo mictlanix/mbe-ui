@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "point of sale",
   "branch": "020-point-of-sale",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,20 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-04T22:54:48.433Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-04T23:00:01.411Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-04T23:06:29.224Z"
     }
   ],
   "coverage": {
