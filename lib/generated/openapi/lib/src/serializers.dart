@@ -26,10 +26,13 @@ import 'package:mbe_api_client/src/model/application_create.dart';
 import 'package:mbe_api_client/src/model/application_response.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
+import 'package:mbe_api_client/src/model/cash_drawer_summary.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_update.dart';
 import 'package:mbe_api_client/src/model/cash_session_close.dart';
 import 'package:mbe_api_client/src/model/cash_session_open.dart';
 import 'package:mbe_api_client/src/model/cash_session_response.dart';
+import 'package:mbe_api_client/src/model/cash_session_sort.dart';
+import 'package:mbe_api_client/src/model/cash_session_status.dart';
 import 'package:mbe_api_client/src/model/change_password_request.dart';
 import 'package:mbe_api_client/src/model/commission.dart';
 import 'package:mbe_api_client/src/model/commission1.dart';
@@ -37,6 +40,9 @@ import 'package:mbe_api_client/src/model/commit_line_request.dart';
 import 'package:mbe_api_client/src/model/commit_line_update.dart';
 import 'package:mbe_api_client/src/model/commit_order_request.dart';
 import 'package:mbe_api_client/src/model/confirm_recovery_request.dart';
+import 'package:mbe_api_client/src/model/contact_create.dart';
+import 'package:mbe_api_client/src/model/contact_response.dart';
+import 'package:mbe_api_client/src/model/contact_update.dart';
 import 'package:mbe_api_client/src/model/credit_limit.dart';
 import 'package:mbe_api_client/src/model/credit_limit1.dart';
 import 'package:mbe_api_client/src/model/credit_note_response.dart';
@@ -56,6 +62,7 @@ import 'package:mbe_api_client/src/model/customer_response.dart';
 import 'package:mbe_api_client/src/model/customer_update.dart';
 import 'package:mbe_api_client/src/model/delivery_order_create.dart';
 import 'package:mbe_api_client/src/model/delivery_order_event_response.dart';
+import 'package:mbe_api_client/src/model/delivery_order_line_request.dart';
 import 'package:mbe_api_client/src/model/delivery_order_line_response.dart';
 import 'package:mbe_api_client/src/model/delivery_order_line_update.dart';
 import 'package:mbe_api_client/src/model/delivery_order_response.dart';
@@ -102,6 +109,7 @@ import 'package:mbe_api_client/src/model/label_update.dart';
 import 'package:mbe_api_client/src/model/list_response_address_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_session_response.dart';
+import 'package:mbe_api_client/src/model/list_response_contact_response.dart';
 import 'package:mbe_api_client/src/model/list_response_credit_note_response.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_payment_response.dart';
@@ -136,6 +144,7 @@ import 'package:mbe_api_client/src/model/low_profit_margin.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/method_total.dart';
 import 'package:mbe_api_client/src/model/opening_amount.dart';
+import 'package:mbe_api_client/src/model/order_application_response.dart';
 import 'package:mbe_api_client/src/model/outstanding_order_response.dart';
 import 'package:mbe_api_client/src/model/payment_method.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
@@ -207,6 +216,7 @@ import 'package:mbe_api_client/src/model/supplier_create.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:mbe_api_client/src/model/supplier_update.dart';
 import 'package:mbe_api_client/src/model/tax_rate.dart';
+import 'package:mbe_api_client/src/model/tax_rate1.dart';
 import 'package:mbe_api_client/src/model/taxpayer_certificate_response.dart';
 import 'package:mbe_api_client/src/model/taxpayer_issuer_create.dart';
 import 'package:mbe_api_client/src/model/taxpayer_issuer_response.dart';
@@ -249,10 +259,13 @@ part 'serializers.g.dart';
   ApplicationResponse,
   CashDrawerCreate,
   CashDrawerResponse,
+  CashDrawerSummary,
   CashDrawerUpdate,
   CashSessionClose,
   CashSessionOpen,
   CashSessionResponse,
+  CashSessionSort,
+  CashSessionStatus,
   ChangePasswordRequest,
   Commission,
   Commission1,
@@ -260,6 +273,9 @@ part 'serializers.g.dart';
   CommitLineUpdate,
   CommitOrderRequest,
   ConfirmRecoveryRequest,
+  ContactCreate,
+  ContactResponse,
+  ContactUpdate,
   CreditLimit,
   CreditLimit1,
   CreditNoteResponse,
@@ -279,6 +295,7 @@ part 'serializers.g.dart';
   CustomerUpdate,
   DeliveryOrderCreate,
   DeliveryOrderEventResponse,
+  DeliveryOrderLineRequest,
   DeliveryOrderLineResponse,
   DeliveryOrderLineUpdate,
   DeliveryOrderResponse,
@@ -325,6 +342,7 @@ part 'serializers.g.dart';
   ListResponseAddressResponse,
   ListResponseCashDrawerResponse,
   ListResponseCashSessionResponse,
+  ListResponseContactResponse,
   ListResponseCreditNoteResponse,
   ListResponseCustomerListItem,
   ListResponseCustomerPaymentResponse,
@@ -359,6 +377,7 @@ part 'serializers.g.dart';
   LowProfitMargin1,
   MethodTotal,
   OpeningAmount,
+  OrderApplicationResponse,
   OutstandingOrderResponse,
   PaymentMethod,
   PaymentMethodOptionCreate,
@@ -430,6 +449,7 @@ part 'serializers.g.dart';
   SupplierResponse,
   SupplierUpdate,
   TaxRate,
+  TaxRate1,
   TaxpayerCertificateResponse,
   TaxpayerIssuerCreate,
   TaxpayerIssuerResponse,
@@ -462,6 +482,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType.nullable(int)]),
             () => ListBuilder<int>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(OrderApplicationResponse)]),
+            () => ListBuilder<OrderApplicationResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltMap, [FullType(String), FullType(String)]),

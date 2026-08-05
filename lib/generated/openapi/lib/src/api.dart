@@ -13,6 +13,7 @@ import 'package:mbe_api_client/src/api/addresses_api.dart';
 import 'package:mbe_api_client/src/api/auth_api.dart';
 import 'package:mbe_api_client/src/api/cash_drawers_api.dart';
 import 'package:mbe_api_client/src/api/cash_sessions_api.dart';
+import 'package:mbe_api_client/src/api/contacts_api.dart';
 import 'package:mbe_api_client/src/api/credit_notes_api.dart';
 import 'package:mbe_api_client/src/api/customer_payments_api.dart';
 import 'package:mbe_api_client/src/api/customer_refunds_api.dart';
@@ -137,6 +138,12 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   CashSessionsApi getCashSessionsApi() {
     return CashSessionsApi(dio, serializers);
+  }
+
+  /// Get ContactsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  ContactsApi getContactsApi() {
+    return ContactsApi(dio, serializers);
   }
 
   /// Get CreditNotesApi instance, base route and serializer can be overridden by a given but be careful,

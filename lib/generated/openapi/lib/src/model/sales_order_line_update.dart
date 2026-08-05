@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/price1.dart';
+import 'package:mbe_api_client/src/model/tax_rate1.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
 import 'package:mbe_api_client/src/model/discount_rate1.dart';
 import 'package:built_value/built_value.dart';
@@ -17,6 +18,7 @@ part 'sales_order_line_update.g.dart';
 /// * [quantity]
 /// * [price]
 /// * [discountRate]
+/// * [taxRate]
 /// * [warehouse]
 /// * [comment]
 @BuiltValue()
@@ -30,6 +32,9 @@ abstract class SalesOrderLineUpdate
 
   @BuiltValueField(wireName: r'discount_rate')
   DiscountRate1? get discountRate;
+
+  @BuiltValueField(wireName: r'tax_rate')
+  TaxRate1? get taxRate;
 
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
@@ -85,6 +90,13 @@ class _$SalesOrderLineUpdateSerializer
       yield serializers.serialize(
         object.discountRate,
         specifiedType: const FullType.nullable(DiscountRate1),
+      );
+    }
+    if (object.taxRate != null) {
+      yield r'tax_rate';
+      yield serializers.serialize(
+        object.taxRate,
+        specifiedType: const FullType.nullable(TaxRate1),
       );
     }
     if (object.warehouse != null) {
@@ -157,6 +169,16 @@ class _$SalesOrderLineUpdateSerializer
                   as DiscountRate1?;
           if (valueDes == null) continue;
           result.discountRate.replace(valueDes);
+          break;
+        case r'tax_rate':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(TaxRate1),
+                  )
+                  as TaxRate1?;
+          if (valueDes == null) continue;
+          result.taxRate.replace(valueDes);
           break;
         case r'warehouse':
           final valueDes =

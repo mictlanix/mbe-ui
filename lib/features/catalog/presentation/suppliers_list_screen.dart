@@ -12,9 +12,9 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_controller.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _suppliersPath = '/suppliers';
@@ -104,7 +104,7 @@ class SuppliersListScreen extends ConsumerWidget {
                   numeric: true,
                   fixedWidth: 140,
                   cellBuilder: (context, s) =>
-                      Text(PricingFormatters.currency(s.creditLimit)),
+                      Text(MoneyFormatters.currency(s.creditLimit)),
                 ),
               ],
               rows: page.items,

@@ -12,6 +12,8 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/cash_session_close.dart';
 import 'package:mbe_api_client/src/model/cash_session_open.dart';
 import 'package:mbe_api_client/src/model/cash_session_response.dart';
+import 'package:mbe_api_client/src/model/cash_session_sort.dart';
+import 'package:mbe_api_client/src/model/cash_session_status.dart';
 import 'package:mbe_api_client/src/model/current_session_response.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_session_response.dart';
@@ -299,6 +301,12 @@ class CashSessionsApi {
   ///
   /// Parameters:
   /// * [cashDrawer]
+  /// * [cashier]
+  /// * [facility]
+  /// * [status]
+  /// * [dateFrom]
+  /// * [dateTo]
+  /// * [sort]
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -313,6 +321,12 @@ class CashSessionsApi {
   Future<Response<ListResponseCashSessionResponse>>
   listCashSessionsApiV1CashSessionsGet({
     int? cashDrawer,
+    int? cashier,
+    int? facility,
+    CashSessionStatus? status,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    CashSessionSort? sort,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -341,6 +355,42 @@ class CashSessionsApi {
           _serializers,
           cashDrawer,
           const FullType(int),
+        ),
+      if (cashier != null)
+        r'cashier': encodeQueryParameter(
+          _serializers,
+          cashier,
+          const FullType(int),
+        ),
+      if (facility != null)
+        r'facility': encodeQueryParameter(
+          _serializers,
+          facility,
+          const FullType(int),
+        ),
+      if (status != null)
+        r'status': encodeQueryParameter(
+          _serializers,
+          status,
+          const FullType(CashSessionStatus),
+        ),
+      if (dateFrom != null)
+        r'date_from': encodeQueryParameter(
+          _serializers,
+          dateFrom,
+          const FullType(DateTime),
+        ),
+      if (dateTo != null)
+        r'date_to': encodeQueryParameter(
+          _serializers,
+          dateTo,
+          const FullType(DateTime),
+        ),
+      if (sort != null)
+        r'sort': encodeQueryParameter(
+          _serializers,
+          sort,
+          const FullType(CashSessionSort),
         ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),

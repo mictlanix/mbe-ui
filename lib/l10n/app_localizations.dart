@@ -4380,6 +4380,316 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to register certificate.'**
   String get certificateUploadFailedError;
+
+  /// No description provided for @cashSessionsMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash Sessions'**
+  String get cashSessionsMenuTitle;
+
+  /// No description provided for @cashSessionStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get cashSessionStatusOpen;
+
+  /// No description provided for @cashSessionStatusStale.
+  ///
+  /// In en, this message translates to:
+  /// **'Stale'**
+  String get cashSessionStatusStale;
+
+  /// No description provided for @cashSessionStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get cashSessionStatusClosed;
+
+  /// No description provided for @cashSessionDrawerFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash drawer'**
+  String get cashSessionDrawerFieldLabel;
+
+  /// No description provided for @cashSessionCashierFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get cashSessionCashierFieldLabel;
+
+  /// No description provided for @cashSessionStartFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get cashSessionStartFieldLabel;
+
+  /// No description provided for @cashSessionEndFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get cashSessionEndFieldLabel;
+
+  /// No description provided for @cashSessionOpenButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Open session'**
+  String get cashSessionOpenButtonLabel;
+
+  /// No description provided for @cashSessionOpeningAmountFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening amount'**
+  String get cashSessionOpeningAmountFieldLabel;
+
+  /// No description provided for @cashSessionNoOpenSessionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no open cash session.'**
+  String get cashSessionNoOpenSessionMessage;
+
+  /// No description provided for @cashSessionDrawerBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A cash drawer must be assigned to your user before you can open a session. Contact your administrator.'**
+  String get cashSessionDrawerBlockedMessage;
+
+  /// No description provided for @cashSessionDrawerBusyError.
+  ///
+  /// In en, this message translates to:
+  /// **'That cash drawer already has an open session. Choose a different drawer.'**
+  String get cashSessionDrawerBusyError;
+
+  /// No description provided for @cashSessionCashierBusyError.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an open session. Close it before opening another.'**
+  String get cashSessionCashierBusyError;
+
+  /// No description provided for @cashSessionCloseButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Close session'**
+  String get cashSessionCloseButtonLabel;
+
+  /// No description provided for @cashSessionPaymentsByMethodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments taken this shift'**
+  String get cashSessionPaymentsByMethodLabel;
+
+  /// No description provided for @cashSessionStaleWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This session was opened on an earlier day and must be closed before you can continue selling.'**
+  String get cashSessionStaleWarningMessage;
+
+  /// No description provided for @cashSessionOpenFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to open the cash session.'**
+  String get cashSessionOpenFailedError;
+
+  /// No description provided for @cashSessionOpenPermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to open a cash session.'**
+  String get cashSessionOpenPermissionDeniedError;
+
+  /// No description provided for @cashSessionCountedTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted total'**
+  String get cashSessionCountedTotalLabel;
+
+  /// No description provided for @cashSessionExpectedCashLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected cash'**
+  String get cashSessionExpectedCashLabel;
+
+  /// No description provided for @cashSessionDifferenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference'**
+  String get cashSessionDifferenceLabel;
+
+  /// No description provided for @cashSessionDifferenceOver.
+  ///
+  /// In en, this message translates to:
+  /// **'Over'**
+  String get cashSessionDifferenceOver;
+
+  /// No description provided for @cashSessionDifferenceShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Short'**
+  String get cashSessionDifferenceShort;
+
+  /// No description provided for @cashSessionDifferenceZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact'**
+  String get cashSessionDifferenceZero;
+
+  /// No description provided for @cashSessionAdvisoryNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Advisory only: covers the opening amount and cash payments taken this shift. Does not account for expense vouchers or other cash movements out of the drawer.'**
+  String get cashSessionAdvisoryNote;
+
+  /// No description provided for @cashSessionEmptyCountConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm empty drawer'**
+  String get cashSessionEmptyCountConfirmTitle;
+
+  /// No description provided for @cashSessionEmptyCountConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Every denomination is at zero. Confirm the drawer was counted and found empty before closing.'**
+  String get cashSessionEmptyCountConfirmMessage;
+
+  /// No description provided for @cashSessionConfirmEmptyCountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm empty'**
+  String get cashSessionConfirmEmptyCountButton;
+
+  /// No description provided for @cashSessionAlreadyClosedError.
+  ///
+  /// In en, this message translates to:
+  /// **'This session is already closed.'**
+  String get cashSessionAlreadyClosedError;
+
+  /// No description provided for @cashSessionSupervisorRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A user with closing rights must close this session.'**
+  String get cashSessionSupervisorRequiredMessage;
+
+  /// No description provided for @cashSessionClosedByFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed by'**
+  String get cashSessionClosedByFieldLabel;
+
+  /// No description provided for @cashSessionQuantityInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid, non-negative whole number for each denomination.'**
+  String get cashSessionQuantityInvalidError;
+
+  /// No description provided for @cashSessionSessionNotFoundError.
+  ///
+  /// In en, this message translates to:
+  /// **'This session no longer exists.'**
+  String get cashSessionSessionNotFoundError;
+
+  /// No description provided for @cashSessionCloseFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to close the cash session.'**
+  String get cashSessionCloseFailedError;
+
+  /// No description provided for @cashSessionClosePermissionDeniedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You no longer have permission to close a cash session.'**
+  String get cashSessionClosePermissionDeniedError;
+
+  /// No description provided for @cashSessionCloseSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session closed'**
+  String get cashSessionCloseSuccessTitle;
+
+  /// No description provided for @cashSessionCloseSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted {counted}, expected {expected}, difference {difference}. These figures will not be shown again.'**
+  String cashSessionCloseSuccessMessage(
+    String counted,
+    String expected,
+    String difference,
+  );
+
+  /// No description provided for @cashSessionViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash session'**
+  String get cashSessionViewTitle;
+
+  /// No description provided for @cashSessionLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load the cash session.'**
+  String get cashSessionLoadFailedError;
+
+  /// No description provided for @okButton.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get okButton;
+
+  /// No description provided for @cashSessionsListEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No cash sessions found.'**
+  String get cashSessionsListEmptyMessage;
+
+  /// No description provided for @cashSessionsFilterDrawerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash drawer'**
+  String get cashSessionsFilterDrawerLabel;
+
+  /// No description provided for @cashSessionsFilterCashierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get cashSessionsFilterCashierLabel;
+
+  /// No description provided for @cashSessionsFilterStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get cashSessionsFilterStatusLabel;
+
+  /// No description provided for @cashSessionColumnDrawer.
+  ///
+  /// In en, this message translates to:
+  /// **'Drawer'**
+  String get cashSessionColumnDrawer;
+
+  /// No description provided for @cashSessionColumnCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get cashSessionColumnCashier;
+
+  /// No description provided for @cashSessionColumnStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get cashSessionColumnStart;
+
+  /// No description provided for @cashSessionColumnEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get cashSessionColumnEnd;
+
+  /// No description provided for @cashSessionColumnStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get cashSessionColumnStatus;
+
+  /// No description provided for @cashSessionOtherSessionsWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You may have other open sessions that need attention. Check the history below.'**
+  String get cashSessionOtherSessionsWarningMessage;
 }
 
 class _AppLocalizationsDelegate

@@ -12,6 +12,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_sales_order_summary.dart';
+import 'package:mbe_api_client/src/model/order_application_response.dart';
 import 'package:mbe_api_client/src/model/product_lookup_response.dart';
 import 'package:mbe_api_client/src/model/sales_order_create.dart';
 import 'package:mbe_api_client/src/model/sales_order_line_create.dart';
@@ -491,6 +492,95 @@ class SalesOrdersApi {
     );
   }
 
+  /// List Sales Order Payments
+  /// Includes cancelled applications — reversals stay visible, as on the payment side (#134).
+  ///
+  /// Parameters:
+  /// * [salesOrderId]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [BuiltList<OrderApplicationResponse>] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<BuiltList<OrderApplicationResponse>>>
+  listSalesOrderPaymentsApiV1SalesOrdersSalesOrderIdPaymentsGet({
+    required int salesOrderId,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/sales-orders/{sales_order_id}/payments'.replaceAll(
+      '{'
+      r'sales_order_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        salesOrderId,
+        const FullType(int),
+      ).toString(),
+    );
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    BuiltList<OrderApplicationResponse>? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(BuiltList, [
+                    FullType(OrderApplicationResponse),
+                  ]),
+                )
+                as BuiltList<OrderApplicationResponse>;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<BuiltList<OrderApplicationResponse>>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// List Sales Orders
   ///
   ///
@@ -502,6 +592,7 @@ class SalesOrdersApi {
   /// * [dateFrom]
   /// * [dateTo]
   /// * [facility]
+  /// * [pointSale]
   /// * [search]
   /// * [skip]
   /// * [limit]
@@ -523,6 +614,7 @@ class SalesOrdersApi {
     DateTime? dateFrom,
     DateTime? dateTo,
     int? facility,
+    int? pointSale,
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -583,6 +675,12 @@ class SalesOrdersApi {
         r'facility': encodeQueryParameter(
           _serializers,
           facility,
+          const FullType(int),
+        ),
+      if (pointSale != null)
+        r'point_sale': encodeQueryParameter(
+          _serializers,
+          pointSale,
           const FullType(int),
         ),
       if (search != null)

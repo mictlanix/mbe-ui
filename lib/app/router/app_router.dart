@@ -48,6 +48,8 @@ import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.
 import 'package:mbe_ui/features/pricing/presentation/price_list_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
 /// Routes are registered by later phases; this provider gives them a
@@ -241,6 +243,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => TaxpayerIssuersListScreen(
                   query: ListQuery.fromUri(state.uri),
                 ),
+              ),
+            ],
+          ),
+          // 021-cash-sessions: appended last (index 17) — the nested
+          // /sales/... form deliberately diverges from the 15 flat business
+          // routes above (research.md §1).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/cash-sessions',
+                builder: (context, state) =>
+                    CashSessionsScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -487,6 +501,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
+      // 021-cash-sessions: no `/new` sibling — a session is opened from the
+      // shift panel on the list screen itself, not a dedicated create form.
+      // No `forceReadOnly` param — a session has no editable form to toggle
+      // (contracts/routes.md §1).
+      GoRoute(
+        path: '/sales/cash-sessions/:cashSessionId',
+        builder: (context, state) => CashSessionDetailScreen(
+          cashSessionId: int.parse(state.pathParameters['cashSessionId']!),
+        ),
+      ),
     ],
   );
 });
@@ -612,6 +636,12 @@ String? _redirect(Ref ref, GoRouterState state) {
   }
   if (location.startsWith('/taxpayer-issuers')) {
     return (object: SystemObject.taxpayers, right: AccessRight.read);
+  }
+  // 021-cash-sessions: gated on `pos` (44), not `cashSessionClose` (111) —
+  // the latter would lock out the cashiers the screen exists for. Close
+  // itself is gated separately, inside the screen (contracts/routes.md §2).
+  if (location.startsWith('/sales/cash-sessions')) {
+    return (object: SystemObject.pos, right: AccessRight.read);
   }
   return null;
 }

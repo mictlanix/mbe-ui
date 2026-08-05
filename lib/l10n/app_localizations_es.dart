@@ -2354,4 +2354,180 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get certificateUploadFailedError =>
       'No se pudo registrar el certificado.';
+
+  @override
+  String get cashSessionsMenuTitle => 'Sesiones de Caja';
+
+  @override
+  String get cashSessionStatusOpen => 'Abierta';
+
+  @override
+  String get cashSessionStatusStale => 'Vencida';
+
+  @override
+  String get cashSessionStatusClosed => 'Cerrada';
+
+  @override
+  String get cashSessionDrawerFieldLabel => 'Caja';
+
+  @override
+  String get cashSessionCashierFieldLabel => 'Cajero';
+
+  @override
+  String get cashSessionStartFieldLabel => 'Inicio';
+
+  @override
+  String get cashSessionEndFieldLabel => 'Fin';
+
+  @override
+  String get cashSessionOpenButtonLabel => 'Abrir sesión';
+
+  @override
+  String get cashSessionOpeningAmountFieldLabel => 'Monto inicial';
+
+  @override
+  String get cashSessionNoOpenSessionMessage =>
+      'No tienes una sesión de caja abierta.';
+
+  @override
+  String get cashSessionDrawerBlockedMessage =>
+      'Debe asignarse una caja a tu usuario antes de poder abrir una sesión. Contacta a tu administrador.';
+
+  @override
+  String get cashSessionDrawerBusyError =>
+      'Esa caja ya tiene una sesión abierta. Elige otra caja.';
+
+  @override
+  String get cashSessionCashierBusyError =>
+      'Ya tienes una sesión abierta. Cierra esa sesión antes de abrir otra.';
+
+  @override
+  String get cashSessionCloseButtonLabel => 'Cerrar sesión';
+
+  @override
+  String get cashSessionPaymentsByMethodLabel =>
+      'Pagos recibidos en este turno';
+
+  @override
+  String get cashSessionStaleWarningMessage =>
+      'Esta sesión se abrió en un día anterior y debe cerrarse antes de continuar vendiendo.';
+
+  @override
+  String get cashSessionOpenFailedError =>
+      'No se pudo abrir la sesión de caja.';
+
+  @override
+  String get cashSessionOpenPermissionDeniedError =>
+      'Ya no tienes permiso para abrir una sesión de caja.';
+
+  @override
+  String get cashSessionCountedTotalLabel => 'Total contado';
+
+  @override
+  String get cashSessionExpectedCashLabel => 'Efectivo esperado';
+
+  @override
+  String get cashSessionDifferenceLabel => 'Diferencia';
+
+  @override
+  String get cashSessionDifferenceOver => 'Sobrante';
+
+  @override
+  String get cashSessionDifferenceShort => 'Faltante';
+
+  @override
+  String get cashSessionDifferenceZero => 'Exacto';
+
+  @override
+  String get cashSessionAdvisoryNote =>
+      'Solo informativo: cubre el monto inicial y los pagos en efectivo de este turno. No considera vales de gastos ni otros movimientos de efectivo de la caja.';
+
+  @override
+  String get cashSessionEmptyCountConfirmTitle => 'Confirmar caja vacía';
+
+  @override
+  String get cashSessionEmptyCountConfirmMessage =>
+      'Todas las denominaciones están en cero. Confirma que se contó la caja y se encontró vacía antes de cerrar.';
+
+  @override
+  String get cashSessionConfirmEmptyCountButton => 'Confirmar vacía';
+
+  @override
+  String get cashSessionAlreadyClosedError => 'Esta sesión ya está cerrada.';
+
+  @override
+  String get cashSessionSupervisorRequiredMessage =>
+      'Un usuario con permiso de cierre debe cerrar esta sesión.';
+
+  @override
+  String get cashSessionClosedByFieldLabel => 'Cerrada por';
+
+  @override
+  String get cashSessionQuantityInvalidError =>
+      'Ingresa un número entero no negativo válido para cada denominación.';
+
+  @override
+  String get cashSessionSessionNotFoundError => 'Esta sesión ya no existe.';
+
+  @override
+  String get cashSessionCloseFailedError =>
+      'No se pudo cerrar la sesión de caja.';
+
+  @override
+  String get cashSessionClosePermissionDeniedError =>
+      'Ya no tienes permiso para cerrar una sesión de caja.';
+
+  @override
+  String get cashSessionCloseSuccessTitle => 'Sesión cerrada';
+
+  @override
+  String cashSessionCloseSuccessMessage(
+    String counted,
+    String expected,
+    String difference,
+  ) {
+    return 'Contado $counted, esperado $expected, diferencia $difference. Estas cifras no se mostrarán de nuevo.';
+  }
+
+  @override
+  String get cashSessionViewTitle => 'Sesión de caja';
+
+  @override
+  String get cashSessionLoadFailedError =>
+      'No se pudo cargar la sesión de caja.';
+
+  @override
+  String get okButton => 'Aceptar';
+
+  @override
+  String get cashSessionsListEmptyMessage =>
+      'No se encontraron sesiones de caja.';
+
+  @override
+  String get cashSessionsFilterDrawerLabel => 'Caja';
+
+  @override
+  String get cashSessionsFilterCashierLabel => 'Cajero';
+
+  @override
+  String get cashSessionsFilterStatusLabel => 'Estado';
+
+  @override
+  String get cashSessionColumnDrawer => 'Caja';
+
+  @override
+  String get cashSessionColumnCashier => 'Cajero';
+
+  @override
+  String get cashSessionColumnStart => 'Inicio';
+
+  @override
+  String get cashSessionColumnEnd => 'Fin';
+
+  @override
+  String get cashSessionColumnStatus => 'Estado';
+
+  @override
+  String get cashSessionOtherSessionsWarningMessage =>
+      'Podrías tener otras sesiones abiertas que requieren atención. Revisa el historial más abajo.';
 }

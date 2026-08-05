@@ -130,7 +130,7 @@ class PaymentMethodOptionsListScreen extends ConsumerWidget {
                 ),
                 DataTableColumn.text(
                   label: l10n.columnPaymentMethod,
-                  text: (o) => _paymentMethodLabel(l10n, o.paymentMethod),
+                  text: (o) => paymentMethodLabel(l10n, o.paymentMethod),
                   size: ColumnSize.M,
                 ),
                 DataTableColumn(
@@ -231,29 +231,4 @@ class _PaymentMethodOptionFiltersPanel extends ConsumerWidget {
       ],
     );
   }
-}
-
-/// [code]'s label from the [PaymentMethod] lookup, falling back to the raw
-/// code for an unmapped value (research §5).
-String _paymentMethodLabel(AppLocalizations l10n, int code) {
-  final method = PaymentMethod.fromCode(code);
-  if (method == null) return '$code';
-  return switch (method) {
-    PaymentMethod.na => l10n.paymentMethodNa,
-    PaymentMethod.cash => l10n.paymentMethodCash,
-    PaymentMethod.check => l10n.paymentMethodCheck,
-    PaymentMethod.eft => l10n.paymentMethodEft,
-    PaymentMethod.creditCard => l10n.paymentMethodCreditCard,
-    PaymentMethod.electronicPurse => l10n.paymentMethodElectronicPurse,
-    PaymentMethod.electronicMoney => l10n.paymentMethodElectronicMoney,
-    PaymentMethod.foodVouchers => l10n.paymentMethodFoodVouchers,
-    PaymentMethod.giving => l10n.paymentMethodGiving,
-    PaymentMethod.toTheSatisfactionOfTheCreditor =>
-      l10n.paymentMethodCreditorSatisfaction,
-    PaymentMethod.debitCard => l10n.paymentMethodDebitCard,
-    PaymentMethod.serviceCard => l10n.paymentMethodServiceCard,
-    PaymentMethod.advancePayments => l10n.paymentMethodAdvancePayments,
-    PaymentMethod.toBeDefined => l10n.paymentMethodToBeDefined,
-    PaymentMethod.governmentFunding => l10n.paymentMethodGovernmentFunding,
-  };
 }
