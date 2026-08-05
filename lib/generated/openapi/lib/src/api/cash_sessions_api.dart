@@ -326,7 +326,7 @@ class CashSessionsApi {
     CashSessionStatus? status,
     DateTime? dateFrom,
     DateTime? dateTo,
-    CashSessionSort? sort = -id,
+    CashSessionSort? sort,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
