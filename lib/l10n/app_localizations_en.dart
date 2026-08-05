@@ -2321,6 +2321,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cashSessionsMenuTitle => 'Cash Sessions';
 
   @override
+  String get posMenuTitle => 'Point of Sale';
+
+  @override
   String get cashSessionStatusOpen => 'Open';
 
   @override
@@ -2488,4 +2491,187 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cashSessionOtherSessionsWarningMessage =>
       'You may have other open sessions that need attention. Check the history below.';
+
+  @override
+  String get posGateNoSessionTitle => 'No cash session is open';
+
+  @override
+  String get posGateNoSessionBody =>
+      'You must open a cash session before starting a sale.';
+
+  @override
+  String get posGateOpenSessionAction => 'Go to cash sessions';
+
+  @override
+  String get posStaleSessionBanner => 'The cash session is stale.';
+
+  @override
+  String get posStepVenta => 'Sale';
+
+  @override
+  String get posStepCobro => 'Payment';
+
+  @override
+  String get posStepEntrega => 'Delivery';
+
+  @override
+  String get posSaleCompletedTitle => 'Sale completed';
+
+  @override
+  String posSaleReference(String reference) {
+    return 'Reference #$reference';
+  }
+
+  @override
+  String get posNewSaleAction => 'New sale';
+
+  @override
+  String get posCustomerLabel => 'Customer';
+
+  @override
+  String get posPaymentTermsImmediate => 'Cash';
+
+  @override
+  String get posPaymentTermsCredit => 'Credit';
+
+  @override
+  String get posFulfillmentCounter => 'In store';
+
+  @override
+  String get posFulfillmentDelivery => 'Delivery';
+
+  @override
+  String get posFulfillmentMixed => 'Mixed';
+
+  @override
+  String get posProductSearchLabel => 'Search or scan a product';
+
+  @override
+  String get posProductSearchNoResults => 'No results';
+
+  @override
+  String get posRemoveLineTooltip => 'Remove line';
+
+  @override
+  String get posLineQuantityLabel => 'Qty.';
+
+  @override
+  String get posLinePriceLabel => 'Price';
+
+  @override
+  String get posLineDiscountLabel => 'Disc. %';
+
+  @override
+  String get posLineTaxLabel => 'Tax %';
+
+  @override
+  String get posLineWarehouseLabel => 'Warehouse';
+
+  @override
+  String get posLineNoStock => 'No stock in this warehouse';
+
+  @override
+  String posLineShortfall(String available) {
+    return 'Only $available available';
+  }
+
+  @override
+  String get posLineAdjustToAvailable => 'Adjust to available';
+
+  @override
+  String posTotalsCounts(int lines, String units) {
+    return '$lines lines · $units units';
+  }
+
+  @override
+  String posTotalsSubtotal(String amount) {
+    return 'Subtotal: $amount';
+  }
+
+  @override
+  String posTotalsDiscount(String amount) {
+    return 'Discount: $amount';
+  }
+
+  @override
+  String posTotalsTax(String amount) {
+    return 'Tax: $amount';
+  }
+
+  @override
+  String posTotalsTotal(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get posSaleReadOnlyBanner =>
+      'The sale is already confirmed; its details are read-only.';
+
+  @override
+  String get posNoLinesHint => 'No lines — search or scan a product';
+
+  @override
+  String get posContinueToPayment => 'Continue to payment';
+
+  @override
+  String get posAmountLabel => 'Amount';
+
+  @override
+  String get posQuickAmountRemaining => 'Remaining';
+
+  @override
+  String get posQuickAmountHalf => 'Half';
+
+  @override
+  String get posPaymentTotal => 'Total';
+
+  @override
+  String get posPaymentPaid => 'Paid';
+
+  @override
+  String get posPaymentBalance => 'Balance';
+
+  @override
+  String get posPaymentReferenceLabel => 'Reference';
+
+  @override
+  String posPaymentChange(String amount) {
+    return 'Change: $amount';
+  }
+
+  @override
+  String get posApplyPayment => 'Apply payment';
+
+  @override
+  String get posContinue => 'Continue';
+
+  @override
+  String get posAppliedPaymentsTitle => 'Applied payments';
+
+  @override
+  String get posNoAppliedPayments => 'No payments applied';
+
+  @override
+  String get posAppliedPaymentsLoadError =>
+      'Applied payments could not be loaded';
+
+  @override
+  String posPaymentReferenceValue(String reference) {
+    return 'Ref. $reference';
+  }
+
+  @override
+  String get posPaymentPendingValidation => 'Pending validation';
+
+  @override
+  String get posPaymentCancelled => 'Cancelled';
+
+  @override
+  String get posReverseAction => 'Reverse';
+
+  @override
+  String get posReversePaymentTitle => 'Reverse payment';
+
+  @override
+  String get posReversalReasonLabel => 'Reason';
 }

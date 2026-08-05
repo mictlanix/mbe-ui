@@ -50,6 +50,7 @@ import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dar
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
 /// Routes are registered by later phases; this provider gives them a
@@ -255,6 +256,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/sales/cash-sessions',
                 builder: (context, state) =>
                     CashSessionsScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
+          // 020-point-of-sale: appended after cash-sessions (index 18) — same
+          // append-don't-renumber rationale (nav_destinations.dart NavBranch).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/pos',
+                builder: (context, state) => const PosScreen(),
               ),
             ],
           ),
@@ -641,6 +652,12 @@ String? _redirect(Ref ref, GoRouterState state) {
   // the latter would lock out the cashiers the screen exists for. Close
   // itself is gated separately, inside the screen (contracts/routes.md §2).
   if (location.startsWith('/sales/cash-sessions')) {
+    return (object: SystemObject.pos, right: AccessRight.read);
+  }
+  // 020-point-of-sale: same `pos` privilege — line-level mutations are
+  // additionally gated on `salesOrders` inside the screen itself
+  // (contracts/pos-screen.md §2), not at the route level.
+  if (location.startsWith('/sales/pos')) {
     return (object: SystemObject.pos, right: AccessRight.read);
   }
   return null;

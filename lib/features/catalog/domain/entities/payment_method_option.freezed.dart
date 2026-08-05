@@ -27,7 +27,14 @@ mixin _$PaymentMethodOption {
   bool get displayOnTicket => throw _privateConstructorUsedError;
   int get paymentMethod => throw _privateConstructorUsedError;
   String? get commission => throw _privateConstructorUsedError;
-  EntityStatus get status => throw _privateConstructorUsedError;
+  EntityStatus get status =>
+      throw _privateConstructorUsedError; // Computed server-side from the SAT payment-method code, not stored —
+  // never drifts from mbe-api's own catalog (020-point-of-sale research
+  // §6). Card/transfer/cheque/electronic-purse/electronic-money/food
+  // vouchers/debit/service-card require one; cash and in-kind settlements
+  // do not; an unrecognized code defaults to `false` so an unclassified
+  // method never blocks a cashier from taking money.
+  bool get requiresReference => throw _privateConstructorUsedError;
 
   /// Create a copy of PaymentMethodOption
   /// with the given fields replaced by the non-null parameter values.
@@ -55,6 +62,7 @@ abstract class $PaymentMethodOptionCopyWith<$Res> {
     int paymentMethod,
     String? commission,
     EntityStatus status,
+    bool requiresReference,
   });
 }
 
@@ -84,6 +92,7 @@ class _$PaymentMethodOptionCopyWithImpl<$Res, $Val extends PaymentMethodOption>
     Object? paymentMethod = null,
     Object? commission = freezed,
     Object? status = null,
+    Object? requiresReference = null,
   }) {
     return _then(
       _value.copyWith(
@@ -131,6 +140,10 @@ class _$PaymentMethodOptionCopyWithImpl<$Res, $Val extends PaymentMethodOption>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus,
+            requiresReference: null == requiresReference
+                ? _value.requiresReference
+                : requiresReference // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -158,6 +171,7 @@ abstract class _$$PaymentMethodOptionImplCopyWith<$Res>
     int paymentMethod,
     String? commission,
     EntityStatus status,
+    bool requiresReference,
   });
 }
 
@@ -186,6 +200,7 @@ class __$$PaymentMethodOptionImplCopyWithImpl<$Res>
     Object? paymentMethod = null,
     Object? commission = freezed,
     Object? status = null,
+    Object? requiresReference = null,
   }) {
     return _then(
       _$PaymentMethodOptionImpl(
@@ -233,6 +248,10 @@ class __$$PaymentMethodOptionImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus,
+        requiresReference: null == requiresReference
+            ? _value.requiresReference
+            : requiresReference // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -253,6 +272,7 @@ class _$PaymentMethodOptionImpl implements _PaymentMethodOption {
     required this.paymentMethod,
     this.commission,
     required this.status,
+    this.requiresReference = false,
   });
 
   @override
@@ -277,10 +297,19 @@ class _$PaymentMethodOptionImpl implements _PaymentMethodOption {
   final String? commission;
   @override
   final EntityStatus status;
+  // Computed server-side from the SAT payment-method code, not stored —
+  // never drifts from mbe-api's own catalog (020-point-of-sale research
+  // §6). Card/transfer/cheque/electronic-purse/electronic-money/food
+  // vouchers/debit/service-card require one; cash and in-kind settlements
+  // do not; an unrecognized code defaults to `false` so an unclassified
+  // method never blocks a cashier from taking money.
+  @override
+  @JsonKey()
+  final bool requiresReference;
 
   @override
   String toString() {
-    return 'PaymentMethodOption(paymentMethodOptionId: $paymentMethodOptionId, facilityId: $facilityId, facilityName: $facilityName, warehouseId: $warehouseId, warehouseName: $warehouseName, name: $name, numberOfPayments: $numberOfPayments, displayOnTicket: $displayOnTicket, paymentMethod: $paymentMethod, commission: $commission, status: $status)';
+    return 'PaymentMethodOption(paymentMethodOptionId: $paymentMethodOptionId, facilityId: $facilityId, facilityName: $facilityName, warehouseId: $warehouseId, warehouseName: $warehouseName, name: $name, numberOfPayments: $numberOfPayments, displayOnTicket: $displayOnTicket, paymentMethod: $paymentMethod, commission: $commission, status: $status, requiresReference: $requiresReference)';
   }
 
   @override
@@ -307,7 +336,9 @@ class _$PaymentMethodOptionImpl implements _PaymentMethodOption {
                 other.paymentMethod == paymentMethod) &&
             (identical(other.commission, commission) ||
                 other.commission == commission) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.requiresReference, requiresReference) ||
+                other.requiresReference == requiresReference));
   }
 
   @override
@@ -324,6 +355,7 @@ class _$PaymentMethodOptionImpl implements _PaymentMethodOption {
     paymentMethod,
     commission,
     status,
+    requiresReference,
   );
 
   /// Create a copy of PaymentMethodOption
@@ -351,6 +383,7 @@ abstract class _PaymentMethodOption implements PaymentMethodOption {
     required final int paymentMethod,
     final String? commission,
     required final EntityStatus status,
+    final bool requiresReference,
   }) = _$PaymentMethodOptionImpl;
 
   @override
@@ -374,7 +407,14 @@ abstract class _PaymentMethodOption implements PaymentMethodOption {
   @override
   String? get commission;
   @override
-  EntityStatus get status;
+  EntityStatus get status; // Computed server-side from the SAT payment-method code, not stored —
+  // never drifts from mbe-api's own catalog (020-point-of-sale research
+  // §6). Card/transfer/cheque/electronic-purse/electronic-money/food
+  // vouchers/debit/service-card require one; cash and in-kind settlements
+  // do not; an unrecognized code defaults to `false` so an unclassified
+  // method never blocks a cashier from taking money.
+  @override
+  bool get requiresReference;
 
   /// Create a copy of PaymentMethodOption
   /// with the given fields replaced by the non-null parameter values.

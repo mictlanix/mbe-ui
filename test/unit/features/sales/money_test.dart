@@ -123,4 +123,56 @@ void main() {
       expect(formatAmount(parseAmount('500.00')), isNotEmpty);
     });
   });
+
+  // 020-point-of-sale additions: the generic Decimal helpers this feature's
+  // balance/change/distribution arithmetic needs (T008), which 021's
+  // cash-specific helpers above don't provide.
+  group('addAmounts', () {
+    test('adds two decimal strings exactly', () {
+      expect(addAmounts('100.25', '50.10'), '150.35');
+    });
+
+    test('adding zero is a no-op', () {
+      expect(addAmounts('100.25', '0'), '100.25');
+    });
+  });
+
+  group('subtractAmounts', () {
+    test('subtracts two decimal strings exactly', () {
+      expect(subtractAmounts('150.35', '50.10'), '100.25');
+    });
+
+    test('can go negative — a refund/overpayment is not floored at zero', () {
+      expect(subtractAmounts('50', '100'), '-50');
+    });
+  });
+
+  group('compareAmounts', () {
+    test('positive when the first amount is greater', () {
+      expect(compareAmounts('100', '50').sign, 1);
+    });
+
+    test('negative when the first amount is smaller', () {
+      expect(compareAmounts('50', '100').sign, -1);
+    });
+
+    test('zero when the amounts are numerically equal, regardless of '
+        'trailing zeros', () {
+      expect(compareAmounts('100.00', '100'), 0);
+    });
+  });
+
+  group('isZeroAmount', () {
+    test('true for a plain zero', () {
+      expect(isZeroAmount('0'), isTrue);
+    });
+
+    test('true for a zero written with decimal places', () {
+      expect(isZeroAmount('0.00'), isTrue);
+    });
+
+    test('false for any non-zero amount', () {
+      expect(isZeroAmount('0.01'), isFalse);
+    });
+  });
 }

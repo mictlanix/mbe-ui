@@ -25,6 +25,13 @@ class PaymentMethodOption with _$PaymentMethodOption {
     required int paymentMethod,
     String? commission,
     required EntityStatus status,
+    // Computed server-side from the SAT payment-method code, not stored —
+    // never drifts from mbe-api's own catalog (020-point-of-sale research
+    // §6). Card/transfer/cheque/electronic-purse/electronic-money/food
+    // vouchers/debit/service-card require one; cash and in-kind settlements
+    // do not; an unrecognized code defaults to `false` so an unclassified
+    // method never blocks a cashier from taking money.
+    @Default(false) bool requiresReference,
   }) = _PaymentMethodOption;
 
   factory PaymentMethodOption.fromResponse(PaymentMethodOptionResponse r) =>
@@ -40,6 +47,7 @@ class PaymentMethodOption with _$PaymentMethodOption {
         paymentMethod: r.paymentMethod,
         commission: r.commission,
         status: EntityStatus.fromApi(r.status),
+        requiresReference: r.requiresReference,
       );
 }
 
