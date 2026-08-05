@@ -29,6 +29,10 @@ doc/CommitLineRequest.md
 doc/CommitLineUpdate.md
 doc/CommitOrderRequest.md
 doc/ConfirmRecoveryRequest.md
+doc/ContactCreate.md
+doc/ContactResponse.md
+doc/ContactUpdate.md
+doc/ContactsApi.md
 doc/CreditLimit.md
 doc/CreditLimit1.md
 doc/CreditNoteResponse.md
@@ -53,6 +57,7 @@ doc/CustomersApi.md
 doc/DeliveryItinerariesApi.md
 doc/DeliveryOrderCreate.md
 doc/DeliveryOrderEventResponse.md
+doc/DeliveryOrderLineRequest.md
 doc/DeliveryOrderLineResponse.md
 doc/DeliveryOrderLineUpdate.md
 doc/DeliveryOrderResponse.md
@@ -106,6 +111,7 @@ doc/LabelsApi.md
 doc/ListResponseAddressResponse.md
 doc/ListResponseCashDrawerResponse.md
 doc/ListResponseCashSessionResponse.md
+doc/ListResponseContactResponse.md
 doc/ListResponseCreditNoteResponse.md
 doc/ListResponseCustomerListItem.md
 doc/ListResponseCustomerPaymentResponse.md
@@ -140,6 +146,7 @@ doc/LowProfitMargin.md
 doc/LowProfitMargin1.md
 doc/MethodTotal.md
 doc/OpeningAmount.md
+doc/OrderApplicationResponse.md
 doc/OutstandingOrderResponse.md
 doc/PaymentMethod.md
 doc/PaymentMethodOptionCreate.md
@@ -220,6 +227,7 @@ doc/SupplierResponse.md
 doc/SupplierUpdate.md
 doc/SuppliersApi.md
 doc/TaxRate.md
+doc/TaxRate1.md
 doc/TaxpayerCertificateResponse.md
 doc/TaxpayerCertificatesApi.md
 doc/TaxpayerIssuerCreate.md
@@ -259,6 +267,7 @@ lib/src/api/addresses_api.dart
 lib/src/api/auth_api.dart
 lib/src/api/cash_drawers_api.dart
 lib/src/api/cash_sessions_api.dart
+lib/src/api/contacts_api.dart
 lib/src/api/credit_notes_api.dart
 lib/src/api/customer_payments_api.dart
 lib/src/api/customer_refunds_api.dart
@@ -317,6 +326,9 @@ lib/src/model/commit_line_request.dart
 lib/src/model/commit_line_update.dart
 lib/src/model/commit_order_request.dart
 lib/src/model/confirm_recovery_request.dart
+lib/src/model/contact_create.dart
+lib/src/model/contact_response.dart
+lib/src/model/contact_update.dart
 lib/src/model/credit_limit.dart
 lib/src/model/credit_limit1.dart
 lib/src/model/credit_note_response.dart
@@ -337,6 +349,7 @@ lib/src/model/customer_update.dart
 lib/src/model/date.dart
 lib/src/model/delivery_order_create.dart
 lib/src/model/delivery_order_event_response.dart
+lib/src/model/delivery_order_line_request.dart
 lib/src/model/delivery_order_line_response.dart
 lib/src/model/delivery_order_line_update.dart
 lib/src/model/delivery_order_response.dart
@@ -383,6 +396,7 @@ lib/src/model/label_update.dart
 lib/src/model/list_response_address_response.dart
 lib/src/model/list_response_cash_drawer_response.dart
 lib/src/model/list_response_cash_session_response.dart
+lib/src/model/list_response_contact_response.dart
 lib/src/model/list_response_credit_note_response.dart
 lib/src/model/list_response_customer_list_item.dart
 lib/src/model/list_response_customer_payment_response.dart
@@ -417,6 +431,7 @@ lib/src/model/low_profit_margin.dart
 lib/src/model/low_profit_margin1.dart
 lib/src/model/method_total.dart
 lib/src/model/opening_amount.dart
+lib/src/model/order_application_response.dart
 lib/src/model/outstanding_order_response.dart
 lib/src/model/payment_method.dart
 lib/src/model/payment_method_option_create.dart
@@ -488,6 +503,7 @@ lib/src/model/supplier_create.dart
 lib/src/model/supplier_response.dart
 lib/src/model/supplier_update.dart
 lib/src/model/tax_rate.dart
+lib/src/model/tax_rate1.dart
 lib/src/model/taxpayer_certificate_response.dart
 lib/src/model/taxpayer_issuer_create.dart
 lib/src/model/taxpayer_issuer_response.dart

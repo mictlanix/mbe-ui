@@ -3,9 +3,12 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/contact_response.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/price_list_response.dart';
+import 'package:mbe_api_client/src/model/address_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -26,6 +29,8 @@ part 'customer_response.g.dart';
 /// * [salesperson]
 /// * [status]
 /// * [comment]
+/// * [addresses]
+/// * [contacts]
 @BuiltValue()
 abstract class CustomerResponse
     implements Built<CustomerResponse, CustomerResponseBuilder> {
@@ -66,13 +71,21 @@ abstract class CustomerResponse
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
+  @BuiltValueField(wireName: r'addresses')
+  BuiltList<AddressResponse>? get addresses;
+
+  @BuiltValueField(wireName: r'contacts')
+  BuiltList<ContactResponse>? get contacts;
+
   CustomerResponse._();
 
   factory CustomerResponse([void updates(CustomerResponseBuilder b)]) =
       _$CustomerResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(CustomerResponseBuilder b) => b;
+  static void _defaults(CustomerResponseBuilder b) => b
+    ..addresses = ListBuilder()
+    ..contacts = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<CustomerResponse> get serializer =>
@@ -158,6 +171,20 @@ class _$CustomerResponseSerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
+    if (object.addresses != null) {
+      yield r'addresses';
+      yield serializers.serialize(
+        object.addresses,
+        specifiedType: const FullType(BuiltList, [FullType(AddressResponse)]),
+      );
+    }
+    if (object.contacts != null) {
+      yield r'contacts';
+      yield serializers.serialize(
+        object.contacts,
+        specifiedType: const FullType(BuiltList, [FullType(ContactResponse)]),
+      );
+    }
   }
 
   @override
@@ -289,6 +316,28 @@ class _$CustomerResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'addresses':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(AddressResponse),
+                    ]),
+                  )
+                  as BuiltList<AddressResponse>;
+          result.addresses.replace(valueDes);
+          break;
+        case r'contacts':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(ContactResponse),
+                    ]),
+                  )
+                  as BuiltList<ContactResponse>;
+          result.contacts.replace(valueDes);
           break;
         default:
           unhandled.add(key);

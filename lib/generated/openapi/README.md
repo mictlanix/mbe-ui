@@ -84,6 +84,11 @@ Class | Method | HTTP request | Description
 [*CashSessionsApi*](doc/CashSessionsApi.md) | [**getCurrentSessionApiV1CashSessionsCurrentGet**](doc/CashSessionsApi.md#getcurrentsessionapiv1cashsessionscurrentget) | **GET** /api/v1/cash-sessions/current | Get Current Session
 [*CashSessionsApi*](doc/CashSessionsApi.md) | [**listCashSessionsApiV1CashSessionsGet**](doc/CashSessionsApi.md#listcashsessionsapiv1cashsessionsget) | **GET** /api/v1/cash-sessions | List Cash Sessions
 [*CashSessionsApi*](doc/CashSessionsApi.md) | [**openCashSessionApiV1CashSessionsPost**](doc/CashSessionsApi.md#opencashsessionapiv1cashsessionspost) | **POST** /api/v1/cash-sessions | Open Cash Session
+[*ContactsApi*](doc/ContactsApi.md) | [**createContactApiV1ContactsPost**](doc/ContactsApi.md#createcontactapiv1contactspost) | **POST** /api/v1/contacts | Create Contact
+[*ContactsApi*](doc/ContactsApi.md) | [**deleteContactApiV1ContactsContactIdDelete**](doc/ContactsApi.md#deletecontactapiv1contactscontactiddelete) | **DELETE** /api/v1/contacts/{contact_id} | Delete Contact
+[*ContactsApi*](doc/ContactsApi.md) | [**getContactApiV1ContactsContactIdGet**](doc/ContactsApi.md#getcontactapiv1contactscontactidget) | **GET** /api/v1/contacts/{contact_id} | Get Contact
+[*ContactsApi*](doc/ContactsApi.md) | [**listContactsApiV1ContactsGet**](doc/ContactsApi.md#listcontactsapiv1contactsget) | **GET** /api/v1/contacts | List Contacts
+[*ContactsApi*](doc/ContactsApi.md) | [**updateContactApiV1ContactsContactIdPut**](doc/ContactsApi.md#updatecontactapiv1contactscontactidput) | **PUT** /api/v1/contacts/{contact_id} | Update Contact
 [*CreditNotesApi*](doc/CreditNotesApi.md) | [**getCreditNoteApiV1CreditNotesCreditNoteIdGet**](doc/CreditNotesApi.md#getcreditnoteapiv1creditnotescreditnoteidget) | **GET** /api/v1/credit-notes/{credit_note_id} | Get Credit Note
 [*CreditNotesApi*](doc/CreditNotesApi.md) | [**listCreditNotesApiV1CreditNotesGet**](doc/CreditNotesApi.md#listcreditnotesapiv1creditnotesget) | **GET** /api/v1/credit-notes | List Credit Notes
 [*CustomerPaymentsApi*](doc/CustomerPaymentsApi.md) | [**applyCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdApplicationsPost**](doc/CustomerPaymentsApi.md#applycustomerpaymentapiv1customerpaymentscustomerpaymentidapplicationspost) | **POST** /api/v1/customer-payments/{customer_payment_id}/applications | Apply Customer Payment
@@ -200,6 +205,7 @@ Class | Method | HTTP request | Description
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**confirmSalesOrderApiV1SalesOrdersSalesOrderIdConfirmPost**](doc/SalesOrdersApi.md#confirmsalesorderapiv1salesorderssalesorderidconfirmpost) | **POST** /api/v1/sales-orders/{sales_order_id}/confirm | Confirm Sales Order
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**createSalesOrderApiV1SalesOrdersPost**](doc/SalesOrdersApi.md#createsalesorderapiv1salesorderspost) | **POST** /api/v1/sales-orders | Create Sales Order
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**getSalesOrderApiV1SalesOrdersSalesOrderIdGet**](doc/SalesOrdersApi.md#getsalesorderapiv1salesorderssalesorderidget) | **GET** /api/v1/sales-orders/{sales_order_id} | Get Sales Order
+[*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**listSalesOrderPaymentsApiV1SalesOrdersSalesOrderIdPaymentsGet**](doc/SalesOrdersApi.md#listsalesorderpaymentsapiv1salesorderssalesorderidpaymentsget) | **GET** /api/v1/sales-orders/{sales_order_id}/payments | List Sales Order Payments
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**listSalesOrdersApiV1SalesOrdersGet**](doc/SalesOrdersApi.md#listsalesordersapiv1salesordersget) | **GET** /api/v1/sales-orders | List Sales Orders
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**lookupProductsApiV1SalesOrdersProductLookupGet**](doc/SalesOrdersApi.md#lookupproductsapiv1salesordersproductlookupget) | **GET** /api/v1/sales-orders/product-lookup | Lookup Products
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**removeSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesLineIdDelete**](doc/SalesOrdersApi.md#removesalesorderlineapiv1salesorderssalesorderidlineslineiddelete) | **DELETE** /api/v1/sales-orders/{sales_order_id}/lines/{line_id} | Remove Sales Order Line
@@ -314,6 +320,9 @@ Class | Method | HTTP request | Description
  - [CommitLineUpdate](doc/CommitLineUpdate.md)
  - [CommitOrderRequest](doc/CommitOrderRequest.md)
  - [ConfirmRecoveryRequest](doc/ConfirmRecoveryRequest.md)
+ - [ContactCreate](doc/ContactCreate.md)
+ - [ContactResponse](doc/ContactResponse.md)
+ - [ContactUpdate](doc/ContactUpdate.md)
  - [CreditLimit](doc/CreditLimit.md)
  - [CreditLimit1](doc/CreditLimit1.md)
  - [CreditNoteResponse](doc/CreditNoteResponse.md)
@@ -333,6 +342,7 @@ Class | Method | HTTP request | Description
  - [CustomerUpdate](doc/CustomerUpdate.md)
  - [DeliveryOrderCreate](doc/DeliveryOrderCreate.md)
  - [DeliveryOrderEventResponse](doc/DeliveryOrderEventResponse.md)
+ - [DeliveryOrderLineRequest](doc/DeliveryOrderLineRequest.md)
  - [DeliveryOrderLineResponse](doc/DeliveryOrderLineResponse.md)
  - [DeliveryOrderLineUpdate](doc/DeliveryOrderLineUpdate.md)
  - [DeliveryOrderResponse](doc/DeliveryOrderResponse.md)
@@ -379,6 +389,7 @@ Class | Method | HTTP request | Description
  - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
  - [ListResponseCashSessionResponse](doc/ListResponseCashSessionResponse.md)
+ - [ListResponseContactResponse](doc/ListResponseContactResponse.md)
  - [ListResponseCreditNoteResponse](doc/ListResponseCreditNoteResponse.md)
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
  - [ListResponseCustomerPaymentResponse](doc/ListResponseCustomerPaymentResponse.md)
@@ -413,6 +424,7 @@ Class | Method | HTTP request | Description
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
  - [MethodTotal](doc/MethodTotal.md)
  - [OpeningAmount](doc/OpeningAmount.md)
+ - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
  - [PaymentMethod](doc/PaymentMethod.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)
@@ -484,6 +496,7 @@ Class | Method | HTTP request | Description
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)
  - [TaxRate](doc/TaxRate.md)
+ - [TaxRate1](doc/TaxRate1.md)
  - [TaxpayerCertificateResponse](doc/TaxpayerCertificateResponse.md)
  - [TaxpayerIssuerCreate](doc/TaxpayerIssuerCreate.md)
  - [TaxpayerIssuerResponse](doc/TaxpayerIssuerResponse.md)

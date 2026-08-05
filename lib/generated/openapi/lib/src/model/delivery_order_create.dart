@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/delivery_order_line_request.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -14,6 +16,7 @@ part 'delivery_order_create.g.dart';
 /// Properties:
 /// * [salesOrder]
 /// * [fulfillmentType]
+/// * [lines]
 @BuiltValue()
 abstract class DeliveryOrderCreate
     implements Built<DeliveryOrderCreate, DeliveryOrderCreateBuilder> {
@@ -23,6 +26,9 @@ abstract class DeliveryOrderCreate
   @BuiltValueField(wireName: r'fulfillment_type')
   FulfillmentType? get fulfillmentType;
   // enum fulfillmentTypeEnum {  0,  1,  };
+
+  @BuiltValueField(wireName: r'lines')
+  BuiltList<DeliveryOrderLineRequest>? get lines;
 
   DeliveryOrderCreate._();
 
@@ -63,6 +69,15 @@ class _$DeliveryOrderCreateSerializer
       yield serializers.serialize(
         object.fulfillmentType,
         specifiedType: const FullType.nullable(FulfillmentType),
+      );
+    }
+    if (object.lines != null) {
+      yield r'lines';
+      yield serializers.serialize(
+        object.lines,
+        specifiedType: const FullType.nullable(BuiltList, [
+          FullType(DeliveryOrderLineRequest),
+        ]),
       );
     }
   }
@@ -107,6 +122,18 @@ class _$DeliveryOrderCreateSerializer
                   as FulfillmentType?;
           if (valueDes == null) continue;
           result.fulfillmentType = valueDes;
+          break;
+        case r'lines':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(DeliveryOrderLineRequest),
+                    ]),
+                  )
+                  as BuiltList<DeliveryOrderLineRequest>?;
+          if (valueDes == null) continue;
+          result.lines.replace(valueDes);
           break;
         default:
           unhandled.add(key);

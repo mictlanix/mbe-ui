@@ -23,6 +23,7 @@ part 'payment_method_option_response.g.dart';
 /// * [paymentMethod]
 /// * [commission]
 /// * [status]
+/// * [requiresReference] - Whether this tender needs a reference before it can be recorded (#137).  Derived from the SAT code rather than stored, so it cannot drift from the catalog. A client enforcing \"card and transfer need an authorization number, cash does not\" reads it from here instead of keeping its own copy of a mapping mbe-api owns and can change.
 @BuiltValue()
 abstract class PaymentMethodOptionResponse
     implements
@@ -54,6 +55,10 @@ abstract class PaymentMethodOptionResponse
   @BuiltValueField(wireName: r'status')
   EntityStatus get status;
   // enum statusEnum {  0,  1,  2,  };
+
+  /// Whether this tender needs a reference before it can be recorded (#137).  Derived from the SAT code rather than stored, so it cannot drift from the catalog. A client enforcing \"card and transfer need an authorization number, cash does not\" reads it from here instead of keeping its own copy of a mapping mbe-api owns and can change.
+  @BuiltValueField(wireName: r'requires_reference')
+  bool get requiresReference;
 
   PaymentMethodOptionResponse._();
 
@@ -131,6 +136,11 @@ class _$PaymentMethodOptionResponseSerializer
     yield serializers.serialize(
       object.status,
       specifiedType: const FullType(EntityStatus),
+    );
+    yield r'requires_reference';
+    yield serializers.serialize(
+      object.requiresReference,
+      specifiedType: const FullType(bool),
     );
   }
 
@@ -231,6 +241,15 @@ class _$PaymentMethodOptionResponseSerializer
                   )
                   as EntityStatus;
           result.status = valueDes;
+          break;
+        case r'requires_reference':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
+          result.requiresReference = valueDes;
           break;
         default:
           unhandled.add(key);
