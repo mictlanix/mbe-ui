@@ -130,7 +130,7 @@
       "title": "Each line MUST show the product name and code, the source warehouse, that warehouse's availability for the product, quantity, unit, unit price, discount, tax rate, and the line total."
     },
     "FR-023": {
-      "title": "Each line's quantity, unit price, discount rate and source warehouse MUST be editable in place, and quantity MUST additionally be adjustable by increment and decrement controls. The line's tax rate MUST be displayed read-only — no supported operation can change it (planning finding, research §12)."
+      "title": "Each line's quantity, unit price, discount rate, tax rate and source warehouse MUST be editable in place, and quantity MUST additionally be adjustable by increment and decrement controls."
     },
     "FR-024": {
       "title": "Adding a product MUST default its source warehouse to the warehouse configured for the cashier's point of sale, and the cashier MUST be able to change it per line and see availability for the chosen warehouse."
@@ -236,6 +236,12 @@
     },
     "FR-058": {
       "title": "A sale in delivery or mixed mode MUST NOT be presented as finished while units remain undistributed, and such a sale MUST remain reachable from the open-sales selector until its delivery is complete."
+    },
+    "FR-002a": {
+      "title": "A sale MUST NOT be opened while the cashier has no current cash session (neither open nor stale). The screen MUST instead explain that a shift must be opened first and offer a way into the cash session screen."
+    },
+    "FR-002b": {
+      "title": "A stale cash session (open, but started on an earlier day) MUST NOT block opening a sale. The screen MUST show a non-blocking indication that the session predates today."
     }
   },
   "size": "oversized",
@@ -260,7 +266,11 @@
     "analysis: /speckit-analyze (2026-08-04) found 2 CRITICAL, 3 HIGH, 4 MEDIUM/LOW findings across spec/plan/tasks — all remediated same session",
     "decision: payment application must refresh Sale via PosSaleController.refresh() (analysis I1) or the payment-step close gate never unlocks",
     "decision: open-sales selector must query status=paid too, not just draft/completed (analysis C1), or FR-058's paid-undistributed sale is unreachable",
-    "decision (post-analysis): FR-015 redesigned around reprice-on-customer-change per mbe-api team confirmation of legacy behavior; current mbe-api does not reprice (verified in update_order source) — filed mbe-api#131 as a BLOCKING dependency (D-005)"
+    "decision (post-analysis): FR-015 redesigned around reprice-on-customer-change per mbe-api team confirmation of legacy behavior; current mbe-api does not reprice (verified in update_order source) — filed mbe-api#131 as a BLOCKING dependency (D-005)",
+    "resolved 2026-08-05: all 8 filed mbe-api issues (#131-138) shipped in PR #139, verified against source + regenerated client — create-then-trim delivery split, comment-encoded contact, session-scoped payments, read-only tax rate all removed as stopgaps",
+    "new dependency 2026-08-05: spec 021 (cash sessions) shipped in lib/features/sales/ (the module this feature already targeted) — reused directly: decimal dep, money.dart, MoneyFormatters, PaymentMethod enum, currentSessionControllerProvider",
+    "decision 2026-08-05: cash session is now a hard precondition for opening a sale (FR-002a/b), reversing 021's own recorded D-002 'no coupling' decision by explicit product direction — spec.md D-006",
+    "decision 2026-08-05: POS route/open-a-sale RBAC corrected from salesOrders to pos (44), matching legacy's 'POS module' privilege and 021's own precedent"
   ],
   "intent": "Give cashiers a point-of-sale screen that records the sale live and adapts between a two-step counter flow and a three-step delivery flow, ending in payment.",
   "expectations": [

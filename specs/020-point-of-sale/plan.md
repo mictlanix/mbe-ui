@@ -1,6 +1,7 @@
 # Implementation Plan: Point of Sale — Sale Capture
 
-**Branch**: `020-point-of-sale` | **Date**: 2026-08-03 | **Spec**: [spec.md](./spec.md)
+**Branch**: `020-point-of-sale` | **Date**: 2026-08-03, revised 2026-08-05 |
+**Spec**: [spec.md](./spec.md)
 
 **Input**: Feature specification from `/specs/020-point-of-sale/spec.md`
 
@@ -9,105 +10,134 @@
 The first screen in this application that sells rather than maintains. A
 cashier opens it, captures a sale line by line, takes payment, and — when the
 goods are being delivered — says where each unit goes. Two steps for a counter
-sale, three for a delivery.
+sale, three for a delivery. As of this revision, a fourth precondition sits in
+front of all of it: a cash session must already be open.
 
-No new backend endpoint is required for the counter sale and payment path: the
-checked-in generated client already exposes every call the flow needs
-(research §2, §15). The work is a new `sales` feature module, one screen with
-three steps, and one new dependency (`decimal`).
+No new backend endpoint is required — the checked-in generated client already
+exposes every call the flow needs, **including all eight capabilities this
+plan originally had to work around** (research §§9–12, §17; mbe-api PR #139,
+verified 2026-08-05). The work is an extension of the `lib/features/sales/`
+module spec 021 (cash sessions) already built, one screen with three steps
+plus a gate, and reuse of infrastructure 021 already shipped in the same
+module — no new decimal dependency, no new money-formatting promotion, both
+already done.
 
-Six findings shape the plan, four of which contradict a naive reading of the
-spec or the mock:
+Seven findings shape this revision, four of which materially shrink the
+feature from its first draft:
 
-1. **Every write returns the whole order** (research §1). Line add, line edit,
-   line delete, header update and confirm all return the complete
-   `SalesOrderResponse` with server-computed `subtotal`, `tax_total`, `total`
-   and `balance`. So the feature is *one* `AsyncNotifier` holding one `Sale`,
-   replaced wholesale on every mutation — not a line list plus a totals cache.
-   FR-008's "show what the server returns" is free; hand-rolling it is the only
-   way to get it wrong.
+1. **The delivery split is no longer client-side arithmetic**
+   (research §3, resolved). `DeliveryOrderCreate` now accepts a named line
+   subset in one call. The create-then-trim orchestrator this plan's first
+   draft called "the highest-risk logic in the feature" — its own dedicated
+   unit test, its serialization constraint, its per-destination write
+   ordering — is deleted, not merely simplified. What replaces it is a pure
+   function computing *what to request*, with no sequencing to get wrong.
 
-2. **The delivery split is create-then-trim, and it must be serialized**
-   (research §3). Creating a delivery order claims *everything not yet covered*
-   by another delivery order for that sale; the client then trims it down. So
-   destination *n+1* cannot be created until destination *n* has been trimmed,
-   and the counter-pickup remainder must be created **last**. `fulfillment_type`
-   is immutable after creation, which is why the remainder is its own create
-   rather than an edit. This is the highest-risk sequence in the feature and the
-   reason the split algorithm is unit-tested against a fake repository before it
-   is wired to a screen.
+2. **Three backend gaps this plan filed issues for have all shipped**
+   (research §9–§11, resolved): a customer's addresses and contacts are now
+   reachable, and a sale's payments can be listed back. Every stopgap they
+   drove — the global-address-search fallback, contact-info stuffed into a
+   delivery order's `comment`, the session-scoped payment list with its
+   explanatory note — is removed outright. SC-004's original promise
+   ("every captured line, payment and destination intact") is restored to its
+   full form; a prior revision of this spec had to walk it back specifically
+   because the payments gap existed.
 
-3. **Three capabilities the delivery step needs do not exist in mbe-api**
-   (research §9, §10, §11): a customer's addresses cannot be listed, there is no
-   contacts API, and a sale's payments cannot be read back. None of them touch
-   P1. Each gets an mbe-api issue and a documented stopgap; the constitution
-   forbids patching mbe-api from this repo (§III).
+3. **The line's tax rate is genuinely editable now** (research §12, resolved).
+   FR-023's read-only amendment and its Complexity Tracking entry are both
+   reverted — the mock's per-line tax control can be built as originally
+   designed.
 
-4. **The mock's per-line IVA dropdown cannot save anything** (research §12). No
-   line endpoint accepts a tax rate. The control is rendered read-only and
-   FR-023 is amended rather than a dead control being built.
+4. **A cash session is now a hard precondition, by explicit product
+   decision** (research §18). Spec 021 shipped a complete, independent cash
+   session feature and deliberately decided *against* coupling it to this one
+   — recorded in 021's own spec as D-002, "wiring POS to the session state is
+   a deliberate follow-up." That follow-up is this revision: entering the
+   screen now checks `GET /cash-sessions/current` before anything else, and no
+   sale opens without one. This is a considered reversal of 021's own
+   decision, not an oversight in either spec — both are amended to record why
+   (spec.md D-006, research §18).
 
-5. **The fulfilment mode has to be persisted, and `ship_to` is the only place
-   that fits** (research §4). Counter pickup writes the facility's own address —
-   which is exactly the test mbe-api itself uses to detect counter pickup — and
-   delivery writes the customer's. Mixed is not encoded at all: it only gates
-   the close action, so a resumed sale asks about the remainder instead of
-   guessing.
+5. **This feature no longer owns an empty module.** `lib/features/sales/` was
+   fully populated by 021 before this feature's first line of code. Reused
+   directly: `decimal` (already a dependency), `domain/money.dart` (extended,
+   not duplicated), the promoted `MoneyFormatters`, the shared `PaymentMethod`
+   enum, and `currentSessionControllerProvider` itself. This plan's original
+   file count is smaller as a result — money arithmetic and formatting were
+   both already built for a different reason and turn out to be exactly what
+   this feature needed too.
 
-6. **The stepper and open-sales selector go in a screen header band, not the app
-   bar** (research §13). `AppShell` owns the only app bar and carries exactly one
-   trailing control by contract (spec 010 FR-009). Putting screen-owned widgets
-   there means changing the shell every other screen depends on. The band sits
-   directly beneath it and reads as one header.
+6. **`requires_reference` is server-computed now** (research §6, resolved).
+   The client-side `payment_method_rules.dart` table this plan's first draft
+   specified is deleted from the plan entirely — the field reads directly off
+   `PaymentMethodOptionResponse`.
 
-Net: one new feature module (~28 new files), 2 shared-widget promotions, one
-new dependency, three mbe-api issues filed, and edits to the router, the nav
-tree and both `.arb` files.
+7. **The screen's own RBAC gate follows 021's precedent, not this plan's
+   original guess.** Legacy's `SystemObject.pos` (44) — "Point of sale
+   terminal (POS module)," confirmed against `mbe/docs/constants.md` — is what
+   021 already gates session read/open on. This plan's first draft gated the
+   route and "open a sale" on `salesOrders` instead; that's corrected to `pos`,
+   matching the established precedent, while line-level mutations (add/edit/
+   confirm) keep using `salesOrders`, the resource actually being mutated.
+
+Net effect on scope: fewer new files than originally planned (two shared
+utilities already exist), a small number of new shared **catalog** files this
+feature needs but 021 didn't (a `ContactRepository` and its inline-create
+dialog, extending `Customer`/`CustomerRepository` to map addresses/contacts,
+extending `PaymentMethodOption` to map `requiresReference`), and one new
+screen state (the cash-session gate) that did not exist in any prior
+revision.
 
 ## Technical Context
 
 **Language/Version**: Dart 3.10 / Flutter (stable)
 
 **Primary Dependencies**: `flutter_riverpod` + `riverpod_generator`, `go_router`,
-`freezed`, `dio` via the generated `mbe_api_client`, `flutter_localizations`/`intl`.
-**One new dependency: `decimal`** — the POS is the first screen that does
-arithmetic on money (outstanding balance, change, quantity distribution, the
-paid == total gate) rather than only displaying it, and `double` cannot back a
-paid/not-paid decision (research §8).
+`freezed`, `dio` via the generated `mbe_api_client`, `flutter_localizations`/`intl`,
+`decimal` (^3.2.6, **already present** — added by 021-cash-sessions for the
+identical reason this feature needs it; no new dependency).
 
 **Storage**: N/A — online-only, every read and write goes to mbe-api
 (constitution §VII). Nothing about a sale is cached locally; that is what makes
-an interrupted sale recoverable (SC-004).
+an interrupted sale recoverable (SC-004), and it is now also true of applied
+payments, which were the one exception to this in a prior revision.
 
 **Testing**: `flutter_test` (unit + widget), `integration_test` against a live
-mbe-api with runtime-discovered fixtures (research §16)
+mbe-api with runtime-discovered fixtures (research §16), including a real open
+cash session as a fixture precondition.
 
 **Target Platform**: Web (Chrome) primary at 1440 px, desktop; compact tier down
 to 360 px
 
-**Project Type**: Single Flutter application, feature-first layering
+**Project Type**: Single Flutter application, feature-first layering. This
+feature **extends** an existing module (`lib/features/sales/`, populated by
+021-cash-sessions) rather than creating a new one.
 
 **Performance Goals**: A scanned product appears within 1 s (SC-002) — one
 `product-lookup` call plus one line `POST`, no client-side recomputation. The
-step transition into payment is one `confirm` call. The delivery step's writes
-are serialized per destination by necessity (research §3), so a three-destination
-split is ~3 creates + ~2n line trims, issued as the cashier works rather than in
-a burst at the end.
+step transition into payment is one `confirm` call. Creating a delivery
+destination is now one call, not a create-plus-N-trims sequence (research §3)
+— a three-destination split issues three requests total for the split itself,
+plus whatever edits the cashier makes afterward, down from the prior
+create-then-trim design's serialized sequence of roughly `3 + 2n` requests.
 
 **Constraints**: mbe-api caps list requests at 100 records; a payment cannot be
 applied to an unconfirmed order; a delivery order cannot be raised from an
-unconfirmed order; `fulfillment_type` is immutable after creation; a line's tax
-rate is not writable; no offline capture (constitution §VII).
+unconfirmed order; `fulfillment_type` is immutable after creation; no offline
+capture (constitution §VII); **no sale opens without a current cash session**
+(new, product decision, research §18).
 
-**Scale/Scope**: 1 screen, 3 steps, 2 dialogs (new customer, new address —
-the latter already exists), ~28 new files under `lib/features/sales/`, 58
-functional requirements, 5 prioritized user stories.
+**Scale/Scope**: 1 screen, 1 gate state + 3 steps, 3 dialogs (new customer,
+new address, new contact — the last two new to this feature), extends an
+existing module rather than a ~28-file new one, 60 functional requirements
+(58 original + 2 new for the session gate), 5 prioritized user stories (one
+gains a precondition, none added).
 
-**Reference-tenant reality**: the counter-sale path can be verified end to end
-today. The delivery path can be verified only in its degraded form until the
-mbe-api issues in research §9/§10 ship — the address picker searches globally
-instead of by customer, and the destination contact is written into the delivery
-order's comment.
+**Reference-tenant reality**: the counter-sale path, the delivery path and the
+payment-history path can all now be verified end to end against a live
+mbe-api — no degraded-mode testing is required for any of them, unlike the
+prior revision where three of the five user stories could only be verified in
+a stopgap form.
 
 ## Constitution Check
 
@@ -116,26 +146,29 @@ order's comment.
 
 | Principle | Status | How this feature satisfies it |
 |---|---|---|
-| **I. Feature-first layered architecture** | PASS | New `lib/features/sales/` with `presentation/`, `domain/`, `data/`. Shared entities (Customer, Product, Warehouse, Address) are **imported from `features/catalog/domain`**, the shared master-data module principle I names by name — not redefined. `presentation` imports `domain` only. |
-| **II. Riverpod for state and DI** | PASS | One `AsyncNotifier` for the sale (research §1), plain `Notifier`s for step/mode/draft-entry UI state, repositories exposed as providers and overridable in tests. |
-| **III. Contract-driven API integration** | PASS with recorded dependencies | No hand-written DTOs; the generated client already covers every call (research §2, §15). Codegen parity is re-verified before implementation. Three missing backend capabilities are recorded below and filed as mbe-api issues — **not** patched from this repo. |
-| **IV. Deny-by-default RBAC** | PASS | Route gated on `salesOrders:read`; opening a sale requires `salesOrders:create`; capture requires `salesOrders:update`; the payment step requires `customerPayments:create`; the delivery step requires `deliveryOrders:create`. A step the cashier cannot perform is absent, never disabled. |
-| **V. Material 3, white-labeled** | PASS | The mock's dark canvas is reference only; the screen uses the app theme and `ColorScheme`. All copy from `.arb` in `es`/`en`; money and quantities via `intl` (`PricingFormatters`, promoted to `core/`). |
-| **VI. Desktop/web-first, compact-ready** | PASS with 2 deviations | Expanded tier is the primary target; compact down to 360 px via the central breakpoints. Deviations for the line grid's row actions and the header band are recorded in Complexity Tracking. |
+| **I. Feature-first layered architecture** | PASS | Extends `lib/features/sales/` (already `presentation/`, `domain/`, `data/`, populated by 021). Shared entities (Customer, Product, Warehouse, Address, Contact, PriceList) are **imported from `features/catalog/domain`**, extended there when a new field is needed (addresses/contacts on `Customer`, `requiresReference` on `PaymentMethodOption`) — never redefined per feature. `presentation` imports `domain` only. |
+| **II. Riverpod for state and DI** | PASS | One `AsyncNotifier` for the sale (research §1), plain `Notifier`s for step/mode/draft-entry UI state, repositories exposed as providers and overridable in tests. `currentSessionControllerProvider` (021) is watched, not re-implemented. |
+| **III. Contract-driven API integration** | PASS | No hand-written DTOs; the generated client covers every call, including all 8 capabilities this feature originally had to file issues for (research §15, done). No outstanding external dependency remains. |
+| **IV. Deny-by-default RBAC** | PASS | Route and "open a sale" gated on `pos:read`/`pos:create` (research §14, §18 — corrected from `salesOrders` in this revision, matching 021's precedent); line capture/confirm on `salesOrders:update`; the payment step on `customerPayments:create`/`read`; the delivery step on `deliveryOrders:create`. A step the cashier cannot perform is absent, never disabled. |
+| **V. Material 3, white-labeled** | PASS | The mock's dark canvas is reference only; the screen uses the app theme and `ColorScheme`. All copy from `.arb` in `es`/`en`; money and date/time via `MoneyFormatters` (`core/widgets/`, already promoted by 021). |
+| **VI. Desktop/web-first, compact-ready** | PASS with 2 deviations | Expanded tier is the primary target; compact down to 360 px via the central breakpoints. Deviations for the line grid's row actions and the header band are recorded in Complexity Tracking — unchanged from the prior revision. |
 | **VII. Online-only, server-rendered documents** | PASS | No local persistence of any kind. Ticket printing is explicitly out of scope and stays server-side when it arrives. |
 
 ### RBAC mapping (constitution §IV requires each module to document this)
 
-| Surface | SystemObject | Right |
-|---|---|---|
-| `/sales/pos` route + nav entry | `salesOrders` (7) | `read` |
-| Opening a sale | `salesOrders` (7) | `create` |
-| Capturing/editing/removing lines, confirming | `salesOrders` (7) | `update` |
-| Recording and applying a payment | `customerPayments` (8) | `create` |
-| Reversing an application | `customerPayments` (8) | `update` |
-| Creating destinations | `deliveryOrders` (71) | `create` |
-| Creating a customer from the sale | `customers` | `create` |
-| Creating an address from the sale | `addresses` | `create` |
+| Surface | SystemObject | Right | Note |
+|---|---|---|---|
+| `/sales/pos` route + nav entry | `pos` (44) | `read` | **Revised** — was `salesOrders`; matches 021's precedent and legacy's own "POS module" privilege |
+| Opening a sale (the register action) | `pos` (44) | `create` | **Revised**, same reason |
+| Capturing/editing/removing lines, confirming | `salesOrders` (7) | `update` | Unchanged — the resource actually being mutated |
+| Reading a sale's applied payments | `customerPayments` (8) | `read` | New surface (research §11, resolved) |
+| Recording and applying a payment | `customerPayments` (8) | `create` | |
+| Reversing an application | `customerPayments` (8) | `update` | |
+| Creating destinations | `deliveryOrders` (71) | `create` | |
+| Creating a customer from the sale | `customers` | `create` | |
+| Creating an address from the sale | `addresses` | `create` | |
+| Creating a contact from the sale | `contacts` (12) | `create` | New surface (research §10, resolved) |
+| Reading current cash session state (the gate) | `pos` (44) | `read` | Reused from 021 |
 
 ## Project Structure
 
@@ -145,15 +178,15 @@ order's comment.
 specs/020-point-of-sale/
 ├── plan.md              # This file
 ├── spec.md              # Feature specification
-├── research.md          # Phase 0 output — 16 findings, 4 backend gaps
-├── data-model.md        # Phase 1 output
+├── research.md          # Phase 0 output — 18 findings; 8 resolved backend gaps, 1 new (cash session)
+├── data-model.md         # Phase 1 output
 ├── quickstart.md        # Phase 1 output
 ├── contracts/
-│   ├── mbe-api-pos.md   # The backend calls this feature consumes
-│   └── pos-screen.md    # The screen's own step/state contract
+│   ├── mbe-api-pos.md   # The backend calls this feature consumes — all issues shipped
+│   └── pos-screen.md    # The screen's own step/state contract, incl. the session gate
 ├── checklists/
 │   └── requirements.md  # Spec quality checklist
-└── tasks.md             # Phase 2 output (/speckit-tasks — NOT created here)
+└── tasks.md             # Phase 2 output (/speckit-tasks)
 ```
 
 ### Source Code (repository root)
@@ -162,87 +195,107 @@ specs/020-point-of-sale/
 lib/
 ├── app/router/app_router.dart                    # + /sales/pos route and guard
 ├── core/
-│   ├── navigation/nav_destinations.dart          # + Point of Sale destination
+│   ├── navigation/nav_destinations.dart          # + Point of Sale destination (append, don't renumber — 021's own precedent)
 │   └── widgets/
-│       ├── money_formatters.dart                 # promoted from features/pricing
-│       └── number_pad.dart                       # new shared touch keypad
-├── features/sales/
-│   ├── domain/
-│   │   ├── entities/
-│   │   │   ├── sale.dart                         # header + lines + totals + balance
-│   │   │   ├── sale_line.dart
-│   │   │   ├── product_lookup_result.dart        # incl. per-warehouse availability
-│   │   │   ├── destination.dart                  # a delivery order in POS terms
-│   │   │   ├── destination_line.dart
-│   │   │   ├── sale_payment.dart
-│   │   │   ├── fulfillment_mode.dart             # counter | delivery | mixed
-│   │   │   └── open_sale.dart                    # selector row
-│   │   ├── repositories/
-│   │   │   ├── sales_order_repository.dart
-│   │   │   ├── delivery_order_repository.dart
-│   │   │   └── customer_payment_repository.dart
-│   │   ├── money.dart                            # decimal helpers (research §8)
-│   │   ├── destination_split.dart                # create-then-trim algorithm
-│   │   └── payment_method_rules.dart             # reference-required table
-│   ├── data/
-│   │   ├── sales_order_repository_impl.dart
-│   │   ├── delivery_order_repository_impl.dart
-│   │   └── customer_payment_repository_impl.dart
-│   └── presentation/
-│       ├── pos_screen.dart                       # step host + header band
-│       ├── pos_sale_controller.dart              # the one AsyncNotifier
-│       ├── pos_step_controller.dart              # step + mode UI state
-│       ├── pos_header_band.dart                  # open-sales selector + stepper
-│       ├── open_sales_selector.dart
-│       ├── capture/
-│       │   ├── capture_step.dart
-│       │   ├── customer_bar.dart
-│       │   ├── fulfillment_mode_selector.dart
-│       │   ├── product_search_field.dart
-│       │   ├── product_lookup_controller.dart
-│       │   ├── sale_line_row.dart                # expanded tier
-│       │   ├── sale_line_card.dart               # compact tier
-│       │   └── sale_totals_bar.dart
-│       ├── payment/
-│       │   ├── payment_step.dart
-│       │   ├── payment_controller.dart
-│       │   ├── payment_method_grid.dart
-│       │   ├── payment_amount_field.dart
-│       │   └── applied_payments_panel.dart
-│       ├── delivery/
-│       │   ├── delivery_step.dart
-│       │   ├── delivery_controller.dart
-│       │   ├── destination_card.dart
-│       │   ├── destination_editor.dart
-│       │   └── line_distribution_panel.dart
-│       └── customer_inline_create.dart           # wraps the catalog form
-└── l10n/{app_en.arb, app_es.arb}                 # + POS strings
+│       ├── money_formatters.dart                 # existing (021) — unchanged
+│       └── number_pad.dart                       # new shared touch keypad — 021 built no equivalent
+├── features/
+│   ├── catalog/
+│   │   ├── domain/
+│   │   │   ├── entities/
+│   │   │   │   ├── customer.dart                 # EDIT — map .addresses/.contacts
+│   │   │   │   ├── contact.dart                  # NEW — mirrors AddressListItem
+│   │   │   │   └── payment_method_option.dart     # EDIT — map .requiresReference
+│   │   │   └── repositories/
+│   │   │       ├── customer_repository.dart       # EDIT — accept addresses/contacts on create/update
+│   │   │       └── contact_repository.dart         # NEW — mirrors address_repository.dart (list + create only)
+│   │   ├── data/
+│   │   │   ├── customer_repository_impl.dart      # EDIT
+│   │   │   └── contact_repository_impl.dart        # NEW
+│   │   └── presentation/
+│   │       └── contact_inline_create.dart          # NEW — mirrors address_inline_create.dart
+│   └── sales/                                      # EXTENDS 021's module, not a new one
+│       ├── domain/
+│       │   ├── entities/
+│       │   │   ├── sale.dart                       # header + lines + totals + balance
+│       │   │   ├── sale_line.dart                  # taxRate now writable
+│       │   │   ├── product_lookup_result.dart      # incl. per-warehouse availability
+│       │   │   ├── destination.dart                # a delivery order in POS terms; created complete, not trimmed
+│       │   │   ├── destination_line.dart
+│       │   │   ├── line_distribution.dart          # in-progress draft view model (data-model.md §6, simplified)
+│       │   │   ├── sale_payment.dart                # from OrderApplicationResponse now, not session state
+│       │   │   ├── fulfillment_mode.dart            # counter | delivery | mixed
+│       │   │   └── open_sale.dart                  # selector row
+│       │   ├── repositories/
+│       │   │   ├── sales_order_repository.dart
+│       │   │   ├── delivery_order_repository.dart  # create() now takes lines
+│       │   │   └── customer_payment_repository.dart # + listForOrder()
+│       │   └── money.dart                          # EDIT (021 already created it) — add generic add/subtract/compare/isZero
+│       ├── data/
+│       │   ├── sales_order_repository_impl.dart
+│       │   ├── delivery_order_repository_impl.dart
+│       │   └── customer_payment_repository_impl.dart
+│       └── presentation/
+│           ├── pos_gate_screen.dart                 # NEW — §0, no session
+│           ├── pos_screen.dart                      # step host + header band
+│           ├── pos_sale_controller.dart             # the one AsyncNotifier
+│           ├── pos_step_controller.dart             # step + mode UI state
+│           ├── pos_header_band.dart                 # open-sales selector + stepper + stale-session banner
+│           ├── open_sales_selector.dart
+│           ├── capture/
+│           │   ├── capture_step.dart
+│           │   ├── customer_bar.dart                # + payment-terms toggle
+│           │   ├── fulfillment_mode_selector.dart
+│           │   ├── product_search_field.dart
+│           │   ├── product_lookup_controller.dart
+│           │   ├── sale_line_row.dart                # expanded tier — tax rate now editable
+│           │   ├── sale_line_card.dart               # compact tier
+│           │   └── sale_totals_bar.dart
+│           ├── payment/
+│           │   ├── payment_step.dart
+│           │   ├── payment_controller.dart
+│           │   ├── order_payments_controller.dart    # NEW — replaces the session-scoped list
+│           │   ├── payment_method_grid.dart          # reads requiresReference directly
+│           │   ├── payment_amount_field.dart
+│           │   └── applied_payments_panel.dart
+│           ├── delivery/
+│           │   ├── delivery_step.dart
+│           │   ├── delivery_controller.dart          # create() is one call now, not an orchestrator
+│           │   ├── destination_card.dart
+│           │   ├── destination_editor.dart           # picks/creates a real Contact, not comment text
+│           │   └── line_distribution_panel.dart
+│           └── customer_inline_create.dart           # wraps the catalog form
+└── l10n/{app_en.arb, app_es.arb}                     # + POS strings, + gate screen strings
 
 test/
 ├── unit/features/sales/
-│   ├── destination_split_test.dart               # the highest-risk logic
-│   ├── money_test.dart
-│   ├── payment_method_rules_test.dart
+│   ├── line_distribution_test.dart                   # replaces destination_split_test.dart — arithmetic only, no sequencing
+│   ├── money_test.dart                                # tests the added generic helpers, not countedTotal/expectedCash (021's own tests cover those)
 │   └── sale_mapping_test.dart
+├── unit/features/catalog/
+│   └── customer_mapping_test.dart                     # NEW — addresses/contacts mapping
 ├── widget/features/sales/
-│   ├── sale_line_row_test.dart
+│   ├── sale_line_row_test.dart                        # incl. the now-editable tax rate
 │   ├── payment_step_gate_test.dart
+│   ├── pos_gate_screen_test.dart                       # NEW — §0
 │   ├── step_indicator_test.dart
-│   ├── pos_compact_layout_test.dart          # US1 journey at 390px
-│   ├── pos_compact_delivery_test.dart        # US2 journey at 390px (analysis finding C5)
-│   └── pos_compact_resume_and_customer_test.dart  # US3+US4 journeys at 390px (C5)
+│   ├── pos_compact_layout_test.dart
+│   ├── pos_compact_delivery_test.dart
+│   └── pos_compact_resume_and_customer_test.dart
 └── integration/
-    └── pos_counter_sale_flow_test.dart           # live mbe-api, runtime fixtures
+    ├── pos_counter_sale_flow_test.dart                 # live mbe-api, runtime fixtures, incl. a real open session
+    ├── pos_delivery_split_flow_test.dart
+    └── pos_resume_flow_test.dart
 ```
 
-**Structure Decision**: A new `lib/features/sales/` module, the second business
-module after `catalog` and the first named in constitution §I's list
-(`auth`, `sales`, `inventory`, …). It owns the sale, delivery and payment
-repositories; it owns no master data. Route `/sales/pos` follows the
-`/sales/...` scheme DESIGN.md §2.2 reserves. Two widgets earn promotion to
-`core/widgets/` because a second consumer is foreseeable and the constitution
-requires shared widgets to live there: money formatting (already duplicated
-intent in `features/pricing`) and the number pad.
+**Structure Decision**: Extends `lib/features/sales/`, populated by
+021-cash-sessions. Shared master-data extensions (Customer addresses/contacts,
+Contact itself, PaymentMethodOption's `requiresReference`) live in
+`features/catalog/`, per constitution §I — this feature needs them, but they
+are not POS-specific, and a future feature needing a customer's contacts would
+otherwise face the same gap this feature closes. Route `/sales/pos` follows
+the `/sales/...` scheme DESIGN.md §2.2 reserves, alongside 021's
+`/sales/cash-sessions`.
 
 ## Complexity Tracking
 
@@ -251,34 +304,39 @@ intent in `features/pricing`) and the number pad.
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
 | §VI row-action rules (Edit-only row action, row click opens read-only, no per-row Delete icon, mandatory pagination and filtering) do not apply to the POS line grid | The line grid is a **data-entry surface**, not a catalog list of records: every cell is directly editable by design, removing a line is the primary corrective action, and the dataset is the sale's own lines (bounded by what the cashier typed, so pagination is meaningless). FR-020–FR-028 describe exactly this. | Applying the catalog rules literally would put a cashier through a row click → read-only detail → Edit toggle for every quantity change — the opposite of a point of sale. The shared table component is not used at all here, so no cross-module consistency is lost. |
-| §VI "screen-level controls in the body, `AppBar.actions` empty" is honoured, but the requester asked for the open-sales selector and stepper "on the app bar" | Rendered as a header band at the top of the screen body, directly beneath the shell app bar (research §13). Visually one header; structurally the screen's own. | Injecting them into `AppShell`'s app bar requires either a global provider leaking screen state into shared navigation, or a route-keyed slot in the shell — a change to shared code every screen depends on, for one screen. Recorded here because it is a conscious reading of the requester's instruction; reversing it is a contained change. |
-| FR-023 lists the line's tax treatment as editable in place | mbe-api has no writable tax rate on a sale line (research §12). The control is rendered read-only. | Building a dropdown that silently fails to save is worse than showing the rate as a fact. An mbe-api issue is filed if per-line override is genuinely wanted. |
-| New dependency `decimal` | Money arithmetic backs a paid/not-paid gate and a quantity distribution that must sum exactly (SC-005, FR-049). | `double` is disqualified for money comparisons; hand-rolled scaled integers are the same work with more places to be wrong. |
-| Three mbe-api capabilities missing (research §9, §10, §11) | Recorded as external dependencies per constitution §III; issues filed against mbe-api; stopgaps documented and scoped to P2/P3 only. | Patching mbe-api from this repo is forbidden by §III. Blocking the whole feature on them would stall P1, which needs none of them. |
+| §VI "screen-level controls in the body, `AppBar.actions` empty" is honoured, but the requester asked for the open-sales selector and stepper "on the app bar" | Rendered as a header band at the top of the screen body, directly beneath the shell app bar (research §13). Visually one header; structurally the screen's own. | Injecting them into `AppShell`'s app bar requires either a global provider leaking screen state into shared navigation, or a route-keyed slot in the shell — a change to shared code every screen depends on, for one screen. |
+| This feature's screen-level RBAC gate (`pos`) is checked *before* the sale-record-level gate (`salesOrders`) that the underlying writes use | Matches 021's own precedent and legacy's `SystemObject.pos` (44) module privilege; a user could in principle hold one without the other, in which case the screen should be reachable/openable but line capture would still correctly refuse. | Gating everything on a single `SystemObject` (either one alone) would either let a user without `salesOrders:update` open a sale they then cannot capture into (confusing), or gate the screen itself on the resource-level privilege, diverging from 021's already-shipped precedent for the same module. |
+| A hard cash-session precondition (research §18) — reverses 021's own explicitly recorded D-002 decision against POS coupling | Explicit product decision: a register should not take money with no shift open, and 021 itself named this exact wiring a "deliberate follow-up" rather than a permanently closed door. Both specs' text is updated to record the reversal and why, rather than silently overriding 021's decision. | A soft gate (show state, don't block) was considered and rejected — it would let a cashier ring up and collect payment against no shift at all, producing the "permanently unattributed payment" condition 021's own D-007 already warns about. |
 
 ## Phase 0 — Outline & Research
 
 **Status**: complete → [research.md](./research.md)
 
-16 findings. All Technical Context unknowns resolved; no `NEEDS CLARIFICATION`
-markers remain. Four are backend gaps (§9, §10, §11, §12), each with an
-mbe-api issue to file and a documented stopgap.
+18 findings (16 original + 1 revised into two + 1 new). All 8 originally-filed
+mbe-api issues (§9–§12, §17, plus §3, §5, §6's dependencies) verified shipped
+2026-08-05. §18 is new: the cash-session hard gate. No `NEEDS CLARIFICATION`
+markers remain.
 
 ## Phase 1 — Design & Contracts
 
 **Status**: complete
 
-- [data-model.md](./data-model.md) — the eight domain entities, their mapping
-  from generated DTOs, validation rules traced to requirements, and the sale's
-  state machine.
+- [data-model.md](./data-model.md) — the domain entities (a `CashSession`
+  precondition section added, `Contact` added, `LineDistribution` simplified),
+  their mapping from generated DTOs, validation rules traced to requirements,
+  and the sale's state machine.
 - [contracts/mbe-api-pos.md](./contracts/mbe-api-pos.md) — every backend call
-  this feature makes, with preconditions and failure modes.
+  this feature makes; the "issues to file" section is now "issues shipped."
 - [contracts/pos-screen.md](./contracts/pos-screen.md) — the screen's own
-  contract: step machine, what each step owns, what survives a reload.
+  contract: the session gate (§0), step machine, what each step owns, what
+  survives a reload.
 - [quickstart.md](./quickstart.md) — how to run and validate the feature end to
-  end.
+  end, now including a live cash-session fixture.
 
 **Post-design constitution re-check**: PASS. The design adds no principle
-violation beyond the four recorded in Complexity Tracking. Layering holds
-(`presentation` → `domain` only; `data` implements `domain` interfaces); every
-mutable action is RBAC-gated; nothing is cached locally.
+violation beyond the three recorded in Complexity Tracking (down from four —
+the "3 missing backend capabilities" deviation from the prior revision no
+longer applies; nothing is missing). Layering holds (`presentation` → `domain`
+only; `data` implements `domain` interfaces; catalog extensions live in
+`catalog`, not duplicated in `sales`); every mutable action is RBAC-gated;
+nothing is cached locally.

@@ -21,18 +21,23 @@ stories and success criteria; details of the calls behind them are in
    ./tool/generate_api_client.sh                       # then: git diff --stat lib/generated
    ```
 3. **A cashier account** whose settings name a default facility, point of sale
-   and warehouse, and which holds `salesOrders` create/update, `customerPayments`
-   create and `deliveryOrders` create.
+   and warehouse, and which holds `pos` read/create, `salesOrders` update,
+   `customerPayments` create/read and `deliveryOrders` create.
 4. **Seeded data**: at least one stockable product with availability in that
    warehouse, one customer with a price list, and one payment method option for
    the facility.
+5. **An open cash session for that cashier** (spec 021) — `/sales/cash-sessions`,
+   open one on the cashier's assigned drawer before starting any scenario
+   below. Without one, `/sales/pos` shows the gate (FR-002a) instead of a sale.
 
 ```bash
 flutter pub get
 flutter run -d chrome --dart-define=BRAND_DISPLAY_NAME=MBE
 ```
 
-Navigate to **Point of Sale** in the side navigation (or `/sales/pos`).
+Navigate to **Point of Sale** in the side navigation (or `/sales/pos`). With no
+open cash session, this shows the gate screen instead — open one at
+`/sales/cash-sessions` first.
 
 ---
 
@@ -71,11 +76,14 @@ curl -s localhost:8000/api/v1/sales-orders/<id> -H "Authorization: Bearer $TOKEN
 2. Capture three lines with quantities greater than 1.
 3. Pay in full. **Expect**: the delivery step opens (step 3 of 3) with the first
    destination pre-filled from the main address.
-4. Set per-line quantities for destination 1, leaving some of each line
-   undistributed. **Expect**: the distribution panel shows the remainder per
-   line and the running "assigned / total" count.
-5. Add a second destination. **Expect**: it claims exactly what destination 1
-   left; adjust it to take the rest.
+4. Set per-line quantities for destination 1 in its editor, submit it leaving
+   some of each line undistributed. **Expect**: one request creates the
+   destination complete (no separate trim step), and the distribution panel
+   shows the remainder per line and the running "assigned / total" count.
+5. Add a second destination, entering the remaining quantities directly.
+   **Expect**: entering more than what destination 1 left for a line is
+   refused inline, naming the line and the shortfall, before submission
+   succeeds with a valid amount.
 6. Close the sale. **Expect**: it is refused while any unit is unassigned, and
    accepted once none is.
 
@@ -103,10 +111,10 @@ created holding exactly that remainder.
    **Expect**: both lines, the customer and the mode are intact and capture
    continues.
 3. Repeat after confirming but before paying. **Expect**: it reopens on the
-   payment step, lines read-only.
+   payment step, lines read-only, with any payments already applied listed in
+   full (`GET /sales-orders/{id}/payments`, resolved — research §11).
 4. Repeat after paying a delivery sale but before distributing.
-   **Expect**: it reopens on the delivery step. (Payments taken in the earlier
-   session are not itemised — the balance is authoritative; research §11.)
+   **Expect**: it reopens on the delivery step.
 
 ---
 
@@ -138,7 +146,8 @@ flutter test test/unit/features/sales test/widget/features/sales   # fast, no se
 flutter test test/integration/pos_counter_sale_flow_test.dart   # needs mbe-api
 ```
 
-The unit suite is the one to trust for the distribution invariant
-(`destination_split_test.dart`) and the money gate (`money_test.dart`); the
+The unit suite is the one to trust for the distribution arithmetic
+(`line_distribution_test.dart`) and the money gate (`money_test.dart`); the
 integration test proves the call sequence in research §2 against a real server,
-discovering its fixtures at runtime rather than hardcoding ids.
+including the cash-session gate, discovering its fixtures at runtime rather
+than hardcoding ids.

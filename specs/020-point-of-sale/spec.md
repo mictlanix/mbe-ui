@@ -19,8 +19,9 @@ steps: capture the sale, take the money. A sale that has to be delivered is
 three: capture the sale, take the money, then say where each unit goes. The
 third step appears only when it has something to do.
 
-Three decisions shape everything below, and all three came from the user rather
-than from the mock:
+Four decisions shape everything below. The first three came from the user
+rather than from the mock; the fourth was added 2026-08-05, once a sibling
+feature made it possible:
 
 1. **The sale is recorded live, from the first keystroke.** The order record is
    opened when the cashier enters the screen, and every line lands on the server
@@ -35,6 +36,9 @@ than from the mock:
 3. **Delivery is the last step, not the middle one.** The order of the steps is
    Venta → Cobro → Entrega, which departs deliberately from the mock's
    Venta → Entrega → Cobro.
+4. **No sale opens without an open cash session.** A cashier who has not opened
+   a shift (spec 021) sees an explanation and a way into that screen, and
+   nothing else — no sale record is created until one exists. See D-006.
 
 The layout in `artifacts/point_of_sale/POS Adaptativo.dc.html` is the visual
 reference for this feature — the expanded (desktop) frames `2a`, `2b`, `2c`,
@@ -57,7 +61,27 @@ exception.
 
 Nothing in the money depends on the destinations — shipping is not charged (see
 A-003) — so taking payment before knowing where the goods go costs the customer
-nothing.
+nothing. Creating a destination is now a single recorded action, not a
+multi-step sequence — the backend accepts a destination's full line split in
+one call (see D-003), so decision 3's "every destination is recorded the
+moment it is entered" holds with no caveats about how many requests that
+takes.
+
+The fourth decision reverses one made by spec 021 (cash sessions), which
+shipped independently of this screen and explicitly decided *not* to couple to
+it — recorded in 021's own spec as "wiring POS to the session state is a
+deliberate follow-up." That follow-up is this decision: a real register cannot
+take money with the drawer closed, and once 021 had actually shipped a working
+session screen to link to, requiring one stopped being premature. See D-006
+for the full reasoning and what changes for 021 as a result (nothing — 021's
+code is reused as-is).
+
+Six backend gaps this spec originally worked around — a customer's addresses
+and contacts being unreachable, a sale's payments being unlistable, a line's
+tax rate being fixed, a customer change never repricing, and the delivery
+split needing a client-side workaround — have all since shipped in mbe-api.
+Every stopgap they drove has been removed from this spec, not merely noted as
+superseded; see Dependencies.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -85,38 +109,44 @@ confirmed, carries both lines and shows a zero balance.
 
 **Acceptance Scenarios**:
 
-1. **Given** a cashier with permission to create sales orders, **When** they
-   open the point of sale, **Then** an order is opened for their point of sale
-   and facility, the walk-in customer and counter pickup are preselected, and
-   the line area is empty.
-2. **Given** an open sale, **When** the cashier scans a barcode that matches one
+1. **Given** a cashier with no open cash session, **When** they open the point
+   of sale, **Then** no sale is opened; the screen explains that a shift must
+   be open first and offers a way into the cash session screen instead.
+2. **Given** a cashier with an open (or stale — opened on an earlier day but
+   not yet closed) cash session and permission to create sales orders, **When**
+   they open the point of sale, **Then** an order is opened for their point of
+   sale and facility, the walk-in customer and counter pickup are preselected,
+   and the line area is empty. A stale session additionally shows a
+   non-blocking note that it was opened on an earlier day.
+3. **Given** an open sale, **When** the cashier scans a barcode that matches one
    product, **Then** that product is added as a line at the customer's price
    list price with the default warehouse, and the search field clears ready for
    the next scan.
-3. **Given** a search term matching several products, **When** the cashier
+4. **Given** a search term matching several products, **When** the cashier
    searches, **Then** matches are listed with code, name, brand, price and
    per-warehouse availability, and choosing one adds it as a line.
-4. **Given** a line already on the sale, **When** the cashier changes its
-   quantity, price, discount or warehouse, **Then** the change is recorded and
-   the line total, the running totals and the stock indicator all update.
-5. **Given** a line for a product with insufficient stock in the chosen
+5. **Given** a line already on the sale, **When** the cashier changes its
+   quantity, price, discount, tax rate or warehouse, **Then** the change is
+   recorded and the line total, the running totals and the stock indicator all
+   update.
+6. **Given** a line for a product with insufficient stock in the chosen
    warehouse, **When** the line is displayed, **Then** it carries a visible
    warning naming the shortfall, and the cashier can still continue capturing.
-6. **Given** a sale with at least one line, **When** the cashier continues to
+7. **Given** a sale with at least one line, **When** the cashier continues to
    payment, **Then** the sale is confirmed, a folio is assigned, the lines
    become read-only, and the payment step opens showing the full total as
    outstanding.
-7. **Given** the payment step with an outstanding balance, **When** the cashier
+8. **Given** the payment step with an outstanding balance, **When** the cashier
    enters an amount, selects a method and adds the payment, **Then** the payment
    is recorded against the sale, the applied-payments list gains an entry, and
    the outstanding balance drops by that amount.
-8. **Given** a counter-pickup sale whose payments cover the total, **When** the
+9. **Given** a counter-pickup sale whose payments cover the total, **When** the
    cashier confirms, **Then** the sale shows as paid, any change due is
    displayed, the workflow ends without a delivery step, and the screen offers
    to start a new sale.
-9. **Given** payments that do not yet cover the total, **When** the cashier
-   looks at the confirm action, **Then** it is unavailable and explains that it
-   unlocks when the amount paid equals the total.
+10. **Given** payments that do not yet cover the total, **When** the cashier
+    looks at the confirm action, **Then** it is unavailable and explains that it
+    unlocks when the amount paid equals the total.
 
 ---
 
@@ -296,10 +326,7 @@ without horizontal scrolling and with every control reachable.
   with the minimum named.
 - **The customer is changed after lines exist.** Every existing line is
   re-priced against the new customer's price list, and the totals update to
-  match (FR-015). This depends on a backend change tracked as D-005 — until it
-  ships, changing the customer is expected to leave prices stale with no
-  indication to the cashier, which the team has accepted as an interim risk
-  (see D-005).
+  match (FR-015).
 - **Credit terms chosen for a customer with no credit line.** Refused, with the
   reason shown, and the sale stays on immediate terms.
 - **A payment in a currency other than the sale's.** Refused before the payment
@@ -331,6 +358,14 @@ without horizontal scrolling and with every control reachable.
   destination is flagged and must be repointed before continuing.
 - **Zero destinations in delivery mode.** Continuing is blocked until at least
   one destination exists.
+- **The cashier's cash session is closed (from the cash-session screen, in
+  another tab) while a sale is in progress.** The next write the sale attempts
+  is refused; the cashier is told their shift has ended and directed back to
+  the cash session screen, and whatever was captured up to that point is not
+  discarded — it exists as a real sale, reachable once a new session is open.
+- **The cashier's cash session was opened on an earlier day (stale) and never
+  closed.** Selling proceeds normally; the screen shows a non-blocking note
+  rather than treating a stale session the same as no session.
 
 ## Requirements *(mandatory)*
 
@@ -345,6 +380,12 @@ without horizontal scrolling and with every control reachable.
 - **FR-002**: Entering the screen without a sale in progress MUST open a new
   sale record immediately, associated with the cashier's point of sale and
   facility, before any product is captured.
+- **FR-002a**: A sale MUST NOT be opened while the cashier has no current cash
+  session (neither open nor stale). The screen MUST instead explain that a
+  shift must be opened first and offer a way into the cash session screen.
+- **FR-002b**: A stale cash session (open, but started on an earlier day) MUST
+  NOT block opening a sale. The screen MUST show a non-blocking indication
+  that the session predates today.
 - **FR-003**: The screen MUST NOT duplicate chrome the shell already provides —
   no second hamburger, no second back affordance, no simulated window frame —
   and MUST use the shell's own navigation controls.
@@ -362,9 +403,9 @@ without horizontal scrolling and with every control reachable.
 #### Recording the sale as it is captured
 
 - **FR-007**: Every capture action — adding a line, changing a line's quantity,
-  price, discount or warehouse, removing a line, changing the customer, the
-  fulfilment mode, the payment terms or the currency — MUST be recorded on the
-  server as it happens, not deferred to a later submit.
+  price, discount, tax rate or warehouse, removing a line, changing the
+  customer, the fulfilment mode, the payment terms or the currency — MUST be
+  recorded on the server as it happens, not deferred to a later submit.
 - **FR-008**: After each recorded action, the screen MUST show the totals the
   server returns rather than totals it computed locally, so that displayed
   subtotal, discount, tax and grand total always match what the sale is worth.
@@ -391,8 +432,7 @@ without horizontal scrolling and with every control reachable.
   existing line MUST be re-priced against the new customer's price list, and
   the screen MUST reflect the updated prices and totals as it would any other
   server-driven change (FR-007, FR-008) — no separate notice is needed, because
-  nothing is being silently preserved. This requires a backend change (D-005);
-  see D-005 for the interim behavior while it is outstanding.
+  nothing is being silently preserved.
 - **FR-016**: The cashier MUST be able to choose immediate or credit payment
   terms; choosing credit for a customer without an available credit line MUST be
   refused with the reason shown.
@@ -427,11 +467,9 @@ without horizontal scrolling and with every control reachable.
 - **FR-022**: Each line MUST show the product name and code, the source
   warehouse, that warehouse's availability for the product, quantity, unit,
   unit price, discount, tax rate, and the line total.
-- **FR-023**: Each line's quantity, unit price, discount rate and source
-  warehouse MUST be editable in place, and quantity MUST additionally be
-  adjustable by increment and decrement controls. The line's tax rate MUST be
-  displayed read-only — no supported operation can change it (planning finding,
-  research §12).
+- **FR-023**: Each line's quantity, unit price, discount rate, tax rate and
+  source warehouse MUST be editable in place, and quantity MUST additionally
+  be adjustable by increment and decrement controls.
 - **FR-024**: Adding a product MUST default its source warehouse to the
   warehouse configured for the cashier's point of sale, and the cashier MUST be
   able to change it per line and see availability for the chosen warehouse.
@@ -556,17 +594,23 @@ without horizontal scrolling and with every control reachable.
   pickup, delivery, or mixed. Chosen during capture, fixed at confirmation,
   recoverable from the sale itself, and the thing that decides whether a
   delivery step follows payment.
-- **Destination** — one place goods are going: an address, a contact name and
-  phone, a delivery date, and the quantity of each sale line assigned to it.
-  Recorded against the sale as soon as it is named. The counter-pickup
-  remainder in a mixed sale becomes a destination of its own when the sale
-  closes.
+- **Destination** — one place goods are going: an address, a linked contact, a
+  delivery date, and the quantity of each sale line assigned to it. Recorded
+  against the sale complete — address, contact and quantities together — in
+  one action. The counter-pickup remainder in a mixed sale becomes a
+  destination of its own when the sale closes.
+- **Contact** — a name and phone/mobile a delivery can be handed to. Belongs to
+  a customer, reused across that customer's destinations and sales rather than
+  retyped each time.
 - **Payment** — money taken: an amount, a method, a currency, an optional
   reference, its validation state, and how much of it is applied to this sale
   versus returned as change.
 - **Customer** — who is buying: code, name, price list, zone, credit limit and
   days, outstanding balance, whether they may receive deliveries and whether
-  deliveries require a signed document, and their addresses.
+  deliveries require a signed document, and their addresses and contacts.
+- **Cash session** — the cashier's shift, owned by spec 021. This feature reads
+  only whether one exists and whether it is stale; opening, counting and
+  closing one belongs entirely to spec 021's own screen.
 
 ## Success Criteria *(mandatory)*
 
@@ -580,10 +624,8 @@ without horizontal scrolling and with every control reachable.
   totals ever disagreeing with the recorded sale.
 - **SC-004**: 100% of sales interrupted at any step (reload, navigation away,
   browser crash) are recoverable from the open-sales selector, reopening on the
-  step they were left at with every captured line and destination intact and
-  the balance accurate. Payments taken before the interruption are reflected in
-  that balance but are not re-itemized (a documented backend limitation, not a
-  data loss — research.md §11).
+  step they were left at with every captured line, payment and destination
+  intact.
 - **SC-005**: A three-destination delivery sale results in exactly three
   delivery records whose quantities sum, per line, to the ordered quantity.
 - **SC-006**: No sale can be closed with an outstanding balance unless it is on
@@ -595,6 +637,9 @@ without horizontal scrolling and with every control reachable.
   0 silent failures and 0 raw technical errors shown to the cashier.
 - **SC-009**: Both supported languages render every screen with no missing
   translations and no clipped labels at any supported width.
+- **SC-010**: 0 sale records are created for a cashier with no current cash
+  session, across the acceptance suite — the gate (FR-002a) is checked before
+  `POST /sales-orders` is ever called, not after.
 
 ## Assumptions
 
@@ -611,9 +656,11 @@ without horizontal scrolling and with every control reachable.
 - **A-004**: The mock's credit-note and voucher payment methods are shown as
   standard payment methods; applying an existing credit note document to a sale
   is out of scope for this feature.
-- **A-005**: Payments attach to the cashier's open cash session when one exists
-  and record without one when it does not. Opening and closing cash sessions is
-  a separate feature and is not part of this screen.
+- **A-005**: Because FR-002a guarantees a current cash session before any sale
+  can be opened, every payment this screen records attaches to a real session
+  server-side — there is no longer a "record without one" case to design for.
+  Opening, counting and closing cash sessions remains entirely spec 021's
+  screen; this one only checks that a session exists.
 - **A-006**: The mock's "pending validation in terminal" payment state reflects
   the existing verification lifecycle for card payments; this screen displays
   that state but does not perform the verification.
@@ -640,41 +687,44 @@ without horizontal scrolling and with every control reachable.
   construction, in every deployment and whichever way that setting is
   configured. This was the deciding argument for the step order, and it is why
   no deployment check is needed before implementation.
-- **D-003**: Splitting one sale across several destinations is expressed as a
-  sequence of create-then-trim operations against the delivery API: a new
-  destination claims whatever quantity is not yet spoken for, and the cashier's
-  per-line entries trim it back. There is no single call that creates a delivery
-  for a named subset of quantities. Filed as
-  [mbe-api#138](https://github.com/mictlanix/mbe-api/issues/138) — not a
-  blocker, but worth prioritizing given it drives this feature's highest-risk
-  logic (the create-then-trim orchestrator, T056/T059).
+- **D-003 (resolved)**: Splitting one sale across several destinations was
+  originally a sequence of create-then-trim operations against the delivery
+  API — no single call created a delivery for a named subset of quantities.
+  [mbe-api#138](https://github.com/mictlanix/mbe-api/issues/138), filed
+  against exactly this, **has shipped**: `DeliveryOrderCreate` now accepts
+  `lines`, a named subset, in the same call that creates the destination. The
+  create-then-trim workaround this dependency described is removed from the
+  design, not merely superseded.
 - **D-004**: The screen reuses the existing customer picker, address inline
-  creation, warehouse and price-list pickers rather than introducing new ones.
-- **D-005 (Blocking, FR-015)**: mbe-api does not currently re-price a sale's
-  existing lines when its customer changes — verified against
-  `sales_order_service.update_order`, whose customer branch only reassigns
-  `order.customer`, with no equivalent to the line-rewriting loop
-  `_change_currency` uses for a currency change. The legacy system did reprice
-  on a customer change; whether that was deliberately dropped or is an
-  oversight in the rewrite is an open question. Filed as
-  [mictlanix/mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131),
-  requesting mbe-api mirror `_change_currency`'s per-line pattern, re-running
-  price-list resolution for every line — except (open question in the issue)
-  lines whose price was manually overridden, consistent with how `add_line`
-  already treats an explicit price as an override. **Until #131 ships**,
-  switching customers mid-sale leaves every existing line at its old price
-  with no indication to the cashier — worse than doing nothing, since FR-015
-  no longer renders a notice explaining it. This is a deliberate, accepted
-  interim risk (the team chose to design FR-015 around the intended backend
-  behavior rather than the current one), not an oversight — but it means this
-  feature should not ship customer-switching to production ahead of #131
-  without re-confirming that trade-off.
+  creation, warehouse and price-list pickers rather than introducing new ones,
+  and adds one new one this feature needs first: a contact picker/inline-create
+  mirroring the address one, backed by the new `/contacts` API (D-006 below).
+- **D-005 (resolved)**: mbe-api did not re-price a sale's existing lines when
+  its customer changed. [mictlanix/mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131),
+  filed against exactly this, **has shipped**: `update_order` now re-prices
+  every line — unconditionally, including a manually-typed price, a design
+  choice mbe-api made explicitly after considering and rejecting preserving
+  overrides (no marker exists to distinguish one from a listed price). FR-015
+  needed no change once this shipped; it was already written against this
+  outcome.
+- **D-006 (new, reverses 021's own decision)**: spec 021 (cash sessions)
+  shipped independently of this feature and explicitly recorded, in its own
+  clarifications, that it would not couple to this screen — "wiring POS to the
+  session state is a deliberate follow-up." This spec is that follow-up:
+  FR-002a/FR-002b make an open cash session a hard precondition for opening a
+  sale, reusing 021's `currentSessionControllerProvider` directly rather than
+  building any new session-reading code. This is a deliberate reversal, made
+  now that 021 has actually shipped something to depend on, not a correction
+  of an error in either spec — 021's own text already named this as the
+  intended next step.
 
 ## Out of Scope
 
 - Printing or emailing a sale ticket or receipt.
 - Invoicing, tax stamping, or any fiscal document.
-- Cash session opening, closing, counting or reconciliation.
+- Cash session opening, closing, counting or reconciliation — this screen
+  **requires** an open session to exist (FR-002a) and reads its state, but
+  managing one is entirely spec 021's screen; no session UI is built here.
 - Returns, refunds, credit notes and cancellation of a confirmed sale.
 - Sales quotes and converting a quote into a sale.
 - Delivery routing, itineraries, driver assignment and proof of delivery.

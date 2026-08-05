@@ -11,7 +11,32 @@ Address, PriceList) are **not** redefined here — they are imported from
 Monetary and quantity values are carried as `String` end to end, matching the
 generated DTOs and the convention spec 011 established; they are converted to
 `Decimal` only inside `domain/money.dart` where arithmetic is unavoidable
-(research §8).
+(research §8) — the same file 021-cash-sessions already created in this
+module, extended rather than duplicated.
+
+**Revised 2026-08-05**: this document originally described three stopgaps —
+a read-only `SaleLine.taxRate`, a comment-encoded destination contact, and a
+session-scoped `SalePayment` list — each driven by a backend gap that has
+since shipped (research.md §9–§12, §17, all RESOLVED). Every entity below
+reflects the shipped shape; the stopgaps are removed, not merely noted as
+superseded. A new precondition entity, `CashSession`, is added — reused
+directly from `lib/features/sales/domain/entities/current_session.dart`
+(021-cash-sessions), not redefined here (research §18).
+
+---
+
+## 0. CashSession precondition (reused, not redefined)
+
+Before `Sale` can exist at all, the screen resolves
+`currentSessionControllerProvider` → `CurrentSession { state, session }`
+(`lib/features/sales/domain/entities/current_session.dart`, 021-cash-sessions).
+This feature adds no new fields, no new mapping — it reads:
+
+| `CurrentSession.state` | Screen behavior |
+|---|---|
+| `none` | Block. No `POST /sales-orders` call is made. Show the gate (contracts/pos-screen.md §0). |
+| `open` | Proceed normally. |
+| `stale` | Proceed, with a non-blocking banner (research §18). |
 
 ---
 
@@ -74,8 +99,8 @@ from the sales-order screens.
 | `quantity` | `String` | `.quantity` | `> 0`; `>= product.minOrderQty` — server-enforced, surfaced on the field |
 | `price` | `String` | `.price` | `>= 0`; may be refused for margin (research §2) |
 | `discountRate` | `String` | `.discountRate` | `0 ≤ r ≤ 1`; displayed as a percentage |
-| `taxRate` | `String` | `.taxRate` | **Read-only** — not writable by any endpoint (research §12) |
-| `taxIncluded` | `bool` | `.taxIncluded` | Display only |
+| `taxRate` | `String` | `.taxRate` | Editable in place. `0 ≤ r ≤ 1`; omitted on add ⇒ the product's own rate (research §12, resolved) |
+| `taxIncluded` | `bool` | `.taxIncluded` | Display only — not part of mbe-api#135's change |
 | `warehouse` | `int?` | `.warehouse` | Defaults to the point of sale's warehouse (FR-024) |
 | `subtotal`, `taxTotal`, `total` | `String` | derived server-side | |
 
@@ -129,21 +154,30 @@ guessing.
 
 ## 5. Destination
 
-A delivery order, in the vocabulary of the step. Created as soon as its address
-is chosen (FR-030).
+A delivery order, in the vocabulary of the step. Created **with its full line
+distribution in one call** (research §3, resolved) — not created bare and
+trimmed afterward.
 
 | Field | Type | Source | Notes |
 |---|---|---|---|
 | `id` | `int` | `DeliveryOrderResponse.deliveryOrderId` | |
-| `fulfillmentType` | `FulfillmentType` | `.fulfillmentType` | Immutable after creation (research §3) |
-| `shipTo` | `int?` | `.shipTo` | The destination address |
+| `fulfillmentType` | `FulfillmentType` | `.fulfillmentType` | Immutable after creation |
+| `shipTo` | `int?` | `.shipTo` | The destination address, from `Customer.addresses` (research §9) or created inline |
 | `addressSummary` | `String` | joined from the catalog Address | Display |
-| `contactName`, `contactPhone` | `String?` | encoded in `.comment` | Stopgap until a contacts API exists (research §10) |
+| `contact` | `int?` | `.contact` | A real `Contact` id (research §10, resolved) — from `Customer.contacts` or created inline |
+| `contactName`, `contactPhone` | `String?` | joined from `Contact` | Display only; the source of truth is the linked `Contact` record, not a local copy |
 | `date` | `DateTime?` | `.date` | This destination's delivery date |
+| `comment` | `String?` | `.comment` | Genuine free-text delivery instructions (FR-029) — no longer doubles as a contact-info stopgap |
 | `status` | `DeliveryOrderStatus` | `.status` | Always `draft` while the step is open |
 | `lines` | `List<DestinationLine>` | `.lines` | |
 
 **Derived**: `lineCount`, `unitCount` for the card header (FR-029).
+
+**Creation** (`DeliveryOrderCreate`): `{sales_order, fulfillment_type,
+ship_to, contact, date, comment, lines: [{sales_order_detail, quantity}, ...]}`
+— the whole destination in one request, validated server-side against the same
+"still undelivered" figure the counter-pickup sweep uses. `lines` omitted (the
+counter-pickup remainder only) means "everything left."
 
 ### 5.1 DestinationLine
 
@@ -155,24 +189,56 @@ is chosen (FR-030).
 | `quantity` | `String` | What this destination takes |
 | `warehouse` | `int` | |
 
+### 5.2 Contact (catalog entity, new to this feature — research §10)
+
+Not a POS-specific entity; belongs in `features/catalog/domain/entities/` per
+constitution §I, alongside `AddressListItem`. Included here because this is
+the feature that first needs it.
+
+| Field | Type | Source |
+|---|---|---|
+| `id` | `int` | `ContactResponse.contactId` |
+| `name` | `String` | `.name` |
+| `phone` | `String` | `.phone` — `''` default, not nullable, matching the column |
+| `mobile` | `String` | `.mobile` — same |
+| `email` | `String?` | `.email` |
+
+Reached two ways: `Customer.contacts` (embedded, research §9) for an existing
+one, or created inline via a new `ContactRepository.create()` mirroring
+`AddressRepository.create()` — then linked to the customer via
+`CustomerRepository.update(contacts: [...existing, newId])`.
+
 ---
 
-## 6. LineDistribution (view model, not persisted)
+## 6. LineDistribution (view model, not persisted, in-progress draft only)
 
-What the distribution panel renders (FR-033), computed from the sale's lines and
-every destination's lines:
+**Revised 2026-08-05**: this was originally computed by querying every
+already-created `Destination`'s lines and reconciling against the sale — the
+client-side half of the create-then-trim workaround (research §3). Now that a
+destination is created with its full distribution in one call, this view model
+is only ever tracking the **destination currently being edited**, before it is
+submitted — not reconstructed from server state after the fact. What the
+distribution panel renders (FR-033), computed from the sale's lines, every
+*already-created* destination's lines (from their own responses, no
+re-derivation needed — each `Destination.lines` is exactly what was
+requested), and the in-progress draft:
 
 | Field | Type | Meaning |
 |---|---|---|
 | `saleLineId` | `int` | |
 | `ordered` | `String` | The sale line's quantity |
-| `perDestination` | `Map<int, String>` | destination id → quantity |
-| `atCounter` | `String` | `ordered` − Σ`perDestination` |
+| `perDestination` | `Map<int, String>` | destination id → quantity, read directly from each `Destination.lines` |
+| `draftQuantity` | `String` | What the destination being edited (not yet submitted) currently claims for this line |
+| `atCounter` | `String` | `ordered` − Σ`perDestination` − `draftQuantity` |
 | `isComplete` | `bool` | `atCounter == 0`, or the mode is mixed |
 
-Invariant (SC-005): Σ`perDestination` + `atCounter` == `ordered`, for every line,
-always. The unit tests in `test/unit/sales/destination_split_test.dart` assert it
-after every operation the step can perform.
+Invariant (SC-005): Σ`perDestination` + `draftQuantity` + `atCounter` ==
+`ordered`, for every line, always — now enforced primarily by the server's own
+`422` refusal (over-claiming a line is rejected outright, research §3), with a
+client-side pre-check only to avoid a round trip for an request already known
+to be invalid. The unit test in `test/unit/features/sales/line_distribution_test.dart`
+asserts the arithmetic, not a multi-call sequencing property — there is no
+sequencing left to get wrong.
 
 ---
 
@@ -180,26 +246,31 @@ after every operation the step can perform.
 
 | Field | Type | Source | Notes |
 |---|---|---|---|
-| `id` | `int` | `CustomerPaymentResponse.customerPaymentId` | |
+| `id` | `int` | `OrderApplicationResponse.salesOrderPaymentId` | |
 | `amount` | `String` | `.amount` | The tender |
-| `method` | `PaymentMethod` | `.method` | |
+| `method` | `PaymentMethod` | `.method` | Reuse `core/domain/payment_method.dart` (research §14), not a POS-local enum |
 | `paymentChargeId` | `int?` | `.paymentCharge` | The chosen payment method option |
 | `methodLabel` | `String` | joined from the option | Facility's own wording (research §6) |
 | `currency` | `CurrencyCode` | `.currency` | Must match the sale's |
-| `reference` | `String?` | `.reference` | Required for card / transfer / cheque |
+| `reference` | `String?` | `.reference` | Required for card / transfer / cheque — `PaymentMethodOptionResponse.requiresReference` decides which (research §6, resolved) |
 | `verifier` | `int?` | `.verifier` | Null ⇒ "pending validation" (display only) |
-| `appliedAmount` | `String` | from the application | What went to this sale |
-| `changeAmount` | `String` | `.amountChange` on the application | Excess handed back (FR-047) |
+| `appliedAmount` | `String` | `.amount` (same field, the application's own) | What went to this sale |
+| `changeAmount` | `String` | `.amountChange` | Excess handed back (FR-047) |
+| `cancelled` | `bool` | `.cancelled` | A reversed application stays visible (research §11) |
+| `paymentDate` | `DateTime` | `.paymentDate` | Distinct from `.date` (the application's own timestamp) whenever money is applied later than it was taken |
 
-**Session-scoped** (research §11): a sale's payments cannot be read back from the
-server. The controller holds those taken in this session; a resumed sale shows
-the balance with an explicit note instead of an empty list.
+**Revised 2026-08-05**: no longer session-scoped. `GET /sales-orders/{id}/payments`
+(research §11, resolved) returns every application against the sale, including
+cancelled ones, each with its payment's fields already flattened on — this list
+loads on every load of the payment step, resumed or not, with no
+session-controller fallback and no explanatory note about missing history.
 
 ---
 
 ## 8. OpenSale (selector row)
 
-From `GET /sales-orders` (research §5).
+From `GET /sales-orders?point_sale=<id>` (research §5, resolved — was
+`facility` + `mine=true`, now scoped to the actual register).
 
 | Field | Type | Source |
 |---|---|---|
@@ -216,16 +287,19 @@ From `GET /sales-orders` (research §5).
 
 | Rule | Where enforced | Requirement |
 |---|---|---|
+| An open cash session exists | Client (`CurrentSession.state != none`), before `POST /sales-orders` is ever called | FR-002a (new, research §18) |
 | Quantity `> 0` and `>= minOrderQty` | Server; surfaced on the field | FR-023, Edge Cases |
 | Price within the margin band | Server (`assert_margin_in_range`); previous value restored on refusal | FR-009, Edge Cases |
 | Discount rate `0 ≤ r ≤ 1` | Client input mask + server | FR-023 |
+| Tax rate `0 ≤ r ≤ 1` | Client input mask + server | FR-023 (resolved, research §12) |
 | At least one line before confirming | Client (button state) + server | FR-038 |
 | No zero-priced line at confirmation | Server; offending lines identified | FR-039 |
 | Sufficient stock at confirmation | Server; offending lines identified, sale stays editable | FR-039 |
 | Credit terms need an available credit line | Server (`_assert_credit_allowed`) | FR-016 |
 | Payment currency == sale currency | Server (`assert_same_currency`); prevented client-side | Edge Cases |
 | Payment applied ≤ outstanding, excess is change | Client computes the split; server validates unapplied | FR-047 |
-| Reference required for card / transfer / cheque | Client (`payment_method_rules.dart`) | FR-045 |
+| Reference required for card / transfer / cheque | Server-computed (`PaymentMethodOptionResponse.requiresReference`), read directly — no client table (FR-045, research §6 resolved) | FR-045 |
 | Balance zero before leaving the payment step | Client gate on `Sale.balance`, unless `paymentTerms == netD` | FR-049, FR-051 |
 | Every unit distributed before closing a delivery sale | Client (`LineDistribution.isComplete`) | FR-035 |
-| Destination quantity ≤ remaining undistributed | Client, before the write | FR-032 |
+| Destination line quantity ≤ still-undelivered | Server (`narrow_to_requested`, `422` naming the line and shortfall); client pre-check avoids an avoidable round trip | FR-032 |
+| No line requested twice in one destination create | Server (`422`); client pre-check | FR-032 |

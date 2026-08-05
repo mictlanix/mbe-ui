@@ -1,12 +1,27 @@
 # Contract: mbe-api calls consumed by the Point of Sale
 
-**Feature**: `020-point-of-sale` | **Client**: `lib/generated/openapi` (already
-generated — no new codegen expected, parity re-verified before implementation
-per research §15)
+**Feature**: `020-point-of-sale` | **Client**: `lib/generated/openapi` |
+**Revised**: 2026-08-05 — regenerated after mbe-api PR #139 shipped all 8 gaps
+this document originally tracked (§5). Every call below was re-verified
+directly against the current generated client, not assumed from the prior
+revision.
 
-Every call below was verified present in the checked-in generated client. The
+Every call below is present in the checked-in generated client. The
 preconditions are enforced server-side; the screen must respect them because
-violating one returns a 409 the cashier cannot act on.
+violating one returns a 409/422 the cashier cannot act on.
+
+---
+
+## 0. Cash session — `CashSessionsApi` (021-cash-sessions, reused)
+
+### `GET /api/v1/cash-sessions/current` — the precondition for everything below
+
+- **Returns**: `CurrentSessionResponse { state: 'none'|'open'|'stale', session: CashSessionResponse? }`.
+- **Called**: before anything else, on entering `/sales/pos` (research §18).
+- **`state == 'none'`**: no sale is opened. The screen shows the gate instead.
+- **RBAC**: `pos:read`.
+- This feature adds no new calls here — `lib/features/sales/domain/repositories/cash_session_repository.dart`
+  and `currentSessionControllerProvider` (021) are reused directly.
 
 ---
 
@@ -14,12 +29,17 @@ violating one returns a 409 the cashier cannot act on.
 
 ### `POST /api/v1/sales-orders` — open a sale
 
+- **Precondition**: a current cash session exists (§0) — enforced client-side,
+  not by this endpoint itself.
 - **Body**: `SalesOrderCreate`. **Every field is optional**; an empty body opens
   a draft on the caller's configured defaults (point of sale, facility,
   salesperson, default customer, currency, payment terms).
 - **Returns**: `SalesOrderResponse` (status `draft`, `serial` null).
-- **Called**: on entering the screen with no sale selected (FR-002).
-- **RBAC**: `salesOrders:create`.
+- **Called**: on entering the screen with no sale selected, once §0 passes (FR-002).
+- **RBAC**: `pos:create` (research §14/§18 — not `salesOrders:create`; this is
+  the screen-level "open a register sale" action, matching legacy's own `POS`
+  (44) module privilege and 021's precedent for gating a POS-adjacent open
+  action).
 
 ### `PUT /api/v1/sales-orders/{id}` — header changes
 
@@ -32,28 +52,29 @@ violating one returns a 409 the cashier cannot act on.
   an available credit line; `404` for an unknown customer.
 - **Used for**: customer change (FR-012), payment terms (FR-016), currency, and
   `shipTo` — which is how the fulfilment mode is persisted (research §4).
-- **Known gap (blocking FR-015)**: a customer change does **not** reprice
-  existing lines — verified against `update_order`'s source, research.md §17.
-  Until [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) ships
-  (§5 below), this call's response will still carry every line at its old
-  price after a customer change, even though FR-015 is written against the
-  intended post-#131 behavior.
+- **Repricing (resolved, research §17)**: when `customer` actually changes
+  (not merely echoed back unchanged), every existing line is unconditionally
+  re-priced against the new customer's price list, in the same response — no
+  separate call, no client-side arithmetic, no notice needed (FR-015).
+- **RBAC**: `salesOrders:update`.
 
 ### `POST /api/v1/sales-orders/{id}/lines` — add a line
 
 - **Body**: `SalesOrderLineCreate` — `product` (required), `quantity`, `price`,
-  `discountRate`, `warehouse`, `comment`.
+  `discountRate`, `taxRate`, `warehouse`, `comment`.
 - **Omit `price`** to take the customer's price-list price; omit `quantity` to
-  take the product's minimum order quantity.
+  take the product's minimum order quantity; **omit `taxRate`** to take the
+  product's own rate (resolved, research §12).
 - **Returns**: the **whole** `SalesOrderResponse` — this is what lets one
   notifier own the sale (research §1).
 - **Failure modes**: `422` margin violation on a manual price; `422` quantity
   below the minimum; `404` unknown product; `409` order not editable.
+- **RBAC**: `salesOrders:update`.
 
 ### `PUT /api/v1/sales-orders/{id}/lines/{lineId}` — edit a line
 
 - **Body**: `SalesOrderLineUpdate` — `quantity`, `price`, `discountRate`,
-  `warehouse`, `comment`. **No `taxRate`** (research §12).
+  `taxRate`, `warehouse`, `comment`. `taxRate` bounded `0–1`.
 - **Returns**: the whole order.
 
 ### `DELETE /api/v1/sales-orders/{id}/lines/{lineId}` — remove a line
@@ -80,34 +101,55 @@ violating one returns a 409 the cashier cannot act on.
 
 ### `GET /api/v1/sales-orders` — the open-sales selector
 
-- **Query used**: `mine=true`, `status`, `dateFrom`, `skip`, `limit`. Facility
-  defaults to the caller's own. **There is no `pointSale` filter** (research §5).
-- **Called**: twice — `status=draft` and `status=completed` — to build the
-  selector (US3).
+- **Query used**: `pointSale=<id>`, `status`, `skip`, `limit`. Facility scoping
+  is automatic.
+- **Revised (resolved, research §5)**: was `facility` + `mine=true`, an
+  approximation of "sales at this register." `pointSale` now scopes exactly.
+- **Called**: three times — `status=draft`, `status=completed`, `status=paid`
+  (the last client-filtered to an incomplete `LineDistribution`) — to build the
+  selector (US3, FR-058).
 
 ### `GET /api/v1/sales-orders/{id}` — resume
 
 - **Returns**: the full order with lines and derived totals. The screen decides
   which step to open from `status` and `shipTo` (research §4).
 
+### `GET /api/v1/sales-orders/{id}/payments` — resume's applied-payments panel
+
+- **Returns**: `List<OrderApplicationResponse>` — every application against
+  the order, cancelled ones included, each with its payment's `method`,
+  `currency`, `reference`, `paymentDate`, `paymentType`, `verifier` already
+  joined on.
+- **New, resolved (research §11)**: was unavailable; the payment step
+  session-scoped its own list as a stopgap. **That stopgap is deleted.** This
+  call loads on every payment-step entry, resumed or not.
+- **RBAC**: `customerPayments:read` — payment data, not `salesOrders`.
+
 ---
 
 ## 2. Delivery orders — `DeliveryOrdersApi`
 
-### `POST /api/v1/delivery-orders` — create a destination
+### `POST /api/v1/delivery-orders` — create a destination, complete, in one call
 
 - **Body**: `DeliveryOrderCreate` — `salesOrder` (required), `fulfillmentType`
-  (`DELIVERY` for an address, `COUNTER_PICKUP` for the remainder).
-- **Behaviour that governs the whole step**: the new order takes **every
-  quantity not already covered** by a non-cancelled delivery order for that
-  sale. The client then trims it (research §3).
+  (`DELIVERY` for an address, `COUNTER_PICKUP` for the remainder), `shipTo`,
+  `contact`, `date`, `comment`, and **`lines: [{salesOrderDetail, quantity}, ...]`**.
+- **Resolved (research §3)**: `lines` **omitted** claims every quantity not
+  yet covered by another delivery order for the sale — this is what the
+  counter-pickup remainder create still relies on, unchanged. `lines`
+  **supplied** claims exactly that named subset — this is new, and it is what
+  every addressed destination now uses. **No trim step. No serialization
+  constraint.** Destination *n+1* can be created immediately after
+  destination *n*, in parallel if the UI wants to.
 - **Preconditions**: the sales order is `completed` and not cancelled; in
-  deployments with `delivery_order_requires_paid_or_credit_sales_order` enabled,
-  also paid or on credit terms. **Both are satisfied by construction**, because
-  the delivery step runs after payment (spec D-002).
+  deployments with `delivery_order_requires_paid_or_credit_sales_order`
+  enabled, also paid or on credit terms. **Both are satisfied by
+  construction**, because the delivery step runs after payment (spec D-002).
 - **Failure modes**: `409` "Only a completed, uncancelled sales order can be
-  delivered"; `409` "This sales order is already fully delivered" — the latter
-  is the expected signal that there is nothing left to distribute.
+  delivered"; `409` "This sales order is already fully delivered" (no `lines`,
+  nothing left — the expected signal that distribution is complete); `422`
+  naming a specific line and its shortfall when a **named** subset over-claims,
+  repeats a line, or names a line of another sale.
 - **`fulfillmentType` is immutable after creation** — it is absent from the
   update body.
 
@@ -115,17 +157,21 @@ violating one returns a 409 the cashier cannot act on.
 
 - **Body**: `DeliveryOrderUpdate` — `date`, `priority`, `shipTo`, `contact`,
   `comment`. **Precondition**: `status == draft`.
-- **`contact` is unusable today** — no API exposes or creates contacts
-  (research §10). Contact name and phone go into `comment` in a fixed format
-  until that ships.
+- **`contact` is now a real, reachable id** (resolved, research §10) — no
+  longer written into `comment` as a stopgap. `comment` goes back to being
+  genuine free-text delivery instructions.
+- Used for post-create edits only — the initial address/contact/date/comment
+  are set in the same `POST` that creates the destination (§ above).
 
-### `PUT /api/v1/delivery-orders/{id}/lines/{lineId}` — trim a line
+### `PUT /api/v1/delivery-orders/{id}/lines/{lineId}` — adjust a line after creation
 
 - **Body**: `DeliveryOrderLineUpdate` — `quantity` (`> 0`).
+- Still exists for editing an already-created destination; no longer part of
+  the *creation* sequence.
 
-### `DELETE /api/v1/delivery-orders/{id}/lines/{lineId}` — drop a line
+### `DELETE /api/v1/delivery-orders/{id}/lines/{lineId}` — drop a line after creation
 
-- Used when a destination takes none of a product.
+- Same scope change as above — an edit affordance, not part of creation.
 
 ---
 
@@ -136,8 +182,9 @@ violating one returns a 409 the cashier cannot act on.
 - **Body**: `CustomerPaymentCreate` — `customer` (required), `amount` (`> 0`),
   `method`, `currency`, `paymentCharge` (the payment method option),
   `reference`, `date`, `paymentType`.
-- The cashier's open cash session is attached server-side **when one exists**; a
-  payment does not require one (spec A-005).
+- The cashier's open cash session is attached server-side automatically —
+  and, per this feature's own precondition (§0), one always exists by the
+  time a payment can be recorded.
 
 ### `POST /api/v1/customer-payments/{id}/applications` — apply it to the sale
 
@@ -155,43 +202,39 @@ violating one returns a 409 the cashier cannot act on.
 - **Body**: `ReversalRequest` — `reason` (required, 1–500 chars).
 - Backs FR-048. The reason is mandatory; the screen must ask for it.
 
-### Not available
-
-`GET /sales-orders/{id}/payments` does not exist — a sale's payments cannot be
-listed back (research §11). The applied-payments panel is session-scoped.
-
 ---
 
-## 4. Master data (existing repositories, unchanged)
+## 4. Master data (existing repositories, extended)
 
 | Need | Call | Note |
 |---|---|---|
 | Customer search and selection | `GET /customers` | Existing `CustomerRepository` |
 | Create a customer | `POST /customers` | `code` is **required** (spec A-002) |
-| Address search | `GET /addresses?search=` | **No `customer` filter** (research §9) |
-| Create an address | `POST /addresses` | Existing inline-create dialog |
-| Payment method options | `GET /payment-method-options` | Facility-scoped; existing repository |
+| A customer's addresses | `Customer.addresses` — **embedded** on `GET /customers/{id}` | Resolved, research §9. `CustomerRepository`/`Customer` entity need extending to map it — not done as of 2026-08-05 |
+| A customer's contacts | `Customer.contacts` — **embedded** on `GET /customers/{id}` | Resolved, research §10. Same extension needed |
+| Link an address/contact to a customer | `PUT /customers/{id}` with `addresses`/`contacts: [int]` | Replace-all, only for a collection actually sent — omit to leave links alone |
+| Create an address | `POST /addresses` | Existing inline-create dialog; link via the customer update above |
+| Create a contact | `POST /contacts` | **New** — no inline-create dialog exists yet; build mirroring the address one |
+| Payment method options, incl. `requiresReference` | `GET /payment-method-options` | Facility-scoped; existing repository, entity needs the new field mapped |
 | The facility's own address | `GET /facilities/{id}` → `.address` | Encodes counter pickup in `shipTo` |
 | Cashier defaults | `GET /auth/me` → `settings` | Existing session provider |
+| Current cash session | `GET /cash-sessions/current` | 021-cash-sessions, reused (§0) |
 
 ---
 
-## 5. mbe-api issues filed against this feature
+## 5. mbe-api issues — all shipped
 
-Per constitution §III these are recorded as external dependencies; none is
-patched from this repository. **All 8 are filed** — issues #1–#5, #7 and #8
-are non-blocking, scoped to P2/P3 or pure hardening; **#6 is blocking** for
-FR-015, since there is no safe client-side stopgap for repricing (it needs
-server-side price-list resolution and margin logic). Every stopgap below stays
-in place until its issue actually ships, not merely once it's filed.
+Every capability this feature originally filed against mbe-api has shipped,
+verified directly against source and the regenerated client (research.md, top
+of file). Nothing is outstanding.
 
-| # | Issue | Ask | Unblocks | Stopgap until then |
-|---|---|---|---|---|
-| 1 | [mbe-api#132](https://github.com/mictlanix/mbe-api/issues/132) | `GET /customers/{id}/addresses` + a link route | FR-031, FR-056 — picking *the customer's* addresses | Global address search |
-| 2 | [mbe-api#133](https://github.com/mictlanix/mbe-api/issues/133) | A contacts API (list/create, per customer) | FR-029, FR-031 — per-destination contact | Name and phone written into the delivery order's `comment` |
-| 3 | [mbe-api#134](https://github.com/mictlanix/mbe-api/issues/134) | `GET /sales-orders/{id}/payments` | Rebuilding the applied-payments panel on resume | Session-scoped list + balance with an explanatory note |
-| 4 | [mbe-api#135](https://github.com/mictlanix/mbe-api/issues/135) | (optional) writable `tax_rate` on a sale line — filed as a question, since a product-level single source of truth may be intentional | FR-023's tax treatment | Tax rate rendered read-only |
-| 5 | [mbe-api#136](https://github.com/mictlanix/mbe-api/issues/136) | (optional) `point_sale` filter on `GET /sales-orders` | A per-station open-sales list | `mine=true` + facility scoping |
-| 6 | [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) (**blocking**) | Reprice every line on a customer change, mirroring `_change_currency`'s per-line loop | FR-015 | None. Lines silently keep stale prices with no cashier-facing indication (accepted interim risk, spec.md D-005) |
-| 7 | [mbe-api#137](https://github.com/mictlanix/mbe-api/issues/137) | A `requires_reference` (or similar) flag on `PaymentMethod`/`PaymentMethodOption` | FR-044/FR-045's per-method reference requirement, currently a hardcoded client table (research §6) that will drift if mbe-api ever adds or reconfigures a method | `payment_method_rules.dart` stays a maintained client-side table |
-| 8 | [mbe-api#138](https://github.com/mictlanix/mbe-api/issues/138) | A delivery-order create that accepts a named subset of quantities, instead of always claiming everything uncovered | Removes the create-then-trim sequence (research §3, D-003) — the highest-risk logic in this feature (T056/T059) exists only to work around this gap | The create-then-trim orchestrator (`destination_split.dart`), unit-tested for its exact-sum invariant before being wired to UI |
+| # | Issue | Ask | Shipped in |
+|---|---|---|---|
+| 1 | [mbe-api#132](https://github.com/mictlanix/mbe-api/issues/132) | Customer addresses | `CustomerResponse.addresses` |
+| 2 | [mbe-api#133](https://github.com/mictlanix/mbe-api/issues/133) | Contacts API | `/api/v1/contacts`, `CustomerResponse.contacts` |
+| 3 | [mbe-api#134](https://github.com/mictlanix/mbe-api/issues/134) | Sale payments listing | `GET /sales-orders/{id}/payments` |
+| 4 | [mbe-api#135](https://github.com/mictlanix/mbe-api/issues/135) | Writable line tax rate | `SalesOrderLineCreate/Update.taxRate` |
+| 5 | [mbe-api#136](https://github.com/mictlanix/mbe-api/issues/136) | `point_sale` filter | `GET /sales-orders?point_sale=` |
+| 6 | [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) | Reprice on customer change | `update_order`'s `_reprice_lines` |
+| 7 | [mbe-api#137](https://github.com/mictlanix/mbe-api/issues/137) | `requires_reference` flag | `PaymentMethodOptionResponse.requiresReference` |
+| 8 | [mbe-api#138](https://github.com/mictlanix/mbe-api/issues/138) | Per-destination delivery create | `DeliveryOrderCreate.lines` |

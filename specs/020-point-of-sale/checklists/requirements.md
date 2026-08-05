@@ -45,11 +45,10 @@
   durable across a reopened sale. Every checklist item above still passes.
 - **Deliberate exception to "no implementation details".** The Dependencies
   section names backend behaviours (a delivery record needs a confirmed sale;
-  splitting quantities takes a create-then-trim sequence; one deployment setting
-  can move FR-036). These are external constraints that change *what* the
-  product can promise, not *how* it is built, and hiding them would push the
-  discovery into implementation. FR-030 carries the same constraint in
-  business language.
+  one deployment setting can move FR-036). These are external constraints that
+  change *what* the product can promise, not *how* it is built, and hiding
+  them would push the discovery into implementation. FR-030 carries the same
+  constraint in business language.
 - **Verbatim Constraints holds literal Spanish UI copy** pinned by the request.
   Exact identifiers are permitted there by design; the rest of the spec keeps
   them out.
@@ -76,3 +75,19 @@
   one place in the spec where a requirement's correctness is contingent on an
   unshipped backend change — D-005 states the interim risk explicitly rather
   than leaving it implicit.
+- **Revised 2026-08-05 — all 8 filed mbe-api issues shipped, cash session made
+  a hard precondition.** Verified directly against mbe-api source and the
+  regenerated client (research.md top-of-file table), not assumed from the
+  issues being closed. Every stopgap the earlier revisions built around is
+  removed rather than left in place: the create-then-trim delivery split, the
+  read-only line tax rate, the global-address-search and comment-encoded
+  contact fallbacks, and the session-scoped applied-payments list are all gone
+  from spec, plan, research, contracts and tasks alike — D-003 and D-005 are
+  now marked resolved rather than open. Separately, spec 021 (cash sessions)
+  shipped a real implementation in `lib/features/sales/`, the module this
+  feature already targeted; two new requirements (FR-002a, FR-002b) make an
+  open session a hard precondition for opening a sale — a deliberate,
+  explicitly-recorded reversal of 021's own "no coupling" decision (D-006),
+  not an oversight in either spec. FR count: 58 → 60. Every checklist item
+  above was re-verified and still passes; no `[NEEDS CLARIFICATION]` markers
+  were introduced by any of this.
