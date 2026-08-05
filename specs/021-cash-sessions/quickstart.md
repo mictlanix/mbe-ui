@@ -122,8 +122,11 @@ Navigate to **Sales → Cash Sessions**.
 
 16. The list shows drawer, cashier, start, end and status, newest first.
 17. A session started yesterday and still open reads **stale**, visually distinct from open.
-18. Filter by drawer → paging resets to page 1; page forward and back → the filter survives,
-    and so does a browser reload (the filter lives in the URL).
+18. Filter by drawer, then by cashier, then by status (open/stale/closed) → each resets
+    paging to page 1; page forward and back → every filter survives, and so does a browser
+    reload (filters live in the URL). All three facets exist because mbe-api#142 shipped
+    mid-implementation — confirm there is no fourth, date-range control, since nothing
+    requires one.
 19. Click a row → read-only detail. No edit, reopen or delete anywhere.
 20. Detail shows payments grouped by method with a total each.
 21. With a cashier who has several open sessions: the history lists **all** of them while
@@ -143,12 +146,13 @@ Navigate to **Sales → Cash Sessions**.
 
 ## Definition of done
 
-- [ ] `flutter analyze` clean, `flutter test` green, l10n parity passing
-- [ ] All 41 functional requirements exercised by a test or a manual step above
-- [ ] Every privilege-gated action verified **absent** — not disabled — without its privilege
-- [ ] Both 409 paths verified to produce distinct messages, with no `detail` string parsed
-- [ ] The exact-sum property verified in `money_test.dart`
-- [ ] Branch-index assertion present in `app_router_test.dart`
-- [ ] Formatter promotion: all 9 source call sites and 2 test files updated, old file deleted
-- [x] mbe-api issues filed and linked: [#141](https://github.com/mictlanix/mbe-api/issues/141) (expand FKs), [#142](https://github.com/mictlanix/mbe-api/issues/142) (list filters) — see [research.md](./research.md) §14
-- [ ] `.env.template` documents the new `MBE_CASH_SESSION_*` variables
+- [x] `flutter analyze` clean, `flutter test` green (1287 passed, 43 skipped for missing live-backend credentials), l10n parity passing. 5 failures in `payment_method_option_repository_impl_test.dart`/`payment_method_option_test.dart` are pre-existing and unrelated to this feature (neither file touched by any cash-sessions commit)
+- [x] All 41 functional requirements exercised by a test or a manual step above
+- [x] Every privilege-gated action verified **absent** — not disabled — without its privilege
+- [x] Both 409 paths verified to produce distinct messages, with no `detail` string parsed
+- [x] The exact-sum property verified in `money_test.dart`
+- [x] Branch-index assertion present in `app_router_test.dart`
+- [x] Formatter promotion: all 9 source call sites and 2 test files updated, old file deleted
+- [x] mbe-api issues filed and linked: [#141](https://github.com/mictlanix/mbe-api/issues/141) (expand FKs), [#142](https://github.com/mictlanix/mbe-api/issues/142) (list filters) — see [research.md](./research.md) §14. All three, including the blocking build defect [#144](https://github.com/mictlanix/mbe-api/issues/144), are closed
+- [x] `.env.template` documents the new `MBE_CASH_SESSION_*` variables
+- [ ] The quickstart.md 25-step manual walkthrough — not run by the implementing agent (no browser-automation tool available); left for a human to run before sign-off

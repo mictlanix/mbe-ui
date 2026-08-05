@@ -8,10 +8,10 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_controller.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/features/pricing/presentation/product_price_row.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -155,7 +155,7 @@ class _PricingTable extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.outline,
                   ),
                 )
-              : Text(PricingFormatters.currency(row.price!.price)),
+              : Text(MoneyFormatters.currency(row.price!.price)),
         ),
         DataTableColumn(
           label: l10n.columnLowProfit,
@@ -164,7 +164,7 @@ class _PricingTable extends ConsumerWidget {
           cellBuilder: (context, row) => Text(
             row.price == null
                 ? '—'
-                : PricingFormatters.percent(row.price!.lowProfit),
+                : MoneyFormatters.percent(row.price!.lowProfit),
           ),
         ),
         DataTableColumn(
@@ -174,7 +174,7 @@ class _PricingTable extends ConsumerWidget {
           cellBuilder: (context, row) => Text(
             row.price == null
                 ? '—'
-                : PricingFormatters.percent(row.price!.highProfit),
+                : MoneyFormatters.percent(row.price!.highProfit),
           ),
         ),
         if (canUpdate)

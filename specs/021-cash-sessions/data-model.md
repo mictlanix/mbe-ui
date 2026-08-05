@@ -18,19 +18,31 @@ A cashier's shift on one cash drawer. Used for both list rows and detail; the ba
 returns the same shape from all three read operations, so there is no separate
 `CashSessionListItem`.
 
+> **mbe-api#141 shipped mid-implementation** (research.md §17) and expanded the three FKs
+> below server-side. The table reflects the **current** wire shape — `CashDrawerSummary` and
+> `EmployeeResponse`, not bare ints. There is no name-resolution step anywhere in this entity
+> or its repository; research.md §5 describes the workaround this made unnecessary.
+
 | Field | Type | Null | Source | Notes |
 |---|---|---|---|---|
 | `cashSessionId` | `int` | no | `cash_session_id` | |
-| `cashDrawerId` | `int` | no | `cash_drawer` | Bare FK — no name from the API (§5) |
-| `cashierId` | `int` | no | `cashier` | Bare FK — employee id |
+| `cashDrawerId` | `int` | no | `cash_drawer.cash_drawer_id` | |
+| `cashDrawerName` | `String` | no | `cash_drawer.name` | Already resolved server-side |
+| `cashDrawerCode` | `String` | no | `cash_drawer.code` | |
+| `cashierId` | `int` | no | `cashier.employee_id` | |
+| `cashierName` | `String` | no | `'${cashier.first_name} ${cashier.last_name}'` | Same join pattern as `employeeDisplayNameProvider` |
 | `start` | `DateTime` | no | `start` | Shift open time |
 | `end` | `DateTime?` | **yes** | `end` | `null` ⇒ still open. The status discriminator |
-| `cashSupervisorId` | `int?` | **yes** | `cash_supervisor` | Whoever closed it; `null` while open |
+| `cashSupervisorId` | `int?` | **yes** | `cash_supervisor.employee_id` | Whoever closed it; `null` while open |
+| `cashSupervisorName` | `String?` | **yes** | `cash_supervisor` first+last name | `null` exactly when `cashSupervisorId` is `null` |
 | `openingAmount` | `String` | no | `opening_amount` | Decimal-as-string |
 | `paymentsByMethod` | `List<PaymentMethodTotal>` | no | `payments_by_method` | Defaults to `const []` — the wire field is nullable |
 
-**Deliberately absent**: any `status` field. The API returns none (only
-`GET /current` reports a state, and only for the caller). Status is derived — §3.
+**Deliberately absent**: any `status` field. The read operations return none (only
+`GET /current` reports a state, and only for the caller). Status is derived — §3. Note
+mbe-api#142 added a **generated** `CashSessionStatus` enum (`open`/`stale`/`closed`) as a
+*list filter input*, derived by the identical rule — but it is not echoed back on any
+response object, so the derivation in §3 is still required for display.
 
 **Deliberately absent**: the closing denomination breakdown. No read operation returns it
 (spec FR-033, D-004). Nothing on this entity should suggest it exists.
@@ -40,16 +52,13 @@ returns the same shape from all three read operations, so there is no separate
 None on read. This entity is never constructed from user input — opening and closing are
 modelled as separate request shapes (§5, §6), not as a mutable session.
 
-### Extension — `CashSessionDisplay`
-
-```
-String cashDrawerDisplayName(String? resolvedName)   // falls back to '#$cashDrawerId'
-String cashierDisplayName(String? resolvedName)      // falls back to '#$cashierId'
-```
-
-Follows `CashDrawerFacilityDisplay`'s posture: the caller passes the resolved name (or
-`null`), and the extension supplies the fallback. Keeps `BuildContext` and l10n out of the
-domain layer.
+**No display extension.** The pre-#141 design called for a `CashSessionDisplay` extension
+supplying an `'#$id'` fallback when a name failed to resolve, mirroring
+`CashDrawerFacilityDisplay`. That fallback has no reason to exist now: `cashDrawerName` and
+`cashierName` are non-nullable fields populated directly from the response's expanded
+objects, not results of a resolution step that could fail. `cashSupervisorName` is nullable,
+but that nullability means "the session is still open," not "the name failed to resolve" —
+the UI checks it directly rather than through a fallback helper.
 
 ---
 
@@ -268,9 +277,19 @@ only confuse the count.
 The freezed family key for the history list, built from the URL. Value equality is what
 makes the Riverpod family work, so it must be `freezed`, not a plain class.
 
+> **mbe-api#142 shipped mid-implementation** (research.md §17) and added `cashier`, `facility`,
+> `status`, `date_from`/`date_to` to `GET /cash-sessions`. The filter below now carries
+> **cashier and status** as real facets, matching the endpoint's new capability and
+> `payment_method_options_list_screen.dart`'s facility+status pattern. `dateFrom`/`dateTo` are
+> plumbed through the repository (cheap, matches the endpoint) but **not** exposed as a UI
+> facet — no user story or FR asks for a date-range filter, and adding one anyway would be
+> speculative surface.
+
 | Field | Type | Default | URL source |
 |---|---|---|---|
 | `cashDrawerId` | `int?` | `null` | facet `cash-drawer` |
+| `cashierId` | `int?` | `null` | facet `cashier` |
+| `status` | `CashSessionStatus?` | `null` | facet `status` — the **domain** enum (§3), mapped to the generated `CashSessionStatus` at the repository boundary |
 | `pageIndex` | `int` | `0` | `?page=` (1-based in URL, 0-based here) |
 
 ```
@@ -279,8 +298,9 @@ extension CashSessionFilterBadge → activeFilterCount, hasActiveFilters
 ```
 
 **No `search` field.** Every other catalog filter carries one; this endpoint has none and a
-session has no free-text field to match (research §12, spec D-003). Adding a dead `search`
-field would imply a capability that does not exist.
+session has no free-text field to match (research §12, spec D-003 — narrowed by §17 to "no
+free-text search" specifically, since cashier/status are now real facets). Adding a dead
+`search` field would imply a capability that does not exist.
 
 ---
 
@@ -355,18 +375,22 @@ it, per constitution §VII.
 ## 12. Relationships
 
 ```
-CashSession ──1:1──▶ CashDrawer        (cashDrawerId; name resolved via a cached map)
-CashSession ──1:1──▶ Employee          (cashierId; name resolved per distinct id)
-CashSession ──0:1──▶ Employee          (cashSupervisorId; detail screen only)
+CashSession ──1:1──▶ CashDrawer        (cashDrawerId/Name/Code — arrive pre-resolved, §17)
+CashSession ──1:1──▶ Employee          (cashierId/Name — arrive pre-resolved, §17)
+CashSession ──0:1──▶ Employee          (cashSupervisorId/Name; detail screen only)
 CashSession ──1:N──▶ PaymentMethodTotal (embedded, aggregate — not individual payments)
 CashSession ──1:N──▶ DenominationCount  (write-only; never read back)
 
 CurrentSession ──0:1──▶ CashSession    (the caller's most recent open one)
 ```
 
-Neither `CashDrawer` nor `Employee` is redefined here — both already exist in
-`lib/features/catalog/domain/entities/`. Constitution §I sanctions a sales feature
-importing `features/catalog/domain`, since `catalog` is the shared master-data module.
+`CashSession` does **not** hold a reference to the catalog `CashDrawer`/`Employee` entities —
+their names are flattened directly onto it from the response's `CashDrawerSummary`/
+`EmployeeResponse` (§1), the same way `CashDrawer.facilityName` is flattened from its own
+expanded FK. No separate fetch, no cache, no display-name provider for this feature's own
+purposes. Constitution §I's "sales importing `features/catalog/domain`" allowance from the
+original design is therefore **unused here** — kept as a true statement about the
+constitution, not as something this feature exercises.
 
 `paymentsByMethod` is an **aggregate**, not a list of payments. Drilling into the
 individual payments of a session would need `GET /customer-payments?cash_session=`, which

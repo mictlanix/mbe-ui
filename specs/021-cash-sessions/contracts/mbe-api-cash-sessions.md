@@ -2,9 +2,11 @@
 
 **Feature**: `021-cash-sessions` | **Date**: 2026-08-04
 
-Five operations, all already present in the checked-in generated client at
-`lib/generated/openapi/lib/src/api/cash_sessions_api.dart`. **No codegen run and no
-mbe-api change is in scope.** Verified against mbe-api source on 2026-08-04.
+Five operations, all present in the checked-in generated client at
+`lib/generated/openapi/lib/src/api/cash_sessions_api.dart`. Verified against mbe-api source
+on 2026-08-04, then **re-verified against the client regenerated 2026-08-05** after
+mbe-api#141/#142 shipped mid-implementation (research.md §17) — this file reflects the
+current wire shapes, not the ones planning started from.
 
 There is no PUT, PATCH, or DELETE anywhere on this resource.
 
@@ -34,25 +36,37 @@ Errors: 401, 403.
 
 ## 2. `GET /api/v1/cash-sessions`
 
-`listCashSessionsApiV1CashSessionsGet({int? cashDrawer, int? skip = 0, int? limit = 20})`
-→ `ListResponseCashSessionResponse` (`{items, total}`)
+`listCashSessionsApiV1CashSessionsGet({int? cashDrawer, int? cashier, int? facility,
+CashSessionStatus? status, DateTime? dateFrom, DateTime? dateTo, CashSessionSort? sort = -id,
+int? skip = 0, int? limit = 20})` → `ListResponseCashSessionResponse` (`{items, total}`)
 
 Privilege: `POS (44)` READ.
 
+mbe-api#142 (filed during planning) shipped mid-implementation and added five parameters;
+this is the **current** signature, not the one-filter version planning started from
+(research.md §17).
+
 | Parameter | Type | Default | Constraint |
 |---|---|---|---|
-| `cashDrawer` | `int?` | none | Exact match. **The only filter that exists** |
+| `cashDrawer` | `int?` | none | Exact match |
+| `cashier` | `int?` | none | Exact match — used by the recover-abandoned-session flow (FR-004) |
+| `facility` | `int?` | none | Exact match. Not used by this feature's UI — no requirement needs it |
+| `status` | `CashSessionStatus?` | none | Generated enum `open`/`stale`/`closed`, derived server-side by the identical `session_state` rule this plan's `cashSessionStatusOf` replicates for display |
+| `dateFrom` / `dateTo` | `DateTime?` | none | Not exposed in the UI — no requirement asks for a date-range filter |
+| `sort` | `CashSessionSort?` | `-id` | `-id` (default), `start`, or `-start`. Not exposed in the UI — the default already satisfies FR-027's "newest first" |
 | `skip` | `int` | 0 | `>= 0` |
 | `limit` | `int` | 20 | `>= 1`, `<= 100` |
 
-Fixed sort: `cash_session_id DESC`, not overridable. **Not scoped by facility** — the list
-is global, so sessions from other facilities appear (spec A-007). **Not scoped by cashier** —
-any user with READ sees every cashier's sessions (spec A-008).
+Still **not** scoped by facility or cashier by default — every filter above is opt-in, so an
+unfiltered request still returns every facility's and every cashier's sessions (spec A-007,
+A-008 both still hold; only the *option* to narrow changed).
 
-No `search`, no cashier filter, no date range, no status filter, no sort choice. See
-research §14 issue B.
+Still no free-text `search` — a session has no text field a search would match against, and
+this was never requested.
 
-Consumed by: the history list (FR-027 to FR-029, FR-034).
+Consumed by: the history list (FR-027 to FR-029, FR-034), and the FR-004 "other open
+sessions" check (`cashier` + `status: open`, replacing the same-drawer heuristic research §16
+describes as superseded).
 
 Errors: 401, 403, 422 (parameter validation).
 
@@ -148,23 +162,30 @@ Three consequences the UI must reflect honestly:
 
 ## `CashSessionResponse`
 
+mbe-api#141 (filed during planning) shipped mid-implementation and expanded three fields
+from bare ints to full objects; this is the **current** shape (research.md §17).
+
 | Field | Type | Null |
 |---|---|---|
 | `cash_session_id` | `int` | no |
-| `cash_drawer` | `int` | no |
-| `cashier` | `int` | no |
+| `cash_drawer` | `CashDrawerSummary { cash_drawer_id, facility, code, name, comment, status }` | no |
+| `cashier` | `EmployeeResponse { employee_id, first_name, last_name, … }` | no |
 | `start` | `datetime` | no |
 | `end` | `datetime` | **yes** |
-| `cash_supervisor` | `int` | **yes** |
+| `cash_supervisor` | `EmployeeResponse` | **yes** |
 | `opening_amount` | `Decimal` (JSON string) | no |
 | `payments_by_method` | `[{ method: int, total: Decimal }]` | nullable, defaults `[]` |
 
-**No `state` field.** Status must be derived from `end` and `start` versus today, wherever
-a session is displayed (FR-002, data-model §3).
+**No `state` field.** Status must still be derived from `end` and `start` versus today,
+wherever a session is displayed (FR-002, data-model §3) — mbe-api#142 added a `CashSessionStatus`
+generated enum, but only as a *list filter input*, never echoed back on this or any other
+response.
 
-**Three bare FK integers** (`cash_drawer`, `cashier`, `cash_supervisor`) where the rest of
-the API expands FKs to `{id, name}` — `CashDrawerResponse.facility` already does. This
-inconsistency is what forces client-side name resolution; research §14 issue A.
+**No more bare FK integers.** `cash_drawer`, `cashier`, and `cash_supervisor` now match the
+API's own dominant shape — `CashDrawerResponse.facility` was already expanded this way — so
+there is no client-side name resolution anywhere in this feature. `CashSession.fromResponse`
+flattens `cash_drawer.name`/`.code` and `cashier`/`cash_supervisor`'s first+last name directly
+off these objects, the same pattern `CashDrawer.facilityName` already uses.
 
 `payments_by_method` is an aggregate net of cash refunds, and excludes expense vouchers and
 other drawer outflows entirely.

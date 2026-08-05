@@ -74,8 +74,8 @@ but is never parsed to choose between them.
 
 | Column | Content | Alignment |
 |---|---|---|
-| Cash drawer | Resolved name, falling back to `#<id>` | left |
-| Cashier | Resolved employee name, falling back to `#<id>` | left |
+| Cash drawer | `cashDrawerName`, read directly off the response — no resolution step | left |
+| Cashier | `cashierName`, read directly off the response — no resolution step | left |
 | Start | Localized date + time | left |
 | End | Localized date + time, or an em dash while open | left |
 | Status | `CashSessionStatusChip` | left, fixed width |
@@ -93,14 +93,23 @@ but is never parsed to choose between them.
 #### Filter bar
 
 `CatalogFilterBar` with:
-- `filters:` — the drawer facet, a `CatalogEntityPicker<CashDrawer>` behind the standard
-  `Badge.count` + `Icons.tune` sheet, exactly as
-  `payment_method_options_list_screen.dart` does for its facility facet. Changing it resets
-  `pageIndex` to 0 (FR-028).
-- `search:` — **renders nothing.** The slot is required by the widget, but the endpoint has
-  no `search` parameter and a session has no free-text field. This is a visible departure
-  from every other list screen and is recorded in research §12 and spec D-003, with the
-  upstream fix as research §14 issue B.
+- `filters:` — one `Badge.count` + `Icons.tune` sheet (the standard `showCatalogFilterSheet`
+  pattern) opening a panel with **three** facets, added together after mbe-api#142 shipped
+  the server-side support mid-implementation (research §17):
+  - Cash drawer — `CatalogEntityPicker<CashDrawer>`, exactly as
+    `payment_method_options_list_screen.dart` does for its facility facet.
+  - Cashier — `CatalogEntityPicker<EmployeeListItem>`, the same picker shape used for the
+    vehicle-operator driver facet elsewhere in the app.
+  - Status — `EntityStatusFilterChips`' three-chip shape, adapted to `CashSessionStatus`
+    (open/stale/closed) rather than the catalog `EntityStatus` it was written for.
+
+  Changing any of the three resets `pageIndex` to 0 (FR-028). A date-range filter is **not**
+  added despite the endpoint supporting one — no user story or FR asks for it, and building
+  UI for a filter nothing requires would be speculative surface.
+- `search:` — **still renders nothing.** mbe-api#142 added real facets but no free-text
+  `search` parameter, and a session still has no text field one would match against. This
+  remains a visible, deliberate departure from every other list screen (research §12, spec
+  D-003).
 - `actions:` — empty. Opening a session happens in the shift panel above, not from a
   toolbar button, because it is not a "create a record" action in the catalog sense.
 

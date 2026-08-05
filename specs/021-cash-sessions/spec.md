@@ -18,6 +18,10 @@
 - Q: Browsing the cash drawer catalog needs a different permission than opening a session, so a cashier may be able to open a shift yet unable to pick a drawer. What should happen when such a user also has no drawer assigned? → A: **Do not work around the missing permission.** Offer no way to open a session and show an error telling the user a cash drawer must be assigned to them, directing them to their administrator. The permission is a real requirement, not an obstacle for the screen to route around. Recorded as FR-007a; the same treatment covers an empty cash drawer catalog. Raised during planning (research.md §7).
 - Q: Must a closing count be non-empty? The backend accepts an empty count list. → A: The client requires a deliberate count. Only denominations with a quantity above zero are submitted, and a genuinely empty drawer MUST be recorded through an explicit "counted and empty" confirmation rather than by silently submitting nothing.
 
+### Session 2026-08-05
+
+- Q: mbe-api#141 and #142 — filed against this feature's two backend gaps (research.md §14) — both shipped mid-implementation, expanding `cash_drawer`/`cashier`/`cash_supervisor` to full objects and adding `cashier`/`facility`/`status`/date-range filters to the list endpoint. Should the history list's scope grow to use the new facets, or stay exactly as originally specified? → A: **Grow within FR-028's existing intent, not beyond it.** Add cashier and status as real filters alongside cash drawer — the same story ("browse a paginated, drawer-filterable list") filled out with facets the backend now genuinely offers, using the identical picker/chip pattern already used elsewhere in the app. Do NOT add a date-range filter: no user story or requirement asks for one, and the backend supporting it is not by itself a reason to build UI for it. FR-028 updated accordingly; D-003 corrected to no longer describe a limitation that no longer exists. Full account in research.md §17.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -176,7 +180,7 @@ A cashier left a session open overnight, or the legacy system left several sessi
 **History**
 
 - **FR-027**: Users holding the read privilege MUST be able to browse a paginated list of cash sessions showing cash drawer, cashier, start, end and status, ordered newest first.
-- **FR-028**: The history list MUST offer a cash drawer filter, and applying or changing it MUST reset paging to the first page.
+- **FR-028**: The history list MUST offer cash drawer, cashier and status filters, and applying or changing any of them MUST reset paging to the first page.
 - **FR-029**: The history list MUST page through sessions using the application's established shared pagination pattern, and MUST NOT attempt to retrieve the whole set at once.
 - **FR-030**: Clicking a history row outside its actions MUST open that session's detail read-only.
 - **FR-031**: A session's detail MUST show its cash drawer, cashier, start, end, opening amount, closing user where present, and the payments taken during the session grouped by payment method with a per-method total.
@@ -235,7 +239,7 @@ A cashier left a session open overnight, or the legacy system left several sessi
 
 - **D-001**: No backend change and no client regeneration are required. Every capability this feature needs is already exposed by the backend and present in the checked-in generated client.
 - **D-002**: This feature MUST NOT modify the Point of Sale screen specified by `specs/020-point-of-sale`, which is `ready-to-implement` but not started and which declares cash session handling out of its own scope. The two features MUST remain independently shippable in either order. Making the Point of Sale screen require or display an open session is deliberately deferred to a later feature.
-- **D-003**: The history list can be filtered only by cash drawer. The backend offers no cashier filter, no date-range filter, no open-only filter, no free-text search, and no choice of sort order. This feature therefore ships the drawer facet alone. Client-side filtering across the returned page is explicitly rejected: it would produce results that are wrong across page boundaries. Closing the gap requires a backend enhancement request for cashier, date-range and status filters, which is a dependency to raise, not to design around.
+- **D-003**: The history list can be filtered by cash drawer, cashier, and status (open/stale/closed) — mbe-api#142, filed during planning, shipped these mid-implementation. A date-range filter also exists server-side but is not exposed in the UI, since no user story or requirement asks for one. The backend still offers no free-text search, and a session has no text field that would make one meaningful. Client-side filtering across a returned page remains explicitly rejected regardless of which facets are server-side: it would produce results that are wrong across page boundaries.
 - **D-004**: The denomination breakdown submitted at close is write-only — no backend capability returns it. Any future requirement to audit a past count is a backend change.
 - **D-005**: Page size is 20 by default and cannot exceed 100 records per request.
 - **D-006**: Monetary values cross the wire as strings and must be parsed before arithmetic; the counted total, expected figure and difference must be computed with exact decimal arithmetic, not floating-point, so a count of many denominations does not accumulate rounding error.

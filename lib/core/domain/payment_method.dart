@@ -1,3 +1,5 @@
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
 /// Payment method codes for a Payment Method Option, mirroring mbe-api's
 /// authoritative `PaymentMethod` constant (`Model/Constants/PaymentMethod.cs`,
 /// documented at `mbe-api/docs/constants.md` §PaymentMethod) — the SAT-aligned
@@ -45,4 +47,36 @@ enum PaymentMethod {
     }
     return null;
   }
+}
+
+/// [code]'s localized label, falling back to the raw code for an unmapped
+/// value — [PaymentMethod.fromCode]'s documented posture.
+///
+/// Promoted from two byte-identical private copies
+/// (`payment_method_option_detail_screen.dart`,
+/// `payment_method_options_list_screen.dart`) that had drifted into existing
+/// as duplicates rather than a shared function (021-cash-sessions research.md
+/// §13) — this feature's session-detail screen needed the same mapping for
+/// `payments_by_method`, which would have made a third copy.
+String paymentMethodLabel(AppLocalizations l10n, int code) {
+  final method = PaymentMethod.fromCode(code);
+  if (method == null) return '$code';
+  return switch (method) {
+    PaymentMethod.na => l10n.paymentMethodNa,
+    PaymentMethod.cash => l10n.paymentMethodCash,
+    PaymentMethod.check => l10n.paymentMethodCheck,
+    PaymentMethod.eft => l10n.paymentMethodEft,
+    PaymentMethod.creditCard => l10n.paymentMethodCreditCard,
+    PaymentMethod.electronicPurse => l10n.paymentMethodElectronicPurse,
+    PaymentMethod.electronicMoney => l10n.paymentMethodElectronicMoney,
+    PaymentMethod.foodVouchers => l10n.paymentMethodFoodVouchers,
+    PaymentMethod.giving => l10n.paymentMethodGiving,
+    PaymentMethod.toTheSatisfactionOfTheCreditor =>
+      l10n.paymentMethodCreditorSatisfaction,
+    PaymentMethod.debitCard => l10n.paymentMethodDebitCard,
+    PaymentMethod.serviceCard => l10n.paymentMethodServiceCard,
+    PaymentMethod.advancePayments => l10n.paymentMethodAdvancePayments,
+    PaymentMethod.toBeDefined => l10n.paymentMethodToBeDefined,
+    PaymentMethod.governmentFunding => l10n.paymentMethodGovernmentFunding,
+  };
 }

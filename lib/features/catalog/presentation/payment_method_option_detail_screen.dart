@@ -212,7 +212,7 @@ class _PaymentMethodOptionDetailScreenState
                     DropdownMenuItem(
                       value: method.code,
                       child: Text(
-                        _paymentMethodLabel(l10n, method),
+                        paymentMethodLabel(l10n, method.code),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -360,23 +360,3 @@ String? _localizeFieldError(AppLocalizations l10n, String? code) {
       return code;
   }
 }
-
-String _paymentMethodLabel(AppLocalizations l10n, PaymentMethod method) =>
-    switch (method) {
-      PaymentMethod.na => l10n.paymentMethodNa,
-      PaymentMethod.cash => l10n.paymentMethodCash,
-      PaymentMethod.check => l10n.paymentMethodCheck,
-      PaymentMethod.eft => l10n.paymentMethodEft,
-      PaymentMethod.creditCard => l10n.paymentMethodCreditCard,
-      PaymentMethod.electronicPurse => l10n.paymentMethodElectronicPurse,
-      PaymentMethod.electronicMoney => l10n.paymentMethodElectronicMoney,
-      PaymentMethod.foodVouchers => l10n.paymentMethodFoodVouchers,
-      PaymentMethod.giving => l10n.paymentMethodGiving,
-      PaymentMethod.toTheSatisfactionOfTheCreditor =>
-        l10n.paymentMethodCreditorSatisfaction,
-      PaymentMethod.debitCard => l10n.paymentMethodDebitCard,
-      PaymentMethod.serviceCard => l10n.paymentMethodServiceCard,
-      PaymentMethod.advancePayments => l10n.paymentMethodAdvancePayments,
-      PaymentMethod.toBeDefined => l10n.paymentMethodToBeDefined,
-      PaymentMethod.governmentFunding => l10n.paymentMethodGovernmentFunding,
-    };

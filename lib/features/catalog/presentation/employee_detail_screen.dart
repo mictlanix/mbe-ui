@@ -10,9 +10,9 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/employee_form_controller.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Create / view / edit screen for a single employee (FR-015, FR-016, US3).
@@ -210,7 +210,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                   ),
                   child: Text(
                     formState.birthday != null
-                        ? PricingFormatters.date(formState.birthday!)
+                        ? MoneyFormatters.date(formState.birthday!)
                         : '',
                   ),
                 ),
@@ -242,7 +242,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                   ),
                   child: Text(
                     formState.startJobDate != null
-                        ? PricingFormatters.date(formState.startJobDate!)
+                        ? MoneyFormatters.date(formState.startJobDate!)
                         : '',
                   ),
                 ),

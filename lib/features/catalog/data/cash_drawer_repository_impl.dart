@@ -13,6 +13,25 @@ final cashDrawerRepositoryProvider = Provider<CashDrawerRepository>((ref) {
   return CashDrawerRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves a cash drawer id to its display name — for a list screen's facet
+/// filter picker on a cold load (a shared link/bookmark/refresh carrying only
+/// `cash-drawer=<id>` in the URL, mirrors `employeeDisplayNameProvider`).
+/// `null` on any failure, so a caller falls back to displaying the raw id
+/// rather than blocking the list (021-cash-sessions).
+final cashDrawerDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  cashDrawerId,
+) async {
+  try {
+    final drawer = await ref
+        .watch(cashDrawerRepositoryProvider)
+        .get(cashDrawerId: cashDrawerId);
+    return drawer.name;
+  } catch (_) {
+    return null;
+  }
+});
+
 class CashDrawerRepositoryImpl implements CashDrawerRepository {
   CashDrawerRepositoryImpl(Dio dio)
     : _api = CashDrawersApi(dio, standardSerializers);

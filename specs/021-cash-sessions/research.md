@@ -159,7 +159,12 @@ requires distinct remedies).
 
 ## 5. Resolving cashier and drawer ids to names
 
-**Decision**: Two different strategies, because the two catalogs have different size risk.
+> **Superseded by §17.** mbe-api#141 shipped mid-implementation and expanded these FKs
+> server-side. Kept below as the honest record of why the final design needs no resolution
+> step at all — this section describes the workaround that is no longer necessary.
+
+**Decision (as originally made — no longer the implementation)**: Two different strategies,
+because the two catalogs have different size risk.
 - **Cash drawers** — one `list(limit: 100)` call cached in a `FutureProvider`, exposed as
   an id→drawer map. Assert coverage against the returned `total`. This same provider
   backs the drawer filter picker.
@@ -385,31 +390,31 @@ is added; the enum's own file is where the mapping belongs. Small, mechanical, o
 
 ---
 
-## 14. mbe-api gaps to file as issues
+## 14. mbe-api gaps to file as issues — both RESOLVED 2026-08-05
 
 Constitution §III forbids editing mbe-api from an mbe-ui session and requires each needed
-backend change be filed as an issue and recorded as a plan dependency. Neither of these
-blocks implementation; both would delete client code once shipped. Filing is established
-practice — spec 020 filed eight. **Both were filed on 2026-08-04.**
+backend change be filed as an issue and recorded as a plan dependency. Filing is established
+practice — spec 020 filed eight. **Both were filed on 2026-08-04 and both shipped on
+2026-08-05, mid-implementation.** See §17 for the full account of what changed and what it
+deletes from this plan. The two entries below are kept as the historical record of what was
+asked for and why — not as open work.
 
 **Issue A — [mbe-api#141](https://github.com/mictlanix/mbe-api/issues/141) — expand the
-cash-session FKs.** `CashSessionResponse` returns `cash_drawer`, `cashier` and
-`cash_supervisor` as bare ints, while `CashDrawerResponse.facility` is already expanded to
-`{facility_id, name}`. Expanding these three to `{id, name}` matches the API's own dominant
-shape and removes the per-row lookups in §5 entirely.
-*Impact if unfixed*: up to 20 extra requests on a full history page.
-*When it lands*: delete the drawer-map provider and the per-row employee watches, regenerate
-the client, and flatten `*Name` fields onto `CashSession` the way `CashDrawer` already has.
+cash-session FKs. RESOLVED.** `CashSessionResponse` returned `cash_drawer`, `cashier` and
+`cash_supervisor` as bare ints, while `CashDrawerResponse.facility` was already expanded to
+`{facility_id, name}`. Asked for these three to expand to match. **Shipped as**: `cash_drawer`
+→ `CashDrawerSummary` (id/facility/code/name/comment/status), `cashier`/`cash_supervisor` →
+full `EmployeeResponse`. The per-row lookups in §5 are deleted, not reduced.
 
 **Issue B — [mbe-api#142](https://github.com/mictlanix/mbe-api/issues/142) — filters and
-sort on `GET /cash-sessions`.** Only `cash_drawer` is supported. A cashier filter, a
-date-range filter, an open/stale/closed status filter, and a sort choice are all needed for
-the list to satisfy constitution §VI's filtering rule, which this feature cannot otherwise
-meet (§12, spec D-003). A free-text `search` was deliberately *not* requested — a session has
-no text field to match.
-*Impact if unfixed*: the history list ships with one facet and no search.
-*When it lands*: add the facets to `CashSessionFilter` and close the §VI deviation recorded
-in plan.md's Complexity Tracking.
+sort on `GET /cash-sessions`. RESOLVED.** Only `cash_drawer` was supported. Asked for a
+cashier filter, a date-range filter, a status filter, and a sort choice — everything except
+free-text search, which was deliberately not requested since a session has no text field.
+**Shipped as**: `cashier`, `facility`, `status` (`CashSessionStatus`), `date_from`/`date_to`,
+`sort` (`CashSessionSort`, default `-id`) — every facet asked for, plus a `facility` filter
+that wasn't. The §VI "no search box" deviation in plan.md's Complexity Tracking narrows to
+"no free-text search," which no requirement needs; cashier/status are now real UI facets
+per §17.
 
 **Not filed**: returning the closing denomination counts (spec D-004). No requirement in
 this feature needs it — FR-033 explicitly declines to show it — so filing it would be
@@ -483,3 +488,159 @@ to where the target rows live); capping a scan to the first N pages by recency (
 wrong for the motivating case, for the reason above); never attempting detection and dropping
 the note (fails FR-004 outright, and removes the only proactive signal a cashier gets before
 being blocked by a stale session they didn't know they had).
+
+> **Superseded by §17.** mbe-api#141/#142 shipped mid-implementation and removed the need for
+> this heuristic entirely — see §17 for the direct replacement.
+
+---
+
+## 17. mbe-api#141 and #142 shipped mid-implementation — three planned workarounds deleted
+
+**What changed**: both issues filed in §14 were resolved and the client regenerated
+(commit `0a64bc7`/`cdd5193`) while this feature was already in progress. Confirmed by reading
+the regenerated models directly, not by trusting the issue titles:
+
+- `CashSessionResponse.cashDrawer` is now `CashDrawerSummary` (`cashDrawerId`, `facility`,
+  `code`, `name`, `comment`, `status`) — a real object, not a bare int. `cashier` and
+  `cashSupervisor` are now full `EmployeeResponse` (`employeeId`, `firstName`, `lastName`, …).
+  This is issue A, closed exactly as filed.
+- `GET /cash-sessions` gained five parameters: `cashier` (`int?`), `facility` (`int?`),
+  `status` (`CashSessionStatus?` — a **generated** enum with members `open`/`stale`/`closed`,
+  whose doc comment states it derives from `end`/`start` "exactly as `session_state` does" —
+  the identical rule this plan's `cashSessionStatusOf` was written to replicate), `dateFrom`/
+  `dateTo` (`DateTime?`), and `sort` (`CashSessionSort` — `-id` default, `start`, `-start`).
+  This is issue B, closed for every facet except free-text search, which nothing in this
+  feature needed in the first place (a session has no text field).
+- The open and close request/response shapes (`CashSessionOpen`, `CashSessionClose`,
+  `Denomination`, `OpeningAmount`, the `AnyOf` wrapper problem) are **untouched** — confirmed
+  by diffing the two regeneration commits, which touch only `cash_sessions_api.dart`,
+  `cash_session_response.dart`, and the two new model files. Nothing in §4, §6, or the
+  close-flow contract changes.
+
+**What this deletes outright:**
+
+- **§5's per-row name resolution is gone.** There is nothing left to resolve — `cashDrawer`
+  and `cashier` arrive already expanded. No cached drawer-name map, no
+  `employeeDisplayNameProvider` watches per row, no "first per-row FK resolution in the
+  codebase" finding. `CashSession.cashDrawerName`/`cashierName`/`cashSupervisorName` are
+  populated directly from the response in `fromResponse`, the same shape `CashDrawer.
+  facilityName` already uses.
+- **§16's same-drawer heuristic is gone.** FR-004 ("indicate that further open sessions
+  exist") is now answered by one direct, exact query — `list(cashier: myEmployeeId, status:
+  CashSessionStatus.open)` — filtered server-side, not approximated client-side. It finds
+  *every* open session for the cashier, on any drawer, not just the current session's own
+  drawer. The entire "bounded, not exhaustive" caveat in §16 no longer applies to anything.
+- **Issue A and issue B are both closed.** Remove them from any "file these" checklist —
+  they are shipped, not pending.
+
+**What this adds to scope, deliberately:** spec.md's D-003 stated the history list "ships the
+drawer facet alone" because the endpoint supported nothing else — that premise is now false.
+The history list filter sheet gains **cashier** and **status** facets alongside drawer,
+matching the exact `CatalogEntityPicker` + `EntityStatusFilterChips`-style pattern
+`payment_method_options_list_screen.dart` already uses for its facility+status pair. This is
+not scope creep into a new story — it is User Story 3's own goal ("browse a paginated,
+drawer-filterable list") filled out with facets the backend now actually offers, using
+components already read and understood for this feature. A **date-range** facet is *not*
+added: no user story or FR asks for one, and adding UI for a filter nothing requires would be
+exactly the kind of speculative surface constitution and CLAUDE.md both warn against. The
+repository method still accepts `dateFrom`/`dateTo` (cheap to expose, matches the endpoint),
+but nothing in the UI wires them.
+
+**What stays exactly as designed:** §1 (module placement), §2 (decimal), §3 (formatter
+promotion), §4 (409 disambiguation via re-read — a list filter changes nothing about a
+*write* conflict), §6 (count/close on the detail screen), §8 (denomination ladder), §10
+(number pad decision), §11 (empty-count dialog), §13 (payment-method label promotion), §15
+(spec-020 coordination). None of those depended on the old response shape or the old filter
+set.
+
+**Cost of not catching this before writing code**: none — this was caught during Foundational
+implementation, before the repository, entities, or the US3/US4 tasks it invalidates were
+written. The only casualty is time spent researching a heuristic (§16) and a name-resolution
+scheme (§5) that turned out to be temporary scaffolding for an API gap that closed under the
+feature. That research is kept, not deleted, because it is the honest record of why the
+simpler final design is correct — a reader who only sees §17 might reasonably ask "why not
+just resolve names server-side," and §5 is the answer: *now* it is; it wasn't when this
+started.
+
+---
+
+## 18. Blocking build defect — [mbe-api#144](https://github.com/mictlanix/mbe-api/issues/144), filed 2026-08-05, open
+
+**Not one of the two enhancement requests above** — a genuine regression, introduced by
+#142's own fix, discovered immediately after regenerating for §17. `CashSessionSort`'s schema
+declares `default: "-id"`; openapi-generator's dart-dio codegen renders that dash-prefixed
+enum default as literal Dart (`CashSessionSort? sort = -id,`) instead of
+`CashSessionSort.id`, which does not compile (`Undefined name 'id'`).
+
+**Blast radius is the whole app, not this feature.** Confirmed by running
+`test/unit/features/catalog/cash_drawer_test.dart` — unrelated to cash sessions — which fails
+with the identical error, because every file importing `mbe_api_client.dart` transitively
+pulls in the broken method signature. `flutter analyze` stays clean only because
+`analysis_options.yaml` excludes `lib/generated/**`; the compiler used by `flutter test`/
+`run`/`build` does not honor that exclusion.
+
+**This feature is blocked on it, not working around it.** Per constitution §III, generated
+files are never hand-edited, and no template/local fix survives the next real regeneration.
+There is nothing to design around — the client must compile before any of this feature's code
+can be analyzed or tested, and T006 onward hadn't started when this was found (T001–T005 are
+complete, verified, and untouched by this — they have nothing to do with the cash-sessions
+API surface).
+
+**Resolution path**: filed with a proposed fix (drop the schema-level default on `sort`,
+apply it in the service layer instead, matching how `skip`/`limit` are already defaulted).
+Once merged and the client regenerated, resume at T006. No design decision in this plan
+changes as a result of this issue — it is a pure build blocker, not a shape or scope question
+like #141/#142.
+
+---
+
+## 19. Seeding an `autoDispose` controller from outside the widget that watches it — found during T020
+
+**What happened**: `OpenSessionFormController` (`@riverpod`, therefore `autoDispose`) needs a
+one-time seed — the cashier's assigned drawer, read off `authNotifierProvider` — before the
+open form is useful. The obvious place to do that is `CashSessionsScreen`'s `initState`,
+mirroring `CashDrawerDetailScreen`'s existing seeding pattern for a pre-selected facility.
+That obvious placement is wrong here, and the widget test (T020) caught it: the seed call
+landed on a transient controller instance with zero listeners, which Riverpod disposed
+before `_OpenForm` — the widget that actually watches
+`openSessionFormControllerProvider` — ever mounted. By the time `_OpenForm` built, it
+created a *fresh* controller via `build() => const OpenSessionFormState()`, and the seed was
+gone. `CashDrawerDetailScreen`'s precedent seeds `CashDrawerFormController`, which is exactly
+the same shape (`@riverpod`, `autoDispose`) — that one likely survives only because its
+consuming screen mounts and starts watching within the same frame the seed lands, which
+`CashSessionsScreen`'s two-hop `currentAsync.when(... data: (current) => ... _OpenForm())`
+does not guarantee.
+
+**The fix**: seed from *inside* the `build()` that watches the target provider, not from a
+lifecycle hook on a different widget above it:
+
+```dart
+// _OpenForm.build(context, ref) — already does ref.watch(openSessionFormControllerProvider)
+if (formState.cashDrawerId == null && settings?.cashDrawerId != null) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    controller.seedAssignedDrawer(settings?.cashDrawerId, settings?.cashDrawerName);
+  });
+}
+```
+
+The provider is guaranteed alive for the duration of this `build()` because this very call is
+what's watching it — the disposal race cannot occur here by construction. The `cashDrawerId
+== null` guard makes it idempotent: harmless to re-check every rebuild, and it never re-fires
+once seeded or once the cashier makes their own pick.
+
+**Consequence for `CashSessionsScreen` itself**: with the seed moved, the screen needed no
+`initState`, no `dispose`, no subscription bookkeeping — it collapsed from a
+`ConsumerStatefulWidget` to a plain `ConsumerWidget`. Simpler code was the *result* of finding
+the right seed location, not a separate cleanup.
+
+**Applies to the rest of this feature**: `CloseSessionFormController` (US2) and any
+seeding `CashSessionDetailScreen`/`CashSessionsScreen`'s history region (US3/US4) do — check
+whether the seed originates from the same widget that watches the target provider before
+reaching for `initState`. If it doesn't, use this pattern instead.
+
+**Also caught in the same test, unrelated**: a `RenderFlex` overflow from pumping
+`CashSessionsScreen` directly as a route's `builder` return value with no `Scaffold`. Every
+production screen renders inside `AppShell`'s `Scaffold`; a test route needs to provide one
+explicitly (`GoRoute(builder: (c, s) => Scaffold(body: CashSessionsScreen(...)))`) or a
+`SingleChildScrollView` with unbounded-height content can misbehave in ways that don't occur
+in the real app shell.

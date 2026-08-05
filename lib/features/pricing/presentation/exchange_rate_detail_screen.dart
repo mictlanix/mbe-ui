@@ -9,9 +9,9 @@ import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_form_controller.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Create / view / edit screen for a single exchange rate (FR-016,
@@ -141,7 +141,7 @@ class _ExchangeRateDetailScreenState
                   ),
                   child: Text(
                     formState.date != null
-                        ? PricingFormatters.date(formState.date!)
+                        ? MoneyFormatters.date(formState.date!)
                         : '',
                   ),
                 ),

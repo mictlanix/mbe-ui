@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 
 void main() {
   // DateFormat requires locale symbol data to be initialized before use —
@@ -11,23 +11,23 @@ void main() {
     await initializeDateFormatting();
   });
 
-  group('PricingFormatters.currency', () {
+  group('MoneyFormatters.currency', () {
     test('formats a whole-number price as MXN with two decimals', () {
-      expect(PricingFormatters.currency('120'), r'$120.00');
+      expect(MoneyFormatters.currency('120'), r'$120.00');
     });
 
     test('formats a price with cents', () {
-      expect(PricingFormatters.currency('120.5'), r'$120.50');
+      expect(MoneyFormatters.currency('120.5'), r'$120.50');
     });
 
     test('formats zero', () {
-      expect(PricingFormatters.currency('0'), r'$0.00');
+      expect(MoneyFormatters.currency('0'), r'$0.00');
     });
 
     test('a high-precision decimal string is not truncated to the wrong '
         'magnitude — the integer part and thousands grouping survive '
         '(spec Edge Cases — "Very small or large decimals")', () {
-      final formatted = PricingFormatters.currency('1234567.891234');
+      final formatted = MoneyFormatters.currency('1234567.891234');
       expect(formatted, r'$1,234,567.89');
       // Never collapse a large value to scientific notation.
       expect(formatted, isNot(contains('e')));
@@ -35,33 +35,44 @@ void main() {
     });
 
     test('a non-numeric value falls back to zero rather than crashing', () {
-      expect(PricingFormatters.currency('not-a-number'), r'$0.00');
+      expect(MoneyFormatters.currency('not-a-number'), r'$0.00');
     });
   });
 
-  group('PricingFormatters.percent', () {
+  group('MoneyFormatters.percent', () {
     test('formats a standard margin', () {
-      expect(PricingFormatters.percent('0.40'), '40%');
+      expect(MoneyFormatters.percent('0.40'), '40%');
     });
 
     test('formats zero', () {
-      expect(PricingFormatters.percent('0'), '0%');
+      expect(MoneyFormatters.percent('0'), '0%');
     });
 
     test('a high-precision margin still resolves to a sane whole-number '
         'percentage rather than an empty/garbled string', () {
-      final formatted = PricingFormatters.percent('0.123456789');
+      final formatted = MoneyFormatters.percent('0.123456789');
       expect(formatted, isNotEmpty);
       expect(formatted, endsWith('%'));
     });
   });
 
-  group('PricingFormatters.date', () {
+  group('MoneyFormatters.date', () {
     test('formats a DateTime as a short locale-aware date', () {
-      final formatted = PricingFormatters.date(DateTime(2026, 7, 17));
+      final formatted = MoneyFormatters.date(DateTime(2026, 7, 17));
       expect(formatted, isNotEmpty);
       // Locale-aware date rendering, not a raw ISO string.
       expect(formatted, isNot(contains('T')));
+    });
+  });
+
+  group('MoneyFormatters.dateTime', () {
+    test('formats a DateTime with both date and time-of-day components '
+        '(021-cash-sessions — session start/end need a time, unlike date)', () {
+      final formatted = MoneyFormatters.dateTime(DateTime(2026, 7, 17, 14, 30));
+      expect(formatted, isNotEmpty);
+      expect(formatted, isNot(contains('T')));
+      // A pure date formatter would drop the time-of-day entirely.
+      expect(formatted, isNot(MoneyFormatters.date(DateTime(2026, 7, 17))));
     });
   });
 }
