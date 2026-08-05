@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "cash sessions",
   "branch": "021-cash-sessions",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-05T02:31:36.173Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-05T02:54:49.474Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-05T02:55:01.397Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-05T02:55:18.564Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-05T02:55:29.730Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -164,7 +192,15 @@
     "constraint: session status (open/stale/closed) is derived client-side; only /current returns a state field",
     "constraint: history list filterable by cash_drawer only — no search, no cashier/date filter, no sort choice, not facility-scoped",
     "constraint: production data has cashiers with 3-4 sessions open at once; /current hides all but the newest",
-    "constraint: no mbe-api change and no OpenAPI regeneration in scope"
+    "constraint: no mbe-api change and no OpenAPI regeneration in scope",
+    "decision: two 409s disambiguated by re-reading GET /current, never by parsing detail strings",
+    "decision: added decimal ^3.2.6 (confined to features/sales/domain/money.dart); entities keep String amounts",
+    "decision: count+close live on the session detail screen; RecordFormActions deliberately unused",
+    "decision: promote pricing_formatters.dart -> core/widgets/money_formatters.dart (9 src + 2 test call sites)",
+    "decision: route /sales/cash-sessions gated on SystemObject.pos(44) read; NavBranch index 17 appended",
+    "finding: drawer picker needs cashDrawers(10) read, a different object from pos(44) — three-way fallback; FR-007 needs a touch-up",
+    "finding: cash_drawer/cashier/cash_supervisor are bare FK ints — first per-row FK resolution in the codebase",
+    "dependency: mbe-api issue A (expand cash-session FKs) and issue B (list filters/sort) to file"
   ],
   "intent": "Give cashiers and supervisors a standalone screen to open a cash drawer shift with an opening amount, close it by counting denominations against an advisory expected-cash figure, and review or recover past and abandoned sessions.",
   "expectations": [
