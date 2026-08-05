@@ -64,7 +64,7 @@
   ],
   "coverage": {
     "FR-001": {
-      "title": "The application MUST offer a point-of-sale destination in the existing navigation, gated on permission to read sales orders, and MUST render it inside the existing application shell rather than as a separate full-screen surface."
+      "title": "The application MUST offer a point-of-sale destination in the existing navigation, gated on permission to use the point of sale, and MUST render it inside the existing application shell rather than as a separate full-screen surface."
     },
     "FR-002": {
       "title": "Entering the screen without a sale in progress MUST open a new sale record immediately, associated with the cashier's point of sale and facility, before any product is captured."
@@ -79,7 +79,7 @@
       "title": "The step indicator MUST present the steps in the order capture, payment, delivery — two steps when the fulfilment mode is counter pickup and three when it is delivery or mixed — and MUST update the moment the mode changes."
     },
     "FR-006": {
-      "title": "A cashier without permission to create sales orders MUST NOT be able to open a sale, and MUST be told why rather than shown a broken screen."
+      "title": "A cashier without permission to open a sale at the point of sale MUST NOT be able to start one, and MUST be told why rather than shown a broken screen. Capturing lines is separately gated on permission to modify sales orders; the screen MUST refuse each action against its own permission."
     },
     "FR-007": {
       "title": "Every capture action — adding a line, changing a line's quantity, price, discount or warehouse, removing a line, changing the customer, the fulfilment mode, the payment terms or the currency — MUST be recorded on the server as it happens, not deferred to a later submit."

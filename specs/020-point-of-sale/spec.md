@@ -113,7 +113,7 @@ confirmed, carries both lines and shows a zero balance.
    of sale, **Then** no sale is opened; the screen explains that a shift must
    be open first and offers a way into the cash session screen instead.
 2. **Given** a cashier with an open (or stale — opened on an earlier day but
-   not yet closed) cash session and permission to create sales orders, **When**
+   not yet closed) cash session and permission to open a sale, **When**
    they open the point of sale, **Then** an order is opened for their point of
    sale and facility, the walk-in customer and counter pickup are preselected,
    and the line area is empty. A stale session additionally shows a
@@ -374,9 +374,9 @@ without horizontal scrolling and with every control reachable.
 #### Entering the screen and the sale record
 
 - **FR-001**: The application MUST offer a point-of-sale destination in the
-  existing navigation, gated on permission to read sales orders, and MUST render
-  it inside the existing application shell rather than as a separate full-screen
-  surface.
+  existing navigation, gated on permission to use the point of sale, and MUST
+  render it inside the existing application shell rather than as a separate
+  full-screen surface.
 - **FR-002**: Entering the screen without a sale in progress MUST open a new
   sale record immediately, associated with the cashier's point of sale and
   facility, before any product is captured.
@@ -397,8 +397,12 @@ without horizontal scrolling and with every control reachable.
   payment, delivery — two steps when the fulfilment mode is counter pickup and
   three when it is delivery or mixed — and MUST update the moment the mode
   changes.
-- **FR-006**: A cashier without permission to create sales orders MUST NOT be
-  able to open a sale, and MUST be told why rather than shown a broken screen.
+- **FR-006**: A cashier without permission to open a sale at the point of sale
+  MUST NOT be able to start one, and MUST be told why rather than shown a
+  broken screen. Capturing lines onto a sale is separately gated on permission
+  to modify sales orders, so a cashier may hold one without the other; the
+  screen MUST refuse each action against its own permission rather than
+  assuming a single blanket one.
 
 #### Recording the sale as it is captured
 
@@ -698,7 +702,9 @@ without horizontal scrolling and with every control reachable.
 - **D-004**: The screen reuses the existing customer picker, address inline
   creation, warehouse and price-list pickers rather than introducing new ones,
   and adds one new one this feature needs first: a contact picker/inline-create
-  mirroring the address one, backed by the new `/contacts` API (D-006 below).
+  mirroring the address one, backed by the contacts API that shipped as
+  [mbe-api#133](https://github.com/mictlanix/mbe-api/issues/133) (research.md
+  §10).
 - **D-005 (resolved)**: mbe-api did not re-price a sale's existing lines when
   its customer changed. [mictlanix/mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131),
   filed against exactly this, **has shipped**: `update_order` now re-prices

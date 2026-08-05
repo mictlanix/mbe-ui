@@ -36,12 +36,23 @@ revision, both verified directly against source, not assumed:
 
 Every task ID below is fresh; nothing from the prior two revisions' numbering
 survives unchanged, since the deletions and insertions touch nearly every
-phase. Net: nine files this feature previously planned to create already exist
-(021's reuse) or are deleted from the plan entirely (the orchestrator, the
-client-side payment-method-reference table); six new catalog-layer files are
-added that 021 didn't need but this feature does (`Contact` and its
-repository/dialog, `Customer`/`PaymentMethodOption` extensions); one new
-foundational screen state (the gate) is added.
+phase. Net change to the file plan:
+
+- **5 files reused instead of created** — `money.dart` (extended, not
+  duplicated), `money_formatters.dart`, `payment_method.dart`,
+  `cash_session_repository.dart` and `current_session_controller.dart`, all
+  already in `lib/features/sales/` or `lib/core/` courtesy of
+  021-cash-sessions (research.md §14). The last two were never in this
+  feature's own prior plan — they became relevant only because the cash-session
+  gate is new in this revision.
+- **2 files deleted from the plan entirely** — `destination_split.dart` (the
+  create-then-trim orchestrator) and `payment_method_rules.dart` (the
+  client-side reference-required table), both obsoleted by shipped backend
+  capabilities rather than merely simplified.
+- **6 new catalog-layer files added** that 021 didn't need but this feature
+  does — `Contact` and its repository/impl/inline-create dialog, plus the
+  `Customer` and `PaymentMethodOption` extensions.
+- **1 new foundational screen state** — the cash-session gate.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -60,8 +71,9 @@ by the `build_runner` tasks below.
 
 ## Phase 1: Setup
 
-**Purpose**: Confirm a clean baseline and the two small catalog-layer additions
-every later phase can assume exist.
+**Purpose**: Confirm a clean baseline and the one small catalog-layer addition
+every later phase can assume exists (plus a reuse-confirmation pass, so nothing
+021 already built gets rebuilt under a new name).
 
 - [ ] T001 Confirm a clean baseline on branch `020-point-of-sale`: run `flutter pub get`, `dart run build_runner build --delete-conflicting-outputs`, `flutter gen-l10n`, `flutter analyze` and `flutter test`, and record any pre-existing failure before changing code
 - [ ] T002 Re-verify codegen parity per research.md §15: regenerate the client against a running mbe-api's `/openapi.json` via `tool/generate_api_client.sh` and confirm `git diff --stat lib/generated` is empty. Specifically confirm all 8 resolved fields are present: `SalesOrderLineCreate/Update.taxRate`, `CustomerCreate/Update/Response.addresses`/`.contacts`, `contacts_api.dart`, `DeliveryOrderCreate.lines`, `SalesOrdersApi.listSalesOrderPaymentsApiV1SalesOrdersSalesOrderIdPaymentsGet`, `SalesOrdersGet`'s `pointSale` parameter, `PaymentMethodOptionResponse.requiresReference`
