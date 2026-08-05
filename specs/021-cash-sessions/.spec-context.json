@@ -1,0 +1,184 @@
+{
+  "workflow": "speckit",
+  "specName": "cash sessions",
+  "branch": "021-cash-sessions",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-05T02:25:36.637Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-05T02:31:36.173Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "The system MUST show the signed-in user their current cash session state, distinguishing three cases: no open session, an open session started today, and an open session started on an earlier day (stale)."
+    },
+    "FR-002": {
+      "title": "The system MUST treat a session with no end time as open, and an open session whose start date precedes today as stale, applying the same rule wherever a session's status is displayed — including list rows and session detail, which do not receive a status from the backend."
+    },
+    "FR-003": {
+      "title": "The system MUST NOT automatically close, extend, or alter a stale session; clearing it MUST always be an explicit user action."
+    },
+    "FR-004": {
+      "title": "When the signed-in user has more than one open session, the system MUST display the most recent as their current session and MUST indicate that further open sessions exist and need attention."
+    },
+    "FR-005": {
+      "title": "A user holding the create privilege for cash sessions MUST be able to open a session by selecting a cash drawer and declaring an opening cash amount."
+    },
+    "FR-006": {
+      "title": "The open form MUST preselect the cash drawer assigned to the signed-in user and identify it by name."
+    },
+    "FR-007": {
+      "title": "When the signed-in user has no assigned cash drawer, the open form MUST require an explicit drawer selection and MUST prevent submission until one is chosen, rather than allowing a submission that the backend would reject."
+    },
+    "FR-008": {
+      "title": "The open form MUST accept an opening amount of zero, MUST default to zero when left blank, and MUST reject a negative amount before submitting."
+    },
+    "FR-009": {
+      "title": "The system MUST distinguish, with different messages and different suggested remedies, a refusal because the selected drawer already has an open session from a refusal because the signed-in user already has one open elsewhere."
+    },
+    "FR-010": {
+      "title": "When the refusal is that the user already has an open session, the system MUST surface the close action for that session instead of leaving the open form as the only path forward."
+    },
+    "FR-011": {
+      "title": "When the selected cash drawer no longer exists, the system MUST report that specifically and allow another drawer to be chosen."
+    },
+    "FR-012": {
+      "title": "On a successful open, the system MUST show the new session as the user's current one without requiring a manual refresh."
+    },
+    "FR-013": {
+      "title": "A user holding the close privilege MUST be able to close an open session by entering a quantity for each supported currency denomination."
+    },
+    "FR-014": {
+      "title": "The count entry MUST present one row per denomination in the supported currency ladder, descending by value, each defaulting to a quantity of zero."
+    },
+    "FR-015": {
+      "title": "The count entry MUST show each row's extended amount and MUST maintain a running counted total that updates as quantities change."
+    },
+    "FR-016": {
+      "title": "The system MUST display an expected cash figure for the session, calculated as its opening amount plus the total of its cash-method payments."
+    },
+    "FR-017": {
+      "title": "The system MUST display the difference between the counted total and the expected figure, labelled as over or short, and MUST show a zero difference as such rather than hiding it."
+    },
+    "FR-018": {
+      "title": "The system MUST present the expected figure and the difference as advisory, with a note stating that they cover the opening amount and cash payments taken during the shift and do not account for other cash movements out of the drawer."
+    },
+    "FR-019": {
+      "title": "The system MUST NOT block a close, demand a justification, or require an approval because the counted total differs from the expected figure."
+    },
+    "FR-020": {
+      "title": "The system MUST submit only denominations whose quantity is above zero."
+    },
+    "FR-021": {
+      "title": "When every quantity is zero, the system MUST require an explicit confirmation that the drawer was counted and found empty before closing."
+    },
+    "FR-022": {
+      "title": "Denomination quantities MUST be validated as non-negative whole numbers before submission."
+    },
+    "FR-023": {
+      "title": "On a successful close, the system MUST report the counted total and the difference in the confirmation, because neither figure can be retrieved from the backend afterwards."
+    },
+    "FR-024": {
+      "title": "When a close is refused because the session is already closed, the system MUST say so plainly and refresh the session's state, without discarding the user's entered counts to an unexplained error."
+    },
+    "FR-025": {
+      "title": "A user lacking the close privilege MUST NOT be shown a close affordance anywhere, and when such a user is blocked by their own stale session the system MUST tell them that a user with closing rights must close it."
+    },
+    "FR-026": {
+      "title": "A user holding the close privilege MUST be able to close a session belonging to another cashier, and the closed session MUST continue to identify its original cashier while also identifying the closing user."
+    },
+    "FR-027": {
+      "title": "Users holding the read privilege MUST be able to browse a paginated list of cash sessions showing cash drawer, cashier, start, end and status, ordered newest first."
+    },
+    "FR-028": {
+      "title": "The history list MUST offer a cash drawer filter, and applying or changing it MUST reset paging to the first page."
+    },
+    "FR-029": {
+      "title": "The history list MUST use the shared pagination component and MUST NOT rely on an unpaginated fetch."
+    },
+    "FR-030": {
+      "title": "Clicking a history row outside its actions MUST open that session's detail read-only."
+    },
+    "FR-031": {
+      "title": "A session's detail MUST show its cash drawer, cashier, start, end, opening amount, closing user where present, and the payments taken during the session grouped by payment method with a per-method total."
+    },
+    "FR-032": {
+      "title": "A session's detail MUST offer no edit, reopen, or delete action, because a closed session is final and an open one is only ever advanced by closing it."
+    },
+    "FR-033": {
+      "title": "A session's detail MUST NOT display or promise the denomination breakdown recorded at close, which the backend does not return."
+    },
+    "FR-034": {
+      "title": "The history list MUST show every open session for a cashier who has several, so a session hidden from the current-session view remains reachable and closable."
+    },
+    "FR-035": {
+      "title": "Reading and opening sessions MUST be gated on the point-of-sale privilege (read and create respectively), and closing MUST be gated on the dedicated cash-session-close privilege — never on the point-of-sale privilege — so a cashier is not shown a close action that will be refused."
+    },
+    "FR-036": {
+      "title": "The route MUST be guarded on the read privilege, and the navigation entry MUST be hidden from users lacking it."
+    },
+    "FR-037": {
+      "title": "Every privilege-gated action MUST be absent for a user lacking the privilege, never rendered disabled."
+    },
+    "FR-038": {
+      "title": "All monetary amounts MUST be formatted as localized currency, and all timestamps as localized dates and times, in both supported locales."
+    },
+    "FR-039": {
+      "title": "All user-facing text introduced by this feature MUST be localized in both English and Spanish."
+    },
+    "FR-040": {
+      "title": "The screen MUST render usably on the compact layout tier as well as the expanded tier, and the count entry in particular MUST remain operable on a narrow viewport."
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 22,
+    "projectedTasks": 35,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: mbe-api /api/v1/cash-sessions router, service, schemas (5 operations, no PUT/PATCH/DELETE)",
+    "area: lib/generated/openapi cash_sessions_api.dart + cash_session_* models — already checked in, no codegen needed",
+    "area: lib/core/access (system_object.dart pos=44, cashSessionClose=111; user_settings.dart cashDrawerId)",
+    "area: lib/features/catalog cash_drawer_* — closest existing pattern for the drawer picker and repository shape",
+    "area: lib/core/domain/payment_method.dart — supplies the cash-method identification for expected cash",
+    "upstream: mbe-api specs/011-sales-cycle-endpoints FR-050..FR-054 and its User Story 3",
+    "legacy: mbe docs 07-administration.md s4, 02-sales.md, constants.md CashCountType, data-dictionary.md cash_session/cash_count",
+    "constraint: backend computes no expected cash and no variance — the client computes both, advisory only",
+    "constraint: closing denomination counts are write-only, never returned by any endpoint",
+    "constraint: close is gated on cashSessionClose(111) UPDATE, not on pos(44) — a cashier without 111 must see no close action",
+    "constraint: session status (open/stale/closed) is derived client-side; only /current returns a state field",
+    "constraint: history list filterable by cash_drawer only — no search, no cashier/date filter, no sort choice, not facility-scoped",
+    "constraint: production data has cashiers with 3-4 sessions open at once; /current hides all but the newest",
+    "constraint: no mbe-api change and no OpenAPI regeneration in scope"
+  ],
+  "intent": "Give cashiers and supervisors a standalone screen to open a cash drawer shift with an opening amount, close it by counting denominations against an advisory expected-cash figure, and review or recover past and abandoned sessions.",
+  "expectations": [
+    "No change to spec 020's Point of Sale screen — no session banner, no forced-close routing out of POS",
+    "No requirement that a sale or payment have an open cash session",
+    "No mbe-api change and no OpenAPI client regeneration",
+    "No server-persisted variance, over/short record, or justification workflow",
+    "No reopen, edit, or delete of a cash session",
+    "No dual control — the closing user is not verified as a second person",
+    "No retrieval or audit of a past session's denomination breakdown",
+    "No free-text search, cashier filter, date-range filter, or sort choice on the history list",
+    "No multi-currency drawers — MXN denomination ladder only",
+    "No expense-voucher, cash-on-delivery, or other non-payment drawer movements in the expected-cash figure",
+    "No offline persistence of an unsubmitted count",
+    "No retroactive attachment of payments taken while no session was open"
+  ]
+}
