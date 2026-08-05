@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/cash_drawer_summary.dart';
+import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/method_total.dart';
 import 'package:built_value/built_value.dart';
@@ -28,10 +30,10 @@ abstract class CashSessionResponse
   int get cashSessionId;
 
   @BuiltValueField(wireName: r'cash_drawer')
-  int get cashDrawer;
+  CashDrawerSummary get cashDrawer;
 
   @BuiltValueField(wireName: r'cashier')
-  int get cashier;
+  EmployeeResponse get cashier;
 
   @BuiltValueField(wireName: r'start')
   DateTime get start;
@@ -40,7 +42,7 @@ abstract class CashSessionResponse
   DateTime? get end;
 
   @BuiltValueField(wireName: r'cash_supervisor')
-  int? get cashSupervisor;
+  EmployeeResponse? get cashSupervisor;
 
   @BuiltValueField(wireName: r'opening_amount')
   String get openingAmount;
@@ -86,12 +88,12 @@ class _$CashSessionResponseSerializer
     yield r'cash_drawer';
     yield serializers.serialize(
       object.cashDrawer,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(CashDrawerSummary),
     );
     yield r'cashier';
     yield serializers.serialize(
       object.cashier,
-      specifiedType: const FullType(int),
+      specifiedType: const FullType(EmployeeResponse),
     );
     yield r'start';
     yield serializers.serialize(
@@ -110,7 +112,7 @@ class _$CashSessionResponseSerializer
         ? null
         : serializers.serialize(
             object.cashSupervisor,
-            specifiedType: const FullType.nullable(int),
+            specifiedType: const FullType.nullable(EmployeeResponse),
           );
     yield r'opening_amount';
     yield serializers.serialize(
@@ -159,15 +161,21 @@ class _$CashSessionResponseSerializer
           break;
         case r'cash_drawer':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
-          result.cashDrawer = valueDes;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(CashDrawerSummary),
+                  )
+                  as CashDrawerSummary;
+          result.cashDrawer.replace(valueDes);
           break;
         case r'cashier':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
-          result.cashier = valueDes;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(EmployeeResponse),
+                  )
+                  as EmployeeResponse;
+          result.cashier.replace(valueDes);
           break;
         case r'start':
           final valueDes =
@@ -192,11 +200,11 @@ class _$CashSessionResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(int),
+                    specifiedType: const FullType.nullable(EmployeeResponse),
                   )
-                  as int?;
+                  as EmployeeResponse?;
           if (valueDes == null) continue;
-          result.cashSupervisor = valueDes;
+          result.cashSupervisor.replace(valueDes);
           break;
         case r'opening_amount':
           final valueDes =
