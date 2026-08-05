@@ -137,6 +137,13 @@ one.
 picture of the user's open sessions, which is exactly why FR-004 requires the shift panel
 to say that others may exist, and why the history list is the only path to them (FR-034).
 
+**How FR-004's detection actually works**: a bounded, same-drawer heuristic, not an
+exhaustive check — `list(cashDrawer: session.cashDrawerId)` filtered client-side for another
+row sharing `cashierId` with `end == null`. It catches same-drawer legacy duplicates and
+misses cross-drawer ones; the honest fix is research §14 issue B (a cashier filter). Detailed
+in research §16. The presentation layer, not this entity, owns that check —
+`CurrentSession` itself carries nothing about it.
+
 ---
 
 ## 5. Opening a session — request shape

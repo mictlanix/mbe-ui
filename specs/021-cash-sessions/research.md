@@ -440,3 +440,46 @@ the two most annoying overlaps and fix 020's under-scoped task once, for both fe
 **No reverse dependency**: 020 lists cash sessions in its Out of Scope and its A-005 states
 a payment does not require a session, so nothing in 020 waits on this feature, and this
 feature touches nothing 020 needs.
+
+---
+
+## 16. Detecting "other open sessions" for FR-004 — a bounded heuristic, not a guarantee
+
+**Decision**: When the shift panel loads an open or stale current session, issue one extra
+call, `list(cashDrawer: session.cashDrawerId, limit: 100)`, and check it for another row with
+the same `cashierId`, `end == null`, and a different `cashSessionId`. Show FR-004's "other
+open sessions exist" note only on a match. Absence of a match is treated as "none found", not
+proven as "none exist" — the note is simply not shown, silently.
+
+**Why this needed deciding**: `GET /current` returns only the caller's single most recent
+open session, by construction. FR-004 requires knowing whether *more* exist, and the list
+endpoint has no cashier filter (issue B) — so the only exhaustive way to answer that is to
+page the entire sessions table checking every row, which is unbounded and, worse, backwards
+for the case that motivates the requirement: mbe-api sorts `cash_session_id DESC`, and the
+legacy-migration orphans User Story 4 targets have old, low ids, so an exhaustive scan would
+need to page through nearly the whole table before reaching them — while a scan capped to the
+first few pages would systematically *miss* exactly the rows it exists to find.
+
+**Why the same-drawer scope is the right compromise, not a shortcut**: it is cheap — one
+bounded request, not a scan — and it is not vacuous. The uniqueness rule that stops the *same
+drawer* from having two open sessions is enforced only at request time by
+`open_cash_session`, not by a database constraint, so pre-invariant legacy rows can and do
+violate it. A cashier who repeatedly opened and failed to close on one drawer, before the
+current backend existed to refuse it, is caught by this exact query. A cashier whose orphans
+are spread across *different* drawers is not — that gap is real and is not being papered over.
+
+**What this is not**: not a substitute for the history list, which is where User Story 4's
+Independent Test actually verifies recovery — by filtering to a drawer and reading the rows,
+which needs no heuristic at all because a human is looking at the full, honest list. The panel
+check is a proactive nudge for the common case, not the mechanism the spec depends on for
+correctness.
+
+**Closes cleanly with issue B**: once a cashier filter exists, this becomes
+`list(cashier: myEmployeeId, limit: 100)` with no drawer restriction, and the same-drawer
+caveat disappears. Nothing else about the shift panel changes.
+
+**Alternatives considered**: an unbounded paged scan (unbounded cost, and backwards relative
+to where the target rows live); capping a scan to the first N pages by recency (actively
+wrong for the motivating case, for the reason above); never attempting detection and dropping
+the note (fails FR-004 outright, and removes the only proactive signal a cashier gets before
+being blocked by a stale session they didn't know they had).

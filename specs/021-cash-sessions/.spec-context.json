@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "cash sessions",
   "branch": "021-cash-sessions",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-05T02:55:29.730Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-05T03:38:49.096Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-05T03:48:52.081Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-05T03:49:36.283Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -222,5 +243,6 @@
     "No expense-voucher, cash-on-delivery, or other non-payment drawer movements in the expected-cash figure",
     "No offline persistence of an unsubmitted count",
     "No retroactive attachment of payments taken while no session was open"
-  ]
+  ],
+  "telemetryInstanceId": "c456c9ae-3ebe-4b07-8fbe-44e89f47fe37"
 }
