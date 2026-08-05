@@ -38,8 +38,10 @@ operations, so this is a pure client feature. What shapes it is six findings fro
    that gates opening a session. A cashier provisioned only for counter work can open a
    session but would get a 403 from the picker. The save is that `user_settings` already
    carries `cashDrawerName` resolved server-side, so the common path needs no drawer request
-   at all. This produces a three-way fork the spec does not describe, and FR-007 needs a
-   touch-up as a result — flagged, not silently diverged from.
+   at all. This produces a three-way fork the spec did not describe; raised with the requester
+   and resolved as **FR-007a** — the permission is a real requirement, so a user who can
+   neither select nor be assigned a drawer gets no open affordance and an error directing them
+   to their administrator, rather than a workaround the screen invents.
 
 4. **Exact decimal arithmetic requires a new dependency, against the local convention**
    (research §2). mbe-ui carries decimals as `String` end to end and never parses them for
@@ -130,16 +132,16 @@ post-design.*
 
 Per §III and the Workflow section, a needed backend change is filed upstream and recorded
 here, never patched from an mbe-ui session. Neither blocks implementation; both delete
-client code once shipped. Confirmed **zero** open issues currently on `mictlanix/mbe-api`,
-so neither is already filed.
+client code once shipped. **Both filed 2026-08-04.**
 
-- **Issue A — expand the cash-session foreign keys.** Return `cash_drawer`, `cashier` and
-  `cash_supervisor` as `{id, name}`, matching `CashDrawerResponse.facility`. Deletes the
-  drawer-map provider and the per-row employee lookups entirely, and removes up to 20
-  requests from a full history page.
-- **Issue B — filters and sort on `GET /cash-sessions`.** Add a cashier filter, a date-range
-  filter, a status filter and a sort choice. This is what would let the history list satisfy
-  §VI's filtering rule, which it otherwise cannot.
+- **[mbe-api#141](https://github.com/mictlanix/mbe-api/issues/141) — expand the cash-session
+  foreign keys.** Return `cash_drawer`, `cashier` and `cash_supervisor` as `{id, name}`,
+  matching `CashDrawerResponse.facility`. Deletes the drawer-map provider and the per-row
+  employee lookups entirely, and removes up to 20 requests from a full history page.
+- **[mbe-api#142](https://github.com/mictlanix/mbe-api/issues/142) — filters and sort on
+  `GET /cash-sessions`.** Add a cashier filter, a date-range filter, a status filter and a
+  sort choice. This is what would let the history list satisfy §VI's filtering rule, which it
+  otherwise cannot, and closes the deviation in Complexity Tracking below.
 
 ## Project Structure
 

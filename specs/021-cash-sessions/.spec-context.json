@@ -69,7 +69,7 @@
       "title": "The open form MUST preselect the cash drawer assigned to the signed-in user and identify it by name."
     },
     "FR-007": {
-      "title": "When the signed-in user has no assigned cash drawer, the open form MUST require an explicit drawer selection and MUST prevent submission until one is chosen, rather than allowing a submission that the backend would reject."
+      "title": "When the signed-in user has no assigned cash drawer but is permitted to browse the cash drawer catalog, the open form MUST require an explicit drawer selection and MUST prevent submission until one is chosen."
     },
     "FR-008": {
       "title": "The open form MUST accept an opening amount of zero, MUST default to zero when left blank, and MUST reject a negative amount before submitting."
@@ -169,6 +169,9 @@
     },
     "FR-040": {
       "title": "The screen MUST render usably on the compact layout tier as well as the expanded tier, and the count entry in particular MUST remain operable on a narrow viewport."
+    },
+    "FR-007a": {
+      "title": "When no cash drawer can be determined for the signed-in user, the system MUST NOT offer to open a session and MUST show an error directing them to their administrator; it MUST NOT work around the missing permission."
     }
   },
   "size": "normal",
@@ -200,7 +203,10 @@
     "decision: route /sales/cash-sessions gated on SystemObject.pos(44) read; NavBranch index 17 appended",
     "finding: drawer picker needs cashDrawers(10) read, a different object from pos(44) — three-way fallback; FR-007 needs a touch-up",
     "finding: cash_drawer/cashier/cash_supervisor are bare FK ints — first per-row FK resolution in the codebase",
-    "dependency: mbe-api issue A (expand cash-session FKs) and issue B (list filters/sort) to file"
+    "dependency: mbe-api issue A (expand cash-session FKs) and issue B (list filters/sort) to file",
+    "resolved: FR-007a added — no drawer determinable means no open affordance + administrator error, no workaround",
+    "filed: mbe-api#141 expand cash-session FKs to {id,name}",
+    "filed: mbe-api#142 add cashier/date-range/status filters + sort to GET /cash-sessions"
   ],
   "intent": "Give cashiers and supervisors a standalone screen to open a cash drawer shift with an opening amount, close it by counting denominations against an advisory expected-cash figure, and review or recover past and abandoned sessions.",
   "expectations": [

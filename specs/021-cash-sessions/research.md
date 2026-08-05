@@ -227,8 +227,8 @@ precedent for editable amounts in a dialog — workable but worse); a dedicated
 **Decision**: Gate the drawer picker on `can(cashDrawers, read)`. When the user holds it,
 render the standard `CatalogEntityPicker<CashDrawer>`. When they do not, render no picker
 and use their assigned drawer, labelled from `userSettings.cashDrawerName` — which needs
-no request. When they hold neither the privilege nor an assigned drawer, block opening with
-an explanation.
+no request. When they hold neither the privilege nor an assigned drawer, offer no way to open
+a session and show an error directing them to their administrator.
 
 **Rationale**: A finding the spec did not anticipate. `GET /cash-drawers` is gated on
 `SystemObject.CASH_DRAWERS (10)` READ, a different object from the `POS (44)` that gates
@@ -237,15 +237,20 @@ list drawers — the picker would 403 and the screen would look broken. The savi
 that `user_settings` already carries `cashDrawerId` *and* `cashDrawerName`, resolved
 server-side, so the common case needs no drawer lookup at all.
 
-**Spec implication to record**: FR-007 says that when the user has no assigned drawer the
-form "MUST require an explicit drawer selection". That is unachievable for a user without
-`cashDrawers:read` — for them the honest outcome is a blocked open with a message to have
-a drawer assigned, not a picker they cannot populate. FR-007 should be read as covering
-only users who can list drawers; the no-privilege-and-no-drawer path is a third case.
-Flagged for a spec touch-up rather than silently diverged from.
+**Spec implication — RESOLVED 2026-08-04**: FR-007 originally said that a user with no
+assigned drawer must be required to select one, which is unachievable without
+`cashDrawers:read`. Raised with the requester during planning and settled: **the permission
+is a real requirement, not an obstacle for the screen to route around.** FR-007 is now scoped
+to users permitted to browse the drawer catalog, and the new **FR-007a** covers the third
+case — no open affordance at all, plus an error stating a drawer must be assigned and
+directing the user to their administrator. The same treatment covers a fourth case the fork
+also produces: a permitted user facing an empty drawer catalog has nothing to select and the
+remedy is equally administrative.
 
 **Alternatives considered**: always rendering the picker (403s for a legitimate cashier);
-gating the whole feature on `cashDrawers:read` (locks out exactly the cashiers it is for).
+gating the whole feature on `cashDrawers:read` (locks out exactly the cashiers it is for);
+silently opening without a drawer and letting the server's 422 explain (surfaces a raw
+backend string for a condition the client can detect up front).
 
 ---
 
@@ -384,21 +389,27 @@ is added; the enum's own file is where the mapping belongs. Small, mechanical, o
 
 Constitution §III forbids editing mbe-api from an mbe-ui session and requires each needed
 backend change be filed as an issue and recorded as a plan dependency. Neither of these
-blocks implementation; both would delete client code once shipped. Confirmed there are
-currently **zero** open issues on `mictlanix/mbe-api`, so neither is already filed. Filing
-is established practice — spec 020 filed eight.
+blocks implementation; both would delete client code once shipped. Filing is established
+practice — spec 020 filed eight. **Both were filed on 2026-08-04.**
 
-**Issue A — expand the cash-session FKs.** `CashSessionResponse` returns `cash_drawer`,
-`cashier` and `cash_supervisor` as bare ints, while `CashDrawerResponse.facility` is
-already expanded to `{facility_id, name}`. Expanding these three to `{id, name}` matches
-the API's own dominant shape and removes the per-row lookups in §5 entirely.
+**Issue A — [mbe-api#141](https://github.com/mictlanix/mbe-api/issues/141) — expand the
+cash-session FKs.** `CashSessionResponse` returns `cash_drawer`, `cashier` and
+`cash_supervisor` as bare ints, while `CashDrawerResponse.facility` is already expanded to
+`{facility_id, name}`. Expanding these three to `{id, name}` matches the API's own dominant
+shape and removes the per-row lookups in §5 entirely.
 *Impact if unfixed*: up to 20 extra requests on a full history page.
+*When it lands*: delete the drawer-map provider and the per-row employee watches, regenerate
+the client, and flatten `*Name` fields onto `CashSession` the way `CashDrawer` already has.
 
-**Issue B — filters and sort on `GET /cash-sessions`.** Only `cash_drawer` is supported.
-A cashier filter, a date-range filter, an open/stale/closed status filter, and a sort
-choice are all needed for the list to satisfy constitution §VI's filtering rule, which
-this feature cannot otherwise meet (§12, spec D-003).
+**Issue B — [mbe-api#142](https://github.com/mictlanix/mbe-api/issues/142) — filters and
+sort on `GET /cash-sessions`.** Only `cash_drawer` is supported. A cashier filter, a
+date-range filter, an open/stale/closed status filter, and a sort choice are all needed for
+the list to satisfy constitution §VI's filtering rule, which this feature cannot otherwise
+meet (§12, spec D-003). A free-text `search` was deliberately *not* requested — a session has
+no text field to match.
 *Impact if unfixed*: the history list ships with one facet and no search.
+*When it lands*: add the facets to `CashSessionFilter` and close the §VI deviation recorded
+in plan.md's Complexity Tracking.
 
 **Not filed**: returning the closing denomination counts (spec D-004). No requirement in
 this feature needs it — FR-033 explicitly declines to show it — so filing it would be

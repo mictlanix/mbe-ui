@@ -100,8 +100,9 @@ Navigate to **Sales → Cash Sessions**.
 5. Try to open a second → told you already have one, **with the close action offered**.
 6. As a different cashier, try that same drawer → a *different* message about the drawer
    being busy. Both are 409s; confirm the two messages and remedies differ.
-7. Sign in as a user with no assigned drawer and no `cashDrawers` read → opening is blocked
-   with an explanation, not a picker that fails.
+7. Sign in as a user with no assigned drawer and no `cashDrawers` read → **no open affordance
+   at all**, and an error stating a cash drawer must be assigned, directing them to their
+   administrator (FR-007a). Not a picker that fails, and not a disabled button.
 
 ### Counting and closing (User Story 2)
 
@@ -143,11 +144,11 @@ Navigate to **Sales → Cash Sessions**.
 ## Definition of done
 
 - [ ] `flutter analyze` clean, `flutter test` green, l10n parity passing
-- [ ] All 40 functional requirements exercised by a test or a manual step above
+- [ ] All 41 functional requirements exercised by a test or a manual step above
 - [ ] Every privilege-gated action verified **absent** — not disabled — without its privilege
 - [ ] Both 409 paths verified to produce distinct messages, with no `detail` string parsed
 - [ ] The exact-sum property verified in `money_test.dart`
 - [ ] Branch-index assertion present in `app_router_test.dart`
 - [ ] Formatter promotion: all 9 source call sites and 2 test files updated, old file deleted
-- [ ] mbe-api issues A and B filed and linked back into [research.md](./research.md) §14
+- [x] mbe-api issues filed and linked: [#141](https://github.com/mictlanix/mbe-api/issues/141) (expand FKs), [#142](https://github.com/mictlanix/mbe-api/issues/142) (list filters) — see [research.md](./research.md) §14
 - [ ] `.env.template` documents the new `MBE_CASH_SESSION_*` variables

@@ -43,8 +43,14 @@ opening a session does not (research §7):
    drawer and changeable.
 2. Lacks it but has an assigned drawer → a **static, non-editable label** showing
    `userSettings.cashDrawerName`. No request is made; the name is already in the session.
-3. Lacks both → no open affordance; a message explaining a drawer must be assigned to their
-   user. This is the third case FR-007 does not currently describe.
+3. Lacks both → **no open affordance at all**, replaced by an error stating that a cash
+   drawer must be assigned to their user and directing them to their administrator
+   (FR-007a). The screen does not attempt to work around the missing permission.
+
+Case 3's treatment also covers a **permitted user facing an empty drawer catalog**: the
+picker has nothing to offer, so the same error and the same administrative remedy apply.
+Both are detected before any open attempt, so the backend's
+`No cash drawer is configured for your user…` 422 should never be reached in practice.
 
 Submit is absent entirely when the user lacks `pos`/`create` (FR-009's last scenario) —
 absent, never disabled.

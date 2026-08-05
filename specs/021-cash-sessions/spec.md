@@ -15,6 +15,7 @@
 - Q: How much surface should this feature cover — a standalone screen, or should it also gate the Point of Sale screen? → A: **Standalone screen only.** This feature MUST NOT edit or depend on spec 020's Point of Sale screen. No session banner in the POS header, no forced-close routing out of POS. Spec 020 is `ready-to-implement` but not started, and lists "Cash session opening, closing, counting or reconciliation" in its own Out of Scope; the two features stay independent and shippable in either order. Wiring POS to the session state is a deliberate follow-up.
 - Q: The backend stores denomination counts but computes no expected cash and no variance. What should the close flow show? → A: **Counted versus expected cash, with an over/short difference, computed by the client.** Expected cash = the session's opening amount plus its cash-method payment total. The figure MUST be labelled advisory, because the backend's per-method payment totals exclude expense vouchers and other non-payment drawer movements.
 - Q: Should a session history list be in scope? → A: **Yes**, paginated, with a cash drawer filter and a close action reachable from open and stale rows. It is the only way to reach *orphaned* open sessions: production data contains cashiers with three and four sessions open simultaneously (left by the legacy monolith), and the current-session lookup returns only the most recent, so the others are otherwise unreachable and can never be closed.
+- Q: Browsing the cash drawer catalog needs a different permission than opening a session, so a cashier may be able to open a shift yet unable to pick a drawer. What should happen when such a user also has no drawer assigned? → A: **Do not work around the missing permission.** Offer no way to open a session and show an error telling the user a cash drawer must be assigned to them, directing them to their administrator. The permission is a real requirement, not an obstacle for the screen to route around. Recorded as FR-007a; the same treatment covers an empty cash drawer catalog. Raised during planning (research.md §7).
 - Q: Must a closing count be non-empty? The backend accepts an empty count list. → A: The client requires a deliberate count. Only denominations with a quantity above zero are submitted, and a genuinely empty drawer MUST be recorded through an explicit "counted and empty" confirmation rather than by silently submitting nothing.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -36,7 +37,8 @@ A cashier starting a shift needs to see, at a glance, whether they already have 
 
 1. **Given** a cashier with no open session, **When** they open the cash session screen, **Then** it states that they have no open session and offers to open one.
 2. **Given** a cashier whose user has an assigned cash drawer, **When** the open form is shown, **Then** that drawer is preselected and identified by name, and the cashier may change it to another drawer.
-3. **Given** a cashier whose user has **no** assigned cash drawer, **When** the open form is shown, **Then** no drawer is preselected and choosing one is required before the session can be opened.
+3. **Given** a cashier whose user has **no** assigned cash drawer but who may browse the cash drawer catalog, **When** the open form is shown, **Then** no drawer is preselected and choosing one is required before the session can be opened.
+3a. **Given** a cashier with no assigned cash drawer who may **not** browse the cash drawer catalog, **When** they open the screen, **Then** no open affordance is shown and an error states that a cash drawer must be assigned to their user, directing them to their administrator.
 4. **Given** the open form with a drawer chosen, **When** the cashier enters an opening cash amount and confirms, **Then** a session is opened for that drawer and the screen shows it as open with its start time and opening amount.
 5. **Given** the open form, **When** the cashier leaves the opening amount blank or enters zero, **Then** the session may still be opened and its opening amount reads as zero.
 6. **Given** the open form, **When** the cashier enters a negative opening amount, **Then** the form rejects it before submitting and explains that the amount cannot be negative.
@@ -116,6 +118,8 @@ A cashier left a session open overnight, or the legacy system left several sessi
 ## Edge Cases
 
 - The signed-in user has no assigned cash drawer and does not choose one — the open attempt must be prevented client-side with a clear explanation rather than surfacing a raw backend rejection.
+- The signed-in user has no assigned cash drawer and is not permitted to browse the cash drawer catalog — there is nothing they can select, so the remedy is administrative, not something the screen can offer (FR-007a).
+- The cash drawer catalog is empty, so even a permitted user has nothing to select — same administrative remedy.
 - The chosen cash drawer was deleted between loading the picker and opening the session.
 - Two cashiers race to open a session on the same drawer; the loser must get the drawer-busy explanation, not a generic failure.
 - The same session is closed twice — from two tabs, or from the shift panel and the history detail at once.
@@ -144,7 +148,8 @@ A cashier left a session open overnight, or the legacy system left several sessi
 
 - **FR-005**: A user holding the create privilege for cash sessions MUST be able to open a session by selecting a cash drawer and declaring an opening cash amount.
 - **FR-006**: The open form MUST preselect the cash drawer assigned to the signed-in user and identify it by name.
-- **FR-007**: When the signed-in user has no assigned cash drawer, the open form MUST require an explicit drawer selection and MUST prevent submission until one is chosen, rather than allowing a submission that the backend would reject.
+- **FR-007**: When the signed-in user has no assigned cash drawer but is permitted to browse the cash drawer catalog, the open form MUST require an explicit drawer selection and MUST prevent submission until one is chosen, rather than allowing a submission that the backend would reject.
+- **FR-007a**: When no cash drawer can be determined for the signed-in user — because they have none assigned and are not permitted to browse the cash drawer catalog, or because no cash drawer exists — the system MUST NOT offer to open a session, and MUST show an error stating that a cash drawer must be assigned to their user and directing them to their administrator. The system MUST NOT attempt to work around the missing permission.
 - **FR-008**: The open form MUST accept an opening amount of zero, MUST default to zero when left blank, and MUST reject a negative amount before submitting.
 - **FR-009**: The system MUST distinguish, with different messages and different suggested remedies, a refusal because the selected drawer already has an open session from a refusal because the signed-in user already has one open elsewhere.
 - **FR-010**: When the refusal is that the user already has an open session, the system MUST surface the close action for that session instead of leaving the open form as the only path forward.
