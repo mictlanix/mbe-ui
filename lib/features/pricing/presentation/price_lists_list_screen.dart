@@ -12,9 +12,9 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_controller.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _priceListsPath = '/price-lists';
@@ -92,14 +92,14 @@ class PriceListsListScreen extends ConsumerWidget {
                   numeric: true,
                   fixedWidth: 140,
                   cellBuilder: (context, p) =>
-                      Text(PricingFormatters.percent(p.highProfitMargin)),
+                      Text(MoneyFormatters.percent(p.highProfitMargin)),
                 ),
                 DataTableColumn(
                   label: l10n.columnLowProfitMargin,
                   numeric: true,
                   fixedWidth: 140,
                   cellBuilder: (context, p) =>
-                      Text(PricingFormatters.percent(p.lowProfitMargin)),
+                      Text(MoneyFormatters.percent(p.lowProfitMargin)),
                 ),
               ],
               rows: page.items,

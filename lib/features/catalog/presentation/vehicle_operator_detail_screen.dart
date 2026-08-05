@@ -10,11 +10,11 @@ import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_form_controller.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Create / view / edit screen for a single vehicle operator (FR-015,
@@ -203,7 +203,7 @@ class _VehicleOperatorDetailScreenState
                   ),
                   child: Text(
                     formState.issueDate != null
-                        ? PricingFormatters.date(formState.issueDate!)
+                        ? MoneyFormatters.date(formState.issueDate!)
                         : '',
                   ),
                 ),
@@ -236,7 +236,7 @@ class _VehicleOperatorDetailScreenState
                   ),
                   child: Text(
                     formState.expirationDate != null
-                        ? PricingFormatters.date(formState.expirationDate!)
+                        ? MoneyFormatters.date(formState.expirationDate!)
                         : '',
                   ),
                 ),

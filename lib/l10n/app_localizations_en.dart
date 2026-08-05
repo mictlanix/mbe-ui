@@ -2316,4 +2316,176 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get certificateUploadFailedError => 'Failed to register certificate.';
+
+  @override
+  String get cashSessionsMenuTitle => 'Cash Sessions';
+
+  @override
+  String get cashSessionStatusOpen => 'Open';
+
+  @override
+  String get cashSessionStatusStale => 'Stale';
+
+  @override
+  String get cashSessionStatusClosed => 'Closed';
+
+  @override
+  String get cashSessionDrawerFieldLabel => 'Cash drawer';
+
+  @override
+  String get cashSessionCashierFieldLabel => 'Cashier';
+
+  @override
+  String get cashSessionStartFieldLabel => 'Start';
+
+  @override
+  String get cashSessionEndFieldLabel => 'End';
+
+  @override
+  String get cashSessionOpenButtonLabel => 'Open session';
+
+  @override
+  String get cashSessionOpeningAmountFieldLabel => 'Opening amount';
+
+  @override
+  String get cashSessionNoOpenSessionMessage =>
+      'You have no open cash session.';
+
+  @override
+  String get cashSessionDrawerBlockedMessage =>
+      'A cash drawer must be assigned to your user before you can open a session. Contact your administrator.';
+
+  @override
+  String get cashSessionDrawerBusyError =>
+      'That cash drawer already has an open session. Choose a different drawer.';
+
+  @override
+  String get cashSessionCashierBusyError =>
+      'You already have an open session. Close it before opening another.';
+
+  @override
+  String get cashSessionCloseButtonLabel => 'Close session';
+
+  @override
+  String get cashSessionPaymentsByMethodLabel => 'Payments taken this shift';
+
+  @override
+  String get cashSessionStaleWarningMessage =>
+      'This session was opened on an earlier day and must be closed before you can continue selling.';
+
+  @override
+  String get cashSessionOpenFailedError => 'Failed to open the cash session.';
+
+  @override
+  String get cashSessionOpenPermissionDeniedError =>
+      'You no longer have permission to open a cash session.';
+
+  @override
+  String get cashSessionCountedTotalLabel => 'Counted total';
+
+  @override
+  String get cashSessionExpectedCashLabel => 'Expected cash';
+
+  @override
+  String get cashSessionDifferenceLabel => 'Difference';
+
+  @override
+  String get cashSessionDifferenceOver => 'Over';
+
+  @override
+  String get cashSessionDifferenceShort => 'Short';
+
+  @override
+  String get cashSessionDifferenceZero => 'Exact';
+
+  @override
+  String get cashSessionAdvisoryNote =>
+      'Advisory only: covers the opening amount and cash payments taken this shift. Does not account for expense vouchers or other cash movements out of the drawer.';
+
+  @override
+  String get cashSessionEmptyCountConfirmTitle => 'Confirm empty drawer';
+
+  @override
+  String get cashSessionEmptyCountConfirmMessage =>
+      'Every denomination is at zero. Confirm the drawer was counted and found empty before closing.';
+
+  @override
+  String get cashSessionConfirmEmptyCountButton => 'Confirm empty';
+
+  @override
+  String get cashSessionAlreadyClosedError => 'This session is already closed.';
+
+  @override
+  String get cashSessionSupervisorRequiredMessage =>
+      'A user with closing rights must close this session.';
+
+  @override
+  String get cashSessionClosedByFieldLabel => 'Closed by';
+
+  @override
+  String get cashSessionQuantityInvalidError =>
+      'Enter a valid, non-negative whole number for each denomination.';
+
+  @override
+  String get cashSessionSessionNotFoundError =>
+      'This session no longer exists.';
+
+  @override
+  String get cashSessionCloseFailedError => 'Failed to close the cash session.';
+
+  @override
+  String get cashSessionClosePermissionDeniedError =>
+      'You no longer have permission to close a cash session.';
+
+  @override
+  String get cashSessionCloseSuccessTitle => 'Session closed';
+
+  @override
+  String cashSessionCloseSuccessMessage(
+    String counted,
+    String expected,
+    String difference,
+  ) {
+    return 'Counted $counted, expected $expected, difference $difference. These figures will not be shown again.';
+  }
+
+  @override
+  String get cashSessionViewTitle => 'Cash session';
+
+  @override
+  String get cashSessionLoadFailedError => 'Failed to load the cash session.';
+
+  @override
+  String get okButton => 'OK';
+
+  @override
+  String get cashSessionsListEmptyMessage => 'No cash sessions found.';
+
+  @override
+  String get cashSessionsFilterDrawerLabel => 'Cash drawer';
+
+  @override
+  String get cashSessionsFilterCashierLabel => 'Cashier';
+
+  @override
+  String get cashSessionsFilterStatusLabel => 'Status';
+
+  @override
+  String get cashSessionColumnDrawer => 'Drawer';
+
+  @override
+  String get cashSessionColumnCashier => 'Cashier';
+
+  @override
+  String get cashSessionColumnStart => 'Start';
+
+  @override
+  String get cashSessionColumnEnd => 'End';
+
+  @override
+  String get cashSessionColumnStatus => 'Status';
+
+  @override
+  String get cashSessionOtherSessionsWarningMessage =>
+      'You may have other open sessions that need attention. Check the history below.';
 }

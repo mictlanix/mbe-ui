@@ -35,6 +35,12 @@ class NavBranch {
   static const int facilities = 14;
   static const int paymentMethodOptions = 15;
   static const int taxpayerIssuers = 16;
+
+  // 021-cash-sessions: appended last, not renumbered into the sequence —
+  // appending avoids renumbering every constant above it for no functional
+  // gain (NavBranch order is already not display order; see `pricing`
+  // above, under Sales, versus `facilities`, under Catalogs).
+  static const int cashSessions = 17;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -220,6 +226,15 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.taxpayerIssuers,
         gate: (object: SystemObject.taxpayers, right: AccessRight.read),
       ),
+      NavDestination(
+        id: 'cash-sessions',
+        label: _cashSessionsLabel,
+        icon: Icons.point_of_sale_outlined,
+        selectedIcon: Icons.point_of_sale,
+        route: '/sales/cash-sessions',
+        branchIndex: NavBranch.cashSessions,
+        gate: (object: SystemObject.pos, right: AccessRight.read),
+      ),
     ],
   ),
 ];
@@ -249,6 +264,7 @@ String _paymentMethodOptionsLabel(AppLocalizations l10n) =>
     l10n.paymentMethodOptionsMenuTitle;
 String _taxpayerIssuersLabel(AppLocalizations l10n) =>
     l10n.taxpayerIssuersMenuTitle;
+String _cashSessionsLabel(AppLocalizations l10n) => l10n.cashSessionsMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

@@ -26,10 +26,13 @@ import 'package:mbe_api_client/src/model/application_create.dart';
 import 'package:mbe_api_client/src/model/application_response.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
+import 'package:mbe_api_client/src/model/cash_drawer_summary.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_update.dart';
 import 'package:mbe_api_client/src/model/cash_session_close.dart';
 import 'package:mbe_api_client/src/model/cash_session_open.dart';
 import 'package:mbe_api_client/src/model/cash_session_response.dart';
+import 'package:mbe_api_client/src/model/cash_session_sort.dart';
+import 'package:mbe_api_client/src/model/cash_session_status.dart';
 import 'package:mbe_api_client/src/model/change_password_request.dart';
 import 'package:mbe_api_client/src/model/commission.dart';
 import 'package:mbe_api_client/src/model/commission1.dart';
@@ -256,10 +259,13 @@ part 'serializers.g.dart';
   ApplicationResponse,
   CashDrawerCreate,
   CashDrawerResponse,
+  CashDrawerSummary,
   CashDrawerUpdate,
   CashSessionClose,
   CashSessionOpen,
   CashSessionResponse,
+  CashSessionSort,
+  CashSessionStatus,
   ChangePasswordRequest,
   Commission,
   Commission1,

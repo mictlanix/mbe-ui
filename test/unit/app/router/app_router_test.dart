@@ -34,6 +34,9 @@ import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.d
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
+import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockProductRepository extends Mock implements ProductRepository {}
@@ -58,6 +61,8 @@ class MockPaymentMethodOptionRepository extends Mock
 
 class MockTaxpayerIssuerRepository extends Mock
     implements TaxpayerIssuerRepository {}
+
+class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 
 /// Bypasses `AuthNotifier.build()`'s real `TokenStorage`/`AuthRepository`
 /// round-trip, resolving directly to a fixed [AuthState] — this test only
@@ -142,6 +147,18 @@ const _fiscalCatalogsReaderUser = User(
     Privilege(systemObject: SystemObject.paymentMethodOptions, rawValue: 2),
     Privilege(systemObject: SystemObject.taxpayers, rawValue: 2),
   ],
+);
+
+/// Holds read on `pos` (44) — the gate for 021-cash-sessions' `/sales/
+/// cash-sessions` route (not `cashSessionClose`, which would lock out the
+/// cashiers the screen exists for).
+const _posReaderUser = User(
+  userId: 'pos-reader',
+  email: 'pos-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.pos, rawValue: 2)],
 );
 
 /// Holds read on the three renumbered branches
@@ -290,6 +307,17 @@ void main() {
       ),
     ).thenAnswer((_) async => const FacilityListResult(items: [], total: 0));
 
+    // 021-cash-sessions: the real screen (T022 onward) watches
+    // currentSessionControllerProvider, which calls getCurrent() eagerly —
+    // without this override that spawns a real, unmocked network call whose
+    // pending timer trips the leak detector at teardown (contracts/routes.md
+    // §4). The current stub screen doesn't call it yet, but the override is
+    // added now so this shared file is edited once, not twice.
+    final cashSessionRepository = MockCashSessionRepository();
+    when(() => cashSessionRepository.getCurrent()).thenAnswer(
+      (_) async => const CurrentSession(state: SessionState.none),
+    );
+
     final container = ProviderContainer(
       overrides: [
         authNotifierProvider.overrideWith(
@@ -319,6 +347,7 @@ void main() {
           taxpayerIssuerRepository,
         ),
         facilityRepositoryProvider.overrideWithValue(facilityRepository),
+        cashSessionRepositoryProvider.overrideWithValue(cashSessionRepository),
       ],
     );
     addTearDown(container.dispose);
@@ -451,6 +480,73 @@ void main() {
       // section of the Taxpayer Issuer detail (research §9), so there is
       // nothing to gate independently here; its RBAC is exercised by the
       // Certificates section's own widget tests instead.
+    },
+  );
+
+  group(
+    '021-cash-sessions — /sales/cash-sessions gates on pos/read (FR-036, '
+    'contracts/routes.md §2)',
+    () {
+      testWidgets('a user with pos:read reaches /sales/cash-sessions', (
+        tester,
+      ) async {
+        final handle = await pumpAt(
+          tester,
+          _posReaderUser,
+          '/sales/cash-sessions',
+        );
+        expect(handle.router.state.uri.path, '/sales/cash-sessions');
+      });
+
+      testWidgets(
+        'a user without pos:read is redirected away from '
+        '/sales/cash-sessions',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/cash-sessions',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'the detail route /sales/cash-sessions/:cashSessionId parses its '
+        'int param and gates identically to the list route',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _posReaderUser,
+            '/sales/cash-sessions/42',
+          );
+          expect(handle.router.state.uri.path, '/sales/cash-sessions/42');
+        },
+      );
+
+      testWidgets(
+        'a user without pos:read is redirected away from the detail route '
+        'too',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/cash-sessions/42',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'activates shell branch NavBranch.cashSessions (17) — the only '
+        'guard against a silent branch-index mismatch (contracts/routes.md '
+        '§3)',
+        (tester) async {
+          await pumpAt(tester, _posReaderUser, '/sales/cash-sessions');
+          final shell = tester.widget<AppShell>(find.byType(AppShell));
+          expect(shell.navigationShell.currentIndex, NavBranch.cashSessions);
+        },
+      );
     },
   );
 

@@ -15,7 +15,7 @@ import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart'
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_formatters.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockExchangeRateRepository extends Mock
@@ -123,7 +123,7 @@ void main() {
       await pumpScreen(tester, exchangeRateId: 1);
 
       expect(
-        find.text(PricingFormatters.date(DateTime(2026, 7, 17))),
+        find.text(MoneyFormatters.date(DateTime(2026, 7, 17))),
         findsOneWidget,
       );
 

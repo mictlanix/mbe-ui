@@ -34,7 +34,7 @@ Future<void> main() async {
   } else {
     WidgetsFlutterBinding.ensureInitialized();
   }
-  // Required by PricingFormatters.date (package:intl's DateFormat throws
+  // Required by MoneyFormatters.date (package:intl's DateFormat throws
   // LocaleDataException without this) — the feature's first use of intl's
   // DateFormat beyond the generated l10n code (specs/011-product-pricing
   // research.md §10).
