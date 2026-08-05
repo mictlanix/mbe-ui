@@ -61,3 +61,7 @@ echo "Running build_runner to generate built_value *.g.dart files ..."
 (cd "${REPO_ROOT}/${OUTPUT_DIR}" && dart pub get && dart run build_runner build)
 
 echo "Done. Generated client is at ${OUTPUT_DIR}"
+
+dart format ${OUTPUT_DIR}
+
+echo "Generated client's code at ${OUTPUT_DIR} was formatted"
