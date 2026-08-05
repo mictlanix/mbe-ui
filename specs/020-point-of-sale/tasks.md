@@ -18,9 +18,21 @@ to a screen.
 **Organization**: Grouped by user story. Phases 3–7 map to the spec's P1–P5.
 
 **Revised 2026-08-04** after `/speckit-analyze` found 2 critical and 3 high
-findings: 3 tasks inserted (T030, T098, T099) and 9 existing tasks amended.
-Every renumbered ID below reflects that pass — see the per-task notes citing
-"analysis finding *Nx/Cx*" for what changed and why.
+findings: 3 tasks inserted (T030 and two compact-layout tests, now T097/T098
+after the second revision below) and 9 existing tasks amended. Every
+renumbered ID reflects that pass — see the per-task notes citing "analysis
+finding *Nx/Cx*" for what changed and why.
+
+**Revised again 2026-08-04** after mbe-api's team confirmed the legacy system
+re-priced a sale's lines on a customer change, which the current backend does
+not (verified against `update_order`'s source — research.md §17). FR-015 was
+redesigned around that intended behavior; the "show a notice" task (old T089)
+is removed — there is nothing to notify once repricing genuinely happens, since
+the screen already reflects every server-driven change automatically (FR-007,
+FR-008) — and its test (old T091) is repurposed rather than deleted. Filed as
+[mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131), tracked as a
+**blocking** dependency in spec.md D-005. Net: −1 task (104 total), Phases 6–8
+renumbered.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -92,7 +104,7 @@ lines and shows a zero balance (SC-001).
 - [ ] T020 [US1] Add `productLookup()` mapping to `SalesOrderRepository`/`SalesOrderRepositoryImpl` (T009/T010), returning `List<ProductLookupResult>` — depends on T019
 - [ ] T021 [P] [US1] Create `productLookupControllerProvider`, an autodispose family keyed by search text and warehouse, in `lib/features/sales/presentation/capture/product_lookup_controller.dart` — depends on T020
 - [ ] T022 [P] [US1] Create `ProductSearchField` in `lib/features/sales/presentation/capture/product_search_field.dart` — one field for scan and search, submits on Enter, keeps focus and clears after a successful add, shows a results list on multiple matches (FR-020, FR-021); owns its own `TextEditingController`/`FocusNode`, independent of `Sale` rebuilds, so an in-flight mutation elsewhere on the screen never drops keystrokes or steals focus here (FR-010, analysis finding C6) — depends on T021
-- [ ] T023 [P] [US1] Create `CustomerBar` in `lib/features/sales/presentation/capture/customer_bar.dart` — walk-in customer preselected, shows name/credit line/balance/price list, offers search-a-different-customer via the existing catalog customer picker (FR-011, FR-012), and an immediate/credit payment-terms toggle wired to `PosSaleController.updateHeader(paymentTerms: …)` that surfaces the server's refusal when the customer has no available credit line (FR-016, analysis finding C2)
+- [ ] T023 [P] [US1] Create `CustomerBar` in `lib/features/sales/presentation/capture/customer_bar.dart` — walk-in customer preselected, shows name/credit line/balance/price list, offers search-a-different-customer via the existing catalog customer picker wired to `PosSaleController.updateHeader(customer: …)` (FR-011, FR-012), and an immediate/credit payment-terms toggle wired the same way, surfacing the server's refusal when the customer has no available credit line (FR-016, analysis finding C2); no special handling is needed for FR-015's repricing — once [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) ships, the `updateHeader` response already carries repriced lines through T012's normal wholesale replace. **Until #131 ships**, a customer switch here silently leaves lines at their old price (spec.md D-005, accepted interim risk) — flag this to whoever schedules the P1 release
 - [ ] T024 [US1] Create `FulfillmentModeSelector` in `lib/features/sales/presentation/capture/fulfillment_mode_selector.dart` — the three-chip Tienda/Domicilio/Mixta control (FR-017); in this phase only Tienda is wired to `PosSaleController.updateHeader`, Domicilio/Mixta are rendered but inert until US2 (T060) makes them functional
 - [ ] T025 [US1] Create `SaleLineRow` (expanded tier) in `lib/features/sales/presentation/capture/sale_line_row.dart` — product, warehouse picker with availability, quantity stepper, in-place price/discount edit, read-only tax rate (FR-023, amended per research §12), line total, delete, and the non-blocking shortfall warning (FR-025, FR-026) — depends on T012
 - [ ] T026 [P] [US1] Create `SaleTotalsBar` in `lib/features/sales/presentation/capture/sale_totals_bar.dart` — line count, unit count, subtotal, discount, tax, grand total, all read from `Sale` (FR-028)
@@ -201,10 +213,9 @@ form and confirm the sale is now attached to that customer with their price list
 applied to subsequently added lines.
 
 - [ ] T087 [US4] Create `customer_inline_create.dart` in `lib/features/sales/presentation/customer_inline_create.dart` wrapping the existing `lib/features/catalog/presentation/customer_form_controller.dart` behind a dialog (≥ 600 px) / full-screen route (< 600 px), per FR-013 and A-002 (the cashier types the code)
-- [ ] T088 [US4] Wire `CustomerBar`'s "create customer" affordance (T023) to open the dialog and, on save, `PUT` the sale's customer and refresh `Sale` via `PosSaleController` (FR-014) — depends on T087
-- [ ] T089 [US4] Render the FR-015 notice when the customer changes on a sale that already has lines, stating that existing lines keep their captured prices — depends on T088
-- [ ] T090 [P] [US4] Add the customer-inline-create strings to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; run `flutter gen-l10n`
-- [ ] T091 [P] [US4] Widget test that creating a customer attaches it to the sale and shows the FR-015 notice when lines already exist, in `test/widget/features/sales/customer_inline_create_test.dart`
+- [ ] T088 [US4] Wire `CustomerBar`'s "create customer" affordance (T023) to open the dialog and, on save, attach the new customer via `PosSaleController.updateHeader(customer: …)` (FR-014); like T023's customer-switch path, this needs no separate handling for FR-015 — the `updateHeader` response already carries repriced lines once [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) ships — depends on T087
+- [ ] T089 [P] [US4] Add the customer-inline-create strings to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; run `flutter gen-l10n`
+- [ ] T090 [P] [US4] Widget test that creating a customer attaches it to the sale (FR-014) and that its line list reflects whatever `Sale` the fake repository returns after the header update — the general server-truth-reflection behavior FR-015 now relies on, exercised concretely via a customer attach rather than a bespoke notice (analysis follow-up: this task replaces the old "renders an FR-015 notice" test, which no longer applies now that FR-015 describes a reprice, not a preservation, of existing prices) — in `test/widget/features/sales/customer_inline_create_test.dart`
 
 **Checkpoint**: User Stories 1 through 4 all independently functional.
 
@@ -219,14 +230,14 @@ journeys, not only the counter sale (SC-007).
 **Independent Test**: Drive the complete counter-sale story at 390 px wide
 without horizontal scrolling and with every control reachable (SC-007).
 
-- [ ] T092 [P] [US5] Create `SaleLineCard` (compact tier) in `lib/features/sales/presentation/capture/sale_line_card.dart`
-- [ ] T093 [US5] Switch `CaptureStep` between `SaleLineRow` (≥ 600 px) and `SaleLineCard` (< 600 px) via the central breakpoints, pinning `SaleTotalsBar` and the primary action to the bottom (FR-053) — depends on T027, T092
-- [ ] T094 [US5] Collapse `PosHeaderBand`'s stepper to a "Paso N de M" label and the selector to a compact chip below 600 px — depends on T080
-- [ ] T095 [US5] Verify/adjust `PaymentStep`'s compact layout so amount entry, quick amounts, the method grid and applied payments are all reachable by vertical scroll alone, reusing `NumberPad` as-is — depends on T041
-- [ ] T096 [US5] Verify/adjust `DeliveryStep`'s compact layout as stacked expandable destination cards — depends on T067
-- [ ] T097 [P] [US5] Widget test the complete counter-sale journey at 390 px renders with zero horizontal scroll and every control reachable, in `test/widget/features/sales/pos_compact_layout_test.dart` — depends on T093, T094, T095
-- [ ] T098 [P] [US5] Widget test the delivery-mode journey (US2) at 390 px — mode selection, the main-address requirement, destination cards, the editor and the distribution panel all reachable by vertical scroll alone with zero horizontal scroll (SC-007, analysis finding C5) — in `test/widget/features/sales/pos_compact_delivery_test.dart` — depends on T096
-- [ ] T099 [P] [US5] Widget test resuming an open sale and creating a customer inline (US3, US4) at 390 px, confirming both are reachable with zero horizontal scroll (SC-007, analysis finding C5) — in `test/widget/features/sales/pos_compact_resume_and_customer_test.dart` — depends on T082, T087
+- [ ] T091 [P] [US5] Create `SaleLineCard` (compact tier) in `lib/features/sales/presentation/capture/sale_line_card.dart`
+- [ ] T092 [US5] Switch `CaptureStep` between `SaleLineRow` (≥ 600 px) and `SaleLineCard` (< 600 px) via the central breakpoints, pinning `SaleTotalsBar` and the primary action to the bottom (FR-053) — depends on T027, T091
+- [ ] T093 [US5] Collapse `PosHeaderBand`'s stepper to a "Paso N de M" label and the selector to a compact chip below 600 px — depends on T080
+- [ ] T094 [US5] Verify/adjust `PaymentStep`'s compact layout so amount entry, quick amounts, the method grid and applied payments are all reachable by vertical scroll alone, reusing `NumberPad` as-is — depends on T041
+- [ ] T095 [US5] Verify/adjust `DeliveryStep`'s compact layout as stacked expandable destination cards — depends on T067
+- [ ] T096 [P] [US5] Widget test the complete counter-sale journey at 390 px renders with zero horizontal scroll and every control reachable, in `test/widget/features/sales/pos_compact_layout_test.dart` — depends on T092, T093, T094
+- [ ] T097 [P] [US5] Widget test the delivery-mode journey (US2) at 390 px — mode selection, the main-address requirement, destination cards, the editor and the distribution panel all reachable by vertical scroll alone with zero horizontal scroll (SC-007, analysis finding C5) — in `test/widget/features/sales/pos_compact_delivery_test.dart` — depends on T095
+- [ ] T098 [P] [US5] Widget test resuming an open sale and creating a customer inline (US3, US4) at 390 px, confirming both are reachable with zero horizontal scroll (SC-007, analysis finding C5) — in `test/widget/features/sales/pos_compact_resume_and_customer_test.dart` — depends on T082, T087
 
 **Checkpoint**: All five user stories independently functional, at every supported width.
 
@@ -237,12 +248,12 @@ without horizontal scrolling and with every control reachable (SC-007).
 **Purpose**: Close out the backend gaps this feature documented rather than
 silently accepted, and verify the whole feature once more as a whole.
 
-- [ ] T100 [P] File the five mbe-api issues from [contracts/mbe-api-pos.md](./contracts/mbe-api-pos.md) §5 (customer addresses, contacts API, sale-payments listing, optional line tax rate, optional `point_sale` filter) and link them back from research.md
-- [ ] T101 Re-verify codegen parity once more against the mbe-api revision this feature actually ships against, confirming today's stopgaps (research.md §9–§12) are still accurate
-- [ ] T102 [P] Accessibility pass: tooltip or semantic label on every icon-only control across the capture, payment and delivery steps
-- [ ] T103 `flutter analyze` across `lib/features/sales/` with zero warnings
-- [ ] T104 Run the complete [quickstart.md](./quickstart.md) scenario set manually against a live mbe-api and record the results
-- [ ] T105 Run the full automated suite — unit, widget and integration — and confirm green
+- [ ] T099 [P] Check the status of all 8 filed mbe-api issues ([contracts/mbe-api-pos.md](./contracts/mbe-api-pos.md) §5: #131–#138) and, for any that have shipped, remove the corresponding stopgap and its "analysis finding"/gap notes from spec.md, research.md, contracts/ and this file rather than leaving a superseded workaround in place
+- [ ] T100 Re-verify codegen parity once more against the mbe-api revision this feature actually ships against, confirming today's stopgaps (research.md §9–§12, §17) are still accurate — in particular, confirm whether #131 has landed and, if so, remove the D-005 interim-risk note from spec.md
+- [ ] T101 [P] Accessibility pass: tooltip or semantic label on every icon-only control across the capture, payment and delivery steps
+- [ ] T102 `flutter analyze` across `lib/features/sales/` with zero warnings
+- [ ] T103 Run the complete [quickstart.md](./quickstart.md) scenario set manually against a live mbe-api and record the results
+- [ ] T104 Run the full automated suite — unit, widget and integration — and confirm green
 
 ---
 

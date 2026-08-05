@@ -148,8 +148,10 @@ facility plus `mine` is the closest available approximation, and it is the one
 the mock's "4 abiertos hoy" chip needs.
 
 **Alternatives considered**: filtering client-side over an unfiltered page
-(rejected: unbounded); asking mbe-api for a `point_sale` filter (deferred — the
-facility+mine approximation is adequate and this is a nice-to-have, not a gap).
+(rejected: unbounded); asking mbe-api for a `point_sale` filter — filed as
+[mbe-api#136](https://github.com/mictlanix/mbe-api/issues/136); the
+facility+mine approximation is adequate in the meantime, so this is a
+nice-to-have, not a gap.
 
 ---
 
@@ -173,8 +175,9 @@ must be a client-side table.
 
 **Alternatives considered**: hardcoding the eight methods from the mock
 (rejected: ignores per-facility configuration that already exists); asking
-mbe-api to add a `requires_reference` flag (worth filing eventually; not a
-blocker, since the rule is stable and small).
+mbe-api to add a `requires_reference` flag — tracked as
+[contracts/mbe-api-pos.md](./contracts/mbe-api-pos.md) §5 issue #7, not a
+blocker since the rule is stable and small.
 
 ---
 
@@ -226,12 +229,12 @@ carries no addresses, `GET /addresses` has no `customer` filter (only `search`,
 cannot be satisfied as written. P1 is unaffected — a counter sale needs no
 address beyond the facility's own.
 
-**Decision**: File an mbe-api issue for `GET /customers/{id}/addresses` and a
-link route. Until it ships, the address picker searches the global address list
-(`GET /addresses?search=`) and a newly created address is used directly as
-`ship_to` without being linked to the customer. The sales order and delivery
-order both accept any address id, so the flow works — it is the *filtering* that
-degrades.
+**Decision**: Filed as [mbe-api#132](https://github.com/mictlanix/mbe-api/issues/132)
+(`GET /customers/{id}/addresses` and a link route). Until it ships, the address
+picker searches the global address list (`GET /addresses?search=`) and a newly
+created address is used directly as `ship_to` without being linked to the
+customer. The sales order and delivery order both accept any address id, so
+the flow works — it is the *filtering* that degrades.
 
 ---
 
@@ -247,8 +250,9 @@ FR-029/FR-031 require) have nowhere structured to live.
 
 **Decision**: Capture contact name and phone in the destination card and write
 them into the delivery order's `comment` in a fixed format, so the information
-reaches whoever prepares and delivers the order. Leave `contact` null. File an
-mbe-api issue for a contacts API and replace the stopgap when it ships.
+reaches whoever prepares and delivers the order. Leave `contact` null. Filed as
+[mbe-api#133](https://github.com/mictlanix/mbe-api/issues/133); replace the
+stopgap when it ships.
 
 ---
 
@@ -266,7 +270,8 @@ so the gate in FR-049 is never wrong — only the itemisation is missing.
 **Decision**: Show payments captured in the current session from the controller's
 own state; on a resumed sale show the balance with an explicit note that earlier
 payments were taken in another session, rather than an empty list that reads as
-"no payments". File an mbe-api issue for `GET /sales-orders/{id}/payments`.
+"no payments". Filed as [mbe-api#134](https://github.com/mictlanix/mbe-api/issues/134)
+(`GET /sales-orders/{id}/payments`).
 
 ---
 
@@ -278,10 +283,12 @@ payments were taken in another session, rather than an empty list that reads as
 **Impact**: the mock's per-line IVA dropdown cannot write anything. FR-023 lists
 "tax treatment" among the in-place editable fields.
 
-**Decision**: Render the line's tax rate **read-only**. File an mbe-api issue if
-the business genuinely needs per-line tax override; do not build a control that
-cannot save. FR-023 is amended accordingly (noted in plan.md's Complexity
-Tracking).
+**Decision**: Render the line's tax rate **read-only**. Filed as
+[mbe-api#135](https://github.com/mictlanix/mbe-api/issues/135), as a question —
+a product-level single source of truth for tax rate may be intentional, in
+which case this closes as "working as intended." Do not build a control that
+cannot save regardless of the answer. FR-023 is amended accordingly (noted in
+plan.md's Complexity Tracking).
 
 ---
 
@@ -362,3 +369,36 @@ expose the calls in §2 — so this is a parity check, not an expected regenerat
 real money, and both are pure logic that can be tested without a server. The
 integration test is the only way to prove the §2 sequence end to end, because
 its preconditions live in the server.
+
+---
+
+## 17. GAP (blocking, post-planning) — a customer change never re-prices existing lines
+
+**Finding**: `update_order`'s customer branch
+(`app/services/sales_order_service.py`) is exactly
+`order.customer = customer.customer_id` — nothing else. It never touches
+`SalesOrderDetail`. This is a genuine absence, not a memory-recall guess: the
+full function was re-read line by line for this entry, and a repo-wide search
+for `reprice`/`re-price`/`price_list`/`_price_for` in that file turns up only
+three call sites, all inside `add_line`/`update_line`, which price a line *at
+the moment it is touched* — never in bulk in response to a header change.
+Contrast `_change_currency`, three lines below the customer branch in the same
+file, which is exactly this pattern done correctly for currency: it loads
+every line and rewrites `currency`/`exchange_rate` on each.
+
+**Why it matters**: mbe-ui's own team reported that the legacy (pre-rewrite)
+system did reprice existing lines on a customer change. Whether the rewrite
+dropped that deliberately or by oversight isn't answerable from the code —
+flagged rather than guessed at.
+
+**Decision**: FR-015 was redesigned around the *intended* behavior (reprice)
+rather than today's actual behavior (freeze), and filed as
+[mictlanix/mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131),
+requesting mbe-api mirror `_change_currency`'s per-line loop, with an open
+question on whether a manually-overridden line price should be exempted
+(matching `add_line`'s existing convention of treating an explicit price as an
+override). This is marked **blocking** for FR-015, unlike the P2/P3-scoped
+gaps in §9–§12 above — there is no safe client-side stopgap for repricing,
+since it requires server-side price-list resolution and margin logic mbe-ui
+cannot replicate correctly. See spec.md D-005 for the accepted interim risk
+while #131 is outstanding.

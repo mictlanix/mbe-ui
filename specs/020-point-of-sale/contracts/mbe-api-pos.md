@@ -32,6 +32,12 @@ violating one returns a 409 the cashier cannot act on.
   an available credit line; `404` for an unknown customer.
 - **Used for**: customer change (FR-012), payment terms (FR-016), currency, and
   `shipTo` — which is how the fulfilment mode is persisted (research §4).
+- **Known gap (blocking FR-015)**: a customer change does **not** reprice
+  existing lines — verified against `update_order`'s source, research.md §17.
+  Until [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) ships
+  (§5 below), this call's response will still carry every line at its old
+  price after a customer change, even though FR-015 is written against the
+  intended post-#131 behavior.
 
 ### `POST /api/v1/sales-orders/{id}/lines` — add a line
 
@@ -170,15 +176,22 @@ listed back (research §11). The applied-payments panel is session-scoped.
 
 ---
 
-## 5. mbe-api issues to file
+## 5. mbe-api issues filed against this feature
 
 Per constitution §III these are recorded as external dependencies; none is
-patched from this repository, and none blocks P1.
+patched from this repository. **All 8 are filed** — issues #1–#5, #7 and #8
+are non-blocking, scoped to P2/P3 or pure hardening; **#6 is blocking** for
+FR-015, since there is no safe client-side stopgap for repricing (it needs
+server-side price-list resolution and margin logic). Every stopgap below stays
+in place until its issue actually ships, not merely once it's filed.
 
-| # | Ask | Unblocks | Stopgap until then |
-|---|---|---|---|
-| 1 | `GET /customers/{id}/addresses` + a link route | FR-031, FR-056 — picking *the customer's* addresses | Global address search |
-| 2 | A contacts API (list/create, per customer) | FR-029, FR-031 — per-destination contact | Name and phone written into the delivery order's `comment` |
-| 3 | `GET /sales-orders/{id}/payments` | Rebuilding the applied-payments panel on resume | Session-scoped list + balance with an explanatory note |
-| 4 | (optional) writable `tax_rate` on a sale line | FR-023's tax treatment | Tax rate rendered read-only |
-| 5 | (optional) `point_sale` filter on `GET /sales-orders` | A per-station open-sales list | `mine=true` + facility scoping |
+| # | Issue | Ask | Unblocks | Stopgap until then |
+|---|---|---|---|---|
+| 1 | [mbe-api#132](https://github.com/mictlanix/mbe-api/issues/132) | `GET /customers/{id}/addresses` + a link route | FR-031, FR-056 — picking *the customer's* addresses | Global address search |
+| 2 | [mbe-api#133](https://github.com/mictlanix/mbe-api/issues/133) | A contacts API (list/create, per customer) | FR-029, FR-031 — per-destination contact | Name and phone written into the delivery order's `comment` |
+| 3 | [mbe-api#134](https://github.com/mictlanix/mbe-api/issues/134) | `GET /sales-orders/{id}/payments` | Rebuilding the applied-payments panel on resume | Session-scoped list + balance with an explanatory note |
+| 4 | [mbe-api#135](https://github.com/mictlanix/mbe-api/issues/135) | (optional) writable `tax_rate` on a sale line — filed as a question, since a product-level single source of truth may be intentional | FR-023's tax treatment | Tax rate rendered read-only |
+| 5 | [mbe-api#136](https://github.com/mictlanix/mbe-api/issues/136) | (optional) `point_sale` filter on `GET /sales-orders` | A per-station open-sales list | `mine=true` + facility scoping |
+| 6 | [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131) (**blocking**) | Reprice every line on a customer change, mirroring `_change_currency`'s per-line loop | FR-015 | None. Lines silently keep stale prices with no cashier-facing indication (accepted interim risk, spec.md D-005) |
+| 7 | [mbe-api#137](https://github.com/mictlanix/mbe-api/issues/137) | A `requires_reference` (or similar) flag on `PaymentMethod`/`PaymentMethodOption` | FR-044/FR-045's per-method reference requirement, currently a hardcoded client table (research §6) that will drift if mbe-api ever adds or reconfigures a method | `payment_method_rules.dart` stays a maintained client-side table |
+| 8 | [mbe-api#138](https://github.com/mictlanix/mbe-api/issues/138) | A delivery-order create that accepts a named subset of quantities, instead of always claiming everything uncovered | Removes the create-then-trim sequence (research §3, D-003) — the highest-risk logic in this feature (T056/T059) exists only to work around this gap | The create-then-trim orchestrator (`destination_split.dart`), unit-tested for its exact-sum invariant before being wired to UI |

@@ -73,7 +73,7 @@
       "title": "The screen MUST NOT duplicate chrome the shell already provides — no second hamburger, no second back affordance, no simulated window frame — and MUST use the shell's own navigation controls."
     },
     "FR-004": {
-      "title": "The app bar MUST carry the open-sales selector and the step indicator, and the step indicator MUST show which of the two or three steps is current, which are complete, and which are still ahead."
+      "title": "The screen's header, immediately below the shell's app bar, MUST carry the open-sales selector and the step indicator, and the step indicator MUST show which of the two or three steps is current, which are complete, and which are still ahead."
     },
     "FR-005": {
       "title": "The step indicator MUST present the steps in the order capture, payment, delivery — two steps when the fulfilment mode is counter pickup and three when it is delivery or mixed — and MUST update the moment the mode changes."
@@ -106,7 +106,7 @@
       "title": "A customer created from the sale MUST be attached to the sale on save, and the customer's price list MUST apply to lines added afterwards."
     },
     "FR-015": {
-      "title": "When the customer changes on a sale that already has lines, the screen MUST tell the cashier that existing lines keep the prices they were captured at."
+      "title": "When the customer changes on a sale that already has lines, every existing line MUST be re-priced against the new customer's price list, and the screen MUST reflect the updated prices and totals as any other server-driven change — no separate notice is needed. Requires backend change D-005 (mbe-api#131)."
     },
     "FR-016": {
       "title": "The cashier MUST be able to choose immediate or credit payment terms; choosing credit for a customer without an available credit line MUST be refused with the reason shown."
@@ -256,7 +256,11 @@
     "decision: live recording — order opened on entry, lines posted as captured, confirm on Continuar al cobro",
     "decision: runs inside the existing nav shell; open-orders selector and stepper live in the app bar",
     "decision (late change): step order is Venta → Cobro → Entrega; delivery runs last, against a confirmed and paid sale, so destinations record live and the confirmed-sale precondition is satisfied by construction",
-    "consequence: fulfilment mode must be durable on the sale itself (main delivery address captured in step 1) so a reopened sale knows whether a delivery step is owed"
+    "consequence: fulfilment mode must be durable on the sale itself (main delivery address captured in step 1) so a reopened sale knows whether a delivery step is owed",
+    "analysis: /speckit-analyze (2026-08-04) found 2 CRITICAL, 3 HIGH, 4 MEDIUM/LOW findings across spec/plan/tasks — all remediated same session",
+    "decision: payment application must refresh Sale via PosSaleController.refresh() (analysis I1) or the payment-step close gate never unlocks",
+    "decision: open-sales selector must query status=paid too, not just draft/completed (analysis C1), or FR-058's paid-undistributed sale is unreachable",
+    "decision (post-analysis): FR-015 redesigned around reprice-on-customer-change per mbe-api team confirmation of legacy behavior; current mbe-api does not reprice (verified in update_order source) — filed mbe-api#131 as a BLOCKING dependency (D-005)"
   ],
   "intent": "Give cashiers a point-of-sale screen that records the sale live and adapts between a two-step counter flow and a three-step delivery flow, ending in payment.",
   "expectations": [

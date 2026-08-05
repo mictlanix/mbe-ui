@@ -244,8 +244,9 @@ applied to subsequently added lines.
 4. **Given** the form is cancelled, **When** it closes, **Then** the sale is
    untouched and still attached to whichever customer it had.
 5. **Given** lines were captured before the customer changed, **When** the
-   customer changes, **Then** the cashier is told that existing lines keep the
-   prices they were captured at and which lines those are.
+   customer changes, **Then** every line is re-priced against the new
+   customer's price list and the totals update accordingly, the same way any
+   other server-driven change already updates the screen (FR-015).
 
 ---
 
@@ -293,8 +294,12 @@ without horizontal scrolling and with every control reachable.
   rejected on entry; the cashier is told, and the previous price stands.
 - **A quantity below the product's minimum order quantity.** Rejected on entry
   with the minimum named.
-- **The customer is changed after lines exist.** Existing lines keep their
-  captured prices; only lines added afterwards use the new price list.
+- **The customer is changed after lines exist.** Every existing line is
+  re-priced against the new customer's price list, and the totals update to
+  match (FR-015). This depends on a backend change tracked as D-005 — until it
+  ships, changing the customer is expected to leave prices stale with no
+  indication to the cashier, which the team has accepted as an interim risk
+  (see D-005).
 - **Credit terms chosen for a customer with no credit line.** Refused, with the
   reason shown, and the sale stays on immediate terms.
 - **A payment in a currency other than the sale's.** Refused before the payment
@@ -382,9 +387,12 @@ without horizontal scrolling and with every control reachable.
   deliveries and whether deliveries need a signed document.
 - **FR-014**: A customer created from the sale MUST be attached to the sale on
   save, and the customer's price list MUST apply to lines added afterwards.
-- **FR-015**: When the customer changes on a sale that already has lines, the
-  screen MUST tell the cashier that existing lines keep the prices they were
-  captured at.
+- **FR-015**: When the customer changes on a sale that already has lines, every
+  existing line MUST be re-priced against the new customer's price list, and
+  the screen MUST reflect the updated prices and totals as it would any other
+  server-driven change (FR-007, FR-008) — no separate notice is needed, because
+  nothing is being silently preserved. This requires a backend change (D-005);
+  see D-005 for the interim behavior while it is outstanding.
 - **FR-016**: The cashier MUST be able to choose immediate or credit payment
   terms; choosing credit for a customer without an available credit line MUST be
   refused with the reason shown.
@@ -636,10 +644,31 @@ without horizontal scrolling and with every control reachable.
   sequence of create-then-trim operations against the delivery API: a new
   destination claims whatever quantity is not yet spoken for, and the cashier's
   per-line entries trim it back. There is no single call that creates a delivery
-  for a named subset of quantities. A backend enhancement request for a
-  per-destination create is worth filing but is not a blocker.
+  for a named subset of quantities. Filed as
+  [mbe-api#138](https://github.com/mictlanix/mbe-api/issues/138) — not a
+  blocker, but worth prioritizing given it drives this feature's highest-risk
+  logic (the create-then-trim orchestrator, T056/T059).
 - **D-004**: The screen reuses the existing customer picker, address inline
   creation, warehouse and price-list pickers rather than introducing new ones.
+- **D-005 (Blocking, FR-015)**: mbe-api does not currently re-price a sale's
+  existing lines when its customer changes — verified against
+  `sales_order_service.update_order`, whose customer branch only reassigns
+  `order.customer`, with no equivalent to the line-rewriting loop
+  `_change_currency` uses for a currency change. The legacy system did reprice
+  on a customer change; whether that was deliberately dropped or is an
+  oversight in the rewrite is an open question. Filed as
+  [mictlanix/mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131),
+  requesting mbe-api mirror `_change_currency`'s per-line pattern, re-running
+  price-list resolution for every line — except (open question in the issue)
+  lines whose price was manually overridden, consistent with how `add_line`
+  already treats an explicit price as an override. **Until #131 ships**,
+  switching customers mid-sale leaves every existing line at its old price
+  with no indication to the cashier — worse than doing nothing, since FR-015
+  no longer renders a notice explaining it. This is a deliberate, accepted
+  interim risk (the team chose to design FR-015 around the intended backend
+  behavior rather than the current one), not an oversight — but it means this
+  feature should not ship customer-switching to production ahead of #131
+  without re-confirming that trade-off.
 
 ## Out of Scope
 

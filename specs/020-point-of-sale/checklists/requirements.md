@@ -53,3 +53,26 @@
 - **Verbatim Constraints holds literal Spanish UI copy** pinned by the request.
   Exact identifiers are permitted there by design; the rest of the spec keeps
   them out.
+- **Revised 2026-08-04 — post-`/speckit-analyze` remediation.** The analysis
+  pass (run after plan.md and tasks.md existed) found 2 CRITICAL and 3 HIGH
+  findings spanning spec/research/contracts/tasks — a payment never refreshing
+  `Sale.balance` (blocked the payment-close gate entirely), the open-sales
+  selector never querying `status=paid` (made FR-058's paid-undistributed sale
+  unreachable, contradicting its own requirement), SC-004 overpromising
+  itemized payment recovery against a documented backend limitation, and two
+  requirements (FR-016 payment terms, FR-041 post-confirm read-only) with zero
+  task coverage. All 11 findings were fixed same session: FR-004 and SC-004
+  reworded, research.md and contracts/pos-screen.md updated to match, and
+  tasks.md gained 3 tasks net (later 2, see below) plus 9 amendments — see
+  tasks.md's own revision note for the full list.
+- **Revised again 2026-08-04 — FR-015 redesigned.** mbe-api's team confirmed
+  the legacy system re-priced a sale's lines on a customer change; the current
+  backend does not (verified directly against `update_order`'s source, not
+  assumed). FR-015, its Edge Cases entry and US4's acceptance scenario 5 were
+  rewritten around the *intended* behavior (reprice, no notice needed) rather
+  than today's actual behavior (freeze, notice required), with the change
+  tracked as a **blocking** dependency, D-005, against
+  [mbe-api#131](https://github.com/mictlanix/mbe-api/issues/131). This is the
+  one place in the spec where a requirement's correctness is contingent on an
+  unshipped backend change — D-005 states the interim risk explicitly rather
+  than leaving it implicit.
