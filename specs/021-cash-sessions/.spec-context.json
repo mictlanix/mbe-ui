@@ -3,7 +3,7 @@
   "specName": "cash sessions",
   "branch": "021-cash-sessions",
   "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -67,6 +67,13 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-05T03:49:36.283Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-05T15:41:08.692Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
