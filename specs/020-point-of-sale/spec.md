@@ -343,9 +343,10 @@ without horizontal scrolling and with every control reachable.
 - **FR-003**: The screen MUST NOT duplicate chrome the shell already provides —
   no second hamburger, no second back affordance, no simulated window frame —
   and MUST use the shell's own navigation controls.
-- **FR-004**: The app bar MUST carry the open-sales selector and the step
-  indicator, and the step indicator MUST show which of the two or three steps is
-  current, which are complete, and which are still ahead.
+- **FR-004**: The screen's header, immediately below the shell's app bar, MUST
+  carry the open-sales selector and the step indicator, and the step indicator
+  MUST show which of the two or three steps is current, which are complete, and
+  which are still ahead.
 - **FR-005**: The step indicator MUST present the steps in the order capture,
   payment, delivery — two steps when the fulfilment mode is counter pickup and
   three when it is delivery or mixed — and MUST update the moment the mode
@@ -571,8 +572,10 @@ without horizontal scrolling and with every control reachable.
   totals ever disagreeing with the recorded sale.
 - **SC-004**: 100% of sales interrupted at any step (reload, navigation away,
   browser crash) are recoverable from the open-sales selector, reopening on the
-  step they were left at with every captured line, payment and destination
-  intact.
+  step they were left at with every captured line and destination intact and
+  the balance accurate. Payments taken before the interruption are reflected in
+  that balance but are not re-itemized (a documented backend limitation, not a
+  data loss — research.md §11).
 - **SC-005**: A three-destination delivery sale results in exactly three
   delivery records whose quantities sum, per line, to the ordered quantity.
 - **SC-006**: No sale can be closed with an outstanding balance unless it is on

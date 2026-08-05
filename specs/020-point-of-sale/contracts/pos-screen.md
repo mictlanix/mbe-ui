@@ -54,6 +54,13 @@ and the stepper becomes a "Paso N de M" label (FR-053). The footer stays pinned.
 confirmed (FR-041) — the step indicator shows Venta as complete and read-only.
 Cobro ← Entrega is offered read-only, so a cashier can check what was taken.
 
+**Editability**: `Sale.isEditable` (`status == draft`, data-model.md §1.1) gates
+every Venta-step control, not only backwards navigation. Once confirmed,
+`SaleLineRow`'s in-place edits, `CustomerBar`'s customer and payment-terms
+controls, and `FulfillmentModeSelector` all render read-only with an
+explanatory banner rather than offering an action the server will reject with
+409 (FR-041, analysis finding C3).
+
 ---
 
 ## 3. What each step owns
@@ -66,6 +73,12 @@ Cobro ← Entrega is offered read-only, so a cashier can check what was taken.
 
 Each step is a separate widget subtree with its own controller; all three read
 the same `posSaleControllerProvider`, and only that provider holds the `Sale`.
+Because Cobro's writes go through `paymentControllerProvider` — a different
+provider, talking to a different repository — nothing updates `Sale.balance`
+automatically when a payment is applied. `paymentControllerProvider` MUST call
+`posSaleControllerProvider`'s refresh after every successful application, or
+`Sale.balance` goes stale and Cobro's own close gate (§2) never unlocks
+(analysis finding I1).
 
 ---
 
@@ -73,12 +86,12 @@ the same `posSaleControllerProvider`, and only that provider holds the `Sale`.
 
 | Provider | Type | Holds | Lifetime |
 |---|---|---|---|
-| `posSaleControllerProvider` | `AsyncNotifier<Sale>` | The whole sale, replaced on every write (research §1) | The screen; disposed when a new sale starts |
+| `posSaleControllerProvider` | `AsyncNotifier<Sale>` | The whole sale, replaced on every write (research §1); exposes a `refresh()` that re-fetches via `getById()` for callers outside its own mutations | The screen; disposed when a new sale starts |
 | `posStepControllerProvider` | `Notifier<PosStepState>` | Current step, fulfilment mode, whether a write is in flight | The screen |
 | `productLookupControllerProvider(query)` | `AutoDisposeAsyncNotifier` | Scan/search results | Per query |
-| `paymentControllerProvider` | `Notifier<PaymentDraft>` | Amount being typed, selected method, reference, **payments taken this session** (research §11) | The screen |
+| `paymentControllerProvider` | `Notifier<PaymentDraft>` | Amount being typed, selected method, reference, **payments taken this session** (research §11); calls `posSaleControllerProvider.refresh()` after each successful application (I1) | The screen |
 | `deliveryControllerProvider` | `AsyncNotifier<List<Destination>>` | The destinations and their lines | The delivery step |
-| `openSalesProvider` | `AutoDisposeAsyncNotifier<List<OpenSale>>` | Selector contents; invalidated after confirm and after a new sale | The screen |
+| `openSalesProvider` | `AutoDisposeAsyncNotifier<List<OpenSale>>` | Selector contents — `draft`, `completed`, and `paid` filtered client-side to an incomplete distribution (research §5, analysis finding C1); invalidated after confirm, after a payment closes a delivery/mixed sale, and after a new sale starts | The screen |
 
 **Nothing is persisted locally** (constitution §VII). Everything above is
 reconstructible from the server except the session-scoped payment list, whose

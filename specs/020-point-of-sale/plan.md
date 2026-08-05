@@ -228,7 +228,9 @@ test/
 │   ├── sale_line_row_test.dart
 │   ├── payment_step_gate_test.dart
 │   ├── step_indicator_test.dart
-│   └── pos_compact_layout_test.dart
+│   ├── pos_compact_layout_test.dart          # US1 journey at 390px
+│   ├── pos_compact_delivery_test.dart        # US2 journey at 390px (analysis finding C5)
+│   └── pos_compact_resume_and_customer_test.dart  # US3+US4 journeys at 390px (C5)
 └── integration/
     └── pos_counter_sale_flow_test.dart           # live mbe-api, runtime fixtures
 ```

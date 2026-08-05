@@ -124,7 +124,20 @@ the resume case that matters).
 
 **Decision**: `GET /sales-orders?mine=true&status=draft&date_from=<today 00:00>`
 for the count and the list, plus a second call with `status=completed` to catch
-confirmed-but-unpaid sales. Facility scoping is automatic.
+confirmed-but-unpaid sales, plus a **third call with `status=paid`** to catch a
+delivery/mixed sale that is paid but whose distribution is not yet complete.
+Facility scoping is automatic.
+
+**Correction (post-planning, analysis finding C1)**: the first draft of this
+decision stopped at two calls. That silently made a paid-but-undistributed
+delivery/mixed sale unreachable from the selector — exactly the sale FR-058 and
+US3 Acceptance Scenario 5 require to stay reachable, and exactly the case
+`contracts/pos-screen.md` §5 already documented as resumable. mbe-api has no
+way to filter "paid AND undistributed" server-side, so the third call fetches
+every `paid` sale for this cashier and the client filters to those whose
+distribution (data-model.md §6) is incomplete — cheap, since a paid sale that
+*is* fully distributed is rare and short-lived (it only exists between the
+close action and the delivery step's own completion).
 
 **Rationale**: `list_sales_orders` filters on `mine`, `status`, `date_from`,
 `date_to`, `customer`, `salesperson`, `search` and `facility`, and defaults
