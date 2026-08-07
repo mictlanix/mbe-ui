@@ -103,3 +103,47 @@ bool isZeroAmount(String value) => parseAmount(value).compareTo(Decimal.zero) ==
 String halveAmount(String value) => formatAmount(
   (parseAmount(value) / Decimal.fromInt(2)).toDecimal(scaleOnInfinitePrecision: 2),
 );
+
+// ── Display formatting for editable line fields (FR-022) ────────────────────
+//
+// mbe-api sends every decimal at full stored scale — `"3.0000"`, `"50.0000000"`,
+// `"0.1600"`. Putting those raw into an editable field is unreadable and, for a
+// rate under a "%" label, actively wrong. These convert at the display edge
+// only; the value sent back is always a plain decimal string in the server's
+// own units.
+
+/// A quantity with trailing zeros dropped: `"3.0000"` → `"3"`,
+/// `"2.5000"` → `"2.5"`.
+String formatQuantity(String value) {
+  final parsed = Decimal.tryParse(value);
+  if (parsed == null) return value;
+  return parsed.toString();
+}
+
+/// A unit price at two decimals: `"50.0000000"` → `"50.00"`. Not currency —
+/// this feeds an editable field, where a `$` prefix would have to be typed
+/// around. [MoneyFormatters.currency] stays the choice for read-only amounts.
+String formatPrice(String value) {
+  final parsed = Decimal.tryParse(value);
+  if (parsed == null) return value;
+  return parsed.toStringAsFixed(2);
+}
+
+/// A stored rate rendered as the percentage the cashier thinks in:
+/// `"0.1600"` → `"16"`, `"0.075"` → `"7.5"`. Rates are stored `0 ≤ r ≤ 1`
+/// (data-model.md §9) but every label in the capture grid reads `%`, so the
+/// two must not disagree.
+String formatRateAsPercent(String value) {
+  final parsed = Decimal.tryParse(value);
+  if (parsed == null) return value;
+  return (parsed * Decimal.fromInt(100)).toString();
+}
+
+/// The inverse of [formatRateAsPercent], for sending an edited field back:
+/// `"16"` → `"0.16"`. Returns `null` when [value] is not a number, so the
+/// caller can reject the edit rather than send nonsense.
+String? parsePercentAsRate(String value) {
+  final parsed = Decimal.tryParse(value.trim());
+  if (parsed == null) return null;
+  return (parsed / Decimal.fromInt(100)).toDecimal(scaleOnInfinitePrecision: 6).toString();
+}

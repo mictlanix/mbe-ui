@@ -112,6 +112,41 @@ void main() {
     });
   });
 
+  group('display formatting (FR-022)', () {
+    testWidgets('renders mbe-api\'s full-scale decimals readably, and rates as '
+        'the percentages their labels claim', (tester) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(
+          // Exactly the shapes a live backend sends.
+          line: testLine(
+            quantity: '3.0000',
+            price: '50.0000000',
+            discountRate: '0',
+            taxRate: '0.1600',
+          ),
+          facilityId: 9,
+        ),
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+
+      String textOf(String label) => tester
+          .widget<TextField>(
+            find.ancestor(of: find.text(label), matching: find.byType(TextField)),
+          )
+          .controller!
+          .text;
+
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      expect(textOf(l10n.posLineQuantityLabel), '3');
+      expect(textOf(l10n.posLinePriceLabel), '50.00');
+      expect(textOf(l10n.posLineDiscountLabel), '0');
+      // 0.1600 stored, shown as 16 under an "Imp. %" label.
+      expect(textOf(l10n.posLineTaxLabel), '16');
+    });
+  });
+
   group('shortfall warning (FR-025, FR-026)', () {
     testWidgets('no warning when availability covers the ordered quantity', (
       tester,

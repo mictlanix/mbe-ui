@@ -1949,5 +1949,13 @@
   "posReversePaymentTitle": "Reverse payment",
   "@posReversePaymentTitle": {},
   "posReversalReasonLabel": "Reason",
-  "@posReversalReasonLabel": {}
+  "@posReversalReasonLabel": {},
+  "posCustomerNameLabel": "Customer",
+  "@posCustomerNameLabel": {},
+  "posCustomerCreditLabel": "Credit line",
+  "@posCustomerCreditLabel": {},
+  "posCustomerNoCredit": "No credit line",
+  "@posCustomerNoCredit": {},
+  "posCustomerPriceListLabel": "Price list",
+  "@posCustomerPriceListLabel": {}
 }

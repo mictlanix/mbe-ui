@@ -2674,4 +2674,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posReversalReasonLabel => 'Reason';
+
+  @override
+  String get posCustomerNameLabel => 'Customer';
+
+  @override
+  String get posCustomerCreditLabel => 'Credit line';
+
+  @override
+  String get posCustomerNoCredit => 'No credit line';
+
+  @override
+  String get posCustomerPriceListLabel => 'Price list';
 }

@@ -5020,6 +5020,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reason'**
   String get posReversalReasonLabel;
+
+  /// No description provided for @posCustomerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get posCustomerNameLabel;
+
+  /// No description provided for @posCustomerCreditLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit line'**
+  String get posCustomerCreditLabel;
+
+  /// No description provided for @posCustomerNoCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'No credit line'**
+  String get posCustomerNoCredit;
+
+  /// No description provided for @posCustomerPriceListLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list'**
+  String get posCustomerPriceListLabel;
 }
 
 class _AppLocalizationsDelegate
