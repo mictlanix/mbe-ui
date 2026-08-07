@@ -17,6 +17,10 @@ part 'delivery_order_create.g.dart';
 /// * [salesOrder]
 /// * [fulfillmentType]
 /// * [lines]
+/// * [shipTo]
+/// * [contact]
+/// * [date]
+/// * [comment]
 @BuiltValue()
 abstract class DeliveryOrderCreate
     implements Built<DeliveryOrderCreate, DeliveryOrderCreateBuilder> {
@@ -29,6 +33,18 @@ abstract class DeliveryOrderCreate
 
   @BuiltValueField(wireName: r'lines')
   BuiltList<DeliveryOrderLineRequest>? get lines;
+
+  @BuiltValueField(wireName: r'ship_to')
+  int? get shipTo;
+
+  @BuiltValueField(wireName: r'contact')
+  int? get contact;
+
+  @BuiltValueField(wireName: r'date')
+  DateTime? get date;
+
+  @BuiltValueField(wireName: r'comment')
+  String? get comment;
 
   DeliveryOrderCreate._();
 
@@ -78,6 +94,34 @@ class _$DeliveryOrderCreateSerializer
         specifiedType: const FullType.nullable(BuiltList, [
           FullType(DeliveryOrderLineRequest),
         ]),
+      );
+    }
+    if (object.shipTo != null) {
+      yield r'ship_to';
+      yield serializers.serialize(
+        object.shipTo,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.contact != null) {
+      yield r'contact';
+      yield serializers.serialize(
+        object.contact,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.date != null) {
+      yield r'date';
+      yield serializers.serialize(
+        object.date,
+        specifiedType: const FullType.nullable(DateTime),
+      );
+    }
+    if (object.comment != null) {
+      yield r'comment';
+      yield serializers.serialize(
+        object.comment,
+        specifiedType: const FullType.nullable(String),
       );
     }
   }
@@ -134,6 +178,46 @@ class _$DeliveryOrderCreateSerializer
                   as BuiltList<DeliveryOrderLineRequest>?;
           if (valueDes == null) continue;
           result.lines.replace(valueDes);
+          break;
+        case r'ship_to':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.shipTo = valueDes;
+          break;
+        case r'contact':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.contact = valueDes;
+          break;
+        case r'date':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(DateTime),
+                  )
+                  as DateTime?;
+          if (valueDes == null) continue;
+          result.date = valueDes;
+          break;
+        case r'comment':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.comment = valueDes;
           break;
         default:
           unhandled.add(key);

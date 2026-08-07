@@ -19,6 +19,7 @@ part 'delivery_order_response.g.dart';
 /// * [facility]
 /// * [serial]
 /// * [customer]
+/// * [salesOrder]
 /// * [shipTo]
 /// * [date]
 /// * [priority]
@@ -46,6 +47,9 @@ abstract class DeliveryOrderResponse
 
   @BuiltValueField(wireName: r'customer')
   int get customer;
+
+  @BuiltValueField(wireName: r'sales_order')
+  int? get salesOrder;
 
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
@@ -141,6 +145,13 @@ class _$DeliveryOrderResponseSerializer
       object.customer,
       specifiedType: const FullType(int),
     );
+    if (object.salesOrder != null) {
+      yield r'sales_order';
+      yield serializers.serialize(
+        object.salesOrder,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
     yield r'ship_to';
     yield object.shipTo == null
         ? null
@@ -278,6 +289,16 @@ class _$DeliveryOrderResponseSerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.customer = valueDes;
+          break;
+        case r'sales_order':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.salesOrder = valueDes;
           break;
         case r'ship_to':
           final valueDes =

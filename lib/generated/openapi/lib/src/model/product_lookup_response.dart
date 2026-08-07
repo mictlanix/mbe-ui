@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/product_stock_response.dart';
+import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -20,6 +21,7 @@ part 'product_lookup_response.g.dart';
 /// * [brand]
 /// * [model]
 /// * [barCode]
+/// * [unitOfMeasurement]
 /// * [price]
 /// * [taxRate]
 /// * [taxIncluded]
@@ -50,6 +52,9 @@ abstract class ProductLookupResponse
 
   @BuiltValueField(wireName: r'bar_code')
   String? get barCode;
+
+  @BuiltValueField(wireName: r'unit_of_measurement')
+  SatUnitOfMeasurementResponse? get unitOfMeasurement;
 
   @BuiltValueField(wireName: r'price')
   String get price;
@@ -146,6 +151,13 @@ class _$ProductLookupResponseSerializer
             object.barCode,
             specifiedType: const FullType.nullable(String),
           );
+    if (object.unitOfMeasurement != null) {
+      yield r'unit_of_measurement';
+      yield serializers.serialize(
+        object.unitOfMeasurement,
+        specifiedType: const FullType.nullable(SatUnitOfMeasurementResponse),
+      );
+    }
     yield r'price';
     yield serializers.serialize(
       object.price,
@@ -275,6 +287,18 @@ class _$ProductLookupResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.barCode = valueDes;
+          break;
+        case r'unit_of_measurement':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(
+                      SatUnitOfMeasurementResponse,
+                    ),
+                  )
+                  as SatUnitOfMeasurementResponse?;
+          if (valueDes == null) continue;
+          result.unitOfMeasurement.replace(valueDes);
           break;
         case r'price':
           final valueDes =

@@ -1083,13 +1083,14 @@ class DeliveryOrdersApi {
   }
 
   /// List Delivery Orders
-  /// &#x60;mine&#x60; is how an author finds a rejected draft — no notification is sent (FR-067).
+  /// &#x60;mine&#x60; is how an author finds a rejected draft — no notification is sent (FR-067).  &#x60;sales_order&#x60; answers \&quot;which deliveries belong to this sale?\&quot; in one call (#147).
   ///
   /// Parameters:
   /// * [status]
   /// * [customer]
   /// * [facility]
   /// * [fulfillmentType]
+  /// * [salesOrder]
   /// * [dateFrom]
   /// * [dateTo]
   /// * [mine]
@@ -1111,6 +1112,7 @@ class DeliveryOrdersApi {
     int? customer,
     int? facility,
     FulfillmentType? fulfillmentType,
+    int? salesOrder,
     DateTime? dateFrom,
     DateTime? dateTo,
     bool? mine = false,
@@ -1161,6 +1163,12 @@ class DeliveryOrdersApi {
           _serializers,
           fulfillmentType,
           const FullType(FulfillmentType),
+        ),
+      if (salesOrder != null)
+        r'sales_order': encodeQueryParameter(
+          _serializers,
+          salesOrder,
+          const FullType(int),
         ),
       if (dateFrom != null)
         r'date_from': encodeQueryParameter(
