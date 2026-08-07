@@ -7,9 +7,11 @@ import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -43,13 +45,45 @@ class PosScreen extends ConsumerWidget {
   }
 }
 
-class _PosBody extends ConsumerWidget {
+class _PosBody extends ConsumerStatefulWidget {
   const _PosBody();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PosBody> createState() => _PosBodyState();
+}
+
+class _PosBodyState extends ConsumerState<_PosBody> {
+  /// The sale the step machine was last aligned to. A resumed sale reopens at
+  /// the step its own status and `shipTo` imply (FR-057), but only once —
+  /// re-deriving on every build would fight the cashier's own navigation.
+  int? _syncedSaleId;
+
+  void _syncStepTo(Sale sale) {
+    final facilityAddressId = ref
+        .watch(facilityAddressControllerProvider(sale.facility))
+        .valueOrNull;
+    // Wait for the facility address before aligning: without it every sale
+    // looks like counter pickup, and a delivery sale would land on the wrong
+    // step and then not be moved again.
+    if (facilityAddressId == null) return;
+    if (_syncedSaleId == sale.id) return;
+
+    _syncedSaleId = sale.id;
+    final target = resumeTargetFor(sale, facilityAddressId: facilityAddressId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(posStepControllerProvider.notifier)
+          .jumpTo(target.step, mode: target.mode);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final sale = ref.watch(posSaleControllerProvider);
     final step = ref.watch(posStepControllerProvider);
+    final current = sale.valueOrNull;
+    if (current != null) _syncStepTo(current);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -132,19 +166,17 @@ class _StepHost extends ConsumerWidget {
         sale: sale,
         onClose: () => _closePayment(context, ref),
       ),
-      PosStep.entrega => Center(child: Text(AppLocalizations.of(context)!.posStepEntrega)),
+      PosStep.entrega => DeliveryStep(
+        sale: sale,
+        mode: ref.watch(posStepControllerProvider).mode,
+        onClose: () => _finish(context, ref),
+      ),
     };
   }
 
-  /// Cobro → Entrega for a delivery/mixed sale; for counter pickup the sale
-  /// is done, so the change due is shown and a new sale is offered (FR-050).
-  void _closePayment(BuildContext context, WidgetRef ref) {
+  /// The sale is done — show its folio and offer the next one (FR-050).
+  void _finish(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final stepNotifier = ref.read(posStepControllerProvider.notifier);
-    if (ref.read(posStepControllerProvider).mode != FulfillmentMode.counterPickup) {
-      stepNotifier.advanceFromCobro();
-      return;
-    }
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
@@ -165,5 +197,16 @@ class _StepHost extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Cobro → Entrega for a delivery/mixed sale; for counter pickup the sale
+  /// is done, so the change due is shown and a new sale is offered (FR-050).
+  void _closePayment(BuildContext context, WidgetRef ref) {
+    final stepNotifier = ref.read(posStepControllerProvider.notifier);
+    if (ref.read(posStepControllerProvider).mode != FulfillmentMode.counterPickup) {
+      stepNotifier.advanceFromCobro();
+      return;
+    }
+    _finish(context, ref);
   }
 }

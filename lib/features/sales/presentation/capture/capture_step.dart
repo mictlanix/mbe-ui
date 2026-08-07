@@ -107,7 +107,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: FulfillmentModeSelector(enabled: enabled),
+          child: FulfillmentModeSelector(sale: sale, enabled: enabled),
         ),
         Padding(
           padding: const EdgeInsets.all(12),

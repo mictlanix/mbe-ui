@@ -2707,4 +2707,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactMethodRequired => 'Enter a mobile or a phone number.';
+
+  @override
+  String get posDeliveryAddressTitle => 'Delivery address';
+
+  @override
+  String get posDeliveryContactTitle => 'Contact';
+
+  @override
+  String get posNoAddressesOnFile => 'This customer has no addresses on file.';
+
+  @override
+  String get posNoContactsOnFile => 'This customer has no contacts on file.';
+
+  @override
+  String get posNewAddressAction => 'New address';
+
+  @override
+  String get posNewContactAction => 'New contact';
+
+  @override
+  String get posDeliveryNotPermitted =>
+      'This customer is not set up to receive deliveries.';
+
+  @override
+  String get posCounterPickupRemainder => 'Collected at the counter';
+
+  @override
+  String get posDeliveryAddressPending => 'Address pending';
+
+  @override
+  String posDestinationCounts(int lines, String units) {
+    return '$lines lines · $units units';
+  }
+
+  @override
+  String get posRemoveDestination => 'Remove destination';
+
+  @override
+  String get posRemoveDestinationReason =>
+      'Removed by the cashier during capture';
+
+  @override
+  String get posDistributionTitle => 'Distribution';
+
+  @override
+  String posDistributionOrdered(String quantity) {
+    return 'Ordered: $quantity';
+  }
+
+  @override
+  String posDistributionAssigned(String quantity) {
+    return 'Assigned: $quantity';
+  }
+
+  @override
+  String posDistributionAtCounter(String quantity) {
+    return 'At counter: $quantity';
+  }
+
+  @override
+  String posDistributionClaimable(String quantity) {
+    return 'Available: $quantity';
+  }
+
+  @override
+  String get posDistributionOverClaimed => 'More than is left';
+
+  @override
+  String get posDistributionClaimAll => 'Take everything left';
+
+  @override
+  String get posDeliveryDateLabel => 'Delivery date';
+
+  @override
+  String get posDeliveryInstructions => 'Delivery instructions';
+
+  @override
+  String get posDestinationQuantitiesTitle => 'Quantities for this destination';
+
+  @override
+  String get posAddDestination => 'Add destination';
+
+  @override
+  String get posNoDestinationsYet => 'No destinations yet — add the first one.';
+
+  @override
+  String posDeliveryOutstanding(String lines) {
+    return 'Still unassigned: $lines';
+  }
+
+  @override
+  String get posFinishSale => 'Finish sale';
 }

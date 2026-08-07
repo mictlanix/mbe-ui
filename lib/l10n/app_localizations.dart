@@ -5086,6 +5086,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a mobile or a phone number.'**
   String get contactMethodRequired;
+
+  /// No description provided for @posDeliveryAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery address'**
+  String get posDeliveryAddressTitle;
+
+  /// No description provided for @posDeliveryContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get posDeliveryContactTitle;
+
+  /// No description provided for @posNoAddressesOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no addresses on file.'**
+  String get posNoAddressesOnFile;
+
+  /// No description provided for @posNoContactsOnFile.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no contacts on file.'**
+  String get posNoContactsOnFile;
+
+  /// No description provided for @posNewAddressAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New address'**
+  String get posNewAddressAction;
+
+  /// No description provided for @posNewContactAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New contact'**
+  String get posNewContactAction;
+
+  /// No description provided for @posDeliveryNotPermitted.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer is not set up to receive deliveries.'**
+  String get posDeliveryNotPermitted;
+
+  /// No description provided for @posCounterPickupRemainder.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected at the counter'**
+  String get posCounterPickupRemainder;
+
+  /// No description provided for @posDeliveryAddressPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Address pending'**
+  String get posDeliveryAddressPending;
+
+  /// No description provided for @posDestinationCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{lines} lines · {units} units'**
+  String posDestinationCounts(int lines, String units);
+
+  /// No description provided for @posRemoveDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove destination'**
+  String get posRemoveDestination;
+
+  /// No description provided for @posRemoveDestinationReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed by the cashier during capture'**
+  String get posRemoveDestinationReason;
+
+  /// No description provided for @posDistributionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribution'**
+  String get posDistributionTitle;
+
+  /// No description provided for @posDistributionOrdered.
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered: {quantity}'**
+  String posDistributionOrdered(String quantity);
+
+  /// No description provided for @posDistributionAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned: {quantity}'**
+  String posDistributionAssigned(String quantity);
+
+  /// No description provided for @posDistributionAtCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'At counter: {quantity}'**
+  String posDistributionAtCounter(String quantity);
+
+  /// No description provided for @posDistributionClaimable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available: {quantity}'**
+  String posDistributionClaimable(String quantity);
+
+  /// No description provided for @posDistributionOverClaimed.
+  ///
+  /// In en, this message translates to:
+  /// **'More than is left'**
+  String get posDistributionOverClaimed;
+
+  /// No description provided for @posDistributionClaimAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Take everything left'**
+  String get posDistributionClaimAll;
+
+  /// No description provided for @posDeliveryDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery date'**
+  String get posDeliveryDateLabel;
+
+  /// No description provided for @posDeliveryInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery instructions'**
+  String get posDeliveryInstructions;
+
+  /// No description provided for @posDestinationQuantitiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantities for this destination'**
+  String get posDestinationQuantitiesTitle;
+
+  /// No description provided for @posAddDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Add destination'**
+  String get posAddDestination;
+
+  /// No description provided for @posNoDestinationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No destinations yet — add the first one.'**
+  String get posNoDestinationsYet;
+
+  /// No description provided for @posDeliveryOutstanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Still unassigned: {lines}'**
+  String posDeliveryOutstanding(String lines);
+
+  /// No description provided for @posFinishSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish sale'**
+  String get posFinishSale;
 }
 
 class _AppLocalizationsDelegate
