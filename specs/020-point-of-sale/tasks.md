@@ -171,13 +171,13 @@ in one call (resolved, research §3) — this phase adds no orchestrator.
 line between two addresses, close the sale — two delivery records exist, one per
 address, holding exactly the quantities entered (SC-005).
 
-- [ ] T053 [US2] Extend `Customer` in `lib/features/catalog/domain/entities/customer.dart` to map `.addresses: List<AddressListItem>` and `.contacts: List<ContactRef>` from the now-embedded `CustomerResponse` fields (research §9, §10, resolved)
-- [ ] T054 [US2] Extend `CustomerRepository`/`CustomerRepositoryImpl`'s `create()`/`update()` to accept `addresses: List<int>?`/`contacts: List<int>?` — replace-all semantics, omitted leaves links alone — per [contracts/mbe-api-pos.md](./contracts/mbe-api-pos.md) §4 — depends on T053
-- [ ] T055 [P] [US2] Create the `Contact` entity in `lib/features/catalog/domain/entities/contact.dart` per [data-model.md](./data-model.md) §5.2 — mirrors `AddressListItem`
-- [ ] T056 [US2] Create the `ContactRepository` interface in `lib/features/catalog/domain/repositories/contact_repository.dart` — `list()`, `create()` only, mirroring `AddressRepository`'s deliberately-not-full-CRUD shape — depends on T055
-- [ ] T057 [US2] Implement `ContactRepositoryImpl` in `lib/features/catalog/data/contact_repository_impl.dart` wrapping the generated `ContactsApi` — depends on T056
-- [ ] T058 [US2] Create `contact_inline_create.dart` in `lib/features/catalog/presentation/contact_inline_create.dart` mirroring `address_inline_create.dart` — a dialog capturing name/phone/mobile/email — depends on T057
-- [ ] T059 [US2] Run `dart run build_runner build --delete-conflicting-outputs` to generate the freezed companions for T053 (Customer), T055 (Contact)
+- [X] T053 [US2] Extend `Customer` in `lib/features/catalog/domain/entities/customer.dart` to map `.addresses: List<AddressListItem>` and `.contacts: List<ContactRef>` from the now-embedded `CustomerResponse` fields (research §9, §10, resolved)
+- [X] T054 [US2] Extend `CustomerRepository`/`CustomerRepositoryImpl`'s `create()`/`update()` to accept `addresses: List<int>?`/`contacts: List<int>?` — replace-all semantics, omitted leaves links alone — per [contracts/mbe-api-pos.md](./contracts/mbe-api-pos.md) §4 — depends on T053
+- [X] T055 [P] [US2] Create the `Contact` entity in `lib/features/catalog/domain/entities/contact.dart` per [data-model.md](./data-model.md) §5.2 — mirrors `AddressListItem`
+- [X] T056 [US2] Create the `ContactRepository` interface in `lib/features/catalog/domain/repositories/contact_repository.dart` — `list()`, `create()` only, mirroring `AddressRepository`'s deliberately-not-full-CRUD shape — depends on T055
+- [X] T057 [US2] Implement `ContactRepositoryImpl` in `lib/features/catalog/data/contact_repository_impl.dart` wrapping the generated `ContactsApi` — depends on T056
+- [X] T058 [US2] Create `contact_inline_create.dart` in `lib/features/catalog/presentation/contact_inline_create.dart` mirroring `address_inline_create.dart` — a dialog capturing name/phone/mobile/email — depends on T057
+- [X] T059 [US2] Run `dart run build_runner build --delete-conflicting-outputs` to generate the freezed companions for T053 (Customer), T055 (Contact)
 - [ ] T060 [P] [US2] Create the `Destination` entity in `lib/features/sales/domain/entities/destination.dart` per [data-model.md](./data-model.md) §5 — `contact: int?` plus `contactName`/`contactPhone` joined for display, not comment-encoded
 - [ ] T061 [P] [US2] Create the `DestinationLine` entity in `lib/features/sales/domain/entities/destination_line.dart` per [data-model.md](./data-model.md) §5.1
 - [ ] T062 [P] [US2] Create the `LineDistribution` view model in `lib/features/sales/domain/entities/line_distribution.dart` per [data-model.md](./data-model.md) §6 (revised) — `perDestination` read directly from each already-created `Destination.lines`, plus `draftQuantity` for the destination currently being edited, `atCounter`, `isComplete`; a pure function, no server round trip

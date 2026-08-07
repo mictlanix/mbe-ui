@@ -2728,4 +2728,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posCustomerPriceListLabel => 'Lista de precios';
+
+  @override
+  String get newContactDialogTitle => 'Nuevo contacto';
+
+  @override
+  String get contactNameLabel => 'Nombre';
+
+  @override
+  String get contactMobileLabel => 'Celular';
+
+  @override
+  String get contactPhoneLabel => 'Teléfono';
+
+  @override
+  String get contactJobTitleLabel => 'Puesto';
+
+  @override
+  String get contactEmailLabel => 'Correo';
+
+  @override
+  String get contactMethodRequired => 'Ingresa un celular o un teléfono.';
 }

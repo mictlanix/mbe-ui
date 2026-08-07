@@ -1957,5 +1957,19 @@
   "posCustomerNoCredit": "No credit line",
   "@posCustomerNoCredit": {},
   "posCustomerPriceListLabel": "Price list",
-  "@posCustomerPriceListLabel": {}
+  "@posCustomerPriceListLabel": {},
+  "newContactDialogTitle": "New contact",
+  "@newContactDialogTitle": {},
+  "contactNameLabel": "Name",
+  "@contactNameLabel": {},
+  "contactMobileLabel": "Mobile",
+  "@contactMobileLabel": {},
+  "contactPhoneLabel": "Phone",
+  "@contactPhoneLabel": {},
+  "contactJobTitleLabel": "Job title",
+  "@contactJobTitleLabel": {},
+  "contactEmailLabel": "Email",
+  "@contactEmailLabel": {},
+  "contactMethodRequired": "Enter a mobile or a phone number.",
+  "@contactMethodRequired": {}
 }

@@ -170,6 +170,101 @@ void main() {
     });
   });
 
+  group('embedded addresses/contacts (020-point-of-sale, mbe-api#132/#133)', () {
+    test('get() maps the embedded collections onto the entity', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode(
+            _customerJson(addresses: [_addressJson()], contacts: [_contactJson()]),
+          ),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final customer = await repository.get(customerId: 1);
+
+      expect(customer.addresses, hasLength(1));
+      expect(customer.addresses.single.addressId, 11);
+      expect(customer.contacts, hasLength(1));
+      expect(customer.contacts.single.contactId, 21);
+      expect(customer.contacts.single.name, 'Ana López');
+      expect(customer.contacts.single.mobile, '5544332211');
+    });
+
+    test('a response omitting them yields empty lists, not null — list '
+        'projections never include them', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode(_customerJson()),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final customer = await repository.get(customerId: 1);
+
+      expect(customer.addresses, isEmpty);
+      expect(customer.contacts, isEmpty);
+    });
+
+    test('update() omits both keys when neither is passed, so existing links '
+        'are left alone (replace-all semantics)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_customerJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.update(customerId: 1, name: 'Renamed');
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody.containsKey('addresses'), isFalse);
+      expect(sentBody.containsKey('contacts'), isFalse);
+    });
+
+    test('update() sends the id lists when passed', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_customerJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.update(customerId: 1, addresses: [11, 12], contacts: [21]);
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['addresses'], [11, 12]);
+      expect(sentBody['contacts'], [21]);
+    });
+
+    test('an empty list is sent, not dropped — it deliberately unlinks '
+        'everything', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_customerJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.update(customerId: 1, addresses: []);
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['addresses'], isEmpty);
+      expect(sentBody.containsKey('addresses'), isTrue);
+    });
+  });
+
   group('CustomerRepositoryImpl.update', () {
     test('sends an updated creditLimit via the update-side wrapper class '
         '(CreditLimit1-style, research.md §4)', () async {
@@ -241,9 +336,36 @@ void main() {
   });
 }
 
+
+Map<String, Object?> _addressJson() => {
+  'address_id': 11,
+  'street': 'Av. Reforma',
+  'exterior_number': '100',
+  'postal_code': '06600',
+  'neighborhood': 'Juárez',
+  'borough': 'Cuauhtémoc',
+  'state': 'CDMX',
+  'country': 'MX',
+  'type': 0,
+  'status': 0,
+};
+
+Map<String, Object?> _contactJson() => {
+  'contact_id': 21,
+  'name': 'Ana López',
+  'job_title': 'Almacén',
+  'phone': '5555555555',
+  'mobile': '5544332211',
+  'email': 'ana@example.com',
+};
+
 Map<String, Object?> _customerJson({
   Object? salesperson = _defaultSalesperson,
+  List<Map<String, Object?>>? addresses,
+  List<Map<String, Object?>>? contacts,
 }) => {
+  'addresses': ?addresses,
+  'contacts': ?contacts,
   'customer_id': 1,
   'code': 'CUST-001',
   'name': 'Acme Corp',

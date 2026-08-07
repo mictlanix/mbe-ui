@@ -877,5 +877,12 @@
   "posCustomerNameLabel": "Cliente",
   "posCustomerCreditLabel": "Crédito",
   "posCustomerNoCredit": "Sin línea",
-  "posCustomerPriceListLabel": "Lista de precios"
+  "posCustomerPriceListLabel": "Lista de precios",
+  "newContactDialogTitle": "Nuevo contacto",
+  "contactNameLabel": "Nombre",
+  "contactMobileLabel": "Celular",
+  "contactPhoneLabel": "Teléfono",
+  "contactJobTitleLabel": "Puesto",
+  "contactEmailLabel": "Correo",
+  "contactMethodRequired": "Ingresa un celular o un teléfono."
 }

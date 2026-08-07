@@ -5044,6 +5044,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Price list'**
   String get posCustomerPriceListLabel;
+
+  /// No description provided for @newContactDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New contact'**
+  String get newContactDialogTitle;
+
+  /// No description provided for @contactNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get contactNameLabel;
+
+  /// No description provided for @contactMobileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile'**
+  String get contactMobileLabel;
+
+  /// No description provided for @contactPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get contactPhoneLabel;
+
+  /// No description provided for @contactJobTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get contactJobTitleLabel;
+
+  /// No description provided for @contactEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get contactEmailLabel;
+
+  /// No description provided for @contactMethodRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a mobile or a phone number.'**
+  String get contactMethodRequired;
 }
 
 class _AppLocalizationsDelegate
