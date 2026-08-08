@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/branding/brand_config_provider.dart';
+import 'package:mbe_ui/core/branding/brand_ink.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
 
 part 'app_theme.g.dart';
@@ -25,16 +26,21 @@ class AppTheme {
 
   factory AppTheme.of(BrandConfig brand) {
     return AppTheme._(
-      _buildTheme(_lightScheme(brand), Brightness.light),
-      _buildTheme(_darkScheme(brand), Brightness.dark),
+      _buildTheme(_lightScheme(brand), Brightness.light, brand),
+      _buildTheme(_darkScheme(brand), Brightness.dark, brand),
     );
   }
 
-  static ThemeData _buildTheme(ColorScheme colorScheme, Brightness brightness) {
+  static ThemeData _buildTheme(
+    ColorScheme colorScheme,
+    Brightness brightness,
+    BrandConfig brand,
+  ) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       textTheme: _brandTextTheme(ThemeData(brightness: brightness).textTheme),
+      extensions: [BrandInk.forBrand(brand, colorScheme)],
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:mbe_ui/core/branding/brand_ink.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/auth/presentation/account/account_controller.dart';
@@ -127,7 +128,7 @@ class _SuccessView extends StatelessWidget {
       children: [
         Icon(
           Icons.check_circle_outline,
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).brandInk.primary,
           size: 64,
         ),
         const SizedBox(height: 16),

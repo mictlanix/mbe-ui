@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/branding/brand_ink.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
@@ -164,7 +165,7 @@ class _HeaderRow extends StatelessWidget {
             flex: 3,
             child: Text(
               l10n.mergeKeptLabel,
-              style: style?.copyWith(color: scheme.primary),
+              style: style?.copyWith(color: theme.brandInk.primary),
             ),
           ),
           Expanded(
