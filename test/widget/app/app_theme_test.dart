@@ -1,9 +1,29 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/app/theme/app_theme.dart';
 import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/branding/brand_ink.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
+
+/// WCAG 2.1 relative luminance / contrast ratio, so the palette's own
+/// contrast claims are asserted rather than trusted.
+double _relativeLuminance(Color color) {
+  double linearize(double channel) => channel <= 0.03928
+      ? channel / 12.92
+      : math.pow((channel + 0.055) / 1.055, 2.4).toDouble();
+  return 0.2126 * linearize(color.r) +
+      0.7152 * linearize(color.g) +
+      0.0722 * linearize(color.b);
+}
+
+double _contrastRatio(Color foreground, Color background) {
+  final a = _relativeLuminance(foreground);
+  final b = _relativeLuminance(background);
+  return (math.max(a, b) + 0.05) / (math.min(a, b) + 0.05);
+}
 
 void main() {
   group('AppTheme.of — default XBE palette (US1)', () {
@@ -56,6 +76,48 @@ void main() {
       expect(theme.light.useMaterial3, isTrue);
       expect(theme.dark.useMaterial3, isTrue);
     });
+
+    test('brandInk demotes gold to goldInk on light, keeps gold on dark', () {
+      final theme = AppTheme.of(defaultBrand);
+
+      // Light: raw gold fails as a foreground, so text/icon uses goldInk.
+      expect(theme.light.brandInk.primary, XbePalette.goldInk);
+      // Dark: gold is already accessible on the warm-dark ramp.
+      expect(theme.dark.brandInk.primary, XbePalette.gold);
+    });
+
+    test('brandInk clears 4.5:1 against the surface it is drawn on', () {
+      // The whole reason this token exists (brand guide § "Modo claro";
+      // contracts/brand-tokens.md § xbeGoldInk) — assert the outcome, not
+      // the constant, so a future palette edit can't silently regress it.
+      for (final theme in [
+        AppTheme.of(defaultBrand).light,
+        AppTheme.of(defaultBrand).dark,
+      ]) {
+        final ratio = _contrastRatio(
+          theme.brandInk.primary,
+          theme.colorScheme.surface,
+        );
+        expect(
+          ratio,
+          greaterThanOrEqualTo(4.5),
+          reason:
+              'brandInk.primary must be legible as text on surface '
+              '(${theme.brightness.name} mode, got ${ratio.toStringAsFixed(2)}:1)',
+        );
+      }
+    });
+
+    test('raw gold primary would NOT pass on the light surface', () {
+      // Guards the premise: if Material ever stopped pinning gold to light
+      // `primary`, the demotion above would become dead code and this test
+      // is what says so.
+      final light = AppTheme.of(defaultBrand).light;
+      expect(
+        _contrastRatio(light.colorScheme.primary, light.colorScheme.surface),
+        lessThan(4.5),
+      );
+    });
   });
 
   group('AppTheme.of — overridden seed isolation (US5, FR-007)', () {
@@ -86,6 +148,18 @@ void main() {
       expect(scheme.tertiary, isNot(XbePalette.orange));
       expect(scheme.error, isNot(const Color(0xFFC4262E)));
       expect(scheme.surface, isNot(const Color(0xFFFBF8F3)));
+    });
+
+    test('brandInk never leaks XBE goldInk into an overridden build', () {
+      // The light-mode demotion is an XBE-palette correction; a deployment
+      // with its own seed gets fromSeed's already-accessible `primary`.
+      for (final theme in [
+        AppTheme.of(overriddenBrand).light,
+        AppTheme.of(overriddenBrand).dark,
+      ]) {
+        expect(theme.brandInk.primary, isNot(XbePalette.goldInk));
+        expect(theme.brandInk.primary, theme.colorScheme.primary);
+      }
     });
 
     test(

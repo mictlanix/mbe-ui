@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/branding/brand_ink.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
@@ -48,9 +49,10 @@ class FacilityStatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final color = switch (status) {
-      EntityStatus.active => scheme.primary,
+      EntityStatus.active => theme.brandInk.primary,
       EntityStatus.inactive => scheme.error,
       EntityStatus.archived => scheme.outline,
     };
@@ -119,7 +121,7 @@ class PointSaleChildRow extends StatelessWidget {
     return _ChildRowShell(
       key: Key('point_sale_row_${pointSale.pointSaleId}'),
       icon: Icons.point_of_sale_outlined,
-      iconColor: scheme.primary,
+      iconColor: theme.brandInk.primary,
       name: pointSale.name,
       code: pointSale.code,
       status: pointSale.status,
