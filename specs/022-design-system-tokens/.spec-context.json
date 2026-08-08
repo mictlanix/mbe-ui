@@ -1,0 +1,178 @@
+{
+  "workflow": "speckit",
+  "specName": "design system tokens",
+  "branch": "022-design-system-tokens",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-08T21:03:15.058Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-08T21:06:47.618Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T21:29:29.294Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T21:32:38.885Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T21:32:38.939Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-08T21:32:54.655Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T21:56:28.916Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-08T21:56:36.881Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Draw all text in the active brand's own colours, not the framework's stock text colours"
+    },
+    "FR-002": {
+      "title": "Define the raised surface tone for light mode as well as dark mode"
+    },
+    "FR-003": {
+      "title": "Guarantee a deployment supplying its own brand colour receives no default-brand values"
+    },
+    "FR-004": {
+      "title": "Define a named spacing scale on the four-unit grid"
+    },
+    "FR-005": {
+      "title": "Define a named corner-radius scale from square to fully rounded"
+    },
+    "FR-006": {
+      "title": "Define an elevation model expressing depth via surface tone, shadow for overlays only"
+    },
+    "FR-007": {
+      "title": "Define density and minimum target settings selected by touch vs pointer"
+    },
+    "FR-008": {
+      "title": "Define which type-hierarchy role each kind of text uses at each supported width"
+    },
+    "FR-009": {
+      "title": "Every token obtainable from the active theme; no direct references"
+    },
+    "FR-010": {
+      "title": "Spacing, radius, elevation, density and type roles identical across deployments"
+    },
+    "FR-011": {
+      "title": "Organise tokens so customisable and non-customisable sets are structurally separate"
+    },
+    "FR-012": {
+      "title": "Define every width-dependent measurement for all four supported widths"
+    },
+    "FR-013": {
+      "title": "Shared controls visibly adapt spacing and density between tablet and desktop widths"
+    },
+    "FR-014": {
+      "title": "Decide and record narrow-width values even though phone layouts are out of scope"
+    },
+    "FR-015": {
+      "title": "Define every shared control's appearance centrally"
+    },
+    "FR-016": {
+      "title": "Central appearance covers the full enumerated set of shared controls"
+    },
+    "FR-017": {
+      "title": "Screens must not restate a centrally-defined control's appearance"
+    },
+    "FR-018": {
+      "title": "Replace the two near-identical status indicators with a single shared control"
+    },
+    "FR-019": {
+      "title": "No screen or control specifies a typeface or text size directly"
+    },
+    "FR-020": {
+      "title": "Hold reference images for every shared control in four light/dark x width combinations"
+    },
+    "FR-021": {
+      "title": "Reference images exist and pass before any central appearance change"
+    },
+    "FR-022": {
+      "title": "Verify text colours meet the accessibility contrast threshold in both modes"
+    },
+    "FR-023": {
+      "title": "Report, not silently accept, a shared control with no reference image"
+    },
+    "FR-024": {
+      "title": "Controls fall back to sensible values when rendered outside the product theme"
+    },
+    "FR-025": {
+      "title": "Do not build phone-specific layout components in this feature"
+    },
+    "FR-026": {
+      "title": "Snap off-grid brand-guide measurements to the nearest step and raise with the brand owner"
+    },
+    "FR-027": {
+      "title": "Fail the build when any deployment's brand colour cannot meet contrast as a foreground"
+    },
+    "FR-028": {
+      "title": "Narrow the monospaced role to identifiers and timestamps; codes/SKUs stay body text"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 45,
+    "projectedTasks": 48,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "context": [
+    "reference: DESIGN-SYSTEM.md (reviewed proposal this spec implements)",
+    "reference: specs/019-xbe-default-branding (colour roles, typography contract, brand assets, FR-007 isolation)",
+    "reference: DESIGN.md §4.1-4.3 (design system, responsive layout, shared component library)",
+    "area: lib/app/theme/ + lib/core/branding/ + proposed lib/core/design/",
+    "area: lib/core/widgets/ (20 shared components) + lib/core/layout/breakpoints.dart",
+    "constraint: constitution §V — customisation limited to colour, typography, brand assets, NOT layout/structure",
+    "constraint: constitution §VI — Expanded-first, Compact deferred; kept intact",
+    "constraint: spec 019 FR-007 white-label isolation must survive",
+    "constraint: nothing in lib/features/ or lib/core/ may import lib/app/"
+  ],
+  "intent": "Complete the design system's missing token layers (type roles, spacing, shape, elevation, density) and centralise Material 3 component appearance, specified across all four form-factor tiers, without making product structure white-labelable.",
+  "expectations": [
+    "Phone-specific layout components: bottom navigation bar, table-to-card list transformation, bottom-sheet filters, pinned action bars, full-screen dialogs",
+    "Changing the colour scheme, logo rules or typefaces settled by spec 019",
+    "Moving off Material 3 or introducing a custom component kit",
+    "Making spacing, shape, elevation or density customisable per deployment",
+    "Replacing the existing data table dependency"
+  ]
+}
