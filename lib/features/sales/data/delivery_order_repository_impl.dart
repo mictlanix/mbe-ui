@@ -17,18 +17,11 @@ final deliveryOrderRepositoryProvider = Provider<DeliveryOrderRepository>((ref) 
 /// `DeliveryOrderRepository` backed by the generated `DeliveryOrdersApi`
 /// (contracts/mbe-api-pos.md §2).
 ///
-/// Two of this feature's assumptions did not survive contact with the live
-/// API, and both are absorbed here rather than leaking into the delivery
-/// step:
-///
-/// 1. **A destination cannot be created complete.** `DeliveryOrderCreate`
-///    takes only `salesOrder`/`fulfillmentType`/`lines`; the header goes
-///    through `PUT` ([create] does the pair, and rolls back on failure) —
-///    [mbe-api#146](https://github.com/mictlanix/mbe-api/issues/146).
-/// 2. **A delivery order does not say which sale it came from.** There is no
-///    `sales_order` field and no such filter, so [listForSale] reconstructs
-///    the link through line ids —
-///    [mbe-api#147](https://github.com/mictlanix/mbe-api/issues/147).
+/// This implementation briefly carried two workarounds — a create-then-`PUT`
+/// pair with cancel-on-failure rollback (mbe-api#146), and reconstructing
+/// "the destinations of sale N" from line ids (mbe-api#147). Both shipped on
+/// the backend, so both are gone: a destination is created complete in one
+/// call, and the sale is a first-class filter.
 class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
   DeliveryOrderRepositoryImpl(Dio dio)
     : _api = api.DeliveryOrdersApi(dio, api.standardSerializers);
@@ -45,53 +38,16 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
     String? comment,
     List<DestinationLineRequest>? lines,
   }) async {
-    final created = await _create(
-      salesOrder: salesOrder,
-      fulfillmentType: fulfillmentType,
-      lines: lines,
-    );
-
-    final needsHeader =
-        shipTo != null || contact != null || date != null || comment != null;
-    if (!needsHeader) return created;
-
-    try {
-      return await updateHeader(
-        destinationId: created.id,
-        shipTo: shipTo,
-        contact: contact,
-        date: date,
-        comment: comment,
-      );
-    } on AppError {
-      // The destination exists but points at the wrong address while holding
-      // committed quantities. Leaving it would silently consume stock the
-      // cashier believes is still available, so it is cancelled before the
-      // failure is surfaced (FR-037). A failed rollback must not mask the
-      // original error, which is the one the cashier can act on.
-      try {
-        await cancel(
-          destinationId: created.id,
-          reason: 'Rollback: destination header could not be set',
-        );
-      } on AppError {
-        // Intentionally swallowed — see above.
-      }
-      rethrow;
-    }
-  }
-
-  Future<Destination> _create({
-    required int salesOrder,
-    required FulfillmentType fulfillmentType,
-    List<DestinationLineRequest>? lines,
-  }) async {
     try {
       final response = await _api.createDeliveryOrderApiV1DeliveryOrdersPost(
         deliveryOrderCreate: api.DeliveryOrderCreate((b) {
           b
             ..salesOrder = salesOrder
-            ..fulfillmentType = fulfillmentType.toApi();
+            ..fulfillmentType = fulfillmentType.toApi()
+            ..shipTo = shipTo
+            ..contact = contact
+            ..date = date
+            ..comment = comment;
           // Omitted claims everything the sale still owes — how the
           // counter-pickup remainder is recorded (FR-036).
           if (lines != null) {
@@ -199,32 +155,17 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
     }
   }
 
-  /// Reconstructs "the destinations of sale N" without an endpoint that can
-  /// answer it (mbe-api#147): list the customer's recent delivery orders,
-  /// fetch each one's detail (the summary carries no lines), and keep those
-  /// whose lines reference one of [saleLineIds].
-  ///
-  /// Bounded by [searchLimit] rather than paging to exhaustion — a very
-  /// active customer could otherwise cost an unbounded number of round
-  /// trips. That bound is the caveat: a destination older than the most
-  /// recent [searchLimit] for this customer will not be found. Acceptable
-  /// only because the delivery step resumes a sale from the same shift, and
-  /// it disappears entirely once #147 ships.
   @override
-  Future<List<Destination>> listForSale({
-    required int salesOrder,
-    required int customer,
-    required Set<int> saleLineIds,
-    int searchLimit = 50,
-  }) async {
-    if (saleLineIds.isEmpty) return const [];
+  Future<List<Destination>> listForSale({required int salesOrder}) async {
     try {
       final response = await _api.listDeliveryOrdersApiV1DeliveryOrdersGet(
-        customer: customer,
-        limit: searchLimit,
+        salesOrder: salesOrder,
+        limit: 100,
       );
       final summaries = response.data?.items ?? const <api.DeliveryOrderSummary>[];
 
+      // The summary carries no lines, and the distribution panel needs them,
+      // so each is read back in full.
       final destinations = <Destination>[];
       for (final summary in summaries) {
         final detail = await _api
@@ -232,12 +173,7 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
               deliveryOrderId: summary.deliveryOrderId,
             );
         final result = detail.data;
-        if (result == null) continue;
-        final destination = Destination.fromResponse(result);
-        final belongsToSale = destination.lines.any(
-          (line) => saleLineIds.contains(line.salesOrderDetail),
-        );
-        if (belongsToSale) destinations.add(destination);
+        if (result != null) destinations.add(Destination.fromResponse(result));
       }
       return destinations;
     } on DioException catch (e) {

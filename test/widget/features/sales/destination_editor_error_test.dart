@@ -77,9 +77,6 @@ void main() {
     when(
       () => deliveryRepository.listForSale(
         salesOrder: any(named: 'salesOrder'),
-        customer: any(named: 'customer'),
-        saleLineIds: any(named: 'saleLineIds'),
-        searchLimit: any(named: 'searchLimit'),
       ),
     ).thenAnswer((_) async => [_existing()]);
   });

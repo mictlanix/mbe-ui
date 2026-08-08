@@ -24,23 +24,15 @@ import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_reposit
 /// rest swept to the counter, and SC-005 asserted **server-side** — every
 /// line's quantities across all delivery orders sum to what was ordered.
 ///
-/// This is also the end-to-end check on the two workarounds this feature
-/// carries, both of which are invisible to unit tests:
+/// Also the end-to-end check on the three backend fixes this step depends
+/// on: a destination created complete in one call (mbe-api#146), found again
+/// by its sale (mbe-api#147), on an endpoint that no longer 500s on every
+/// request (mbe-api#149).
 ///
-/// - a destination is created with a POST then a PUT, because
-///   `DeliveryOrderCreate` cannot carry the header (mbe-api#146);
-/// - "the destinations of sale N" is reconstructed from line ids, because a
-///   delivery order does not record which sale it came from (mbe-api#147).
-///
-/// **Currently blocked by [mbe-api#149](https://github.com/mictlanix/mbe-api/issues/149)**:
-/// `POST /delivery-orders` returns 500 for every request, because
-/// `create_from_sales_order` shadows its own `lines` parameter with the
-/// sale's ORM rows. Nothing in this test or in the client can work around
-/// that — no destination of any kind can be recorded. The test is written
-/// against the documented contract and is expected to pass unchanged once
-/// #149 lands; until then it fails at the first `deliveries.create`. It does
-/// not run in a default `flutter test` (no `MBE_POS_*` defines), so it does
-/// not redden the suite.
+/// **Run the POS live tests serially** (`flutter test -j 1 ...`). They commit
+/// stock against the same dev dataset, so two of them confirming concurrently
+/// race and one loses with a `409` on `confirm` — a property of the shared
+/// database, not of the code under test.
 ///
 /// Requires mbe-api at [apiBaseUrl], an **already open cash session**, and
 /// the same `MBE_POS_*` defines as `pos_counter_sale_flow_test.dart`. Creates
@@ -174,8 +166,7 @@ void main() {
         ],
       );
 
-      // Destination 1 takes 2 of the split line. This exercises the
-      // POST-then-PUT sequence: `shipTo` is only settable on the PUT.
+      // Destination 1 takes 2 of the split line, created complete in one call.
       final destinationOne = await deliveries.create(
         salesOrder: paid.id,
         fulfillmentType: FulfillmentType.delivery,
@@ -188,7 +179,7 @@ void main() {
       expect(
         destinationOne.shipTo,
         first.addressId,
-        reason: 'the header PUT must have landed',
+        reason: 'the header must have been applied by the create',
       );
 
       // Destination 2 takes the remaining 1 of the split line, plus 1 of the
@@ -216,15 +207,11 @@ void main() {
       expect(remainder.isCounterPickup, isTrue);
 
       // ── SC-005, asserted from what the server actually stored ──────────
-      final recorded = await deliveries.listForSale(
-        salesOrder: paid.id,
-        customer: paid.customer,
-        saleLineIds: paid.lines.map((l) => l.id).toSet(),
-      );
+      final recorded = await deliveries.listForSale(salesOrder: paid.id);
       expect(
         recorded.map((d) => d.id).toSet(),
         {destinationOne.id, destinationTwo.id, remainder.id},
-        reason: 'listForSale must find all three despite mbe-api#147',
+        reason: 'all three destinations belong to this sale',
       );
 
       final distribution = distributionFor(sale: paid, destinations: recorded);

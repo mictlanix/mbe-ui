@@ -22,6 +22,11 @@ import 'package:mbe_ui/features/sales/domain/money.dart';
 /// session — so no ids are hardcoded and the test survives a reseeded
 /// database.
 ///
+/// **Run the POS live tests serially** (`flutter test -j 1 ...`). They commit
+/// stock against the same dev dataset, so two of them confirming concurrently
+/// race and one loses with a `409` on `confirm` — a property of the shared
+/// database, not of the code under test.
+///
 /// Requires mbe-api running at [apiBaseUrl] (default `http://127.0.0.1:8000`)
 /// and a user with `POS (44)` READ and `SALES_ORDERS (7)` CREATE+UPDATE, plus
 /// an **already open cash session** — this feature's own hard precondition

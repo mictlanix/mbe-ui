@@ -25,11 +25,7 @@ class DeliveryController extends _$DeliveryController {
   Future<List<Destination>> build(Sale sale) {
     return ref
         .watch(deliveryOrderRepositoryProvider)
-        .listForSale(
-          salesOrder: sale.id,
-          customer: sale.customer,
-          saleLineIds: sale.lines.map((line) => line.id).toSet(),
-        );
+        .listForSale(salesOrder: sale.id);
   }
 
   /// Records one addressed destination and its share of each line.
