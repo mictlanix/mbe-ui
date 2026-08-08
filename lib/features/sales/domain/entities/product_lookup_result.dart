@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart' show unitLabelOf;
+
 part 'product_lookup_result.freezed.dart';
 
 /// What a search or scan returns (data-model.md §3), from
@@ -16,6 +18,7 @@ class ProductLookupResult with _$ProductLookupResult {
     String? brand,
     String? model,
     String? barCode,
+    String? unit,
     required String price,
     required String taxRate,
     required bool taxIncluded,
@@ -34,6 +37,7 @@ class ProductLookupResult with _$ProductLookupResult {
         brand: r.brand,
         model: r.model,
         barCode: r.barCode,
+        unit: unitLabelOf(r.unitOfMeasurement),
         price: r.price,
         taxRate: r.taxRate,
         taxIncluded: r.taxIncluded,

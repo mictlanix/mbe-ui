@@ -24,6 +24,7 @@ mixin _$ProductLookupResult {
   String? get brand => throw _privateConstructorUsedError;
   String? get model => throw _privateConstructorUsedError;
   String? get barCode => throw _privateConstructorUsedError;
+  String? get unit => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
   String get taxRate => throw _privateConstructorUsedError;
   bool get taxIncluded => throw _privateConstructorUsedError;
@@ -54,6 +55,7 @@ abstract class $ProductLookupResultCopyWith<$Res> {
     String? brand,
     String? model,
     String? barCode,
+    String? unit,
     String price,
     String taxRate,
     bool taxIncluded,
@@ -86,6 +88,7 @@ class _$ProductLookupResultCopyWithImpl<$Res, $Val extends ProductLookupResult>
     Object? brand = freezed,
     Object? model = freezed,
     Object? barCode = freezed,
+    Object? unit = freezed,
     Object? price = null,
     Object? taxRate = null,
     Object? taxIncluded = null,
@@ -123,6 +126,10 @@ class _$ProductLookupResultCopyWithImpl<$Res, $Val extends ProductLookupResult>
             barCode: freezed == barCode
                 ? _value.barCode
                 : barCode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            unit: freezed == unit
+                ? _value.unit
+                : unit // ignore: cast_nullable_to_non_nullable
                       as String?,
             price: null == price
                 ? _value.price
@@ -175,6 +182,7 @@ abstract class _$$ProductLookupResultImplCopyWith<$Res>
     String? brand,
     String? model,
     String? barCode,
+    String? unit,
     String price,
     String taxRate,
     bool taxIncluded,
@@ -206,6 +214,7 @@ class __$$ProductLookupResultImplCopyWithImpl<$Res>
     Object? brand = freezed,
     Object? model = freezed,
     Object? barCode = freezed,
+    Object? unit = freezed,
     Object? price = null,
     Object? taxRate = null,
     Object? taxIncluded = null,
@@ -243,6 +252,10 @@ class __$$ProductLookupResultImplCopyWithImpl<$Res>
         barCode: freezed == barCode
             ? _value.barCode
             : barCode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        unit: freezed == unit
+            ? _value.unit
+            : unit // ignore: cast_nullable_to_non_nullable
                   as String?,
         price: null == price
             ? _value.price
@@ -288,6 +301,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
     this.brand,
     this.model,
     this.barCode,
+    this.unit,
     required this.price,
     required this.taxRate,
     required this.taxIncluded,
@@ -312,6 +326,8 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
   @override
   final String? barCode;
   @override
+  final String? unit;
+  @override
   final String price;
   @override
   final String taxRate;
@@ -334,7 +350,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
 
   @override
   String toString() {
-    return 'ProductLookupResult(product: $product, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, price: $price, taxRate: $taxRate, taxIncluded: $taxIncluded, minOrderQty: $minOrderQty, stockRequired: $stockRequired, stockable: $stockable, stock: $stock)';
+    return 'ProductLookupResult(product: $product, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, unit: $unit, price: $price, taxRate: $taxRate, taxIncluded: $taxIncluded, minOrderQty: $minOrderQty, stockRequired: $stockRequired, stockable: $stockable, stock: $stock)';
   }
 
   @override
@@ -349,6 +365,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
             (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.model, model) || other.model == model) &&
             (identical(other.barCode, barCode) || other.barCode == barCode) &&
+            (identical(other.unit, unit) || other.unit == unit) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.taxIncluded, taxIncluded) ||
@@ -372,6 +389,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
     brand,
     model,
     barCode,
+    unit,
     price,
     taxRate,
     taxIncluded,
@@ -402,6 +420,7 @@ abstract class _ProductLookupResult implements ProductLookupResult {
     final String? brand,
     final String? model,
     final String? barCode,
+    final String? unit,
     required final String price,
     required final String taxRate,
     required final bool taxIncluded,
@@ -425,6 +444,8 @@ abstract class _ProductLookupResult implements ProductLookupResult {
   String? get model;
   @override
   String? get barCode;
+  @override
+  String? get unit;
   @override
   String get price;
   @override

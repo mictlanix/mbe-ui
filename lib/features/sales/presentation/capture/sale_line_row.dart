@@ -12,8 +12,8 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One line, expanded tier (FR-022, FR-023): product, warehouse picker with
-/// availability, quantity stepper, in-place price/discount/tax-rate edit,
-/// line total, delete, and the non-blocking shortfall warning (FR-025,
+/// availability, quantity stepper, unit, in-place price/discount/tax-rate
+/// edit, line total, delete, and the non-blocking shortfall warning (FR-025,
 /// FR-026). Read-only once `Sale.isEditable` is false (FR-041) — the caller
 /// passes `enabled: false` rather than this row deciding on its own.
 class SaleLineRow extends ConsumerStatefulWidget {
@@ -177,6 +177,16 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow> {
                   icon: const Icon(Icons.add),
                   onPressed: enabled ? () => _step(1) : null,
                 ),
+                // FR-022's unit column (mbe-api#145). Absent for a product
+                // with no unit on file, rather than a placeholder.
+                if (line.unit != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Text(
+                      line.unit!,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
                 Expanded(
                   child: TextField(
                     controller: _price,

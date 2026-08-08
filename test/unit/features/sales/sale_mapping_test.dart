@@ -51,7 +51,11 @@ Map<String, Object?> _lineJson({
   String quantity = '2',
   String taxRate = '0.16',
   int? warehouse = 3,
+  Object? unit = _noUnit,
 }) => {
+  'unit_of_measurement': unit == _noUnit
+      ? {'id': 'H87', 'name': 'Pieza', 'symbol': 'Pza'}
+      : unit,
   'sales_order_detail_id': salesOrderDetailId,
   'product': 11,
   'product_code': 'P-11',
@@ -70,6 +74,8 @@ Map<String, Object?> _lineJson({
   'tax_total': '16.00',
   'total': '116.00',
 };
+
+const _noUnit = Object();
 
 void main() {
   group('Sale.fromResponse', () {
@@ -193,6 +199,36 @@ void main() {
         )!,
       );
       expect(line.availability, isNull);
+    });
+
+    test('maps the unit\'s symbol in preference to its name (mbe-api#145)', () {
+      final line = SaleLine.fromResponse(
+        api.standardSerializers.deserializeWith(
+          api.SalesOrderLineResponse.serializer,
+          _lineJson(),
+        )!,
+      );
+      expect(line.unit, 'Pza');
+    });
+
+    test('falls back to the unit name when it has no symbol', () {
+      final line = SaleLine.fromResponse(
+        api.standardSerializers.deserializeWith(
+          api.SalesOrderLineResponse.serializer,
+          _lineJson(unit: {'id': 'XBX', 'name': 'Caja'}),
+        )!,
+      );
+      expect(line.unit, 'Caja');
+    });
+
+    test('a product with no unit on file maps to null, not a placeholder', () {
+      final line = SaleLine.fromResponse(
+        api.standardSerializers.deserializeWith(
+          api.SalesOrderLineResponse.serializer,
+          _lineJson(unit: null),
+        )!,
+      );
+      expect(line.unit, isNull);
     });
 
     test('a line with no warehouse maps to null rather than a sentinel', () {

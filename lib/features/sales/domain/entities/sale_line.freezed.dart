@@ -20,7 +20,10 @@ mixin _$SaleLine {
   int get id => throw _privateConstructorUsedError;
   int get product => throw _privateConstructorUsedError;
   String get productCode => throw _privateConstructorUsedError;
-  String get productName => throw _privateConstructorUsedError;
+  String get productName =>
+      throw _privateConstructorUsedError; // The SAT unit's symbol when it has one ("Pza"), else its name
+  // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
+  String? get unit => throw _privateConstructorUsedError;
   String get quantity => throw _privateConstructorUsedError;
   String get cost => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
@@ -55,6 +58,7 @@ abstract class $SaleLineCopyWith<$Res> {
     int product,
     String productCode,
     String productName,
+    String? unit,
     String quantity,
     String cost,
     String price,
@@ -89,6 +93,7 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
     Object? product = null,
     Object? productCode = null,
     Object? productName = null,
+    Object? unit = freezed,
     Object? quantity = null,
     Object? cost = null,
     Object? price = null,
@@ -120,6 +125,10 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
                 ? _value.productName
                 : productName // ignore: cast_nullable_to_non_nullable
                       as String,
+            unit: freezed == unit
+                ? _value.unit
+                : unit // ignore: cast_nullable_to_non_nullable
+                      as String?,
             quantity: null == quantity
                 ? _value.quantity
                 : quantity // ignore: cast_nullable_to_non_nullable
@@ -188,6 +197,7 @@ abstract class _$$SaleLineImplCopyWith<$Res>
     int product,
     String productCode,
     String productName,
+    String? unit,
     String quantity,
     String cost,
     String price,
@@ -221,6 +231,7 @@ class __$$SaleLineImplCopyWithImpl<$Res>
     Object? product = null,
     Object? productCode = null,
     Object? productName = null,
+    Object? unit = freezed,
     Object? quantity = null,
     Object? cost = null,
     Object? price = null,
@@ -252,6 +263,10 @@ class __$$SaleLineImplCopyWithImpl<$Res>
             ? _value.productName
             : productName // ignore: cast_nullable_to_non_nullable
                   as String,
+        unit: freezed == unit
+            ? _value.unit
+            : unit // ignore: cast_nullable_to_non_nullable
+                  as String?,
         quantity: null == quantity
             ? _value.quantity
             : quantity // ignore: cast_nullable_to_non_nullable
@@ -313,6 +328,7 @@ class _$SaleLineImpl implements _SaleLine {
     required this.product,
     required this.productCode,
     required this.productName,
+    this.unit,
     required this.quantity,
     required this.cost,
     required this.price,
@@ -335,6 +351,10 @@ class _$SaleLineImpl implements _SaleLine {
   final String productCode;
   @override
   final String productName;
+  // The SAT unit's symbol when it has one ("Pza"), else its name
+  // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
+  @override
+  final String? unit;
   @override
   final String quantity;
   @override
@@ -366,7 +386,7 @@ class _$SaleLineImpl implements _SaleLine {
 
   @override
   String toString() {
-    return 'SaleLine(id: $id, product: $product, productCode: $productCode, productName: $productName, quantity: $quantity, cost: $cost, price: $price, discountRate: $discountRate, taxRate: $taxRate, taxIncluded: $taxIncluded, warehouse: $warehouse, comment: $comment, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, availability: $availability)';
+    return 'SaleLine(id: $id, product: $product, productCode: $productCode, productName: $productName, unit: $unit, quantity: $quantity, cost: $cost, price: $price, discountRate: $discountRate, taxRate: $taxRate, taxIncluded: $taxIncluded, warehouse: $warehouse, comment: $comment, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, availability: $availability)';
   }
 
   @override
@@ -380,6 +400,7 @@ class _$SaleLineImpl implements _SaleLine {
                 other.productCode == productCode) &&
             (identical(other.productName, productName) ||
                 other.productName == productName) &&
+            (identical(other.unit, unit) || other.unit == unit) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
             (identical(other.cost, cost) || other.cost == cost) &&
@@ -408,6 +429,7 @@ class _$SaleLineImpl implements _SaleLine {
     product,
     productCode,
     productName,
+    unit,
     quantity,
     cost,
     price,
@@ -437,6 +459,7 @@ abstract class _SaleLine implements SaleLine {
     required final int product,
     required final String productCode,
     required final String productName,
+    final String? unit,
     required final String quantity,
     required final String cost,
     required final String price,
@@ -458,7 +481,10 @@ abstract class _SaleLine implements SaleLine {
   @override
   String get productCode;
   @override
-  String get productName;
+  String get productName; // The SAT unit's symbol when it has one ("Pza"), else its name
+  // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
+  @override
+  String? get unit;
   @override
   String get quantity;
   @override

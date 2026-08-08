@@ -147,6 +147,31 @@ void main() {
     });
   });
 
+  group('the unit column (FR-022, mbe-api#145)', () {
+    testWidgets('renders the product\'s unit beside the quantity', (tester) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(line: testLine(unit: 'Pza'), facilityId: 9),
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+      expect(find.text('Pza'), findsOneWidget);
+    });
+
+    testWidgets('a product with no unit on file renders no placeholder', (
+      tester,
+    ) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(line: testLine(), facilityId: 9),
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+      // Only the fields' own labels are present — nothing stands in for the
+      // missing unit.
+      expect(find.text('—'), findsNothing);
+      expect(find.text('Pza'), findsNothing);
+    });
+  });
+
   group('shortfall warning (FR-025, FR-026)', () {
     testWidgets('no warning when availability covers the ordered quantity', (
       tester,

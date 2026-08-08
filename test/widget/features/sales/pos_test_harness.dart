@@ -59,11 +59,13 @@ SaleLine testLine({
   String discountRate = '0',
   String taxRate = '0.16',
   int? warehouse = 3,
+  String? unit,
 }) => SaleLine(
   id: id,
   product: 11,
   productCode: 'P-11',
   productName: 'Widget',
+  unit: unit,
   quantity: quantity,
   cost: '40.00',
   price: price,
