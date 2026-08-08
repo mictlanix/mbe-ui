@@ -17,16 +17,18 @@ class OpenSalesSelector extends ConsumerWidget {
   const OpenSalesSelector({
     super.key,
     required this.pointSale,
-    required this.currentReference,
+    required this.currentId,
+    this.currentSerial,
     required this.onSelected,
     required this.onStartNew,
   });
 
   final int pointSale;
 
-  /// What the header shows for the sale in hand — its folio once assigned,
-  /// its provisional id before that (FR-040).
-  final String currentReference;
+  /// The sale in hand: its id always, and its folio once mbe-api has assigned
+  /// one (FR-040). Both are shown, each labelled — see [_OpenSaleRow].
+  final int currentId;
+  final int? currentSerial;
 
   final ValueChanged<OpenSale> onSelected;
   final VoidCallback onStartNew;
@@ -46,12 +48,19 @@ class OpenSalesSelector extends ConsumerWidget {
             child: Text(l10n.posNoOpenSales),
           )
         else
-          for (final sale in sales)
+          // The list arrives grouped by status, so a heading goes in wherever
+          // the status changes. Saying it once per section beats repeating it
+          // on every row: what the cashier needs is which pile a sale is in,
+          // and the pile is now visible from its position.
+          for (final (index, sale) in sales.indexed) ...[
+            if (index == 0 || sales[index - 1].status != sale.status)
+              _StatusHeading(status: sale.status),
             MenuItemButton(
               key: Key('open_sale_${sale.id}'),
               onPressed: () => onSelected(sale),
               child: _OpenSaleRow(sale: sale),
             ),
+          ],
         const Divider(height: 1),
         MenuItemButton(
           key: const Key('open_sales_new_button'),
@@ -60,19 +69,29 @@ class OpenSalesSelector extends ConsumerWidget {
           child: Text(l10n.posNewSaleAction),
         ),
       ],
-      // On a phone the chip carries the reference alone: the open-sales count
-      // is repeated inside the menu it opens, and spelling it out here costs
-      // width the step indicator needs (US5, SC-007).
       builder: (context, controller, child) => ActionChip(
         avatar: const Icon(Icons.receipt_long_outlined, size: 18),
-        label: Text(
-          sales.isEmpty || LayoutBreakpoints.isCompact(context)
-              ? '#$currentReference'
-              : '#$currentReference · ${l10n.posOpenSalesCount(sales.length)}',
-        ),
+        label: Text(_chipLabel(l10n, context, sales.length)),
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
       ),
     );
+  }
+
+  /// The sale in hand, labelled the same way the menu rows are: its id, its
+  /// folio once assigned, and how many other sales are still open.
+  ///
+  /// On a phone the count drops — it is repeated inside the menu this chip
+  /// opens, and spelling it out here costs width the step indicator needs
+  /// (US5, SC-007). The folio stays: it is the number on the customer's
+  /// ticket, so it is the one worth the space.
+  String _chipLabel(AppLocalizations l10n, BuildContext context, int openCount) {
+    final reference = [
+      l10n.posOpenSaleId(currentId),
+      if (currentSerial case final serial?) l10n.posOpenSaleSerial(serial),
+    ].join(' · ');
+
+    if (openCount == 0 || LayoutBreakpoints.isCompact(context)) return reference;
+    return '$reference · ${l10n.posOpenSalesCount(openCount)}';
   }
 }
 
@@ -118,19 +137,51 @@ class _OpenSaleRow extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            _statusLabel(l10n, sale.status),
-            style: theme.textTheme.labelSmall,
-          ),
           const SizedBox(width: 12),
           Text(MoneyFormatters.currency(sale.total)),
         ],
       ),
     );
   }
+}
 
-  /// Why the sale is still open, which is what tells the cashier where
-  /// selecting it will land them (contracts/pos-screen.md §5).
+/// The heading over one status section — why every sale beneath it is still
+/// open, and therefore where selecting one will land the cashier
+/// (contracts/pos-screen.md §5). Said once per section rather than on every
+/// row.
+class _StatusHeading extends StatelessWidget {
+  const _StatusHeading({required this.status});
+
+  final SaleStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: SizedBox(
+            width: 360,
+            child: Text(
+              key: Key('open_sales_heading_${status.name}'),
+              _statusLabel(l10n, status),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        const Divider(height: 1),
+      ],
+    );
+  }
+
   String _statusLabel(AppLocalizations l10n, SaleStatus status) => switch (status) {
     SaleStatus.draft => l10n.posOpenSaleDraft,
     SaleStatus.completed => l10n.posOpenSaleUnpaid,

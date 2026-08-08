@@ -215,7 +215,8 @@ void main() {
         tester,
         OpenSalesSelector(
           pointSale: 3,
-          currentReference: '00282127',
+          currentId: 337471,
+          currentSerial: 282127,
           onSelected: (sale) => chosen = sale,
           onStartNew: () {},
         ),
@@ -223,9 +224,15 @@ void main() {
         overrides: overrides(),
       );
 
-      // The chip carries the reference alone here — the count would cost
-      // width the step indicator needs.
-      expect(find.text('#00282127'), findsOneWidget);
+      // The chip keeps both identifiers but drops the open-sales count here —
+      // that count would cost width the step indicator needs, and the menu
+      // this chip opens repeats it anyway.
+      expect(
+        find.text(
+          '${l10n.posOpenSaleId(337471)} · ${l10n.posOpenSaleSerial(282127)}',
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.byKey(const Key('open_sales_selector')));
       await tester.pumpAndSettle();

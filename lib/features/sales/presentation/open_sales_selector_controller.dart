@@ -80,9 +80,30 @@ Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async
     byId.putIfAbsent(sale.id, () => sale);
   }
 
-  // Newest first (US3 scenario 1, data-model.md §8).
-  return byId.values.toList()..sort((a, b) => b.date.compareTo(a.date));
+  // Grouped by what the cashier can do about the sale — still capturing, then
+  // owed money, then owed a delivery — and newest first within each group.
+  //
+  // This supersedes data-model.md §8's flat "newest first": with three
+  // statuses interleaved, the register's own drafts were scattered among
+  // sales that need a different action entirely. The section order matches
+  // the order a sale moves through, so the top of the list is always the work
+  // nearest to hand.
+  return byId.values.toList()
+    ..sort((a, b) {
+      final byStatus = _statusRank(a.status).compareTo(_statusRank(b.status));
+      return byStatus != 0 ? byStatus : b.id.compareTo(a.id);
+    });
 }
+
+/// Sale ids are sequential, so descending id is newest-first *within* a group
+/// — data-model.md §8's intent, kept inside each section.
+int _statusRank(SaleStatus status) => switch (status) {
+  SaleStatus.draft => 0,
+  SaleStatus.completed => 1,
+  SaleStatus.paid => 2,
+  // Never listed; ranked last rather than left to chance.
+  SaleStatus.cancelled => 3,
+};
 
 /// Midnight of the register's trading day, as the wire wants it.
 ///

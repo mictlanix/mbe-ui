@@ -129,7 +129,8 @@ void main() {
       tester,
       OpenSalesSelector(
         pointSale: 3,
-        currentReference: '00282127',
+        currentId: 337471,
+        currentSerial: 282127,
         onSelected: onSelected ?? (_) {},
         onStartNew: () {},
       ),
@@ -176,8 +177,50 @@ void main() {
       );
       expect(find.text('Acme'), findsWidgets);
       expect(find.text(r'$116.00'), findsWidgets);
+    });
+
+    testWidgets('the status is a heading over each section, not a label on '
+        'every row', (tester) async {
+      stubStatuses(
+        draft: [
+          _openSale(id: 1, status: SaleStatus.draft),
+          _openSale(id: 2, status: SaleStatus.draft),
+        ],
+        completed: [_openSale(id: 3, status: SaleStatus.completed)],
+      );
+
+      await pumpSelector(tester);
+
+      // One heading per section, however many sales it holds.
       expect(find.text(l10n.posOpenSaleDraft), findsOneWidget);
       expect(find.text(l10n.posOpenSaleUnpaid), findsOneWidget);
+      expect(
+        find.byKey(const Key('open_sales_heading_draft')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('open_sales_heading_completed')),
+        findsOneWidget,
+      );
+      // No section that has no sales in it.
+      expect(find.text(l10n.posOpenSaleUndelivered), findsNothing);
+
+      // Each heading sits above its own sales.
+      final draftHeading = tester
+          .getTopLeft(find.byKey(const Key('open_sales_heading_draft')))
+          .dy;
+      final unpaidHeading = tester
+          .getTopLeft(find.byKey(const Key('open_sales_heading_completed')))
+          .dy;
+      for (final id in [1, 2]) {
+        final row = tester.getTopLeft(find.byKey(Key('open_sale_$id'))).dy;
+        expect(row, greaterThan(draftHeading));
+        expect(row, lessThan(unpaidHeading));
+      }
+      expect(
+        tester.getTopLeft(find.byKey(const Key('open_sale_3'))).dy,
+        greaterThan(unpaidHeading),
+      );
     });
 
     testWidgets('a draft shows no folio line at all — it has not been '
@@ -186,13 +229,64 @@ void main() {
 
       await pumpSelector(tester);
 
-      expect(find.text(l10n.posOpenSaleId(337482)), findsOneWidget);
-      expect(find.textContaining(l10n.posOpenSaleSerial(0).split(' ').first),
-          findsNothing,
-          reason: 'no folio label when there is no folio');
+      // Scoped to the row: the chip above it carries a folio of its own.
+      final row = find.byKey(const Key('open_sale_337482'));
+      expect(
+        find.descendant(of: row, matching: find.text(l10n.posOpenSaleId(337482))),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: row,
+          matching: find.textContaining(
+            l10n.posOpenSaleSerial(0).split(' ').first,
+          ),
+        ),
+        findsNothing,
+        reason: 'no folio label when there is no folio',
+      );
     });
 
-    testWidgets('newest first', (tester) async {
+    testWidgets('the chip labels the sale in hand the same way, and says how '
+        'many others are open', (tester) async {
+      stubStatuses(draft: [_openSale(id: 1, status: SaleStatus.draft)]);
+
+      await pumpSelector(tester);
+
+      expect(
+        find.text(
+          '${l10n.posOpenSaleId(337471)} · ${l10n.posOpenSaleSerial(282127)}'
+          ' · ${l10n.posOpenSalesCount(1)}',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a sale with no folio yet gets an id-only chip', (tester) async {
+      stubStatuses();
+
+      await pumpPos(
+        tester,
+        OpenSalesSelector(
+          pointSale: 3,
+          currentId: 337482,
+          onSelected: (_) {},
+          onStartNew: () {},
+        ),
+        overrides: [
+          salesOrderOverride(salesOrders),
+          deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+          facilityRepositoryProvider.overrideWithValue(facilities),
+        ],
+      );
+
+      expect(find.text(l10n.posOpenSaleId(337482)), findsOneWidget);
+    });
+
+    testWidgets('grouped by status — capturing, then owed money, then owed a '
+        'delivery — however the dates fall', (tester) async {
+      // The draft is the *oldest* here, so a flat newest-first ordering would
+      // put it last. Grouping by what the cashier can do about it wins.
       stubStatuses(
         draft: [
           _openSale(id: 1, status: SaleStatus.draft, date: DateTime(2026, 8, 5, 9)),
@@ -204,13 +298,47 @@ void main() {
             date: DateTime(2026, 8, 5, 17),
           ),
         ],
+        paid: [
+          _openSale(id: 3, status: SaleStatus.paid, date: DateTime(2026, 8, 5, 18)),
+        ],
+      );
+      when(() => salesOrders.getById(saleId: 3)).thenAnswer(
+        (_) async => testSale(
+          id: 3,
+          status: SaleStatus.paid,
+          shipTo: _deliveryAddress,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+      when(
+        () => deliveries.listForSale(salesOrder: 3),
+      ).thenAnswer((_) async => [_destination(claimed: '4')]);
+
+      await pumpSelector(tester);
+
+      final capturing = tester.getTopLeft(find.byKey(const Key('open_sale_1')));
+      final owedMoney = tester.getTopLeft(find.byKey(const Key('open_sale_2')));
+      final owedDelivery = tester.getTopLeft(find.byKey(const Key('open_sale_3')));
+      expect(capturing.dy, lessThan(owedMoney.dy));
+      expect(owedMoney.dy, lessThan(owedDelivery.dy));
+    });
+
+    testWidgets('newest first within a status group — ids are sequential, so '
+        'the most recent draft is the top one', (tester) async {
+      stubStatuses(
+        draft: [
+          _openSale(id: 337435, status: SaleStatus.draft),
+          _openSale(id: 337482, status: SaleStatus.draft),
+          _openSale(id: 337449, status: SaleStatus.draft),
+        ],
       );
 
       await pumpSelector(tester);
 
-      final newer = tester.getTopLeft(find.byKey(const Key('open_sale_2')));
-      final older = tester.getTopLeft(find.byKey(const Key('open_sale_1')));
-      expect(newer.dy, lessThan(older.dy));
+      final rows = [337482, 337449, 337435]
+          .map((id) => tester.getTopLeft(find.byKey(Key('open_sale_$id'))).dy)
+          .toList();
+      expect(rows, orderedEquals([...rows]..sort()));
     });
 
     testWidgets('an empty register says so rather than showing a blank menu', (

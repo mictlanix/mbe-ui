@@ -46,9 +46,9 @@ class PosHeaderBand extends ConsumerWidget {
               if (current != null)
                 OpenSalesSelector(
                   pointSale: current.pointSale,
-                  // FR-040: the folio once assigned, the provisional id before.
-                  currentReference:
-                      '${current.serial ?? current.provisionalReference}',
+                  // FR-040: the id always, the folio once assigned.
+                  currentId: current.provisionalReference,
+                  currentSerial: current.serial,
                   onSelected: onSaleSelected,
                   onStartNew: onStartNew,
                 ),
