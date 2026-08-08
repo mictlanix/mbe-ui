@@ -3,7 +3,7 @@
   "specName": "point of sale",
   "branch": "020-point-of-sale",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -955,6 +955,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-08T01:42:55.450Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-08T20:01:25.588Z"
     }
   ],
   "coverage": {
@@ -1179,5 +1186,6 @@
     "No offline capture",
     "No shipping cost (no backend support)"
   ],
-  "currentTask": "T111"
+  "currentTask": "T111",
+  "telemetryInstanceId": "4b2e9392-f065-4bf7-b8c7-8bc63e08d5a7"
 }
