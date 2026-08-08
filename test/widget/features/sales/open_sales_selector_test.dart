@@ -164,6 +164,73 @@ void main() {
     });
   });
 
+  group("mbe-api's status filter is not exclusive", () {
+    testWidgets('a paid sale returned by the `completed` query is listed once, '
+        'not twice — duplicate keys crash the menu', (tester) async {
+      // Exactly what a live backend answers: `status=completed` includes
+      // everything confirmed, so a paid sale comes back from that query *and*
+      // from the `paid` one.
+      final settled = _openSale(id: 337446, status: SaleStatus.paid);
+      stubStatuses(completed: [settled], paid: [settled]);
+      when(() => salesOrders.getById(saleId: 337446)).thenAnswer(
+        (_) async => testSale(
+          id: 337446,
+          status: SaleStatus.paid,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+      // Nothing distributed, so it genuinely belongs in the list — once.
+      when(
+        () => deliveries.listForSale(salesOrder: 337446),
+      ).thenAnswer((_) async => []);
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_337446')), findsOneWidget);
+      expect(find.text(l10n.posOpenSaleUndelivered), findsOneWidget);
+      expect(
+        find.text(l10n.posOpenSaleUnpaid),
+        findsNothing,
+        reason: 'a paid sale owes nothing and must not read as unpaid',
+      );
+    });
+
+    testWidgets('a settled counter sale leaking into the `completed` query is '
+        'not listed at all', (tester) async {
+      final settled = _openSale(id: 42, status: SaleStatus.paid);
+      stubStatuses(completed: [settled], paid: [settled]);
+      // Fully distributed: finished, so neither branch should keep it.
+      when(() => salesOrders.getById(saleId: 42)).thenAnswer(
+        (_) async => testSale(
+          id: 42,
+          status: SaleStatus.paid,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+      when(
+        () => deliveries.listForSale(salesOrder: 42),
+      ).thenAnswer((_) async => [_destination(claimed: '10')]);
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_42')), findsNothing);
+      expect(find.text(l10n.posNoOpenSales), findsOneWidget);
+    });
+
+    testWidgets('the same sale caught by two concurrent queries mid-transition '
+        'is still listed once', (tester) async {
+      // A draft confirmed between the first and second query answers both.
+      stubStatuses(
+        draft: [_openSale(id: 7, status: SaleStatus.draft)],
+        completed: [_openSale(id: 7, status: SaleStatus.completed)],
+      );
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_7')), findsOneWidget);
+    });
+  });
+
   group('paid sales (FR-058)', () {
     testWidgets('a paid delivery sale with an unfinished distribution is '
         'listed', (tester) async {

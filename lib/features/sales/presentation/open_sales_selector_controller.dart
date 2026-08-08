@@ -35,17 +35,31 @@ Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async
     salesOrders.listOpen(pointSale: pointSale, status: SaleStatus.paid),
   ]);
 
+  // mbe-api's `status` filter is not exclusive: `completed` answers with
+  // everything confirmed, paid sales included (verified against a live
+  // backend — one page came back 80 `paid` to 20 `completed`). Each branch
+  // here therefore keeps only the status it asked for. Without this a paid
+  // sale arrives twice, once as "unpaid" and once through the distribution
+  // check below, and the two entries collide as duplicate widget keys in the
+  // menu — a crash, not a cosmetic slip.
   final resumable = <OpenSale>[
-    ...pages[0].items,
-    ...pages[1].items,
+    ...pages[0].items.where((sale) => sale.status == SaleStatus.draft),
+    ...pages[1].items.where((sale) => sale.status == SaleStatus.completed),
   ];
 
-  final undistributed = await _paidAndUndistributed(ref, pages[2].items);
-  resumable.addAll(undistributed);
+  final paid = pages[2].items.where((sale) => sale.status == SaleStatus.paid);
+  resumable.addAll(await _paidAndUndistributed(ref, paid.toList()));
+
+  // The three queries are concurrent and independent, so a sale confirmed or
+  // paid *between* two of them can legitimately appear in both answers however
+  // the server filters. Collapsing by id keeps that race off the screen.
+  final byId = <int, OpenSale>{};
+  for (final sale in resumable) {
+    byId.putIfAbsent(sale.id, () => sale);
+  }
 
   // Newest first (US3 scenario 1, data-model.md §8).
-  resumable.sort((a, b) => b.date.compareTo(a.date));
-  return resumable;
+  return byId.values.toList()..sort((a, b) => b.date.compareTo(a.date));
 }
 
 /// Keeps only the paid sales that still owe a distribution.
