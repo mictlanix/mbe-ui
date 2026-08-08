@@ -9,6 +9,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:mbe_api_client/src/model/address_response.dart';
+import 'package:mbe_api_client/src/model/taxpayer_recipient_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -31,6 +32,7 @@ part 'customer_response.g.dart';
 /// * [comment]
 /// * [addresses]
 /// * [contacts]
+/// * [taxpayers]
 @BuiltValue()
 abstract class CustomerResponse
     implements Built<CustomerResponse, CustomerResponseBuilder> {
@@ -77,6 +79,9 @@ abstract class CustomerResponse
   @BuiltValueField(wireName: r'contacts')
   BuiltList<ContactResponse>? get contacts;
 
+  @BuiltValueField(wireName: r'taxpayers')
+  BuiltList<TaxpayerRecipientResponse>? get taxpayers;
+
   CustomerResponse._();
 
   factory CustomerResponse([void updates(CustomerResponseBuilder b)]) =
@@ -85,7 +90,8 @@ abstract class CustomerResponse
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(CustomerResponseBuilder b) => b
     ..addresses = ListBuilder()
-    ..contacts = ListBuilder();
+    ..contacts = ListBuilder()
+    ..taxpayers = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<CustomerResponse> get serializer =>
@@ -183,6 +189,15 @@ class _$CustomerResponseSerializer
       yield serializers.serialize(
         object.contacts,
         specifiedType: const FullType(BuiltList, [FullType(ContactResponse)]),
+      );
+    }
+    if (object.taxpayers != null) {
+      yield r'taxpayers';
+      yield serializers.serialize(
+        object.taxpayers,
+        specifiedType: const FullType(BuiltList, [
+          FullType(TaxpayerRecipientResponse),
+        ]),
       );
     }
   }
@@ -338,6 +353,17 @@ class _$CustomerResponseSerializer
                   )
                   as BuiltList<ContactResponse>;
           result.contacts.replace(valueDes);
+          break;
+        case r'taxpayers':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(BuiltList, [
+                      FullType(TaxpayerRecipientResponse),
+                    ]),
+                  )
+                  as BuiltList<TaxpayerRecipientResponse>;
+          result.taxpayers.replace(valueDes);
           break;
         default:
           unhandled.add(key);
