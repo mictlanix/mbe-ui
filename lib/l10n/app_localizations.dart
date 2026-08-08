@@ -5284,6 +5284,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create customer'**
   String get posCreateCustomerAction;
+
+  /// No description provided for @posStepProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String posStepProgress(int current, int total);
 }
 
 class _AppLocalizationsDelegate

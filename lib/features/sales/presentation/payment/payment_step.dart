@@ -45,8 +45,15 @@ class PaymentStep extends ConsumerWidget {
         Card(
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            // A `Wrap` rather than a `Row`: three currency figures side by
+            // side overflow a phone (US5, SC-007), and large amounts overflow
+            // even a wide one. This reads as a spaced row wherever it fits
+            // and folds onto a second line where it does not — no figure is
+            // ever truncated.
+            child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              spacing: 16,
+              runSpacing: 12,
               children: [
                 _figure(context, l10n.posPaymentTotal, sale.total),
                 _figure(context, l10n.posPaymentPaid, subtractAmounts(sale.total, sale.balance)),
@@ -115,6 +122,7 @@ class PaymentStep extends ConsumerWidget {
   }) {
     final theme = Theme.of(context);
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(label, style: theme.textTheme.labelMedium),
         Text(

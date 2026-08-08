@@ -247,14 +247,18 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
             const SizedBox(height: 12),
             LineDistributionPanel(distribution: distribution),
             const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            // A `Wrap`, because "Cancelar" beside "Agregar destino" does not
+            // fit a phone-width card (US5, SC-007) — there the second button
+            // drops to its own line rather than being pushed off the edge.
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 TextButton(
                   onPressed: _submitting ? null : widget.onDone,
                   child: Text(l10n.cancelButton),
                 ),
-                const SizedBox(width: 8),
                 FilledButton(
                   key: const Key('destination_save_button'),
                   onPressed: canSubmit ? _submit : null,

@@ -2828,4 +2828,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posCreateCustomerAction => 'Create customer';
+
+  @override
+  String posStepProgress(int current, int total) {
+    return 'Step $current of $total';
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
@@ -65,6 +66,10 @@ class PosHeaderBand extends ConsumerWidget {
 /// Two steps or three, driven by the fulfilment mode (FR-005) — the current
 /// one emphasised rather than the others hidden, so the cashier can see
 /// what is still ahead.
+///
+/// On a phone there is no room for that: three labels and two chevrons would
+/// push the selector off the band, so it collapses to "Paso N de M" (US5,
+/// SC-007). The position is what matters; the names are on the step itself.
 class _StepIndicator extends StatelessWidget {
   const _StepIndicator({required this.step});
 
@@ -74,6 +79,15 @@ class _StepIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+
+    if (LayoutBreakpoints.isCompact(context)) {
+      return Text(
+        key: const Key('pos_step_progress'),
+        l10n.posStepProgress(step.current.index + 1, step.stepCount),
+        style: theme.textTheme.titleSmall,
+      );
+    }
+
     final labels = [
       l10n.posStepVenta,
       l10n.posStepCobro,

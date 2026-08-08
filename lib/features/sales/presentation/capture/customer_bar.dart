@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
@@ -80,51 +81,32 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
               ErrorBanner(error: _error!, onDismiss: () => setState(() => _error = null)),
               const SizedBox(height: 8),
             ],
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: CatalogEntityPicker<CustomerListItem>(
-                    key: const Key('pos_customer_picker'),
-                    label: l10n.posCustomerLabel,
-                    initialDisplayText: sale.customerName,
-                    enabled: widget.enabled && !_busy,
-                    displayStringForOption: (c) => '${c.code} — ${c.name}',
-                    optionsBuilder: (query) async {
-                      final result = await ref
-                          .read(customerRepositoryProvider)
-                          .list(search: query, limit: 10);
-                      return result.items;
-                    },
-                    onSelected: (c) => _updateHeader(customer: c.customerId),
-                  ),
-                ),
-                if (ref
-                    .watch(accessControlProvider)
-                    .can(SystemObject.customers, AccessRight.create)) ...[
-                  const SizedBox(width: 4),
-                  IconButton(
-                    key: const Key('pos_create_customer_button'),
-                    icon: const Icon(Icons.person_add_alt),
-                    tooltip: l10n.posCreateCustomerAction,
-                    onPressed: (widget.enabled && !_busy)
-                        ? _createCustomer
-                        : null,
-                  ),
+            // Phone width cannot hold the picker, the create button and a
+            // three-segment terms control on one line, so the terms control
+            // drops below (US5, SC-007).
+            if (LayoutBreakpoints.isCompact(context)) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(child: _picker(l10n, sale)),
+                  if (_canCreateCustomers) _createButton(l10n),
                 ],
-                const SizedBox(width: 12),
-                SegmentedButton<PaymentTerms>(
-                  segments: [
-                    ButtonSegment(value: PaymentTerms.immediate, label: Text(l10n.posPaymentTermsImmediate)),
-                    ButtonSegment(value: PaymentTerms.netD, label: Text(l10n.posPaymentTermsCredit)),
-                  ],
-                  selected: {sale.paymentTerms},
-                  onSelectionChanged: (widget.enabled && !_busy)
-                      ? (selection) => _updateHeader(paymentTerms: selection.first)
-                      : null,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: _paymentTermsControl(l10n, sale),
+              ),
+            ] else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(child: _picker(l10n, sale)),
+                  if (_canCreateCustomers) _createButton(l10n),
+                  const SizedBox(width: 12),
+                  _paymentTermsControl(l10n, sale),
+                ],
+              ),
             const SizedBox(height: 8),
             _CustomerFacts(customerId: sale.customer),
           ],
@@ -132,6 +114,51 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
       ),
     );
   }
+
+  bool get _canCreateCustomers => ref
+      .watch(accessControlProvider)
+      .can(SystemObject.customers, AccessRight.create);
+
+  Widget _createButton(AppLocalizations l10n) => IconButton(
+    key: const Key('pos_create_customer_button'),
+    icon: const Icon(Icons.person_add_alt),
+    tooltip: l10n.posCreateCustomerAction,
+    onPressed: (widget.enabled && !_busy) ? _createCustomer : null,
+  );
+
+  Widget _paymentTermsControl(AppLocalizations l10n, Sale sale) =>
+      SegmentedButton<PaymentTerms>(
+        segments: [
+          ButtonSegment(
+            value: PaymentTerms.immediate,
+            label: Text(l10n.posPaymentTermsImmediate),
+          ),
+          ButtonSegment(
+            value: PaymentTerms.netD,
+            label: Text(l10n.posPaymentTermsCredit),
+          ),
+        ],
+        selected: {sale.paymentTerms},
+        onSelectionChanged: (widget.enabled && !_busy)
+            ? (selection) => _updateHeader(paymentTerms: selection.first)
+            : null,
+      );
+
+  Widget _picker(AppLocalizations l10n, Sale sale) =>
+      CatalogEntityPicker<CustomerListItem>(
+        key: const Key('pos_customer_picker'),
+        label: l10n.posCustomerLabel,
+        initialDisplayText: sale.customerName,
+        enabled: widget.enabled && !_busy,
+        displayStringForOption: (c) => '${c.code} — ${c.name}',
+        optionsBuilder: (query) async {
+          final result = await ref
+              .read(customerRepositoryProvider)
+              .list(search: query, limit: 10);
+          return result.items;
+        },
+        onSelected: (c) => _updateHeader(customer: c.customerId),
+      );
 }
 
 /// FR-011's standing facts about the selected customer: credit line and price

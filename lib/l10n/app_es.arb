@@ -917,5 +917,6 @@
   "posOpenSaleDraft": "En captura",
   "posOpenSaleUnpaid": "Por cobrar",
   "posOpenSaleUndelivered": "Por entregar",
-  "posCreateCustomerAction": "Crear cliente"
+  "posCreateCustomerAction": "Crear cliente",
+  "posStepProgress": "Paso {current} de {total}"
 }

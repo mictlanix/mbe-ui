@@ -114,6 +114,32 @@ Future<ProviderContainer> pumpPos(
   return container;
 }
 
+/// A phone, for the US5 compact-tier tests — below `LayoutBreakpoints.compact`
+/// (600) so every `isCompact` branch is the one under test.
+const phoneSurface = Size(390, 844);
+
+/// SC-007: at phone width nothing on the POS may ask the cashier to scroll
+/// sideways. Single-line text fields are exempt — their `EditableText` scrolls
+/// horizontally by construction to keep the caret visible, which is not the
+/// page scrolling and is not what SC-007 is about.
+void expectNoHorizontalScroll(WidgetTester tester) {
+  final horizontal = find.byWidgetPredicate(
+    (widget) =>
+        widget is Scrollable &&
+        (widget.axisDirection == AxisDirection.left ||
+            widget.axisDirection == AxisDirection.right),
+  );
+  final insideTextFields = find.descendant(
+    of: find.byType(EditableText),
+    matching: horizontal,
+  );
+  expect(
+    horizontal.evaluate().length,
+    insideTextFields.evaluate().length,
+    reason: 'every horizontal scrollable should belong to a text field',
+  );
+}
+
 Override salesOrderOverride(SalesOrderRepository repository) =>
     salesOrderRepositoryProvider.overrideWithValue(repository);
 

@@ -259,14 +259,14 @@ journeys, not only the counter sale (SC-007).
 **Independent Test**: Drive the complete counter-sale story at 390 px wide
 without horizontal scrolling and with every control reachable (SC-007).
 
-- [ ] T098 [P] [US5] Create `SaleLineCard` (compact tier) in `lib/features/sales/presentation/capture/sale_line_card.dart`
-- [ ] T099 [US5] Switch `CaptureStep` between `SaleLineRow` (≥ 600 px) and `SaleLineCard` (< 600 px) via the central breakpoints, pinning `SaleTotalsBar` and the primary action to the bottom (FR-053) — depends on T029, T098
-- [ ] T100 [US5] Collapse `PosHeaderBand`'s stepper to a "Paso N de M" label and the selector to a compact chip below 600 px — depends on T087
-- [ ] T101 [US5] Verify/adjust `PaymentStep`'s compact layout so amount entry, quick amounts, the method grid and applied payments are all reachable by vertical scroll alone, reusing `NumberPad` as-is — depends on T043
-- [ ] T102 [US5] Verify/adjust `DeliveryStep`'s compact layout as stacked expandable destination cards — depends on T074
-- [ ] T103 [P] [US5] Widget test the complete counter-sale journey at 390 px renders with zero horizontal scroll and every control reachable, in `test/widget/features/sales/pos_compact_layout_test.dart` — depends on T099, T100, T101
-- [ ] T104 [P] [US5] Widget test the delivery-mode journey (US2) at 390 px — mode selection, the main-address requirement, destination cards, the editor (incl. the contact picker) and the distribution panel all reachable by vertical scroll alone with zero horizontal scroll (SC-007) — in `test/widget/features/sales/pos_compact_delivery_test.dart` — depends on T102
-- [ ] T105 [P] [US5] Widget test resuming an open sale and creating a customer inline (US3, US4) at 390 px, confirming both are reachable with zero horizontal scroll (SC-007) — in `test/widget/features/sales/pos_compact_resume_and_customer_test.dart` — depends on T089, T094
+- [X] T098 [P] [US5] Create `SaleLineCard` (compact tier) in `lib/features/sales/presentation/capture/sale_line_card.dart`
+- [X] T099 [US5] Switch `CaptureStep` between `SaleLineRow` (≥ 600 px) and `SaleLineCard` (< 600 px) via the central breakpoints, pinning `SaleTotalsBar` and the primary action to the bottom (FR-053) — depends on T029, T098
+- [X] T100 [US5] Collapse `PosHeaderBand`'s stepper to a "Paso N de M" label and the selector to a compact chip below 600 px — depends on T087
+- [X] T101 [US5] Verify/adjust `PaymentStep`'s compact layout so amount entry, quick amounts, the method grid and applied payments are all reachable by vertical scroll alone, reusing `NumberPad` as-is — depends on T043
+- [X] T102 [US5] Verify/adjust `DeliveryStep`'s compact layout as stacked expandable destination cards — depends on T074
+- [X] T103 [P] [US5] Widget test the complete counter-sale journey at 390 px renders with zero horizontal scroll and every control reachable, in `test/widget/features/sales/pos_compact_layout_test.dart` — depends on T099, T100, T101
+- [X] T104 [P] [US5] Widget test the delivery-mode journey (US2) at 390 px — mode selection, the main-address requirement, destination cards, the editor (incl. the contact picker) and the distribution panel all reachable by vertical scroll alone with zero horizontal scroll (SC-007) — in `test/widget/features/sales/pos_compact_delivery_test.dart` — depends on T102
+- [X] T105 [P] [US5] Widget test resuming an open sale and creating a customer inline (US3, US4) at 390 px, confirming both are reachable with zero horizontal scroll (SC-007) — in `test/widget/features/sales/pos_compact_resume_and_customer_test.dart` — depends on T089, T094
 
 **Checkpoint**: All five user stories independently functional, at every supported width.
 

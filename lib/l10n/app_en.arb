@@ -2037,5 +2037,7 @@
   "posOpenSaleUndelivered": "Awaiting delivery",
   "@posOpenSaleUndelivered": {},
   "posCreateCustomerAction": "Create customer",
-  "@posCreateCustomerAction": {}
+  "@posCreateCustomerAction": {},
+  "posStepProgress": "Step {current} of {total}",
+  "@posStepProgress": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } }
 }

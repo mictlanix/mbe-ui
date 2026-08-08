@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -10,6 +11,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/default_warehouse_con
 import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
@@ -81,76 +83,124 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final l10n = AppLocalizations.of(context)!;
     final sale = widget.sale;
     final enabled = sale.isEditable;
+    final compact = LayoutBreakpoints.isCompact(context);
     final defaultWarehouse = ref.watch(
       defaultWarehouseControllerProvider(sale.pointSale),
     );
 
+    final header = <Widget>[
+      if (_confirmError != null)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          child: ErrorBanner(
+            error: _confirmError!,
+            onDismiss: () => setState(() => _confirmError = null),
+          ),
+        ),
+      if (!enabled)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          child: Text(l10n.posSaleReadOnlyBanner),
+        ),
+      Padding(
+        padding: const EdgeInsets.all(12),
+        child: CustomerBar(sale: sale, enabled: enabled),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: FulfillmentModeSelector(sale: sale, enabled: enabled),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(12),
+        child: ProductSearchField(
+          enabled: enabled,
+          warehouse: defaultWarehouse.value,
+          onProductSelected: (result) => _addLine(result, defaultWarehouse.value),
+        ),
+      ),
+    ];
+
+    // FR-053/SC-007: on a phone the whole capture surface — customer, mode,
+    // search and lines — scrolls as one, because none of it fits alongside
+    // the rest. Only the totals and the primary action stay put, so the
+    // cashier can always see the figure and reach "continue" without
+    // scrolling back. Wider tiers keep the fixed header they have room for.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_confirmError != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-            child: ErrorBanner(
-              error: _confirmError!,
-              onDismiss: () => setState(() => _confirmError = null),
+        if (compact)
+          Expanded(
+            child: ListView(
+              children: [
+                ...header,
+                if (sale.lines.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: Text(l10n.posNoLinesHint)),
+                  )
+                else
+                  ..._lines(sale, enabled, compact: true),
+              ],
             ),
+          )
+        else ...[
+          ...header,
+          Expanded(
+            child: sale.lines.isEmpty
+                ? Center(child: Text(l10n.posNoLinesHint))
+                : ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    children: _lines(sale, enabled, compact: false),
+                  ),
           ),
-        if (!enabled)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-            child: Text(l10n.posSaleReadOnlyBanner),
-          ),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: CustomerBar(sale: sale, enabled: enabled),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: FulfillmentModeSelector(sale: sale, enabled: enabled),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: ProductSearchField(
-            enabled: enabled,
-            warehouse: defaultWarehouse.value,
-            onProductSelected: (result) => _addLine(result, defaultWarehouse.value),
-          ),
-        ),
-        Expanded(
-          child: sale.lines.isEmpty
-              ? Center(child: Text(l10n.posNoLinesHint))
-              : ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  children: [
-                    for (final line in sale.lines)
-                      SaleLineRow(
-                        key: ValueKey(line.id),
-                        line: line,
-                        facilityId: sale.facility,
-                        enabled: enabled,
-                      ),
-                  ],
-                ),
-        ),
+        ],
         SaleTotalsBar(sale: sale),
         Padding(
           padding: const EdgeInsets.all(12),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: FilledButton(
-              onPressed: (enabled && sale.lineCount > 0 && !_confirming) ? _confirm : null,
-              child: _confirming
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.posContinueToPayment),
+          child: SizedBox(
+            // A pinned bottom action is a thumb target on a phone, so it
+            // takes the full width there rather than hugging one corner.
+            width: compact ? double.infinity : null,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton(
+                key: const Key('pos_continue_to_payment'),
+                onPressed: (enabled && sale.lineCount > 0 && !_confirming) ? _confirm : null,
+                child: _confirming
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.posContinueToPayment),
+              ),
             ),
           ),
         ),
       ],
     );
   }
+
+  /// [SaleLineCard] on a phone, [SaleLineRow] anywhere wider — the same line,
+  /// stacked or strung out (T098/T099).
+  List<Widget> _lines(Sale sale, bool enabled, {required bool compact}) => [
+    for (final line in sale.lines)
+      if (compact)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SaleLineCard(
+            key: ValueKey(line.id),
+            line: line,
+            facilityId: sale.facility,
+            enabled: enabled,
+          ),
+        )
+      else
+        SaleLineRow(
+          key: ValueKey(line.id),
+          line: line,
+          facilityId: sale.facility,
+          enabled: enabled,
+        ),
+  ];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -59,10 +60,13 @@ class OpenSalesSelector extends ConsumerWidget {
           child: Text(l10n.posNewSaleAction),
         ),
       ],
+      // On a phone the chip carries the reference alone: the open-sales count
+      // is repeated inside the menu it opens, and spelling it out here costs
+      // width the step indicator needs (US5, SC-007).
       builder: (context, controller, child) => ActionChip(
         avatar: const Icon(Icons.receipt_long_outlined, size: 18),
         label: Text(
-          sales.isEmpty
+          sales.isEmpty || LayoutBreakpoints.isCompact(context)
               ? '#$currentReference'
               : '#$currentReference · ${l10n.posOpenSalesCount(sales.length)}',
         ),
