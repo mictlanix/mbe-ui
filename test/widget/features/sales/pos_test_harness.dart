@@ -32,6 +32,7 @@ Sale testSale({
   String total = '116.00',
   String balance = '116.00',
   List<SaleLine> lines = const [],
+  int? shipTo,
 }) => Sale(
   id: id,
   serial: serial,
@@ -40,6 +41,9 @@ Sale testSale({
   salesperson: 100,
   customer: 7,
   customerName: 'Público en general',
+  // Null by default: a counter sale, which is what most fixtures want.
+  // Pass a delivery address to make it a delivery sale (FR-057).
+  shipTo: shipTo,
   paymentTerms: paymentTerms,
   currency: Currency.mxn,
   exchangeRate: '1',

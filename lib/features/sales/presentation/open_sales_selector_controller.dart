@@ -3,9 +3,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 
 part 'open_sales_selector_controller.g.dart';
 
@@ -82,14 +84,36 @@ Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async
   return byId.values.toList()..sort((a, b) => b.date.compareTo(a.date));
 }
 
-/// Midnight local time — the register's trading day, in the cashier's own
-/// timezone rather than UTC, so the list turns over when the shop does.
+/// Midnight of the register's trading day, as the wire wants it.
+///
+/// Flagged UTC while carrying the **local** wall-clock date, deliberately —
+/// two constraints meet here and only this satisfies both:
+///
+/// - built_value's `Iso8601DateTimeSerializer` throws `ArgumentError` on a
+///   local `DateTime`. A plain `DateTime(y, m, d)` therefore never reaches the
+///   network at all: the throw happens while the query string is being built,
+///   so the request is abandoned before dio sends it.
+/// - mbe-api ignores the offset and reads `date_from` as local wall-clock time
+///   (verified against a live backend: `…T18:00:00Z` and `…T18:00:00` select
+///   the same rows, where `…T12:00:00` selects more). `.toUtc()` would
+///   therefore shift the window forward by the UTC offset and silently drop
+///   every sale between midnight and, at UTC-6, six in the morning.
+///
+/// `DateTime.utc` of today's local date serializes cleanly *and* puts the
+/// intended wall-clock value on the wire.
 DateTime _startOfToday() {
   final now = DateTime.now();
-  return DateTime(now.year, now.month, now.day);
+  return DateTime.utc(now.year, now.month, now.day);
 }
 
-/// Keeps only the paid sales that still owe a distribution.
+/// Keeps only the paid **delivery** sales that still owe a distribution.
+///
+/// The delivery test comes first and matters as much as the distribution one:
+/// a counter sale has nothing to distribute, so asking only "is everything
+/// distributed?" answers "no" for every paid counter sale ever rung at the
+/// register — they would fill the selector permanently (FR-058: a paid
+/// counter sale is finished). It is also the cheap test, so it runs before
+/// any delivery-order round trip.
 Future<List<OpenSale>> _paidAndUndistributed(Ref ref, List<OpenSale> paid) async {
   if (paid.isEmpty) return const [];
 
@@ -100,6 +124,22 @@ Future<List<OpenSale>> _paidAndUndistributed(Ref ref, List<OpenSale> paid) async
     final sale = await salesOrders.getById(saleId: candidate.id);
     // A sale with no lines cannot owe a distribution.
     if (sale.lines.isEmpty) return null;
+    // No destination was ever named, so it was collected here — and this
+    // costs nothing, which is why it is asked before the facility lookup.
+    if (sale.shipTo == null) return null;
+
+    // Counter pickup can also be recorded explicitly, as the facility's own
+    // address. Distinguishing that from a real delivery needs the facility,
+    // read through the same helper the resume step uses so the selector and
+    // the step it reopens on cannot disagree about what a delivery sale is.
+    final facilityAddressId = await ref.read(
+      facilityAddressControllerProvider(sale.facility).future,
+    );
+    final isDelivery = FulfillmentModeEncoding.impliesDelivery(
+      shipTo: sale.shipTo,
+      facilityAddressId: facilityAddressId,
+    );
+    if (!isDelivery) return null;
 
     final destinations = await deliveries.listForSale(salesOrder: sale.id);
     final distribution = distributionFor(sale: sale, destinations: destinations);

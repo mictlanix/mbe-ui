@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/domain/facility_type.dart';
+import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
@@ -16,6 +21,26 @@ import 'pos_test_harness.dart';
 
 class MockDeliveryOrderRepository extends Mock
     implements DeliveryOrderRepository {}
+
+class MockFacilityRepository extends Mock implements FacilityRepository {}
+
+/// The facility the fixtures' sales belong to. Its own address is 500, so a
+/// `shipTo` of 500 is counter pickup and anything else is a delivery.
+const _facilityAddress = 500;
+const _deliveryAddress = 777;
+
+Facility _facility() => const Facility(
+  facilityId: 9,
+  code: 'MTZ',
+  name: 'Matriz',
+  type: FacilityType.store,
+  locationId: '01',
+  locationLabel: 'Centro',
+  addressId: _facilityAddress,
+  addressLabel: 'Av. Reforma 1',
+  taxpayerRfc: 'XXXX000000XXX',
+  status: EntityStatus.active,
+);
 
 OpenSale _openSale({
   required int id,
@@ -53,6 +78,7 @@ Destination _destination({required String claimed}) => Destination(
 void main() {
   late MockSalesOrderRepository salesOrders;
   late MockDeliveryOrderRepository deliveries;
+  late MockFacilityRepository facilities;
   late AppLocalizations l10n;
 
   setUpAll(() async {
@@ -62,6 +88,10 @@ void main() {
   setUp(() {
     salesOrders = MockSalesOrderRepository();
     deliveries = MockDeliveryOrderRepository();
+    facilities = MockFacilityRepository();
+    when(
+      () => facilities.get(facilityId: any(named: 'facilityId')),
+    ).thenAnswer((_) async => _facility());
     when(
       () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
     ).thenAnswer((_) async => []);
@@ -106,6 +136,7 @@ void main() {
       overrides: [
         salesOrderOverride(salesOrders),
         deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+        facilityRepositoryProvider.overrideWithValue(facilities),
       ],
     );
     await tester.tap(find.byKey(const Key('open_sales_selector')));
@@ -189,8 +220,15 @@ void main() {
         expect(captured, isNotNull, reason: '$status must be date-scoped');
         expect(
           captured,
-          DateTime(midnight.year, midnight.month, midnight.day),
-          reason: 'local midnight, so the list turns over when the shop does',
+          DateTime.utc(midnight.year, midnight.month, midnight.day),
+          reason: "today's local date, but UTC-flagged: built_value refuses to "
+              'serialize a local DateTime, and mbe-api reads the value as '
+              'wall-clock time anyway',
+        );
+        expect(
+          captured!.isUtc,
+          isTrue,
+          reason: 'a local DateTime throws before the request is ever sent',
         );
       }
     });
@@ -208,10 +246,12 @@ void main() {
         (_) async => testSale(
           id: 337446,
           status: SaleStatus.paid,
+          shipTo: _deliveryAddress,
           lines: [testLine(id: 5, quantity: '10')],
         ),
       );
-      // Nothing distributed, so it genuinely belongs in the list — once.
+      // A delivery sale with nothing distributed, so it genuinely belongs in
+      // the list — once.
       when(
         () => deliveries.listForSale(salesOrder: 337446),
       ).thenAnswer((_) async => []);
@@ -273,6 +313,7 @@ void main() {
         (_) async => testSale(
           id: 3,
           status: SaleStatus.paid,
+          shipTo: _deliveryAddress,
           lines: [testLine(id: 5, quantity: '10')],
         ),
       );
@@ -297,6 +338,7 @@ void main() {
         (_) async => testSale(
           id: 3,
           status: SaleStatus.paid,
+          shipTo: _deliveryAddress,
           lines: [testLine(id: 5, quantity: '10')],
         ),
       );
@@ -308,6 +350,52 @@ void main() {
 
       expect(find.byKey(const Key('open_sale_3')), findsNothing);
       expect(find.text(l10n.posNoOpenSales), findsOneWidget);
+    });
+
+    testWidgets('a paid counter sale is finished, however little of it was '
+        'ever "distributed" — the register would fill with them otherwise', (
+      tester,
+    ) async {
+      // The live case: paid, has lines, no ship_to, and no delivery orders at
+      // all. Asking only "is everything distributed?" answers "no" forever.
+      stubStatuses(paid: [_openSale(id: 337446, status: SaleStatus.paid)]);
+      when(() => salesOrders.getById(saleId: 337446)).thenAnswer(
+        (_) async => testSale(
+          id: 337446,
+          status: SaleStatus.paid,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+      when(
+        () => deliveries.listForSale(salesOrder: 337446),
+      ).thenAnswer((_) async => []);
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_337446')), findsNothing);
+      expect(find.text(l10n.posNoOpenSales), findsOneWidget);
+      verifyNever(() => deliveries.listForSale(salesOrder: 337446));
+    });
+
+    testWidgets('counter pickup recorded explicitly as the facility\'s own '
+        'address is finished too', (tester) async {
+      stubStatuses(paid: [_openSale(id: 4, status: SaleStatus.paid)]);
+      when(() => salesOrders.getById(saleId: 4)).thenAnswer(
+        (_) async => testSale(
+          id: 4,
+          status: SaleStatus.paid,
+          shipTo: _facilityAddress,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+      when(
+        () => deliveries.listForSale(salesOrder: 4),
+      ).thenAnswer((_) async => []);
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_4')), findsNothing);
+      verifyNever(() => deliveries.listForSale(salesOrder: 4));
     });
 
     testWidgets('a paid counter sale with no lines is not listed', (tester) async {
