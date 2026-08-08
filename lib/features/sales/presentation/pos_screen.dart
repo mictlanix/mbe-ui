@@ -63,17 +63,28 @@ class _PosBodyState extends ConsumerState<_PosBody> {
   int? _syncedSaleId;
 
   void _syncStepTo(Sale sale) {
-    final facilityAddressId = ref
-        .watch(facilityAddressControllerProvider(sale.facility))
-        .valueOrNull;
-    // Wait for the facility address before aligning: without it every sale
-    // looks like counter pickup, and a delivery sale would land on the wrong
-    // step and then not be moved again.
-    if (facilityAddressId == null) return;
+    final facilityAddress = ref.watch(
+      facilityAddressControllerProvider(sale.facility),
+    );
+    // Wait only while it is still *in flight*: without the facility address
+    // every sale looks like counter pickup, and a delivery sale would land on
+    // the wrong step and never be moved again.
+    //
+    // A lookup that has *failed* is a different case and must not wait
+    // forever — `valueOrNull` is null for both, and treating them alike left
+    // resume silently broken for every sale, including drafts and unpaid ones
+    // where the facility address does not affect the answer. On failure the
+    // sale is resolved without it, which is what `resumeTargetFor`'s nullable
+    // parameter is for: it degrades to counter pickup rather than guessing
+    // delivery.
+    if (!facilityAddress.hasValue && !facilityAddress.hasError) return;
     if (_syncedSaleId == sale.id) return;
 
     _syncedSaleId = sale.id;
-    final target = resumeTargetFor(sale, facilityAddressId: facilityAddressId);
+    final target = resumeTargetFor(
+      sale,
+      facilityAddressId: facilityAddress.valueOrNull,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref

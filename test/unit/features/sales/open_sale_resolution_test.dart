@@ -101,8 +101,26 @@ void main() {
       expect(target.mode, FulfillmentMode.counterPickup);
     });
 
+    test('a draft still resolves to Venta without the facility address — it '
+        'never affected that answer', () {
+      final target = resumeTargetFor(
+        _sale(status: SaleStatus.draft, shipTo: 777),
+        facilityAddressId: null,
+      );
+      expect(target.step, PosStep.venta);
+    });
+
+    test('an unpaid sale still resolves to Cobro without it', () {
+      final target = resumeTargetFor(
+        _sale(status: SaleStatus.completed, shipTo: 777),
+        facilityAddressId: null,
+      );
+      expect(target.step, PosStep.cobro);
+    });
+
     test('an unknown facility address never promotes a sale to delivery — a '
-        'slow lookup must not land a counter sale on the wrong step', () {
+        'slow *or failed* lookup must not land a counter sale on the wrong '
+        'step', () {
       final target = resumeTargetFor(
         _sale(status: SaleStatus.paid, shipTo: 777),
         facilityAddressId: null,
