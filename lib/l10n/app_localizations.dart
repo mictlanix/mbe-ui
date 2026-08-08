@@ -5290,6 +5290,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Step {current} of {total}'**
   String posStepProgress(int current, int total);
+
+  /// No description provided for @posLineDecreaseQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease quantity'**
+  String get posLineDecreaseQuantity;
+
+  /// No description provided for @posLineIncreaseQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase quantity'**
+  String get posLineIncreaseQuantity;
+
+  /// No description provided for @numberPadBackspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Backspace'**
+  String get numberPadBackspace;
+
+  /// No description provided for @dismissErrorTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismissErrorTooltip;
 }
 
 class _AppLocalizationsDelegate

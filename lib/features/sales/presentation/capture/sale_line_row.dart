@@ -82,6 +82,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove),
+                  tooltip: l10n.posLineDecreaseQuantity,
                   onPressed: enabled ? () => step(-1) : null,
                 ),
                 SizedBox(
@@ -97,6 +98,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
+                  tooltip: l10n.posLineIncreaseQuantity,
                   onPressed: enabled ? () => step(1) : null,
                 ),
                 // FR-022's unit column (mbe-api#145). Absent for a product

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
 /// A 0–9 / decimal-point / backspace pad for amount entry (FR-043).
 ///
 /// Keyboard-equivalent by construction: it edits the [controller] a caller
@@ -47,10 +49,16 @@ class NumberPad extends StatelessWidget {
             onPressed: enabled ? () => _append(key) : null,
             child: Text(key),
           ),
+        // The only key with no text of its own, so it carries a label for a
+        // screen reader rather than announcing itself as an unnamed button.
         OutlinedButton(
           key: const Key('number_pad_backspace'),
           onPressed: enabled ? _backspace : null,
-          child: const Icon(Icons.backspace_outlined),
+          child: Semantics(
+            label: AppLocalizations.of(context)?.numberPadBackspace,
+            button: true,
+            child: const Icon(Icons.backspace_outlined),
+          ),
         ),
       ],
     );

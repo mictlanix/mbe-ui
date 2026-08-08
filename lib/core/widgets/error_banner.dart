@@ -51,6 +51,7 @@ class ErrorBanner extends StatelessWidget {
                   Icons.close,
                   color: theme.colorScheme.onErrorContainer,
                 ),
+                tooltip: AppLocalizations.of(context)?.dismissErrorTooltip,
                 onPressed: onDismiss,
               ),
           ],

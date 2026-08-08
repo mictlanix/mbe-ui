@@ -99,6 +99,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove),
+                  tooltip: l10n.posLineDecreaseQuantity,
                   onPressed: enabled ? () => step(-1) : null,
                 ),
                 Expanded(
@@ -120,6 +121,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
+                  tooltip: l10n.posLineIncreaseQuantity,
                   onPressed: enabled ? () => step(1) : null,
                 ),
               ],

@@ -2877,4 +2877,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String posStepProgress(int current, int total) {
     return 'Paso $current de $total';
   }
+
+  @override
+  String get posLineDecreaseQuantity => 'Disminuir cantidad';
+
+  @override
+  String get posLineIncreaseQuantity => 'Aumentar cantidad';
+
+  @override
+  String get numberPadBackspace => 'Borrar';
+
+  @override
+  String get dismissErrorTooltip => 'Descartar';
 }

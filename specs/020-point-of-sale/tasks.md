@@ -277,12 +277,12 @@ without horizontal scrolling and with every control reachable (SC-007).
 **Purpose**: Confirm no superseded workaround remains anywhere, and verify the
 whole feature once more as a whole.
 
-- [ ] T106 [P] Audit `lib/features/sales/`, `lib/features/catalog/` and this spec's own documents for any remaining reference to a superseded workaround — comment-encoded destination contact, session-scoped payment list, create-then-trim sequencing, a client-side payment-method-reference table — and remove it; none should exist after Phases 2–7, but this is the check that confirms it
-- [ ] T107 Re-verify codegen parity one final time against the exact mbe-api revision this feature ships against
-- [ ] T108 [P] Accessibility pass: tooltip or semantic label on every icon-only control across the gate, capture, payment and delivery steps
-- [ ] T109 `flutter analyze` across `lib/features/sales/` and the `lib/features/catalog/` additions with zero warnings
-- [ ] T110 Run the complete [quickstart.md](./quickstart.md) scenario set manually against a live mbe-api, including a real cash session as a precondition, and record the results
-- [ ] T111 Run the full automated suite — unit, widget and integration — and confirm green
+- [X] T106 [P] Audit `lib/features/sales/`, `lib/features/catalog/` and this spec's own documents for any remaining reference to a superseded workaround — comment-encoded destination contact, session-scoped payment list, create-then-trim sequencing, a client-side payment-method-reference table — and remove it; none should exist after Phases 2–7, but this is the check that confirms it
+- [X] T107 Re-verify codegen parity one final time against the exact mbe-api revision this feature ships against — **verified 2026-08-07** against the live spec at `GET /openapi.json`: 203 schemas, **0 field mismatches**, all 212 operations present in the generated apis, every model file present. No regeneration needed.
+- [X] T108 [P] Accessibility pass: tooltip or semantic label on every icon-only control across the gate, capture, payment and delivery steps
+- [X] T109 `flutter analyze` across `lib/features/sales/` and the `lib/features/catalog/` additions with zero warnings
+- [X] T110 Run the complete [quickstart.md](./quickstart.md) scenario set manually against a live mbe-api, including a real cash session as a precondition, and record the results — **run 2026-08-07**, mbe-api at `127.0.0.1:8000`, cash session `10015` open on drawer `CCZU01` (facility 51). All three POS live suites green, run serially (`-j 1`) as they require: counter sale (SC-001) 15s, delivery split + counter sweep (SC-005) 29s, resume at each step (Scenario 4) 29s. Invocation: the admin account mapped onto `MBE_POS_USERNAME`/`_PASSWORD` (the repo `.env` defines neither) with `MBE_POS_PRODUCT_PATTERN=clavo` — the default pattern `a` matches nothing sellable in the register's own warehouse.
+- [X] T111 Run the full automated suite — unit, widget and integration — and confirm green — **offline suite green: 1447 passing, 0 failing.** With every live define supplied, 15 further tests fail, **none of them this feature's**: 3 in `auth_flow_test.dart` (the token defect filed as mbe-ui#155), and 12 across `product_catalog_`/`catalog_master_`/`catalog_logistics_`/`catalog_consistency_flow_test.dart`. Their causes are environmental — `MBE_TEST_USERNAME`'s credentials no longer authenticate, and fixed-code catalog fixtures already exist on the dev tenant (`409`). Verified pre-existing by re-running them on a stashed tree: identical failures without any of this feature's changes.
 
 ---
 

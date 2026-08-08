@@ -918,5 +918,9 @@
   "posOpenSaleUnpaid": "Por cobrar",
   "posOpenSaleUndelivered": "Por entregar",
   "posCreateCustomerAction": "Crear cliente",
-  "posStepProgress": "Paso {current} de {total}"
+  "posStepProgress": "Paso {current} de {total}",
+  "posLineDecreaseQuantity": "Disminuir cantidad",
+  "posLineIncreaseQuantity": "Aumentar cantidad",
+  "numberPadBackspace": "Borrar",
+  "dismissErrorTooltip": "Descartar"
 }

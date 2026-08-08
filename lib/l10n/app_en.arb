@@ -2039,5 +2039,13 @@
   "posCreateCustomerAction": "Create customer",
   "@posCreateCustomerAction": {},
   "posStepProgress": "Step {current} of {total}",
-  "@posStepProgress": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } }
+  "@posStepProgress": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "posLineDecreaseQuantity": "Decrease quantity",
+  "@posLineDecreaseQuantity": {},
+  "posLineIncreaseQuantity": "Increase quantity",
+  "@posLineIncreaseQuantity": {},
+  "numberPadBackspace": "Backspace",
+  "@numberPadBackspace": {},
+  "dismissErrorTooltip": "Dismiss",
+  "@dismissErrorTooltip": {}
 }
