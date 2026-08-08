@@ -81,6 +81,7 @@ void main() {
         () => salesOrders.listOpen(
           pointSale: any(named: 'pointSale'),
           status: entry.key,
+          dateFrom: any(named: 'dateFrom'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -161,6 +162,37 @@ void main() {
       stubStatuses();
       await pumpSelector(tester);
       expect(find.text(l10n.posNoOpenSales), findsOneWidget);
+    });
+  });
+
+  group('scoping to the trading day', () {
+    testWidgets('every status is asked for from midnight today, not from the '
+        'beginning of the register\'s history', (tester) async {
+      stubStatuses(draft: [_openSale(id: 1, status: SaleStatus.draft)]);
+
+      await pumpSelector(tester);
+
+      final midnight = DateTime.now();
+      for (final status in SaleStatus.values.where(
+        (s) => s != SaleStatus.cancelled,
+      )) {
+        final captured = verify(
+          () => salesOrders.listOpen(
+            pointSale: 3,
+            status: status,
+            dateFrom: captureAny(named: 'dateFrom'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).captured.single as DateTime?;
+
+        expect(captured, isNotNull, reason: '$status must be date-scoped');
+        expect(
+          captured,
+          DateTime(midnight.year, midnight.month, midnight.day),
+          reason: 'local midnight, so the list turns over when the shop does',
+        );
+      }
     });
   });
 

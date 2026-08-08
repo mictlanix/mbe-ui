@@ -75,12 +75,19 @@ abstract class SalesOrderRepository {
     int? warehouse,
   });
 
-  /// `GET /sales-orders?point_sale=<id>&status=<status>` — the open-sales
-  /// selector's data source, scoped to the cashier's own register
-  /// (resolved, research.md §5 — was `facility` + `mine=true`).
+  /// `GET /sales-orders?point_sale=<id>&status=<status>&date_from=<from>` —
+  /// the open-sales selector's data source, scoped to the cashier's own
+  /// register (resolved, research.md §5 — was `facility` + `mine=true`).
+  ///
+  /// [dateFrom] bounds it to the register's current trading day. Without it
+  /// the confirmed and paid statuses answer with the register's entire
+  /// history — 19k rows apiece on a real dataset — of which only the first
+  /// [limit] are ever seen, so a genuinely unfinished sale could sit past the
+  /// cut-off and never be offered.
   Future<OpenSalePage> listOpen({
     required int pointSale,
     required SaleStatus status,
+    DateTime? dateFrom,
     int skip = 0,
     int limit = 100,
   });

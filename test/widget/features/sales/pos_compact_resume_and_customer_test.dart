@@ -131,6 +131,7 @@ void main() {
         () => salesOrders.listOpen(
           pointSale: any(named: 'pointSale'),
           status: status,
+          dateFrom: any(named: 'dateFrom'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -164,6 +165,7 @@ void main() {
         () => salesOrders.listOpen(
           pointSale: any(named: 'pointSale'),
           status: SaleStatus.draft,
+          dateFrom: any(named: 'dateFrom'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -197,6 +199,7 @@ void main() {
         () => salesOrders.listOpen(
           pointSale: any(named: 'pointSale'),
           status: SaleStatus.draft,
+          dateFrom: any(named: 'dateFrom'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),

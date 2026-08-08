@@ -220,6 +220,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
   Future<OpenSalePage> listOpen({
     required int pointSale,
     required SaleStatus status,
+    DateTime? dateFrom,
     int skip = 0,
     int limit = 100,
   }) async {
@@ -227,6 +228,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
       final response = await _api.listSalesOrdersApiV1SalesOrdersGet(
         pointSale: pointSale,
         status: status.wireName,
+        dateFrom: dateFrom,
         skip: skip,
         limit: limit,
       );

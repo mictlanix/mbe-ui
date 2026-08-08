@@ -29,10 +29,30 @@ part 'open_sales_selector_controller.g.dart';
 Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async {
   final salesOrders = ref.watch(salesOrderRepositoryProvider);
 
+  // The register's *current trading day*. Unbounded, `completed` and `paid`
+  // answer with the whole history of the point of sale — measured at 19,277
+  // and 19,291 rows against a live backend — and only the first page of each
+  // is ever read, so an unfinished sale could sit past the cut-off and never
+  // be offered at all. A sale left open across a day boundary is a
+  // back-office matter, not something the cashier resumes at the counter.
+  final since = _startOfToday();
+
   final pages = await Future.wait([
-    salesOrders.listOpen(pointSale: pointSale, status: SaleStatus.draft),
-    salesOrders.listOpen(pointSale: pointSale, status: SaleStatus.completed),
-    salesOrders.listOpen(pointSale: pointSale, status: SaleStatus.paid),
+    salesOrders.listOpen(
+      pointSale: pointSale,
+      status: SaleStatus.draft,
+      dateFrom: since,
+    ),
+    salesOrders.listOpen(
+      pointSale: pointSale,
+      status: SaleStatus.completed,
+      dateFrom: since,
+    ),
+    salesOrders.listOpen(
+      pointSale: pointSale,
+      status: SaleStatus.paid,
+      dateFrom: since,
+    ),
   ]);
 
   // mbe-api's `status` filter is not exclusive: `completed` answers with
@@ -60,6 +80,13 @@ Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async
 
   // Newest first (US3 scenario 1, data-model.md §8).
   return byId.values.toList()..sort((a, b) => b.date.compareTo(a.date));
+}
+
+/// Midnight local time — the register's trading day, in the cashier's own
+/// timezone rather than UTC, so the list turns over when the shop does.
+DateTime _startOfToday() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day);
 }
 
 /// Keeps only the paid sales that still owe a distribution.
