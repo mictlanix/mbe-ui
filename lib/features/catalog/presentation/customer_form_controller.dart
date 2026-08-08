@@ -204,7 +204,7 @@ class CustomerFormController extends _$CustomerFormController {
       fieldErrors: const {},
     );
     try {
-      await ref
+      final created = await ref
           .read(customerRepositoryProvider)
           .create(
             code: state.code,
@@ -219,7 +219,13 @@ class CustomerFormController extends _$CustomerFormController {
             comment: _orNull(state.comment),
           );
       ref.invalidate(customersListControllerProvider);
-      state = state.copyWith(submitting: false, saved: true);
+      // Recording the new id lets a caller act on the customer it just
+      // created — the POS attaches it to the open sale (020 FR-014).
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        customerId: created.customerId,
+      );
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(

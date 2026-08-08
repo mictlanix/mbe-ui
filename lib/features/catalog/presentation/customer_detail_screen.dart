@@ -108,7 +108,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                   error: AppError.validation([
                     FieldError(
                       loc: const [],
-                      msg: _localizeFormError(l10n, formState.error!),
+                      msg: localizeCustomerFormError(l10n, formState.error!),
                       type: 'error',
                     ),
                     if (formState.errorDetail != null)
@@ -126,7 +126,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.code,
                 decoration: InputDecoration(
                   labelText: l10n.codeLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['code'],
                   ),
@@ -141,7 +141,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.name,
                 decoration: InputDecoration(
                   labelText: l10n.nameLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['name'],
                   ),
@@ -164,7 +164,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 onSelected: (p) =>
                     controller.priceListSelected(p.priceListId, p.name),
                 initialDisplayText: formState.priceListDisplayText,
-                errorText: _localizeFieldError(
+                errorText: localizeCustomerFieldError(
                   l10n,
                   formState.fieldErrors['priceList'],
                 ),
@@ -205,7 +205,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.creditLimit,
                 decoration: InputDecoration(
                   labelText: l10n.creditLimitLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['creditLimit'] ??
                         formState.fieldErrors['credit_limit'],
@@ -224,7 +224,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.creditDays,
                 decoration: InputDecoration(
                   labelText: l10n.creditDaysLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['creditDays'] ??
                         formState.fieldErrors['credit_days'],
@@ -317,7 +317,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
   }
 }
 
-String _localizeFormError(AppLocalizations l10n, String code) {
+String localizeCustomerFormError(AppLocalizations l10n, String code) {
   switch (code) {
     case CustomerFormErrorCode.loadFailed:
       return l10n.customerLoadFailedError;
@@ -338,7 +338,7 @@ String _localizeFormError(AppLocalizations l10n, String code) {
   }
 }
 
-String? _localizeFieldError(AppLocalizations l10n, String? code) {
+String? localizeCustomerFieldError(AppLocalizations l10n, String? code) {
   if (code == null) return null;
   switch (code) {
     case CustomerFormErrorCode.codeRequired:

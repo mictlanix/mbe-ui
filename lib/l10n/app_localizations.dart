@@ -5278,6 +5278,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Awaiting delivery'**
   String get posOpenSaleUndelivered;
+
+  /// No description provided for @posCreateCustomerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create customer'**
+  String get posCreateCustomerAction;
 }
 
 class _AppLocalizationsDelegate

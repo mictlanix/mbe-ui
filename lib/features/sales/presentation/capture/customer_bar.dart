@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
@@ -10,6 +13,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart'
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/customer_inline_create.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -52,6 +56,16 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
     }
   }
 
+  /// FR-013/FR-014: create a customer without discarding the sale, then
+  /// attach it. Attaching goes through the same `updateHeader` path as picking
+  /// an existing customer, so the re-priced lines the server returns land the
+  /// same way (FR-015) — there is nothing special about a brand-new customer.
+  Future<void> _createCustomer() async {
+    final created = await showCustomerInlineCreate(context, ref);
+    if (created == null || !mounted) return;
+    await _updateHeader(customer: created);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -85,6 +99,19 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                     onSelected: (c) => _updateHeader(customer: c.customerId),
                   ),
                 ),
+                if (ref
+                    .watch(accessControlProvider)
+                    .can(SystemObject.customers, AccessRight.create)) ...[
+                  const SizedBox(width: 4),
+                  IconButton(
+                    key: const Key('pos_create_customer_button'),
+                    icon: const Icon(Icons.person_add_alt),
+                    tooltip: l10n.posCreateCustomerAction,
+                    onPressed: (widget.enabled && !_busy)
+                        ? _createCustomer
+                        : null,
+                  ),
+                ],
                 const SizedBox(width: 12),
                 SegmentedButton<PaymentTerms>(
                   segments: [

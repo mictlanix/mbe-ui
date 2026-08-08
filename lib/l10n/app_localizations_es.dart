@@ -2869,4 +2869,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posOpenSaleUndelivered => 'Por entregar';
+
+  @override
+  String get posCreateCustomerAction => 'Crear cliente';
 }

@@ -2825,4 +2825,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posOpenSaleUndelivered => 'Awaiting delivery';
+
+  @override
+  String get posCreateCustomerAction => 'Create customer';
 }

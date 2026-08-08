@@ -241,10 +241,10 @@ captured, and attach it immediately.
 form and confirm the sale is now attached to that customer with their price list
 applied to subsequently added lines.
 
-- [ ] T094 [US4] Create `customer_inline_create.dart` in `lib/features/sales/presentation/customer_inline_create.dart` wrapping the existing `lib/features/catalog/presentation/customer_form_controller.dart` behind a dialog (≥ 600 px) / full-screen route (< 600 px), per FR-013 and A-002 (the cashier types the code)
-- [ ] T095 [US4] Wire `CustomerBar`'s "create customer" affordance (T025) to open the dialog and, on save, attach the new customer via `PosSaleController.updateHeader(customer: …)` (FR-014) — same automatic repricing-via-wholesale-replace as T025's customer-switch path, no special handling — depends on T094
-- [ ] T096 [P] [US4] Add the customer-inline-create strings to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; run `flutter gen-l10n`
-- [ ] T097 [P] [US4] Widget test that creating a customer attaches it to the sale (FR-014) and that its line list reflects whatever `Sale` the fake repository returns after the header update — the general server-truth-reflection behavior FR-015 relies on (no separate notice; repricing already shows up automatically) — in `test/widget/features/sales/customer_inline_create_test.dart`
+- [X] T094 [US4] Create `customer_inline_create.dart` in `lib/features/sales/presentation/customer_inline_create.dart` wrapping the existing `lib/features/catalog/presentation/customer_form_controller.dart` behind a dialog (≥ 600 px) / full-screen route (< 600 px), per FR-013 and A-002 (the cashier types the code)
+- [X] T095 [US4] Wire `CustomerBar`'s "create customer" affordance (T025) to open the dialog and, on save, attach the new customer via `PosSaleController.updateHeader(customer: …)` (FR-014) — same automatic repricing-via-wholesale-replace as T025's customer-switch path, no special handling — depends on T094
+- [X] T096 [P] [US4] Add the customer-inline-create strings to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`; run `flutter gen-l10n`
+- [X] T097 [P] [US4] Widget test that creating a customer attaches it to the sale (FR-014) and that its line list reflects whatever `Sale` the fake repository returns after the header update — the general server-truth-reflection behavior FR-015 relies on (no separate notice; repricing already shows up automatically) — in `test/widget/features/sales/customer_inline_create_test.dart`
 
 **Checkpoint**: User Stories 1 through 4 all independently functional.
 

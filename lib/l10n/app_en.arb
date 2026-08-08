@@ -2035,5 +2035,7 @@
   "posOpenSaleUnpaid": "Awaiting payment",
   "@posOpenSaleUnpaid": {},
   "posOpenSaleUndelivered": "Awaiting delivery",
-  "@posOpenSaleUndelivered": {}
+  "@posOpenSaleUndelivered": {},
+  "posCreateCustomerAction": "Create customer",
+  "@posCreateCustomerAction": {}
 }

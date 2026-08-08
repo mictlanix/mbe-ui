@@ -916,5 +916,6 @@
   "posOpenSalesCount": "{count, plural, =1{1 abierta} other{{count} abiertas}}",
   "posOpenSaleDraft": "En captura",
   "posOpenSaleUnpaid": "Por cobrar",
-  "posOpenSaleUndelivered": "Por entregar"
+  "posOpenSaleUndelivered": "Por entregar",
+  "posCreateCustomerAction": "Crear cliente"
 }
