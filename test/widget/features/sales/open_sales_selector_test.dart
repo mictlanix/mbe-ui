@@ -158,12 +158,38 @@ void main() {
 
       expect(find.byKey(const Key('open_sale_1')), findsOneWidget);
       expect(find.byKey(const Key('open_sale_2')), findsOneWidget);
-      expect(find.text('#282127'), findsOneWidget, reason: 'folio once assigned');
-      expect(find.text('#1'), findsOneWidget, reason: 'id before confirmation');
+
+      // Every sale shows its id; the folio is a second, labelled line that
+      // appears only once mbe-api has assigned one (FR-040).
+      expect(find.text(l10n.posOpenSaleId(1)), findsOneWidget);
+      expect(find.text(l10n.posOpenSaleId(2)), findsOneWidget);
+      expect(
+        find.text(l10n.posOpenSaleSerial(282127)),
+        findsOneWidget,
+        reason: 'the confirmed sale shows its folio alongside its id',
+      );
+      expect(
+        find.text('#282127'),
+        findsNothing,
+        reason: 'the folio is labelled, never a bare number whose meaning '
+            'depends on whether the sale was confirmed',
+      );
       expect(find.text('Acme'), findsWidgets);
       expect(find.text(r'$116.00'), findsWidgets);
       expect(find.text(l10n.posOpenSaleDraft), findsOneWidget);
       expect(find.text(l10n.posOpenSaleUnpaid), findsOneWidget);
+    });
+
+    testWidgets('a draft shows no folio line at all — it has not been '
+        'assigned one yet', (tester) async {
+      stubStatuses(draft: [_openSale(id: 337482, status: SaleStatus.draft)]);
+
+      await pumpSelector(tester);
+
+      expect(find.text(l10n.posOpenSaleId(337482)), findsOneWidget);
+      expect(find.textContaining(l10n.posOpenSaleSerial(0).split(' ').first),
+          findsNothing,
+          reason: 'no folio label when there is no folio');
     });
 
     testWidgets('newest first', (tester) async {

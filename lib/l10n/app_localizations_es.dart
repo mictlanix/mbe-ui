@@ -2889,4 +2889,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dismissErrorTooltip => 'Descartar';
+
+  @override
+  String posOpenSaleId(int id) {
+    return 'Id $id';
+  }
+
+  @override
+  String posOpenSaleSerial(int serial) {
+    return 'Folio $serial';
+  }
 }

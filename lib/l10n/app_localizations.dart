@@ -5314,6 +5314,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dismiss'**
   String get dismissErrorTooltip;
+
+  /// No description provided for @posOpenSaleId.
+  ///
+  /// In en, this message translates to:
+  /// **'Id {id}'**
+  String posOpenSaleId(int id);
+
+  /// No description provided for @posOpenSaleSerial.
+  ///
+  /// In en, this message translates to:
+  /// **'Serial {serial}'**
+  String posOpenSaleSerial(int serial);
 }
 
 class _AppLocalizationsDelegate

@@ -922,5 +922,7 @@
   "posLineDecreaseQuantity": "Disminuir cantidad",
   "posLineIncreaseQuantity": "Aumentar cantidad",
   "numberPadBackspace": "Borrar",
-  "dismissErrorTooltip": "Descartar"
+  "dismissErrorTooltip": "Descartar",
+  "posOpenSaleId": "Id {id}",
+  "posOpenSaleSerial": "Folio {serial}"
 }

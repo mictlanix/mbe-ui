@@ -96,12 +96,25 @@ class _OpenSaleRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('#${sale.serial ?? sale.id}'),
-                Text(
-                  sale.customerName ?? '',
-                  style: theme.textTheme.labelSmall,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                // Both identifiers, each labelled, rather than one bare
+                // number whose meaning depends on whether the sale happens to
+                // have been confirmed yet: the id is what every sale has, the
+                // folio only appears once mbe-api assigns one (FR-040). A
+                // list mixing six-digit ids with five-digit folios is
+                // unreadable without saying which is which.
+                Text(l10n.posOpenSaleId(sale.id)),
+                if (sale.serial case final serial?)
+                  Text(
+                    l10n.posOpenSaleSerial(serial),
+                    style: theme.textTheme.labelSmall,
+                  ),
+                if (sale.customerName case final name?
+                    when name.isNotEmpty)
+                  Text(
+                    name,
+                    style: theme.textTheme.labelSmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
               ],
             ),
           ),

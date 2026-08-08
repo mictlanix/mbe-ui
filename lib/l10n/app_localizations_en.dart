@@ -2845,4 +2845,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dismissErrorTooltip => 'Dismiss';
+
+  @override
+  String posOpenSaleId(int id) {
+    return 'Id $id';
+  }
+
+  @override
+  String posOpenSaleSerial(int serial) {
+    return 'Serial $serial';
+  }
 }

@@ -2047,5 +2047,9 @@
   "numberPadBackspace": "Backspace",
   "@numberPadBackspace": {},
   "dismissErrorTooltip": "Dismiss",
-  "@dismissErrorTooltip": {}
+  "@dismissErrorTooltip": {},
+  "posOpenSaleId": "Id {id}",
+  "@posOpenSaleId": { "placeholders": { "id": { "type": "int" } } },
+  "posOpenSaleSerial": "Serial {serial}",
+  "@posOpenSaleSerial": { "placeholders": { "serial": { "type": "int" } } }
 }
