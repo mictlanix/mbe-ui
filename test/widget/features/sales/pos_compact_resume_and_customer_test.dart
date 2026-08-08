@@ -250,7 +250,7 @@ void main() {
       final sale = testSale(lines: [testLine()]);
       when(() => salesOrders.open()).thenAnswer((_) async => sale);
 
-      await pumpPos(
+      final container = await pumpPos(
         tester,
         Consumer(
           builder: (context, ref, _) => ref
@@ -264,6 +264,8 @@ void main() {
         surface: phoneSurface,
         overrides: overrides(),
       );
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('pos_create_customer_button')));
       await tester.pumpAndSettle();
@@ -287,7 +289,7 @@ void main() {
       final sale = testSale(lines: [testLine()]);
       when(() => salesOrders.open()).thenAnswer((_) async => sale);
 
-      await pumpPos(
+      final container = await pumpPos(
         tester,
         Consumer(
           builder: (context, ref, _) => ref
@@ -301,6 +303,8 @@ void main() {
         surface: phoneSurface,
         overrides: overrides(),
       );
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('pos_create_customer_button')));
       await tester.pumpAndSettle();

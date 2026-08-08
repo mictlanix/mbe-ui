@@ -21,7 +21,9 @@ Future<List<ProductLookupResult>> productLookupController(
 }) async {
   final trimmed = pattern.trim();
   if (trimmed.isEmpty) return const [];
-  final sale = await ref.watch(posSaleControllerProvider.future);
+  // Pricing is per customer and the customer is the sale's, so a lookup is
+  // one of the actions that opens the sale when none is started yet.
+  final sale = await ref.read(posSaleControllerProvider.notifier).ensureOpen();
   return ref
       .watch(salesOrderRepositoryProvider)
       .productLookup(pattern: trimmed, customer: sale.customer, warehouse: warehouse);

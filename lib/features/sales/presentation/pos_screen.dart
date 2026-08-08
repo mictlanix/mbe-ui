@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_header_band.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -124,7 +125,9 @@ class _PosBodyState extends ConsumerState<_PosBody> {
   }
 
   void _refreshSelector() {
-    final pointSale = ref.read(posSaleControllerProvider).valueOrNull?.pointSale;
+    final pointSale =
+        ref.read(posSaleControllerProvider).valueOrNull?.pointSale ??
+        ref.read(registerPointSaleProvider);
     if (pointSale != null) {
       ref.invalidate(openSalesSelectorControllerProvider(pointSale));
     }
@@ -170,18 +173,23 @@ class _StepHost extends ConsumerWidget {
   const _StepHost({required this.step, required this.sale});
 
   final PosStep step;
-  final Sale sale;
+
+  /// `null` on an untouched register — only Venta can render that, and it is
+  /// the only step reachable there.
+  final Sale? sale;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final current = sale;
+    if (current == null) return CaptureStep(sale: null);
     return switch (step) {
-      PosStep.venta => CaptureStep(sale: sale),
+      PosStep.venta => CaptureStep(sale: current),
       PosStep.cobro => PaymentStep(
-        sale: sale,
+        sale: current,
         onClose: () => _closePayment(context, ref),
       ),
       PosStep.entrega => DeliveryStep(
-        sale: sale,
+        sale: current,
         mode: ref.watch(posStepControllerProvider).mode,
         onClose: () => _finish(context, ref),
       ),
@@ -196,7 +204,7 @@ class _StepHost extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Text(l10n.posSaleCompletedTitle),
         content: Text(
-          l10n.posSaleReference('${sale.serial ?? sale.provisionalReference}'),
+          l10n.posSaleReference('${sale?.serial ?? sale?.provisionalReference}'),
         ),
         actions: [
           FilledButton(

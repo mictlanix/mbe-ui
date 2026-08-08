@@ -136,7 +136,7 @@ void main() {
   }) async {
     when(() => salesOrders.open()).thenAnswer((_) async => sale);
 
-    await pumpPos(
+    final container = await pumpPos(
       tester,
       Consumer(
         builder: (context, ref, _) => ref
@@ -163,6 +163,11 @@ void main() {
         ),
       ],
     );
+
+    // The register opens no sale of its own any more, so these tests start
+    // one the way a cashier would — by doing something.
+    await container.read(posSaleControllerProvider.notifier).ensureOpen();
+    await tester.pumpAndSettle();
   }
 
   /// Fills the inline form's required fields and saves.

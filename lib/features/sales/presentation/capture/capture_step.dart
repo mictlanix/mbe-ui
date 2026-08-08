@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -32,7 +33,11 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 class CaptureStep extends ConsumerStatefulWidget {
   const CaptureStep({super.key, required this.sale});
 
-  final Sale sale;
+  /// `null` on a register nobody has started a sale on yet. The search field
+  /// still works — scanning is what opens the sale — but everything that
+  /// describes a sale (customer, fulfilment mode, totals) has nothing to
+  /// describe until then.
+  final Sale? sale;
 
   @override
   ConsumerState<CaptureStep> createState() => _CaptureStepState();
@@ -82,11 +87,15 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final sale = widget.sale;
-    final enabled = sale.isEditable;
+    final enabled = sale?.isEditable ?? true;
     final compact = LayoutBreakpoints.isCompact(context);
-    final defaultWarehouse = ref.watch(
-      defaultWarehouseControllerProvider(sale.pointSale),
-    );
+    // The register's own point of sale, known from the signed-in user's
+    // settings before any sale exists — so the first scan already lands in
+    // the right warehouse (FR-024) instead of one resolved a beat too late.
+    final pointSale = sale?.pointSale ?? ref.watch(registerPointSaleProvider);
+    final defaultWarehouse = pointSale == null
+        ? const AsyncValue<int>.loading()
+        : ref.watch(defaultWarehouseControllerProvider(pointSale));
 
     final header = <Widget>[
       if (_confirmError != null)
@@ -102,14 +111,17 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: Text(l10n.posSaleReadOnlyBanner),
         ),
-      Padding(
-        padding: const EdgeInsets.all(12),
-        child: CustomerBar(sale: sale, enabled: enabled),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: FulfillmentModeSelector(sale: sale, enabled: enabled),
-      ),
+      // Both describe a sale, so they wait for one. Scanning creates it.
+      if (sale != null) ...[
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: CustomerBar(sale: sale, enabled: enabled),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: FulfillmentModeSelector(sale: sale, enabled: enabled),
+        ),
+      ],
       Padding(
         padding: const EdgeInsets.all(12),
         child: ProductSearchField(
@@ -133,7 +145,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
             child: ListView(
               children: [
                 ...header,
-                if (sale.lines.isEmpty)
+                if (sale == null || sale.lines.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(child: Text(l10n.posNoLinesHint)),
@@ -146,7 +158,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         else ...[
           ...header,
           Expanded(
-            child: sale.lines.isEmpty
+            child: sale == null || sale.lines.isEmpty
                 ? Center(child: Text(l10n.posNoLinesHint))
                 : ListView(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -154,7 +166,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                   ),
           ),
         ],
-        SaleTotalsBar(sale: sale),
+        if (sale != null) SaleTotalsBar(sale: sale),
         Padding(
           padding: const EdgeInsets.all(12),
           child: SizedBox(
@@ -165,7 +177,10 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
               alignment: Alignment.centerRight,
               child: FilledButton(
                 key: const Key('pos_continue_to_payment'),
-                onPressed: (enabled && sale.lineCount > 0 && !_confirming) ? _confirm : null,
+                onPressed:
+                    (enabled && (sale?.lineCount ?? 0) > 0 && !_confirming)
+                    ? _confirm
+                    : null,
                 child: _confirming
                     ? const SizedBox(
                         width: 16,

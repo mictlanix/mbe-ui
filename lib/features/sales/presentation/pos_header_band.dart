@@ -7,6 +7,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The band directly beneath the app bar (research.md §13, FR-004): the
@@ -35,6 +36,10 @@ class PosHeaderBand extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final step = ref.watch(posStepControllerProvider);
     final current = sale;
+    // The selector is keyed by the register, not by the sale in hand — so an
+    // untouched POS still offers the open sales to resume. Without this,
+    // reloading the page would strand every unfinished sale (US3).
+    final pointSale = current?.pointSale ?? ref.watch(registerPointSaleProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,12 +48,13 @@ class PosHeaderBand extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Row(
             children: [
-              if (current != null)
+              if (pointSale != null)
                 OpenSalesSelector(
-                  pointSale: current.pointSale,
-                  // FR-040: the id always, the folio once assigned.
-                  currentId: current.provisionalReference,
-                  currentSerial: current.serial,
+                  pointSale: pointSale,
+                  // FR-040: the id always, the folio once assigned. Both are
+                  // absent until a sale exists.
+                  currentId: current?.provisionalReference,
+                  currentSerial: current?.serial,
                   onSelected: onSaleSelected,
                   onStartNew: onStartNew,
                 ),

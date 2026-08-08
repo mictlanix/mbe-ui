@@ -25,9 +25,11 @@ class OpenSalesSelector extends ConsumerWidget {
 
   final int pointSale;
 
-  /// The sale in hand: its id always, and its folio once mbe-api has assigned
-  /// one (FR-040). Both are shown, each labelled — see [_OpenSaleRow].
-  final int currentId;
+  /// The sale in hand: its id, and its folio once mbe-api has assigned one
+  /// (FR-040). Both are shown, each labelled — see [_OpenSaleRow]. `null`
+  /// before the cashier has started a sale, when the chip carries only the
+  /// count of what is open.
+  final int? currentId;
   final int? currentSerial;
 
   final ValueChanged<OpenSale> onSelected;
@@ -86,12 +88,16 @@ class OpenSalesSelector extends ConsumerWidget {
   /// ticket, so it is the one worth the space.
   String _chipLabel(AppLocalizations l10n, BuildContext context, int openCount) {
     final reference = [
-      l10n.posOpenSaleId(currentId),
+      if (currentId case final id?) l10n.posOpenSaleId(id),
       if (currentSerial case final serial?) l10n.posOpenSaleSerial(serial),
     ].join(' · ');
 
+    final count = l10n.posOpenSalesCount(openCount);
+    // Nothing started yet: the chip is purely the way in to the open sales,
+    // so it says how many there are.
+    if (reference.isEmpty) return openCount == 0 ? l10n.posNoOpenSales : count;
     if (openCount == 0 || LayoutBreakpoints.isCompact(context)) return reference;
-    return '$reference · ${l10n.posOpenSalesCount(openCount)}';
+    return '$reference · $count';
   }
 }
 

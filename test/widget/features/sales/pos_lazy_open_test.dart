@@ -1,0 +1,194 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/product_lookup_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
+import 'pos_test_harness.dart';
+
+class MockCustomerRepository extends Mock implements CustomerRepository {}
+
+Customer _customer() => const Customer(
+  customerId: 7,
+  code: 'C-7',
+  name: 'PÚBLICO EN GENERAL',
+  creditLimit: '0',
+  creditDays: 0,
+  priceList: PriceListRef(id: 1, name: 'Mostrador'),
+  shipping: false,
+  shippingRequiredDocument: false,
+  status: EntityStatus.active,
+);
+
+/// A register nobody has touched must not create a sale.
+///
+/// `open()` is a `POST` that leaves a draft behind for good, so calling it to
+/// merely *render* the screen meant every reload, every navigation back and
+/// every hot restart littered the register — 12 of one day's 21 drafts were
+/// empty on a live account. The draft is now opened by the first action that
+/// needs one.
+void main() {
+  late MockSalesOrderRepository salesOrders;
+  late MockCustomerRepository customers;
+  late MockCustomerPaymentRepository payments;
+  late MockWarehouseRepository warehouses;
+  late AppLocalizations l10n;
+
+  setUpAll(() async {
+    l10n = await AppLocalizations.delegate.load(const Locale('es'));
+  });
+
+  setUp(() {
+    salesOrders = MockSalesOrderRepository();
+    customers = MockCustomerRepository();
+    payments = MockCustomerPaymentRepository();
+    warehouses = MockWarehouseRepository();
+
+    when(() => salesOrders.open()).thenAnswer((_) async => testSale());
+    when(
+      () => customers.get(customerId: any(named: 'customerId')),
+    ).thenAnswer((_) async => _customer());
+    when(
+      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+    ).thenAnswer((_) async => '0');
+  });
+
+  Future<ProviderContainer> pumpRegister(WidgetTester tester) {
+    return pumpPos(
+      tester,
+      Consumer(
+        builder: (context, ref, _) => CaptureStep(
+          sale: ref.watch(posSaleControllerProvider).valueOrNull,
+        ),
+      ),
+      overrides: [
+        salesOrderOverride(salesOrders),
+        warehouseOverride(warehouses),
+        customerRepositoryProvider.overrideWithValue(customers),
+        customerPaymentOverride(payments),
+      ],
+    );
+  }
+
+  group('an untouched register', () {
+    testWidgets('opens no sale at all', (tester) async {
+      await pumpRegister(tester);
+
+      verifyNever(() => salesOrders.open());
+    });
+
+    testWidgets('still invites a scan — that is what starts the sale', (
+      tester,
+    ) async {
+      await pumpRegister(tester);
+
+      expect(find.text(l10n.posNoLinesHint), findsOneWidget);
+      expect(
+        find.text(l10n.posProductSearchLabel),
+        findsOneWidget,
+        reason: 'the search field is the way in and must not wait for a sale',
+      );
+    });
+
+    testWidgets('shows nothing that describes a sale, because there is none', (
+      tester,
+    ) async {
+      await pumpRegister(tester);
+
+      expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+      expect(find.text(l10n.posFulfillmentCounter), findsNothing);
+      expect(
+        find.textContaining(l10n.posTotalsTotal('')),
+        findsNothing,
+        reason: 'no totals bar until there are totals',
+      );
+    });
+
+    testWidgets('cannot be confirmed', (tester) async {
+      await pumpRegister(tester);
+
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.byKey(const Key('pos_continue_to_payment')),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+  });
+
+  group('the first action opens the sale', () {
+    testWidgets('adding a line opens it once, then reuses it', (tester) async {
+      final container = await pumpRegister(tester);
+      final notifier = container.read(posSaleControllerProvider.notifier);
+
+      when(
+        () => salesOrders.addLine(
+          saleId: any(named: 'saleId'),
+          product: any(named: 'product'),
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer((_) async => testSale(lines: [testLine()]));
+
+      await notifier.addLine(product: 11, quantity: '1');
+      await notifier.addLine(product: 12, quantity: '1');
+      await tester.pumpAndSettle();
+
+      verify(() => salesOrders.open()).called(1);
+      expect(container.read(posSaleControllerProvider).valueOrNull, isNotNull);
+    });
+
+    testWidgets('so does a product lookup — pricing needs the customer, and '
+        'the customer is the sale\'s', (tester) async {
+      final container = await pumpRegister(tester);
+      when(
+        () => salesOrders.productLookup(
+          pattern: any(named: 'pattern'),
+          customer: any(named: 'customer'),
+          warehouse: any(named: 'warehouse'),
+        ),
+      ).thenAnswer((_) async => const <ProductLookupResult>[]);
+
+      await container.read(
+        productLookupControllerProvider('clavo').future,
+      );
+
+      verify(() => salesOrders.open()).called(1);
+      verify(() => salesOrders.productLookup(
+            pattern: 'clavo',
+            customer: 7,
+            warehouse: any(named: 'warehouse'),
+          )).called(1);
+    });
+
+    testWidgets('finishing a sale returns the register to empty rather than '
+        'opening another', (tester) async {
+      final container = await pumpRegister(tester);
+      final notifier = container.read(posSaleControllerProvider.notifier);
+
+      await notifier.ensureOpen();
+      expect(container.read(posSaleControllerProvider).valueOrNull, isNotNull);
+
+      await notifier.startNew();
+      await tester.pumpAndSettle();
+
+      expect(container.read(posSaleControllerProvider).valueOrNull, isNull);
+      verify(() => salesOrders.open()).called(1);
+    });
+  });
+}

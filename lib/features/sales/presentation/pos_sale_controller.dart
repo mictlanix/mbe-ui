@@ -14,11 +14,42 @@ part 'pos_sale_controller.g.dart';
 /// catch the thrown `AppError` themselves and render it inline (FR-009)
 /// rather than letting this notifier surface it as `AsyncError`, which
 /// would blank the whole sale from view.
+///
+/// **`null` until the cashier does something.** `open()` is a `POST` that
+/// creates a draft server-side, so calling it from `build` left an empty sale
+/// behind on every visit to the screen — every reload, every navigation back,
+/// every hot restart. Measured on a live register: 12 of a day's 21 drafts
+/// were empty, 39 had accumulated in total. The draft is now created by the
+/// first action that needs one, so a register nobody has touched writes
+/// nothing.
 @riverpod
 class PosSaleController extends _$PosSaleController {
   @override
-  Future<Sale> build() {
-    return ref.watch(salesOrderRepositoryProvider).open();
+  Future<Sale?> build() async => null;
+
+  /// The sale in hand, opening one if the cashier has not started yet.
+  ///
+  /// Every action that can legitimately be the *first* goes through this:
+  /// adding a line, editing the header, and the product lookup — which prices
+  /// against a customer, and the customer is the sale's. The rest
+  /// ([updateLine], [removeLine], [confirm]) are impossible before a sale
+  /// exists and assert one instead.
+  Future<Sale> ensureOpen() async {
+    final current = state.valueOrNull;
+    if (current != null) return current;
+    final opened = await ref.read(salesOrderRepositoryProvider).open();
+    state = AsyncValue.data(opened);
+    return opened;
+  }
+
+  /// For the mutations that cannot be a first action — there is nothing to
+  /// update, remove or confirm before a sale exists.
+  Sale get _openSale {
+    final current = state.valueOrNull;
+    if (current == null) {
+      throw StateError('This action needs an open sale; none is started.');
+    }
+    return current;
   }
 
   /// Loads an existing sale instead of opening a new one — the open-sales
@@ -52,7 +83,7 @@ class PosSaleController extends _$PosSaleController {
     int? contact,
     String? customerName,
   }) async {
-    final current = state.requireValue;
+    final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.updateHeader(
       saleId: current.id,
@@ -75,7 +106,7 @@ class PosSaleController extends _$PosSaleController {
     int? warehouse,
     String? comment,
   }) async {
-    final current = state.requireValue;
+    final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.addLine(
       saleId: current.id,
@@ -99,7 +130,7 @@ class PosSaleController extends _$PosSaleController {
     int? warehouse,
     String? comment,
   }) async {
-    final current = state.requireValue;
+    final current = _openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.updateLine(
       saleId: current.id,
@@ -115,7 +146,7 @@ class PosSaleController extends _$PosSaleController {
   }
 
   Future<void> removeLine(int lineId) async {
-    final current = state.requireValue;
+    final current = _openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.removeLine(
       saleId: current.id,
@@ -129,7 +160,7 @@ class PosSaleController extends _$PosSaleController {
   /// (zero-priced lines, insufficient stock, no lines); the caller renders
   /// it on the capture step without leaving it.
   Future<void> confirm() async {
-    final current = state.requireValue;
+    final current = _openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.confirm(saleId: current.id);
     state = AsyncValue.data(updated);
@@ -138,10 +169,10 @@ class PosSaleController extends _$PosSaleController {
   /// Starts a fresh sale, discarding the currently-held one from view (it
   /// stays open server-side and reachable from the selector) — "start a new
   /// sale" (FR-050, US3 scenario 3).
+  /// Returns the register to its empty state rather than opening a draft —
+  /// a cashier who finishes a sale and walks away leaves nothing behind. The
+  /// next scan opens the next sale.
   Future<void> startNew() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(salesOrderRepositoryProvider).open(),
-    );
+    state = const AsyncValue.data(null);
   }
 }
