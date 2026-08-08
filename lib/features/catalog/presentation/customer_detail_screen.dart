@@ -12,6 +12,8 @@ import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_form_controller.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
@@ -65,6 +67,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final employeeRepo = ref.read(employeeRepositoryProvider);
+    final taxpayerRepo = ref.read(taxpayerRecipientRepositoryProvider);
 
     final title = readOnly
         ? l10n.viewCustomerTitle
@@ -187,6 +190,24 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialDisplayText: formState.salespersonDisplayText.isNotEmpty
                     ? formState.salespersonDisplayText
                     : l10n.noneAssignedLabel,
+                enabled: fieldsEnabled,
+              ),
+            ),
+            FormGridChild(
+              CatalogEntityPicker<TaxpayerRecipientListItem>(
+                key: const Key('taxpayer_field'),
+                label: l10n.taxpayerRecipientFieldLabel,
+                displayStringForOption: (t) =>
+                    '${t.taxpayerRecipientId} — ${t.name}',
+                optionsBuilder: (query) async {
+                  final result = await taxpayerRepo.list(
+                    search: query.isEmpty ? null : query,
+                  );
+                  return result.items;
+                },
+                onSelected: (t) =>
+                    controller.taxpayerSelected(t.taxpayerRecipientId, t.name),
+                initialDisplayText: formState.taxpayerDisplayText,
                 enabled: fieldsEnabled,
               ),
             ),

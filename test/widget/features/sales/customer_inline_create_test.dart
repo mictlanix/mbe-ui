@@ -10,7 +10,10 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
@@ -25,6 +28,9 @@ import 'pos_test_harness.dart';
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
 class MockPriceListRepository extends Mock implements PriceListRepository {}
+
+class MockTaxpayerRecipientRepository extends Mock
+    implements TaxpayerRecipientRepository {}
 
 /// An administrator, so `can(customers, create)` is true without spelling out
 /// a privilege bitmask; the privilege-less case uses an unauthenticated state.
@@ -57,6 +63,7 @@ void main() {
   late MockSalesOrderRepository salesOrders;
   late MockCustomerRepository customers;
   late MockPriceListRepository priceLists;
+  late MockTaxpayerRecipientRepository taxpayers;
   late MockCustomerPaymentRepository payments;
   late MockWarehouseRepository warehouses;
   late AppLocalizations l10n;
@@ -69,6 +76,25 @@ void main() {
     salesOrders = MockSalesOrderRepository();
     customers = MockCustomerRepository();
     priceLists = MockPriceListRepository();
+    taxpayers = MockTaxpayerRecipientRepository();
+    when(
+      () => taxpayers.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const TaxpayerRecipientPage(
+        items: [
+          TaxpayerRecipientListItem(
+            taxpayerRecipientId: 'XAXX010101000',
+            name: 'FERRETERÍA LOS PINOS SA DE CV',
+            email: 'facturas@lospinos.mx',
+          ),
+        ],
+        total: 1,
+      ),
+    );
     payments = MockCustomerPaymentRepository();
     warehouses = MockWarehouseRepository();
 
@@ -127,6 +153,7 @@ void main() {
         customerRepositoryProvider.overrideWithValue(customers),
         customerPaymentRepositoryProvider.overrideWithValue(payments),
         priceListRepositoryProvider.overrideWithValue(priceLists),
+        taxpayerRecipientRepositoryProvider.overrideWithValue(taxpayers),
         accessControlProvider.overrideWithValue(
           AccessControlService(
             canCreateCustomers
@@ -181,6 +208,7 @@ void main() {
           shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer(id: 99, name: 'FERRETERÍA LOS PINOS'));
       when(
@@ -208,6 +236,7 @@ void main() {
           shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
         ),
       ).captured;
       expect(created, ['C-99', 'FERRETERÍA LOS PINOS', 2]);
@@ -238,6 +267,7 @@ void main() {
           shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer(id: 99, priceList: 'Mayoreo'));
       when(
@@ -274,6 +304,7 @@ void main() {
           shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
         ),
       ).thenThrow(
         const AppError.server(statusCode: 409, message: 'Código duplicado'),
@@ -305,6 +336,123 @@ void main() {
       expect(find.text(l10n.customerCodeRequiredError), findsOneWidget);
       expect(find.text(l10n.customerNameRequiredError), findsOneWidget);
       expect(find.byKey(const Key('pos_new_customer_save')), findsOneWidget);
+    });
+
+    testWidgets('the tax registration is captured and sent as an RFC key '
+        '(FR-013, mbe-api#150)', (tester) async {
+      final sale = testSale(lines: [testLine()]);
+      when(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          shipping: any(named: 'shipping'),
+          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
+        ),
+      ).thenAnswer((_) async => _customer(id: 99));
+      when(
+        () => salesOrders.updateHeader(
+          saleId: any(named: 'saleId'),
+          customer: any(named: 'customer'),
+          paymentTerms: any(named: 'paymentTerms'),
+        ),
+      ).thenAnswer((_) async => sale);
+
+      await pumpCapture(tester, sale: sale);
+      await tester.tap(find.byKey(const Key('pos_create_customer_button')));
+      await tester.pumpAndSettle();
+
+      // Pick the RFC before filling the rest.
+      await tester.tap(find.byKey(const Key('pos_new_customer_taxpayer')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('pos_new_customer_taxpayer')),
+          matching: find.byType(TextField),
+        ),
+        'XAXX',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('XAXX010101000').last);
+      await tester.pumpAndSettle();
+
+      await fillAndSave(tester);
+
+      final sent = verify(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          shipping: any(named: 'shipping'),
+          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: captureAny(named: 'taxpayers'),
+        ),
+      ).captured.single;
+      expect(
+        sent,
+        ['XAXX010101000'],
+        reason: 'the RFC is the primary key mbe-api#150 links by',
+      );
+    });
+
+    testWidgets('an unset tax registration sends null, not an empty list — '
+        'empty would unlink every RFC the customer had', (tester) async {
+      final sale = testSale(lines: [testLine()]);
+      when(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          shipping: any(named: 'shipping'),
+          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
+        ),
+      ).thenAnswer((_) async => _customer(id: 99));
+      when(
+        () => salesOrders.updateHeader(
+          saleId: any(named: 'saleId'),
+          customer: any(named: 'customer'),
+          paymentTerms: any(named: 'paymentTerms'),
+        ),
+      ).thenAnswer((_) async => sale);
+
+      await pumpCapture(tester, sale: sale);
+      await tester.tap(find.byKey(const Key('pos_create_customer_button')));
+      await tester.pumpAndSettle();
+      await fillAndSave(tester);
+
+      final sent = verify(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          shipping: any(named: 'shipping'),
+          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: captureAny(named: 'taxpayers'),
+        ),
+      ).captured.single;
+      expect(sent, isNull);
     });
 
     testWidgets('a cashier without the customers create privilege is not '

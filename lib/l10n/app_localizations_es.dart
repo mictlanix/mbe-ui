@@ -2899,4 +2899,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String posOpenSaleSerial(int serial) {
     return 'Folio $serial';
   }
+
+  @override
+  String get taxpayerRecipientFieldLabel => 'Receptor fiscal (RFC)';
 }

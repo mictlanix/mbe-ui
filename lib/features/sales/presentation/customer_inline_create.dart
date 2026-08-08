@@ -9,6 +9,8 @@ import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart'
     show localizeCustomerFieldError, localizeCustomerFormError;
 import 'package:mbe_ui/features/catalog/presentation/customer_form_controller.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -69,10 +71,8 @@ class _CustomerInlineCreateScreen extends StatelessWidget {
   }
 }
 
-/// The fields FR-013 asks for, minus tax registration: mbe-api's customer
-/// carries no tax-registration field (`CustomerCreate`/`CustomerResponse` have
-/// none, and Taxpayer Recipients are an unrelated catalog keyed by RFC with no
-/// link back to a customer), so there is nothing to capture it into.
+/// Every field FR-013 asks for, tax registration included since mbe-api#150
+/// exposed the customer/taxpayer-recipient link.
 class _CustomerInlineCreateForm extends ConsumerStatefulWidget {
   const _CustomerInlineCreateForm();
 
@@ -89,6 +89,7 @@ class _CustomerInlineCreateFormState
     final form = ref.watch(customerFormControllerProvider);
     final controller = ref.read(customerFormControllerProvider.notifier);
     final priceListRepo = ref.read(priceListRepositoryProvider);
+    final taxpayerRepo = ref.read(taxpayerRecipientRepositoryProvider);
     final enabled = !form.submitting;
 
     ref.listen(customerFormControllerProvider, (previous, next) {
@@ -164,6 +165,26 @@ class _CustomerInlineCreateFormState
               l10n,
               form.fieldErrors['priceList'],
             ),
+            enabled: enabled,
+          ),
+        ),
+        FormGridChild(
+          CatalogEntityPicker<TaxpayerRecipientListItem>(
+            key: const Key('pos_new_customer_taxpayer'),
+            label: l10n.taxpayerRecipientFieldLabel,
+            displayStringForOption: (t) =>
+                '${t.taxpayerRecipientId} — ${t.name}',
+            optionsBuilder: (query) async {
+              final result = await taxpayerRepo.list(
+                search: query.isEmpty ? null : query,
+              );
+              return result.items;
+            },
+            onSelected: (t) => controller.taxpayerSelected(
+              t.taxpayerRecipientId,
+              t.name,
+            ),
+            initialDisplayText: form.taxpayerDisplayText,
             enabled: enabled,
           ),
         ),

@@ -333,7 +333,12 @@ mixin _$Customer {
   // is enough — there is no separate fetch. Empty (not null) when the
   // customer has none, and on list projections, which never include them.
   List<AddressListItem> get addresses => throw _privateConstructorUsedError;
-  List<Contact> get contacts => throw _privateConstructorUsedError;
+  List<Contact> get contacts =>
+      throw _privateConstructorUsedError; // The RFCs this customer may invoice under (mbe-api#150). A
+  // many-to-many, mirroring the legacy `customer_taxpayer` join table —
+  // one customer can bill under more than one. Expanded on read; writes
+  // send the plain RFC keys, replace-all like `addresses`/`contacts`.
+  List<TaxpayerRecipient> get taxpayers => throw _privateConstructorUsedError;
 
   /// Create a copy of Customer
   /// with the given fields replaced by the non-null parameter values.
@@ -362,6 +367,7 @@ abstract class $CustomerCopyWith<$Res> {
     String? comment,
     List<AddressListItem> addresses,
     List<Contact> contacts,
+    List<TaxpayerRecipient> taxpayers,
   });
 
   $PriceListRefCopyWith<$Res> get priceList;
@@ -397,6 +403,7 @@ class _$CustomerCopyWithImpl<$Res, $Val extends Customer>
     Object? comment = freezed,
     Object? addresses = null,
     Object? contacts = null,
+    Object? taxpayers = null,
   }) {
     return _then(
       _value.copyWith(
@@ -456,6 +463,10 @@ class _$CustomerCopyWithImpl<$Res, $Val extends Customer>
                 ? _value.contacts
                 : contacts // ignore: cast_nullable_to_non_nullable
                       as List<Contact>,
+            taxpayers: null == taxpayers
+                ? _value.taxpayers
+                : taxpayers // ignore: cast_nullable_to_non_nullable
+                      as List<TaxpayerRecipient>,
           )
           as $Val,
     );
@@ -510,6 +521,7 @@ abstract class _$$CustomerImplCopyWith<$Res>
     String? comment,
     List<AddressListItem> addresses,
     List<Contact> contacts,
+    List<TaxpayerRecipient> taxpayers,
   });
 
   @override
@@ -546,6 +558,7 @@ class __$$CustomerImplCopyWithImpl<$Res>
     Object? comment = freezed,
     Object? addresses = null,
     Object? contacts = null,
+    Object? taxpayers = null,
   }) {
     return _then(
       _$CustomerImpl(
@@ -605,6 +618,10 @@ class __$$CustomerImplCopyWithImpl<$Res>
             ? _value._contacts
             : contacts // ignore: cast_nullable_to_non_nullable
                   as List<Contact>,
+        taxpayers: null == taxpayers
+            ? _value._taxpayers
+            : taxpayers // ignore: cast_nullable_to_non_nullable
+                  as List<TaxpayerRecipient>,
       ),
     );
   }
@@ -628,8 +645,10 @@ class _$CustomerImpl implements _Customer {
     this.comment,
     final List<AddressListItem> addresses = const <AddressListItem>[],
     final List<Contact> contacts = const <Contact>[],
+    final List<TaxpayerRecipient> taxpayers = const <TaxpayerRecipient>[],
   }) : _addresses = addresses,
-       _contacts = contacts;
+       _contacts = contacts,
+       _taxpayers = taxpayers;
 
   @override
   final int customerId;
@@ -683,9 +702,26 @@ class _$CustomerImpl implements _Customer {
     return EqualUnmodifiableListView(_contacts);
   }
 
+  // The RFCs this customer may invoice under (mbe-api#150). A
+  // many-to-many, mirroring the legacy `customer_taxpayer` join table —
+  // one customer can bill under more than one. Expanded on read; writes
+  // send the plain RFC keys, replace-all like `addresses`/`contacts`.
+  final List<TaxpayerRecipient> _taxpayers;
+  // The RFCs this customer may invoice under (mbe-api#150). A
+  // many-to-many, mirroring the legacy `customer_taxpayer` join table —
+  // one customer can bill under more than one. Expanded on read; writes
+  // send the plain RFC keys, replace-all like `addresses`/`contacts`.
+  @override
+  @JsonKey()
+  List<TaxpayerRecipient> get taxpayers {
+    if (_taxpayers is EqualUnmodifiableListView) return _taxpayers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_taxpayers);
+  }
+
   @override
   String toString() {
-    return 'Customer(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salesperson: $salesperson, status: $status, comment: $comment, addresses: $addresses, contacts: $contacts)';
+    return 'Customer(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salesperson: $salesperson, status: $status, comment: $comment, addresses: $addresses, contacts: $contacts, taxpayers: $taxpayers)';
   }
 
   @override
@@ -719,7 +755,11 @@ class _$CustomerImpl implements _Customer {
               other._addresses,
               _addresses,
             ) &&
-            const DeepCollectionEquality().equals(other._contacts, _contacts));
+            const DeepCollectionEquality().equals(other._contacts, _contacts) &&
+            const DeepCollectionEquality().equals(
+              other._taxpayers,
+              _taxpayers,
+            ));
   }
 
   @override
@@ -739,6 +779,7 @@ class _$CustomerImpl implements _Customer {
     comment,
     const DeepCollectionEquality().hash(_addresses),
     const DeepCollectionEquality().hash(_contacts),
+    const DeepCollectionEquality().hash(_taxpayers),
   );
 
   /// Create a copy of Customer
@@ -766,6 +807,7 @@ abstract class _Customer implements Customer {
     final String? comment,
     final List<AddressListItem> addresses,
     final List<Contact> contacts,
+    final List<TaxpayerRecipient> taxpayers,
   }) = _$CustomerImpl;
 
   @override
@@ -799,7 +841,12 @@ abstract class _Customer implements Customer {
   @override
   List<AddressListItem> get addresses;
   @override
-  List<Contact> get contacts;
+  List<Contact> get contacts; // The RFCs this customer may invoice under (mbe-api#150). A
+  // many-to-many, mirroring the legacy `customer_taxpayer` join table —
+  // one customer can bill under more than one. Expanded on read; writes
+  // send the plain RFC keys, replace-all like `addresses`/`contacts`.
+  @override
+  List<TaxpayerRecipient> get taxpayers;
 
   /// Create a copy of Customer
   /// with the given fields replaced by the non-null parameter values.

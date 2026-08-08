@@ -49,6 +49,11 @@ class CustomerFormState with _$CustomerFormState {
     @Default(false) bool shippingRequiredDocument,
     int? salespersonId,
     @Default('') String salespersonDisplayText,
+    /// The RFC this customer invoices under (mbe-api#150). One here even
+    /// though the relation is many-to-many: a customer registered at the
+    /// counter has one, and managing the full set belongs in the catalog.
+    String? taxpayerId,
+    @Default('') String taxpayerDisplayText,
     @Default(EntityStatus.active) EntityStatus status,
     @Default('') String comment,
     @Default(false) bool loading,
@@ -113,6 +118,9 @@ class CustomerFormController extends _$CustomerFormController {
   void salespersonSelected(int? id, String displayText) => state = state
       .copyWith(salespersonId: id, salespersonDisplayText: displayText);
 
+  void taxpayerSelected(String? id, String displayText) =>
+      state = state.copyWith(taxpayerId: id, taxpayerDisplayText: displayText);
+
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   void commentChanged(String v) => state = state.copyWith(comment: v);
@@ -137,6 +145,8 @@ class CustomerFormController extends _$CustomerFormController {
         shippingRequiredDocument: customer.shippingRequiredDocument,
         salespersonId: customer.salesperson?.id,
         salespersonDisplayText: customer.salesperson?.name ?? '',
+        taxpayerId: customer.taxpayers.firstOrNull?.taxpayerRecipientId,
+        taxpayerDisplayText: customer.taxpayers.firstOrNull?.name ?? '',
         status: customer.status,
         comment: customer.comment ?? '',
       );
@@ -217,6 +227,7 @@ class CustomerFormController extends _$CustomerFormController {
             shippingRequiredDocument: state.shippingRequiredDocument,
             salesperson: state.salespersonId,
             comment: _orNull(state.comment),
+            taxpayers: _taxpayersOf(state),
           );
       ref.invalidate(customersListControllerProvider);
       // Recording the new id lets a caller act on the customer it just
@@ -290,6 +301,7 @@ class CustomerFormController extends _$CustomerFormController {
             salesperson: state.salespersonId,
             status: state.status,
             comment: state.comment,
+            taxpayers: _taxpayersOf(state),
           );
       ref.invalidate(customersListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);
@@ -342,6 +354,14 @@ class CustomerFormController extends _$CustomerFormController {
 }
 
 String? _orNull(String value) => value.isEmpty ? null : value;
+
+/// `null` leaves whatever links the customer already has alone; a list
+/// replaces them. Sending `[]` for an unset field would silently unlink every
+/// RFC the customer had, so "not chosen" must stay `null`.
+List<String>? _taxpayersOf(CustomerFormState state) {
+  final id = state.taxpayerId;
+  return id == null ? null : [id];
+}
 
 int? _orNullInt(String value) => value.isEmpty ? null : int.tryParse(value);
 

@@ -80,6 +80,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
     String? comment,
     List<int>? addresses,
     List<int>? contacts,
+    List<String>? taxpayers,
   }) async {
     try {
       final response = await _api.createCustomerApiV1CustomersPost(
@@ -97,6 +98,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
           if (creditLimit != null) _setCreditLimit(b.creditLimit, creditLimit);
           if (addresses != null) b.addresses = ListBuilder<int>(addresses);
           if (contacts != null) b.contacts = ListBuilder<int>(contacts);
+          if (taxpayers != null) {
+            b.taxpayers = ListBuilder<String>(taxpayers);
+          }
         }),
       );
       final customer = response.data;
@@ -123,6 +127,7 @@ class CustomerRepositoryImpl implements CustomerRepository {
     String? comment,
     List<int>? addresses,
     List<int>? contacts,
+    List<String>? taxpayers,
   }) async {
     try {
       final response = await _api.updateCustomerApiV1CustomersCustomerIdPut(
@@ -148,6 +153,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
           // §4).
           if (addresses != null) b.addresses = ListBuilder<int>(addresses);
           if (contacts != null) b.contacts = ListBuilder<int>(contacts);
+          if (taxpayers != null) {
+            b.taxpayers = ListBuilder<String>(taxpayers);
+          }
         }),
       );
       final customer = response.data;

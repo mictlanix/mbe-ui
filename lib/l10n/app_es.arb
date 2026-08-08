@@ -924,5 +924,6 @@
   "numberPadBackspace": "Borrar",
   "dismissErrorTooltip": "Descartar",
   "posOpenSaleId": "Id {id}",
-  "posOpenSaleSerial": "Folio {serial}"
+  "posOpenSaleSerial": "Folio {serial}",
+  "taxpayerRecipientFieldLabel": "Receptor fiscal (RFC)"
 }

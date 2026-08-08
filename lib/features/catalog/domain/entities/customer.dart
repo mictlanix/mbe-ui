@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient.dart';
 
 part 'customer.freezed.dart';
 
@@ -57,6 +58,11 @@ class Customer with _$Customer {
     // customer has none, and on list projections, which never include them.
     @Default(<AddressListItem>[]) List<AddressListItem> addresses,
     @Default(<Contact>[]) List<Contact> contacts,
+    // The RFCs this customer may invoice under (mbe-api#150). A
+    // many-to-many, mirroring the legacy `customer_taxpayer` join table —
+    // one customer can bill under more than one. Expanded on read; writes
+    // send the plain RFC keys, replace-all like `addresses`/`contacts`.
+    @Default(<TaxpayerRecipient>[]) List<TaxpayerRecipient> taxpayers,
   }) = _Customer;
 
   factory Customer.fromResponse(CustomerResponse response) {
@@ -80,6 +86,9 @@ class Customer with _$Customer {
           .toList(),
       contacts: (response.contacts ?? const <ContactResponse>[])
           .map(Contact.fromResponse)
+          .toList(),
+      taxpayers: (response.taxpayers ?? const <TaxpayerRecipientResponse>[])
+          .map(TaxpayerRecipient.fromResponse)
           .toList(),
     );
   }

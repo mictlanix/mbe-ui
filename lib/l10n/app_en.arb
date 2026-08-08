@@ -2051,5 +2051,7 @@
   "posOpenSaleId": "Id {id}",
   "@posOpenSaleId": { "placeholders": { "id": { "type": "int" } } },
   "posOpenSaleSerial": "Serial {serial}",
-  "@posOpenSaleSerial": { "placeholders": { "serial": { "type": "int" } } }
+  "@posOpenSaleSerial": { "placeholders": { "serial": { "type": "int" } } },
+  "taxpayerRecipientFieldLabel": "Tax recipient (RFC)",
+  "@taxpayerRecipientFieldLabel": {}
 }

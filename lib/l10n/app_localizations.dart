@@ -5326,6 +5326,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Serial {serial}'**
   String posOpenSaleSerial(int serial);
+
+  /// No description provided for @taxpayerRecipientFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax recipient (RFC)'**
+  String get taxpayerRecipientFieldLabel;
 }
 
 class _AppLocalizationsDelegate

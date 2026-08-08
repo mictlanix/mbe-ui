@@ -39,6 +39,9 @@ abstract class CustomerRepository {
     String? comment,
     List<int>? addresses,
     List<int>? contacts,
+    /// RFC keys this customer may invoice under (mbe-api#150) — replace-all,
+    /// exactly like [addresses] and [contacts].
+    List<String>? taxpayers,
   });
 
   Future<Customer> update({
@@ -56,6 +59,9 @@ abstract class CustomerRepository {
     String? comment,
     List<int>? addresses,
     List<int>? contacts,
+    /// RFC keys this customer may invoice under (mbe-api#150) — replace-all,
+    /// exactly like [addresses] and [contacts].
+    List<String>? taxpayers,
   });
 
   Future<void> delete({required int customerId});

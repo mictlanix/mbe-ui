@@ -29,6 +29,12 @@ mixin _$CustomerFormState {
   bool get shippingRequiredDocument => throw _privateConstructorUsedError;
   int? get salespersonId => throw _privateConstructorUsedError;
   String get salespersonDisplayText => throw _privateConstructorUsedError;
+
+  /// The RFC this customer invoices under (mbe-api#150). One here even
+  /// though the relation is many-to-many: a customer registered at the
+  /// counter has one, and managing the full set belongs in the catalog.
+  String? get taxpayerId => throw _privateConstructorUsedError;
+  String get taxpayerDisplayText => throw _privateConstructorUsedError;
   EntityStatus get status => throw _privateConstructorUsedError;
   String get comment => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
@@ -66,6 +72,8 @@ abstract class $CustomerFormStateCopyWith<$Res> {
     bool shippingRequiredDocument,
     int? salespersonId,
     String salespersonDisplayText,
+    String? taxpayerId,
+    String taxpayerDisplayText,
     EntityStatus status,
     String comment,
     bool loading,
@@ -105,6 +113,8 @@ class _$CustomerFormStateCopyWithImpl<$Res, $Val extends CustomerFormState>
     Object? shippingRequiredDocument = null,
     Object? salespersonId = freezed,
     Object? salespersonDisplayText = null,
+    Object? taxpayerId = freezed,
+    Object? taxpayerDisplayText = null,
     Object? status = null,
     Object? comment = null,
     Object? loading = null,
@@ -164,6 +174,14 @@ class _$CustomerFormStateCopyWithImpl<$Res, $Val extends CustomerFormState>
             salespersonDisplayText: null == salespersonDisplayText
                 ? _value.salespersonDisplayText
                 : salespersonDisplayText // ignore: cast_nullable_to_non_nullable
+                      as String,
+            taxpayerId: freezed == taxpayerId
+                ? _value.taxpayerId
+                : taxpayerId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            taxpayerDisplayText: null == taxpayerDisplayText
+                ? _value.taxpayerDisplayText
+                : taxpayerDisplayText // ignore: cast_nullable_to_non_nullable
                       as String,
             status: null == status
                 ? _value.status
@@ -229,6 +247,8 @@ abstract class _$$CustomerFormStateImplCopyWith<$Res>
     bool shippingRequiredDocument,
     int? salespersonId,
     String salespersonDisplayText,
+    String? taxpayerId,
+    String taxpayerDisplayText,
     EntityStatus status,
     String comment,
     bool loading,
@@ -267,6 +287,8 @@ class __$$CustomerFormStateImplCopyWithImpl<$Res>
     Object? shippingRequiredDocument = null,
     Object? salespersonId = freezed,
     Object? salespersonDisplayText = null,
+    Object? taxpayerId = freezed,
+    Object? taxpayerDisplayText = null,
     Object? status = null,
     Object? comment = null,
     Object? loading = null,
@@ -327,6 +349,14 @@ class __$$CustomerFormStateImplCopyWithImpl<$Res>
             ? _value.salespersonDisplayText
             : salespersonDisplayText // ignore: cast_nullable_to_non_nullable
                   as String,
+        taxpayerId: freezed == taxpayerId
+            ? _value.taxpayerId
+            : taxpayerId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        taxpayerDisplayText: null == taxpayerDisplayText
+            ? _value.taxpayerDisplayText
+            : taxpayerDisplayText // ignore: cast_nullable_to_non_nullable
+                  as String,
         status: null == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
@@ -384,6 +414,8 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
     this.shippingRequiredDocument = false,
     this.salespersonId,
     this.salespersonDisplayText = '',
+    this.taxpayerId,
+    this.taxpayerDisplayText = '',
     this.status = EntityStatus.active,
     this.comment = '',
     this.loading = false,
@@ -428,6 +460,15 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
   @override
   @JsonKey()
   final String salespersonDisplayText;
+
+  /// The RFC this customer invoices under (mbe-api#150). One here even
+  /// though the relation is many-to-many: a customer registered at the
+  /// counter has one, and managing the full set belongs in the catalog.
+  @override
+  final String? taxpayerId;
+  @override
+  @JsonKey()
+  final String taxpayerDisplayText;
   @override
   @JsonKey()
   final EntityStatus status;
@@ -461,7 +502,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
 
   @override
   String toString() {
-    return 'CustomerFormState(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText, status: $status, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'CustomerFormState(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText, taxpayerId: $taxpayerId, taxpayerDisplayText: $taxpayerDisplayText, status: $status, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -493,6 +534,10 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
                 other.salespersonId == salespersonId) &&
             (identical(other.salespersonDisplayText, salespersonDisplayText) ||
                 other.salespersonDisplayText == salespersonDisplayText) &&
+            (identical(other.taxpayerId, taxpayerId) ||
+                other.taxpayerId == taxpayerId) &&
+            (identical(other.taxpayerDisplayText, taxpayerDisplayText) ||
+                other.taxpayerDisplayText == taxpayerDisplayText) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.comment, comment) || other.comment == comment) &&
             (identical(other.loading, loading) || other.loading == loading) &&
@@ -524,6 +569,8 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
     shippingRequiredDocument,
     salespersonId,
     salespersonDisplayText,
+    taxpayerId,
+    taxpayerDisplayText,
     status,
     comment,
     loading,
@@ -561,6 +608,8 @@ abstract class _CustomerFormState implements CustomerFormState {
     final bool shippingRequiredDocument,
     final int? salespersonId,
     final String salespersonDisplayText,
+    final String? taxpayerId,
+    final String taxpayerDisplayText,
     final EntityStatus status,
     final String comment,
     final bool loading,
@@ -596,6 +645,14 @@ abstract class _CustomerFormState implements CustomerFormState {
   int? get salespersonId;
   @override
   String get salespersonDisplayText;
+
+  /// The RFC this customer invoices under (mbe-api#150). One here even
+  /// though the relation is many-to-many: a customer registered at the
+  /// counter has one, and managing the full set belongs in the catalog.
+  @override
+  String? get taxpayerId;
+  @override
+  String get taxpayerDisplayText;
   @override
   EntityStatus get status;
   @override
