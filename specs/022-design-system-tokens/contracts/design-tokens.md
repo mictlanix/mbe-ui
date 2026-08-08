@@ -87,8 +87,9 @@ dialogs.
 
 ## Component sub-themes
 
-17 sub-themes are defined centrally (`FR-016`). Once a sub-theme owns a property, screens
-must not restate it (`FR-017`).
+20 distinct `Theme`/`ThemeData` classes are defined centrally (`FR-016`), grouped below into
+14 rows where several classes share one concern (e.g. the three button themes). Once a
+sub-theme owns a property, screens must not restate it (`FR-017`).
 
 | Sub-theme | Owns | Retires |
 |---|---|---|

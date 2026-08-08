@@ -117,7 +117,7 @@ confirm every card-bearing screen reports a diff with **zero screen files edited
 
 ---
 
-## Scenario 5 — Type by role (US5, FR-019/FR-028, SC-001)
+## Scenario 5 — Type by role, and zero hardcoded style (US5, FR-019/FR-028, SC-001/SC-002)
 
 ```bash
 # zero hardcoded typefaces or sizes outside the token definitions
@@ -128,6 +128,20 @@ grep -rn "fontSize:" lib --include='*.dart' \
 ```
 
 **Expected**: no output from either (`SC-001`).
+
+```bash
+# zero hardcoded colors outside the token definitions (SC-002)
+grep -rn "Color(0x" lib --include='*.dart' \
+  | grep -v "^lib/generated/" | grep -v "^lib/core/branding/"
+grep -rn "Colors\." lib --include='*.dart' \
+  | grep -v "^lib/generated/" | grep -v "^lib/core/branding/"
+```
+
+**Expected**: no output from the `Color(0x` grep. The `Colors\.` grep returns only the
+documented legitimate exceptions — `Colors.transparent` as an absent-color sentinel,
+`Colors.black54` matching Flutter's own barrier default, and `ColorFilter.mode(Colors.white,
+…)` for asset tinting (see the original theme audit for the exact site list). Any other
+result is a new hardcode and a defect (`SC-002`).
 
 **Expected for `FR-028`**: record identifiers and timestamps render monospaced; an ordinary
 product code or SKU in a table cell renders in the standard body face. Confirm on

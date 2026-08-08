@@ -165,7 +165,8 @@
     "constraint: constitution §V — customisation limited to colour, typography, brand assets, NOT layout/structure",
     "constraint: constitution §VI — Expanded-first, Compact deferred; kept intact",
     "constraint: spec 019 FR-007 white-label isolation must survive",
-    "constraint: nothing in lib/features/ or lib/core/ may import lib/app/"
+    "constraint: nothing in lib/features/ or lib/core/ may import lib/app/",
+    "remediation: /speckit-analyze found 10 issues (0 CRITICAL/3 HIGH/5 MEDIUM/2 LOW), all resolved same session — see tasks.md Revision History"
   ],
   "intent": "Complete the design system's missing token layers (type roles, spacing, shape, elevation, density) and centralise Material 3 component appearance, specified across all four form-factor tiers, without making product structure white-labelable.",
   "expectations": [

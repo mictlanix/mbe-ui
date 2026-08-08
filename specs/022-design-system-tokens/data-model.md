@@ -209,7 +209,7 @@ BrandConfig ──> XbePalette ──> ColorScheme ──> BrandInk        (lib/
                      ├── Elevations   ├─ identical across every deployment (FR-010)
                      ├── Density      │
                      ├── TypeRoles    ┘
-                     └── 17 component sub-themes (FR-016), consuming the above
+                     └── 20 component sub-theme classes (FR-016), consuming the above
 ```
 
 **The direction of the arrows is the guarantee**: brand values flow into `ColorScheme` and

@@ -7,8 +7,8 @@
 ## Summary
 
 Close the five missing layers of the design system — semantic type roles, spacing, shape,
-elevation and density — and move component appearance out of individual screens into 17
-Material 3 sub-themes. Token values are decided for all four width tiers so phone and
+elevation and density — and move component appearance out of individual screens into 20
+Material 3 sub-theme classes. Token values are decided for all four width tiers so phone and
 tablet need no renegotiation later, while phone-specific *layouts* stay out of scope.
 
 The technical approach turns on one decision (research R1): the width tier is resolved in
@@ -48,8 +48,11 @@ plus a local harness in `test/golden/` — **no new dev dependency** (research R
 `lib/features/` or `lib/core/` may import `lib/app/` (verified true today). No structural
 value may be per-deployment configurable.
 
-**Scale/Scope**: ~20 shared widgets in `lib/core/widgets/`, 18 record detail screens,
-5 new token files, 17 component sub-themes, ~80 golden images (20 controls × 4 combinations).
+**Scale/Scope**: 19 renderable shared widgets in `lib/core/widgets/` (`money_formatters.dart`
+is a formatting utility, not a widget, and is excluded from golden coverage), 18 record
+detail screens, 5 new token files, 20 component sub-theme classes (`FR-016`; grouped into
+14 rows in `contracts/design-tokens.md`), ~80 golden images (19 existing + 1 new
+`StatusChip` from `FR-018` = 20 controls × 4 combinations).
 
 ## Constitution Check
 
@@ -65,14 +68,20 @@ value may be per-deployment configurable.
 | **VI. Desktop/Web-First, Compact-Ready** | Expanded remains the primary target. Breakpoints stay centralized in `core/layout/`. Compact **layouts** explicitly deferred (`FR-025`), so §VI's deferral is preserved, not amended. Shared table/badge/form ownership in `core/widgets/` is strengthened by `FR-018`. | **PASS** |
 | **VII. Online-Only, Server-Rendered Documents** | Not touched. | **N/A** |
 
-**Note on §V and the card shape override.** §V says all UI stays "within Material 3
-component shapes/structure regardless of theme — customization is limited to color scheme,
-typography, and branding assets, not layout/structure." This feature overrides
-`CardThemeData.shape` from Flutter's 12 to the brand guide's 16. That is **not** a §V
-violation: §V constrains *per-deployment* customization, and this override is applied
-product-wide, identically for every deployment, as part of the product's own M3 theming.
-The clause it must satisfy — that a customer cannot alter structure — is satisfied more
-strictly than before, because `lib/core/design/` accepts no brand input at all.
+**Note on the card shape override, and a citation correction.** This feature overrides
+`CardThemeData.shape` from Flutter's 12 to the brand guide's 16. The rule that this must not
+violate — "customization is limited to color scheme, typography, and branding assets, not
+layout/structure" — is **DESIGN.md §4.1**, not constitution §V itself: the constitution's
+own §V text (seed-color/typography configurability via `--dart-define`, `fromSeed` for both
+`ColorScheme`s, `es-MX` as a first-class locale) does not contain that sentence, and doesn't
+address shape/structure at all. (An earlier draft of this Constitution Check misattributed
+the quote to §V directly; corrected here per `/speckit-analyze` finding D1.) DESIGN.md is,
+per the constitution's own Governance section, "the narrative record of *why* each decision
+was made," so the rule is still binding — just sourced correctly. Under it, this override is
+**not** a violation: DESIGN.md's rule constrains *per-deployment* customization, and this
+override is applied product-wide, identically for every deployment, as part of the product's
+own M3 theming. The clause it must satisfy — that a customer cannot alter structure — is
+satisfied more strictly than before, because `lib/core/design/` accepts no brand input at all.
 
 **Post-Phase 1 re-check**: no gate changed. The design adds no new project, no new runtime
 dependency, and no new state management mechanism. Complexity Tracking is therefore empty.
@@ -112,10 +121,10 @@ lib/
 │   │   ├── brand_ink.dart
 │   │   └── brand_config.dart
 │   ├── layout/breakpoints.dart      # EXISTING — reused unchanged
-│   └── widgets/                     # ~20 shared components; status chip consolidated
+│   └── widgets/                     # 19 renderable shared widgets; status chip consolidated
 │       └── status_chip.dart         # NEW — replaces the two near-duplicates (FR-018)
 ├── app/theme/
-│   └── app_theme.dart               # Assembles ColorScheme + TextTheme + 17 sub-themes
+│   └── app_theme.dart               # Assembles ColorScheme + TextTheme + 20 sub-theme classes
 └── app/app.dart                     # MaterialApp.builder applies the tier-resolved theme
 
 test/
@@ -149,7 +158,7 @@ Derived from the story priorities, with two hard orderings that are not negotiab
 | A | US1 | Text ink fix, light `surfaceContainerLow` pin | Low, visible |
 | B | US2 | `core/design/` tokens + `DesignTheme.forTier` + `MaterialApp.builder`; no call-site change | Very low — additive |
 | C | US3 | Golden harness, `FontLoader` setup, ~80 baseline images | Low; **gates phase D** |
-| D | US4 | 17 sub-themes; status chip consolidation | **Highest** — product-wide visual change |
+| D | US4 | 20 sub-theme classes; status chip consolidation | **Highest** — product-wide visual change |
 | E | US5 | Type roles applied; retire 5 typeface + 3 size literals; correct spec 019's typography contract | Low |
 | F | US6 | Tier-response verification across all four tiers | Low |
 

@@ -17,6 +17,11 @@ and `SC-008`'s brand-independence proof are only real if something asserts them.
 **Organization**: Tasks are grouped by user story, in the priority order from `spec.md`.
 Two cross-story orderings are load-bearing, not stylistic — see Dependencies below.
 
+**Revision note (2026-08-08, post-`/speckit-analyze`)**: this revision resolves 10 findings
+from the cross-artifact analysis — see the bottom of this file for the full list and what
+changed. Net effect: 1 new task (`T046`), 8 tasks reworded to actually verify what they
+claimed to, and 3 documentation-only corrections in `plan.md`/`contracts/design-tokens.md`.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependency on an incomplete task)
@@ -70,12 +75,16 @@ both match the approved brand values. No other phase needs to exist first.
   `surfaceContainerLow: XbePalette.lightSurfaceContainerLow`, mirroring the existing dark
   pin (`FR-002`).
 - [ ] T006 [P] [US1] Extend `test/widget/app/app_theme_test.dart`: for both brightnesses,
-  assert every `TextTheme` role's `.color` equals `colorScheme.onSurface` (not
-  `#1D1B20`/`#E6E0E9`); assert `light.colorScheme.surfaceContainerLow` equals the new pinned
-  constant, not a seed-derived value.
-- [ ] T007 [US1] Run `quickstart.md` Scenario 1 (`flutter test test/widget/app/app_theme_test.dart`
-  plus the WCAG contrast check already present in that file) and confirm `SC-003` (≥4.5:1
-  every text role, both modes) still holds after T003–T005.
+  (a) assert every `TextTheme` role's `.color` equals `colorScheme.onSurface` (not
+  `#1D1B20`/`#E6E0E9`); (b) assert `light.colorScheme.surfaceContainerLow` equals the new
+  pinned constant, not a seed-derived value; **and (c) reuse the file's existing
+  `_contrastRatio` helper to compute, not just assert-equal, the contrast ratio of every
+  `TextTheme` role's color against `colorScheme.surface`, asserting ≥4.5:1 in both
+  brightnesses** (`FR-022`, `SC-003`) — (c) is the actual, computed proof of the contrast
+  claim; (a) alone only proves color assignment, not that the assignment is safe to read.
+- [ ] T007 [US1] Run `quickstart.md` Scenario 1 (`flutter test test/widget/app/app_theme_test.dart`)
+  and confirm `SC-003` (≥4.5:1 every text role, both modes) holds via T006(c)'s computed
+  assertion — not merely inferred from T006(a)'s equality check.
 
 **Checkpoint**: US1 ships independently. Deployable on its own.
 
@@ -106,7 +115,7 @@ mode until it is pinned).
   `MediaQuery.navigationModeOf`, which the spec's own Assumptions wrongly named), with the
   touch/pointer table from `data-model.md` §4 (`FR-007`).
 - [ ] T012 [US2] Create `lib/core/design/type_roles.dart`: `TypeRoles` `ThemeExtension`
-  with the 20 slots from `data-model.md` §5, each returning a ready `TextStyle` for the
+  with the **21** slots from `data-model.md` §5, each returning a ready `TextStyle` for the
   current tier. Bake per-slot weight emphasis into the role itself where the current
   hardcode adds one on top of the brand default (`metricValue`, `pageHeading` both need
   `w700`, one step above their base role's brand `w600`) — so a call site never needs its
@@ -126,10 +135,13 @@ mode until it is pinned).
   `.elevations`, `.density`, `.typeRoles`) mirroring the shipped `BrandInkTheme` pattern —
   each falls back to its `const` default when the extension is absent, satisfying `FR-024`
   and `FR-009` together.
-- [ ] T017 [P] [US2] Create `test/unit/core/design/spacing_test.dart`,
-  `shapes_test.dart`, `elevations_test.dart`, `density_test.dart`: assert the grid/ordering
-  invariants from `data-model.md`'s per-entity Validation notes, and that every
-  tier-dependent field resolves for all four tiers with no gap (`SC-005`).
+- [ ] T017 [P] [US2] Create `test/unit/core/design/spacing_test.dart`, `shapes_test.dart`,
+  `elevations_test.dart`, `density_test.dart`, **and `type_roles_test.dart`** (five files):
+  for the first four, assert the grid/ordering invariants from `data-model.md`'s
+  per-entity Validation notes, and that every tier-dependent field resolves for all four
+  tiers with no gap (`SC-005`). For `type_roles_test.dart`, assert **every one of the 21
+  slots** resolves to its documented M3 role at every one of the 4 tiers (`FR-008`) — not
+  only the three monospace-related slots (those get their own narrower assertions in T044).
 - [ ] T018 [US2] Create `test/unit/core/design/brand_independence_test.dart`: build
   `DesignTheme.forTier` under the default `BrandConfig` and under an overridden-seed one;
   assert every design-token value is identical between the two (`SC-008`) — the structural
@@ -150,7 +162,7 @@ screen has changed. US2 ships independently on top of US1.
 ## Phase 4: User Story 3 - A safety net before anything is restyled (Priority: P2)
 
 **Goal**: golden images for every shared component, light/dark × narrow/wide, that fail
-loudly on any visual change.
+loudly on any visual change — including a component added *after* this feature ships.
 
 **Independent Test**: deliberately alter one component's appearance; the comparison fails
 and names the component and combination.
@@ -162,29 +174,38 @@ and names the component and combination.
   boxes and the suite verifies nothing (research R4).
 - [ ] T022 [US3] Create `test/golden/README.md` recording the generating Flutter version
   (3.44.2) and the `--update-goldens` workflow, per research R4's host-dependence note.
-- [ ] T023 [US3] Create `test/golden/core_widgets_golden_test.dart`: for each of the 20
-  widgets in `lib/core/widgets/` (`app_navigation`, `app_shell`, `brand_logo`,
+- [ ] T023 [US3] Create `test/golden/core_widgets_golden_test.dart`: for each of the 19
+  renderable widgets in `lib/core/widgets/` (`app_navigation`, `app_shell`, `brand_logo`,
   `brand_nav_header`, `catalog_action_icons`, `catalog_entity_picker`, `catalog_filter_bar`,
   `catalog_filter_sheet`, `catalog_pagination`, `catalog_search_bar`, `data_table_view`,
   `entity_status_controls`, `error_banner`, `label_multi_picker`, `list_state_views`,
-  `product_photo`, `record_form_actions`, `responsive_form_grid`, `user_menu_button`),
-  capture 4 goldens (light/dark × 400dp/1024dp) via T021's harness. A widget with no
-  golden must fail the run, not pass silently (`FR-023`).
+  `product_photo`, `record_form_actions`, `responsive_form_grid`, `user_menu_button` —
+  `money_formatters.dart` is deliberately excluded: it is a static formatting utility, not
+  a renderable widget), capture 4 goldens (light/dark × 400dp/1024dp) via T021's harness. A
+  widget with no golden must fail the run, not pass silently (`FR-023`). **In the same
+  file, add a directory-scan test**: enumerate `lib/core/widgets/*.dart`, exclude the one
+  documented non-widget file above, and assert every remaining file name appears in this
+  test's own widget list — so a widget added to the directory *after* this feature ships,
+  but never wired into this suite, fails the run instead of silently having no coverage
+  (closing the gap the enumerated-list approach would otherwise leave open). Note for T029:
+  adding `status_chip.dart` in Phase 5 will make this scan fail until T029 adds its entry —
+  that failure is the mechanism working as intended, not a bug.
 - [ ] T024 [US3] Run `flutter test test/golden --update-goldens` to generate the baseline
   images; commit the resulting PNGs.
 - [ ] T025 [US3] Verify the net catches change (`FR-021` proof, quickstart Scenario 3):
   temporarily change one widget's padding, run `flutter test test/golden`, confirm the
   failure names the widget and combination, then revert the change before continuing.
 
-**Checkpoint**: `FR-020`/`021`/`023` and `SC-006` satisfied. **Phase 5 must not start until
-this checkpoint is green** (plan.md's hard sequencing rule).
+**Checkpoint**: `FR-020`/`021`/`023` and `SC-006` satisfied — including for widgets not yet
+written. **Phase 5 must not start until this checkpoint is green** (plan.md's hard
+sequencing rule).
 
 ---
 
 ## Phase 5: User Story 4 - Components look the same everywhere without per-screen styling (Priority: P2)
 
-**Goal**: 17 component sub-themes centralize appearance; the duplicated status chip becomes
-one shared control.
+**Goal**: 20 component sub-theme classes centralize appearance; the duplicated status chip
+becomes one shared control.
 
 **Independent Test**: the same control in three feature areas is pixel-identical; a change
 to one sub-theme propagates to every screen with zero screen files edited.
@@ -200,7 +221,8 @@ to one sub-theme propagates to every screen with zero screen files edited.
   to delegate to `StatusChip`; remove its now-redundant `labelStyle`/`visualDensity`.
 - [ ] T029 [US4] Add golden coverage for the new `StatusChip` to
   `test/golden/core_widgets_golden_test.dart` (extends T023 — the widget did not exist when
-  the baseline was captured).
+  the baseline was captured) — this also satisfies T023's directory-scan assertion, which
+  would otherwise fail as soon as `status_chip.dart` exists.
 - [ ] T030 [US4] In `lib/app/theme/app_theme.dart`'s `_buildTheme`, add `AppBarTheme`,
   `CardThemeData` (`shapes.lg`, `surfaceContainerLow`, elevation 0, tier margin from
   `spacing`), `InputDecorationTheme` (filled, `shapes.xs`, tier `isDense` from `density`),
@@ -245,8 +267,8 @@ to one sub-theme propagates to every screen with zero screen files edited.
 **Goal**: retire the 5 hardcoded typefaces and 3 hardcoded sizes; narrow the monospace
 contract to match actual usage.
 
-**Independent Test**: zero hardcoded typefaces/sizes remain outside the token definitions;
-a product code in a table stays on the body role.
+**Independent Test**: zero hardcoded typefaces/sizes/colors remain outside the token
+definitions; a product code in a table stays on the body role.
 
 **Depends on**: Phase 3 (`TypeRoles` must exist).
 
@@ -269,37 +291,47 @@ a product code in a table stays on the body role.
   contract table, narrow "Codes / SKUs / monospaced data" to "Record identifiers /
   timestamps", per `FR-028` (clarified 2026-08-08) — a documentation correction to match
   behaviour that was never actually built.
-- [ ] T044 [P] [US5] Extend `test/unit/core/design/type_roles_test.dart` (from T017):
+- [ ] T044 [P] [US5] Extend `test/unit/core/design/type_roles_test.dart` (created in T017):
   assert `theme.typeRoles.productCode` uses the standard body role (not RobotoMono), and
   `.recordId`/`.timestamp` do use RobotoMono (`FR-028`).
 - [ ] T045 [US5] Run the `SC-001` check from `quickstart.md` Scenario 5
   (`grep -rn "fontFamily:\s*'" lib | grep -v generated | grep -v core/design`, and the
   equivalent for `fontSize:`) and confirm zero results.
+- [ ] T046 [P] [US5] Run the `SC-002` check from `quickstart.md` Scenario 5: grep the repo
+  for hardcoded `Color(0x` / `Colors\.` literals outside `lib/core/branding/` (the token
+  source) and the documented legitimate exceptions (`Colors.transparent` as an
+  absent-color sentinel, `Colors.black54` matching Flutter's own barrier default,
+  `ColorFilter.mode(Colors.white, …)` for asset tinting — see the original theme audit for
+  the exact site list). Confirm zero unexplained occurrences (`SC-002`).
 
-**Checkpoint**: US5 ships. `SC-001` holds repo-wide.
+**Checkpoint**: US5 ships. `SC-001` and `SC-002` hold repo-wide.
 
 ---
 
 ## Phase 7: User Story 6 - Ready for tablets and phones without a token redesign (Priority: P3)
 
 **Goal**: every width-dependent value has a decided value at all four tiers; tablet/desktop
-controls visibly adapt at the tier boundary.
+controls visibly adapt at the tier boundary — provably, not just by inspection.
 
 **Independent Test**: inspect every tier table for gaps; resize across 840px and observe
-metric changes.
+metric changes and an actual rendered control's measured padding change.
 
-**Depends on**: Phase 3 (the tier tables to audit) and, for the visible-adaptation check,
-Phase 5 (a themed control to observe).
+**Depends on**: Phase 3 (the tier tables to audit) and, for the rendered-control check,
+Phase 5 (a themed control to measure).
 
-- [ ] T046 [US6] Audit `lib/core/design/spacing.dart` and `density.dart` against
+- [ ] T047 [US6] Audit `lib/core/design/spacing.dart` and `density.dart` against
   `data-model.md` §1/§4: confirm every tier-dependent field has a defined value for
   compact, medium, expanded, **and** large — no accidental gap (`FR-012`, `SC-005`). Fix
   any gap found.
-- [ ] T047 [US6] Extend `test/widget/core/design/tier_resolution_test.dart` (T019) with
-  assertions that `screenMargin`, `cardPadding`, `sectionGap`, and `paneGutter` change
-  value crossing the 840px expanded boundary (`FR-013`), and that compact-tier values
-  resolve even though no compact-tier layout consumes them yet (`FR-014`).
-- [ ] T048 [US6] Manual verification, quickstart Scenario 6: resize the desktop app window
+- [ ] T048 [US6] Extend `test/widget/core/design/tier_resolution_test.dart` (T019) with (a)
+  assertions that `screenMargin`, `cardPadding`, `sectionGap`, and `paneGutter` change value
+  crossing the 840px expanded boundary (`FR-013`), and that compact-tier values resolve
+  even though no compact-tier layout consumes them yet (`FR-014`); **and (b) a rendered
+  check**: pump one Phase 5 themed control (e.g. a `Card` using the new `CardThemeData`) at
+  700px (medium/tablet) and 900px (expanded/desktop), and assert its measured `RenderBox`
+  padding differs between the two per `data-model.md`'s table — moving `FR-013`'s "visibly
+  adapt" claim from a manual-only check to an automated one for at least one control.
+- [ ] T049 [US6] Manual verification, quickstart Scenario 6: resize the desktop app window
   across 840px and confirm the Phase 5 shared widgets visibly step their spacing and
   density at the boundary.
 
@@ -311,21 +343,28 @@ Phase 5 (a themed control to observe).
 
 **Purpose**: the deployment-facing gate and closing verification, spanning every story.
 
-- [ ] T049 [P] Run `flutter analyze lib test` and fix any lints introduced by this feature.
-- [ ] T050 Create `test/contract/brand_contrast_test.dart`: build the real `AppTheme` from
+- [ ] T050 [P] Run `flutter analyze lib test` and fix any lints introduced by this feature.
+- [ ] T051 Create `test/contract/brand_contrast_test.dart`: build the real `AppTheme` from
   `BrandConfig.fromEnvironment()` (so it honors whatever `--dart-define` values the caller
   passed) and assert every foreground role clears 4.5:1 in both brightnesses (`FR-027`).
-  Document, in the file's header comment, that a deployment pipeline MUST run this with the
-  **same** `--dart-define` values as the following `flutter build`, and MUST treat a
-  non-zero exit as a failed deployment (`SC-011`) — see quickstart.md Scenario 7 and
-  research R6 for why this cannot be a build-time hook instead.
-- [ ] T051 [P] Update `DESIGN-SYSTEM.md`, marking §3 (type roles), §4 (spacing), §5 (shape),
+  **Also add two deliberately-failing negative cases, per `SC-011`'s literal wording** ("at
+  least one deliberately-failing colour, for the default brand's mechanism and for an
+  overridden deployment colour alike"): (a) build `AppTheme` with the default palette but a
+  seed color chosen to fail contrast as a foreground, and assert the test fails/flags it;
+  (b) build `AppTheme` with `usesDefaultPalette: false` and an overridden seed color chosen
+  to fail contrast, and assert the same. Both (a) and (b) prove the gate actually catches a
+  bad color, not only that today's color happens to pass. Document, in the file's header
+  comment, that a deployment pipeline MUST run this with the **same** `--dart-define`
+  values as the following `flutter build`, and MUST treat a non-zero exit as a failed
+  deployment — see quickstart.md Scenario 7 and research R6 for why this cannot be a
+  build-time hook instead.
+- [ ] T052 [P] Update `DESIGN-SYSTEM.md`, marking §3 (type roles), §4 (spacing), §5 (shape),
   §6 (elevation), §7 (density), and §8 (sub-themes) as shipped, linking to this spec.
-- [ ] T052 Run every scenario in `quickstart.md` end-to-end and record the result of each
+- [ ] T053 Run every scenario in `quickstart.md` end-to-end and record the result of each
   against its listed success criteria.
 
 **Checkpoint**: feature complete. All 28 functional requirements and 11 success criteria
-verified.
+verified — with computed, not inferred, evidence for FR-022/SC-003 and SC-011.
 
 ---
 
@@ -343,9 +382,8 @@ verified.
 - **US4 (Phase 5)**: depends on **US3's checkpoint being green** (hard gate — a sub-theme
   change is otherwise unverifiable) and on **US2** (sub-themes consume the tokens).
 - **US5 (Phase 6)**: depends on **US2** (`TypeRoles` must exist). Independent of US3/US4.
-- **US6 (Phase 7)**: depends on **US2** for its audit, and on **US4** for the
-  visible-adaptation manual check (T048) only — its token-completeness tasks (T046–T047)
-  need only US2.
+- **US6 (Phase 7)**: depends on **US2** for its audit tasks (T047–T048a), and on **US4** for
+  the rendered-control check (T048b) and the manual check (T049) only.
 - **Polish (Phase 8)**: depends on all stories being complete.
 
 ### Parallel Opportunities
@@ -354,30 +392,34 @@ verified.
   once T003 lands.
 - T008–T011 (US2's four independent token files) run in parallel; T012 (`TypeRoles`) and
   T013 (`DesignTheme`) are sequential after them.
-- T017 (US2's four unit test files) run in parallel.
+- T017 (US2's five unit test files) run in parallel.
 - **US3 (Phase 4) can run in parallel with US2 (Phase 3)** — it tests today's widgets, not
   the new tokens. Staffing both at once shortens the path to Phase 5's start.
 - Within Phase 5, T030–T034 (sub-theme additions) are five edits to the same
   `_buildTheme` method and are **not** parallelizable; T036 (a new test file) can run
   alongside them.
-- T049/T051 (Phase 8) are independent of each other and of T050/T052.
+- T045/T046 (Phase 6, two independent grep checks) run in parallel.
+- T050/T052 (Phase 8) are independent of each other and of T051/T053.
 
 ---
 
 ## Parallel Example: User Story 2
 
 ```bash
-# Four independent token files, no shared state:
+# Five independent token files, no shared state:
 Task: "Create Spacing ThemeExtension in lib/core/design/spacing.dart"
 Task: "Create Shapes ThemeExtension in lib/core/design/shapes.dart"
 Task: "Create Elevations ThemeExtension in lib/core/design/elevations.dart"
 Task: "Create Density ThemeExtension in lib/core/design/density.dart"
+# (TypeRoles is sequenced after these four — it's the one T012 depends on nothing else for,
+# but design_theme.dart in turn depends on all five, so it isn't part of this parallel batch)
 
-# Their four unit-test files, equally independent:
+# Their five unit-test files, equally independent:
 Task: "Spacing invariants in test/unit/core/design/spacing_test.dart"
 Task: "Shapes invariants in test/unit/core/design/shapes_test.dart"
 Task: "Elevations invariants in test/unit/core/design/elevations_test.dart"
 Task: "Density invariants in test/unit/core/design/density_test.dart"
+Task: "Type role invariants in test/unit/core/design/type_roles_test.dart"
 ```
 
 ---
@@ -424,3 +466,24 @@ with a large team.
   `lightSurfaceContainerLow` value (T004) and the off-grid 14px brand-guide gap (`FR-026`,
   already in spec.md). Both need the brand owner's sign-off before they are treated as
   final, not just correct-by-construction.
+
+## Revision History
+
+**2026-08-08 — `/speckit-analyze` remediation.** The prior revision's cross-artifact
+analysis found 10 issues (0 CRITICAL, 3 HIGH, 5 MEDIUM, 2 LOW); all 10 are resolved here:
+
+| Finding | Fix applied |
+|---|---|
+| E1 (HIGH) — FR-022/SC-003 had no computed contrast test, only a color-equality check | T006 now computes contrast via the existing `_contrastRatio` helper for every `TextTheme` role |
+| E2 (HIGH) — SC-011's required negative test case (deliberately-failing colour) was missing | T051 now includes both required negative cases (default palette, overridden palette) |
+| F1 (HIGH) — T044 extended `type_roles_test.dart`, but no task created it | T017 now creates it, with the full 21-slot tier assertion |
+| E3 (MEDIUM) — SC-002 (no hardcoded colors) had zero verification anywhere | New T046 |
+| E4 (MEDIUM) — only 3 of 21 `TypeRoles` slots were verified | T017 now asserts all 21 |
+| E5 (MEDIUM) — FR-023's enumerated widget list wouldn't flag a future unlisted widget | T023 now includes a directory-scan assertion |
+| D1 (MEDIUM) — plan.md misattributed DESIGN.md prose to the constitution | Fixed in plan.md (see its own revision note) |
+| F2 (MEDIUM) — "17 sub-themes" didn't match the actual 20-class enumeration | Fixed in plan.md and contracts/design-tokens.md |
+| E6 (LOW) — FR-013's "visibly adapt" claim was manual-only | T048 now includes an automated rendered-control measurement |
+| F3 (LOW) — T012 said "20 slots," table has 21 | Fixed |
+
+Net task count: 52 → **53** (T046 added; all other IDs preserved, only Phase 6's tail and
+Phases 7–8 shifted by one position to make room).
