@@ -153,6 +153,9 @@ Map<String, Object?> _optionJson({
   'payment_method': paymentMethod,
   'commission': commission,
   'status': status,
+  // Required (non-nullable) on the response since mbe-api#137 shipped —
+  // omitting it fails deserialization outright, not just this field.
+  'requires_reference': false,
 };
 
 const _unset = Object();

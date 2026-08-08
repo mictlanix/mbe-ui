@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
@@ -77,6 +78,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
     bool? shippingRequiredDocument,
     int? salesperson,
     String? comment,
+    List<int>? addresses,
+    List<int>? contacts,
+    List<String>? taxpayers,
   }) async {
     try {
       final response = await _api.createCustomerApiV1CustomersPost(
@@ -92,6 +96,11 @@ class CustomerRepositoryImpl implements CustomerRepository {
             ..salesperson = salesperson
             ..comment = comment;
           if (creditLimit != null) _setCreditLimit(b.creditLimit, creditLimit);
+          if (addresses != null) b.addresses = ListBuilder<int>(addresses);
+          if (contacts != null) b.contacts = ListBuilder<int>(contacts);
+          if (taxpayers != null) {
+            b.taxpayers = ListBuilder<String>(taxpayers);
+          }
         }),
       );
       final customer = response.data;
@@ -116,6 +125,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
     int? salesperson,
     EntityStatus? status,
     String? comment,
+    List<int>? addresses,
+    List<int>? contacts,
+    List<String>? taxpayers,
   }) async {
     try {
       final response = await _api.updateCustomerApiV1CustomersCustomerIdPut(
@@ -135,6 +147,14 @@ class CustomerRepositoryImpl implements CustomerRepository {
           if (comment != null) b.comment = comment;
           if (creditLimit != null) {
             _setCreditLimit1(b.creditLimit, creditLimit);
+          }
+          // Replace-all: an omitted list leaves the customer's existing links
+          // alone, an empty one unlinks everything (contracts/mbe-api-pos.md
+          // §4).
+          if (addresses != null) b.addresses = ListBuilder<int>(addresses);
+          if (contacts != null) b.contacts = ListBuilder<int>(contacts);
+          if (taxpayers != null) {
+            b.taxpayers = ListBuilder<String>(taxpayers);
           }
         }),
       );

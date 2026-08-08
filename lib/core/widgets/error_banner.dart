@@ -51,6 +51,7 @@ class ErrorBanner extends StatelessWidget {
                   Icons.close,
                   color: theme.colorScheme.onErrorContainer,
                 ),
+                tooltip: AppLocalizations.of(context)?.dismissErrorTooltip,
                 onPressed: onDismiss,
               ),
           ],
@@ -61,7 +62,7 @@ class ErrorBanner extends StatelessWidget {
 
   List<String> _messagesFor(BuildContext context, AppError error) {
     final l10n = AppLocalizations.of(context)!;
-    return switch (error) {
+    final generic = switch (error) {
       ValidationError(errors: final errors) when errors.isNotEmpty =>
         errors.map((e) => e.msg).toList(),
       ValidationError() => [l10n.errorValidationGeneric],
@@ -70,5 +71,25 @@ class ErrorBanner extends StatelessWidget {
       ServerError() => [l10n.errorServerGeneric],
       NetworkError() => [l10n.errorNetworkGeneric],
     };
+
+    // The server's own detail, when it sent one, below the localized
+    // headline — this is what `AppErrorServerMessage.serverMessage` exists
+    // for. Without it a refusal that names *which* line is at fault (a
+    // sales-order confirmation naming its zero-priced or out-of-stock
+    // products, a destination over-claim naming the line and shortfall) was
+    // rendered as an unactionable "something went wrong" (FR-037, FR-039).
+    //
+    // Only for the variants whose message mbe-api actually authored (its
+    // `detail` string). `AuthError` is excluded because FR-008 requires that
+    // a failed sign-in never reveal which credential was wrong, and
+    // `NetworkError` because its message is the raw `DioException` text,
+    // which SC-008 forbids putting in front of a user.
+    final detail = switch (error) {
+      ServerError(message: final m) => m,
+      NotFoundError(message: final m) => m,
+      AuthError() || NetworkError() || ValidationError() => null,
+    };
+    if (detail == null || detail.isEmpty) return generic;
+    return [...generic, detail];
   }
 }

@@ -27,6 +27,7 @@ part 'customer_create.g.dart';
 /// * [comment]
 /// * [addresses]
 /// * [contacts]
+/// * [taxpayers]
 @BuiltValue()
 abstract class CustomerCreate
     implements Built<CustomerCreate, CustomerCreateBuilder> {
@@ -69,6 +70,9 @@ abstract class CustomerCreate
 
   @BuiltValueField(wireName: r'contacts')
   BuiltList<int>? get contacts;
+
+  @BuiltValueField(wireName: r'taxpayers')
+  BuiltList<String>? get taxpayers;
 
   CustomerCreate._();
 
@@ -183,6 +187,13 @@ class _$CustomerCreateSerializer
       yield serializers.serialize(
         object.contacts,
         specifiedType: const FullType.nullable(BuiltList, [FullType(int)]),
+      );
+    }
+    if (object.taxpayers != null) {
+      yield r'taxpayers';
+      yield serializers.serialize(
+        object.taxpayers,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(String)]),
       );
     }
   }
@@ -331,6 +342,18 @@ class _$CustomerCreateSerializer
                   as BuiltList<int>?;
           if (valueDes == null) continue;
           result.contacts.replace(valueDes);
+          break;
+        case r'taxpayers':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(String),
+                    ]),
+                  )
+                  as BuiltList<String>?;
+          if (valueDes == null) continue;
+          result.taxpayers.replace(valueDes);
           break;
         default:
           unhandled.add(key);

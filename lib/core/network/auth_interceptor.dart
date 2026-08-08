@@ -65,10 +65,22 @@ AppError mapDioException(DioException error) {
 
 /// Extracts FastAPI's `{"detail": "<message>"}` string shape (used for
 /// `HTTPException`, as opposed to `422`'s list-of-`ValidationError` shape).
+///
+/// Some mbe-api conflicts raise a *structured* detail instead — the
+/// sales-order confirm endpoint answers a 409 with
+/// `{"detail": {"message": "Insufficient stock", "lines": [...]}}`, verified
+/// against a live backend. Returning `null` for those dropped the only
+/// explanation the server gave, so the headline is surfaced here. Callers
+/// that need the rest of the structure (the POS capture step wants the
+/// per-line reasons, FR-039) read `response.data` themselves.
 String? _detailFrom(Object? data) {
   if (data is! Map) return null;
   final detail = data['detail'];
-  return detail is String ? detail : null;
+  if (detail is String) return detail;
+  if (detail is Map && detail['message'] is String) {
+    return detail['message'] as String;
+  }
+  return null;
 }
 
 List<FieldError> _fieldErrorsFrom(Object? data) {

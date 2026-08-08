@@ -158,6 +158,9 @@ Map<String, Object?> _optionJson() => {
   'payment_method': 1,
   'commission': '0.05',
   'status': 0,
+  // Required (non-nullable) on the response since mbe-api#137 shipped —
+  // omitting it fails deserialization outright, not just this field.
+  'requires_reference': false,
 };
 
 Map<String, Object?> _decodeBody(Object? data) => data is String

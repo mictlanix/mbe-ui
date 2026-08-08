@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/product_lookup_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
+/// The one field that accepts both a scanned barcode and a code/name/brand/
+/// SKU search (FR-020, FR-021). Owns its own `TextEditingController`/
+/// `FocusNode` — independent of `Sale` rebuilds, so an in-flight mutation
+/// elsewhere never drops keystrokes or steals focus (FR-010).
+///
+/// Store scanners are keyboard-wedge devices: they type the code and send
+/// Enter (research.md §7) — the field searches on submit, not per keystroke.
+/// A search matching exactly one product calls [onProductSelected] directly;
+/// several matches render a results list below the field.
+class ProductSearchField extends ConsumerStatefulWidget {
+  const ProductSearchField({
+    super.key,
+    required this.onProductSelected,
+    this.warehouse,
+    this.enabled = true,
+  });
+
+  final ValueChanged<ProductLookupResult> onProductSelected;
+  final int? warehouse;
+  final bool enabled;
+
+  @override
+  ConsumerState<ProductSearchField> createState() => _ProductSearchFieldState();
+}
+
+class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+  List<ProductLookupResult> _results = const [];
+  bool _searching = false;
+  bool _searchedEmpty = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _search() async {
+    final pattern = _controller.text.trim();
+    if (pattern.isEmpty) return;
+    setState(() {
+      _searching = true;
+      _searchedEmpty = false;
+    });
+    final results = await ref.read(
+      productLookupControllerProvider(pattern, warehouse: widget.warehouse).future,
+    );
+    if (!mounted) return;
+    if (results.length == 1) {
+      _select(results.first);
+      return;
+    }
+    setState(() {
+      _searching = false;
+      _results = results;
+      _searchedEmpty = results.isEmpty;
+    });
+  }
+
+  void _select(ProductLookupResult result) {
+    widget.onProductSelected(result);
+    _controller.clear();
+    setState(() {
+      _results = const [];
+      _searching = false;
+      _searchedEmpty = false;
+    });
+    _focusNode.requestFocus();
+  }
+
+  void _clearResults() {
+    setState(() {
+      _results = const [];
+      _searchedEmpty = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Focus(
+          onKeyEvent: (node, event) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.escape &&
+                _results.isNotEmpty) {
+              _clearResults();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: TextField(
+            controller: _controller,
+            focusNode: _focusNode,
+            enabled: widget.enabled,
+            decoration: InputDecoration(
+              labelText: l10n.posProductSearchLabel,
+              prefixIcon: const Icon(Icons.qr_code_scanner),
+              suffixIcon: _searching
+                  ? const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : null,
+            ),
+            textInputAction: TextInputAction.search,
+            onSubmitted: (_) => _search(),
+          ),
+        ),
+        if (_searchedEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(l10n.posProductSearchNoResults),
+          ),
+        if (_results.isNotEmpty)
+          Card(
+            margin: const EdgeInsets.only(top: 4),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 280),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _results.length,
+                itemBuilder: (context, index) {
+                  final result = _results[index];
+                  return ListTile(
+                    title: Text('${result.code} — ${result.name}'),
+                    subtitle: Text(result.brand ?? ''),
+                    trailing: Text(result.price),
+                    onTap: () => _select(result),
+                  );
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}

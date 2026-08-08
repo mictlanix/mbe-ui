@@ -2321,6 +2321,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cashSessionsMenuTitle => 'Cash Sessions';
 
   @override
+  String get posMenuTitle => 'Point of Sale';
+
+  @override
   String get cashSessionStatusOpen => 'Open';
 
   @override
@@ -2488,4 +2491,371 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cashSessionOtherSessionsWarningMessage =>
       'You may have other open sessions that need attention. Check the history below.';
+
+  @override
+  String get posGateNoSessionTitle => 'No cash session is open';
+
+  @override
+  String get posGateNoSessionBody =>
+      'You must open a cash session before starting a sale.';
+
+  @override
+  String get posGateOpenSessionAction => 'Go to cash sessions';
+
+  @override
+  String get posStaleSessionBanner => 'The cash session is stale.';
+
+  @override
+  String get posStepVenta => 'Sale';
+
+  @override
+  String get posStepCobro => 'Payment';
+
+  @override
+  String get posStepEntrega => 'Delivery';
+
+  @override
+  String get posSaleCompletedTitle => 'Sale completed';
+
+  @override
+  String posSaleReference(String reference) {
+    return 'Reference #$reference';
+  }
+
+  @override
+  String get posNewSaleAction => 'New sale';
+
+  @override
+  String get posCustomerLabel => 'Customer';
+
+  @override
+  String get posPaymentTermsImmediate => 'Cash';
+
+  @override
+  String get posPaymentTermsCredit => 'Credit';
+
+  @override
+  String get posFulfillmentCounter => 'In store';
+
+  @override
+  String get posFulfillmentDelivery => 'Delivery';
+
+  @override
+  String get posFulfillmentMixed => 'Mixed';
+
+  @override
+  String get posProductSearchLabel => 'Search or scan a product';
+
+  @override
+  String get posProductSearchNoResults => 'No results';
+
+  @override
+  String get posRemoveLineTooltip => 'Remove line';
+
+  @override
+  String get posLineQuantityLabel => 'Qty.';
+
+  @override
+  String get posLinePriceLabel => 'Price';
+
+  @override
+  String get posLineDiscountLabel => 'Disc. %';
+
+  @override
+  String get posLineTaxLabel => 'Tax %';
+
+  @override
+  String get posLineWarehouseLabel => 'Warehouse';
+
+  @override
+  String get posLineNoStock => 'No stock in this warehouse';
+
+  @override
+  String posLineShortfall(String available) {
+    return 'Only $available available';
+  }
+
+  @override
+  String get posLineAdjustToAvailable => 'Adjust to available';
+
+  @override
+  String posTotalsCounts(int lines, String units) {
+    return '$lines lines · $units units';
+  }
+
+  @override
+  String posTotalsSubtotal(String amount) {
+    return 'Subtotal: $amount';
+  }
+
+  @override
+  String posTotalsDiscount(String amount) {
+    return 'Discount: $amount';
+  }
+
+  @override
+  String posTotalsTax(String amount) {
+    return 'Tax: $amount';
+  }
+
+  @override
+  String posTotalsTotal(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get posSaleReadOnlyBanner =>
+      'The sale is already confirmed; its details are read-only.';
+
+  @override
+  String get posNoLinesHint => 'No lines — search or scan a product';
+
+  @override
+  String get posContinueToPayment => 'Continue to payment';
+
+  @override
+  String get posAmountLabel => 'Amount';
+
+  @override
+  String get posQuickAmountRemaining => 'Remaining';
+
+  @override
+  String get posQuickAmountHalf => 'Half';
+
+  @override
+  String get posPaymentTotal => 'Total';
+
+  @override
+  String get posPaymentPaid => 'Paid';
+
+  @override
+  String get posPaymentBalance => 'Balance';
+
+  @override
+  String get posPaymentReferenceLabel => 'Reference';
+
+  @override
+  String posPaymentChange(String amount) {
+    return 'Change: $amount';
+  }
+
+  @override
+  String get posApplyPayment => 'Apply payment';
+
+  @override
+  String get posContinue => 'Continue';
+
+  @override
+  String get posAppliedPaymentsTitle => 'Applied payments';
+
+  @override
+  String get posNoAppliedPayments => 'No payments applied';
+
+  @override
+  String get posAppliedPaymentsLoadError =>
+      'Applied payments could not be loaded';
+
+  @override
+  String posPaymentReferenceValue(String reference) {
+    return 'Ref. $reference';
+  }
+
+  @override
+  String get posPaymentPendingValidation => 'Pending validation';
+
+  @override
+  String get posPaymentCancelled => 'Cancelled';
+
+  @override
+  String get posReverseAction => 'Reverse';
+
+  @override
+  String get posReversePaymentTitle => 'Reverse payment';
+
+  @override
+  String get posReversalReasonLabel => 'Reason';
+
+  @override
+  String get posCustomerNameLabel => 'Customer';
+
+  @override
+  String get posCustomerCreditLabel => 'Credit line';
+
+  @override
+  String get posCustomerNoCredit => 'No credit line';
+
+  @override
+  String get posCustomerPriceListLabel => 'Price list';
+
+  @override
+  String get newContactDialogTitle => 'New contact';
+
+  @override
+  String get contactNameLabel => 'Name';
+
+  @override
+  String get contactMobileLabel => 'Mobile';
+
+  @override
+  String get contactPhoneLabel => 'Phone';
+
+  @override
+  String get contactJobTitleLabel => 'Job title';
+
+  @override
+  String get contactEmailLabel => 'Email';
+
+  @override
+  String get contactMethodRequired => 'Enter a mobile or a phone number.';
+
+  @override
+  String get posDeliveryAddressTitle => 'Delivery address';
+
+  @override
+  String get posDeliveryContactTitle => 'Contact';
+
+  @override
+  String get posNoAddressesOnFile => 'This customer has no addresses on file.';
+
+  @override
+  String get posNoContactsOnFile => 'This customer has no contacts on file.';
+
+  @override
+  String get posNewAddressAction => 'New address';
+
+  @override
+  String get posNewContactAction => 'New contact';
+
+  @override
+  String get posDeliveryNotPermitted =>
+      'This customer is not set up to receive deliveries.';
+
+  @override
+  String get posCounterPickupRemainder => 'Collected at the counter';
+
+  @override
+  String get posDeliveryAddressPending => 'Address pending';
+
+  @override
+  String posDestinationCounts(int lines, String units) {
+    return '$lines lines · $units units';
+  }
+
+  @override
+  String get posRemoveDestination => 'Remove destination';
+
+  @override
+  String get posRemoveDestinationReason =>
+      'Removed by the cashier during capture';
+
+  @override
+  String get posDistributionTitle => 'Distribution';
+
+  @override
+  String posDistributionOrdered(String quantity) {
+    return 'Ordered: $quantity';
+  }
+
+  @override
+  String posDistributionAssigned(String quantity) {
+    return 'Assigned: $quantity';
+  }
+
+  @override
+  String posDistributionAtCounter(String quantity) {
+    return 'At counter: $quantity';
+  }
+
+  @override
+  String posDistributionClaimable(String quantity) {
+    return 'Available: $quantity';
+  }
+
+  @override
+  String get posDistributionOverClaimed => 'More than is left';
+
+  @override
+  String get posDistributionClaimAll => 'Take everything left';
+
+  @override
+  String get posDeliveryDateLabel => 'Delivery date';
+
+  @override
+  String get posDeliveryInstructions => 'Delivery instructions';
+
+  @override
+  String get posDestinationQuantitiesTitle => 'Quantities for this destination';
+
+  @override
+  String get posAddDestination => 'Add destination';
+
+  @override
+  String get posNoDestinationsYet => 'No destinations yet — add the first one.';
+
+  @override
+  String posDeliveryOutstanding(String lines) {
+    return 'Still unassigned: $lines';
+  }
+
+  @override
+  String get posFinishSale => 'Finish sale';
+
+  @override
+  String get posCustomerBalanceLabel => 'Balance';
+
+  @override
+  String get posNoOpenSales => 'No other open sales';
+
+  @override
+  String posOpenSalesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count open',
+      one: '1 open',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get posOpenSaleDraft => 'In progress';
+
+  @override
+  String get posOpenSaleUnpaid => 'Awaiting payment';
+
+  @override
+  String get posOpenSaleUndelivered => 'Awaiting delivery';
+
+  @override
+  String get posCreateCustomerAction => 'Create customer';
+
+  @override
+  String posStepProgress(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get posLineDecreaseQuantity => 'Decrease quantity';
+
+  @override
+  String get posLineIncreaseQuantity => 'Increase quantity';
+
+  @override
+  String get numberPadBackspace => 'Backspace';
+
+  @override
+  String get dismissErrorTooltip => 'Dismiss';
+
+  @override
+  String posOpenSaleId(int id) {
+    return 'Id $id';
+  }
+
+  @override
+  String posOpenSaleSerial(int serial) {
+    return 'Serial $serial';
+  }
+
+  @override
+  String get taxpayerRecipientFieldLabel => 'Tax recipient (RFC)';
 }

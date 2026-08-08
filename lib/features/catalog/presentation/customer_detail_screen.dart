@@ -12,6 +12,8 @@ import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_form_controller.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
@@ -65,6 +67,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final employeeRepo = ref.read(employeeRepositoryProvider);
+    final taxpayerRepo = ref.read(taxpayerRecipientRepositoryProvider);
 
     final title = readOnly
         ? l10n.viewCustomerTitle
@@ -108,7 +111,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                   error: AppError.validation([
                     FieldError(
                       loc: const [],
-                      msg: _localizeFormError(l10n, formState.error!),
+                      msg: localizeCustomerFormError(l10n, formState.error!),
                       type: 'error',
                     ),
                     if (formState.errorDetail != null)
@@ -126,7 +129,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.code,
                 decoration: InputDecoration(
                   labelText: l10n.codeLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['code'],
                   ),
@@ -141,7 +144,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.name,
                 decoration: InputDecoration(
                   labelText: l10n.nameLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['name'],
                   ),
@@ -164,7 +167,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 onSelected: (p) =>
                     controller.priceListSelected(p.priceListId, p.name),
                 initialDisplayText: formState.priceListDisplayText,
-                errorText: _localizeFieldError(
+                errorText: localizeCustomerFieldError(
                   l10n,
                   formState.fieldErrors['priceList'],
                 ),
@@ -191,6 +194,24 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
               ),
             ),
             FormGridChild(
+              CatalogEntityPicker<TaxpayerRecipientListItem>(
+                key: const Key('taxpayer_field'),
+                label: l10n.taxpayerRecipientFieldLabel,
+                displayStringForOption: (t) =>
+                    '${t.taxpayerRecipientId} — ${t.name}',
+                optionsBuilder: (query) async {
+                  final result = await taxpayerRepo.list(
+                    search: query.isEmpty ? null : query,
+                  );
+                  return result.items;
+                },
+                onSelected: (t) =>
+                    controller.taxpayerSelected(t.taxpayerRecipientId, t.name),
+                initialDisplayText: formState.taxpayerDisplayText,
+                enabled: fieldsEnabled,
+              ),
+            ),
+            FormGridChild(
               TextFormField(
                 key: const Key('zone_field'),
                 initialValue: formState.zone,
@@ -205,7 +226,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.creditLimit,
                 decoration: InputDecoration(
                   labelText: l10n.creditLimitLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['creditLimit'] ??
                         formState.fieldErrors['credit_limit'],
@@ -224,7 +245,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
                 initialValue: formState.creditDays,
                 decoration: InputDecoration(
                   labelText: l10n.creditDaysLabel,
-                  errorText: _localizeFieldError(
+                  errorText: localizeCustomerFieldError(
                     l10n,
                     formState.fieldErrors['creditDays'] ??
                         formState.fieldErrors['credit_days'],
@@ -317,7 +338,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
   }
 }
 
-String _localizeFormError(AppLocalizations l10n, String code) {
+String localizeCustomerFormError(AppLocalizations l10n, String code) {
   switch (code) {
     case CustomerFormErrorCode.loadFailed:
       return l10n.customerLoadFailedError;
@@ -338,7 +359,7 @@ String _localizeFormError(AppLocalizations l10n, String code) {
   }
 }
 
-String? _localizeFieldError(AppLocalizations l10n, String? code) {
+String? localizeCustomerFieldError(AppLocalizations l10n, String? code) {
   if (code == null) return null;
   switch (code) {
     case CustomerFormErrorCode.codeRequired:

@@ -41,6 +41,9 @@ class NavBranch {
   // gain (NavBranch order is already not display order; see `pricing`
   // above, under Sales, versus `facilities`, under Catalogs).
   static const int cashSessions = 17;
+
+  // 020-point-of-sale: appended last, same rationale as `cashSessions` above.
+  static const int pos = 18;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -235,6 +238,15 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.cashSessions,
         gate: (object: SystemObject.pos, right: AccessRight.read),
       ),
+      NavDestination(
+        id: 'pos',
+        label: _posLabel,
+        icon: Icons.shopping_cart_outlined,
+        selectedIcon: Icons.shopping_cart,
+        route: '/sales/pos',
+        branchIndex: NavBranch.pos,
+        gate: (object: SystemObject.pos, right: AccessRight.read),
+      ),
     ],
   ),
 ];
@@ -265,6 +277,7 @@ String _paymentMethodOptionsLabel(AppLocalizations l10n) =>
 String _taxpayerIssuersLabel(AppLocalizations l10n) =>
     l10n.taxpayerIssuersMenuTitle;
 String _cashSessionsLabel(AppLocalizations l10n) => l10n.cashSessionsMenuTitle;
+String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a
