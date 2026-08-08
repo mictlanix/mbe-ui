@@ -5248,6 +5248,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Balance'**
   String get posCustomerBalanceLabel;
+
+  /// No description provided for @posNoOpenSales.
+  ///
+  /// In en, this message translates to:
+  /// **'No other open sales'**
+  String get posNoOpenSales;
+
+  /// No description provided for @posOpenSalesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 open} other{{count} open}}'**
+  String posOpenSalesCount(int count);
+
+  /// No description provided for @posOpenSaleDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get posOpenSaleDraft;
+
+  /// No description provided for @posOpenSaleUnpaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting payment'**
+  String get posOpenSaleUnpaid;
+
+  /// No description provided for @posOpenSaleUndelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting delivery'**
+  String get posOpenSaleUndelivered;
 }
 
 class _AppLocalizationsDelegate

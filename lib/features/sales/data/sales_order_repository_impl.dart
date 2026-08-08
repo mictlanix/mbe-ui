@@ -219,14 +219,14 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
   @override
   Future<OpenSalePage> listOpen({
     required int pointSale,
-    required String status,
+    required SaleStatus status,
     int skip = 0,
     int limit = 100,
   }) async {
     try {
       final response = await _api.listSalesOrdersApiV1SalesOrdersGet(
         pointSale: pointSale,
-        status: status,
+        status: status.wireName,
         skip: skip,
         limit: limit,
       );

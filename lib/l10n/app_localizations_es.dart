@@ -2846,4 +2846,27 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posCustomerBalanceLabel => 'Saldo';
+
+  @override
+  String get posNoOpenSales => 'Sin otras ventas abiertas';
+
+  @override
+  String posOpenSalesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count abiertas',
+      one: '1 abierta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get posOpenSaleDraft => 'En captura';
+
+  @override
+  String get posOpenSaleUnpaid => 'Por cobrar';
+
+  @override
+  String get posOpenSaleUndelivered => 'Por entregar';
 }

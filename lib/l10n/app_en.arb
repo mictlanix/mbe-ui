@@ -2025,5 +2025,15 @@
   "posFinishSale": "Finish sale",
   "@posFinishSale": {},
   "posCustomerBalanceLabel": "Balance",
-  "@posCustomerBalanceLabel": {}
+  "@posCustomerBalanceLabel": {},
+  "posNoOpenSales": "No other open sales",
+  "@posNoOpenSales": {},
+  "posOpenSalesCount": "{count, plural, =1{1 open} other{{count} open}}",
+  "@posOpenSalesCount": {"placeholders": {"count": {"type": "int"}}},
+  "posOpenSaleDraft": "In progress",
+  "@posOpenSaleDraft": {},
+  "posOpenSaleUnpaid": "Awaiting payment",
+  "@posOpenSaleUnpaid": {},
+  "posOpenSaleUndelivered": "Awaiting delivery",
+  "@posOpenSaleUndelivered": {}
 }

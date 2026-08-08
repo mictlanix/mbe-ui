@@ -84,6 +84,10 @@ enum SaleStatus {
   paid,
   cancelled;
 
+  /// The string mbe-api filters on (`?status=`) — the same four names the
+  /// `DocumentStatus` schema enumerates.
+  String get wireName => name;
+
   static SaleStatus fromApi(api.DocumentStatus value) => switch (value) {
     api.DocumentStatus.draft => SaleStatus.draft,
     api.DocumentStatus.completed => SaleStatus.completed,

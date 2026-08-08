@@ -80,7 +80,7 @@ abstract class SalesOrderRepository {
   /// (resolved, research.md §5 — was `facility` + `mine=true`).
   Future<OpenSalePage> listOpen({
     required int pointSale,
-    required String status,
+    required SaleStatus status,
     int skip = 0,
     int limit = 100,
   });

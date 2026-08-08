@@ -4,13 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
+import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_header_band.dart';
+import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
@@ -78,23 +82,62 @@ class _PosBodyState extends ConsumerState<_PosBody> {
     });
   }
 
+  /// US3 scenario 6 / Edge Cases: a sale left with nothing on it is
+  /// cancelled rather than abandoned, so the register's selector does not
+  /// accumulate empty drafts. A sale that has lines is left open — that is
+  /// exactly what the selector is for.
+  Future<void> _discardIfEmpty(Sale? leaving) async {
+    if (leaving == null || leaving.lines.isNotEmpty) return;
+    if (leaving.status != SaleStatus.draft) return;
+    try {
+      await ref.read(salesOrderRepositoryProvider).cancel(saleId: leaving.id);
+    } on Object {
+      // Best effort: failing to tidy up must never block the cashier from
+      // moving to the sale they asked for.
+    }
+  }
+
+  Future<void> _selectSale(OpenSale selected) async {
+    final leaving = ref.read(posSaleControllerProvider).valueOrNull;
+    if (leaving?.id == selected.id) return;
+    await _discardIfEmpty(leaving);
+    await ref.read(posSaleControllerProvider.notifier).load(selected.id);
+    _refreshSelector();
+  }
+
+  Future<void> _startNewSale() async {
+    final leaving = ref.read(posSaleControllerProvider).valueOrNull;
+    await _discardIfEmpty(leaving);
+    await ref.read(posSaleControllerProvider.notifier).startNew();
+    _refreshSelector();
+  }
+
+  void _refreshSelector() {
+    final pointSale = ref.read(posSaleControllerProvider).valueOrNull?.pointSale;
+    if (pointSale != null) {
+      ref.invalidate(openSalesSelectorControllerProvider(pointSale));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final sale = ref.watch(posSaleControllerProvider);
-    final step = ref.watch(posStepControllerProvider);
     final current = sale.valueOrNull;
     if (current != null) _syncStepTo(current);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _HeaderBand(step: step, sale: sale.value),
-        // Renders the stale banner or nothing — PosGateScreen owns every
-        // rendering decision that follows from `CurrentSession` alone
-        // (contracts/pos-screen.md §0); `state == none` never reaches here.
-        const PosGateScreen(),
+        PosHeaderBand(
+          sale: current,
+          onSaleSelected: _selectSale,
+          onStartNew: _startNewSale,
+        ),
         Expanded(
           child: sale.when(
-            data: (value) => _StepHost(step: step.current, sale: value),
+            data: (value) => _StepHost(
+              step: ref.watch(posStepControllerProvider).current,
+              sale: value,
+            ),
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stackTrace) => Center(
               child: Padding(
@@ -108,46 +151,6 @@ class _PosBodyState extends ConsumerState<_PosBody> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _HeaderBand extends StatelessWidget {
-  const _HeaderBand({required this.step, required this.sale});
-
-  final PosStepState step;
-  final Sale? sale;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final labels = [
-      l10n.posStepVenta,
-      l10n.posStepCobro,
-      l10n.posStepEntrega,
-    ].take(step.stepCount).toList();
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          // FR-040: once confirmed, every reference display reads the
-          // assigned folio (`serial`) instead of the provisional `id`.
-          if (sale != null) Text('#${sale!.serial ?? sale!.provisionalReference}'),
-          const Spacer(),
-          for (var i = 0; i < labels.length; i++) ...[
-            Text(
-              '${i + 1}·${labels[i]}',
-              style: i == step.current.index
-                  ? Theme.of(context).textTheme.titleSmall
-                  : Theme.of(context).textTheme.bodyMedium,
-            ),
-            if (i < labels.length - 1) const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Icon(Icons.chevron_right, size: 16),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }

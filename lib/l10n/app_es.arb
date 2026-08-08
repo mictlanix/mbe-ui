@@ -911,5 +911,10 @@
   "posNoDestinationsYet": "Sin destinos — agrega el primero.",
   "posDeliveryOutstanding": "Falta asignar: {lines}",
   "posFinishSale": "Finalizar venta",
-  "posCustomerBalanceLabel": "Saldo"
+  "posCustomerBalanceLabel": "Saldo",
+  "posNoOpenSales": "Sin otras ventas abiertas",
+  "posOpenSalesCount": "{count, plural, =1{1 abierta} other{{count} abiertas}}",
+  "posOpenSaleDraft": "En captura",
+  "posOpenSaleUnpaid": "Por cobrar",
+  "posOpenSaleUndelivered": "Por entregar"
 }
