@@ -73,19 +73,27 @@ class _CustomerAddressPickerState extends ConsumerState<_CustomerAddressPicker> 
         child: customer.when(
           data: (value) => value.addresses.isEmpty
               ? Text(l10n.posNoAddressesOnFile)
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (final address in value.addresses)
-                      ListTile(
+              // Bounded and scrollable: a customer may have many addresses on
+              // file, and an unbounded `Column` runs off the dialog — verified
+              // against a live account with twenty, where the list overflowed
+              // by 243px and the actions were painted over it.
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 320),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: value.addresses.length,
+                    itemBuilder: (context, index) {
+                      final address = value.addresses[index];
+                      return ListTile(
                         key: Key('address_option_${address.addressId}'),
                         leading: const Icon(Icons.location_on_outlined),
                         title: Text(address.label),
                         onTap: _linking
                             ? null
                             : () => Navigator.of(context).pop(address.addressId),
-                      ),
-                  ],
+                      );
+                    },
+                  ),
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Text(l10n.posNoAddressesOnFile),

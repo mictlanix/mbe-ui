@@ -47,13 +47,14 @@ Customer _customer() => const Customer(
   ],
 );
 
+/// Carries only what mbe-api actually returns — the `ship_to`/`contact`
+/// **ids**. The address and contact labels are joined from the customer by
+/// `DeliveryController`, so asserting on them proves that join happens.
 Destination _existing() => Destination(
   id: 500,
   fulfillmentType: FulfillmentType.delivery,
   shipTo: 11,
-  addressSummary: 'Av. Paseo de la Reforma 100, Cuauhtémoc, Ciudad de México',
-  contactName: 'Ana López',
-  contactPhone: '55 1234 5678',
+  contact: 21,
   status: DeliveryOrderStatus.draft,
   date: DateTime(2026, 8, 12),
   lines: const [
@@ -124,6 +125,28 @@ void main() {
       // where a fixed-width layout would overflow.
       expect(find.textContaining('Ana López'), findsWidgets);
       expectNoHorizontalScroll(tester);
+    });
+
+    testWidgets('a destination names where it goes and who receives it, '
+        'joined from the customer — mbe-api returns only ids', (tester) async {
+      await pumpStep(tester);
+
+      expect(
+        find.textContaining('Av. Paseo de la Reforma 100'),
+        findsWidgets,
+        reason: 'ship_to 11 resolves to the customer\'s own address label',
+      );
+      expect(
+        find.textContaining('55 1234 5678'),
+        findsWidgets,
+        reason: 'contact 21 resolves to that contact\'s name and phone',
+      );
+      expect(
+        find.text(l10n.posDeliveryAddressPending),
+        findsNothing,
+        reason: 'the "address pending" fallback is for a destination with no '
+            'ship_to at all, not for every destination ever created',
+      );
     });
 
     testWidgets('the distribution panel and the add-destination action are '

@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -22,10 +24,47 @@ part 'delivery_controller.g.dart';
 @riverpod
 class DeliveryController extends _$DeliveryController {
   @override
-  Future<List<Destination>> build(Sale sale) {
-    return ref
+  Future<List<Destination>> build(Sale sale) async {
+    final destinations = await ref
         .watch(deliveryOrderRepositoryProvider)
         .listForSale(salesOrder: sale.id);
+    return [for (final d in destinations) await _labelled(d)];
+  }
+
+  /// Fills the display-only address and contact labels the cards render
+  /// (data-model.md §5).
+  ///
+  /// mbe-api returns `ship_to`/`contact` as bare ids, so without this join
+  /// every destination reads "Dirección pendiente" and names no recipient —
+  /// which makes two destinations indistinguishable, exactly when telling
+  /// them apart matters. The customer's own records stay the source of
+  /// truth; nothing is copied onto the delivery order.
+  Future<Destination> _labelled(Destination destination) async {
+    if (destination.isCounterPickup) return destination;
+    final customer = await ref.read(
+      saleCustomerControllerProvider(sale.customer).future,
+    );
+
+    String? addressLabel;
+    for (final address in customer.addresses) {
+      if (address.addressId == destination.shipTo) {
+        addressLabel = address.label;
+        break;
+      }
+    }
+    Contact? recipient;
+    for (final contact in customer.contacts) {
+      if (contact.contactId == destination.contact) {
+        recipient = contact;
+        break;
+      }
+    }
+
+    return destination.copyWith(
+      addressSummary: addressLabel,
+      contactName: recipient?.name,
+      contactPhone: recipient?.preferredPhone,
+    );
   }
 
   /// Records one addressed destination and its share of each line.
@@ -54,8 +93,9 @@ class DeliveryController extends _$DeliveryController {
           lines: lines,
         );
 
-    state = AsyncData([...?state.valueOrNull, created]);
-    return created;
+    final labelled = await _labelled(created);
+    state = AsyncData([...?state.valueOrNull, labelled]);
+    return labelled;
   }
 
   /// FR-036 — sweeps whatever is left into a counter-pickup destination.
