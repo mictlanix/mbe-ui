@@ -123,6 +123,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         ),
       ],
       Padding(
+        // Keyed because this list changes shape underneath it: the customer
+        // bar and mode selector appear above the search field the moment the
+        // first lookup opens the sale. Matched by position instead, the
+        // field's State would be destroyed mid-search and the product it
+        // found would never be added — verified live, where the first scan
+        // of a sale silently added nothing and the second worked.
+        key: const Key('pos_product_search_field'),
         padding: const EdgeInsets.all(12),
         child: ProductSearchField(
           enabled: enabled,

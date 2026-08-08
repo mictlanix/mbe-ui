@@ -128,6 +128,34 @@ void main() {
   });
 
   group('the first action opens the sale', () {
+    testWidgets('the search field survives the sale appearing — the header '
+        'grows above it mid-search, and losing its State would drop the '
+        'product it just found', (tester) async {
+      final container = await pumpRegister(tester);
+
+      // Whatever the cashier has typed stands in for the in-flight search
+      // this list-reshuffle used to discard.
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('pos_product_search_field')),
+          matching: find.byType(TextField),
+        ),
+        'CLASTDCC4MS',
+      );
+      await tester.pumpAndSettle();
+
+      // The sale appears, so the customer bar and mode selector slot in above.
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
+      expect(
+        find.text('CLASTDCC4MS'),
+        findsOneWidget,
+        reason: 'the same field, not a fresh one — its State carried through',
+      );
+    });
+
     testWidgets('adding a line opens it once, then reuses it', (tester) async {
       final container = await pumpRegister(tester);
       final notifier = container.read(posSaleControllerProvider.notifier);
