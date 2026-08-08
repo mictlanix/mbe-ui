@@ -15,6 +15,9 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 class NumberPad extends StatelessWidget {
   const NumberPad({super.key, required this.controller, this.enabled = true});
 
+  /// The widest the pad is ever drawn, whatever the pane it sits in.
+  static const maxPadWidth = 360.0;
+
   final TextEditingController controller;
   final bool enabled;
 
@@ -35,32 +38,46 @@ class NumberPad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const keys = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '.', '0'];
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: 3,
-      childAspectRatio: 1.8,
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        for (final key in keys)
-          OutlinedButton(
-            key: Key('number_pad_$key'),
-            onPressed: enabled ? () => _append(key) : null,
-            child: Text(key),
-          ),
-        // The only key with no text of its own, so it carries a label for a
-        // screen reader rather than announcing itself as an unnamed button.
-        OutlinedButton(
-          key: const Key('number_pad_backspace'),
-          onPressed: enabled ? _backspace : null,
-          child: Semantics(
-            label: AppLocalizations.of(context)?.numberPadBackspace,
-            button: true,
-            child: const Icon(Icons.backspace_outlined),
-          ),
+    // `GridView.count` derives cell height from the width it is handed, so
+    // given a wide pane the keys inflated to roughly 550x300 px each and
+    // pushed the submit button below the fold — driving it live, every digit
+    // needed a scroll first and taps landed late enough to mis-enter the
+    // amount. [maxPadWidth] is what the pad already occupies on a phone,
+    // which is the size these keys were drawn for; wider tiers now keep it
+    // rather than stretch it.
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: maxPadWidth),
+        child: GridView.count(
+          shrinkWrap: true,
+          crossAxisCount: 3,
+          childAspectRatio: 1.8,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            for (final key in keys)
+              OutlinedButton(
+                key: Key('number_pad_$key'),
+                onPressed: enabled ? () => _append(key) : null,
+                child: Text(key),
+              ),
+            // The only key with no text of its own, so it carries a label for
+            // a screen reader rather than announcing itself as an unnamed
+            // button.
+            OutlinedButton(
+              key: const Key('number_pad_backspace'),
+              onPressed: enabled ? _backspace : null,
+              child: Semantics(
+                label: AppLocalizations.of(context)?.numberPadBackspace,
+                button: true,
+                child: const Icon(Icons.backspace_outlined),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
