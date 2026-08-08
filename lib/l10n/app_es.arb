@@ -910,5 +910,6 @@
   "posAddDestination": "Agregar destino",
   "posNoDestinationsYet": "Sin destinos — agrega el primero.",
   "posDeliveryOutstanding": "Falta asignar: {lines}",
-  "posFinishSale": "Finalizar venta"
+  "posFinishSale": "Finalizar venta",
+  "posCustomerBalanceLabel": "Saldo"
 }

@@ -2843,4 +2843,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posFinishSale => 'Finalizar venta';
+
+  @override
+  String get posCustomerBalanceLabel => 'Saldo';
 }

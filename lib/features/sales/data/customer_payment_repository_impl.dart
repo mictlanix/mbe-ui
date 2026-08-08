@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 
 final customerPaymentRepositoryProvider = Provider<CustomerPaymentRepository>((ref) {
@@ -106,6 +107,35 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
       final result = response.data;
       if (result == null) throw const AppError.server();
       return result.map(SalePayment.fromResponse).toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<String> outstandingBalanceFor({required int customerId}) async {
+    try {
+      const pageSize = 100;
+      var skip = 0;
+      var total = '0';
+      while (true) {
+        final response = await _payments
+            .listOutstandingOrdersApiV1CustomerPaymentsOutstandingOrdersGet(
+              customer: customerId,
+              skip: skip,
+              limit: pageSize,
+            );
+        final page = response.data;
+        if (page == null) break;
+        for (final order in page.items) {
+          total = addAmounts(total, order.balance);
+        }
+        skip += page.items.length;
+        // Stop on a short page as well as on the count, so a server that
+        // reports `total` differently cannot spin this loop forever.
+        if (page.items.isEmpty || skip >= page.total) break;
+      }
+      return total;
     } on DioException catch (e) {
       throw _toAppError(e);
     }

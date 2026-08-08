@@ -20,10 +20,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// special handling here: the response already carries every line re-priced,
 /// and the controller's normal wholesale replace picks it up.
 ///
-/// Shows name and price list. `CustomerResponse` carries no outstanding-
-/// balance field (verified against the generated DTO) — FR-011's "outstanding
-/// balance" is not rendered here for lack of a backing field, a documented
-/// gap rather than a fabricated figure.
+/// Shows everything FR-011 asks for: the customer's name, credit line,
+/// outstanding balance and price list.
 class CustomerBar extends ConsumerStatefulWidget {
   const CustomerBar({super.key, required this.sale, this.enabled = true});
 
@@ -113,11 +111,10 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
 /// list, read from the full `Customer` record (the sale itself carries only
 /// the id and a display name).
 ///
-/// The requirement also names an **outstanding balance**, which is not
-/// rendered: `CustomerResponse` exposes no such field (only `creditLimit` and
-/// `creditDays`), so there is nothing to show without an mbe-api change.
-/// Showing the credit *limit* labelled as a balance would be worse than
-/// showing nothing.
+/// The **outstanding balance** comes from a second call
+/// ([customerOutstandingBalanceProvider]): `CustomerResponse` carries no such
+/// field, so it is summed from the customer's open orders. It renders on its
+/// own once it arrives, so a slow or failing sum never holds up the rest.
 class _CustomerFacts extends ConsumerWidget {
   const _CustomerFacts({required this.customerId});
 
@@ -133,15 +130,16 @@ class _CustomerFacts extends ConsumerWidget {
         spacing: 24,
         runSpacing: 4,
         children: [
-          _fact(context, l10n.posCustomerNameLabel, value.name),
-          _fact(
+          fact(context, l10n.posCustomerNameLabel, value.name),
+          fact(
             context,
             l10n.posCustomerCreditLabel,
             isZeroAmount(value.creditLimit)
                 ? l10n.posCustomerNoCredit
                 : MoneyFormatters.currency(value.creditLimit),
           ),
-          _fact(context, l10n.posCustomerPriceListLabel, value.priceList.name),
+          fact(context, l10n.posCustomerPriceListLabel, value.priceList.name),
+          _BalanceFact(customerId: customerId),
         ],
       ),
       loading: () => const SizedBox(height: 20),
@@ -151,7 +149,7 @@ class _CustomerFacts extends ConsumerWidget {
     );
   }
 
-  Widget _fact(BuildContext context, String label, String value) {
+  static Widget fact(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,6 +158,30 @@ class _CustomerFacts extends ConsumerWidget {
         Text(label, style: theme.textTheme.labelSmall),
         Text(value, style: theme.textTheme.bodyMedium),
       ],
+    );
+  }
+}
+
+/// FR-011's outstanding balance. Separate from [_CustomerFacts] so its own
+/// loading and failure states stay local: an unavailable balance leaves a
+/// blank where the figure goes rather than blanking the customer area.
+class _BalanceFact extends ConsumerWidget {
+  const _BalanceFact({required this.customerId});
+
+  final int customerId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final balance = ref.watch(customerOutstandingBalanceProvider(customerId));
+    return balance.when(
+      data: (value) => _CustomerFacts.fact(
+        context,
+        l10n.posCustomerBalanceLabel,
+        MoneyFormatters.currency(value),
+      ),
+      loading: () => const SizedBox.shrink(),
+      error: (error, stackTrace) => const SizedBox.shrink(),
     );
   }
 }

@@ -5242,6 +5242,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish sale'**
   String get posFinishSale;
+
+  /// No description provided for @posCustomerBalanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get posCustomerBalanceLabel;
 }
 
 class _AppLocalizationsDelegate

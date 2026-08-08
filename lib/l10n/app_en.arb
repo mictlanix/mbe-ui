@@ -2023,5 +2023,7 @@
   "posDeliveryOutstanding": "Still unassigned: {lines}",
   "@posDeliveryOutstanding": {"placeholders": {"lines": {"type": "String"}}},
   "posFinishSale": "Finish sale",
-  "@posFinishSale": {}
+  "@posFinishSale": {},
+  "posCustomerBalanceLabel": "Balance",
+  "@posCustomerBalanceLabel": {}
 }

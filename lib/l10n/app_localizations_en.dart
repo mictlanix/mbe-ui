@@ -2799,4 +2799,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posFinishSale => 'Finish sale';
+
+  @override
+  String get posCustomerBalanceLabel => 'Balance';
 }
