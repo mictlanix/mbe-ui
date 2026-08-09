@@ -3,7 +3,7 @@
   "specName": "design system tokens",
   "branch": "022-design-system-tokens",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -491,6 +491,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-08T23:57:38.639Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-09T01:57:34.784Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -983,5 +990,6 @@
         "specs/022-design-system-tokens/quickstart.md"
       ]
     }
-  }
+  },
+  "telemetryInstanceId": "5cf9141c-3dec-4e94-83c5-fe93b996284f"
 }
