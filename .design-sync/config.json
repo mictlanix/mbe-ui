@@ -1,0 +1,7 @@
+{
+  "projectId": "8b2b202f-7b21-4c77-bf62-4cac8539fce7",
+  "pkg": "mbe-ui-tokens",
+  "globalName": "MbeUiTokens",
+  "shape": "package",
+  "readmeHeader": ".design-sync/conventions.md"
+}
