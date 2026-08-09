@@ -1,6 +1,8 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
+
 import 'catalog_pagination.dart';
 
 /// A column in a [DataTableView]. If [comparator] is provided, the column
@@ -172,6 +174,19 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
 
   @override
   Widget build(BuildContext context) {
+    // data_table_2 carries its own dataRowHeight/headingRowHeight/
+    // dividerThickness constructor params rather than reading them from
+    // DataTableThemeData (research R5) -- this is the one place any screen
+    // touches table sizing; no screen may pass these itself.
+    //
+    // Density.table*RowHeight is null on touch platforms (tables render as
+    // card lists there -- out of scope, FR-025) but this widget still
+    // renders a DataTable2 on every platform today since that compact-tier
+    // transformation isn't built yet, so a concrete fallback is required;
+    // the pointer-density values are the correct fallback until it lands.
+    final density = Theme.of(context).density;
+    final headingRowHeight = density.tableHeadingRowHeight ?? 48;
+    final dataRowHeight = density.tableDataRowHeight ?? 44;
     final pagination = widget.pagination;
     if (pagination != null) {
       _source ??= _CatalogDataTableSource<T>(widget, _buildRow);
@@ -190,6 +205,9 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         // whether from user navigation or from a post-mutation reset.
         key: ValueKey(pagination.pageIndex),
         columns: _buildColumns(sortable: false),
+        headingRowHeight: headingRowHeight,
+        dataRowHeight: dataRowHeight,
+        dividerThickness: 1,
         source: _source!,
         showCheckboxColumn: false,
         rowsPerPage: pagination.pageSize,
@@ -231,6 +249,9 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         sortColumnIndex: _sortColumnIndex,
         sortAscending: _sortAscending,
         columns: _buildColumns(sortable: true),
+        headingRowHeight: headingRowHeight,
+        dataRowHeight: dataRowHeight,
+        dividerThickness: 1,
         rows: [for (final item in rows) _buildRow(item)],
       ),
     );

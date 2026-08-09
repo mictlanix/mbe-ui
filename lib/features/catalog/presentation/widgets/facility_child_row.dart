@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/brand_ink.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
@@ -30,7 +31,7 @@ class FacilityCodeChip extends StatelessWidget {
       child: Text(
         code,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontFamily: 'monospace',
+          fontFamily: TypeRoles.monoFamily,
           color: scheme.onSurfaceVariant,
         ),
       ),

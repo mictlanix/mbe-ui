@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/brand_logo.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -14,6 +15,7 @@ class LoginBrandingPane extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final typeRoles = Theme.of(context).typeRoles;
     return ColoredBox(
       color: XbePalette.darkSurface,
       child: Center(
@@ -30,10 +32,11 @@ class LoginBrandingPane extends StatelessWidget {
               const SizedBox(height: 40),
               Text(
                 l10n.loginTagline,
-                style: const TextStyle(
-                  fontFamily: 'Archivo',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 32,
+                // This pane is deliberately always-dark regardless of the
+                // user's theme choice (spec 019 FR-014), so the color is
+                // pinned to the dark tokens explicitly -- only the
+                // typeface/size/weight come from the role.
+                style: typeRoles.heroHeading.copyWith(
                   color: XbePalette.darkOnSurface,
                   height: 1.15,
                 ),
@@ -41,8 +44,7 @@ class LoginBrandingPane extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 l10n.loginSubhead,
-                style: const TextStyle(
-                  fontSize: 15,
+                style: typeRoles.heroSubhead.copyWith(
                   color: XbePalette.darkOnSurfaceVariant,
                   height: 1.5,
                 ),

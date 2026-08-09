@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
@@ -294,12 +295,7 @@ class _RecoveryTokenCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            SelectableText(
-              token,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
-            ),
+            SelectableText(token, style: Theme.of(context).typeRoles.recordId),
             const SizedBox(height: 4),
             Text(
               AppLocalizations.of(context)!.recoveryExpiresAt(expiresAt),

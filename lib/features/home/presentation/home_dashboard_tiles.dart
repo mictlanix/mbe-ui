@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/brand_ink.dart';
+import 'package:mbe_ui/core/design/design.dart';
 
 /// A single Home dashboard indicator tile (icon + value + label). Static
 /// placeholder data (spec 019 FR-016) — matches the brand guide's own
@@ -84,13 +85,7 @@ class HomeDashboardTiles extends StatelessWidget {
                   children: [
                     Icon(tile.icon, color: theme.brandInk.primary),
                     const SizedBox(height: 12),
-                    Text(
-                      tile.value,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontFamily: 'Archivo',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    Text(tile.value, style: theme.typeRoles.metricValue),
                     Text(
                       tile.label,
                       style: theme.textTheme.bodySmall?.copyWith(

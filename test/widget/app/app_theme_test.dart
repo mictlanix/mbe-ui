@@ -77,6 +77,100 @@ void main() {
       expect(theme.dark.useMaterial3, isTrue);
     });
 
+    test(
+      'TextTheme ink traces to the pinned onSurface, not the M3 baseline',
+      () {
+        // app_theme.dart used to seed _brandTextTheme's base from a bare
+        // ThemeData(brightness:) carrying no colorScheme, so Flutter's M3
+        // baseline ink (#1D1B20 light / #E6E0E9 dark) won ThemeData's
+        // defaultTextTheme.merge over the pinned XBE values (spec 022 FR-001).
+        for (final theme in [
+          AppTheme.of(defaultBrand).light,
+          AppTheme.of(defaultBrand).dark,
+        ]) {
+          final onSurface = theme.colorScheme.onSurface;
+          for (final style in [
+            theme.textTheme.displayLarge,
+            theme.textTheme.displayMedium,
+            theme.textTheme.displaySmall,
+            theme.textTheme.headlineLarge,
+            theme.textTheme.headlineMedium,
+            theme.textTheme.headlineSmall,
+            theme.textTheme.titleLarge,
+            theme.textTheme.titleMedium,
+            theme.textTheme.titleSmall,
+            theme.textTheme.bodyLarge,
+            theme.textTheme.bodyMedium,
+            theme.textTheme.bodySmall,
+            theme.textTheme.labelLarge,
+            theme.textTheme.labelMedium,
+            theme.textTheme.labelSmall,
+          ]) {
+            expect(
+              style?.color,
+              onSurface,
+              reason:
+                  '${theme.brightness.name} mode text role must use the '
+                  'pinned onSurface, not the M3 baseline ink',
+            );
+          }
+        }
+      },
+    );
+
+    test('light surfaceContainerLow is pinned, not seed-derived', () {
+      // Previously dark-only; light mode fell back to a seed-derived value
+      // nobody approved (spec 022 FR-002).
+      final light = AppTheme.of(defaultBrand).light;
+      expect(
+        light.colorScheme.surfaceContainerLow,
+        XbePalette.lightSurfaceContainerLow,
+      );
+    });
+
+    test(
+      'every TextTheme role computes >= 4.5:1 contrast against its surface',
+      () {
+        // FR-022/SC-003's actual, computed proof -- not inferred from the
+        // color-equality checks above. Reuses the file's own WCAG helper.
+        for (final theme in [
+          AppTheme.of(defaultBrand).light,
+          AppTheme.of(defaultBrand).dark,
+        ]) {
+          final surface = theme.colorScheme.surface;
+          final roles = <String, TextStyle?>{
+            'displayLarge': theme.textTheme.displayLarge,
+            'displayMedium': theme.textTheme.displayMedium,
+            'displaySmall': theme.textTheme.displaySmall,
+            'headlineLarge': theme.textTheme.headlineLarge,
+            'headlineMedium': theme.textTheme.headlineMedium,
+            'headlineSmall': theme.textTheme.headlineSmall,
+            'titleLarge': theme.textTheme.titleLarge,
+            'titleMedium': theme.textTheme.titleMedium,
+            'titleSmall': theme.textTheme.titleSmall,
+            'bodyLarge': theme.textTheme.bodyLarge,
+            'bodyMedium': theme.textTheme.bodyMedium,
+            'bodySmall': theme.textTheme.bodySmall,
+            'labelLarge': theme.textTheme.labelLarge,
+            'labelMedium': theme.textTheme.labelMedium,
+            'labelSmall': theme.textTheme.labelSmall,
+          };
+          roles.forEach((name, style) {
+            final color = style?.color;
+            if (color == null) return;
+            final ratio = _contrastRatio(color, surface);
+            expect(
+              ratio,
+              greaterThanOrEqualTo(4.5),
+              reason:
+                  '$name in ${theme.brightness.name} mode must clear 4.5:1 '
+                  'against surface (got ${ratio.toStringAsFixed(2)}:1)',
+            );
+          });
+        }
+      },
+    );
+
     test('brandInk demotes gold to goldInk on light, keeps gold on dark', () {
       final theme = AppTheme.of(defaultBrand);
 

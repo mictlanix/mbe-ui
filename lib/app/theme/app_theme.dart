@@ -39,7 +39,9 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      textTheme: _brandTextTheme(ThemeData(brightness: brightness).textTheme),
+      textTheme: _brandTextTheme(
+        ThemeData(colorScheme: colorScheme, useMaterial3: true).textTheme,
+      ),
       extensions: [BrandInk.forBrand(brand, colorScheme)],
     );
   }
@@ -107,6 +109,7 @@ class AppTheme {
       outline: XbePalette.lightOutline,
       outlineVariant: XbePalette.lightOutlineVariant,
       surfaceContainerLowest: XbePalette.lightSurfaceContainerLowest,
+      surfaceContainerLow: XbePalette.lightSurfaceContainerLow,
       surfaceContainer: XbePalette.lightSurfaceContainer,
     );
   }

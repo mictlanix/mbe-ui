@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
+
 /// A single Home recent-activity line (icon + description + timestamp).
 /// Static placeholder data (spec 019 FR-016) — matches the brand guide's
 /// own example content verbatim; not backed by a live query. Wiring this to
@@ -89,8 +91,7 @@ class HomeActivityFeed extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     _entries[i].time,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'RobotoMono',
+                    style: theme.typeRoles.timestamp.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
