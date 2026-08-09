@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/branding/brand_config_provider.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/brand_logo.dart';
 
 /// Brand mark + display name (spec 019 FR-004). Used in two places that
@@ -30,11 +31,7 @@ class BrandNavHeader extends ConsumerWidget {
             child: Text(
               displayName,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Archivo',
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).typeRoles.navHeader,
             ),
           ),
         ],

@@ -73,9 +73,17 @@ series color, or a primary interactive color. Chart/accent needs use
 |---|---|---|
 | `display*`, `headline*`, `title*`, `label*` | **Archivo** (400/500/600/700) | bundled `assets/fonts/` |
 | `body*` | **Roboto** | Flutter's Material 3 default (not bundled) |
-| Codes / SKUs / monospaced data | **Roboto Mono** (400/500) | bundled `assets/fonts/` |
+| Record identifiers / timestamps | **Roboto Mono** (400/500) | bundled `assets/fonts/` |
 
 Fonts are bundled, never fetched at runtime (research R3).
+
+**Narrowed 2026-08-08 (spec 022 FR-028, clarified):** this row originally read
+"Codes / SKUs / monospaced data." The product never actually monospaced
+ordinary product codes or SKUs — only timestamps — so the contract is
+corrected to match built behavior rather than extended to match the
+original (aspirational) wording. `productCode` is a distinct, deliberately
+non-monospaced slot in spec 022's `TypeRoles` token
+(`specs/022-design-system-tokens/data-model.md` §5).
 
 ## Logo placement contract
 

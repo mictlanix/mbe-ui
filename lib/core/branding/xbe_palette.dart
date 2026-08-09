@@ -65,6 +65,14 @@ class XbePalette {
   static const lightSurface = Color(0xFFFBF8F3);
   static const lightOnSurface = Color(0xFF1C1A16);
   static const lightSurfaceContainerLowest = Colors.white;
+
+  /// Interpolated — the brand guide's §06 "Modo claro" section never
+  /// specified this role (spec 022 FR-002). Midpoint between
+  /// [lightSurfaceContainerLowest] (`#FFFFFF`) and [lightSurfaceContainer]
+  /// (`#F3EDE3`). Flagged for brand-owner confirmation, same as the
+  /// off-grid-spacing note in spec 022 FR-026 — an engineering estimate
+  /// standing in for a design decision, not an approved token.
+  static const lightSurfaceContainerLow = Color(0xFFF9F6F1);
   static const lightSurfaceContainer = Color(0xFFF3EDE3);
   static const lightOnSurfaceVariant = Color(0xFF5A5349);
   static const lightOutline = Color(0xFFC4BBAC);

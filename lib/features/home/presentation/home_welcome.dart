@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/branding/brand_config_provider.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/brand_logo.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
@@ -165,10 +166,7 @@ class _GreetingCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.homeGreeting(greetingName),
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontFamily: 'Archivo',
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: theme.typeRoles.pageHeading,
                 ),
                 const SizedBox(height: 8),
                 ConstrainedBox(

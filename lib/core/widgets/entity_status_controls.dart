@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Shared presentation of [EntityStatus] — the lifecycle state every catalog
@@ -28,23 +29,22 @@ class EntityStatusCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
     final label = entityStatusLabel(l10n, status);
 
     if (status == EntityStatus.active) return Text(label);
 
-    final (background, foreground) = switch (status) {
-      EntityStatus.inactive => (scheme.errorContainer, scheme.onErrorContainer),
-      // Archived is a deliberate, non-error end state — tone it down.
-      _ => (scheme.surfaceContainerHighest, scheme.onSurfaceVariant),
-    };
-
-    return Chip(
+    return StatusChip<EntityStatus>(
       key: Key('status_badge_${status.name}'),
-      label: Text(label),
-      backgroundColor: background,
-      labelStyle: TextStyle(color: foreground),
-      visualDensity: VisualDensity.compact,
+      value: status,
+      label: label,
+      colors: (scheme) => switch (status) {
+        EntityStatus.inactive => (
+          scheme.errorContainer,
+          scheme.onErrorContainer,
+        ),
+        // Archived is a deliberate, non-error end state — tone it down.
+        _ => (scheme.surfaceContainerHighest, scheme.onSurfaceVariant),
+      },
     );
   }
 }

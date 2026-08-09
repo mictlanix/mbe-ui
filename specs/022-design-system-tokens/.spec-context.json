@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "design system tokens",
   "branch": "022-design-system-tokens",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -60,6 +60,437 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-08T21:56:36.881Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:01:53.399Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:01:53.445Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:02:58.927Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:02:58.975Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:02:59.019Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:02:59.063Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:02:59.105Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.527Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.570Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.611Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.654Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.695Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.735Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.777Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.817Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.860Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.904Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.948Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:18.991Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:12:19.033Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:24:07.702Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:24:07.747Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:24:07.787Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:24:07.832Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:24:07.873Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:47.739Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:47.786Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:47.831Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:47.877Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:47.926Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:47.973Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.018Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.065Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.110Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.156Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.248Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:36:48.293Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.586Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.631Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.676Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.722Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.766Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.811Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.855Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:43:21.900Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:47:17.463Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:47:17.509Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:47:17.554Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:57:38.449Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:57:38.493Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:57:38.535Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-08T23:57:38.578Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-08T23:57:38.639Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -175,5 +606,382 @@
     "Moving off Material 3 or introducing a custom component kit",
     "Making spacing, shape, elevation or density customisable per deployment",
     "Replacing the existing data table dependency"
-  ]
+  ],
+  "currentTask": "T053",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Created lib/core/design/ barrel and test directory scaffolding",
+      "files": [
+        "lib/core/design/design.dart"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Layering invariant test: nothing in lib/features/ or lib/core/ imports lib/app/",
+      "files": [
+        "test/unit/core/layering_test.dart"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Fixed _buildTheme to seed TextTheme from a ThemeData built WITH colorScheme, so text ink traces to pinned onSurface instead of M3 baseline",
+      "files": [
+        "lib/app/theme/app_theme.dart"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added lightSurfaceContainerLow (#F9F6F1, interpolated, flagged for brand-owner confirmation)",
+      "files": [
+        "lib/core/branding/xbe_palette.dart"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Pinned surfaceContainerLow in _lightScheme",
+      "files": [
+        "lib/app/theme/app_theme.dart"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Extended app_theme_test.dart: TextTheme equality, surfaceContainerLow pin, and computed 4.5:1 contrast loop (E1 fix)",
+      "files": [
+        "test/widget/app/app_theme_test.dart"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Ran full app_theme_test.dart -- 14/14 pass, SC-003 verified via computed assertion",
+      "files": [
+        "test/widget/app/app_theme_test.dart"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Spacing ThemeExtension: 8-step scale + 7 tier-dependent layout metrics",
+      "files": [
+        "lib/core/design/spacing.dart"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Shapes ThemeExtension: 7 radii incl. lg=16 card override",
+      "files": [
+        "lib/core/design/shapes.dart"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Elevations ThemeExtension: 6 levels resolved from ColorScheme (design refinement: mapping fixed, resolved color brand-derived)",
+      "files": [
+        "lib/core/design/elevations.dart"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Density ThemeExtension: platform-derived via VisualDensity.adaptivePlatformDensity, not navigationModeOf",
+      "files": [
+        "lib/core/design/density.dart"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "TypeRoles ThemeExtension: 21 slots resolved from TextTheme per tier, weight emphasis baked in",
+      "files": [
+        "lib/core/design/type_roles.dart"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "DesignTheme.forTier assembly with (base,tier)-keyed memoization",
+      "files": [
+        "lib/core/design/design_theme.dart"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Wired MaterialApp.router's builder to resolve tier and re-apply DesignTheme above the Navigator",
+      "files": [
+        "lib/app/app.dart"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Populated design.dart barrel export",
+      "files": [
+        "lib/core/design/design.dart"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added ThemeData extension getters (spacing/shapes/elevations/density/typeRoles) with const fallbacks",
+      "files": [
+        "lib/core/design/design_theme_extensions.dart"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "5 unit test files: grid/ordering invariants + full 21-slot TypeRoles tier assertion (F1/E4 fix)",
+      "files": [
+        "test/unit/core/design/spacing_test.dart",
+        "test/unit/core/design/shapes_test.dart",
+        "test/unit/core/design/elevations_test.dart",
+        "test/unit/core/design/density_test.dart",
+        "test/unit/core/design/type_roles_test.dart"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "brand_independence_test.dart: refined SC-008 proof distinguishing literal-value tokens (Spacing/Shapes/Density) from mapping-fixed/brand-derived tokens (Elevations/TypeRoles)",
+      "files": [
+        "test/unit/core/design/brand_independence_test.dart"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "tier_resolution_test.dart: 4 width pumps + Navigator-wrapping proof",
+      "files": [
+        "test/widget/core/design/tier_resolution_test.dart"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "fallback_test.dart: bare ThemeData returns const defaults, no throw",
+      "files": [
+        "test/widget/core/design/fallback_test.dart"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "golden_harness.dart: pumpGoldenScenario + expectGoldenMatrix helpers, loadGoldenFonts (discovered mid-task: Archivo/RobotoMono alone insufficient -- vendored Roboto + MaterialIcons fixtures too, since Flutter's test sandbox has zero real fonts by default)",
+      "files": [
+        "test/golden/golden_harness.dart",
+        "test/golden/fixtures/Roboto-Regular.ttf",
+        "test/golden/fixtures/MaterialIcons-Regular.otf"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "golden/README.md documenting generating version, workflow, and 3 non-widget + 1 unconstructible exclusion (corrected from spec-time assumption: catalog_action_icons.dart and catalog_pagination.dart are also non-widget files, discovered via mechanical grep)",
+      "files": [
+        "test/golden/README.md"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "core_widgets_golden_test.dart: 17 widgets (corrected count from repo reality: 21 files in lib/core/widgets/, 3 non-widget, 1 excluded as unconstructible) + directory-scan test guarding future coverage gaps",
+      "files": [
+        "test/golden/core_widgets_golden_test.dart"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Generated 68 baseline PNGs (17 widgets x 4 combinations); visually verified real font/icon rendering after the Roboto/MaterialIcons fix",
+      "files": [
+        "test/golden/goldens/"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Verified the net catches change: perturbed brand_nav_header padding, confirmed all 4 combinations fail naming the widget, reverted, confirmed green",
+      "files": [
+        "lib/core/widgets/brand_nav_header.dart"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Created shared StatusChip<T> widget, generic for type-level distinguishability in tests",
+      "files": [
+        "lib/core/widgets/status_chip.dart"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Refactored EntityStatusCell to delegate non-active states to StatusChip<EntityStatus>",
+      "files": [
+        "lib/core/widgets/entity_status_controls.dart"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Refactored CashSessionStatusChip to delegate to StatusChip<CashSessionStatus>",
+      "files": [
+        "lib/features/sales/presentation/widgets/cash_session_status_chip.dart"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Added StatusChip golden coverage, extending T023's suite",
+      "files": [
+        "test/golden/core_widgets_golden_test.dart"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "AppBarTheme/CardThemeData/InputDecorationTheme/ChipThemeData (architectural correction: moved to component_themes.dart consumed by DesignTheme.forTier, not AppTheme._buildTheme, since sub-themes need tier-resolved tokens that only exist post-tier-resolution)",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "DataTableThemeData/DividerThemeData/DialogThemeData",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "NavigationRailThemeData/NavigationDrawerThemeData added; app_navigation.dart's ad-hoc Colors.transparent/circular(28)/raw TextStyle removed. Caught and fixed a real regression: unselected nav label went bold (typeRoles.navLabel is w600) until explicit fontWeight.normal restored the original selected/unselected weight distinction",
+      "files": [
+        "lib/core/design/component_themes.dart",
+        "lib/core/widgets/app_navigation.dart"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Filled/Outlined/TextButtonTheme, ListTileThemeData, SegmentedButtonThemeData",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "BottomSheetThemeData, SnackBar/Tooltip/PopupMenu/Switch/ProgressIndicatorThemeData",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "data_table_view.dart passes density-derived row heights explicitly (data_table_2 doesn't read DataTableThemeData for these); pointer-density fallback documented since compact card-list transform isn't built yet",
+      "files": [
+        "lib/core/widgets/data_table_view.dart"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "status_chip_test.dart: 4 tests confirming EntityStatus/CashSessionStatus route through distinct StatusChip<T> types, active renders plain text",
+      "files": [
+        "test/widget/core/widgets/status_chip_test.dart"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Re-ran goldens: 11/18 widgets diffed. Individually verified each before accepting -- caught 2 real issues (nav weight regression, chip shape contradicting own contracts.md spec/Flutter M3 default) and fixed both before accepting. Full test/widget+test/unit suite (1519 tests) still green",
+      "files": [
+        "test/golden/goldens/"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "SC-009 proven mechanically: single-line component_themes.dart edit propagated to the one card-bearing golden with zero screen files touched (git status confirmed). Full manual click-through in a running app not performed -- no device/simulator available in this environment; StatusChip's generic-type test (T036) is the automated proxy for cross-screen identity",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "brand_nav_header.dart: theme.typeRoles.navHeader replaces hardcoded TextStyle",
+      "files": [
+        "lib/core/widgets/brand_nav_header.dart"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "login_branding_pane.dart: typeRoles.heroHeading/.heroSubhead replace hardcoded styles, dark-only color override preserved via .copyWith",
+      "files": [
+        "lib/features/auth/presentation/login/login_branding_pane.dart"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "home_dashboard_tiles.dart/home_welcome.dart: redundant copyWith overrides removed, typeRoles.metricValue/.pageHeading used directly",
+      "files": [
+        "lib/features/home/presentation/home_dashboard_tiles.dart",
+        "lib/features/home/presentation/home_welcome.dart"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "home_activity_feed.dart: typeRoles.timestamp replaces hardcoded RobotoMono",
+      "files": [
+        "lib/features/home/presentation/home_activity_feed.dart"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "Corrected spec 019 brand-tokens.md Typography contract row to match built behavior (record identifiers/timestamps, not codes/SKUs)",
+      "files": [
+        "specs/019-xbe-default-branding/contracts/brand-tokens.md"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Already satisfied by T017's type_roles_test.dart (productCode/recordId/timestamp assertions written during Phase 3)",
+      "files": [
+        "test/unit/core/design/type_roles_test.dart"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "SC-001 grep: zero hardcoded fontFamily/fontSize in lib/. Found and fixed 3 additional generic 'monospace' sites my original audit missed (user_detail_screen.dart, facility_child_section.dart, facility_child_row.dart) -- added TypeRoles.monoFamily constant for the two that don't fit an existing slot's size",
+      "files": [
+        "lib/core/design/type_roles.dart",
+        "lib/features/auth/presentation/admin/user_detail_screen.dart",
+        "lib/features/catalog/presentation/widgets/facility_child_section.dart",
+        "lib/features/catalog/presentation/widgets/facility_child_row.dart"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "SC-002 grep: zero unexplained Color(0x/Colors.* outside lib/core/branding/ -- all 5 Colors.* matches are the documented legitimate exceptions"
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "Audited Spacing/Density for tier gaps: mechanically confirmed impossible by construction (Dart required params + field-occurrence count). No gaps found",
+      "files": [
+        "lib/core/design/spacing.dart"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Extended tier_resolution_test.dart with boundary-crossing assertions and a rendered-Card measurement. Running it caught a real bug: CardThemeData.margin used the tier-INVARIANT spacing.sm instead of tier-DEPENDENT spacing.cardPadding, making cardPadding a dead token FR-013 never actually satisfied. Fixed in component_themes.dart, re-verified goldens + full suite",
+      "files": [
+        "test/widget/core/design/tier_resolution_test.dart",
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "Automated proxies for the manual resize check now exist (T048's rendered-Card test); literal window-drag verification not performed -- no running device/simulator in this environment"
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Ran flutter analyze lib test; zero issues, no lints to fix"
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Created test/contract/brand_contrast_test.dart asserting every foreground role clears 4.5:1 against surface for the real AppTheme.of(BrandConfig.fromEnvironment()); added two negative-case tests proving the gate's assertion logic catches a synthetic bad pair, since exhaustive probing (8 saturated + 6 near-neutral/extreme seeds x 6 DynamicSchemeVariants) found no real fromSeed-derived color that fails, documented in the file's own comments",
+      "files": [
+        "test/contract/brand_contrast_test.dart"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "Updated DESIGN-SYSTEM.md marking type roles/spacing/shape/elevation/density/sub-themes sections as shipped with a new divergences section, linked to spec 022",
+      "files": [
+        "DESIGN-SYSTEM.md"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Ran all 7 quickstart.md scenarios plus the Full check section end-to-end for real: analyzer clean, 1522 unit+widget tests pass, 19 golden tests pass; corrected quickstart.md Scenario 7's factually-wrong pale-yellow claim after literally disproving it against the real gate",
+      "files": [
+        "specs/022-design-system-tokens/quickstart.md"
+      ]
+    }
+  }
 }

@@ -190,9 +190,16 @@ flutter test test/contract/brand_contrast_test.dart --dart-define=BRAND_SEED_COL
 flutter build web --dart-define=BRAND_SEED_COLOR=$SEED
 ```
 
-**Expected**: the test passes and the build proceeds. With a deliberately failing colour
-(e.g. a pale yellow that cannot reach 4.5:1 as a foreground), the **test exits non-zero and
-the build must not run** (`SC-011`).
+**Expected**: the test passes and the build proceeds, for essentially any seed you try —
+verified directly: `flutter test test/contract/brand_contrast_test.dart
+--dart-define=BRAND_SEED_COLOR=F5E642` (a pale yellow) **passes**. `ColorScheme.fromSeed`'s
+`primary` clears ~6.1:1+ against its own `surface` across every seed and
+`DynamicSchemeVariant` tried (8 saturated hues, 6 near-neutral/extreme colors) — M3's tonal
+system appears to structurally prevent this specific failure by construction, so a real
+`--dart-define` value that fails could not be found. `brand_contrast_test.dart`'s own
+"gate catches a real failure" group proves the **assertion logic** still catches a bad
+color when one exists, via a synthetic pair, rather than relying on an unfindable real one
+(`SC-011`).
 
 ---
 

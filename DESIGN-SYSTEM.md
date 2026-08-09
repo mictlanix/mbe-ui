@@ -1,8 +1,13 @@
-# MBE-UI Design System — Proposal
+# MBE-UI Design System
 
-**Status**: Proposal. **Nothing here is implemented.** This document exists to
-be reviewed, argued with, and then turned into a spec (`specs/0NN-design-system-tokens/`)
-that implements it in phases.
+**Status**: **Shipped.** Implemented by
+[spec 022](specs/022-design-system-tokens/) — §3–§8 below are now built, not
+proposed; this document is kept as the design record (the *why* behind the
+values) alongside spec 022's own `data-model.md`/`contracts/`. Where
+implementation diverged from this proposal (a handful of judgment calls made
+during the build — an interpolated color, an M3-default correction, two
+bugs the safety net caught), spec 022's `tasks.md` Revision History and this
+file's §15 note the differences.
 
 **Scope**: the token layers and component theming that [DESIGN.md](DESIGN.md) §4
 and [constitution](.specify/memory/constitution.md) §V/§VI assume but never
@@ -26,14 +31,14 @@ The design system is half-built, and the built half is the hard half.
 | Brand ink (contrast-safe foreground) | ✅ **Done** | [brand_ink.dart](lib/core/branding/brand_ink.dart) |
 | Font families | ✅ **Done** — Archivo + Roboto + RobotoMono, bundled | [pubspec.yaml](pubspec.yaml), [assets/fonts/](assets/fonts/) |
 | Logo placement | ✅ **Done** — 7 placements, min sizes, opacities | `XbePalette` placement block |
-| Type **role assignment** | ⚠️ Metrics inherited from M3; no decision about which role goes where | §3 below |
-| Spacing scale | ❌ Nothing | §4 |
-| Shape / radius scale | ❌ Nothing | §5 |
-| Elevation | ❌ Nothing | §6 |
-| Density / touch targets | ❌ Nothing | §7 |
-| Component sub-themes | ❌ **Zero** — no `AppBarTheme`, `CardThemeData`, `InputDecorationTheme`, `ChipThemeData`, `DataTableThemeData`, … | §8 |
-| Form-factor behavior | ⚠️ Breakpoints exist; per-tier behavior is per-screen folklore | §9 |
-| Component library | ⚠️ 20 widgets in [lib/core/widgets/](lib/core/widgets/), no index or reference render | §11 |
+| Type **role assignment** | ✅ **Done** — 21 slots, all 4 tiers | [type_roles.dart](lib/core/design/type_roles.dart); §3 below |
+| Spacing scale | ✅ **Done** | [spacing.dart](lib/core/design/spacing.dart); §4 |
+| Shape / radius scale | ✅ **Done** | [shapes.dart](lib/core/design/shapes.dart); §5 |
+| Elevation | ✅ **Done** | [elevations.dart](lib/core/design/elevations.dart); §6 |
+| Density / touch targets | ✅ **Done** — keyed on platform, not width | [density.dart](lib/core/design/density.dart); §7 |
+| Component sub-themes | ✅ **Done** — 20 `ThemeData` classes | [component_themes.dart](lib/core/design/component_themes.dart); §8 |
+| Form-factor behavior | ✅ **Tokens done** for all 4 tiers; Compact **layouts** deferred, by design (spec 022 FR-025) | §9; [contracts/design-tokens.md](specs/022-design-system-tokens/contracts/design-tokens.md) |
+| Component library | ⚠️ 21 files in [lib/core/widgets/](lib/core/widgets/) (3 non-widget), golden-covered for 18; no index or preview harness | §11; [test/golden/](test/golden/) |
 
 **One correction to the framing.** "Type scale ❌ nothing" is too harsh. Flutter's
 `Typography.material2021` already ships the complete M3 ramp — sizes, line
@@ -476,3 +481,47 @@ silently restyles 18 screens with no test that notices.
 - **Not** building the Compact tier — that stays deferred; this only ensures
   the tokens won't need redesigning when it's scoped.
 - **Not** replacing `data_table_2` or any current dependency.
+
+---
+
+## 15. Where implementation diverged from this proposal
+
+Spec 022 implemented §3–§8 largely as proposed; where it didn't, here's what
+changed and why — full detail in spec 022's `tasks.md` Revision History and
+`research.md`.
+
+- **§10's "product tokens vs. brand tokens" split held, but the *assembly
+  point* moved.** This document assumed sub-themes assemble in
+  `AppTheme._buildTheme`. They actually assemble in `DesignTheme.forTier`
+  (`lib/core/design/design_theme.dart`): most sub-themes read `Spacing`/
+  `Shapes`/`Density`/`TypeRoles`, which only exist once the width tier is
+  known, and `AppTheme.of` runs before that.
+- **§6's "surface tone, not shadow" elevation model needed a resolution
+  step this doc didn't specify.** `Elevations` and `TypeRoles` aren't pure
+  constants — they resolve against the brand's own `ColorScheme`/`TextTheme`,
+  the same "fixed mapping, brand-derived output" pattern `BrandInk` already
+  used. Product tokens with zero brand awareness (`Spacing`, `Shapes`,
+  `Density`) stayed exactly as proposed.
+- **§4.2's `lightSurfaceContainerLow` gap got a real (interpolated) value**:
+  `#F9F6F1`, the midpoint of its two neighboring approved tones — flagged
+  for brand-owner confirmation, not treated as final.
+- **Chips use `shapes.sm` (8dp), not a stadium shape** — verified directly
+  against the Flutter SDK source (`_ChipDefaultsM3`) rather than assumed;
+  an implementation draft briefly used `StadiumBorder` before this check
+  caught it.
+- **The golden safety net (§11) needed two more font fixtures than
+  planned.** Loading only Archivo/RobotoMono left all *unbranded* body text
+  and every icon rendering as placeholder boxes — Flutter's test sandbox
+  ships zero real fonts by default, including Roboto and Material Icons.
+  Both are now vendored as test fixtures (Apache 2.0 / CC-BY 4.0) alongside
+  Archivo/RobotoMono.
+- **Two real bugs the safety net caught before they shipped**: the
+  navigation rail's unselected-label weight briefly went bold (lost the
+  original selected/unselected distinction), and `CardThemeData.margin`
+  briefly read a fixed spacing constant instead of the tier-dependent
+  `cardPadding`, silently defeating FR-013 for every card-bearing screen.
+  Both fixed and re-verified before landing.
+- **§13 Q1 (contrast enforcement)**: resolved as fail-the-build, not warn —
+  see spec 022's Clarifications. §13 Q4 (RobotoMono scope): resolved as
+  narrowing spec 019's contract to match built behavior (timestamps/record
+  identifiers only), not extending it to codes/SKUs.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
 import 'package:mbe_ui/core/widgets/brand_nav_header.dart';
@@ -87,34 +88,47 @@ class AppNavigation extends ConsumerWidget {
     NavDestination d,
     AppLocalizations l10n,
   ) {
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final navTheme = theme.navigationRailTheme;
     final selected = d.branchIndex == currentIndex;
-    final fg = selected ? scheme.onSecondaryContainer : scheme.onSurfaceVariant;
+    final indicatorShape = navTheme.indicatorShape ?? const StadiumBorder();
+    final labelStyle =
+        (selected
+            ? navTheme.selectedLabelTextStyle
+            : navTheme.unselectedLabelTextStyle) ??
+        theme.typeRoles.navLabel;
+    final fg =
+        labelStyle.color ??
+        (selected ? scheme.onSecondaryContainer : scheme.onSurfaceVariant);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.xs,
+        vertical: theme.spacing.xxs / 2,
+      ),
       child: Material(
-        color: selected ? scheme.secondaryContainer : Colors.transparent,
-        borderRadius: BorderRadius.circular(28),
+        color: selected
+            ? (navTheme.indicatorColor ?? scheme.secondaryContainer)
+            : Colors.transparent,
+        shape: indicatorShape,
         child: InkWell(
           key: Key('nav_dest_${d.id}'),
-          borderRadius: BorderRadius.circular(28),
+          customBorder: indicatorShape,
           onTap: () => onDestinationSelected(d.branchIndex),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: theme.spacing.md,
+              vertical: theme.spacing.sm,
+            ),
             child: Row(
               children: [
                 Icon(selected ? (d.selectedIcon ?? d.icon) : d.icon, color: fg),
-                const SizedBox(width: 12),
+                SizedBox(width: theme.spacing.sm),
                 Expanded(
                   child: Text(
                     d.label(l10n),
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: fg,
-                      fontWeight: selected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                    ),
+                    style: labelStyle,
                   ),
                 ),
               ],

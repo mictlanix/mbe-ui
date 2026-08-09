@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
+
 /// One labeled section (Warehouses / Points of Sale / Cash Drawers) inside
 /// an expanded facility card (FR-007). Shows a header with the section's
 /// name and count, a create action (hidden when [onCreate] is `null` —
@@ -77,7 +79,7 @@ class FacilityChildSection extends StatelessWidget {
               Text(
                 '$count',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  fontFamily: 'monospace',
+                  fontFamily: TypeRoles.monoFamily,
                   color: scheme.outline,
                 ),
               ),

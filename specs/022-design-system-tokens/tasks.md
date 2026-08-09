@@ -40,10 +40,10 @@ applies. New code lands in `lib/core/design/` (product tokens) and `test/golden/
 
 **Purpose**: Scaffolding only — no token logic, no widget changes.
 
-- [ ] T001 Create the `lib/core/design/` directory and stub `lib/core/design/design.dart`
+- [x] T001 Create the `lib/core/design/` directory and stub `lib/core/design/design.dart`
   (empty barrel export for now); create `test/golden/`, `test/contract/`,
   `test/unit/core/design/`, `test/widget/core/design/`.
-- [ ] T002 Create `test/unit/core/layering_test.dart`: assert, by scanning `lib/features/`
+- [x] T002 Create `test/unit/core/layering_test.dart`: assert, by scanning `lib/features/`
   and `lib/core/` source for `import 'package:mbe_ui/app/`, that nothing imports
   `lib/app/` (constitution §I; Verbatim Constraint in spec.md). Guards the invariant every
   later phase relies on.
@@ -60,21 +60,21 @@ approved value instead of falling back to a seed-derived one.
 **Independent Test**: sample body text and card-background color in light and dark mode;
 both match the approved brand values. No other phase needs to exist first.
 
-- [ ] T003 [US1] In `lib/app/theme/app_theme.dart`'s `_buildTheme`, stop seeding
+- [x] T003 [US1] In `lib/app/theme/app_theme.dart`'s `_buildTheme`, stop seeding
   `_brandTextTheme`'s base from a bare `ThemeData(brightness: brightness)` (which carries
   no `colorScheme` and so resolves Flutter's M3 baseline ink, `#1D1B20`/`#E6E0E9`). Seed it
   from a `ThemeData` built **with** `colorScheme`, so every text role's color traces to the
   pinned `onSurface` (`#1C1A16` light / `#EFE9DF` dark) instead (`FR-001`).
-- [ ] T004 [US1] In `lib/core/branding/xbe_palette.dart`, add `lightSurfaceContainerLow`.
+- [x] T004 [US1] In `lib/core/branding/xbe_palette.dart`, add `lightSurfaceContainerLow`.
   Value: `#F9F6F1` — the midpoint between the existing `lightSurfaceContainerLowest`
   (`#FFFFFF`) and `lightSurfaceContainer` (`#F3EDE3`), since the brand guide's own §06
   "Modo claro" section never specified this role. **Flag this interpolated value for
   brand-owner confirmation** in the same way `FR-026` flags off-grid spacing — it is an
   engineering estimate standing in for a design decision, not an approved token.
-- [ ] T005 [US1] In `lib/app/theme/app_theme.dart`'s `_lightScheme`, pin
+- [x] T005 [US1] In `lib/app/theme/app_theme.dart`'s `_lightScheme`, pin
   `surfaceContainerLow: XbePalette.lightSurfaceContainerLow`, mirroring the existing dark
   pin (`FR-002`).
-- [ ] T006 [P] [US1] Extend `test/widget/app/app_theme_test.dart`: for both brightnesses,
+- [x] T006 [P] [US1] Extend `test/widget/app/app_theme_test.dart`: for both brightnesses,
   (a) assert every `TextTheme` role's `.color` equals `colorScheme.onSurface` (not
   `#1D1B20`/`#E6E0E9`); (b) assert `light.colorScheme.surfaceContainerLow` equals the new
   pinned constant, not a seed-derived value; **and (c) reuse the file's existing
@@ -82,7 +82,7 @@ both match the approved brand values. No other phase needs to exist first.
   `TextTheme` role's color against `colorScheme.surface`, asserting ≥4.5:1 in both
   brightnesses** (`FR-022`, `SC-003`) — (c) is the actual, computed proof of the contrast
   claim; (a) alone only proves color assignment, not that the assignment is safe to read.
-- [ ] T007 [US1] Run `quickstart.md` Scenario 1 (`flutter test test/widget/app/app_theme_test.dart`)
+- [x] T007 [US1] Run `quickstart.md` Scenario 1 (`flutter test test/widget/app/app_theme_test.dart`)
   and confirm `SC-003` (≥4.5:1 every text role, both modes) holds via T006(c)'s computed
   assertion — not merely inferred from T006(a)'s equality check.
 
@@ -102,55 +102,55 @@ documented values (`data-model.md`) and identical results under two different br
 **Depends on**: T005 (`Elevations.raised` maps to `surfaceContainerLow`, unusable in light
 mode until it is pinned).
 
-- [ ] T008 [P] [US2] Create `lib/core/design/spacing.dart`: `Spacing` `ThemeExtension` with
+- [x] T008 [P] [US2] Create `lib/core/design/spacing.dart`: `Spacing` `ThemeExtension` with
   the 8 fixed steps and 7 tier-dependent layout metrics from `data-model.md` §1, `const`
   constructors, no `BrandConfig` parameter (`FR-004`, `FR-010`).
-- [ ] T009 [P] [US2] Create `lib/core/design/shapes.dart`: `Shapes` `ThemeExtension` with
+- [x] T009 [P] [US2] Create `lib/core/design/shapes.dart`: `Shapes` `ThemeExtension` with
   the 7 radii from `data-model.md` §2, including `lg = 16` (Verbatim Constraint) (`FR-005`).
-- [ ] T010 [P] [US2] Create `lib/core/design/elevations.dart`: `Elevations` `ThemeExtension`
+- [x] T010 [P] [US2] Create `lib/core/design/elevations.dart`: `Elevations` `ThemeExtension`
   with the 6 levels from `data-model.md` §3, each carrying a surface-role reference and a
   shadow dp (`0` for persistent surfaces) (`FR-006`).
-- [ ] T011 [P] [US2] Create `lib/core/design/density.dart`: `Density` `ThemeExtension`
+- [x] T011 [P] [US2] Create `lib/core/design/density.dart`: `Density` `ThemeExtension`
   resolved from `VisualDensity.adaptivePlatformDensity` (research R2 — **not**
   `MediaQuery.navigationModeOf`, which the spec's own Assumptions wrongly named), with the
   touch/pointer table from `data-model.md` §4 (`FR-007`).
-- [ ] T012 [US2] Create `lib/core/design/type_roles.dart`: `TypeRoles` `ThemeExtension`
+- [x] T012 [US2] Create `lib/core/design/type_roles.dart`: `TypeRoles` `ThemeExtension`
   with the **21** slots from `data-model.md` §5, each returning a ready `TextStyle` for the
   current tier. Bake per-slot weight emphasis into the role itself where the current
   hardcode adds one on top of the brand default (`metricValue`, `pageHeading` both need
   `w700`, one step above their base role's brand `w600`) — so a call site never needs its
   own `.copyWith` (`FR-008`).
-- [ ] T013 [US2] Create `lib/core/design/design_theme.dart`: `DesignTheme.forTier(ThemeData
+- [x] T013 [US2] Create `lib/core/design/design_theme.dart`: `DesignTheme.forTier(ThemeData
   base, LayoutTier tier)` assembling T008–T012 into a derived `ThemeData`, memoized per
   `(Brightness, LayoutTier)` (at most 8 live instances) so only a tier-boundary crossing
   triggers a rebuild (research R1).
-- [ ] T014 [US2] In `lib/app/app.dart`, add a `MaterialApp.builder` that resolves
+- [x] T014 [US2] In `lib/app/app.dart`, add a `MaterialApp.builder` that resolves
   `LayoutBreakpoints.tierOfContext(context)` and wraps `child` in
   `Theme(data: DesignTheme.forTier(Theme.of(context), tier), child: child!)`. Because
   `builder` wraps the `Navigator`, every route/dialog/sheet inherits the tier-resolved
   theme (research R1).
-- [ ] T015 [P] [US2] Populate `lib/core/design/design.dart` (stubbed in T001) as the barrel
+- [x] T015 [P] [US2] Populate `lib/core/design/design.dart` (stubbed in T001) as the barrel
   export for T008–T013.
-- [ ] T016 [P] [US2] Add `ThemeData` extension getters (`theme.spacing`, `.shapes`,
+- [x] T016 [P] [US2] Add `ThemeData` extension getters (`theme.spacing`, `.shapes`,
   `.elevations`, `.density`, `.typeRoles`) mirroring the shipped `BrandInkTheme` pattern —
   each falls back to its `const` default when the extension is absent, satisfying `FR-024`
   and `FR-009` together.
-- [ ] T017 [P] [US2] Create `test/unit/core/design/spacing_test.dart`, `shapes_test.dart`,
+- [x] T017 [P] [US2] Create `test/unit/core/design/spacing_test.dart`, `shapes_test.dart`,
   `elevations_test.dart`, `density_test.dart`, **and `type_roles_test.dart`** (five files):
   for the first four, assert the grid/ordering invariants from `data-model.md`'s
   per-entity Validation notes, and that every tier-dependent field resolves for all four
   tiers with no gap (`SC-005`). For `type_roles_test.dart`, assert **every one of the 21
   slots** resolves to its documented M3 role at every one of the 4 tiers (`FR-008`) — not
   only the three monospace-related slots (those get their own narrower assertions in T044).
-- [ ] T018 [US2] Create `test/unit/core/design/brand_independence_test.dart`: build
+- [x] T018 [US2] Create `test/unit/core/design/brand_independence_test.dart`: build
   `DesignTheme.forTier` under the default `BrandConfig` and under an overridden-seed one;
   assert every design-token value is identical between the two (`SC-008`) — the structural
   proof that `FR-010` holds, not just a documentation claim.
-- [ ] T019 [US2] Create `test/widget/core/design/tier_resolution_test.dart`: pump the app at
+- [x] T019 [US2] Create `test/widget/core/design/tier_resolution_test.dart`: pump the app at
   480 / 720 / 1024 / 1440 logical px and assert `MaterialApp.builder` resolves
   compact/medium/expanded/large respectively, with the tier-resolved theme visible above
   the `Navigator`.
-- [ ] T020 [US2] Create `test/widget/core/design/fallback_test.dart`: pump a bare
+- [x] T020 [US2] Create `test/widget/core/design/fallback_test.dart`: pump a bare
   `ThemeData()` with no design extensions and confirm `theme.spacing` etc. return their
   `const` defaults rather than throwing (`FR-024`).
 
@@ -167,14 +167,14 @@ loudly on any visual change — including a component added *after* this feature
 **Independent Test**: deliberately alter one component's appearance; the comparison fails
 and names the component and combination.
 
-- [ ] T021 [US3] Create `test/golden/golden_harness.dart`: a shared
+- [x] T021 [US3] Create `test/golden/golden_harness.dart`: a shared
   `pumpGoldenScenario(tester, widget, brightness, tier)` helper, plus a `setUpAll` that
   loads `assets/fonts/Archivo-Variable.ttf` and `assets/fonts/RobotoMono-Variable.ttf` via
   `FontLoader`. **Required, not optional** — without it, goldens render text as placeholder
   boxes and the suite verifies nothing (research R4).
-- [ ] T022 [US3] Create `test/golden/README.md` recording the generating Flutter version
+- [x] T022 [US3] Create `test/golden/README.md` recording the generating Flutter version
   (3.44.2) and the `--update-goldens` workflow, per research R4's host-dependence note.
-- [ ] T023 [US3] Create `test/golden/core_widgets_golden_test.dart`: for each of the 19
+- [x] T023 [US3] Create `test/golden/core_widgets_golden_test.dart`: for each of the 19
   renderable widgets in `lib/core/widgets/` (`app_navigation`, `app_shell`, `brand_logo`,
   `brand_nav_header`, `catalog_action_icons`, `catalog_entity_picker`, `catalog_filter_bar`,
   `catalog_filter_sheet`, `catalog_pagination`, `catalog_search_bar`, `data_table_view`,
@@ -190,9 +190,9 @@ and names the component and combination.
   (closing the gap the enumerated-list approach would otherwise leave open). Note for T029:
   adding `status_chip.dart` in Phase 5 will make this scan fail until T029 adds its entry —
   that failure is the mechanism working as intended, not a bug.
-- [ ] T024 [US3] Run `flutter test test/golden --update-goldens` to generate the baseline
+- [x] T024 [US3] Run `flutter test test/golden --update-goldens` to generate the baseline
   images; commit the resulting PNGs.
-- [ ] T025 [US3] Verify the net catches change (`FR-021` proof, quickstart Scenario 3):
+- [x] T025 [US3] Verify the net catches change (`FR-021` proof, quickstart Scenario 3):
   temporarily change one widget's padding, run `flutter test test/golden`, confirm the
   failure names the widget and combination, then revert the change before continuing.
 
@@ -212,48 +212,48 @@ to one sub-theme propagates to every screen with zero screen files edited.
 
 **Depends on**: Phase 4 checkpoint (golden net green) and Phase 3 (tokens to consume).
 
-- [ ] T026 [US4] Create `lib/core/widgets/status_chip.dart`: a generic `StatusChip<T>`
+- [x] T026 [US4] Create `lib/core/widgets/status_chip.dart`: a generic `StatusChip<T>`
   reading its label/background/foreground from a caller-supplied mapping and from
   `ChipThemeData`, replacing the two near-duplicate chip implementations (`FR-018`).
-- [ ] T027 [US4] Refactor `lib/core/widgets/entity_status_controls.dart` to delegate its
+- [x] T027 [US4] Refactor `lib/core/widgets/entity_status_controls.dart` to delegate its
   chip rendering to `StatusChip`.
-- [ ] T028 [US4] Refactor `lib/features/sales/presentation/widgets/cash_session_status_chip.dart`
+- [x] T028 [US4] Refactor `lib/features/sales/presentation/widgets/cash_session_status_chip.dart`
   to delegate to `StatusChip`; remove its now-redundant `labelStyle`/`visualDensity`.
-- [ ] T029 [US4] Add golden coverage for the new `StatusChip` to
+- [x] T029 [US4] Add golden coverage for the new `StatusChip` to
   `test/golden/core_widgets_golden_test.dart` (extends T023 — the widget did not exist when
   the baseline was captured) — this also satisfies T023's directory-scan assertion, which
   would otherwise fail as soon as `status_chip.dart` exists.
-- [ ] T030 [US4] In `lib/app/theme/app_theme.dart`'s `_buildTheme`, add `AppBarTheme`,
+- [x] T030 [US4] In `lib/app/theme/app_theme.dart`'s `_buildTheme`, add `AppBarTheme`,
   `CardThemeData` (`shapes.lg`, `surfaceContainerLow`, elevation 0, tier margin from
   `spacing`), `InputDecorationTheme` (filled, `shapes.xs`, tier `isDense` from `density`),
   and `ChipThemeData` (`typeRoles.chipLabel`, `shapes.sm`) (contracts table rows 1–4).
-- [ ] T031 [US4] Add `DataTableThemeData` (`typeRoles.tableHeader`/`.tableCell`,
+- [x] T031 [US4] Add `DataTableThemeData` (`typeRoles.tableHeader`/`.tableCell`,
   `headingRowColor`), `DividerThemeData` (`outlineVariant`, thickness 1), and
   `DialogThemeData` (`shapes.xl`, `typeRoles.sectionHeading`) (contracts rows 5–7).
-- [ ] T032 [US4] Add `NavigationRailThemeData` and `NavigationDrawerThemeData`
+- [x] T032 [US4] Add `NavigationRailThemeData` and `NavigationDrawerThemeData`
   (`indicatorShape: shapes.full`, `secondaryContainer`, `typeRoles.navLabel`); update
   `lib/core/widgets/app_navigation.dart` to remove its ad-hoc `Colors.transparent` fill and
   `BorderRadius.circular(28)`, and its raw `TextStyle` for the destination label, reading
   all three from the new sub-themes instead (contracts rows 8–9).
-- [ ] T033 [US4] Add `FilledButtonTheme`/`OutlinedButtonTheme`/`TextButtonTheme`
+- [x] T033 [US4] Add `FilledButtonTheme`/`OutlinedButtonTheme`/`TextButtonTheme`
   (`shapes.full`, tier padding, `typeRoles.buttonLabel`), `ListTileThemeData`, and
   `SegmentedButtonThemeData` (contracts rows 10–11).
-- [ ] T034 [US4] Add `BottomSheetThemeData` (`shapes.xl`, top corners only),
+- [x] T034 [US4] Add `BottomSheetThemeData` (`shapes.xl`, top corners only),
   `SnackBarThemeData`, `TooltipThemeData`, `PopupMenuThemeData`, `SwitchThemeData`, and
   `ProgressIndicatorThemeData` (contracts rows 12–14).
-- [ ] T035 [US4] In `lib/core/widgets/data_table_view.dart`, pass `dataRowHeight`,
+- [x] T035 [US4] In `lib/core/widgets/data_table_view.dart`, pass `dataRowHeight`,
   `headingRowHeight`, and `dividerThickness` explicitly from `theme.density`, since
   `data_table_2` reads those three from its own constructor parameters rather than
   `DataTableThemeData` (research R5) — this is the one place any screen touches table
   sizing; no other screen may pass these itself.
-- [ ] T036 [P] [US4] Create `test/widget/core/widgets/status_chip_test.dart`: assert
+- [x] T036 [P] [US4] Create `test/widget/core/widgets/status_chip_test.dart`: assert
   `EntityStatus` and `CashSessionStatus` both render through the single shared `StatusChip`
   (`SC-010`).
-- [ ] T037 [US4] Re-run `flutter test test/golden`. Review every diff: `CardThemeData.shape`
+- [x] T037 [US4] Re-run `flutter test test/golden`. Review every diff: `CardThemeData.shape`
   (12→16), the navigation indicator shape, and chip styling are **expected** — accept and
   regenerate those baselines with `--update-goldens`. Any other diff is a regression; fix
   before proceeding.
-- [ ] T038 [US4] Manual verification, quickstart Scenario 4: compare the status indicator
+- [x] T038 [US4] Manual verification, quickstart Scenario 4: compare the status indicator
   across Catalog → Products, Facilities → child rows, and Sales → Cash Sessions — confirm
   identical. Change `CardThemeData.shape` once more and confirm every card-bearing screen
   reflects it with zero screen files edited (`SC-009`).
@@ -272,32 +272,32 @@ definitions; a product code in a table stays on the body role.
 
 **Depends on**: Phase 3 (`TypeRoles` must exist).
 
-- [ ] T039 [US5] In `lib/core/widgets/brand_nav_header.dart`, replace the hardcoded
+- [x] T039 [US5] In `lib/core/widgets/brand_nav_header.dart`, replace the hardcoded
   `TextStyle(fontFamily: 'Archivo', fontWeight: w600, fontSize: 14)` with
   `theme.typeRoles.navHeader`.
-- [ ] T040 [US5] In `lib/features/auth/presentation/login/login_branding_pane.dart`, replace
+- [x] T040 [US5] In `lib/features/auth/presentation/login/login_branding_pane.dart`, replace
   the two hardcoded `TextStyle`s (`fontSize: 32`/`15`, `fontFamily: 'Archivo'`) with
   `theme.typeRoles.heroHeading`/`.heroSubhead`, keeping each style's `.copyWith(color:
   XbePalette.darkOnSurface / .darkOnSurfaceVariant)` — this pane is deliberately always-dark
   regardless of the user's theme choice, which `FR-019`'s ban on hardcoded typefaces/sizes
   does not override.
-- [ ] T041 [US5] In `lib/features/home/presentation/home_dashboard_tiles.dart` and
+- [x] T041 [US5] In `lib/features/home/presentation/home_dashboard_tiles.dart` and
   `home_welcome.dart`, remove the `.copyWith(fontFamily: 'Archivo', fontWeight: w700)`
   overrides (now redundant — T012 already bakes the emphasis into the role) and use
   `theme.typeRoles.metricValue` / `.pageHeading` directly.
-- [ ] T042 [US5] In `lib/features/home/presentation/home_activity_feed.dart`, replace the
+- [x] T042 [US5] In `lib/features/home/presentation/home_activity_feed.dart`, replace the
   hardcoded `fontFamily: 'RobotoMono'` with `theme.typeRoles.timestamp`.
-- [ ] T043 [US5] In `specs/019-xbe-default-branding/contracts/brand-tokens.md`'s Typography
+- [x] T043 [US5] In `specs/019-xbe-default-branding/contracts/brand-tokens.md`'s Typography
   contract table, narrow "Codes / SKUs / monospaced data" to "Record identifiers /
   timestamps", per `FR-028` (clarified 2026-08-08) — a documentation correction to match
   behaviour that was never actually built.
-- [ ] T044 [P] [US5] Extend `test/unit/core/design/type_roles_test.dart` (created in T017):
+- [x] T044 [P] [US5] Extend `test/unit/core/design/type_roles_test.dart` (created in T017):
   assert `theme.typeRoles.productCode` uses the standard body role (not RobotoMono), and
   `.recordId`/`.timestamp` do use RobotoMono (`FR-028`).
-- [ ] T045 [US5] Run the `SC-001` check from `quickstart.md` Scenario 5
+- [x] T045 [US5] Run the `SC-001` check from `quickstart.md` Scenario 5
   (`grep -rn "fontFamily:\s*'" lib | grep -v generated | grep -v core/design`, and the
   equivalent for `fontSize:`) and confirm zero results.
-- [ ] T046 [P] [US5] Run the `SC-002` check from `quickstart.md` Scenario 5: grep the repo
+- [x] T046 [P] [US5] Run the `SC-002` check from `quickstart.md` Scenario 5: grep the repo
   for hardcoded `Color(0x` / `Colors\.` literals outside `lib/core/branding/` (the token
   source) and the documented legitimate exceptions (`Colors.transparent` as an
   absent-color sentinel, `Colors.black54` matching Flutter's own barrier default,
@@ -319,11 +319,11 @@ metric changes and an actual rendered control's measured padding change.
 **Depends on**: Phase 3 (the tier tables to audit) and, for the rendered-control check,
 Phase 5 (a themed control to measure).
 
-- [ ] T047 [US6] Audit `lib/core/design/spacing.dart` and `density.dart` against
+- [x] T047 [US6] Audit `lib/core/design/spacing.dart` and `density.dart` against
   `data-model.md` §1/§4: confirm every tier-dependent field has a defined value for
   compact, medium, expanded, **and** large — no accidental gap (`FR-012`, `SC-005`). Fix
   any gap found.
-- [ ] T048 [US6] Extend `test/widget/core/design/tier_resolution_test.dart` (T019) with (a)
+- [x] T048 [US6] Extend `test/widget/core/design/tier_resolution_test.dart` (T019) with (a)
   assertions that `screenMargin`, `cardPadding`, `sectionGap`, and `paneGutter` change value
   crossing the 840px expanded boundary (`FR-013`), and that compact-tier values resolve
   even though no compact-tier layout consumes them yet (`FR-014`); **and (b) a rendered
@@ -331,7 +331,7 @@ Phase 5 (a themed control to measure).
   700px (medium/tablet) and 900px (expanded/desktop), and assert its measured `RenderBox`
   padding differs between the two per `data-model.md`'s table — moving `FR-013`'s "visibly
   adapt" claim from a manual-only check to an automated one for at least one control.
-- [ ] T049 [US6] Manual verification, quickstart Scenario 6: resize the desktop app window
+- [x] T049 [US6] Manual verification, quickstart Scenario 6: resize the desktop app window
   across 840px and confirm the Phase 5 shared widgets visibly step their spacing and
   density at the boundary.
 
@@ -343,8 +343,8 @@ Phase 5 (a themed control to measure).
 
 **Purpose**: the deployment-facing gate and closing verification, spanning every story.
 
-- [ ] T050 [P] Run `flutter analyze lib test` and fix any lints introduced by this feature.
-- [ ] T051 Create `test/contract/brand_contrast_test.dart`: build the real `AppTheme` from
+- [x] T050 [P] Run `flutter analyze lib test` and fix any lints introduced by this feature.
+- [x] T051 Create `test/contract/brand_contrast_test.dart`: build the real `AppTheme` from
   `BrandConfig.fromEnvironment()` (so it honors whatever `--dart-define` values the caller
   passed) and assert every foreground role clears 4.5:1 in both brightnesses (`FR-027`).
   **Also add two deliberately-failing negative cases, per `SC-011`'s literal wording** ("at
@@ -358,9 +358,9 @@ Phase 5 (a themed control to measure).
   values as the following `flutter build`, and MUST treat a non-zero exit as a failed
   deployment — see quickstart.md Scenario 7 and research R6 for why this cannot be a
   build-time hook instead.
-- [ ] T052 [P] Update `DESIGN-SYSTEM.md`, marking §3 (type roles), §4 (spacing), §5 (shape),
+- [x] T052 [P] Update `DESIGN-SYSTEM.md`, marking §3 (type roles), §4 (spacing), §5 (shape),
   §6 (elevation), §7 (density), and §8 (sub-themes) as shipped, linking to this spec.
-- [ ] T053 Run every scenario in `quickstart.md` end-to-end and record the result of each
+- [x] T053 Run every scenario in `quickstart.md` end-to-end and record the result of each
   against its listed success criteria.
 
 **Checkpoint**: feature complete. All 28 functional requirements and 11 success criteria
