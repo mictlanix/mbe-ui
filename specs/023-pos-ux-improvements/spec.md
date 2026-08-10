@@ -130,6 +130,9 @@ unconfirmed one reopens on Venta and the finished one offers no edit.
 6. **Given** a paid counter sale or a cancelled sale, **When** the cashier
    looks at its row, **Then** the row shows its information and offers no edit
    action.
+6a. **Given** a finished sale, **When** the cashier clicks its row anywhere
+   outside the edit action, **Then** the sale opens read-only — every value
+   legible, every control inert — so a stray click can never start an edit.
 7. **Given** the cashier is on the list, **When** they press the new-sale
    action, **Then** the workspace opens on a fresh sale for their register.
 8. **Given** the cashier reopened a sale and returns to the list, **When** the
@@ -424,6 +427,10 @@ the primary action sits on the same band.
   workable — being captured, confirmed with an outstanding balance, or paid with
   an unfinished delivery distribution — and MUST NOT offer it on finished or
   cancelled sales.
+- **FR-006a**: Clicking a row anywhere outside its edit action MUST open that
+  sale read-only, never an editable form — the safe-click rule every list screen
+  in this product follows. A finished sale is therefore readable, without a new
+  screen being introduced for it.
 - **FR-007**: Pressing a sale's edit action MUST open the sale workspace at the
   step that sale's own status and delivery destination imply, using the same
   resolution the register's open-sales selector already uses.
@@ -456,9 +463,11 @@ the primary action sits on the same band.
   the workspace, in the order spec 020 fixed.
 - **FR-018**: Leaving the workspace with a sale that has no lines MUST abandon
   that draft, as leaving an empty sale already does.
-- **FR-019**: Opening the workspace for a sale that cannot be worked on —
+- **FR-019**: Opening the workspace for a sale that cannot be *reached* —
   unknown, cancelled, or belonging to another register — MUST explain why and
-  offer a way back to the list, and MUST NOT open a sale in its place.
+  offer a way back to the list, and MUST NOT open a sale in its place. A sale
+  that is merely **finished** is not in this category: it opens read-only
+  (FR-006a).
 - **FR-020**: The cash-session gate MUST govern the workspace on every entry
   path, including a direct link.
 - **FR-021**: At phone widths the workspace MUST keep the existing stacked,
@@ -625,9 +634,13 @@ the primary action sits on the same band.
   bar, as the mock's frame `2a` shows it — the list is how a cashier *finds* a
   sale, but moving between two sales at a busy counter should not require
   leaving the workspace.
-- **No read-only sale viewer is added.** A finished or cancelled sale is
-  readable as its list row; this feature does not add a detail screen for it.
-  If one is wanted, it is its own feature.
+- **No *new* read-only screen is added.** A finished sale opens into the
+  workspace's existing read-only rendering — the sale is already displayed with
+  every control inert once it is past draft — so FR-006a's safe-click rule is
+  satisfied without a second screen. Amended during planning: the spec first put
+  read-only viewing out of scope, which would have left the list with no row
+  click at all, against the standing rule that a stray click must open a
+  read-only view rather than an editable form.
 - **The one-row line threshold is chosen during design, but its ceiling is
   fixed.** The exact number follows from measuring the fields against the type
   scale; what is settled is that it must be at or below 1024 px so a tablet in
