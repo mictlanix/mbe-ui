@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "pos ux improvements",
   "branch": "023-pos-ux-improvements",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-10T13:35:13.107Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-10T14:02:06.416Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-10T14:02:12.697Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-10T14:02:12.752Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
