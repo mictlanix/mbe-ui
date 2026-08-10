@@ -1,0 +1,209 @@
+{
+  "workflow": "speckit",
+  "specName": "pos ux improvements",
+  "branch": "023-pos-ux-improvements",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-10T12:06:55.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-10T12:14:27.817Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "The point-of-sale navigation destination MUST open a list of sales, replacing the capture surface"
+    },
+    "FR-002": {
+      "title": "The list MUST show reference/folio, date and time, customer, status, total and outstanding balance"
+    },
+    "FR-003": {
+      "title": "The list MUST be scoped to the cashier's own point of sale and default to the current trading day"
+    },
+    "FR-004": {
+      "title": "The list MUST offer date-range, status and free-text search filters, and MUST page results"
+    },
+    "FR-005": {
+      "title": "The list MUST order sales newest first"
+    },
+    "FR-006": {
+      "title": "The list MUST offer an edit action only on sales that are still workable"
+    },
+    "FR-007": {
+      "title": "Edit MUST open the workspace at the step the sale's status and delivery destination imply"
+    },
+    "FR-008": {
+      "title": "The list MUST offer a primary action that starts a new sale and opens the workspace on it"
+    },
+    "FR-009": {
+      "title": "Returning to the list from the workspace MUST re-read the sales"
+    },
+    "FR-010": {
+      "title": "The list MUST report empty, loading and failure states per convention, with retry"
+    },
+    "FR-011": {
+      "title": "The list MUST remain inside the application shell with the existing access gate"
+    },
+    "FR-012": {
+      "title": "The sale workspace MUST render full-screen with its own app bar and no rail or drawer"
+    },
+    "FR-013": {
+      "title": "The workspace app bar MUST carry a Back affordance that returns to the list"
+    },
+    "FR-014": {
+      "title": "The workspace app bar area MUST carry the sale reference, folio and step indicator"
+    },
+    "FR-015": {
+      "title": "The workspace MUST NOT centre or width-bound its content"
+    },
+    "FR-016": {
+      "title": "The workspace MUST leave no unused vertical space; the lines region absorbs it"
+    },
+    "FR-017": {
+      "title": "All three steps MUST render inside the workspace in the order spec 020 fixed"
+    },
+    "FR-018": {
+      "title": "Leaving the workspace with a sale that has no lines MUST abandon that draft"
+    },
+    "FR-019": {
+      "title": "Opening a sale that cannot be worked on MUST explain and offer a way back, opening no sale"
+    },
+    "FR-020": {
+      "title": "The cash-session gate MUST govern the workspace on every entry path"
+    },
+    "FR-021": {
+      "title": "At phone widths the workspace MUST keep the stacked single-scroll capture behaviour"
+    },
+    "FR-022": {
+      "title": "The customer band MUST by default report name, credit line, price list and balance as information"
+    },
+    "FR-023": {
+      "title": "The customer band MUST always show the resolved customer name, including mid-change"
+    },
+    "FR-024": {
+      "title": "The customer band MUST offer search and create actions, create only when permitted"
+    },
+    "FR-025": {
+      "title": "Pressing search MUST replace the facts in place with the picker, with a visible transition and focus"
+    },
+    "FR-026": {
+      "title": "Dismissing the picker without choosing MUST restore the facts and change nothing"
+    },
+    "FR-027": {
+      "title": "The band MUST show progress while fetching candidates and while attaching a customer"
+    },
+    "FR-028": {
+      "title": "The segmented immediate/credit control MUST be replaced by a payment-terms dropdown by the credit line"
+    },
+    "FR-029": {
+      "title": "The terms dropdown MUST show the sale's terms, offer credit only with a credit line, and state its absence"
+    },
+    "FR-030": {
+      "title": "The screen MUST NOT change payment terms other than in response to the cashier choosing them"
+    },
+    "FR-031": {
+      "title": "The fulfilment mode control MUST sit beside the customer band where width allows, below it otherwise"
+    },
+    "FR-032": {
+      "title": "The customer band MUST span its available width with token insets and no nested padding"
+    },
+    "FR-033": {
+      "title": "The product field MUST offer matching products as the cashier types, debounced, without Enter"
+    },
+    "FR-034": {
+      "title": "The product field MUST keep the scanner path: code plus Enter with one match adds the line directly"
+    },
+    "FR-035": {
+      "title": "Only the result for the currently typed text MUST be offered"
+    },
+    "FR-036": {
+      "title": "The product field MUST show search progress, state no-match, and allow dismissal without clearing text"
+    },
+    "FR-037": {
+      "title": "A sale line MUST render as one row above a defined width, two rows below it, and the card at phone widths"
+    },
+    "FR-037a": {
+      "title": "The single-row width MUST be low enough that a tablet in landscape (1024 px) uses one row"
+    },
+    "FR-038": {
+      "title": "Each of a line's fields MUST be sized for the value it holds, product area taking the remainder"
+    },
+    "FR-039": {
+      "title": "A line MUST present the product name prominently with the code as a secondary line beneath"
+    },
+    "FR-040": {
+      "title": "A line MUST reserve a fixed thumbnail slot rendering the placeholder until a backend photo exists"
+    },
+    "FR-041": {
+      "title": "A line MUST keep warehouse choice, availability and the non-blocking shortfall warning"
+    },
+    "FR-042": {
+      "title": "A line of a non-editable sale MUST render values legibly with every control inert"
+    },
+    "FR-043": {
+      "title": "The footer MUST report item and unit counts, subtotal, discounts when any, and tax as labelled figures"
+    },
+    "FR-044": {
+      "title": "The footer MUST set the grand total apart as its most prominent, right-aligned figure with currency"
+    },
+    "FR-045": {
+      "title": "The footer MUST carry the advancing action on the same band, disabled until the sale can advance"
+    },
+    "FR-046": {
+      "title": "The footer MUST stay visible without scrolling at every supported width"
+    },
+    "FR-047": {
+      "title": "Every figure the footer reports MUST come from the sale as returned, never recomputed"
+    },
+    "FR-048": {
+      "title": "All colour, spacing, radius, elevation and text size MUST come from design tokens via the theme"
+    },
+    "FR-049": {
+      "title": "Changed controls MUST meet touch-target and contrast rules per form factor and be keyboard-reachable"
+    },
+    "FR-050": {
+      "title": "Every label, message and empty state introduced MUST exist in both supported locales"
+    },
+    "FR-051": {
+      "title": "Restyled shared components MUST have their visual reference images refreshed"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 26,
+    "projectedTasks": 42,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "context": [
+    "area: lib/features/sales/presentation (pos_screen, pos_header_band, open_sales_selector, capture/*)",
+    "area: lib/app/router/app_router.dart — shell branches vs full-screen sibling routes",
+    "area: lib/core/design + DESIGN-SYSTEM.md — token access rule Theme.of(context).spacing/.shapes/.typeRoles",
+    "reference: artifacts/point_of_sale/POS_Adaptativo.dc.html frames 2a and 2e",
+    "constraint: spec 020 decision 3 — step order Venta → Cobro → Entrega is not changed",
+    "constraint: spec 020 decision 2 revised for the workspace only; the list stays in the shell",
+    "constraint: mbe-api unchanged — product photo absent from lookup/line payloads, thumbnail slot reserved"
+  ],
+  "intent": "Give the point of sale a sales list of its own, run the sale in a full-width child workspace, and bring the capture surface back to its mock without changing any selling rule.",
+  "expectations": [
+    "Changing the step order (Venta → Cobro → Entrega stands)",
+    "The payment step's internal layout (mock frame 2c), keypad and applied-payments panel",
+    "The delivery step's internal layout (mock frame 2b)",
+    "The inline customer-create dialog's layout (mock frame 2d)",
+    "Fetching product photos per line or any client-side workaround for the missing photo field",
+    "Facility-wide or supervisor-oriented sales browsing, and any cross-register filter",
+    "Reprinting, invoicing, cancelling or refunding a sale from the list",
+    "Any change to mbe-api itself"
+  ]
+}
