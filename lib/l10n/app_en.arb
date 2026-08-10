@@ -2014,6 +2014,8 @@
   "@posCustomerPriceListLabel": {},
   "posCustomerSearchAction": "Search",
   "@posCustomerSearchAction": {},
+  "posCustomerCreateAction": "New",
+  "@posCustomerCreateAction": {},
   "posCustomerSearchCancelAction": "Cancel search",
   "@posCustomerSearchCancelAction": {},
   "posCustomerNoCreditHint": "No credit line",

@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
@@ -100,7 +101,25 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
     final spacing = Theme.of(context).spacing;
     final enabled = widget.enabled && !_busy;
 
+    final theme = Theme.of(context);
+
     return Card(
+      // Material's own default `Card` margin, left in place, inset this band
+      // a few pixels further than the product search field directly beneath
+      // it — a misalignment visible against that field's edge. The step
+      // already owns every horizontal inset here (`horizontalInset` in
+      // `capture_step.dart`), so the card contributes none of its own.
+      margin: EdgeInsets.zero,
+      // Outlined, as the mock draws this band (`border:1px solid #26262F`
+      // over a barely-lighter fill): at this size a shadow alone did not
+      // read as an edge, and the band needs one to sit as a peer beside the
+      // mode selector's own outline. `outlineVariant` is M3's subtle-border
+      // role, and the radius stays the card theme's own `shapes.lg` so this
+      // is still the same card shape every other surface uses.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.lgRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
         padding: EdgeInsets.all(spacing.cardPadding),
         child: Column(
@@ -183,11 +202,22 @@ class _FactsView extends ConsumerWidget {
     // name.
     final displayName = customerAsync.valueOrNull?.name ?? sale.customerName ?? '—';
 
+    // Every interactive control in this header row shares one height, so the
+    // band's buttons and the mode selector beside it sit on a single
+    // baseline. `SegmentedButton` cannot be pushed past Material's minimum
+    // interactive dimension (see `fulfillment_mode_selector.dart`), so that
+    // is the height everything else meets rather than a taller one nothing
+    // else could reach.
+    final buttonStyle = OutlinedButton.styleFrom(
+      minimumSize: const Size(0, kMinInteractiveDimension),
+    );
+
     final actions = Wrap(
       spacing: 8,
       children: [
         OutlinedButton.icon(
           key: const Key('pos_customer_search_button'),
+          style: buttonStyle,
           icon: busy
               ? const SizedBox(
                   width: 16,
@@ -199,43 +229,68 @@ class _FactsView extends ConsumerWidget {
           onPressed: enabled ? onSearch : null,
         ),
         if (canCreate)
-          IconButton(
+          // Same affordance as Buscar, deliberately: the mock draws the pair
+          // as two identical outlined pills, and as a bare icon this one read
+          // as a lesser control while also being the only unlabelled thing in
+          // the band. The longer `posCreateCustomerAction` stays as the
+          // tooltip, so the short visible label costs nothing in clarity.
+          OutlinedButton.icon(
             key: const Key('pos_create_customer_button'),
+            style: buttonStyle,
             icon: const Icon(Icons.person_add_alt),
-            tooltip: l10n.posCreateCustomerAction,
+            label: Text(l10n.posCustomerCreateAction),
             onPressed: enabled ? onCreate : null,
           ),
       ],
     );
 
-    return Row(
-      key: const Key('pos_customer_facts'),
-      crossAxisAlignment: CrossAxisAlignment.start,
+    final facts = Wrap(
+      spacing: 24,
+      runSpacing: 4,
       children: [
-        Expanded(
-          child: Wrap(
-            spacing: 24,
-            runSpacing: 4,
-            children: [
-              _CustomerBarFact.fact(context, l10n.posCustomerNameLabel, displayName),
-              _TermsFact(sale: sale, enabled: enabled, onChanged: onTermsChanged),
-              customerAsync.when(
-                data: (value) => _CustomerBarFact.fact(
-                  context,
-                  l10n.posCustomerPriceListLabel,
-                  value.priceList.name,
-                ),
-                loading: () => const SizedBox(height: 20),
-                error: (error, stackTrace) => const SizedBox(height: 20),
-              ),
-              _BalanceFact(customerId: sale.customer),
-            ],
+        _CustomerBarFact.fact(context, l10n.posCustomerNameLabel, displayName),
+        _TermsFact(sale: sale, enabled: enabled, onChanged: onTermsChanged),
+        customerAsync.when(
+          data: (value) => _CustomerBarFact.fact(
+            context,
+            l10n.posCustomerPriceListLabel,
+            value.priceList.name,
           ),
+          loading: () => const SizedBox(height: 20),
+          error: (error, stackTrace) => const SizedBox(height: 20),
         ),
-        SizedBox(width: theme.spacing.sm),
-        actions,
+        _BalanceFact(customerId: sale.customer),
       ],
     );
+
+    // Beside the facts where there is room, beneath them on a phone. Both
+    // actions carry a label now, and the pair is wide enough that keeping it
+    // on the facts' row at 390 px squeezed the `Expanded` below the terms
+    // dropdown's own fixed width — which, being fixed, overflowed rather
+    // than shrinking with it.
+    return LayoutBreakpoints.isCompact(context)
+        ? Column(
+            key: const Key('pos_customer_facts'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              facts,
+              SizedBox(height: theme.spacing.xs),
+              actions,
+            ],
+          )
+        : Row(
+            // Centred so the facts and the action pills share one line
+            // rather than the pills hanging from the facts' top edge — the
+            // same centring the step applies between this band and the mode
+            // selector, so all three read as one row of controls.
+            key: const Key('pos_customer_facts'),
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: facts),
+              SizedBox(width: theme.spacing.sm),
+              actions,
+            ],
+          );
   }
 }
 

@@ -905,6 +905,7 @@
   "posCustomerCreditLabel": "Crédito",
   "posCustomerPriceListLabel": "Lista de precios",
   "posCustomerSearchAction": "Buscar",
+  "posCustomerCreateAction": "Nuevo",
   "posCustomerSearchCancelAction": "Cancelar búsqueda",
   "posCustomerNoCreditHint": "Sin línea de crédito",
   "newContactDialogTitle": "Nuevo contacto",

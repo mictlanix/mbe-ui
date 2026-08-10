@@ -31,6 +31,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -441,6 +442,22 @@ void main() {
       await tester.tap(find.byKey(const Key('pos_customer_search_button')));
       await tester.pumpAndSettle();
       await shoot(tester, '06_customer_band_searching');
+    });
+
+    testWidgets('the mode selector alone, first segment selected', (tester) async {
+      await pumpScreen(
+        tester,
+        Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: FulfillmentModeSelector(sale: sale(), enabled: true),
+          ),
+        ),
+        size: const Size(600, 200),
+        overrides: captureOverrides(),
+      );
+      await shoot(tester, '08_mode_selector');
     });
 
     testWidgets('light theme, desktop', (tester) async {

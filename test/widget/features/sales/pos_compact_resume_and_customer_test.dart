@@ -371,7 +371,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('pos_new_customer_code')), findsNothing);
-      expect(find.text(r'$116.00'), findsOneWidget);
+      // Scoped to the footer: the single line's own total is the same
+      // $116.00 as the sale's (`testLine`'s default), so an unscoped finder
+      // matches both as soon as the line card is laid out.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('pos_totals_footer')),
+          matching: find.text(r'$116.00'),
+        ),
+        findsOneWidget,
+      );
       verifyNever(
         () => salesOrders.updateHeader(
           saleId: any(named: 'saleId'),

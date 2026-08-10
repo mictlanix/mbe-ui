@@ -90,9 +90,31 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     final enabled = widget.enabled && !_busy;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Taller than `SegmentedButton`'s stock 40 px, which read as an
+        // afterthought beside the customer band, and driven by **padding** —
+        // the only lever that moves this control's height without breaking
+        // it.
+        //
+        // The mock (frame `2a`) draws this at 56 px, which is not reachable:
+        // `SegmentedButton` forwards only `textStyle`, `padding`,
+        // `visualDensity` and `tapTargetSize` to its segments, dropping
+        // `minimumSize`/`fixedSize` outright, and it paints each segment's
+        // fill as a plain rectangle clipped to a border rect derived from
+        // `fontSize + padding.vertical`. Forcing the height from outside (an
+        // enclosing `SizedBox`) left that clip rect at the stock size while
+        // the fill filled the stretched box — the selected segment then
+        // showed a square-cornered block with the container's rounded end
+        // visible around it, which is exactly the artefact this replaces.
+        // Padding keeps height, clip rect and tap target in agreement, and
+        // lands at 48 px — Material's own minimum interactive dimension.
+        // The horizontal 20 is the mock's own value.
         SegmentedButton<FulfillmentMode>(
+          style: SegmentedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          ),
           segments: [
             ButtonSegment(
               value: FulfillmentMode.counterPickup,

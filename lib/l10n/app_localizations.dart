@@ -5201,6 +5201,12 @@ abstract class AppLocalizations {
   /// **'Search'**
   String get posCustomerSearchAction;
 
+  /// No description provided for @posCustomerCreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get posCustomerCreateAction;
+
   /// No description provided for @posCustomerSearchCancelAction.
   ///
   /// In en, this message translates to:

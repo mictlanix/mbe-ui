@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
@@ -133,6 +136,57 @@ void main() {
 
       expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
       expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+    });
+
+    testWidgets('both actions share the mode selector\'s baseline — one '
+        'height for every control in the header row', (tester) async {
+      when(
+        () => customerRepository.get(customerId: any(named: 'customerId')),
+      ).thenAnswer((_) async => _customer());
+      await pumpPos(
+        tester,
+        CustomerBar(sale: testSale()),
+        overrides: [
+          customerRepositoryProvider.overrideWithValue(customerRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
+          // An administrator short-circuits every privilege check, which is
+          // what makes the create action render at all here.
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              const AuthState.authenticated(
+                token: 't',
+                user: User(
+                  userId: 'cajero',
+                  email: 'cajero@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
+      final search = tester.getSize(
+        find.byKey(const Key('pos_customer_search_button')),
+      );
+      final create = tester.getSize(
+        find.byKey(const Key('pos_create_customer_button')),
+      );
+
+      // `kMinInteractiveDimension` is the height `SegmentedButton` cannot be
+      // pushed past (see fulfillment_mode_selector.dart), so it is the one
+      // height every control in this row meets.
+      expect(search.height, kMinInteractiveDimension);
+      expect(create.height, kMinInteractiveDimension);
+
+      // ...and they sit on one line, not offset from each other.
+      expect(
+        tester.getCenter(find.byKey(const Key('pos_customer_search_button'))).dy,
+        tester.getCenter(find.byKey(const Key('pos_create_customer_button'))).dy,
+      );
     });
   });
 

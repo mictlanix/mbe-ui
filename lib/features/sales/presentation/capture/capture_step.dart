@@ -127,10 +127,18 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
       // beside the customer band.
       if (sale != null)
         Padding(
-          padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
+          // Top inset only: the search field below carries its own, and
+          // doubling them left a dead band between the two (the mock's own
+          // customer row is `12px 24px 0` for the same reason).
+          padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
           child: LayoutBreakpoints.isExpanded(context)
               ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // Centred, not top-aligned: the mode control is a single
+                  // 56 px pill while the customer band is a taller card, so
+                  // `start` pinned it to the band's top edge and read as
+                  // misaligned. The mock centres the pair (`align-items:
+                  // center`) for exactly this reason.
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(child: CustomerBar(sale: sale, enabled: enabled)),
                     SizedBox(width: spacing.sm),

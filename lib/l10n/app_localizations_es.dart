@@ -2805,6 +2805,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posCustomerSearchAction => 'Buscar';
 
   @override
+  String get posCustomerCreateAction => 'Nuevo';
+
+  @override
   String get posCustomerSearchCancelAction => 'Cancelar búsqueda';
 
   @override
