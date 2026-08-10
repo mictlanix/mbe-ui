@@ -105,27 +105,11 @@ int _statusRank(SaleStatus status) => switch (status) {
   SaleStatus.cancelled => 3,
 };
 
-/// Midnight of the register's trading day, as the wire wants it.
-///
-/// Flagged UTC while carrying the **local** wall-clock date, deliberately —
-/// two constraints meet here and only this satisfies both:
-///
-/// - built_value's `Iso8601DateTimeSerializer` throws `ArgumentError` on a
-///   local `DateTime`. A plain `DateTime(y, m, d)` therefore never reaches the
-///   network at all: the throw happens while the query string is being built,
-///   so the request is abandoned before dio sends it.
-/// - mbe-api ignores the offset and reads `date_from` as local wall-clock time
-///   (verified against a live backend: `…T18:00:00Z` and `…T18:00:00` select
-///   the same rows, where `…T12:00:00` selects more). `.toUtc()` would
-///   therefore shift the window forward by the UTC offset and silently drop
-///   every sale between midnight and, at UTC-6, six in the morning.
-///
-/// `DateTime.utc` of today's local date serializes cleanly *and* puts the
-/// intended wall-clock value on the wire.
-DateTime _startOfToday() {
-  final now = DateTime.now();
-  return DateTime.utc(now.year, now.month, now.day);
-}
+/// Midnight of the register's trading day, as the wire wants it — a thin
+/// wrapper over the shared [wireDate] (extracted to
+/// `sales_order_repository_impl.dart` in spec 023, since `PosSalesListController`
+/// needs the same encoding for a cashier-chosen date, not only "today").
+DateTime _startOfToday() => wireDate(DateTime.now());
 
 /// Keeps only the paid **delivery** sales that still owe a distribution.
 ///

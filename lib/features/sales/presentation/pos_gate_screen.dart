@@ -9,15 +9,17 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// The cash-session gate (contracts/pos-screen.md §0, FR-002a, FR-002b). No
 /// sale is ever opened without a current session. Owns every rendering
 /// decision that follows purely from `CurrentSession`, independent of the
-/// `Sale` itself, so [PosScreen] never has to duplicate this logic:
+/// `Sale` itself, so `PosWorkspaceScreen` never has to duplicate this logic:
 ///
-/// - `state == none`: the full-screen explanation + link — [PosScreen]
-///   renders this in place of everything else (header band, step host,
-///   footer), none of which exist yet (contracts/pos-screen.md §1).
-/// - `state == open`: renders nothing — [PosScreen] proceeds to its own
-///   header band and step host below/around this widget.
-/// - `state == stale`: renders the non-blocking banner — [PosScreen] still
-///   proceeds, embedding this widget in its header band.
+/// - `state == none`: the full-screen explanation + link —
+///   `PosWorkspaceScreen` renders this in place of everything else (header
+///   band, step host, footer), none of which exist yet
+///   (contracts/pos-screen.md §1).
+/// - `state == open`: renders nothing — `PosWorkspaceScreen` proceeds to its
+///   own header band and step host below/around this widget.
+/// - `state == stale`: renders the non-blocking banner —
+///   `PosWorkspaceScreen` still proceeds, embedding this widget in its
+///   header band.
 ///
 /// Has no state of its own beyond watching `currentSessionControllerProvider`
 /// (021-cash-sessions, reused as-is: no new repository, no new entity here).

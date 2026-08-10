@@ -50,7 +50,8 @@ import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dar
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
 /// Routes are registered by later phases; this provider gives them a
@@ -261,11 +262,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           // 020-point-of-sale: appended after cash-sessions (index 18) — same
           // append-don't-renumber rationale (nav_destinations.dart NavBranch).
+          //
+          // 023-pos-ux-improvements: this branch now renders the register's
+          // sales list (`PosSalesListScreen`) rather than the sale capture
+          // surface itself — the sale moved to the top-level
+          // `/sales/pos/new` / `/sales/pos/:saleId` routes below, alongside
+          // every other record's detail route, so it can render full-screen
+          // with no rail (spec 023 research R1, contracts/pos-workspace.md).
+          // The branch index and the `pos` gate are unchanged.
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/sales/pos',
-                builder: (context, state) => const PosScreen(),
+                builder: (context, state) =>
+                    PosSalesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -520,6 +530,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/sales/cash-sessions/:cashSessionId',
         builder: (context, state) => CashSessionDetailScreen(
           cashSessionId: int.parse(state.pathParameters['cashSessionId']!),
+        ),
+      ),
+      // 023-pos-ux-improvements: top-level siblings, not shell branches — the
+      // sale workspace renders full-screen with no rail (contracts/
+      // pos-workspace.md §1). `/new` opens with no sale until the first real
+      // action; `:saleId` loads an existing one. Both share the `pos` read
+      // gate the `/sales/pos` prefix already covers (see `_routeGate` below).
+      GoRoute(
+        path: '/sales/pos/new',
+        builder: (context, state) => const PosWorkspaceScreen(),
+      ),
+      GoRoute(
+        path: '/sales/pos/:saleId',
+        builder: (context, state) => PosWorkspaceScreen(
+          saleId: int.parse(state.pathParameters['saleId']!),
         ),
       ),
     ],

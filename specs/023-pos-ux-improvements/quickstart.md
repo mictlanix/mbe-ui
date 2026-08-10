@@ -117,8 +117,8 @@ flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000
 
 1. Open **Punto de Venta** from the rail. Expect the register's sales for today,
    newest first, with folio/date/customer/status/total/balance.
-2. The draft sale and the unpaid sale show an Edit icon; the finished one shows it
-   disabled with a tooltip; a cancelled one likewise.
+2. The draft sale and the unpaid sale show an Edit icon; the finished sale and the
+   cancelled one show no Edit icon at all — their status chip already says why.
 3. Click the **finished** sale's row (not the icon). It must open read-only, with
    the read-only banner and every control inert — this is FR-006a, the check most
    likely to be missed.

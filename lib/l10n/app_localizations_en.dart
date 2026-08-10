@@ -2584,28 +2584,103 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String posTotalsSubtotal(String amount) {
-    return 'Subtotal: $amount';
-  }
+  String get posTotalsArticlesLabel => 'Items';
 
   @override
-  String posTotalsDiscount(String amount) {
-    return 'Discount: $amount';
-  }
+  String get posTotalsSubtotalLabel => 'Subtotal';
 
   @override
-  String posTotalsTax(String amount) {
-    return 'Tax: $amount';
-  }
+  String get posTotalsDiscountLabel => 'Discounts';
 
   @override
-  String posTotalsTotal(String amount) {
-    return 'Total: $amount';
-  }
+  String get posTotalsTaxLabel => 'Tax';
+
+  @override
+  String get posTotalsTotalLabel => 'Total';
 
   @override
   String get posSaleReadOnlyBanner =>
       'The sale is already confirmed; its details are read-only.';
+
+  @override
+  String get posSalesSearchLabel => 'Search sales';
+
+  @override
+  String get posSalesStatusFilterLabel => 'Status';
+
+  @override
+  String get posSalesStatusFilterAll => 'All statuses';
+
+  @override
+  String get posSalesNewSaleAction => 'New sale';
+
+  @override
+  String get posSalesColumnReference => 'Reference';
+
+  @override
+  String get posSalesColumnDate => 'Date';
+
+  @override
+  String get posSalesColumnCustomer => 'Customer';
+
+  @override
+  String get posSalesColumnStatus => 'Status';
+
+  @override
+  String get posSalesColumnTotal => 'Total';
+
+  @override
+  String get posSalesColumnBalance => 'Balance';
+
+  @override
+  String get posSalesEmptyToday => 'No sales on this register today';
+
+  @override
+  String get posSalesNoRegister => 'This account has no register assigned.';
+
+  @override
+  String get posSalesNewSaleBlockedNoSession =>
+      'You must open a cash session before starting a sale.';
+
+  @override
+  String get dateRangeFilterToday => 'Today';
+
+  @override
+  String dateRangeFilterRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get dateRangeFilterClear => 'Back to today';
+
+  @override
+  String get posSaleStatusDraft => 'Capturing';
+
+  @override
+  String get posSaleStatusCompleted => 'Payment due';
+
+  @override
+  String get posSaleStatusPaid => 'Paid';
+
+  @override
+  String get posSaleStatusCancelled => 'Cancelled';
+
+  @override
+  String get posSaleUnreachableTitle => 'This sale can\'t be opened';
+
+  @override
+  String get posSaleUnreachableUnknown => 'This sale could not be found.';
+
+  @override
+  String get posSaleUnreachableCancelled =>
+      'This sale was cancelled and can no longer be opened.';
+
+  @override
+  String get posSaleUnreachableOtherRegister =>
+      'This sale belongs to a different register.';
+
+  @override
+  String get posSaleBackToListAction => 'Back to sales';
 
   @override
   String get posNoLinesHint => 'No lines — search or scan a product';
@@ -2682,10 +2757,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posCustomerCreditLabel => 'Credit line';
 
   @override
-  String get posCustomerNoCredit => 'No credit line';
+  String get posCustomerPriceListLabel => 'Price list';
 
   @override
-  String get posCustomerPriceListLabel => 'Price list';
+  String get posCustomerSearchAction => 'Search';
+
+  @override
+  String get posCustomerSearchCancelAction => 'Cancel search';
+
+  @override
+  String get posCustomerNoCreditHint => 'No credit line';
 
   @override
   String get newContactDialogTitle => 'New contact';

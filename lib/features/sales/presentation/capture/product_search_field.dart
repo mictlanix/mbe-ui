@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,17 +39,52 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
   List<ProductLookupResult> _results = const [];
   bool _searching = false;
   bool _searchedEmpty = false;
+  Timer? _debounce;
+  // Tags every lookup so a slower, superseded one can never overwrite what a
+  // faster, later one already found — the race a debounced *and* an
+  // immediate (scanner) path both feeding the same state can hit, which a
+  // submit-only field never could (spec 023 FR-035).
+  int _requestId = 0;
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _search() async {
-    final pattern = _controller.text.trim();
+  void _onChanged(String value) {
+    _debounce?.cancel();
+    final pattern = value.trim();
+    if (pattern.isEmpty) {
+      setState(() {
+        _results = const [];
+        _searching = false;
+        _searchedEmpty = false;
+      });
+      return;
+    }
+    // FR-033: offered as the cashier types, debounced — never auto-added.
+    // Only `onSubmitted` (the scanner's Enter) may add a line directly.
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => _search(pattern, autoAddSingleMatch: false),
+    );
+  }
+
+  Future<void> _onSubmitted(String value) async {
+    _debounce?.cancel();
+    final pattern = value.trim();
     if (pattern.isEmpty) return;
+    // FR-034: a keyboard-wedge scanner types the code and sends Enter — the
+    // one path that still adds a single exact match directly, unchanged
+    // from before this field could search on every keystroke.
+    await _search(pattern, autoAddSingleMatch: true);
+  }
+
+  Future<void> _search(String pattern, {required bool autoAddSingleMatch}) async {
+    final requestId = ++_requestId;
     setState(() {
       _searching = true;
       _searchedEmpty = false;
@@ -55,8 +92,8 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     final results = await ref.read(
       productLookupControllerProvider(pattern, warehouse: widget.warehouse).future,
     );
-    if (!mounted) return;
-    if (results.length == 1) {
+    if (!mounted || requestId != _requestId) return;
+    if (autoAddSingleMatch && results.length == 1) {
       _select(results.first);
       return;
     }
@@ -120,7 +157,8 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
                   : null,
             ),
             textInputAction: TextInputAction.search,
-            onSubmitted: (_) => _search(),
+            onChanged: _onChanged,
+            onSubmitted: _onSubmitted,
           ),
         ),
         if (_searchedEmpty)

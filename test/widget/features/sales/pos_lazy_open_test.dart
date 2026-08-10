@@ -107,7 +107,7 @@ void main() {
       expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
       expect(find.text(l10n.posFulfillmentCounter), findsNothing);
       expect(
-        find.textContaining(l10n.posTotalsTotal('')),
+        find.text(l10n.posTotalsTotalLabel.toUpperCase()),
         findsNothing,
         reason: 'no totals bar until there are totals',
       );
@@ -132,6 +132,17 @@ void main() {
         'grows above it mid-search, and losing its State would drop the '
         'product it just found', (tester) async {
       final container = await pumpRegister(tester);
+      // spec 023: typing now debounces into a real lookup (not only on
+      // Enter), so the field needs a stub even though this test's own
+      // interest is in the field's State surviving the sale appearing, not
+      // in the lookup's result.
+      when(
+        () => salesOrders.productLookup(
+          pattern: any(named: 'pattern'),
+          customer: any(named: 'customer'),
+          warehouse: any(named: 'warehouse'),
+        ),
+      ).thenAnswer((_) async => const <ProductLookupResult>[]);
 
       // Whatever the cashier has typed stands in for the in-flight search
       // this list-reshuffle used to discard.
@@ -148,7 +159,9 @@ void main() {
       await container.read(posSaleControllerProvider.notifier).ensureOpen();
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
+      // The customer band shows facts by default (spec 023's redesign) —
+      // the picker itself is reached via Buscar, covered elsewhere.
+      expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
       expect(
         find.text('CLASTDCC4MS'),
         findsOneWidget,

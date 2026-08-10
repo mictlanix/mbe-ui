@@ -53,16 +53,16 @@ click-to-view rule:
 | | Condition | Behaviour |
 |---|---|---|
 | **Edit icon** | `saleIsWorkable(sale, resumableIds: …)` **and** `can(salesOrders, update)` | `context.push('/sales/pos/${sale.id}')` |
-| **Edit icon** | workable but no `update` privilege | **absent** (never shown disabled — constitution §VI/IV) |
-| **Edit icon** | not workable | **shown disabled**, with `posSalesEditDisabledTooltip` stating why |
+| **Edit icon** | not workable, or lacking `update` | **absent** (never shown disabled — constitution §VI/IV: a row action a user cannot use is hidden, not disabled) |
 | **Row click** | any row | `context.push('/sales/pos/${sale.id}')` — read-only when the sale is past draft (FR-006a) |
 
-The one deliberate difference from other catalogs: a *state*-based refusal is
-rendered as a disabled icon with a tooltip, because "this sale is finished" is
-information the cashier needs; a *privilege*-based refusal is rendered as absence,
-per the constitution. The two cases never coincide visually.
-
-Built with `buildCatalogRowActions(editTooltip:, onEdit:)` — no bespoke icon.
+Unlike a privilege-based refusal elsewhere in the product, a *state*-based one
+here has an implicit explanation already on the row: the status column
+(`PosSaleStatusChip`) already says "Cancelada"/"Pagada" for exactly the rows
+without an Edit icon, so nothing further is needed to tell the cashier why.
+Built with `buildCatalogRowActions(editTooltip:, onEdit:)` — no bespoke icon,
+no extra "disabled" rendering mode added to the shared component for this one
+screen.
 
 ## 4. Filters
 
@@ -117,7 +117,7 @@ screen does not offer.
 |---|---|
 | Loading | the shared list loading view |
 | Empty, default range | `posSalesEmptyToday` — "no sales on this register today", with "Nueva venta" still offered |
-| Empty, filtered | `posSalesEmptyFiltered` + a clear-filters affordance (`filter.hasActiveFilters`) |
+| Empty, filtered | the shared generic filtered-empty message every catalog uses, plus its own clear-filters affordance — driven by `isFiltered` alone, not a screen-specific string |
 | No register configured | `posSalesNoRegister` — explains a register must be assigned; no query is issued |
 | Failure | `ErrorBanner` with retry (`ref.invalidate`), the sale rows kept off screen rather than half-shown |
 

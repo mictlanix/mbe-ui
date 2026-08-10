@@ -16,6 +16,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
@@ -55,6 +56,7 @@ const _coveredFiles = {
   'catalog_filter_sheet.dart',
   'catalog_search_bar.dart',
   'data_table_view.dart',
+  'date_range_filter_chip.dart', // spec 023 T023 — the sales list's date filter
   'entity_status_controls.dart',
   'error_banner.dart',
   'label_multi_picker.dart',
@@ -392,6 +394,36 @@ void main() {
               ),
             ],
           ),
+        ),
+      );
+    });
+
+    testWidgets('DateRangeFilterChip (today, no clear affordance)', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'date_range_filter_chip_today',
+        (brightness, width) => DateRangeFilterChip(
+          from: DateTime(2026, 8, 10),
+          to: DateTime(2026, 8, 10),
+          isToday: true,
+          onChanged: (_) {},
+          onClear: _noop,
+        ),
+      );
+    });
+
+    testWidgets('DateRangeFilterChip (custom range, clear affordance shown)', (
+      tester,
+    ) async {
+      await expectGoldenMatrix(
+        tester,
+        'date_range_filter_chip_range',
+        (brightness, width) => DateRangeFilterChip(
+          from: DateTime(2026, 8, 1),
+          to: DateTime(2026, 8, 10),
+          isToday: false,
+          onChanged: (_) {},
+          onClear: _noop,
         ),
       );
     });

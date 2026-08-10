@@ -124,7 +124,7 @@ Driven by `LayoutBuilder` on the row's **own available width**, never
 ### 4.2 The single row
 
 ```
-[36 img] Product name           [warehouse ▾ 140] [− 104 +] unit [price 84] [desc 68] [iva 68]  [total 96] [🗑 40]
+[36 img] Product name           [warehouse ▾ 140] [− 128 +] unit [price 84] [desc 68] [iva 68]  [total 96] [🗑]
          CODE (secondary)        stock badge
 ```
 
@@ -133,20 +133,22 @@ Driven by `LayoutBuilder` on the row's **own available width**, never
 | Thumbnail | 36 | `ProductPhoto(photoUrl: null, size: 36)` — reserved slot, placeholder until mbe-api exposes `photo` (research R11) |
 | Product | flex, min 200 | name in the body role; code beneath in the smaller secondary role — **not** `'code — name'` in one string |
 | Warehouse | 140 | existing `warehousePicker()`, with the availability figure kept visible |
-| Quantity | 104 | −/field/+ stepper |
+| Quantity | 128 | −/field/+ stepper, with its own `posLineQuantityLabel` — widened from an initially tighter 104 during implementation (see below) |
 | Unit | 36 | `line.unit`, omitted (not placeholdered) when the product has none |
 | Price | 84 | editable |
 | Discount | 68 | editable, percent |
 | Tax | 68 | editable, percent |
 | Total | 96 | right-aligned, never truncated |
-| Delete | 40 | existing icon |
+| Delete | unconstrained | existing icon, Material's own default sizing |
 
-Gaps are `spacing.xs` (8). Fixed subtotal 744 + 200 minimum product = 944, which
-is why the threshold is 950 and a 1024-px tablet (≈992 available after
-`screenMargin`) fits with slack. **These are budgets, not measurements** — the
-FR-037a widget test pumps a real line at a 1024-px surface and fails on overflow
-or on the wrong layout, so a wider-than-budgeted column is caught rather than
-shipped.
+Gaps are `spacing.xs` (8), 7 of them (no gap before the trailing delete icon).
+**These are budgets, not measurements** — the FR-037a widget test pumps a real
+line at a 1024-px surface and asserts no overflow. It caught exactly this: the
+quantity column's first budget (104 px, two `IconButton`s explicitly constrained
+to 28 px each plus a 36-px field) overflowed by 12 px in practice — `IconButton`'s
+own sizing did not shrink as far as the `constraints`/`padding` overrides implied
+— and was widened to 128 px, matching the mock's own original column width,
+rather than fighting the framework further.
 
 ### 4.3 The two-row fallback
 

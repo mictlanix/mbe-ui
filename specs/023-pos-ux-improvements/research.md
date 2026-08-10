@@ -345,6 +345,8 @@ expose the product's resolved `photo` on `ProductLookupResponse` and on
 call. Until it ships, the reserved slot keeps row heights stable so lighting it
 up later is a one-line change at each call site.
 
+**Filed**: [mictlanix/mbe-api#157](https://github.com/mictlanix/mbe-api/issues/157).
+
 ## R12 — Reclaiming the vertical space: what actually causes the dead band
 
 **Diagnosis.** Three separate things, all visible in the screenshot:
@@ -451,6 +453,6 @@ cleanly when they are missing, like its siblings.
 
 | # | Question | How it is handled |
 |---|---|---|
-| U1 | What `search` matches on `GET /sales-orders` | Live integration test; UI degrades to an empty state either way |
-| U2 | Whether `date_to` includes its own day | Same test; the picker lets the cashier extend the range |
-| U3 | Whether mbe-api will expose `photo` on lookup/line payloads | mbe-api issue to file (R11); placeholder ships regardless |
+| U1 | What `search` matches on `GET /sales-orders` | `test/integration/pos_sales_list_flow_test.dart` (written; skips cleanly without `MBE_POS_*` — not yet run against a live backend, so still open) |
+| U2 | Whether `date_to` includes its own day | Same test, same status — the picker lets the cashier extend the range either way |
+| U3 | Whether mbe-api will expose `photo` on lookup/line payloads | Filed: [mictlanix/mbe-api#157](https://github.com/mictlanix/mbe-api/issues/157); placeholder ships regardless |

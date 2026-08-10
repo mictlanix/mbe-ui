@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
@@ -23,8 +24,8 @@ import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_reposit
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_header_band.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -67,6 +68,64 @@ OpenSale _openSale({required int id, required SaleStatus status}) => OpenSale(
   status: status,
   date: DateTime(2026, 8, 5, 10),
 );
+
+/// The former `PosHeaderBand`'s selector-plus-step-indicator row, now
+/// composed inline in `PosWorkspaceScreen`'s app bar title rather than a
+/// standalone widget. Reimplemented here rather than exported purely for a
+/// test — the same choice `step_indicator_test.dart` already made for the
+/// step indicator alone; this adds the selector beside it, which is what
+/// this test is actually about (do the two fit together at phone width).
+class _HeaderRowStandIn extends ConsumerWidget {
+  const _HeaderRowStandIn({
+    required this.sale,
+    required this.onSaleSelected,
+    required this.onStartNew,
+  });
+
+  final Sale sale;
+  final ValueChanged<OpenSale> onSaleSelected;
+  final VoidCallback onStartNew;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final step = ref.watch(posStepControllerProvider);
+    final labels = [
+      l10n.posStepVenta,
+      l10n.posStepCobro,
+      l10n.posStepEntrega,
+    ].take(step.stepCount).toList();
+
+    return Row(
+      children: [
+        OpenSalesSelector(
+          pointSale: sale.pointSale,
+          currentId: sale.provisionalReference,
+          currentSerial: sale.serial,
+          onSelected: onSaleSelected,
+          onStartNew: onStartNew,
+        ),
+        const Spacer(),
+        if (LayoutBreakpoints.isCompact(context))
+          Text(
+            key: const Key('pos_step_progress'),
+            l10n.posStepProgress(step.current.index + 1, step.stepCount),
+            style: theme.textTheme.titleSmall,
+          )
+        else
+          Row(
+            key: const Key('pos_step_indicator'),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < labels.length; i++)
+                Text('${i + 1}·${labels[i]}'),
+            ],
+          ),
+      ],
+    );
+  }
+}
 
 /// US3 and US4 at 390 px (T105): resuming an open sale and creating a
 /// customer without leaving it are both reachable on a phone, with nothing
@@ -178,7 +237,7 @@ void main() {
 
       await pumpPos(
         tester,
-        PosHeaderBand(
+        _HeaderRowStandIn(
           sale: testSale(),
           onSaleSelected: (_) {},
           onStartNew: () {},
@@ -312,7 +371,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('pos_new_customer_code')), findsNothing);
-      expect(find.text(l10n.posTotalsTotal(r'$116.00')), findsOneWidget);
+      expect(find.text(r'$116.00'), findsOneWidget);
       verifyNever(
         () => salesOrders.updateHeader(
           saleId: any(named: 'saleId'),

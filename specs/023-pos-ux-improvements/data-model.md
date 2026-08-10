@@ -197,7 +197,7 @@ Both `lib/l10n/app_es.arb` and `app_en.arb` (the parity test enforces it):
 
 | Area | Keys |
 |---|---|
-| List screen | `posSalesListTitle`, `posSalesNewSaleAction`, `posSalesColumnReference`, `posSalesColumnDate`, `posSalesColumnCustomer`, `posSalesColumnStatus`, `posSalesColumnTotal`, `posSalesColumnBalance`, `posSalesEmptyToday`, `posSalesEmptyFiltered`, `posSalesNoRegister`, `posSalesEditDisabledTooltip`, `posSalesNewSaleBlockedNoSession` |
+| List screen | `posSalesSearchLabel`, `posSalesNewSaleAction`, `posSalesColumnReference`, `posSalesColumnDate`, `posSalesColumnCustomer`, `posSalesColumnStatus`, `posSalesColumnTotal`, `posSalesColumnBalance`, `posSalesEmptyToday`, `posSalesNoRegister`, `posSalesNewSaleBlockedNoSession`, `posSalesStatusFilterLabel`, `posSalesStatusFilterAll` — no `posSalesListTitle` (see above) and no `posSalesEmptyFiltered`: `CatalogListStateView`'s filtered-empty state always renders its own shared generic message (`filteredEmptyTitle`/`filteredEmptyMessage`) regardless of what `emptyMessage` is passed — every other catalog already relies on that, and a custom filtered string here would simply never render |
 | Date range filter | `dateRangeFilterLabel`, `dateRangeFilterToday`, `dateRangeFilterRange`, `dateRangeFilterClear` |
 | Workspace | `posWorkspaceBackTooltip`, `posSaleUnreachableTitle`, `posSaleUnreachableCancelled`, `posSaleUnreachableUnknown`, `posSaleUnreachableOtherRegister`, `posSaleBackToListAction` |
 | Customer band | `posCustomerSearchAction`, `posCustomerSearchCancelAction`, `posCustomerNoCreditHint` |

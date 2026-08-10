@@ -29,6 +29,7 @@ class CatalogEntityPicker<T extends Object> extends StatefulWidget {
     this.enabled = true,
     this.optionImageUrl,
     this.optionSubtitle,
+    this.autofocus = false,
   });
 
   final String label;
@@ -38,6 +39,12 @@ class CatalogEntityPicker<T extends Object> extends StatefulWidget {
   final String? initialDisplayText;
   final String? errorText;
   final bool enabled;
+
+  /// Requests focus as soon as the field is mounted — for a picker that
+  /// replaces other content in place (e.g. the POS customer band's search
+  /// face, spec 023 FR-023) and should take the keyboard immediately rather
+  /// than waiting for a tap.
+  final bool autofocus;
 
   /// Leading thumbnail URL for a suggestion row, or `null` for that item's
   /// placeholder. `null` (the default) keeps the default text-only option
@@ -110,6 +117,7 @@ class _CatalogEntityPickerState<T extends Object>
         return TextFormField(
           controller: controller,
           focusNode: focusNode,
+          autofocus: widget.autofocus,
           decoration: InputDecoration(
             labelText: widget.label,
             errorText: widget.errorText,

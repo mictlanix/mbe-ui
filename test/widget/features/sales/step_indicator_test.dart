@@ -8,7 +8,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 
-/// The step indicator is `PosScreen`'s private header band, so this asserts
+/// The step indicator is `PosWorkspaceScreen`'s private header band, so this asserts
 /// on the property that drives it — `PosStepState.stepCount` — plus the
 /// labels it renders, through a stand-in that reads the same provider the
 /// real band does. That keeps FR-005's "two steps for a counter-pickup sale"

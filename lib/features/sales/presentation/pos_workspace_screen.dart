@@ -1,0 +1,529 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
+import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
+import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
+import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
+import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
+/// The full-screen sale workspace (spec 023 contracts/pos-workspace.md),
+/// reached at `/sales/pos/new` and `/sales/pos/:saleId` — top-level sibling
+/// routes, not a shell branch, so it renders with no navigation rail or
+/// drawer. This revises spec 020 decision 2 ("the screen lives inside the
+/// ordinary application shell") for the workspace only; `/sales/pos` itself
+/// is now the sales list, which does stay in the shell
+/// (`PosSalesListScreen`).
+///
+/// Checks the cash session gate (contracts/pos-screen.md §0) before touching
+/// anything else, exactly as the former `PosScreen` did: `state == none`
+/// renders [PosGateScreen] and stops there — no sale is opened. Otherwise
+/// loads or opens the sale named by [saleId] and renders the step host.
+class PosWorkspaceScreen extends ConsumerWidget {
+  const PosWorkspaceScreen({super.key, this.saleId});
+
+  /// `null` for `/sales/pos/new` — a fresh sale, opened lazily by the first
+  /// action that needs one (spec 020's anti-empty-draft rule). Non-null for
+  /// `/sales/pos/:saleId` — an existing sale to load.
+  final int? saleId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentSession = ref.watch(currentSessionControllerProvider);
+    return currentSession.when(
+      data: (current) {
+        if (current.state == SessionState.none) {
+          return const Scaffold(body: PosGateScreen());
+        }
+        return _PosWorkspaceBody(saleId: saleId);
+      },
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stackTrace) => Scaffold(
+        body: Center(
+          // Matches cash_session_detail_screen.dart's own error-state
+          // padding, not a one-off value.
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ErrorBanner(
+              error: toAppError(error),
+              onDismiss: () => ref.invalidate(currentSessionControllerProvider),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PosWorkspaceBody extends ConsumerStatefulWidget {
+  const _PosWorkspaceBody({required this.saleId});
+
+  final int? saleId;
+
+  @override
+  ConsumerState<_PosWorkspaceBody> createState() => _PosWorkspaceBodyState();
+}
+
+class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
+  /// The sale the step machine was last aligned to. A resumed sale reopens at
+  /// the step its own status and `shipTo` imply (FR-057), but only once —
+  /// re-deriving on every build would fight the cashier's own navigation.
+  int? _syncedSaleId;
+
+  /// Whether the `/sales/pos/new` → `/sales/pos/<id>` URL rewrite has already
+  /// run for this instance (contracts §1.1).
+  bool _rewrittenUrl = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Dispatched exactly once — `initState` runs once per instance, and
+    // go_router mounts a fresh instance per navigation rather than reusing
+    // this one across sales, so no extra guard is needed here
+    // (contracts/pos-workspace.md §1.1).
+    final saleId = widget.saleId;
+    if (saleId != null) {
+      // Scheduled after the first frame, matching `_syncStepTo`'s own
+      // deferral below: a mutation issued from `initState` would otherwise
+      // run before this widget's `ref` is fully wired into the tree.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref.read(posSaleControllerProvider.notifier).load(saleId);
+      });
+    }
+    // `saleId == null` (`/sales/pos/new`): nothing is dispatched. The
+    // capture step already renders a `sale == null` state, and mbe-api is
+    // touched only by the first real action (spec 020's anti-empty-draft
+    // rule) — see `_maybeRewriteUrl` for what happens once that action opens
+    // a sale.
+  }
+
+  /// Once a sale exists under a `/new` mount, the URL is rewritten to the
+  /// sale's real id — a reload of `/sales/pos/new` would otherwise repeat
+  /// spec 020's 39-empty-draft problem once per reload (research R2).
+  void _maybeRewriteUrl(Sale sale) {
+    if (widget.saleId != null || _rewrittenUrl) return;
+    _rewrittenUrl = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      GoRouter.of(context).replace('/sales/pos/${sale.id}');
+    });
+  }
+
+  void _syncStepTo(Sale sale) {
+    final facilityAddress = ref.watch(
+      facilityAddressControllerProvider(sale.facility),
+    );
+    // Wait only while it is still *in flight*: without the facility address
+    // every sale looks like counter pickup, and a delivery sale would land on
+    // the wrong step and never be moved again.
+    //
+    // A lookup that has *failed* is a different case and must not wait
+    // forever — `valueOrNull` is null for both, and treating them alike left
+    // resume silently broken for every sale, including drafts and unpaid ones
+    // where the facility address does not affect the answer. On failure the
+    // sale is resolved without it, which is what `resumeTargetFor`'s nullable
+    // parameter is for: it degrades to counter pickup rather than guessing
+    // delivery.
+    if (!facilityAddress.hasValue && !facilityAddress.hasError) return;
+    if (_syncedSaleId == sale.id) return;
+
+    _syncedSaleId = sale.id;
+    final target = resumeTargetFor(
+      sale,
+      facilityAddressId: facilityAddress.valueOrNull,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(posStepControllerProvider.notifier)
+          .jumpTo(target.step, mode: target.mode);
+    });
+  }
+
+  /// US3 scenario 6 / Edge Cases: a sale left with nothing on it is
+  /// cancelled rather than abandoned, so the register's selector does not
+  /// accumulate empty drafts. A sale that has lines is left open — that is
+  /// exactly what the selector is for.
+  Future<void> _discardIfEmpty(Sale? leaving) async {
+    if (leaving == null || leaving.lines.isNotEmpty) return;
+    if (leaving.status != SaleStatus.draft) return;
+    try {
+      await ref.read(salesOrderRepositoryProvider).cancel(saleId: leaving.id);
+    } on Object {
+      // Best effort: failing to tidy up must never block the cashier from
+      // moving to the sale they asked for.
+    }
+  }
+
+  /// The workspace's own Back affordance (contracts/pos-workspace.md §6):
+  /// an empty draft is discarded exactly as leaving it for another sale
+  /// already discards it (`_discardIfEmpty`), *then* the route is left —
+  /// popped when there is a page to return to, or sent to the list directly
+  /// for a route reached by a fresh deep link with nothing on the stack
+  /// beneath it.
+  Future<void> _leaveWorkspace(BuildContext context, Sale? current) async {
+    await _discardIfEmpty(current);
+    if (!context.mounted) return;
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/sales/pos');
+    }
+  }
+
+  Future<void> _selectSale(OpenSale selected) async {
+    final leaving = ref.read(posSaleControllerProvider).valueOrNull;
+    if (leaving?.id == selected.id) return;
+    await _discardIfEmpty(leaving);
+    await ref.read(posSaleControllerProvider.notifier).load(selected.id);
+    _refreshSelector();
+  }
+
+  Future<void> _startNewSale() async {
+    final leaving = ref.read(posSaleControllerProvider).valueOrNull;
+    await _discardIfEmpty(leaving);
+    await ref.read(posSaleControllerProvider.notifier).startNew();
+    _refreshSelector();
+  }
+
+  void _refreshSelector() {
+    final pointSale =
+        ref.read(posSaleControllerProvider).valueOrNull?.pointSale ??
+        ref.read(registerPointSaleProvider);
+    if (pointSale != null) {
+      ref.invalidate(openSalesSelectorControllerProvider(pointSale));
+    }
+  }
+
+  /// Why the sale named by `widget.saleId` cannot be opened — `null` for
+  /// every ordinary case, including the whole `/sales/pos/new` path, which
+  /// has nothing to be unreachable about (contracts/pos-workspace.md §1.2).
+  /// A **finished** sale (paid, fully distributed) is deliberately not one
+  /// of these reasons — it opens read-only via the ordinary step host, same
+  /// as any other non-editable sale (spec 023 FR-006a/FR-019).
+  _UnreachableReason? _unreachableReasonFor(AsyncValue<Sale?> sale, Sale? current) {
+    if (widget.saleId == null) return null;
+    final error = sale.error;
+    if (error != null && toAppError(error) is NotFoundError) {
+      return _UnreachableReason.unknown;
+    }
+    if (current != null) {
+      if (current.status == SaleStatus.cancelled) return _UnreachableReason.cancelled;
+      final myRegister = ref.read(registerPointSaleProvider);
+      if (myRegister != null && current.pointSale != myRegister) {
+        return _UnreachableReason.otherRegister;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sale = ref.watch(posSaleControllerProvider);
+    final current = sale.valueOrNull;
+
+    final unreachable = _unreachableReasonFor(sale, current);
+    if (unreachable != null) return _UnreachableSalePanel(reason: unreachable);
+
+    if (current != null) {
+      _syncStepTo(current);
+      _maybeRewriteUrl(current);
+    }
+
+    final step = ref.watch(posStepControllerProvider);
+    // The selector is keyed by the register, not by the sale in hand — so an
+    // untouched POS still offers the open sales to resume. Without this,
+    // reloading the page would strand every unfinished sale (US3).
+    final pointSale = current?.pointSale ?? ref.watch(registerPointSaleProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          key: const Key('pos_workspace_back'),
+          icon: const Icon(Icons.arrow_back),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          onPressed: () => _leaveWorkspace(context, current),
+        ),
+        title: Row(
+          children: [
+            Text(_stepTitle(context, step.current)),
+            if (current != null) ...[
+              const SizedBox(width: 12),
+              _SaleIdentityChip(sale: current),
+            ],
+            if (pointSale != null) ...[
+              const SizedBox(width: 12),
+              OpenSalesSelector(
+                pointSale: pointSale,
+                // FR-040: the id always, the folio once assigned. Both are
+                // absent until a sale exists.
+                currentId: current?.provisionalReference,
+                currentSerial: current?.serial,
+                onSelected: _selectSale,
+                onStartNew: _startNewSale,
+              ),
+            ],
+            const Spacer(),
+            _StepIndicator(step: step),
+          ],
+        ),
+        // Constitution §VI (v1.10.0): a screen's actions live in the body,
+        // not the app bar. The identity chip, the selector and the step
+        // indicator above are title-area content, not actions — Back is
+        // `leading`, which the rule does not restrict (spec 023 research
+        // R13, Complexity Tracking).
+        actions: const [],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Renders nothing when the session is healthy; the non-blocking
+          // stale-session banner otherwise (`state == none` never reaches
+          // here — the top-level gate in `PosWorkspaceScreen` already
+          // stopped there).
+          const PosGateScreen(),
+          Expanded(
+            child: sale.when(
+              data: (value) => _StepHost(step: step.current, sale: value),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: ErrorBanner(
+                    error: toAppError(error),
+                    onDismiss: () => ref.invalidate(posSaleControllerProvider),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _stepTitle(BuildContext context, PosStep step) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (step) {
+      PosStep.venta => l10n.posStepVenta,
+      PosStep.cobro => l10n.posStepCobro,
+      PosStep.entrega => l10n.posStepEntrega,
+    };
+  }
+}
+
+/// The sale's reference (and folio once assigned) in the app bar — the mock's
+/// "Id 337496" chip (frame `2a`).
+class _SaleIdentityChip extends StatelessWidget {
+  const _SaleIdentityChip({required this.sale});
+
+  final Sale sale;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Chip(
+      avatar: const Icon(Icons.receipt_long_outlined, size: 18),
+      label: Text(
+        '${sale.serial ?? sale.provisionalReference}',
+        style: theme.textTheme.bodyMedium,
+      ),
+      visualDensity: VisualDensity.compact,
+    );
+  }
+}
+
+/// Two steps or three, driven by the fulfilment mode (FR-005) — the current
+/// one emphasised rather than the others hidden, so the cashier can see what
+/// is still ahead.
+///
+/// On a phone there is no room for that: three labels and two chevrons would
+/// push the selector off the band, so it collapses to "Paso N de M" (US5,
+/// SC-007). The position is what matters; the names are on the step itself.
+class _StepIndicator extends StatelessWidget {
+  const _StepIndicator({required this.step});
+
+  final PosStepState step;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    if (LayoutBreakpoints.isCompact(context)) {
+      return Text(
+        key: const Key('pos_step_progress'),
+        l10n.posStepProgress(step.current.index + 1, step.stepCount),
+        style: theme.textTheme.titleSmall,
+      );
+    }
+
+    final labels = [
+      l10n.posStepVenta,
+      l10n.posStepCobro,
+      l10n.posStepEntrega,
+    ].take(step.stepCount).toList();
+
+    return Row(
+      key: const Key('pos_step_indicator'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < labels.length; i++) ...[
+          Text(
+            '${i + 1}·${labels[i]}',
+            style: i == step.current.index
+                ? theme.textTheme.titleSmall
+                : theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
+          ),
+          if (i < labels.length - 1)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: theme.spacing.xs),
+              child: const Icon(Icons.chevron_right, size: 16),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+enum _UnreachableReason { unknown, cancelled, otherRegister }
+
+/// A sale that cannot be opened at all — unknown, cancelled, or belonging to
+/// another register (contracts/pos-workspace.md §1.2). No sale is opened in
+/// its place; the only way forward is back to the list.
+class _UnreachableSalePanel extends StatelessWidget {
+  const _UnreachableSalePanel({required this.reason});
+
+  final _UnreachableReason reason;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final message = switch (reason) {
+      _UnreachableReason.unknown => l10n.posSaleUnreachableUnknown,
+      _UnreachableReason.cancelled => l10n.posSaleUnreachableCancelled,
+      _UnreachableReason.otherRegister => l10n.posSaleUnreachableOtherRegister,
+    };
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          key: const Key('pos_workspace_back'),
+          icon: const Icon(Icons.arrow_back),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          onPressed: () => context.canPop() ? context.pop() : context.go('/sales/pos'),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          key: const Key('pos_sale_unreachable'),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.outline),
+              const SizedBox(height: 16),
+              Text(
+                l10n.posSaleUnreachableTitle,
+                style: theme.textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(message, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => context.go('/sales/pos'),
+                child: Text(l10n.posSaleBackToListAction),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepHost extends ConsumerWidget {
+  const _StepHost({required this.step, required this.sale});
+
+  final PosStep step;
+
+  /// `null` on an untouched register — only Venta can render that, and it is
+  /// the only step reachable there.
+  final Sale? sale;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = sale;
+    if (current == null) return CaptureStep(sale: null);
+    return switch (step) {
+      PosStep.venta => CaptureStep(sale: current),
+      PosStep.cobro => PaymentStep(
+        sale: current,
+        onClose: () => _closePayment(context, ref),
+      ),
+      PosStep.entrega => DeliveryStep(
+        sale: current,
+        mode: ref.watch(posStepControllerProvider).mode,
+        onClose: () => _finish(context, ref),
+      ),
+    };
+  }
+
+  /// The sale is done — show its folio and offer the next one (FR-050).
+  void _finish(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.posSaleCompletedTitle),
+        content: Text(
+          l10n.posSaleReference('${sale?.serial ?? sale?.provisionalReference}'),
+        ),
+        actions: [
+          FilledButton(
+            key: const Key('start_new_sale_button'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(posSaleControllerProvider.notifier).startNew();
+              ref.read(posStepControllerProvider.notifier).jumpTo(PosStep.venta);
+            },
+            child: Text(l10n.posNewSaleAction),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Cobro → Entrega for a delivery/mixed sale; for counter pickup the sale
+  /// is done, so the change due is shown and a new sale is offered (FR-050).
+  void _closePayment(BuildContext context, WidgetRef ref) {
+    final stepNotifier = ref.read(posStepControllerProvider.notifier);
+    if (ref.read(posStepControllerProvider).mode != FulfillmentMode.counterPickup) {
+      stepNotifier.advanceFromCobro();
+      return;
+    }
+    _finish(context, ref);
+  }
+}

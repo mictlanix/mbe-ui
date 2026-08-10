@@ -127,8 +127,8 @@ void main() {
 
   /// Pumps the capture step, which hosts the customer bar and therefore the
   /// create-customer affordance. Driven from `PosSaleController` the way
-  /// `PosScreen` drives it, so the sale the server returns after a header
-  /// update actually reaches the step.
+  /// `PosWorkspaceScreen` drives it, so the sale the server returns after a
+  /// header update actually reaches the step.
   Future<void> pumpCapture(
     WidgetTester tester, {
     required Sale sale,
@@ -284,15 +284,23 @@ void main() {
       ).thenAnswer((_) async => after);
       when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => after);
 
+      // Scoped to the footer: testLine()'s own `total` field is fixed at
+      // "116.00" regardless of `price`, so the line row's bare figure would
+      // otherwise collide with the grand total's now-bare figure too.
+      Finder footerTotal(String amount) => find.descendant(
+        of: find.byKey(const Key('pos_totals_footer')),
+        matching: find.text(amount),
+      );
+
       await pumpCapture(tester, sale: before);
-      expect(find.text(l10n.posTotalsTotal(r'$116.00')), findsOneWidget);
+      expect(footerTotal(r'$116.00'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('pos_create_customer_button')));
       await tester.pumpAndSettle();
       await fillAndSave(tester);
 
-      expect(find.text(l10n.posTotalsTotal(r'$104.40')), findsOneWidget);
-      expect(find.text(l10n.posTotalsTotal(r'$116.00')), findsNothing);
+      expect(footerTotal(r'$104.40'), findsOneWidget);
+      expect(footerTotal(r'$116.00'), findsNothing);
     });
 
     testWidgets('a failed save keeps the form open with the reason, so nothing '

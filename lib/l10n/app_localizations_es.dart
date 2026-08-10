@@ -2626,28 +2626,103 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String posTotalsSubtotal(String amount) {
-    return 'Subtotal: $amount';
-  }
+  String get posTotalsArticlesLabel => 'Artículos';
 
   @override
-  String posTotalsDiscount(String amount) {
-    return 'Descuento: $amount';
-  }
+  String get posTotalsSubtotalLabel => 'Subtotal';
 
   @override
-  String posTotalsTax(String amount) {
-    return 'Impuestos: $amount';
-  }
+  String get posTotalsDiscountLabel => 'Descuentos';
 
   @override
-  String posTotalsTotal(String amount) {
-    return 'Total: $amount';
-  }
+  String get posTotalsTaxLabel => 'IVA';
+
+  @override
+  String get posTotalsTotalLabel => 'Total';
 
   @override
   String get posSaleReadOnlyBanner =>
       'La venta ya fue confirmada; los datos son de solo lectura.';
+
+  @override
+  String get posSalesSearchLabel => 'Buscar ventas';
+
+  @override
+  String get posSalesStatusFilterLabel => 'Estado';
+
+  @override
+  String get posSalesStatusFilterAll => 'Todos los estados';
+
+  @override
+  String get posSalesNewSaleAction => 'Nueva venta';
+
+  @override
+  String get posSalesColumnReference => 'Folio';
+
+  @override
+  String get posSalesColumnDate => 'Fecha';
+
+  @override
+  String get posSalesColumnCustomer => 'Cliente';
+
+  @override
+  String get posSalesColumnStatus => 'Estado';
+
+  @override
+  String get posSalesColumnTotal => 'Total';
+
+  @override
+  String get posSalesColumnBalance => 'Saldo';
+
+  @override
+  String get posSalesEmptyToday => 'Sin ventas en esta caja hoy';
+
+  @override
+  String get posSalesNoRegister => 'Esta cuenta no tiene una caja asignada.';
+
+  @override
+  String get posSalesNewSaleBlockedNoSession =>
+      'Debes abrir una sesión de caja antes de iniciar una venta.';
+
+  @override
+  String get dateRangeFilterToday => 'Hoy';
+
+  @override
+  String dateRangeFilterRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get dateRangeFilterClear => 'Volver a hoy';
+
+  @override
+  String get posSaleStatusDraft => 'En captura';
+
+  @override
+  String get posSaleStatusCompleted => 'Por cobrar';
+
+  @override
+  String get posSaleStatusPaid => 'Pagada';
+
+  @override
+  String get posSaleStatusCancelled => 'Cancelada';
+
+  @override
+  String get posSaleUnreachableTitle => 'Esta venta no se puede abrir';
+
+  @override
+  String get posSaleUnreachableUnknown => 'No se encontró esta venta.';
+
+  @override
+  String get posSaleUnreachableCancelled =>
+      'Esta venta fue cancelada y ya no se puede abrir.';
+
+  @override
+  String get posSaleUnreachableOtherRegister =>
+      'Esta venta pertenece a otra caja.';
+
+  @override
+  String get posSaleBackToListAction => 'Volver a ventas';
 
   @override
   String get posNoLinesHint => 'Sin líneas — busca o escanea un producto';
@@ -2724,10 +2799,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posCustomerCreditLabel => 'Crédito';
 
   @override
-  String get posCustomerNoCredit => 'Sin línea';
+  String get posCustomerPriceListLabel => 'Lista de precios';
 
   @override
-  String get posCustomerPriceListLabel => 'Lista de precios';
+  String get posCustomerSearchAction => 'Buscar';
+
+  @override
+  String get posCustomerSearchCancelAction => 'Cancelar búsqueda';
+
+  @override
+  String get posCustomerNoCreditHint => 'Sin línea de crédito';
 
   @override
   String get newContactDialogTitle => 'Nuevo contacto';

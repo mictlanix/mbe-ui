@@ -91,6 +91,26 @@ abstract class SalesOrderRepository {
     int skip = 0,
     int limit = 100,
   });
+
+  /// `GET /sales-orders?point_sale=<id>&status=&date_from=&date_to=&search=&skip=&limit=`
+  /// — the sales list screen's data source (spec 023 FR-001–FR-005), scoped to
+  /// the cashier's own register like [listOpen] but over an arbitrary,
+  /// cashier-chosen date range and every status rather than the selector's
+  /// fixed three.
+  ///
+  /// [status], when given, is **not** guaranteed exclusive by mbe-api — a
+  /// live-verified quirk [listOpen] already documents (`completed` answers
+  /// with `paid` rows too) — so a caller that cares about an exact status
+  /// match must still narrow the returned page itself.
+  Future<OpenSalePage> listSales({
+    required int pointSale,
+    SaleStatus? status,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  });
 }
 
 class OpenSalePage {

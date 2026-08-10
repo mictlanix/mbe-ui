@@ -230,4 +230,55 @@ void main() {
       expect(find.byIcon(Icons.warning_amber), findsNothing);
     });
   });
+
+  group('layout thresholds (spec 023 FR-037, FR-037a)', () {
+    testWidgets(
+      'a single row at 1024 px of available width — the tablet-landscape '
+      'case — with nothing overflowing',
+      (tester) async {
+        await pumpPos(
+          tester,
+          SaleLineRow(line: testLine(), facilityId: 9),
+          overrides: [warehouseOverride(warehouseRepository)],
+          surface: const Size(1024, 900),
+        );
+
+        // A RenderFlex overflow throws during the pump above and fails the
+        // test on its own — reaching here at all is the assertion. The
+        // sale-line-row key additionally confirms singleRow actually
+        // rendered (a single Card, not the two-row Column variant, which
+        // would still pass an overflow check but silently be the wrong
+        // layout).
+        expect(find.byKey(Key('sale_line_row_${testLine().id}')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('the two-row fallback below 950 px, still nothing overflowing', (
+      tester,
+    ) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(line: testLine(), facilityId: 9),
+        overrides: [warehouseOverride(warehouseRepository)],
+        surface: const Size(700, 900),
+      );
+
+      expect(tester.takeException(), isNull);
+      // Every field FR-022 asks for is still there and still editable —
+      // nothing was dropped to make the fallback fit.
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      for (final label in [
+        l10n.posLineQuantityLabel,
+        l10n.posLinePriceLabel,
+        l10n.posLineDiscountLabel,
+        l10n.posLineTaxLabel,
+      ]) {
+        expect(
+          find.ancestor(of: find.text(label), matching: find.byType(TextField)),
+          findsOneWidget,
+        );
+      }
+    });
+  });
 }

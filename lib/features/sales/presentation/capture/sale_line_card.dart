@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -66,6 +67,12 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Reserved slot (spec 023 research R11): neither the
+                // product-lookup nor the sale-line payload carries a photo
+                // today, so this is the shared placeholder until mbe-api
+                // exposes one.
+                const ProductPhoto(photoUrl: null, size: 36),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
