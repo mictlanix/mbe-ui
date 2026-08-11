@@ -14,8 +14,8 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 /// (default `http://127.0.0.1:8000`).
 ///
 /// Configure via `--dart-define`:
-///   --dart-define=MBE_TEST_USERNAME=...           (account with products.update)
-///   --dart-define=MBE_TEST_PASSWORD=...
+///   --dart-define=MBE_CREATE_TEST_USERNAME=...    (account with products.update)
+///   --dart-define=MBE_CREATE_TEST_PASSWORD=...
 ///   --dart-define=MBE_READONLY_USERNAME=...       (account with products.read only)
 ///   --dart-define=MBE_READONLY_PASSWORD=...
 ///   --dart-define=MBE_NO_PHOTO_PRODUCT_ID=...     (an existing product id with no photo)
@@ -26,15 +26,19 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 /// Tests requiring seeded credentials/data are skipped when not provided.
 /// US3 replace/remove scenarios are exercised by an extension added in a
 /// later phase (T024), not here.
-const _testUsername = String.fromEnvironment('MBE_TEST_USERNAME');
-const _testPassword = String.fromEnvironment('MBE_TEST_PASSWORD');
+/// Photo upload and removal both require `PRODUCTS.UPDATE` (mbe-api
+/// `app/api/v1/endpoints/products.py`), so these scenarios run as the
+/// write-capable fixture rather than `MBE_TEST_*` — which every other suite
+/// requires to hold *no* `products` privilege at all (see `TEST_ACCOUNTS.md`).
+const _createUsername = String.fromEnvironment('MBE_CREATE_TEST_USERNAME');
+const _createPassword = String.fromEnvironment('MBE_CREATE_TEST_PASSWORD');
 const _readOnlyUsername = String.fromEnvironment('MBE_READONLY_USERNAME');
 const _readOnlyPassword = String.fromEnvironment('MBE_READONLY_PASSWORD');
 const _noPhotoProductId = String.fromEnvironment('MBE_NO_PHOTO_PRODUCT_ID');
 const _withPhotoProductId = String.fromEnvironment('MBE_WITH_PHOTO_PRODUCT_ID');
 const _mutableProductId = String.fromEnvironment('MBE_MUTABLE_PRODUCT_ID');
 
-const _hasTestCredentials = _testUsername != '' && _testPassword != '';
+const _hasCreateCredentials = _createUsername != '' && _createPassword != '';
 const _hasReadOnlyCredentials =
     _readOnlyUsername != '' && _readOnlyPassword != '';
 const _hasNoPhotoProduct = _noPhotoProductId != '';
@@ -132,8 +136,8 @@ void main() {
   test('scenario: a product with a photo shows it on the detail screen '
       '(FR-001)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
 
     final product = await repository.get(
@@ -141,13 +145,13 @@ void main() {
     );
 
     expect(product.photo, isNotNull);
-  }, skip: !_hasTestCredentials || !_hasWithPhotoProduct);
+  }, skip: !_hasCreateCredentials || !_hasWithPhotoProduct);
 
   test('scenario: a product with no photo shows the placeholder on the '
       'detail screen (FR-002, SC-004)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
 
     final product = await repository.get(
@@ -155,13 +159,13 @@ void main() {
     );
 
     expect(product.photo, isNull);
-  }, skip: !_hasTestCredentials || !_hasNoPhotoProduct);
+  }, skip: !_hasCreateCredentials || !_hasNoPhotoProduct);
 
   test('scenario: a product with a photo shows it in its own list row '
       '(mictlanix/mbe-api#71, FR-001)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
     final product = await repository.get(
       productId: int.parse(_withPhotoProductId),
@@ -171,13 +175,13 @@ void main() {
 
     expect(result.items, isNotEmpty);
     expect(result.items.single.photo, product.photo);
-  }, skip: !_hasTestCredentials || !_hasWithPhotoProduct);
+  }, skip: !_hasCreateCredentials || !_hasWithPhotoProduct);
 
   test('scenario: uploading a valid photo persists it and is reflected on '
       'the next get (FR-003, SC-001)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
     final productId = int.parse(_mutableProductId);
 
@@ -192,13 +196,13 @@ void main() {
     expect(reloaded.photo, uploaded.photo);
 
     await repository.removePhoto(productId: productId); // cleanup
-  }, skip: !_hasTestCredentials || !_hasMutableProduct);
+  }, skip: !_hasCreateCredentials || !_hasMutableProduct);
 
   test('scenario: an unsupported file type is rejected with a validation '
       'error (FR-006, SC-002)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
 
     await expectLater(
@@ -209,13 +213,13 @@ void main() {
       ),
       throwsA(isA<ValidationError>()),
     );
-  }, skip: !_hasTestCredentials || !_hasMutableProduct);
+  }, skip: !_hasCreateCredentials || !_hasMutableProduct);
 
   test('scenario: an oversized file is rejected with a validation error '
       '(FR-007, SC-002)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
 
     await expectLater(
@@ -226,13 +230,13 @@ void main() {
       ),
       throwsA(isA<ValidationError>()),
     );
-  }, skip: !_hasTestCredentials || !_hasMutableProduct);
+  }, skip: !_hasCreateCredentials || !_hasMutableProduct);
 
   test('scenario: replacing an existing photo updates it everywhere the '
       'product is displayed (FR-004)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
     final productId = int.parse(_mutableProductId);
 
@@ -258,13 +262,13 @@ void main() {
     expect(first.photo, isNotNull);
 
     await repository.removePhoto(productId: productId); // cleanup
-  }, skip: !_hasTestCredentials || !_hasMutableProduct);
+  }, skip: !_hasCreateCredentials || !_hasMutableProduct);
 
   test('scenario: removing a photo reverts the product to the placeholder '
       'everywhere it is displayed (FR-005, SC-005)', () async {
     final repository = await _authenticatedProductRepository(
-      _testUsername,
-      _testPassword,
+      _createUsername,
+      _createPassword,
     );
     final productId = int.parse(_mutableProductId);
     await repository.uploadPhoto(
@@ -278,7 +282,7 @@ void main() {
     expect(removed.photo, isNull);
     final reloaded = await repository.get(productId: productId);
     expect(reloaded.photo, isNull);
-  }, skip: !_hasTestCredentials || !_hasMutableProduct);
+  }, skip: !_hasCreateCredentials || !_hasMutableProduct);
 
   test('scenario: a Read-only account can still view photos (no privilege '
       'required to read) (FR-009)', () async {

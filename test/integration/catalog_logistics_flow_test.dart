@@ -44,6 +44,12 @@ void main() {
     final vehicleOperatorRepository = VehicleOperatorRepositoryImpl(dio);
 
     final suffix = DateTime.now().millisecondsSinceEpoch;
+    // `vehicle.license_plate` is `String(8)` (mbe-api `app/models/core.py`),
+    // and `VehicleCreate` declares no `max_length`, so an over-long plate is
+    // not rejected as a 422 — it reaches the database and comes back as a bare
+    // 500. The full `$suffix` is 13 digits, so take only its tail: still
+    // unique per run, and inside the column.
+    final plate = 'IT${suffix % 1000000}';
 
     // 1. US1 — create an expense.
     final expense = await expenseRepository.create(
@@ -53,12 +59,12 @@ void main() {
 
     // 2. US2 — create a vehicle.
     final vehicle = await vehicleRepository.create(
-      licensePlate: 'IT-$suffix',
+      licensePlate: plate,
       name: 'Integration Test Vehicle',
       nickname: 'ITV-$suffix',
       tonsCapacity: 5,
     );
-    expect(vehicle.licensePlate, 'IT-$suffix');
+    expect(vehicle.licensePlate, plate);
 
     // 3. Reuse the employee catalog (spec 012) purely as a driver source —
     // create a throwaway employee for this run.
@@ -77,7 +83,9 @@ void main() {
     final vehicleOperator = await vehicleOperatorRepository.create(
       driverId: employee.employeeId,
       licenseType: 'A',
-      driverLicenseNumber: 'LN-$suffix',
+      // `String(15)`, and again unvalidated by the schema, so the hyphen that
+      // would push this to 16 characters is deliberately absent.
+      driverLicenseNumber: 'LN$suffix',
       issueDate: DateTime.now(),
       expirationDate: DateTime.now().add(const Duration(days: 365)),
       issuingLocation: 'CDMX',

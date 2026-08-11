@@ -25,6 +25,11 @@ const _mergePassword = String.fromEnvironment('MBE_MERGE_TEST_PASSWORD');
 
 const _hasMergeCredentials = _mergeUsername != '' && _mergePassword != '';
 
+/// A real SAT unit code — `product.unit_of_measurement` is a foreign key into
+/// `sat_unit_of_measurement`. `H87` is "Pieza"; `PCE` is not in the catalog
+/// (see `product_catalog_flow_test.dart`).
+const _unitOfMeasurement = 'H87';
+
 void main() {
   Future<ProductRepositoryImpl> authenticatedProductRepository(
     String username,
@@ -51,12 +56,12 @@ void main() {
       final canonical = await repo.create(
         code: 'IT-MERGE-CANON-$suffix',
         name: 'Integration Test Merge Canonical',
-        unitOfMeasurement: 'PCE',
+        unitOfMeasurement: _unitOfMeasurement,
       );
       final duplicate = await repo.create(
         code: 'IT-MERGE-DUP-$suffix',
         name: 'Integration Test Merge Duplicate',
-        unitOfMeasurement: 'PCE',
+        unitOfMeasurement: _unitOfMeasurement,
       );
 
       await repo.mergeProducts(
@@ -84,7 +89,7 @@ void main() {
     final product = await repo.create(
       code: 'IT-MERGE-SELF-${DateTime.now().millisecondsSinceEpoch}',
       name: 'Integration Test Merge Self',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurement: _unitOfMeasurement,
     );
 
     await expectLater(
@@ -109,7 +114,7 @@ void main() {
       final canonical = await repo.create(
         code: 'IT-MERGE-NF-${DateTime.now().millisecondsSinceEpoch}',
         name: 'Integration Test Merge Not-Found',
-        unitOfMeasurement: 'PCE',
+        unitOfMeasurement: _unitOfMeasurement,
       );
 
       await expectLater(
