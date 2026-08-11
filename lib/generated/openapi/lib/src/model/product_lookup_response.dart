@@ -22,6 +22,7 @@ part 'product_lookup_response.g.dart';
 /// * [model]
 /// * [barCode]
 /// * [unitOfMeasurement]
+/// * [photo]
 /// * [price]
 /// * [taxRate]
 /// * [taxIncluded]
@@ -55,6 +56,9 @@ abstract class ProductLookupResponse
 
   @BuiltValueField(wireName: r'unit_of_measurement')
   SatUnitOfMeasurementResponse? get unitOfMeasurement;
+
+  @BuiltValueField(wireName: r'photo')
+  String? get photo;
 
   @BuiltValueField(wireName: r'price')
   String get price;
@@ -156,6 +160,13 @@ class _$ProductLookupResponseSerializer
       yield serializers.serialize(
         object.unitOfMeasurement,
         specifiedType: const FullType.nullable(SatUnitOfMeasurementResponse),
+      );
+    }
+    if (object.photo != null) {
+      yield r'photo';
+      yield serializers.serialize(
+        object.photo,
+        specifiedType: const FullType.nullable(String),
       );
     }
     yield r'price';
@@ -299,6 +310,16 @@ class _$ProductLookupResponseSerializer
                   as SatUnitOfMeasurementResponse?;
           if (valueDes == null) continue;
           result.unitOfMeasurement.replace(valueDes);
+          break;
+        case r'photo':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.photo = valueDes;
           break;
         case r'price':
           final valueDes =

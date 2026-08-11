@@ -18,6 +18,7 @@ part 'sales_order_line_response.g.dart';
 /// * [productCode]
 /// * [productName]
 /// * [unitOfMeasurement]
+/// * [photo]
 /// * [quantity]
 /// * [cost]
 /// * [price]
@@ -48,6 +49,9 @@ abstract class SalesOrderLineResponse
 
   @BuiltValueField(wireName: r'unit_of_measurement')
   SatUnitOfMeasurementResponse? get unitOfMeasurement;
+
+  @BuiltValueField(wireName: r'photo')
+  String? get photo;
 
   @BuiltValueField(wireName: r'quantity')
   String get quantity;
@@ -144,6 +148,13 @@ class _$SalesOrderLineResponseSerializer
       yield serializers.serialize(
         object.unitOfMeasurement,
         specifiedType: const FullType.nullable(SatUnitOfMeasurementResponse),
+      );
+    }
+    if (object.photo != null) {
+      yield r'photo';
+      yield serializers.serialize(
+        object.photo,
+        specifiedType: const FullType.nullable(String),
       );
     }
     yield r'quantity';
@@ -283,6 +294,16 @@ class _$SalesOrderLineResponseSerializer
                   as SatUnitOfMeasurementResponse?;
           if (valueDes == null) continue;
           result.unitOfMeasurement.replace(valueDes);
+          break;
+        case r'photo':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.photo = valueDes;
           break;
         case r'quantity':
           final valueDes =
