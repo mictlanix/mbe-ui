@@ -313,8 +313,15 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     style: Theme.of(context).typeRoles.money,
   );
 
+  /// Removing a line is the one irreversible thing this row does, so it carries
+  /// the error colour the rest of the product already gives destructive actions
+  /// (`RecordFormActions`' delete button). Disabled it fades with everything
+  /// else — a control that cannot fire should not advertise danger.
   Widget _deleteButton(AppLocalizations l10n, bool enabled) => IconButton(
     icon: const Icon(Icons.delete_outline),
+    style: IconButton.styleFrom(
+      foregroundColor: Theme.of(context).colorScheme.error,
+    ),
     onPressed: enabled ? removeLine : null,
     tooltip: l10n.posRemoveLineTooltip,
   );

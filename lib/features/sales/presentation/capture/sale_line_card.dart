@@ -98,8 +98,13 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                   MoneyFormatters.currency(line.total),
                   style: theme.textTheme.titleMedium,
                 ),
+                // The error colour every destructive action in the product
+                // carries, as in `SaleLineRow`.
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
+                  style: IconButton.styleFrom(
+                    foregroundColor: theme.colorScheme.error,
+                  ),
                   onPressed: enabled ? removeLine : null,
                   tooltip: l10n.posRemoveLineTooltip,
                 ),

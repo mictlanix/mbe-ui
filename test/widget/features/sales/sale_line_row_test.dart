@@ -227,6 +227,31 @@ void main() {
       expect(picker.value, Decimal.parse('0.16'));
     });
 
+    testWidgets('removing a line is marked as destructive — the error colour '
+        'the rest of the product gives a delete action', (tester) async {
+      await pumpRow(tester);
+
+      final delete = tester.widget<IconButton>(
+        find.ancestor(
+          of: find.byIcon(Icons.delete_outline),
+          matching: find.byType(IconButton),
+        ),
+      );
+      final scheme = Theme.of(
+        tester.element(find.byType(SaleLineRow)),
+      ).colorScheme;
+      expect(
+        delete.style!.foregroundColor!.resolve(const <WidgetState>{}),
+        scheme.error,
+      );
+      // ...and not while it cannot fire: a disabled control should not
+      // advertise danger.
+      expect(
+        delete.style!.foregroundColor!.resolve(const {WidgetState.disabled}),
+        isNot(scheme.error),
+      );
+    });
+
     testWidgets('quantity has increment and decrement controls', (tester) async {
       await pumpRow(tester);
       expect(find.byIcon(Icons.add), findsOneWidget);
