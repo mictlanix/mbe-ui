@@ -1882,6 +1882,8 @@
   "@posRemoveLineTooltip": {},
   "posLineQuantityLabel": "Qty.",
   "@posLineQuantityLabel": {},
+  "posLineQuantityWithUnitLabel": "Qty. ({unit})",
+  "@posLineQuantityWithUnitLabel": {"placeholders": {"unit": {"type": "String"}}},
   "posLinePriceLabel": "Price",
   "@posLinePriceLabel": {},
   "posLineDiscountLabel": "Disc. %",

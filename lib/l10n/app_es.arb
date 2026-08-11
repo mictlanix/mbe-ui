@@ -840,6 +840,7 @@
   "posProductSearchNoResults": "Sin resultados",
   "posRemoveLineTooltip": "Eliminar línea",
   "posLineQuantityLabel": "Cant.",
+  "posLineQuantityWithUnitLabel": "Cant. ({unit})",
   "posLinePriceLabel": "Precio",
   "posLineDiscountLabel": "Desc. %",
   "posLineTaxLabel": "Imp. %",

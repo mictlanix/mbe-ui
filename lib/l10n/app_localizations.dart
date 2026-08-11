@@ -4817,6 +4817,12 @@ abstract class AppLocalizations {
   /// **'Qty.'**
   String get posLineQuantityLabel;
 
+  /// No description provided for @posLineQuantityWithUnitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty. ({unit})'**
+  String posLineQuantityWithUnitLabel(String unit);
+
   /// No description provided for @posLinePriceLabel.
   ///
   /// In en, this message translates to:

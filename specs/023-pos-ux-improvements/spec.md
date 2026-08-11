@@ -529,6 +529,10 @@ the primary action sits on the same band.
 - **FR-038**: Each of a line's fields MUST be sized for the value it holds, with
   the product area taking the remaining space; no field may be wider than its
   content warrants.
+- **FR-038a**: Every editable control on a line MUST share one height and one
+  vertical centre, so the line reads as a single band of controls rather than as
+  differently-sized boxes; the product's unit of measurement MUST travel with
+  the quantity field rather than occupying a column of its own.
 - **FR-039**: A line MUST present the product name as its prominent element with
   the code as a secondary line beneath it.
 - **FR-040**: A line MUST reserve a fixed thumbnail slot and MUST render the

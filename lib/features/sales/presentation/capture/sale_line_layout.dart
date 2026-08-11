@@ -8,23 +8,36 @@
 enum SaleLineLayout { singleRow, twoRow, card }
 
 /// The budget for the single-row layout (contracts/capture-surface.md §4.2):
-/// fixed columns (thumbnail 36, warehouse 140, quantity 128, unit 56, price
-/// 84, discount 68, tax 68, total 96, delete ~48) plus 7 gaps of
-/// `spacing.xs` (56) plus a 200 px minimum for the product cell. The
-/// quantity column widened from an initially tighter 104 px to 128 px after
-/// a widget test caught a real overflow there — `IconButton`'s own sizing
-/// didn't shrink as far as `constraints`/`padding` overrides alone
-/// implied, confirming these are a *budget*, not a measurement (research
-/// R10): the FR-037a widget test (`sale_line_row_test.dart`) pumps a real
-/// line at 1024 px and fails on overflow, which is what caught this.
+/// fixed columns (warehouse 168, quantity 132, price 88, discount 80, tax 80,
+/// total 100, delete 48) plus 6 gaps of `spacing.xs` (48) plus a 226 px
+/// minimum for the product cell, which carries the 40 px thumbnail inside it.
+/// These are a *budget*, not a measurement (research R10): the FR-037a widget
+/// test (`sale_line_row_test.dart`) pumps a real line at 1024 px and fails on
+/// overflow, which is what keeps the budget honest — it caught the quantity
+/// column's first, tighter 104 px, where `IconButton`'s own sizing didn't
+/// shrink as far as `constraints`/`padding` overrides alone implied.
 ///
-/// The unit column later grew 36 → 56 for the same reason, caught the same
-/// way but by *looking* rather than by an assertion: a rendered screenshot
-/// showed a six-letter unit (`Cubeta`) wrapping to two lines and taking the
-/// whole row taller with it. This threshold grew by the same 20 px, keeping
-/// the product cell's 200 px floor intact — and staying well under the
-/// 1024 px a landscape tablet gives it (FR-037a).
+/// The columns widened toward the mock's own grid (`minmax(300px,1fr) 176px
+/// 128px 96px 100px 88px 84px 124px 44px`) without moving this threshold,
+/// paid for by folding the separate unit column into the quantity field's
+/// label — the unit is one short symbol (`Pza`), and a column of its own cost
+/// more than it earned. It had already grown 36 → 56 once because a
+/// six-letter unit (`Cubeta`) wrapped and took the whole row taller with it.
 const saleLineSingleRowMinWidth = 970.0;
+
+/// The height every editable control in a line shares — warehouse picker,
+/// quantity stepper, price, discount and tax (FR-038a: one height, so the band
+/// reads as one row of controls rather than five differently-sized ones).
+/// Material's own minimum interactive dimension, which a dense field with a
+/// floating label lands on anyway.
+const saleLineFieldHeight = 48.0;
+
+/// The height of the single row's control band, fixed so every line in the
+/// list is the same height whether its product name takes one line or two.
+/// Sized for the taller of the two things in it: the field band
+/// ([saleLineFieldHeight]) and the product cell's reserved two name lines plus
+/// its code line — the mock's own 56 px row.
+const saleLineRowHeight = 56.0;
 
 /// Below this, even the two-row fallback has nowhere left to shrink — the
 /// caller substitutes `SaleLineCard` at this width today, so `SaleLineRow`

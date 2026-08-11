@@ -117,43 +117,65 @@ Driven by `LayoutBuilder` on the row's **own available width**, never
 
 | Available width | Layout | Chosen by |
 |---|---|---|
-| ≥ 950 px | single row | `saleLineLayoutFor` |
-| 600–950 px | two rows | `saleLineLayoutFor` |
+| ≥ 970 px | single row | `saleLineLayoutFor` |
+| 600–970 px | two rows | `saleLineLayoutFor` |
 | < 600 px | `SaleLineCard`, unchanged | the caller, as today |
 
 ### 4.2 The single row
 
 ```
-[36 img] Product name           [warehouse ▾ 140] [− 128 +] unit [price 84] [desc 68] [iva 68]  [total 96] [🗑]
-         CODE (secondary)        stock badge
+[40 img] Product name, up to     [warehouse ▾ 168] [− Cant. (Pza) +] [precio 88] [desc 80] [imp 80]  [total 100] [🗑]
+         two lines               132
+         CODE (secondary)
 ```
+
+Band height `saleLineRowHeight` = 56 (the mock's own row height); every
+editable control in it is `saleLineFieldHeight` = 48 tall and shares one
+vertical centre (FR-038a).
 
 | Column | Width | Content |
 |---|---|---|
-| Thumbnail | 36 | `ProductPhoto(photoUrl: null, size: 36)` — reserved slot, placeholder until mbe-api exposes `photo` (research R11) |
-| Product | flex, min 200 | name in the body role; code beneath in the smaller secondary role — **not** `'code — name'` in one string |
-| Warehouse | 140 | existing `warehousePicker()`, with the availability figure kept visible |
-| Quantity | 128 | −/field/+ stepper, with its own `posLineQuantityLabel` — widened from an initially tighter 104 during implementation (see below) |
-| Unit | 36 | `line.unit`, omitted (not placeholdered) when the product has none |
-| Price | 84 | editable |
-| Discount | 68 | editable, percent |
-| Tax | 68 | editable, percent |
-| Total | 96 | right-aligned, never truncated |
+| Thumbnail | 40 | `ProductPhoto(photoUrl: null, size: 40)` — reserved slot, placeholder until mbe-api exposes `photo` (research R11); lives inside the product column |
+| Product | flex, min 226 | name in the body role over **two reserved lines**, ellipsized; code beneath in the smaller secondary role — **not** `'code — name'` in one string. Both lines are reserved whether the name needs them or not, so rows do not jump height (FR-040) |
+| Warehouse | 168 | existing `warehousePicker()`, with the availability figure kept visible |
+| Quantity | 132 | −/field/+ stepper, labelled `posLineQuantityWithUnitLabel` (`Cant. (Pza)`) when the product has a unit, `posLineQuantityLabel` (`Cant.`) when it does not |
+| Price | 88 | editable — see 4.2a |
+| Discount | 80 | editable, percent |
+| Tax | 80 | editable, percent |
+| Total | 100 | right-aligned in `typeRoles.money`, never truncated |
 | Delete | unconstrained | existing icon, Material's own default sizing |
 
-Gaps are `spacing.xs` (8), 7 of them (no gap before the trailing delete icon).
+Gaps are `spacing.xs` (8), 6 of them (no gap before the trailing delete icon).
 **These are budgets, not measurements** — the FR-037a widget test pumps a real
 line at a 1024-px surface and asserts no overflow. It caught exactly this: the
 quantity column's first budget (104 px, two `IconButton`s explicitly constrained
 to 28 px each plus a 36-px field) overflowed by 12 px in practice — `IconButton`'s
 own sizing did not shrink as far as the `constraints`/`padding` overrides implied
-— and was widened to 128 px, matching the mock's own original column width,
-rather than fighting the framework further.
+— and was widened, rather than fighting the framework further.
+
+The columns above are the mock's own grid (`minmax(300px,1fr) 176px 128px 96px
+100px 88px 84px 124px 44px`), trimmed to fit 1024 px. What paid for widening
+them is the **unit's own column**, folded into the quantity field's label: a
+unit is one short symbol, and a column of its own had already cost 56 px after
+growing 36 → 56 to stop `Cubeta` wrapping and taking the whole row taller. The
+compact tier reached the same conclusion independently — `SaleLineCard` carries
+the unit as the quantity field's `suffixText`.
+
+### 4.2a Price stays editable
+
+The mock renders `Precio` as plain read-only text while `Desc.` and `IVA` carry
+field chrome. The API disagrees, and the API wins: `SalesOrderLineCreate` and
+`SalesOrderLineUpdate` both accept `price` (`Decimal | None, ge=0`), and
+mbe-api validates a supplied price against the product's profit-margin band
+(`price_validation_in_range_required`) rather than ignoring it — a deliberate,
+guarded override, not an accident. Spec 020 FR-023 and this spec's FR-023 both
+make it editable, so the mock's read-only price is read as presentation, on the
+same footing as its dark palette.
 
 ### 4.3 The two-row fallback
 
 Row 1: thumbnail, product, warehouse, total, delete.
-Row 2: quantity stepper, unit, price, discount, tax.
+Row 2: quantity stepper (unit in its label, as above), price, discount, tax.
 Nothing is dropped and nothing is read-only that was editable.
 
 ### 4.4 Unchanged behaviour

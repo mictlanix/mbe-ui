@@ -2598,6 +2598,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posLineQuantityLabel => 'Cant.';
 
   @override
+  String posLineQuantityWithUnitLabel(String unit) {
+    return 'Cant. ($unit)';
+  }
+
+  @override
   String get posLinePriceLabel => 'Precio';
 
   @override

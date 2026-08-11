@@ -7,6 +7,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -147,28 +148,105 @@ void main() {
     });
   });
 
-  group('the unit column (FR-022, mbe-api#145)', () {
-    testWidgets('renders the product\'s unit beside the quantity', (tester) async {
+  group('the unit, in the quantity label (FR-022, FR-038a, mbe-api#145)', () {
+    testWidgets('the quantity field is labelled with the product\'s unit — no '
+        'column of its own', (tester) async {
       await pumpPos(
         tester,
         SaleLineRow(line: testLine(unit: 'Pza'), facilityId: 9),
         overrides: [warehouseOverride(warehouseRepository)],
       );
-      expect(find.text('Pza'), findsOneWidget);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      expect(find.text(l10n.posLineQuantityWithUnitLabel('Pza')), findsOneWidget);
+      // The unit is the label, not a cell beside it.
+      expect(find.text('Pza'), findsNothing);
     });
 
-    testWidgets('a product with no unit on file renders no placeholder', (
+    testWidgets('a product with no unit on file keeps the plain quantity '
+        'label and shows no placeholder', (tester) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(line: testLine(), facilityId: 9),
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      expect(find.text(l10n.posLineQuantityLabel), findsOneWidget);
+      expect(find.text('—'), findsNothing);
+      expect(find.text('Pza'), findsNothing);
+    });
+  });
+
+  group('one height for every editable control (FR-038a)', () {
+    testWidgets('warehouse, quantity, price, discount and tax are all '
+        '$saleLineFieldHeight tall and share one vertical centre', (
       tester,
     ) async {
       await pumpPos(
         tester,
         SaleLineRow(line: testLine(), facilityId: 9),
         overrides: [warehouseOverride(warehouseRepository)],
+        surface: const Size(1400, 900),
       );
-      // Only the fields' own labels are present — nothing stands in for the
-      // missing unit.
-      expect(find.text('—'), findsNothing);
-      expect(find.text('Pza'), findsNothing);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      // Each control's own decorated box, found via its label — the widths
+      // differ by design, the heights must not.
+      Finder boxFor(String label) => find.ancestor(
+        of: find.text(label),
+        matching: find.byType(InputDecorator),
+      );
+
+      final labels = [
+        l10n.posLineWarehouseLabel,
+        l10n.posLineQuantityLabel,
+        l10n.posLinePriceLabel,
+        l10n.posLineDiscountLabel,
+        l10n.posLineTaxLabel,
+      ];
+      final centres = <double>[];
+      for (final label in labels) {
+        expect(boxFor(label), findsOneWidget, reason: label);
+        expect(
+          tester.getSize(boxFor(label)).height,
+          saleLineFieldHeight,
+          reason: label,
+        );
+        centres.add(tester.getCenter(boxFor(label)).dy);
+      }
+      expect(centres.toSet(), hasLength(1));
+    });
+
+    testWidgets('a one-line product name and a name long enough to wrap give '
+        'rows of the same height — the list does not jump', (tester) async {
+      await pumpPos(
+        tester,
+        Column(
+          children: [
+            SaleLineRow(
+              line: testLine(id: 1, productName: 'CLAVO'),
+              facilityId: 9,
+            ),
+            SaleLineRow(
+              line: testLine(
+                id: 2,
+                productName:
+                    'ADAPTADOR DE CLAVIJA ESPIGAS POLARIZADAS 2 PACK CON '
+                    'TIERRA REFORZADO USO INTERIOR',
+              ),
+              facilityId: 9,
+            ),
+          ],
+        ),
+        overrides: [warehouseOverride(warehouseRepository)],
+        surface: const Size(1400, 900),
+      );
+
+      expect(
+        tester.getSize(find.byKey(const Key('sale_line_row_1'))).height,
+        tester.getSize(find.byKey(const Key('sale_line_row_2'))).height,
+      );
     });
   });
 
