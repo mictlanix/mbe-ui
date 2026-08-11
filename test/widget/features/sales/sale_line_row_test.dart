@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../golden/golden_harness.dart';
 import 'pos_test_harness.dart';
 
 Warehouse _warehouse(int id, String name) => Warehouse(
@@ -302,9 +303,9 @@ void main() {
       expect(textOf(l10n.posLineQuantityLabel), '3');
       expect(textOf(l10n.posLinePriceLabel), '50.00');
       expect(textOf(l10n.posLineDiscountLabel), '0');
-      // 0.1600 stored, offered as 16 under an "Imp. %" label — a picker item
-      // now rather than a field's text.
-      expect(find.text('16'), findsOneWidget);
+      // 0.1600 stored, offered as a two-decimal percentage — a picker item now
+      // rather than a field's text.
+      expect(find.text('16.00 %'), findsOneWidget);
     });
   });
 
@@ -335,6 +336,70 @@ void main() {
       expect(find.text(l10n.posLineQuantityLabel), findsOneWidget);
       expect(find.text('—'), findsNothing);
       expect(find.text('Pza'), findsNothing);
+    });
+  });
+
+  // Pumped against the **real app theme** rather than the bare `MaterialApp`
+  // the rest of this file uses: the padding that equalises a dropdown against a
+  // text field is derived from the body role's line height, so it is the app's
+  // own type scale this has to hold under, not the framework's default.
+  group('one box height, one baseline, under the real theme (FR-038a)', () {
+    setUpAll(loadGoldenFonts);
+
+    testWidgets('every control in the band is $saleLineFieldHeight tall and '
+        'every value in it — the line total included — sits on one baseline', (
+      tester,
+    ) async {
+      await pumpGoldenScenario(
+        tester,
+        SaleLineRow(line: testLine(unit: 'kg'), facilityId: 9),
+        brightness: Brightness.dark,
+        width: 1440,
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      for (final label in [
+        l10n.posLineWarehouseLabel,
+        l10n.posLineQuantityWithUnitLabel('kg'),
+        l10n.posLinePriceLabel,
+        l10n.posLineDiscountLabel,
+        l10n.posLineTaxLabel,
+      ]) {
+        expect(
+          tester
+              .getSize(
+                find.ancestor(
+                  of: find.text(label),
+                  matching: find.byType(InputDecorator),
+                ),
+              )
+              .height,
+          saleLineFieldHeight,
+          reason: label,
+        );
+      }
+
+      // One line box for every value, so one baseline: the two dropdowns, the
+      // three text fields and the line total. Compared as rects rather than
+      // baselines because `getRect` on the `Text` is the line box itself —
+      // equal tops and equal heights *is* an equal baseline.
+      final boxes = {
+        for (final value in [
+          'Main Warehouse', // the warehouse picker's selected item
+          '2', // quantity
+          '50.00', // price
+          '0', // discount
+          '16.00 %', // tax
+          r'$116.00', // the line total
+        ])
+          value: tester.getRect(find.text(value).first),
+      };
+      expect(
+        boxes.values.map((r) => (r.top, r.height)).toSet(),
+        hasLength(1),
+        reason: boxes.toString(),
+      );
     });
   });
 

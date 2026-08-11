@@ -131,8 +131,20 @@ Driven by `LayoutBuilder` on the row's **own available width**, never
 
 Band height `saleLineRowHeight` = 60; every control in it is
 `saleLineFieldHeight` = 52 tall, set in one text style — the body role (14 px),
-not the 12 px the fields used to differ in — and shares one vertical centre
-(FR-038a).
+not the 12 px the fields used to differ in — and every **value** in the band
+sits on one baseline, the line total's included (FR-038a).
+
+Both of those come from the vertical content padding, not from an enclosing
+`SizedBox`, and the two kinds of control need different padding to get there: a
+dense dropdown's inner box is **4 px taller** than a dense text field's, because
+`DropdownButton._denseButtonHeight` is `max(lineHeight, max(iconSize, 24))` and
+that 24 is a hard floor no icon size gets under, while a text field's inner box
+is its 20-px line. So `saleLineTextFieldPadding` = 16 and
+`saleLineDropdownPadding` = 14. Forcing the outer height instead — the first
+attempt — made the *decorations* 52 while leaving each **painted box** at its own
+natural height and each value 2 px off its neighbour's baseline: measured, not
+guessed, and now asserted against the real app theme in
+`sale_line_row_test.dart`.
 
 Column widths are **interpolated**, not fixed: `SaleLineColumns.of(width)`
 returns the `floor` set at `saleLineSingleRowMinWidth` (970) and the
@@ -190,8 +202,10 @@ its own.
 
 **Tax** (FR-038b). A `DropdownButtonFormField<Decimal>`, key
 `pos_line_tax_rate_picker`, offering exactly two rates ascending: none, and the
-product table's own. The mock draws `IVA` with an `expand_more` for the same
-reason.
+product table's own, each rendered by `formatRateAsPercentWithSymbol` — two
+decimals and the sign, `16.00 %`, so the items read as a column of aligned
+figures instead of a ragged `16` / `7.5`. The mock draws `IVA` with an
+`expand_more` for the same reason.
 
 | The product's rate comes from | When |
 |---|---|

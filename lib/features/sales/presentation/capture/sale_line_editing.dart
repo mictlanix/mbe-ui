@@ -167,7 +167,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
           for (final rate in taxRateOptions)
             DropdownMenuItem(
               value: rate,
-              child: Text(formatRateAsPercent(rate.toString())),
+              child: Text(formatRateAsPercentWithSymbol(rate.toString())),
             ),
         ],
         onChanged: enabled

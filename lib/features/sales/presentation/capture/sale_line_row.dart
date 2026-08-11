@@ -180,12 +180,12 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   TextStyle? get _fieldStyle => Theme.of(context).textTheme.bodyMedium;
 
   Widget _warehouseCell(AppLocalizations l10n) => warehousePicker(
-    decoration: _fieldDecoration(l10n.posLineWarehouseLabel),
+    decoration: _fieldDecoration(l10n.posLineWarehouseLabel, dropdown: true),
     style: _fieldStyle,
   );
 
   Widget _taxCell(AppLocalizations l10n) => taxRatePicker(
-    decoration: _fieldDecoration(l10n.posLineTaxLabel),
+    decoration: _fieldDecoration(l10n.posLineTaxLabel, dropdown: true),
     style: _fieldStyle,
   );
 
@@ -263,15 +263,25 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     onPressed: onPressed,
   );
 
-  /// One decoration for every editable control in the band, so they come out
-  /// the same height as each other rather than each landing wherever its own
-  /// content puts it (FR-038a). [_band] pins that height; this keeps the
-  /// interiors consistent too.
-  InputDecoration _fieldDecoration(String label) => InputDecoration(
-    labelText: label,
-    isDense: true,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-  );
+  /// One decoration for every control in the band, so they come out the same
+  /// height *and* on the same baseline rather than each landing wherever its own
+  /// content puts it (FR-038a).
+  ///
+  /// [dropdown] is the whole difference: a dense dropdown's inner box is 4 px
+  /// taller than a dense text field's, so it takes 2 px less padding on each
+  /// side to reach the same [saleLineFieldHeight] — see
+  /// [saleLineDropdownPadding].
+  InputDecoration _fieldDecoration(String label, {bool dropdown = false}) =>
+      InputDecoration(
+        labelText: label,
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: dropdown
+              ? saleLineDropdownPadding
+              : saleLineTextFieldPadding,
+        ),
+      );
 
   Widget _rateField({
     required TextEditingController controller,

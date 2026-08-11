@@ -33,6 +33,34 @@ const saleLineSingleRowMinWidth = 970.0;
 /// padding `SaleLineRow` applies.
 const saleLineFieldHeight = 52.0;
 
+/// The height of the box a **text field** puts inside its decoration: one line
+/// of the body role (14 px at the theme's 1.43 line height).
+const _saleLineTextContentHeight = 20.0;
+
+/// The height of the box a **dropdown** puts inside its decoration. Flutter's
+/// own `_kDenseButtonHeight` floor — `max(lineHeight, max(iconSize, 24))` in
+/// `DropdownButton._denseButtonHeight` — so a dense dropdown is 4 px taller
+/// inside than a dense text field however its icon and text are sized.
+const _saleLineDropdownContentHeight = 24.0;
+
+/// The vertical content padding that brings a **text field** to
+/// [saleLineFieldHeight].
+const saleLineTextFieldPadding =
+    (saleLineFieldHeight - _saleLineTextContentHeight) / 2;
+
+/// The vertical content padding that brings a **dropdown** to
+/// [saleLineFieldHeight] — 2 px less than a text field's, because its inner box
+/// is 4 px taller.
+///
+/// Paying the difference in *padding* rather than forcing the outer height is
+/// what makes the two kinds of control agree on both counts at once: the boxes
+/// come out the same height, and since each one centres a 20-px line of text
+/// inside the same 52-px decoration, the text lands on the same baseline too —
+/// the same baseline the line total sits on, being a 20-px line centred in the
+/// same band.
+const saleLineDropdownPadding =
+    (saleLineFieldHeight - _saleLineDropdownContentHeight) / 2;
+
 /// The height of the single row's control band, fixed so every line in the
 /// list is the same height whether its product name takes one line or two.
 /// Sized for the taller of the two things in it: the field band

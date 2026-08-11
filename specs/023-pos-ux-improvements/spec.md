@@ -531,10 +531,13 @@ the primary action sits on the same band.
 - **FR-038**: Each of a line's fields MUST be sized for the value it holds, with
   the product area taking the remaining space; no field may be wider than its
   content warrants.
-- **FR-038a**: Every editable control on a line MUST share one height and one
-  vertical centre, so the line reads as a single band of controls rather than as
-  differently-sized boxes; the product's unit of measurement MUST travel with
-  the quantity field rather than occupying a column of its own.
+- **FR-038a**: Every control on a line MUST share one height, and every value on
+  it — the line total included — MUST sit on one baseline, so the line reads as a
+  single band rather than as differently-sized boxes with text at differing
+  heights. This holds across control *kinds*: a picker and a text field must
+  agree, not merely each agree with its own sort. The product's unit of
+  measurement MUST travel with the quantity field rather than occupying a column
+  of its own.
 - **FR-038b**: A line's tax rate MUST be **chosen**, not typed: the only rates
   offered are the product's own rate and none. A rate a line already carries
   MUST remain selectable so that rendering a line never rewrites it.
