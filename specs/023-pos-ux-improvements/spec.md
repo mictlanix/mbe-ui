@@ -549,9 +549,11 @@ the primary action sits on the same band.
   is a deliberate policy in the UI, not a backend limitation.
 - **FR-039**: A line MUST present the product name as its prominent element with
   the code as a secondary line beneath it.
-- **FR-040**: A line MUST reserve a fixed thumbnail slot and MUST render the
-  product placeholder in it, at a size that keeps every row the same height,
-  until a product photo is available from the backend.
+- **FR-040**: A line MUST show the product's photo in a fixed thumbnail slot,
+  and MUST render the shared placeholder in that same slot for a product with no
+  photo, at a size that keeps every row the same height either way. (Satisfied
+  by the reserved slot alone until mbe-api#157 shipped the photo on both
+  payloads on 2026-08-11; satisfied fully since.)
 - **FR-041**: A line MUST keep its warehouse choice and that warehouse's
   availability visible, and MUST keep the non-blocking shortfall warning and its
   adjust action.

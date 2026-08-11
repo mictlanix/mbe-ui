@@ -8,6 +8,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart';
@@ -331,6 +332,42 @@ void main() {
       // 0.1600 stored, offered as a two-decimal percentage — a picker item now
       // rather than a field's text.
       expect(find.text('16.00 %'), findsOneWidget);
+    });
+  });
+
+  group('the product thumbnail (FR-040, mbe-api#157)', () {
+    testWidgets('renders the line\'s own photo — no second call to fetch it', (
+      tester,
+    ) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(
+          line: testLine(photo: 'https://cdn.example.com/images/p-11.jpg'),
+          facilityId: 9,
+        ),
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+
+      expect(
+        tester.widget<ProductPhoto>(find.byType(ProductPhoto)).photoUrl,
+        'https://cdn.example.com/images/p-11.jpg',
+      );
+    });
+
+    testWidgets('a product with no photo still reserves the slot, so rows keep '
+        'one height', (tester) async {
+      await pumpPos(
+        tester,
+        SaleLineRow(line: testLine(), facilityId: 9),
+        overrides: [warehouseOverride(warehouseRepository)],
+      );
+
+      expect(
+        tester.widget<ProductPhoto>(find.byType(ProductPhoto)).photoUrl,
+        isNull,
+      );
+      // The placeholder occupies the same box a photo would.
+      expect(tester.getSize(find.byType(ProductPhoto)), const Size(40, 40));
     });
   });
 

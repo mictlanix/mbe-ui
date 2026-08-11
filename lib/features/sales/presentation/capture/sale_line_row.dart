@@ -124,7 +124,10 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
 
   // ── Shared field cells (contracts/capture-surface.md §4.2) ───────────────
 
-  Widget _thumbnail() => const ProductPhoto(photoUrl: null, size: 40);
+  /// The real photo since mbe-api#157 put one on both shapes a till reads;
+  /// `ProductPhoto` falls back to its placeholder for a product without one,
+  /// which is what keeps every row the same height either way (FR-040).
+  Widget _thumbnail() => ProductPhoto(photoUrl: line.photo, size: 40);
 
   /// Name prominent over the code as a secondary line — not `'code — name'`
   /// in one string (FR-039). The thumbnail sits beside it since both rows

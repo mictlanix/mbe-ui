@@ -73,11 +73,10 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Reserved slot (spec 023 research R11): neither the
-                // product-lookup nor the sale-line payload carries a photo
-                // today, so this is the shared placeholder until mbe-api
-                // exposes one.
-                const ProductPhoto(photoUrl: null, size: 36),
+                // The product's real photo since mbe-api#157 (spec 023 research
+                // R11) put one on both shapes a till reads; the shared widget
+                // still placeholders a product without one.
+                ProductPhoto(photoUrl: line.photo, size: 36),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(

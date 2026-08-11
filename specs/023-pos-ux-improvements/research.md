@@ -326,6 +326,18 @@ the window and be wrong in both directions.
 
 ## R11 — The product thumbnail, and the mbe-api dependency
 
+> **Resolved 2026-08-11.** [mbe-api#157](https://github.com/mictlanix/mbe-api/issues/157)
+> shipped (`mictlanix/mbe-api` f0385de, "Expose the product's photo on the two
+> shapes a till reads"): `photo` is now on **both** `ProductLookupResponse` and
+> `SalesOrderLineResponse`, resolved server-side to the same URL the product
+> endpoints serve. The generated client was regenerated against the live spec,
+> `SaleLine.photo`/`ProductLookupResult.photo` map it through the existing
+> `resolvePhotoUrl` — the same helper `Product`/`ProductListItem` use, so a
+> legacy `~/Photos/…` path resolves the same way here as everywhere else — and
+> both call sites now pass it to `ProductPhoto`. The reserved slot did what it
+> was for: lighting it up was one line at each call site, and no row height
+> moved. The decision below is the pre-#157 state, kept for the record.
+
 **Decision.** `SaleLineRow`/`SaleLineCard` render
 `ProductPhoto(photoUrl: null, size: 36)` — the existing shared widget's
 placeholder — in a fixed 36 px slot. No photo is fetched.
@@ -455,4 +467,4 @@ cleanly when they are missing, like its siblings.
 |---|---|---|
 | U1 | What `search` matches on `GET /sales-orders` | `test/integration/pos_sales_list_flow_test.dart` (written; skips cleanly without `MBE_POS_*` — not yet run against a live backend, so still open) |
 | U2 | Whether `date_to` includes its own day | Same test, same status — the picker lets the cashier extend the range either way |
-| U3 | Whether mbe-api will expose `photo` on lookup/line payloads | Filed: [mictlanix/mbe-api#157](https://github.com/mictlanix/mbe-api/issues/157); placeholder ships regardless |
+| U3 | ~~Whether mbe-api will expose `photo` on lookup/line payloads~~ | **Closed 2026-08-11**: [mbe-api#157](https://github.com/mictlanix/mbe-api/issues/157) shipped on both payloads and the thumbnail is live — see R11 |

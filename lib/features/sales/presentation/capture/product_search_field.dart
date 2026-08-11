@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_lookup_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -177,6 +178,10 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
                 itemBuilder: (context, index) {
                   final result = _results[index];
                   return ListTile(
+                    // The looked-up product's own photo (mbe-api#157) — the
+                    // same leading thumbnail `CatalogEntityPicker` gives a
+                    // product candidate, and no extra call to get it.
+                    leading: ProductPhoto(photoUrl: result.photo, size: 40),
                     title: Text('${result.code} — ${result.name}'),
                     subtitle: Text(result.brand ?? ''),
                     trailing: Text(result.price),

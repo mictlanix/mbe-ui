@@ -156,7 +156,7 @@ workspace stranding empty space at the right edge.
 
 | Column | Floor → comfortable | Content |
 |---|---|---|
-| Thumbnail | 40 | `ProductPhoto(photoUrl: null, size: 40)` — reserved slot, placeholder until mbe-api exposes `photo` (research R11); lives inside the product column |
+| Thumbnail | 40 | `ProductPhoto(photoUrl: line.photo, size: 40)` — the product's real photo since mbe-api#157, the shared placeholder for a product without one (research R11); lives inside the product column |
 | Product | flex, min 222 | name in the body role over **two reserved lines**, ellipsized; code beneath in the smaller secondary role — **not** `'code — name'` in one string. Both lines are reserved whether the name needs them or not, so rows do not jump height (FR-040) |
 | Warehouse | 168 → 240 | existing `warehousePicker()`, with the availability figure kept visible |
 | Quantity | 132 → 140 | −/field/+ stepper, labelled `posLineQuantityWithUnitLabel` (`Cant. (Pza)`) when the product has a unit, `posLineQuantityLabel` (`Cant.`) when it does not |
@@ -218,8 +218,12 @@ two, so rendering a line never rewrites its rate and the picker never asserts on
 a value it has no item for. The last row of that table is the one real gap:
 `SalesOrderLineResponse` carries the line's `tax_rate` and nothing about the
 product's, so a sale resumed in a fresh session cannot restore a zeroed line's
-tax until mbe-api exposes the product's rate on the sale-line payload — the same
-shape of backend dependency as the line thumbnail (research R11).
+tax until mbe-api exposes the product's rate on the sale-line payload. That is
+the same shape of backend dependency the thumbnail had, and #157 is the
+precedent for how it resolves: the answer was to put the field on **both**
+shapes a till reads, for exactly this reason — a resumed sale re-reads its lines
+and never re-runs the lookup, so the rows a resume exists to show are the ones a
+lookup-only field leaves empty (research R11).
 
 ### 4.3 The two-row fallback
 

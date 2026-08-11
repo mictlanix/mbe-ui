@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -15,11 +16,16 @@ import 'pos_test_harness.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
-ProductLookupResult _product({required int product, required String code, required String name}) =>
-    ProductLookupResult(
+ProductLookupResult _product({
+  required int product,
+  required String code,
+  required String name,
+  String? photo,
+}) => ProductLookupResult(
       product: product,
       code: code,
       name: name,
+      photo: photo,
       price: '10.00',
       taxRate: '0.16',
       taxIncluded: false,
@@ -97,6 +103,40 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('CLA — Clavo estándar'), findsOneWidget);
+    });
+
+    testWidgets('a candidate carries the product\'s own photo — no second call '
+        'to show it (mbe-api#157)', (tester) async {
+      await pumpField(tester);
+      when(
+        () => salesOrders.productLookup(
+          pattern: any(named: 'pattern'),
+          customer: any(named: 'customer'),
+          warehouse: any(named: 'warehouse'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          _product(
+            product: 1,
+            code: 'CLA',
+            name: 'Clavo estándar',
+            photo: 'https://cdn.example.com/images/cla.jpg',
+          ),
+          _product(product: 2, code: 'TOR', name: 'Tornillo'),
+        ],
+      );
+
+      await tester.enterText(find.byType(TextField), 'c');
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+
+      final photos = tester
+          .widgetList<ProductPhoto>(find.byType(ProductPhoto))
+          .map((p) => p.photoUrl)
+          .toList();
+      // One slot per candidate, and a product with no photo still gets its
+      // slot rather than a ragged list.
+      expect(photos, ['https://cdn.example.com/images/cla.jpg', null]);
     });
 
     testWidgets(

@@ -71,7 +71,9 @@ SaleLine testLine({
   int? warehouse = 3,
   String? unit,
   String productName = 'Widget',
+  String? photo,
 }) => SaleLine(
+  photo: photo,
   id: id,
   product: 11,
   productCode: 'P-11',

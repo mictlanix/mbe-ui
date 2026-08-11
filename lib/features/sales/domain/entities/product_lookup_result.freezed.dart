@@ -24,7 +24,9 @@ mixin _$ProductLookupResult {
   String? get brand => throw _privateConstructorUsedError;
   String? get model => throw _privateConstructorUsedError;
   String? get barCode => throw _privateConstructorUsedError;
-  String? get unit => throw _privateConstructorUsedError;
+  String? get unit =>
+      throw _privateConstructorUsedError; // The product's photo, already resolved to a fetchable URL — mbe-api#157.
+  String? get photo => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
   String get taxRate => throw _privateConstructorUsedError;
   bool get taxIncluded => throw _privateConstructorUsedError;
@@ -56,6 +58,7 @@ abstract class $ProductLookupResultCopyWith<$Res> {
     String? model,
     String? barCode,
     String? unit,
+    String? photo,
     String price,
     String taxRate,
     bool taxIncluded,
@@ -89,6 +92,7 @@ class _$ProductLookupResultCopyWithImpl<$Res, $Val extends ProductLookupResult>
     Object? model = freezed,
     Object? barCode = freezed,
     Object? unit = freezed,
+    Object? photo = freezed,
     Object? price = null,
     Object? taxRate = null,
     Object? taxIncluded = null,
@@ -130,6 +134,10 @@ class _$ProductLookupResultCopyWithImpl<$Res, $Val extends ProductLookupResult>
             unit: freezed == unit
                 ? _value.unit
                 : unit // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            photo: freezed == photo
+                ? _value.photo
+                : photo // ignore: cast_nullable_to_non_nullable
                       as String?,
             price: null == price
                 ? _value.price
@@ -183,6 +191,7 @@ abstract class _$$ProductLookupResultImplCopyWith<$Res>
     String? model,
     String? barCode,
     String? unit,
+    String? photo,
     String price,
     String taxRate,
     bool taxIncluded,
@@ -215,6 +224,7 @@ class __$$ProductLookupResultImplCopyWithImpl<$Res>
     Object? model = freezed,
     Object? barCode = freezed,
     Object? unit = freezed,
+    Object? photo = freezed,
     Object? price = null,
     Object? taxRate = null,
     Object? taxIncluded = null,
@@ -256,6 +266,10 @@ class __$$ProductLookupResultImplCopyWithImpl<$Res>
         unit: freezed == unit
             ? _value.unit
             : unit // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        photo: freezed == photo
+            ? _value.photo
+            : photo // ignore: cast_nullable_to_non_nullable
                   as String?,
         price: null == price
             ? _value.price
@@ -302,6 +316,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
     this.model,
     this.barCode,
     this.unit,
+    this.photo,
     required this.price,
     required this.taxRate,
     required this.taxIncluded,
@@ -327,6 +342,9 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
   final String? barCode;
   @override
   final String? unit;
+  // The product's photo, already resolved to a fetchable URL — mbe-api#157.
+  @override
+  final String? photo;
   @override
   final String price;
   @override
@@ -350,7 +368,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
 
   @override
   String toString() {
-    return 'ProductLookupResult(product: $product, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, unit: $unit, price: $price, taxRate: $taxRate, taxIncluded: $taxIncluded, minOrderQty: $minOrderQty, stockRequired: $stockRequired, stockable: $stockable, stock: $stock)';
+    return 'ProductLookupResult(product: $product, code: $code, name: $name, sku: $sku, brand: $brand, model: $model, barCode: $barCode, unit: $unit, photo: $photo, price: $price, taxRate: $taxRate, taxIncluded: $taxIncluded, minOrderQty: $minOrderQty, stockRequired: $stockRequired, stockable: $stockable, stock: $stock)';
   }
 
   @override
@@ -366,6 +384,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
             (identical(other.model, model) || other.model == model) &&
             (identical(other.barCode, barCode) || other.barCode == barCode) &&
             (identical(other.unit, unit) || other.unit == unit) &&
+            (identical(other.photo, photo) || other.photo == photo) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.taxRate, taxRate) || other.taxRate == taxRate) &&
             (identical(other.taxIncluded, taxIncluded) ||
@@ -390,6 +409,7 @@ class _$ProductLookupResultImpl implements _ProductLookupResult {
     model,
     barCode,
     unit,
+    photo,
     price,
     taxRate,
     taxIncluded,
@@ -421,6 +441,7 @@ abstract class _ProductLookupResult implements ProductLookupResult {
     final String? model,
     final String? barCode,
     final String? unit,
+    final String? photo,
     required final String price,
     required final String taxRate,
     required final bool taxIncluded,
@@ -445,7 +466,9 @@ abstract class _ProductLookupResult implements ProductLookupResult {
   @override
   String? get barCode;
   @override
-  String? get unit;
+  String? get unit; // The product's photo, already resolved to a fetchable URL — mbe-api#157.
+  @override
+  String? get photo;
   @override
   String get price;
   @override

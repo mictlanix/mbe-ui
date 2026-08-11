@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/core/network/photo_url.dart';
+
 part 'sale_line.freezed.dart';
 
 /// The short label for a SAT unit of measurement: its symbol when it has
@@ -27,6 +29,11 @@ class SaleLine with _$SaleLine {
     // The SAT unit's symbol when it has one ("Pza"), else its name
     // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
     String? unit,
+    // The product's photo as a fetchable URL — mbe-api#157, which put it on
+    // both shapes a till reads so a resumed sale's own lines are not the blank
+    // ones. Already resolved through `resolvePhotoUrl`, so a call site hands it
+    // straight to `ProductPhoto`. Null for a product with no photo.
+    String? photo,
     required String quantity,
     required String cost,
     required String price,
@@ -51,6 +58,7 @@ class SaleLine with _$SaleLine {
     productCode: r.productCode,
     productName: r.productName,
     unit: unitLabelOf(r.unitOfMeasurement),
+    photo: resolvePhotoUrl(r.photo),
     quantity: r.quantity,
     cost: r.cost,
     price: r.price,
