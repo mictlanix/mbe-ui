@@ -258,7 +258,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
         pointSale: pointSale,
         status: status?.wireName,
         dateFrom: dateFrom == null ? null : wireDate(dateFrom),
-        dateTo: dateTo == null ? null : wireDate(dateTo),
+        dateTo: dateTo == null ? null : wireDateEnd(dateTo),
         search: search,
         skip: skip,
         limit: limit,
@@ -284,6 +284,17 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
 /// `open_sales_selector_controller.dart`'s `_startOfToday`, which now defers
 /// to this for the same reasoning (spec 023 research R3, R6).
 DateTime wireDate(DateTime local) => DateTime.utc(local.year, local.month, local.day);
+
+/// The last instant of [local]'s date — the `date_to` counterpart to
+/// [wireDate], which is only ever right for `date_from`.
+///
+/// mbe-api compares `date_to` against the sale's *full timestamp*, inclusively
+/// — it does not truncate it to a calendar day (spec 023 research U2, settled
+/// live: `date_to=…T15:27:35` keeps the 15:27:35 sale, `…T15:27:34` drops it).
+/// So a range whose end is plain midnight selects `[00:00:00, 00:00:00]`, an
+/// empty window that answers `total: 0` for any day with actual trading on it.
+DateTime wireDateEnd(DateTime local) =>
+    DateTime.utc(local.year, local.month, local.day, 23, 59, 59, 999);
 
 AppError _toAppError(DioException error) {
   final mapped = error.error;
