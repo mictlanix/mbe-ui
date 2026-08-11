@@ -13,3 +13,18 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 /// substitute for the authoritative check at confirmation.
 final productStockCacheProvider =
     StateProvider<Map<int, List<WarehouseStock>>>((ref) => const {});
+
+/// The product table's own tax rate, keyed by product id — the same
+/// lookup-derived, screen-local cache as [productStockCacheProvider], written
+/// at the same moment by [CaptureStep] and for the same reason: it is the one
+/// place the rate is available.
+///
+/// `SalesOrderLineResponse` carries the **line's** `tax_rate` and nothing
+/// about the product's, so a line's tax picker (FR-038b) needs this to know
+/// what rate to offer besides zero. A line whose product was never looked up
+/// this session (right after resuming a sale) falls back to its own non-zero
+/// rate, which the server took from the product table when the line was
+/// created — see `SaleLineEditing.taxRateOptions`.
+final productTaxRateCacheProvider = StateProvider<Map<int, String>>(
+  (ref) => const {},
+);

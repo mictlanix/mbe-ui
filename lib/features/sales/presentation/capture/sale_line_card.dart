@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
@@ -57,6 +58,11 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
     return Card(
       key: Key('sale_line_card_${line.id}'),
       margin: const EdgeInsets.symmetric(vertical: 4),
+      // Outlined, as in `SaleLineRow` and the customer band.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.mdRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -134,12 +140,17 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
               ],
             ),
             const SizedBox(height: 8),
+            // Read-only here as in the wide row (FR-038c) — a price is
+            // adjusted through the discount, not typed over.
             TextField(
               controller: priceField,
-              enabled: enabled,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              readOnly: true,
+              canRequestFocus: false,
+              mouseCursor: SystemMouseCursors.basic,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               decoration: InputDecoration(labelText: l10n.posLinePriceLabel),
-              onSubmitted: (v) => update(price: v),
             ),
             const SizedBox(height: 8),
             Row(
@@ -158,17 +169,8 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: taxField,
-                    enabled: enabled,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(labelText: l10n.posLineTaxLabel),
-                    onSubmitted: (v) => updateRate(taxRate: v),
-                  ),
-                ),
+                // Chosen, not typed (FR-038b).
+                Expanded(child: taxRatePicker()),
               ],
             ),
             const SizedBox(height: 8),

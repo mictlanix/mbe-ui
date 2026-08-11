@@ -52,6 +52,11 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     ref.read(productStockCacheProvider.notifier).update(
       (cache) => {...cache, result.product: result.stock},
     );
+    // The product table's tax rate, cached for the line's tax picker
+    // (FR-038b) — the lookup is the only payload that carries it.
+    ref.read(productTaxRateCacheProvider.notifier).update(
+      (cache) => {...cache, result.product: result.taxRate},
+    );
     await ref
         .read(posSaleControllerProvider.notifier)
         .addLine(

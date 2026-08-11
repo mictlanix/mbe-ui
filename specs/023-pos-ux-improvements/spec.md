@@ -520,7 +520,9 @@ the primary action sits on the same band.
 
 - **FR-037**: A sale line MUST render as a single row at and above a defined
   width, MUST fall back to two rows below it, and MUST keep the existing stacked
-  card at phone widths — with every field editable in all three.
+  card at phone widths — with the same fields, in the same form, in all three
+  (revised: this said "every field editable" before FR-038b and FR-038c made
+  the price read-only and the tax a choice).
 - **FR-037a**: The single-row width MUST be low enough that a tablet in
   landscape uses it — a line MUST render as one row at 1024 px of available
   width, and SHOULD do so as far down as the expanded tier's lower bound where
@@ -533,6 +535,15 @@ the primary action sits on the same band.
   vertical centre, so the line reads as a single band of controls rather than as
   differently-sized boxes; the product's unit of measurement MUST travel with
   the quantity field rather than occupying a column of its own.
+- **FR-038b**: A line's tax rate MUST be **chosen**, not typed: the only rates
+  offered are the product's own rate and none. A rate a line already carries
+  MUST remain selectable so that rendering a line never rewrites it.
+- **FR-038c**: A line's price MUST be shown but MUST NOT be editable on the
+  capture surface. A price that needs adjusting is adjusted through the
+  discount, which is what the discount is for — decided 2026-08-11, and this
+  narrows spec 020 FR-023 ("every field the cashier can touch is editable in
+  place") for the price alone. mbe-api still accepts a price on a line, so this
+  is a deliberate policy in the UI, not a backend limitation.
 - **FR-039**: A line MUST present the product name as its prominent element with
   the code as a secondary line beneath it.
 - **FR-040**: A line MUST reserve a fixed thumbnail slot and MUST render the

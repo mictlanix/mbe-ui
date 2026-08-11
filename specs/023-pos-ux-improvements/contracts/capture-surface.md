@@ -129,23 +129,34 @@ Driven by `LayoutBuilder` on the row's **own available width**, never
          CODE (secondary)
 ```
 
-Band height `saleLineRowHeight` = 56 (the mock's own row height); every
-editable control in it is `saleLineFieldHeight` = 48 tall and shares one
-vertical centre (FR-038a).
+Band height `saleLineRowHeight` = 60; every control in it is
+`saleLineFieldHeight` = 52 tall, set in one text style — the body role (14 px),
+not the 12 px the fields used to differ in — and shares one vertical centre
+(FR-038a).
 
-| Column | Width | Content |
+Column widths are **interpolated**, not fixed: `SaleLineColumns.of(width)`
+returns the `floor` set at `saleLineSingleRowMinWidth` (970) and the
+`comfortable` set at `saleLineComfortableWidth` (1500), linearly between, so a
+1024-px tablet still fits one row while a desktop gets the sizes drawn on the
+annotated screenshot of 2026-08-11. The product column is not in the table: it
+is `Expanded`, and takes whatever the rest leave, which is what stops a wide
+workspace stranding empty space at the right edge.
+
+| Column | Floor → comfortable | Content |
 |---|---|---|
 | Thumbnail | 40 | `ProductPhoto(photoUrl: null, size: 40)` — reserved slot, placeholder until mbe-api exposes `photo` (research R11); lives inside the product column |
-| Product | flex, min 226 | name in the body role over **two reserved lines**, ellipsized; code beneath in the smaller secondary role — **not** `'code — name'` in one string. Both lines are reserved whether the name needs them or not, so rows do not jump height (FR-040) |
-| Warehouse | 168 | existing `warehousePicker()`, with the availability figure kept visible |
-| Quantity | 132 | −/field/+ stepper, labelled `posLineQuantityWithUnitLabel` (`Cant. (Pza)`) when the product has a unit, `posLineQuantityLabel` (`Cant.`) when it does not |
-| Price | 88 | editable — see 4.2a |
-| Discount | 80 | editable, percent |
-| Tax | 80 | editable, percent |
-| Total | 100 | right-aligned in `typeRoles.money`, never truncated |
+| Product | flex, min 222 | name in the body role over **two reserved lines**, ellipsized; code beneath in the smaller secondary role — **not** `'code — name'` in one string. Both lines are reserved whether the name needs them or not, so rows do not jump height (FR-040) |
+| Warehouse | 168 → 240 | existing `warehousePicker()`, with the availability figure kept visible |
+| Quantity | 132 → 140 | −/field/+ stepper, labelled `posLineQuantityWithUnitLabel` (`Cant. (Pza)`) when the product has a unit, `posLineQuantityLabel` (`Cant.`) when it does not |
+| Price | 88 → 100 | **read-only** — see 4.2a |
+| Discount | 76 → 112 | editable, percent |
+| Tax | 88 → 120 | **a picker** — see 4.2a |
+| Total | 100 → 112 | right-aligned in `typeRoles.money`, never truncated |
 | Delete | unconstrained | existing icon, Material's own default sizing |
 
 Gaps are `spacing.xs` (8), 6 of them (no gap before the trailing delete icon).
+The card is **outlined** — `outlineVariant` at `shapes.mdRadius` — as the
+customer band is, so one line reads as separate from the next.
 **These are budgets, not measurements** — the FR-037a widget test pumps a real
 line at a 1024-px surface and asserts no overflow. It caught exactly this: the
 quantity column's first budget (104 px, two `IconButton`s explicitly constrained
@@ -161,16 +172,40 @@ growing 36 → 56 to stop `Cubeta` wrapping and taking the whole row taller. The
 compact tier reached the same conclusion independently — `SaleLineCard` carries
 the unit as the quantity field's `suffixText`.
 
-### 4.2a Price stays editable
+### 4.2a Price is read-only; tax is a choice
 
-The mock renders `Precio` as plain read-only text while `Desc.` and `IVA` carry
-field chrome. The API disagrees, and the API wins: `SalesOrderLineCreate` and
-`SalesOrderLineUpdate` both accept `price` (`Decimal | None, ge=0`), and
-mbe-api validates a supplied price against the product's profit-margin band
-(`price_validation_in_range_required`) rather than ignoring it — a deliberate,
-guarded override, not an accident. Spec 020 FR-023 and this spec's FR-023 both
-make it editable, so the mock's read-only price is read as presentation, on the
-same footing as its dark palette.
+**Price** (FR-038c). mbe-api *permits* a price override — `SalesOrderLineCreate`
+and `SalesOrderLineUpdate` both accept `price` (`Decimal | None, ge=0`), and
+mbe-api validates a supplied one against the product's profit-margin band
+(`price_validation_in_range_required`) rather than ignoring it. The capture
+surface nonetheless does not offer it (decided 2026-08-11): a cashier who needs
+to move a line's amount moves the **discount**, which is auditable as a
+discount, where a retyped price is indistinguishable from the list price. This
+matches the mock, which draws `Precio` as plain text while `Desc.` and `IVA`
+carry field chrome. The price still renders *as a field* — same box, same
+height, same place — but `readOnly` and out of the tab order, so the band stays
+one row of same-sized controls. `SaleLineEditing.update` has no `price`
+parameter at all, so nothing on this screen can send one; the repository keeps
+its own.
+
+**Tax** (FR-038b). A `DropdownButtonFormField<Decimal>`, key
+`pos_line_tax_rate_picker`, offering exactly two rates ascending: none, and the
+product table's own. The mock draws `IVA` with an `expand_more` for the same
+reason.
+
+| The product's rate comes from | When |
+|---|---|
+| `productTaxRateCacheProvider[line.product]` | the product was looked up this session — `CaptureStep` caches `ProductLookupResponse.tax_rate` beside the stock it already caches |
+| the line's own rate | nothing cached and the line is not at zero: the server took that rate from the product table when the line was created |
+| — only zero is offered | nothing cached **and** the line is already at zero |
+
+The line's current rate is always among the items even when it is neither of the
+two, so rendering a line never rewrites its rate and the picker never asserts on
+a value it has no item for. The last row of that table is the one real gap:
+`SalesOrderLineResponse` carries the line's `tax_rate` and nothing about the
+product's, so a sale resumed in a fresh session cannot restore a zeroed line's
+tax until mbe-api exposes the product's rate on the sale-line payload — the same
+shape of backend dependency as the line thumbnail (research R11).
 
 ### 4.3 The two-row fallback
 

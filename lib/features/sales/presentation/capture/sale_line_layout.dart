@@ -25,19 +25,20 @@ enum SaleLineLayout { singleRow, twoRow, card }
 /// six-letter unit (`Cubeta`) wrapped and took the whole row taller with it.
 const saleLineSingleRowMinWidth = 970.0;
 
-/// The height every editable control in a line shares — warehouse picker,
-/// quantity stepper, price, discount and tax (FR-038a: one height, so the band
-/// reads as one row of controls rather than five differently-sized ones).
-/// Material's own minimum interactive dimension, which a dense field with a
-/// floating label lands on anyway.
-const saleLineFieldHeight = 48.0;
+/// The height every control in a line shares — warehouse picker, quantity
+/// stepper, price, discount and tax (FR-038a: one height, so the band reads as
+/// one row of controls rather than five differently-sized boxes). Sized for the
+/// body role every one of them now renders in — 14 px rather than the 12 px
+/// they used to differ in — under a floating label, with the dense content
+/// padding `SaleLineRow` applies.
+const saleLineFieldHeight = 52.0;
 
 /// The height of the single row's control band, fixed so every line in the
 /// list is the same height whether its product name takes one line or two.
 /// Sized for the taller of the two things in it: the field band
 /// ([saleLineFieldHeight]) and the product cell's reserved two name lines plus
-/// its code line — the mock's own 56 px row.
-const saleLineRowHeight = 56.0;
+/// its code line.
+const saleLineRowHeight = 60.0;
 
 /// Below this, even the two-row fallback has nowhere left to shrink — the
 /// caller substitutes `SaleLineCard` at this width today, so `SaleLineRow`
@@ -48,4 +49,76 @@ SaleLineLayout saleLineLayoutFor(double availableWidth) {
   if (availableWidth >= saleLineSingleRowMinWidth) return SaleLineLayout.singleRow;
   if (availableWidth >= saleLineTwoRowMinWidth) return SaleLineLayout.twoRow;
   return SaleLineLayout.card;
+}
+
+/// The width above which a line's controls are at their full, comfortable
+/// sizes — a desktop workspace. Between here and
+/// [saleLineSingleRowMinWidth] every column narrows proportionally toward its
+/// floor, so the row degrades smoothly into a tablet rather than jumping.
+const saleLineComfortableWidth = 1500.0;
+
+/// What each fixed column of the single row gets at a given available width.
+///
+/// Two width sets, interpolated: the **floor** is what fits a 1024-px tablet
+/// (FR-037a) once the product cell keeps its 222 px minimum, and the
+/// **comfortable** set is the one drawn on the annotated screenshot of
+/// 2026-08-11 — a ~35 % product cell with visibly roomier controls beside it.
+/// The product column is not here: it is `Expanded`, and takes whatever these
+/// leave, which is what keeps a very wide workspace from stranding empty space
+/// at the right edge.
+class SaleLineColumns {
+  const SaleLineColumns._({
+    required this.warehouse,
+    required this.quantity,
+    required this.price,
+    required this.discount,
+    required this.tax,
+    required this.total,
+  });
+
+  final double warehouse;
+  final double quantity;
+  final double price;
+  final double discount;
+  final double tax;
+  final double total;
+
+  /// The tablet floor: 652 px of columns, plus a 48 px delete button and six
+  /// `spacing.xs` gaps, leaves the product cell 222 px at
+  /// [saleLineSingleRowMinWidth].
+  static const floor = SaleLineColumns._(
+    warehouse: 168,
+    quantity: 132,
+    price: 88,
+    discount: 76,
+    tax: 88,
+    total: 100,
+  );
+
+  /// The desktop set: 824 px of columns, which at a 1440-px workspace leaves
+  /// the product cell a little over a third of the row.
+  static const comfortable = SaleLineColumns._(
+    warehouse: 240,
+    quantity: 140,
+    price: 100,
+    discount: 112,
+    tax: 120,
+    total: 112,
+  );
+
+  static SaleLineColumns of(double availableWidth) {
+    final t =
+        ((availableWidth - saleLineSingleRowMinWidth) /
+                (saleLineComfortableWidth - saleLineSingleRowMinWidth))
+            .clamp(0.0, 1.0);
+    double at(double a, double b) => a + (b - a) * t;
+    return SaleLineColumns._(
+      warehouse: at(floor.warehouse, comfortable.warehouse),
+      quantity: at(floor.quantity, comfortable.quantity),
+      price: at(floor.price, comfortable.price),
+      discount: at(floor.discount, comfortable.discount),
+      tax: at(floor.tax, comfortable.tax),
+      total: at(floor.total, comfortable.total),
+    );
+  }
 }

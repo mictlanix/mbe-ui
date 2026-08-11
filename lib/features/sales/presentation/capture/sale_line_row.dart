@@ -10,10 +10,12 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One line, expanded tier (FR-022, FR-023): product, warehouse picker with
-/// availability, quantity stepper, unit, in-place price/discount/tax-rate
-/// edit, line total, delete, and the non-blocking shortfall warning (FR-025,
-/// FR-026). Read-only once `Sale.isEditable` is false (FR-041) — the caller
-/// passes `enabled: false` rather than this row deciding on its own.
+/// availability, quantity stepper carrying the unit, the price read-only
+/// (FR-038c), an editable discount, a tax rate chosen from the product's own
+/// or none (FR-038b), line total, delete, and the non-blocking shortfall
+/// warning (FR-025, FR-026). Read-only once `Sale.isEditable` is false
+/// (FR-041) — the caller passes `enabled: false` rather than this row
+/// deciding on its own.
 ///
 /// One row down to [saleLineSingleRowMinWidth], two rows below that
 /// (spec 023 contracts/capture-surface.md §4) — driven by this row's own
@@ -63,21 +65,31 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     final line = widget.line;
     final enabled = this.enabled;
     final shortfallText = shortfall(l10n);
-    final spacing = Theme.of(context).spacing;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
 
     return Card(
       key: Key('sale_line_row_${line.id}'),
       margin: const EdgeInsets.symmetric(vertical: 4),
+      // Outlined, like the customer band: the lines are the surface the
+      // cashier reads down, and an edge is what separates one from the next.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.mdRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             LayoutBuilder(
-              builder: (context, constraints) =>
-                  saleLineLayoutFor(constraints.maxWidth) == SaleLineLayout.singleRow
-                  ? _singleRow(context, l10n, line, enabled, spacing)
-                  : _twoRow(context, l10n, line, enabled, spacing),
+              builder: (context, constraints) {
+                final columns = SaleLineColumns.of(constraints.maxWidth);
+                return saleLineLayoutFor(constraints.maxWidth) ==
+                        SaleLineLayout.singleRow
+                    ? _singleRow(context, l10n, line, enabled, spacing, columns)
+                    : _twoRow(context, l10n, line, enabled, spacing, columns);
+              },
             ),
             if (shortfallText != null)
               Padding(
@@ -162,7 +174,37 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     );
   }
 
-  Widget _warehouseCell() => warehousePicker();
+  /// One text style for every control in the band (FR-038a). The band used to
+  /// mix `bodySmall` fields with a `bodyMedium`-ish dropdown; a row of controls
+  /// that all do the same job should not be set in two sizes.
+  TextStyle? get _fieldStyle => Theme.of(context).textTheme.bodyMedium;
+
+  Widget _warehouseCell(AppLocalizations l10n) => warehousePicker(
+    decoration: _fieldDecoration(l10n.posLineWarehouseLabel),
+    style: _fieldStyle,
+  );
+
+  Widget _taxCell(AppLocalizations l10n) => taxRatePicker(
+    decoration: _fieldDecoration(l10n.posLineTaxLabel),
+    style: _fieldStyle,
+  );
+
+  /// The price, shown but not writable (FR-038c). It keeps the field shape so
+  /// the band stays one row of same-sized boxes, and keeps the price where the
+  /// cashier already looks for it — but it takes no focus and no keystrokes.
+  /// A price that needs adjusting is adjusted through the discount, which is
+  /// what the discount is for.
+  Widget _priceCell(AppLocalizations l10n) => TextField(
+    controller: priceField,
+    readOnly: true,
+    canRequestFocus: false,
+    mouseCursor: SystemMouseCursors.basic,
+    textAlign: TextAlign.end,
+    style: _fieldStyle?.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    ),
+    decoration: _fieldDecoration(l10n.posLinePriceLabel),
+  );
 
   /// A compact −/field/+ stepper, at the same height as every other control
   /// in the band ([saleLineFieldHeight]).
@@ -178,18 +220,24 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     children: [
       _stepperButton(Icons.remove, enabled ? () => step(-1) : null, l10n.posLineDecreaseQuantity),
       Expanded(
-        child: TextField(
-          controller: quantityField,
-          enabled: enabled,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: _fieldDecoration(
-            line.unit == null
-                ? l10n.posLineQuantityLabel
-                : l10n.posLineQuantityWithUnitLabel(line.unit!),
+        // The stepper's own `Row` would otherwise give the field its intrinsic
+        // height, leaving it shorter than the band it sits in — the two
+        // buttons beside it are what stop the field from filling on its own.
+        child: SizedBox(
+          height: saleLineFieldHeight,
+          child: TextField(
+            controller: quantityField,
+            enabled: enabled,
+            textAlign: TextAlign.center,
+            style: _fieldStyle,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: _fieldDecoration(
+              line.unit == null
+                  ? l10n.posLineQuantityLabel
+                  : l10n.posLineQuantityWithUnitLabel(line.unit!),
+            ),
+            onSubmitted: (v) => update(quantity: v),
           ),
-          onSubmitted: (v) => update(quantity: v),
         ),
       ),
       _stepperButton(Icons.add, enabled ? () => step(1) : null, l10n.posLineIncreaseQuantity),
@@ -234,7 +282,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     controller: controller,
     enabled: enabled,
     textAlign: TextAlign.end,
-    style: Theme.of(context).textTheme.bodySmall,
+    style: _fieldStyle,
     keyboardType: const TextInputType.numberWithOptions(decimal: true),
     decoration: _fieldDecoration(label),
     onSubmitted: onSubmitted,
@@ -263,18 +311,19 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
 
   // ── Layouts ───────────────────────────────────────────────────────────
 
-  /// contracts/capture-surface.md §4.2 — product flex (min 226 by
+  /// contracts/capture-surface.md §4.2 — product flex (min 222 by
   /// construction of [saleLineSingleRowMinWidth], carrying the 40 px
-  /// thumbnail), warehouse 168, quantity 132, price 88, discount 80, tax 80,
-  /// total 100, delete (unconstrained); `spacing.xs` gaps throughout. The
-  /// whole band is [saleLineRowHeight] tall and every editable control in it
-  /// is [saleLineFieldHeight] tall (FR-038a).
+  /// thumbnail); every other column sized by [SaleLineColumns] for this row's
+  /// own width, with `spacing.xs` gaps throughout. The whole band is
+  /// [saleLineRowHeight] tall and every control in it is
+  /// [saleLineFieldHeight] tall (FR-038a).
   Widget _singleRow(
     BuildContext context,
     AppLocalizations l10n,
     SaleLine line,
     bool enabled,
     Spacing spacing,
+    SaleLineColumns columns,
   ) {
     final gap = SizedBox(width: spacing.xs);
     return SizedBox(
@@ -284,22 +333,17 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         children: [
           Expanded(child: _productCell(context, line)),
           gap,
-          _band(width: 168, child: _warehouseCell()),
-          gap,
-          _band(width: 132, child: _quantityStepper(l10n, enabled)),
+          _band(width: columns.warehouse, child: _warehouseCell(l10n)),
           gap,
           _band(
-            width: 88,
-            child: _rateField(
-              controller: priceField,
-              enabled: enabled,
-              label: l10n.posLinePriceLabel,
-              onSubmitted: (v) => update(price: v),
-            ),
+            width: columns.quantity,
+            child: _quantityStepper(l10n, enabled),
           ),
           gap,
+          _band(width: columns.price, child: _priceCell(l10n)),
+          gap,
           _band(
-            width: 80,
+            width: columns.discount,
             child: _rateField(
               controller: discountField,
               enabled: enabled,
@@ -308,17 +352,9 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
             ),
           ),
           gap,
-          _band(
-            width: 80,
-            child: _rateField(
-              controller: taxField,
-              enabled: enabled,
-              label: l10n.posLineTaxLabel,
-              onSubmitted: (v) => updateRate(taxRate: v),
-            ),
-          ),
+          _band(width: columns.tax, child: _taxCell(l10n)),
           gap,
-          SizedBox(width: 100, child: _totalCell(line)),
+          SizedBox(width: columns.total, child: _totalCell(line)),
           _deleteButton(l10n, enabled),
         ],
       ),
@@ -328,13 +364,15 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   /// contracts/capture-surface.md §4.3 — row 1: thumbnail, product,
   /// warehouse, total, delete; row 2: quantity, price, discount, tax. Nothing
   /// dropped, nothing read-only that was editable in the single row; the unit
-  /// travels in the quantity label here too.
+  /// travels in the quantity label here too, and the price is read-only here
+  /// as well (FR-038c).
   Widget _twoRow(
     BuildContext context,
     AppLocalizations l10n,
     SaleLine line,
     bool enabled,
     Spacing spacing,
+    SaleLineColumns columns,
   ) {
     final gap = SizedBox(width: spacing.xs);
     return Column(
@@ -347,9 +385,9 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
             children: [
               Expanded(child: _productCell(context, line)),
               gap,
-              _band(width: 168, child: _warehouseCell()),
+              _band(width: columns.warehouse, child: _warehouseCell(l10n)),
               gap,
-              SizedBox(width: 100, child: _totalCell(line)),
+              SizedBox(width: columns.total, child: _totalCell(line)),
               _deleteButton(l10n, enabled),
             ],
           ),
@@ -360,16 +398,12 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _band(width: 132, child: _quantityStepper(l10n, enabled)),
-              gap,
-              Expanded(
-                child: _rateField(
-                  controller: priceField,
-                  enabled: enabled,
-                  label: l10n.posLinePriceLabel,
-                  onSubmitted: (v) => update(price: v),
-                ),
+              _band(
+                width: columns.quantity,
+                child: _quantityStepper(l10n, enabled),
               ),
+              gap,
+              Expanded(child: _priceCell(l10n)),
               gap,
               Expanded(
                 child: _rateField(
@@ -380,14 +414,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                 ),
               ),
               gap,
-              Expanded(
-                child: _rateField(
-                  controller: taxField,
-                  enabled: enabled,
-                  label: l10n.posLineTaxLabel,
-                  onSubmitted: (v) => updateRate(taxRate: v),
-                ),
-              ),
+              Expanded(child: _taxCell(l10n)),
             ],
           ),
         ),
