@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "user profiles",
   "branch": "024-user-profiles",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-14T23:32:39.418Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-14T23:39:26.328Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:42:05.784Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:42:05.844Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -182,5 +203,6 @@
     "Changing per-user permission-edit semantics (stays a partial upsert)",
     "Per-facility or otherwise scoped profiles",
     "Any change to permission enforcement or the permission vocabulary"
-  ]
+  ],
+  "telemetryInstanceId": "d77b0ab2-e38f-4e8d-9080-7abcb698a990"
 }
