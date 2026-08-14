@@ -38,6 +38,7 @@ import 'package:mbe_api_client/src/api/suppliers_api.dart';
 import 'package:mbe_api_client/src/api/taxpayer_certificates_api.dart';
 import 'package:mbe_api_client/src/api/taxpayer_issuers_api.dart';
 import 'package:mbe_api_client/src/api/taxpayer_recipients_api.dart';
+import 'package:mbe_api_client/src/api/user_profiles_api.dart';
 import 'package:mbe_api_client/src/api/users_api.dart';
 import 'package:mbe_api_client/src/api/vehicle_operators_api.dart';
 import 'package:mbe_api_client/src/api/vehicles_api.dart';
@@ -288,6 +289,12 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   TaxpayerRecipientsApi getTaxpayerRecipientsApi() {
     return TaxpayerRecipientsApi(dio, serializers);
+  }
+
+  /// Get UserProfilesApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  UserProfilesApi getUserProfilesApi() {
+    return UserProfilesApi(dio, serializers);
   }
 
   /// Get UsersApi instance, base route and serializer can be overridden by a given but be careful,

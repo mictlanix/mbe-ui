@@ -11,24 +11,25 @@ import 'package:dio/dio.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
-import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
-import 'package:mbe_api_client/src/model/user_create.dart';
-import 'package:mbe_api_client/src/model/user_list_response.dart';
+import 'package:mbe_api_client/src/model/user_profile_create.dart';
+import 'package:mbe_api_client/src/model/user_profile_list_response.dart';
+import 'package:mbe_api_client/src/model/user_profile_response.dart';
+import 'package:mbe_api_client/src/model/user_profile_update.dart';
 import 'package:mbe_api_client/src/model/user_response.dart';
-import 'package:mbe_api_client/src/model/user_update.dart';
 
-class UsersApi {
+class UserProfilesApi {
   final Dio _dio;
 
   final Serializers _serializers;
 
-  const UsersApi(this._dio, this._serializers);
+  const UserProfilesApi(this._dio, this._serializers);
 
-  /// Create User
-  ///
+  /// Apply User Profile
+  /// Copy a profile&#39;s permissions onto a user, replacing everything they held.  Mounted on the profile rather than the user because the profile is the action&#39;s subject: it is what gets copied and what can refuse by being inactive. Returns the full updated user, matching &#x60;PUT /users/{id}&#x60; — a caller that just replaced 107 permission rows wants to see them.
   ///
   /// Parameters:
-  /// * [userCreate]
+  /// * [profileId]
+  /// * [userId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -38,8 +39,10 @@ class UsersApi {
   ///
   /// Returns a [Future] containing a [Response] with a [UserResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<UserResponse>> createUserApiV1UsersPost({
-    required UserCreate userCreate,
+  Future<Response<UserResponse>>
+  applyUserProfileApiV1UserProfilesProfileIdApplyUserIdPost({
+    required int profileId,
+    required String userId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -47,7 +50,27 @@ class UsersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/users';
+    final _path = r'/api/v1/user-profiles/{profile_id}/apply/{user_id}'
+        .replaceAll(
+          '{'
+          r'profile_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            profileId,
+            const FullType(int),
+          ).toString(),
+        )
+        .replaceAll(
+          '{'
+          r'user_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            userId,
+            const FullType(String),
+          ).toString(),
+        );
     final _options = Options(
       method: r'POST',
       headers: <String, dynamic>{...?headers},
@@ -57,27 +80,11 @@ class UsersApi {
         ],
         ...?extra,
       },
-      contentType: 'application/json',
       validateStatus: validateStatus,
     );
 
-    dynamic _bodyData;
-
-    try {
-      const _type = FullType(UserCreate);
-      _bodyData = _serializers.serialize(userCreate, specifiedType: _type);
-    } catch (error, stackTrace) {
-      throw DioException(
-        requestOptions: _options.compose(_dio.options, _path),
-        type: DioExceptionType.unknown,
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-
     final _response = await _dio.request<Object>(
       _path,
-      data: _bodyData,
       options: _options,
       cancelToken: cancelToken,
       onSendProgress: onSendProgress,
@@ -117,11 +124,107 @@ class UsersApi {
     );
   }
 
-  /// Delete User
+  /// Create User Profile
   ///
   ///
   /// Parameters:
-  /// * [userId]
+  /// * [userProfileCreate]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [UserProfileResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<UserProfileResponse>> createUserProfileApiV1UserProfilesPost({
+    required UserProfileCreate userProfileCreate,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/user-profiles';
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(UserProfileCreate);
+      _bodyData = _serializers.serialize(
+        userProfileCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    UserProfileResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(UserProfileResponse),
+                )
+                as UserProfileResponse;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<UserProfileResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Delete User Profile
+  ///
+  ///
+  /// Parameters:
+  /// * [profileId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -131,8 +234,8 @@ class UsersApi {
   ///
   /// Returns a [Future]
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<void>> deleteUserApiV1UsersUserIdDelete({
-    required String userId,
+  Future<Response<void>> deleteUserProfileApiV1UserProfilesProfileIdDelete({
+    required int profileId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -140,14 +243,14 @@ class UsersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/users/{user_id}'.replaceAll(
+    final _path = r'/api/v1/user-profiles/{profile_id}'.replaceAll(
       '{'
-      r'user_id'
+      r'profile_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        userId,
-        const FullType(String),
+        profileId,
+        const FullType(int),
       ).toString(),
     );
     final _options = Options(
@@ -173,11 +276,11 @@ class UsersApi {
     return _response;
   }
 
-  /// Get User
+  /// Get User Profile
   ///
   ///
   /// Parameters:
-  /// * [userId]
+  /// * [profileId]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -185,10 +288,11 @@ class UsersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [UserResponse] as data
+  /// Returns a [Future] containing a [Response] with a [UserProfileResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<UserResponse>> getUserApiV1UsersUserIdGet({
-    required String userId,
+  Future<Response<UserProfileResponse>>
+  getUserProfileApiV1UserProfilesProfileIdGet({
+    required int profileId,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -196,14 +300,14 @@ class UsersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/users/{user_id}'.replaceAll(
+    final _path = r'/api/v1/user-profiles/{profile_id}'.replaceAll(
       '{'
-      r'user_id'
+      r'profile_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        userId,
-        const FullType(String),
+        profileId,
+        const FullType(int),
       ).toString(),
     );
     final _options = Options(
@@ -226,7 +330,7 @@ class UsersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    UserResponse? _responseData;
+    UserProfileResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -234,9 +338,9 @@ class UsersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(UserResponse),
+                  specifiedType: const FullType(UserProfileResponse),
                 )
-                as UserResponse;
+                as UserProfileResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -247,7 +351,7 @@ class UsersApi {
       );
     }
 
-    return Response<UserResponse>(
+    return Response<UserProfileResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -259,13 +363,12 @@ class UsersApi {
     );
   }
 
-  /// List Users
+  /// List User Profiles
   ///
   ///
   /// Parameters:
-  /// * [search] - Search by username or email
+  /// * [search] - Search by profile name
   /// * [status]
-  /// * [profileId] - Only accounts provisioned from this profile
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -275,12 +378,12 @@ class UsersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [UserListResponse] as data
+  /// Returns a [Future] containing a [Response] with a [UserProfileListResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<UserListResponse>> listUsersApiV1UsersGet({
+  Future<Response<UserProfileListResponse>>
+  listUserProfilesApiV1UserProfilesGet({
     String? search,
     EntityStatus? status,
-    int? profileId,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -290,7 +393,7 @@ class UsersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/users';
+    final _path = r'/api/v1/user-profiles';
     final _options = Options(
       method: r'GET',
       headers: <String, dynamic>{...?headers},
@@ -316,12 +419,6 @@ class UsersApi {
           status,
           const FullType(EntityStatus),
         ),
-      if (profileId != null)
-        r'profile_id': encodeQueryParameter(
-          _serializers,
-          profileId,
-          const FullType(int),
-        ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
       if (limit != null)
@@ -341,7 +438,7 @@ class UsersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    UserListResponse? _responseData;
+    UserProfileListResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -349,9 +446,9 @@ class UsersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(UserListResponse),
+                  specifiedType: const FullType(UserProfileListResponse),
                 )
-                as UserListResponse;
+                as UserProfileListResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -362,7 +459,7 @@ class UsersApi {
       );
     }
 
-    return Response<UserListResponse>(
+    return Response<UserProfileListResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
@@ -374,11 +471,12 @@ class UsersApi {
     );
   }
 
-  /// Recover Password
-  /// Admin-triggered: generate a signed time-limited recovery token for the user.
+  /// Update User Profile
+  ///
   ///
   /// Parameters:
-  /// * [userId]
+  /// * [profileId]
+  /// * [userProfileUpdate]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -386,11 +484,12 @@ class UsersApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [RecoverPasswordAdminResponse] as data
+  /// Returns a [Future] containing a [Response] with a [UserProfileResponse] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<RecoverPasswordAdminResponse>>
-  recoverPasswordApiV1UsersUserIdRecoverPasswordPost({
-    required String userId,
+  Future<Response<UserProfileResponse>>
+  updateUserProfileApiV1UserProfilesProfileIdPut({
+    required int profileId,
+    required UserProfileUpdate userProfileUpdate,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -398,102 +497,14 @@ class UsersApi {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final _path = r'/api/v1/users/{user_id}/recover-password'.replaceAll(
+    final _path = r'/api/v1/user-profiles/{profile_id}'.replaceAll(
       '{'
-      r'user_id'
+      r'profile_id'
       '}',
       encodeQueryParameter(
         _serializers,
-        userId,
-        const FullType(String),
-      ).toString(),
-    );
-    final _options = Options(
-      method: r'POST',
-      headers: <String, dynamic>{...?headers},
-      extra: <String, dynamic>{
-        'secure': <Map<String, String>>[
-          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
-        ],
-        ...?extra,
-      },
-      validateStatus: validateStatus,
-    );
-
-    final _response = await _dio.request<Object>(
-      _path,
-      options: _options,
-      cancelToken: cancelToken,
-      onSendProgress: onSendProgress,
-      onReceiveProgress: onReceiveProgress,
-    );
-
-    RecoverPasswordAdminResponse? _responseData;
-
-    try {
-      final rawResponse = _response.data;
-      _responseData = rawResponse == null
-          ? null
-          : _serializers.deserialize(
-                  rawResponse,
-                  specifiedType: const FullType(RecoverPasswordAdminResponse),
-                )
-                as RecoverPasswordAdminResponse;
-    } catch (error, stackTrace) {
-      throw DioException(
-        requestOptions: _response.requestOptions,
-        response: _response,
-        type: DioExceptionType.unknown,
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
-
-    return Response<RecoverPasswordAdminResponse>(
-      data: _responseData,
-      headers: _response.headers,
-      isRedirect: _response.isRedirect,
-      requestOptions: _response.requestOptions,
-      redirects: _response.redirects,
-      statusCode: _response.statusCode,
-      statusMessage: _response.statusMessage,
-      extra: _response.extra,
-    );
-  }
-
-  /// Update User
-  ///
-  ///
-  /// Parameters:
-  /// * [userId]
-  /// * [userUpdate]
-  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
-  /// * [headers] - Can be used to add additional headers to the request
-  /// * [extras] - Can be used to add flags to the request
-  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
-  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
-  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
-  ///
-  /// Returns a [Future] containing a [Response] with a [UserResponse] as data
-  /// Throws [DioException] if API call or serialization fails
-  Future<Response<UserResponse>> updateUserApiV1UsersUserIdPut({
-    required String userId,
-    required UserUpdate userUpdate,
-    CancelToken? cancelToken,
-    Map<String, dynamic>? headers,
-    Map<String, dynamic>? extra,
-    ValidateStatus? validateStatus,
-    ProgressCallback? onSendProgress,
-    ProgressCallback? onReceiveProgress,
-  }) async {
-    final _path = r'/api/v1/users/{user_id}'.replaceAll(
-      '{'
-      r'user_id'
-      '}',
-      encodeQueryParameter(
-        _serializers,
-        userId,
-        const FullType(String),
+        profileId,
+        const FullType(int),
       ).toString(),
     );
     final _options = Options(
@@ -512,8 +523,11 @@ class UsersApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(UserUpdate);
-      _bodyData = _serializers.serialize(userUpdate, specifiedType: _type);
+      const _type = FullType(UserProfileUpdate);
+      _bodyData = _serializers.serialize(
+        userProfileUpdate,
+        specifiedType: _type,
+      );
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),
@@ -532,7 +546,7 @@ class UsersApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    UserResponse? _responseData;
+    UserProfileResponse? _responseData;
 
     try {
       final rawResponse = _response.data;
@@ -540,9 +554,9 @@ class UsersApi {
           ? null
           : _serializers.deserialize(
                   rawResponse,
-                  specifiedType: const FullType(UserResponse),
+                  specifiedType: const FullType(UserProfileResponse),
                 )
-                as UserResponse;
+                as UserProfileResponse;
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _response.requestOptions,
@@ -553,7 +567,7 @@ class UsersApi {
       );
     }
 
-    return Response<UserResponse>(
+    return Response<UserProfileResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

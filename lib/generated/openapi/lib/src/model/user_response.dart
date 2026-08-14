@@ -21,6 +21,8 @@ part 'user_response.g.dart';
 /// * [administrator]
 /// * [status]
 /// * [sessionVersion]
+/// * [profileId]
+/// * [profileName]
 /// * [settings]
 /// * [privileges]
 @BuiltValue()
@@ -44,6 +46,12 @@ abstract class UserResponse
 
   @BuiltValueField(wireName: r'session_version')
   int get sessionVersion;
+
+  @BuiltValueField(wireName: r'profile_id')
+  int? get profileId;
+
+  @BuiltValueField(wireName: r'profile_name')
+  String? get profileName;
 
   @BuiltValueField(wireName: r'settings')
   UserSettingsResponse? get settings;
@@ -104,6 +112,20 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
       object.sessionVersion,
       specifiedType: const FullType(int),
     );
+    if (object.profileId != null) {
+      yield r'profile_id';
+      yield serializers.serialize(
+        object.profileId,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.profileName != null) {
+      yield r'profile_name';
+      yield serializers.serialize(
+        object.profileName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'settings';
     yield object.settings == null
         ? null
@@ -190,6 +212,26 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.sessionVersion = valueDes;
+          break;
+        case r'profile_id':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.profileId = valueDes;
+          break;
+        case r'profile_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.profileName = valueDes;
           break;
         case r'settings':
           final valueDes =

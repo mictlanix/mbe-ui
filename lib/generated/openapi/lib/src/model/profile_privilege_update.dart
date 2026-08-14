@@ -1,0 +1,131 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+
+// ignore_for_file: unused_element
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
+
+part 'profile_privilege_update.g.dart';
+
+/// ProfilePrivilegeUpdate
+///
+/// Properties:
+/// * [systemObject]
+/// * [privileges]
+@BuiltValue()
+abstract class ProfilePrivilegeUpdate
+    implements Built<ProfilePrivilegeUpdate, ProfilePrivilegeUpdateBuilder> {
+  @BuiltValueField(wireName: r'system_object')
+  int get systemObject;
+
+  @BuiltValueField(wireName: r'privileges')
+  int get privileges;
+
+  ProfilePrivilegeUpdate._();
+
+  factory ProfilePrivilegeUpdate([
+    void updates(ProfilePrivilegeUpdateBuilder b),
+  ]) = _$ProfilePrivilegeUpdate;
+
+  @BuiltValueHook(initializeBuilder: true)
+  static void _defaults(ProfilePrivilegeUpdateBuilder b) => b;
+
+  @BuiltValueSerializer(custom: true)
+  static Serializer<ProfilePrivilegeUpdate> get serializer =>
+      _$ProfilePrivilegeUpdateSerializer();
+}
+
+class _$ProfilePrivilegeUpdateSerializer
+    implements PrimitiveSerializer<ProfilePrivilegeUpdate> {
+  @override
+  final Iterable<Type> types = const [
+    ProfilePrivilegeUpdate,
+    _$ProfilePrivilegeUpdate,
+  ];
+
+  @override
+  final String wireName = r'ProfilePrivilegeUpdate';
+
+  Iterable<Object?> _serializeProperties(
+    Serializers serializers,
+    ProfilePrivilegeUpdate object, {
+    FullType specifiedType = FullType.unspecified,
+  }) sync* {
+    yield r'system_object';
+    yield serializers.serialize(
+      object.systemObject,
+      specifiedType: const FullType(int),
+    );
+    yield r'privileges';
+    yield serializers.serialize(
+      object.privileges,
+      specifiedType: const FullType(int),
+    );
+  }
+
+  @override
+  Object serialize(
+    Serializers serializers,
+    ProfilePrivilegeUpdate object, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
+    return _serializeProperties(
+      serializers,
+      object,
+      specifiedType: specifiedType,
+    ).toList();
+  }
+
+  void _deserializeProperties(
+    Serializers serializers,
+    Object serialized, {
+    FullType specifiedType = FullType.unspecified,
+    required List<Object?> serializedList,
+    required ProfilePrivilegeUpdateBuilder result,
+    required List<Object?> unhandled,
+  }) {
+    for (var i = 0; i < serializedList.length; i += 2) {
+      final key = serializedList[i] as String;
+      final value = serializedList[i + 1];
+      switch (key) {
+        case r'system_object':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.systemObject = valueDes;
+          break;
+        case r'privileges':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.privileges = valueDes;
+          break;
+        default:
+          unhandled.add(key);
+          unhandled.add(value);
+          break;
+      }
+    }
+  }
+
+  @override
+  ProfilePrivilegeUpdate deserialize(
+    Serializers serializers,
+    Object serialized, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
+    final result = ProfilePrivilegeUpdateBuilder();
+    final serializedList = (serialized as Iterable<Object?>).toList();
+    final unhandled = <Object?>[];
+    _deserializeProperties(
+      serializers,
+      serialized,
+      specifiedType: specifiedType,
+      serializedList: serializedList,
+      unhandled: unhandled,
+      result: result,
+    );
+    return result.build();
+  }
+}
