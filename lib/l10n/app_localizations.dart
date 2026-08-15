@@ -5332,6 +5332,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tax recipient (RFC)'**
   String get taxpayerRecipientFieldLabel;
+
+  /// No description provided for @userProfilesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User Profiles'**
+  String get userProfilesMenuTitle;
+
+  /// No description provided for @newUserProfileTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'New profile'**
+  String get newUserProfileTooltip;
+
+  /// No description provided for @userProfilesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get userProfilesSearchLabel;
+
+  /// No description provided for @noUserProfilesYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No user profiles yet — create the first one.'**
+  String get noUserProfilesYetMessage;
+
+  /// No description provided for @columnProfileName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get columnProfileName;
+
+  /// No description provided for @columnProfileDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get columnProfileDescription;
+
+  /// No description provided for @newUserProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Profile'**
+  String get newUserProfileTitle;
+
+  /// No description provided for @editUserProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editUserProfileTitle;
+
+  /// No description provided for @viewUserProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get viewUserProfileTitle;
+
+  /// No description provided for @userProfileNameFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get userProfileNameFieldLabel;
+
+  /// No description provided for @userProfileDescriptionFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get userProfileDescriptionFieldLabel;
+
+  /// No description provided for @userProfileNameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get userProfileNameRequiredError;
+
+  /// No description provided for @userProfileLoadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the profile.'**
+  String get userProfileLoadFailedError;
+
+  /// No description provided for @userProfileSaveFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the profile.'**
+  String get userProfileSaveFailedError;
+
+  /// No description provided for @userProfileDeleteFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the profile.'**
+  String get userProfileDeleteFailedError;
+
+  /// No description provided for @deleteUserProfileTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete profile'**
+  String get deleteUserProfileTooltip;
+
+  /// No description provided for @deleteUserProfileConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete profile?'**
+  String get deleteUserProfileConfirmTitle;
+
+  /// No description provided for @deleteUserProfileConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{name}\"? This action cannot be undone.'**
+  String deleteUserProfileConfirmMessage(String name);
+
+  /// No description provided for @userProfilePickerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get userProfilePickerLabel;
+
+  /// No description provided for @applyProfileButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply profile'**
+  String get applyProfileButtonLabel;
+
+  /// No description provided for @applyProfileDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Profile'**
+  String get applyProfileDialogTitle;
+
+  /// No description provided for @applyProfileReplaceWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This replaces every permission this account currently holds.'**
+  String get applyProfileReplaceWarning;
+
+  /// No description provided for @applyProfileSessionWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'The account\'s active sessions will end and it must sign in again.'**
+  String get applyProfileSessionWarning;
+
+  /// No description provided for @applyProfileSelfWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your own account — your own session will end too.'**
+  String get applyProfileSelfWarning;
+
+  /// No description provided for @applyProfileConfirmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyProfileConfirmLabel;
+
+  /// No description provided for @applyProfileSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile applied.'**
+  String get applyProfileSuccessMessage;
+
+  /// No description provided for @userFormApplyFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not apply the profile.'**
+  String get userFormApplyFailedError;
+
+  /// No description provided for @userProvisionedFromLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Provisioned from {profileName}'**
+  String userProvisionedFromLabel(String profileName);
 }
 
 class _AppLocalizationsDelegate

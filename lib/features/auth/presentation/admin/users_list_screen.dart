@@ -9,12 +9,15 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -125,6 +128,14 @@ class UsersListScreen extends ConsumerWidget {
                       ? const Icon(Icons.check)
                       : const SizedBox.shrink(),
                 ),
+                // Provenance only — never a live description of the
+                // account's current permissions (024-user-profiles FR-027,
+                // FR-030).
+                DataTableColumn.text(
+                  label: l10n.columnProfileName,
+                  text: (u) => u.profileName ?? '',
+                  size: ColumnSize.M,
+                ),
                 DataTableColumn(
                   label: l10n.columnStatus,
                   size: ColumnSize.S,
@@ -168,6 +179,11 @@ class _UserFiltersPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = UserFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
+    // The picker itself calls an administrator-only endpoint
+    // (024-user-profiles research.md §2), so it is omitted for a
+    // non-administrator rather than shown-and-failing
+    // (contracts/user-profile-screens.md §4).
+    final isAdministrator = ref.watch(accessControlProvider).isAdministrator;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -189,7 +205,53 @@ class _UserFiltersPanel extends ConsumerWidget {
                 .toString(),
           ),
         ),
+        if (isAdministrator) ...[
+          const SizedBox(height: 16),
+          _ProfileFilterField(query: query, profileId: filter.profileId),
+        ],
       ],
+    );
+  }
+}
+
+/// The profile filter's `CatalogEntityPicker`, isolated so `profileId`'s
+/// resolved display name (`userProfileNameProvider`, only needed when a
+/// filter is actually applied) is watched only here, not on every panel
+/// build (024-user-profiles research.md §8, mirroring
+/// `cash_sessions_screen.dart`'s cashier facet).
+class _ProfileFilterField extends ConsumerWidget {
+  const _ProfileFilterField({required this.query, required this.profileId});
+
+  final ListQuery query;
+  final int? profileId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final userProfileRepo = ref.read(userProfileRepositoryProvider);
+    final resolvedName = profileId != null
+        ? ref.watch(userProfileNameProvider(profileId!)).valueOrNull
+        : null;
+
+    return CatalogEntityPicker<UserProfileSummary>(
+      key: const Key('users_filter_profile'),
+      label: l10n.userProfilePickerLabel,
+      displayStringForOption: (p) => p.name,
+      optionsBuilder: (searchQuery) async {
+        final result = await userProfileRepo.list(
+          search: searchQuery.isEmpty ? null : searchQuery,
+        );
+        return result.items;
+      },
+      onSelected: (p) => context.go(
+        query
+            .withFacet('profile', '${p.userProfileId}')
+            .copyWith(pageIndex: 0)
+            .toUri(_usersPath)
+            .toString(),
+      ),
+      initialDisplayText: resolvedName ?? profileId?.toString() ?? '',
+      enabled: true,
     );
   }
 }

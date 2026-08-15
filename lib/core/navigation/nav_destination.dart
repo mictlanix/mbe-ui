@@ -11,9 +11,33 @@ sealed class NavItem {
   const NavItem();
 }
 
-/// The RBAC gate for a destination: the `(SystemObject, AccessRight)` pair a
-/// user must satisfy for the destination to be visible (constitution §IV).
-typedef NavGate = ({SystemObject object, AccessRight right});
+/// The RBAC gate for a destination/route: either the constitution §IV
+/// `(SystemObject, AccessRight)` pair, or — for the one family of routes
+/// mbe-api itself gates on the administrator flag rather than on a
+/// `SystemObject` — a bare administrator check (024-user-profiles
+/// research.md §2, contracts/routes.md §2). [AdministratorGate] is strictly
+/// narrower than any [PrivilegeGate]: `can()` already returns `true` for an
+/// administrator on every object, so nothing reachable via a `PrivilegeGate`
+/// becomes unreachable by adding this case.
+sealed class NavGate {
+  const NavGate();
+}
+
+/// The existing constitution §IV gate: visible/reachable only when the
+/// signed-in user satisfies `can(object, right)`.
+class PrivilegeGate extends NavGate {
+  const PrivilegeGate(this.object, this.right);
+
+  final SystemObject object;
+  final AccessRight right;
+}
+
+/// Visible/reachable only for the signed-in user's `administrator` flag —
+/// used where mbe-api exposes no `SystemObject` for the resource (e.g. user
+/// profiles).
+class AdministratorGate extends NavGate {
+  const AdministratorGate();
+}
 
 /// A reachable destination in the shell — one branch of the router's
 /// `StatefulShellRoute` (data-model.md "NavDestination").

@@ -2902,4 +2902,96 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get taxpayerRecipientFieldLabel => 'Receptor fiscal (RFC)';
+
+  @override
+  String get userProfilesMenuTitle => 'Perfiles de usuario';
+
+  @override
+  String get newUserProfileTooltip => 'Nuevo perfil';
+
+  @override
+  String get userProfilesSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get noUserProfilesYetMessage =>
+      'Aún no hay perfiles de usuario — crea el primero.';
+
+  @override
+  String get columnProfileName => 'Nombre';
+
+  @override
+  String get columnProfileDescription => 'Descripción';
+
+  @override
+  String get newUserProfileTitle => 'Nuevo perfil';
+
+  @override
+  String get editUserProfileTitle => 'Editar perfil';
+
+  @override
+  String get viewUserProfileTitle => 'Ver perfil';
+
+  @override
+  String get userProfileNameFieldLabel => 'Nombre';
+
+  @override
+  String get userProfileDescriptionFieldLabel => 'Descripción';
+
+  @override
+  String get userProfileNameRequiredError => 'El nombre es obligatorio.';
+
+  @override
+  String get userProfileLoadFailedError => 'No se pudo cargar el perfil.';
+
+  @override
+  String get userProfileSaveFailedError => 'No se pudo guardar el perfil.';
+
+  @override
+  String get userProfileDeleteFailedError => 'No se pudo eliminar el perfil.';
+
+  @override
+  String get deleteUserProfileTooltip => 'Eliminar perfil';
+
+  @override
+  String get deleteUserProfileConfirmTitle => '¿Eliminar perfil?';
+
+  @override
+  String deleteUserProfileConfirmMessage(String name) {
+    return '¿Seguro que deseas eliminar \"$name\"? Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get userProfilePickerLabel => 'Perfil';
+
+  @override
+  String get applyProfileButtonLabel => 'Aplicar perfil';
+
+  @override
+  String get applyProfileDialogTitle => 'Aplicar perfil';
+
+  @override
+  String get applyProfileReplaceWarning =>
+      'Esto reemplaza todos los permisos que esta cuenta tiene actualmente.';
+
+  @override
+  String get applyProfileSessionWarning =>
+      'Las sesiones activas de la cuenta terminarán y deberá iniciar sesión de nuevo.';
+
+  @override
+  String get applyProfileSelfWarning =>
+      'Esta es tu propia cuenta — tu propia sesión también terminará.';
+
+  @override
+  String get applyProfileConfirmLabel => 'Aplicar';
+
+  @override
+  String get applyProfileSuccessMessage => 'Perfil aplicado.';
+
+  @override
+  String get userFormApplyFailedError => 'No se pudo aplicar el perfil.';
+
+  @override
+  String userProvisionedFromLabel(String profileName) {
+    return 'Aprovisionado desde $profileName';
+  }
 }

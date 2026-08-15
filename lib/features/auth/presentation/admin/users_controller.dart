@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -36,16 +37,25 @@ class UserFilter with _$UserFilter {
   const factory UserFilter({
     @Default('') String search,
     EntityStatus? status,
+
+    /// Narrows to accounts provisioned from this profile
+    /// (024-user-profiles FR-028), decoded from the `profile` facet — the
+    /// app's own vocabulary for the wire's `profile_id` query parameter,
+    /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
+    /// counterparts.
+    int? profileId,
     @Default(0) int pageIndex,
   }) = _UserFilter;
 
   factory UserFilter.fromQuery(ListQuery query) {
     final statusRaw = query.facet('status');
+    final profileRaw = query.facet('profile');
     return UserFilter(
       search: query.search,
       status: statusRaw != null
           ? EntityStatus.values.byNameOrNull(statusRaw)
           : null,
+      profileId: profileRaw != null ? int.tryParse(profileRaw) : null,
       pageIndex: query.pageIndex,
     );
   }
@@ -55,7 +65,8 @@ class UserFilter with _$UserFilter {
 /// mirroring `VehicleFilterBadge.activeFilterCount`. [search] has its own
 /// always-visible box and is excluded.
 extension UserFilterBadge on UserFilter {
-  int get activeFilterCount => status != null ? 1 : 0;
+  int get activeFilterCount =>
+      (status != null ? 1 : 0) + (profileId != null ? 1 : 0);
 
   bool get hasActiveFilters => activeFilterCount > 0;
 }
@@ -74,6 +85,11 @@ abstract final class UserFormErrorCode {
   static const saveFailed = 'saveFailed';
   static const deleteFailed = 'deleteFailed';
   static const recoveryFailed = 'recoveryFailed';
+
+  /// An `applyProfile` call was refused — the profile named does not exist,
+  /// is inactive, or the account no longer exists (024-user-profiles
+  /// FR-023).
+  static const applyFailed = 'applyFailed';
 }
 
 /// Admin user-form state (data-model.md "Admin user-form state").
@@ -111,8 +127,38 @@ class UserFormState with _$UserFormState {
     String? errorDetail,
     String? recoveryToken,
     String? recoveryExpiresAt,
+
+    /// The profile chosen on the new-user form (create mode), or the
+    /// profile this account was last provisioned from (edit mode) —
+    /// (024-user-profiles data-model.md §3). `null` means no profile
+    /// chosen/recorded.
+    int? profileId,
+
+    /// Display text for [profileId]: the picker's selection in create mode,
+    /// or the provenance line's label in edit mode.
+    @Default('') String profileName,
   }) = _UserFormState;
 }
+
+/// Resolves a profile id to its display name — for the users list's profile
+/// filter picker on a cold load (a shared link/bookmark/refresh carrying
+/// only `profile=<id>` in the URL, 024-user-profiles research.md §8,
+/// mirroring `employeeDisplayNameProvider`'s pattern). `null` on any failure
+/// (e.g. the profile no longer exists), so a caller falls back to
+/// displaying the raw id rather than blocking the list.
+final userProfileNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  profileId,
+) async {
+  try {
+    final profile = await ref
+        .watch(userProfileRepositoryProvider)
+        .get(profileId: profileId);
+    return profile.name;
+  } catch (_) {
+    return null;
+  }
+});
 
 /// Fetches and holds the admin users list (FR-001, FR-002, FR-011) for the
 /// given [UserFilter]. A family keyed by the filter value: a different URL
@@ -136,6 +182,7 @@ class UsersController extends _$UsersController {
         .list(
           search: filter.search.isEmpty ? null : filter.search,
           status: filter.status,
+          profileId: filter.profileId,
           skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
         );
@@ -185,6 +232,8 @@ class UserFormController extends _$UserFormController {
         status: user.status,
         privileges: user.privileges,
         settings: user.settings,
+        profileId: user.profileId,
+        profileName: user.profileName ?? '',
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -208,6 +257,18 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(
       employeeId: id,
       employeeDisplayText: displayText,
+      error: null,
+      errorDetail: null,
+    );
+  }
+
+  /// Sets the profile chosen from the `CatalogEntityPicker` on the
+  /// new-user form (create mode only — clears the assignment when [id] is
+  /// `null`, 024-user-profiles FR-016/FR-017).
+  void profileSelected(int? id, String displayText) {
+    state = state.copyWith(
+      profileId: id,
+      profileName: displayText,
       error: null,
       errorDetail: null,
     );
@@ -286,17 +347,25 @@ class UserFormController extends _$UserFormController {
         );
         ref.read(authNotifierProvider.notifier).refreshCurrentUser(updated);
       } else {
-        final created = await repo.create(
+        await repo.create(
           userId: state.userId,
           password: state.password,
           email: state.email,
           employeeId: state.employeeId!,
           administrator: state.administrator,
           status: state.status,
+          profileId: state.profileId,
         );
-        if (state.privileges.isNotEmpty) {
+        // Skipped whenever a profile was chosen: the profile already
+        // applied its full permission set as part of creation, and a
+        // follow-up partial-upsert PUT would layer hand-edits on top of it
+        // (024-user-profiles research.md §7). The permission grid itself is
+        // hidden by the form while a profile is selected, so
+        // `state.privileges` is never non-empty in that case in practice —
+        // this check is the defense against it anyway.
+        if (state.profileId == null && state.privileges.isNotEmpty) {
           await repo.update(
-            userId: created.userId,
+            userId: state.userId,
             privileges: state.privileges,
           );
         }
@@ -359,6 +428,48 @@ class UserFormController extends _$UserFormController {
           errorDetail: e.serverMessage,
         );
       }
+    }
+  }
+
+  /// Applies [profileId] to [userId] (024-user-profiles FR-011), replacing
+  /// every permission the account currently holds and invalidating its
+  /// sessions server-side. On success, **replaces** the form state wholesale
+  /// from the returned account — never merges — so the screen reflects the
+  /// applied profile with no manual reload (FR-022). If the target is the
+  /// signed-in administrator's own account, that replacement is moot: the
+  /// account's session version just advanced, so the *next* request (not
+  /// this one — the apply response itself is valid) returns 401 and the
+  /// shared auth interceptor redirects to `/auth/login` on its own,
+  /// handling the resulting sign-out as an ordinary session expiry
+  /// (FR-024). On failure, prior state is left untouched (FR-023).
+  Future<void> applyProfile({
+    required String userId,
+    required int profileId,
+  }) async {
+    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    try {
+      final updated = await ref
+          .read(userProfileRepositoryProvider)
+          .apply(profileId: profileId, userId: userId);
+      // Deliberately does NOT set `saved` — that flag drives
+      // `UserDetailScreen`'s auto-pop-on-success, and an apply stays on the
+      // same screen to show the account's new permissions (FR-022), unlike
+      // an ordinary save.
+      state = state.copyWith(
+        submitting: false,
+        administrator: updated.administrator,
+        status: updated.status,
+        privileges: updated.privileges,
+        profileId: updated.profileId,
+        profileName: updated.profileName ?? '',
+      );
+      ref.invalidate(usersControllerProvider);
+    } on AppError catch (e) {
+      state = state.copyWith(
+        submitting: false,
+        error: UserFormErrorCode.applyFailed,
+        errorDetail: e.serverMessage,
+      );
     }
   }
 

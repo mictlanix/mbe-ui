@@ -75,6 +75,55 @@ void main() {
       expect(filter.search, '');
       expect(filter.status, isNull);
       expect(filter.pageIndex, 0);
+      expect(filter.profileId, isNull);
+    });
+
+    test(
+      'decodes the profile facet into profileId (024-user-profiles FR-028)',
+      () {
+        final filter = UserFilter.fromQuery(
+          const ListQuery(
+            facets: {
+              'profile': ['5'],
+            },
+          ),
+        );
+
+        expect(filter.profileId, 5);
+      },
+    );
+
+    test('an unparseable profile facet degrades to null, not a throw', () {
+      final filter = UserFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'profile': ['not-a-number'],
+          },
+        ),
+      );
+
+      expect(filter.profileId, isNull);
+    });
+  });
+
+  group('UserFilterBadge.activeFilterCount', () {
+    test('0 when nothing is set', () {
+      expect(const UserFilter().activeFilterCount, 0);
+    });
+
+    test('counts status and profileId independently', () {
+      expect(
+        const UserFilter(status: EntityStatus.inactive).activeFilterCount,
+        1,
+      );
+      expect(const UserFilter(profileId: 5).activeFilterCount, 1);
+      expect(
+        const UserFilter(
+          status: EntityStatus.inactive,
+          profileId: 5,
+        ).activeFilterCount,
+        2,
+      );
     });
   });
 
@@ -89,7 +138,7 @@ void main() {
     test('build(filter) fetches page 0 with the given filter', () async {
       when(
         () =>
-            userRepository.list(search: null, status: null, skip: 0, limit: 20),
+            userRepository.list(search: null, status: null, profileId: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 1),
       );
@@ -112,6 +161,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: EntityStatus.inactive,
+            profileId: null,
             skip: 0,
             limit: 20,
           ),
@@ -132,6 +182,44 @@ void main() {
           () => userRepository.list(
             search: null,
             status: EntityStatus.inactive,
+            profileId: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'a profile facet in the filter is passed to the repository '
+      '(024-user-profiles FR-028)',
+      () async {
+        when(
+          () => userRepository.list(
+            search: null,
+            status: null,
+            profileId: 5,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => UserListResult(items: [user('jdoe')], total: 1),
+        );
+
+        final container = makeContainer();
+        addTearDown(container.dispose);
+
+        const filter = UserFilter(profileId: 5);
+        final page = await container.read(
+          usersControllerProvider(filter).future,
+        );
+
+        expect(page.items.single.userId, 'jdoe');
+        verify(
+          () => userRepository.list(
+            search: null,
+            status: null,
+            profileId: 5,
             skip: 0,
             limit: 20,
           ),
@@ -146,6 +234,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: null,
+            profileId: null,
             skip: 0,
             limit: 20,
           ),
@@ -156,6 +245,7 @@ void main() {
           () => userRepository.list(
             search: 'admin',
             status: null,
+            profileId: null,
             skip: 0,
             limit: 20,
           ),
@@ -181,7 +271,7 @@ void main() {
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
         () =>
-            userRepository.list(search: null, status: null, skip: 0, limit: 20),
+            userRepository.list(search: null, status: null, profileId: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 21),
       );
@@ -189,6 +279,7 @@ void main() {
         () => userRepository.list(
           search: null,
           status: null,
+          profileId: null,
           skip: 20,
           limit: 20,
         ),
@@ -221,6 +312,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: null,
+            profileId: null,
             skip: 20,
             limit: 20,
           ),
@@ -236,6 +328,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: null,
+            profileId: null,
             skip: 20,
             limit: 20,
           ),
@@ -295,7 +388,8 @@ void main() {
 
   group('UserFormController.save (create mode)', () {
     test(
-      'calls create then update-with-privileges when privileges present',
+      'with no profile chosen, calls create then update-with-privileges '
+      'when privileges present — unchanged from before 024-user-profiles',
       () async {
         when(
           () => userRepository.create(
@@ -303,6 +397,7 @@ void main() {
             password: any(named: 'password'),
             email: any(named: 'email'),
             employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
           ),
         ).thenAnswer((_) async => _testUser);
         when(
@@ -330,6 +425,7 @@ void main() {
             password: 'secret1',
             email: 'jdoe@example.com',
             employeeId: 7,
+            profileId: null,
           ),
         ).called(1);
         verify(
@@ -338,6 +434,56 @@ void main() {
             privileges: any(named: 'privileges'),
           ),
         ).called(1);
+        expect(container.read(userFormControllerProvider).saved, isTrue);
+      },
+    );
+
+    test(
+      'with a profile chosen, calls create with that profileId and skips '
+      'the follow-up privileges PUT entirely, even with a non-empty grid '
+      '(024-user-profiles research.md §7 — the single most damaging slip '
+      'this feature could ship with)',
+      () async {
+        when(
+          () => userRepository.create(
+            userId: any(named: 'userId'),
+            password: any(named: 'password'),
+            email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
+          ),
+        ).thenAnswer((_) async => _testUser);
+
+        final container = makeContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(userFormControllerProvider.notifier);
+
+        notifier.userIdChanged('jdoe');
+        notifier.passwordChanged('secret1');
+        notifier.emailChanged('jdoe@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
+        // Hand-ticked despite a profile being chosen — must not reach the
+        // server, since the profile already determines the full set.
+        notifier.privilegeChanged(SystemObject.users, 2);
+        notifier.profileSelected(5, 'Cashier');
+
+        await notifier.save();
+
+        verify(
+          () => userRepository.create(
+            userId: 'jdoe',
+            password: 'secret1',
+            email: 'jdoe@example.com',
+            employeeId: 7,
+            profileId: 5,
+          ),
+        ).called(1);
+        verifyNever(
+          () => userRepository.update(
+            userId: any(named: 'userId'),
+            privileges: any(named: 'privileges'),
+          ),
+        );
         expect(container.read(userFormControllerProvider).saved, isTrue);
       },
     );

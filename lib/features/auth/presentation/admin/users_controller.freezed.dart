@@ -19,6 +19,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$UserFilter {
   String get search => throw _privateConstructorUsedError;
   EntityStatus? get status => throw _privateConstructorUsedError;
+
+  /// Narrows to accounts provisioned from this profile
+  /// (024-user-profiles FR-028), decoded from the `profile` facet — the
+  /// app's own vocabulary for the wire's `profile_id` query parameter,
+  /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
+  /// counterparts.
+  int? get profileId => throw _privateConstructorUsedError;
   int get pageIndex => throw _privateConstructorUsedError;
 
   /// Create a copy of UserFilter
@@ -35,7 +42,12 @@ abstract class $UserFilterCopyWith<$Res> {
     $Res Function(UserFilter) then,
   ) = _$UserFilterCopyWithImpl<$Res, UserFilter>;
   @useResult
-  $Res call({String search, EntityStatus? status, int pageIndex});
+  $Res call({
+    String search,
+    EntityStatus? status,
+    int? profileId,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -55,6 +67,7 @@ class _$UserFilterCopyWithImpl<$Res, $Val extends UserFilter>
   $Res call({
     Object? search = null,
     Object? status = freezed,
+    Object? profileId = freezed,
     Object? pageIndex = null,
   }) {
     return _then(
@@ -67,6 +80,10 @@ class _$UserFilterCopyWithImpl<$Res, $Val extends UserFilter>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus?,
+            profileId: freezed == profileId
+                ? _value.profileId
+                : profileId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             pageIndex: null == pageIndex
                 ? _value.pageIndex
                 : pageIndex // ignore: cast_nullable_to_non_nullable
@@ -86,7 +103,12 @@ abstract class _$$UserFilterImplCopyWith<$Res>
   ) = __$$UserFilterImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String search, EntityStatus? status, int pageIndex});
+  $Res call({
+    String search,
+    EntityStatus? status,
+    int? profileId,
+    int pageIndex,
+  });
 }
 
 /// @nodoc
@@ -105,6 +127,7 @@ class __$$UserFilterImplCopyWithImpl<$Res>
   $Res call({
     Object? search = null,
     Object? status = freezed,
+    Object? profileId = freezed,
     Object? pageIndex = null,
   }) {
     return _then(
@@ -117,6 +140,10 @@ class __$$UserFilterImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus?,
+        profileId: freezed == profileId
+            ? _value.profileId
+            : profileId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         pageIndex: null == pageIndex
             ? _value.pageIndex
             : pageIndex // ignore: cast_nullable_to_non_nullable
@@ -129,20 +156,33 @@ class __$$UserFilterImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$UserFilterImpl implements _UserFilter {
-  const _$UserFilterImpl({this.search = '', this.status, this.pageIndex = 0});
+  const _$UserFilterImpl({
+    this.search = '',
+    this.status,
+    this.profileId,
+    this.pageIndex = 0,
+  });
 
   @override
   @JsonKey()
   final String search;
   @override
   final EntityStatus? status;
+
+  /// Narrows to accounts provisioned from this profile
+  /// (024-user-profiles FR-028), decoded from the `profile` facet — the
+  /// app's own vocabulary for the wire's `profile_id` query parameter,
+  /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
+  /// counterparts.
+  @override
+  final int? profileId;
   @override
   @JsonKey()
   final int pageIndex;
 
   @override
   String toString() {
-    return 'UserFilter(search: $search, status: $status, pageIndex: $pageIndex)';
+    return 'UserFilter(search: $search, status: $status, profileId: $profileId, pageIndex: $pageIndex)';
   }
 
   @override
@@ -152,12 +192,15 @@ class _$UserFilterImpl implements _UserFilter {
             other is _$UserFilterImpl &&
             (identical(other.search, search) || other.search == search) &&
             (identical(other.status, status) || other.status == status) &&
+            (identical(other.profileId, profileId) ||
+                other.profileId == profileId) &&
             (identical(other.pageIndex, pageIndex) ||
                 other.pageIndex == pageIndex));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, search, status, pageIndex);
+  int get hashCode =>
+      Object.hash(runtimeType, search, status, profileId, pageIndex);
 
   /// Create a copy of UserFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -172,6 +215,7 @@ abstract class _UserFilter implements UserFilter {
   const factory _UserFilter({
     final String search,
     final EntityStatus? status,
+    final int? profileId,
     final int pageIndex,
   }) = _$UserFilterImpl;
 
@@ -179,6 +223,14 @@ abstract class _UserFilter implements UserFilter {
   String get search;
   @override
   EntityStatus? get status;
+
+  /// Narrows to accounts provisioned from this profile
+  /// (024-user-profiles FR-028), decoded from the `profile` facet — the
+  /// app's own vocabulary for the wire's `profile_id` query parameter,
+  /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
+  /// counterparts.
+  @override
+  int? get profileId;
   @override
   int get pageIndex;
 
@@ -222,6 +274,16 @@ mixin _$UserFormState {
   String? get recoveryToken => throw _privateConstructorUsedError;
   String? get recoveryExpiresAt => throw _privateConstructorUsedError;
 
+  /// The profile chosen on the new-user form (create mode), or the
+  /// profile this account was last provisioned from (edit mode) —
+  /// (024-user-profiles data-model.md §3). `null` means no profile
+  /// chosen/recorded.
+  int? get profileId => throw _privateConstructorUsedError;
+
+  /// Display text for [profileId]: the picker's selection in create mode,
+  /// or the provenance line's label in edit mode.
+  String get profileName => throw _privateConstructorUsedError;
+
   /// Create a copy of UserFormState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -254,6 +316,8 @@ abstract class $UserFormStateCopyWith<$Res> {
     String? errorDetail,
     String? recoveryToken,
     String? recoveryExpiresAt,
+    int? profileId,
+    String profileName,
   });
 
   $UserSettingsCopyWith<$Res>? get settings;
@@ -291,6 +355,8 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
     Object? errorDetail = freezed,
     Object? recoveryToken = freezed,
     Object? recoveryExpiresAt = freezed,
+    Object? profileId = freezed,
+    Object? profileName = null,
   }) {
     return _then(
       _value.copyWith(
@@ -362,6 +428,14 @@ class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
                 ? _value.recoveryExpiresAt
                 : recoveryExpiresAt // ignore: cast_nullable_to_non_nullable
                       as String?,
+            profileId: freezed == profileId
+                ? _value.profileId
+                : profileId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            profileName: null == profileName
+                ? _value.profileName
+                : profileName // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -409,6 +483,8 @@ abstract class _$$UserFormStateImplCopyWith<$Res>
     String? errorDetail,
     String? recoveryToken,
     String? recoveryExpiresAt,
+    int? profileId,
+    String profileName,
   });
 
   @override
@@ -446,6 +522,8 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
     Object? errorDetail = freezed,
     Object? recoveryToken = freezed,
     Object? recoveryExpiresAt = freezed,
+    Object? profileId = freezed,
+    Object? profileName = null,
   }) {
     return _then(
       _$UserFormStateImpl(
@@ -517,6 +595,14 @@ class __$$UserFormStateImplCopyWithImpl<$Res>
             ? _value.recoveryExpiresAt
             : recoveryExpiresAt // ignore: cast_nullable_to_non_nullable
                   as String?,
+        profileId: freezed == profileId
+            ? _value.profileId
+            : profileId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        profileName: null == profileName
+            ? _value.profileName
+            : profileName // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -543,6 +629,8 @@ class _$UserFormStateImpl implements _UserFormState {
     this.errorDetail,
     this.recoveryToken,
     this.recoveryExpiresAt,
+    this.profileId,
+    this.profileName = '',
   }) : _privileges = privileges;
 
   @override
@@ -609,9 +697,22 @@ class _$UserFormStateImpl implements _UserFormState {
   @override
   final String? recoveryExpiresAt;
 
+  /// The profile chosen on the new-user form (create mode), or the
+  /// profile this account was last provisioned from (edit mode) —
+  /// (024-user-profiles data-model.md §3). `null` means no profile
+  /// chosen/recorded.
+  @override
+  final int? profileId;
+
+  /// Display text for [profileId]: the picker's selection in create mode,
+  /// or the provenance line's label in edit mode.
+  @override
+  @JsonKey()
+  final String profileName;
+
   @override
   String toString() {
-    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, employeeDisplayText: $employeeDisplayText, administrator: $administrator, status: $status, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt)';
+    return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, employeeDisplayText: $employeeDisplayText, administrator: $administrator, status: $status, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt, profileId: $profileId, profileName: $profileName)';
   }
 
   @override
@@ -647,11 +748,15 @@ class _$UserFormStateImpl implements _UserFormState {
             (identical(other.recoveryToken, recoveryToken) ||
                 other.recoveryToken == recoveryToken) &&
             (identical(other.recoveryExpiresAt, recoveryExpiresAt) ||
-                other.recoveryExpiresAt == recoveryExpiresAt));
+                other.recoveryExpiresAt == recoveryExpiresAt) &&
+            (identical(other.profileId, profileId) ||
+                other.profileId == profileId) &&
+            (identical(other.profileName, profileName) ||
+                other.profileName == profileName));
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     userId,
     password,
@@ -670,7 +775,9 @@ class _$UserFormStateImpl implements _UserFormState {
     errorDetail,
     recoveryToken,
     recoveryExpiresAt,
-  );
+    profileId,
+    profileName,
+  ]);
 
   /// Create a copy of UserFormState
   /// with the given fields replaced by the non-null parameter values.
@@ -700,6 +807,8 @@ abstract class _UserFormState implements UserFormState {
     final String? errorDetail,
     final String? recoveryToken,
     final String? recoveryExpiresAt,
+    final int? profileId,
+    final String profileName,
   }) = _$UserFormStateImpl;
 
   @override
@@ -748,6 +857,18 @@ abstract class _UserFormState implements UserFormState {
   String? get recoveryToken;
   @override
   String? get recoveryExpiresAt;
+
+  /// The profile chosen on the new-user form (create mode), or the
+  /// profile this account was last provisioned from (edit mode) —
+  /// (024-user-profiles data-model.md §3). `null` means no profile
+  /// chosen/recorded.
+  @override
+  int? get profileId;
+
+  /// Display text for [profileId]: the picker's selection in create mode,
+  /// or the provenance line's label in edit mode.
+  @override
+  String get profileName;
 
   /// Create a copy of UserFormState
   /// with the given fields replaced by the non-null parameter values.

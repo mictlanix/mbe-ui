@@ -27,6 +27,16 @@ class Privilege with _$Privilege {
     return Privilege(systemObject: object, rawValue: response.privileges);
   }
 
+  /// Same mapping as [fromResponse], for a user profile's entry instead of a
+  /// user's (024-user-profiles data-model.md §2) — a profile's
+  /// `ProfilePrivilegeResponse` carries the identical `system_object` +
+  /// `privileges` pair, so one [Privilege] type serves both.
+  static Privilege? fromProfileResponse(ProfilePrivilegeResponse response) {
+    final object = SystemObject.fromValue(response.systemObject);
+    if (object == null) return null;
+    return Privilege(systemObject: object, rawValue: response.privileges);
+  }
+
   bool get allowCreate => has(AccessRight.create);
 
   bool get allowRead => has(AccessRight.read);
@@ -39,6 +49,16 @@ class Privilege with _$Privilege {
 
   PrivilegeUpdate toUpdate() {
     return PrivilegeUpdate(
+      (b) => b
+        ..systemObject = systemObject.value
+        ..privileges = rawValue,
+    );
+  }
+
+  /// Same shape as [toUpdate], for submitting this mask as a profile's
+  /// entry instead of a user's (024-user-profiles data-model.md §2).
+  ProfilePrivilegeUpdate toProfileUpdate() {
+    return ProfilePrivilegeUpdate(
       (b) => b
         ..systemObject = systemObject.value
         ..privileges = rawValue,
