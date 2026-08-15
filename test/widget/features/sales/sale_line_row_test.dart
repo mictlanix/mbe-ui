@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
@@ -616,6 +617,34 @@ void main() {
         // layout).
         expect(find.byKey(Key('sale_line_row_${testLine().id}')), findsOneWidget);
         expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'a real 1024-px window — through CaptureStep, so the step\'s own '
+      'margins count against the budget (FR-037a)',
+      (tester) async {
+        await pumpPos(
+          tester,
+          CaptureStep(sale: testSale(lines: [testLine()])),
+          overrides: [warehouseOverride(warehouseRepository)],
+          surface: const Size(1024, 900),
+        );
+        expect(tester.takeException(), isNull);
+        // Pumping `SaleLineRow` on its own says nothing about the insets the
+        // step puts around it: aligning the lines list to `screenMargin` cost
+        // a line 24 px, which took the tablet under the then-current
+        // threshold and silently dropped it to the two-row fallback — a
+        // regression no overflow check could have caught, since the fallback
+        // lays out perfectly well.
+        //
+        // Height is what separates the two: the single row is one band, the
+        // fallback stacks a second field row under it. Anything at or above
+        // the two combined is the fallback.
+        expect(
+          tester.getSize(find.byType(SaleLineRow)).height,
+          lessThan(saleLineRowHeight + saleLineFieldHeight),
+        );
       },
     );
 

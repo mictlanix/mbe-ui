@@ -117,8 +117,8 @@ Driven by `LayoutBuilder` on the row's **own available width**, never
 
 | Available width | Layout | Chosen by |
 |---|---|---|
-| ≥ 970 px | single row | `saleLineLayoutFor` |
-| 600–970 px | two rows | `saleLineLayoutFor` |
+| ≥ 950 px | single row | `saleLineLayoutFor` |
+| 600–950 px | two rows | `saleLineLayoutFor` |
 | < 600 px | `SaleLineCard`, unchanged | the caller, as today |
 
 ### 4.2 The single row
@@ -147,17 +147,24 @@ guessed, and now asserted against the real app theme in
 `sale_line_row_test.dart`.
 
 Column widths are **interpolated**, not fixed: `SaleLineColumns.of(width)`
-returns the `floor` set at `saleLineSingleRowMinWidth` (970) and the
+returns the `floor` set at `saleLineSingleRowMinWidth` (950) and the
 `comfortable` set at `saleLineComfortableWidth` (1500), linearly between, so a
 1024-px tablet still fits one row while a desktop gets the sizes drawn on the
-annotated screenshot of 2026-08-11. The product column is not in the table: it
+annotated screenshot of 2026-08-11.
+
+The threshold is **950, not the 970 first budgeted**, because the lines list is
+inset by `spacing.screenMargin` to sit under the search field (§4.4): measured
+through `CaptureStep`, a line at a 1024-px window gets **960 px**, which the old
+threshold put in the two-row fallback. FR-037a is now asserted through the step
+rather than by pumping a bare `SaleLineRow` — the row alone knows nothing about
+the margins around it, which is exactly how the regression got in. The product column is not in the table: it
 is `Expanded`, and takes whatever the rest leave, which is what stops a wide
 workspace stranding empty space at the right edge.
 
 | Column | Floor → comfortable | Content |
 |---|---|---|
 | Thumbnail | 40 | `ProductPhoto(photoUrl: line.photo, size: 40)` — the product's real photo since mbe-api#157, the shared placeholder for a product without one (research R11); lives inside the product column |
-| Product | flex, min 222 | name in the body role over **two reserved lines**, ellipsized; code beneath in the smaller secondary role — **not** `'code — name'` in one string. Both lines are reserved whether the name needs them or not, so rows do not jump height (FR-040) |
+| Product | flex, min 202 | name in the body role over **two reserved lines**, ellipsized; code beneath in the smaller secondary role — **not** `'code — name'` in one string. Both lines are reserved whether the name needs them or not, so rows do not jump height (FR-040) |
 | Warehouse | 168 → 240 | existing `warehousePicker()`, with the availability figure kept visible |
 | Quantity | 132 → 140 | −/field/+ stepper, labelled `posLineQuantityWithUnitLabel` (`Cant. (Pza)`) when the product has a unit, `posLineQuantityLabel` (`Cant.`) when it does not |
 | Price | 88 → 100 | **read-only** — see 4.2a |
@@ -231,7 +238,17 @@ Row 1: thumbnail, product, warehouse, total, delete.
 Row 2: quantity stepper (unit in its label, as above), price, discount, tax.
 Nothing is dropped and nothing is read-only that was editable.
 
-### 4.4 Unchanged behaviour
+### 4.4 The lines list's own inset
+
+The lines list carries `spacing.screenMargin` — the same inset every header item
+gets — so a line's left and right edges sit directly under the search field's
+rather than 12 px inside them. On compact each `SaleLineCard` carries it
+directly, since the cards are items in the one scrolling list there.
+
+This is not free: it costs each line 24 px, which is what moved
+`saleLineSingleRowMinWidth` (§4.2).
+
+### 4.5 Unchanged behaviour
 
 Everything comes from the `SaleLineEditing` mixin as it does today: per-field
 server round trips, refusal-restores-fields, the stepper's floor at > 0, and the

@@ -8,22 +8,34 @@
 enum SaleLineLayout { singleRow, twoRow, card }
 
 /// The budget for the single-row layout (contracts/capture-surface.md §4.2):
-/// fixed columns (warehouse 168, quantity 132, price 88, discount 80, tax 80,
-/// total 100, delete 48) plus 6 gaps of `spacing.xs` (48) plus a 226 px
+/// fixed columns (warehouse 168, quantity 132, price 88, discount 76, tax 88,
+/// total 100, delete 48) plus 6 gaps of `spacing.xs` (48) plus a 202 px
 /// minimum for the product cell, which carries the 40 px thumbnail inside it.
+///
+/// 950, not the 970 first budgeted: the lines list was later inset by
+/// `spacing.screenMargin` to sit under the search field rather than 12 px
+/// inside it, which costs a line 24 px. Measured at a 1024-px window, a line
+/// gets **960 px** — under the old threshold, so the tablet silently dropped to
+/// the two-row fallback that FR-037a exists to prevent. The threshold follows
+/// the width a line actually has, not the width it had before the margins were
+/// aligned.
+///
 /// These are a *budget*, not a measurement (research R10): the FR-037a widget
-/// test (`sale_line_row_test.dart`) pumps a real line at 1024 px and fails on
-/// overflow, which is what keeps the budget honest — it caught the quantity
-/// column's first, tighter 104 px, where `IconButton`'s own sizing didn't
-/// shrink as far as `constraints`/`padding` overrides alone implied.
+/// test (`sale_line_row_test.dart`) pumps a real line at the tablet's real
+/// width and fails on overflow, which is what keeps the budget honest — it
+/// caught the quantity column's first, tighter 104 px, where `IconButton`'s own
+/// sizing didn't shrink as far as `constraints`/`padding` overrides alone
+/// implied. It is also why the width a line gets is now measured through
+/// `CaptureStep` rather than assumed: pumping `SaleLineRow` alone at a 1024-px
+/// surface says nothing about the margins the step puts around it.
 ///
 /// The columns widened toward the mock's own grid (`minmax(300px,1fr) 176px
-/// 128px 96px 100px 88px 84px 124px 44px`) without moving this threshold,
-/// paid for by folding the separate unit column into the quantity field's
-/// label — the unit is one short symbol (`Pza`), and a column of its own cost
-/// more than it earned. It had already grown 36 → 56 once because a
-/// six-letter unit (`Cubeta`) wrapped and took the whole row taller with it.
-const saleLineSingleRowMinWidth = 970.0;
+/// 128px 96px 100px 88px 84px 124px 44px`), paid for by folding the separate
+/// unit column into the quantity field's label — the unit is one short symbol
+/// (`Pza`), and a column of its own cost more than it earned. It had already
+/// grown 36 → 56 once because a six-letter unit (`Cubeta`) wrapped and took the
+/// whole row taller with it.
+const saleLineSingleRowMinWidth = 950.0;
 
 /// The height every control in a line shares — warehouse picker, quantity
 /// stepper, price, discount and tax (FR-038a: one height, so the band reads as
@@ -88,7 +100,7 @@ const saleLineComfortableWidth = 1500.0;
 /// What each fixed column of the single row gets at a given available width.
 ///
 /// Two width sets, interpolated: the **floor** is what fits a 1024-px tablet
-/// (FR-037a) once the product cell keeps its 222 px minimum, and the
+/// (FR-037a) once the product cell keeps its 202 px minimum, and the
 /// **comfortable** set is the one drawn on the annotated screenshot of
 /// 2026-08-11 — a ~35 % product cell with visibly roomier controls beside it.
 /// The product column is not here: it is `Expanded`, and takes whatever these
@@ -112,7 +124,7 @@ class SaleLineColumns {
   final double total;
 
   /// The tablet floor: 652 px of columns, plus a 48 px delete button and six
-  /// `spacing.xs` gaps, leaves the product cell 222 px at
+  /// `spacing.xs` gaps, leaves the product cell 202 px at
   /// [saleLineSingleRowMinWidth].
   static const floor = SaleLineColumns._(
     warehouse: 168,

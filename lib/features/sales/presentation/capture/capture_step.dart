@@ -195,7 +195,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                     child: Center(child: Text(l10n.posNoLinesHint)),
                   )
                 else
-                  ..._lines(sale, enabled, compact: true),
+                  ..._lines(sale, enabled, compact: true, inset: horizontalInset),
               ],
             ),
           )
@@ -205,7 +205,10 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
             child: sale == null || sale.lines.isEmpty
                 ? Center(child: Text(l10n.posNoLinesHint))
                 : ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    // The same inset every header item carries, so a line's
+                    // edges sit directly under the search field's rather than
+                    // 12 px inside them.
+                    padding: horizontalInset,
                     children: _lines(sale, enabled, compact: false),
                   ),
           ),
@@ -228,11 +231,20 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
 
   /// [SaleLineCard] on a phone, [SaleLineRow] anywhere wider — the same line,
   /// stacked or strung out (T098/T099).
-  List<Widget> _lines(Sale sale, bool enabled, {required bool compact}) => [
+  ///
+  /// [inset] is the step's own horizontal margin. On a phone the cards are
+  /// items in the one scrolling list, so each carries it directly; wider tiers
+  /// put it on the lines `ListView` instead.
+  List<Widget> _lines(
+    Sale sale,
+    bool enabled, {
+    required bool compact,
+    EdgeInsets inset = EdgeInsets.zero,
+  }) => [
     for (final line in sale.lines)
       if (compact)
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: inset,
           child: SaleLineCard(
             key: ValueKey(line.id),
             line: line,
