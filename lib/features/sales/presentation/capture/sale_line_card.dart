@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -56,6 +58,11 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
     return Card(
       key: Key('sale_line_card_${line.id}'),
       margin: const EdgeInsets.symmetric(vertical: 4),
+      // Outlined, as in `SaleLineRow` and the customer band.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.mdRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -66,6 +73,11 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // The product's real photo since mbe-api#157 (spec 023 research
+                // R11) put one on both shapes a till reads; the shared widget
+                // still placeholders a product without one.
+                ProductPhoto(photoUrl: line.photo, size: 36),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,8 +97,13 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                   MoneyFormatters.currency(line.total),
                   style: theme.textTheme.titleMedium,
                 ),
+                // The error colour every destructive action in the product
+                // carries, as in `SaleLineRow`.
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
+                  style: IconButton.styleFrom(
+                    foregroundColor: theme.colorScheme.error,
+                  ),
                   onPressed: enabled ? removeLine : null,
                   tooltip: l10n.posRemoveLineTooltip,
                 ),
@@ -127,12 +144,17 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
               ],
             ),
             const SizedBox(height: 8),
+            // Read-only here as in the wide row (FR-038c) — a price is
+            // adjusted through the discount, not typed over.
             TextField(
               controller: priceField,
-              enabled: enabled,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              readOnly: true,
+              canRequestFocus: false,
+              mouseCursor: SystemMouseCursors.basic,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               decoration: InputDecoration(labelText: l10n.posLinePriceLabel),
-              onSubmitted: (v) => update(price: v),
             ),
             const SizedBox(height: 8),
             Row(
@@ -151,17 +173,8 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: taxField,
-                    enabled: enabled,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(labelText: l10n.posLineTaxLabel),
-                    onSubmitted: (v) => updateRate(taxRate: v),
-                  ),
-                ),
+                // Chosen, not typed (FR-038b).
+                Expanded(child: taxRatePicker()),
               ],
             ),
             const SizedBox(height: 8),

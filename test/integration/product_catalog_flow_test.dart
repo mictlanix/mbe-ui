@@ -26,6 +26,10 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 ///   --dart-define=MBE_CREATE_TEST_USERNAME=...  (account with products.create)
 ///   --dart-define=MBE_CREATE_TEST_PASSWORD=...
 ///
+/// `MBE_TEST_*` is this suite's *negative control*: it must hold no `products`
+/// privilege at all, which is what scenario 4 and US3/US4 scenarios 3 and 4
+/// assert. See `TEST_ACCOUNTS.md` for the full seed contract.
+///
 /// Tests requiring seeded credentials/data are skipped when not provided.
 /// US3/US4 scenarios (edit/deactivate) are exercised by extensions added in
 /// later phases (T025, T032), not here.
@@ -37,20 +41,26 @@ const _knownProductNamePart = String.fromEnvironment(
 );
 const _createUsername = String.fromEnvironment('MBE_CREATE_TEST_USERNAME');
 const _createPassword = String.fromEnvironment('MBE_CREATE_TEST_PASSWORD');
-
 const _hasTestCredentials = _testUsername != '' && _testPassword != '';
 const _hasKnownProduct = _knownProductCode != '';
 const _hasKnownProductName = _knownProductNamePart != '';
 const _hasCreateCredentials = _createUsername != '' && _createPassword != '';
 
+/// `product.unit_of_measurement` is a foreign key into `sat_unit_of_measurement`
+/// (mbe-api `app/models/product.py`), so it must be a real SAT code. `H87`
+/// ("Pieza") is the SAT code for a piece; `PCE` is not in the catalog at all,
+/// and using it made every create fail with the generic 409 the global
+/// `IntegrityError` handler returns — which reads as a duplicate-code conflict
+/// rather than a bad unit.
+const _unitOfMeasurement = 'H87';
+
 void main() {
-  late AuthRepositoryImpl authRepository;
   late ProductRepositoryImpl productRepository;
 
   setUp(() {
-    final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
-    authRepository = AuthRepositoryImpl(dio);
-    productRepository = ProductRepositoryImpl(dio);
+    productRepository = ProductRepositoryImpl(
+      Dio(BaseOptions(baseUrl: apiBaseUrl)),
+    );
   });
 
   Future<ProductRepositoryImpl> authenticatedProductRepository(
@@ -63,6 +73,30 @@ void main() {
     ).login(username: username, password: password);
     dio.options.headers['Authorization'] = 'Bearer $token';
     return ProductRepositoryImpl(dio);
+  }
+
+  /// Signs in and resolves the account's effective privileges.
+  ///
+  /// `me()` is an authenticated call, so the bearer token has to be attached
+  /// before it. Signing in and then calling `me()` on a bare `Dio` always
+  /// fails with `Not authenticated` — the same omission that makes
+  /// `auth_flow_test` scenarios 1 and 7 fail against a healthy backend
+  /// (mictlanix/mbe-ui#155).
+  Future<AccessControlService> accessFor(
+    String username,
+    String password,
+  ) async {
+    final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
+    final repository = AuthRepositoryImpl(dio);
+    final token = await repository.login(
+      username: username,
+      password: password,
+    );
+    dio.options.headers['Authorization'] = 'Bearer $token';
+    final user = await repository.me();
+    return AccessControlService(
+      AuthState.authenticated(token: token, user: user),
+    );
   }
 
   test(
@@ -101,14 +135,7 @@ void main() {
   test(
     'scenario 4: a user without products privilege is denied access (FR-012, SC-004)',
     () async {
-      final token = await authRepository.login(
-        username: _testUsername,
-        password: _testPassword,
-      );
-      final user = await authRepository.me();
-      final access = AccessControlService(
-        AuthState.authenticated(token: token, user: user),
-      );
+      final access = await accessFor(_testUsername, _testPassword);
 
       // A module with no `Privilege` row is fully inaccessible (FR-012).
       // The seeded test account is expected to have no `products` privilege.
@@ -128,7 +155,7 @@ void main() {
     final created = await repo.create(
       code: code,
       name: 'Integration Test Widget',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurement: _unitOfMeasurement,
     );
 
     expect(created.code, code);
@@ -150,16 +177,20 @@ void main() {
       await repo.create(
         code: code,
         name: 'Integration Test Widget',
-        unitOfMeasurement: 'PCE',
+        unitOfMeasurement: _unitOfMeasurement,
       );
 
+      // A duplicate code is a 409, not a 422: mbe-api raises its own
+      // `HTTPException` for it, and `mapDioException` reserves
+      // `ValidationError` for 422's field-error list. Same shape the cash
+      // session suite asserts on for its own conflicts.
       await expectLater(
         () => repo.create(
           code: code,
           name: 'Integration Test Widget Duplicate',
-          unitOfMeasurement: 'PCE',
+          unitOfMeasurement: _unitOfMeasurement,
         ),
-        throwsA(isA<ValidationError>()),
+        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
       );
     },
     skip: !_hasCreateCredentials,
@@ -177,7 +208,7 @@ void main() {
         () => repo.create(
           code: 'IT-${DateTime.now().millisecondsSinceEpoch}',
           name: 'Hi',
-          unitOfMeasurement: 'PCE',
+          unitOfMeasurement: _unitOfMeasurement,
         ),
         throwsA(isA<ValidationError>()),
       );
@@ -194,7 +225,7 @@ void main() {
     final created = await repo.create(
       code: 'IT-${DateTime.now().millisecondsSinceEpoch}',
       name: 'Integration Test Widget',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurement: _unitOfMeasurement,
       taxRate: '0.16',
     );
 
@@ -205,7 +236,9 @@ void main() {
     );
 
     expect(updated.name, 'Integration Test Widget Updated');
-    expect(updated.taxRate, '0');
+    // `tax_rate` is a SQL `Numeric` and comes back at the column's own scale
+    // (`'0.000000'`, not `'0'`), so compare the value rather than the text.
+    expect(num.parse(updated.taxRate), 0);
 
     final fetched = await repo.get(productId: created.productId);
     expect(fetched.name, 'Integration Test Widget Updated');
@@ -222,17 +255,17 @@ void main() {
       await repo.create(
         code: existingCode,
         name: 'Integration Test Widget A',
-        unitOfMeasurement: 'PCE',
+        unitOfMeasurement: _unitOfMeasurement,
       );
       final toRename = await repo.create(
         code: 'IT-${DateTime.now().millisecondsSinceEpoch}-b',
         name: 'Integration Test Widget B',
-        unitOfMeasurement: 'PCE',
+        unitOfMeasurement: _unitOfMeasurement,
       );
 
       await expectLater(
         () => repo.update(productId: toRename.productId, code: existingCode),
-        throwsA(isA<ValidationError>()),
+        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
       );
     },
     skip: !_hasCreateCredentials,
@@ -240,14 +273,7 @@ void main() {
 
   test('US3 scenario 3: a user without products.update privilege is denied '
       '(FR-012, FR-013)', () async {
-    final token = await authRepository.login(
-      username: _testUsername,
-      password: _testPassword,
-    );
-    final user = await authRepository.me();
-    final access = AccessControlService(
-      AuthState.authenticated(token: token, user: user),
-    );
+    final access = await accessFor(_testUsername, _testPassword);
 
     expect(access.can(SystemObject.products, AccessRight.update), isFalse);
   }, skip: !_hasTestCredentials);
@@ -262,7 +288,7 @@ void main() {
     final created = await repo.create(
       code: code,
       name: 'Integration Test Widget',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurement: _unitOfMeasurement,
     );
 
     final deactivated = await repo.update(
@@ -291,7 +317,7 @@ void main() {
     final created = await repo.create(
       code: code,
       name: 'Integration Test Widget',
-      unitOfMeasurement: 'PCE',
+      unitOfMeasurement: _unitOfMeasurement,
     );
     await repo.update(
       productId: created.productId,
@@ -307,14 +333,7 @@ void main() {
 
   test('US4 scenario 4: a user without products.delete privilege is denied '
       '(FR-012)', () async {
-    final token = await authRepository.login(
-      username: _testUsername,
-      password: _testPassword,
-    );
-    final user = await authRepository.me();
-    final access = AccessControlService(
-      AuthState.authenticated(token: token, user: user),
-    );
+    final access = await accessFor(_testUsername, _testPassword);
 
     expect(access.can(SystemObject.products, AccessRight.delete), isFalse);
   }, skip: !_hasTestCredentials);

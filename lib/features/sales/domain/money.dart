@@ -139,6 +139,16 @@ String formatRateAsPercent(String value) {
   return (parsed * Decimal.fromInt(100)).toString();
 }
 
+/// A stored rate rendered as a percentage a picker can display without a
+/// label to lean on: `"0.1600"` → `"16.00 %"`, `"0"` → `"0.00 %"`. Two
+/// decimals always, so a list of rates reads as a column of aligned figures
+/// rather than a ragged mix of `16` and `7.5`.
+String formatRateAsPercentWithSymbol(String value) {
+  final parsed = Decimal.tryParse(value);
+  if (parsed == null) return value;
+  return '${(parsed * Decimal.fromInt(100)).toStringAsFixed(2)} %';
+}
+
 /// The inverse of [formatRateAsPercent], for sending an edited field back:
 /// `"16"` → `"0.16"`. Returns `null` when [value] is not a number, so the
 /// caller can reject the edit rather than send nonsense.

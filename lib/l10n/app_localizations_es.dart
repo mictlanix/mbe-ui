@@ -2598,6 +2598,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posLineQuantityLabel => 'Cant.';
 
   @override
+  String posLineQuantityWithUnitLabel(String unit) {
+    return 'Cant. ($unit)';
+  }
+
+  @override
   String get posLinePriceLabel => 'Precio';
 
   @override
@@ -2621,39 +2626,123 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posLineAdjustToAvailable => 'Ajustar a disponible';
 
   @override
-  String posTotalsCounts(int lines, String units) {
-    return '$lines líneas · $units uds.';
+  String posTotalsCounts(int lines, String units, num unitsValue) {
+    String _temp0 = intl.Intl.pluralLogic(
+      lines,
+      locale: localeName,
+      other: '$lines líneas',
+      one: '$lines línea',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      unitsValue,
+      locale: localeName,
+      other: 'uds.',
+      one: 'ud.',
+    );
+    return '$_temp0 · $units $_temp1';
   }
 
   @override
-  String posTotalsSubtotal(String amount) {
-    return 'Subtotal: $amount';
-  }
+  String get posTotalsArticlesLabel => 'Artículos';
 
   @override
-  String posTotalsDiscount(String amount) {
-    return 'Descuento: $amount';
-  }
+  String get posTotalsSubtotalLabel => 'Subtotal';
 
   @override
-  String posTotalsTax(String amount) {
-    return 'Impuestos: $amount';
-  }
+  String get posTotalsDiscountLabel => 'Descuentos';
 
   @override
-  String posTotalsTotal(String amount) {
-    return 'Total: $amount';
-  }
+  String get posTotalsTaxLabel => 'IVA';
+
+  @override
+  String get posTotalsTotalLabel => 'Total';
 
   @override
   String get posSaleReadOnlyBanner =>
       'La venta ya fue confirmada; los datos son de solo lectura.';
 
   @override
-  String get posNoLinesHint => 'Sin líneas — busca o escanea un producto';
+  String get posSalesSearchLabel => 'Buscar ventas';
 
   @override
-  String get posContinueToPayment => 'Continuar al cobro';
+  String get posSalesStatusFilterLabel => 'Estado';
+
+  @override
+  String get posSalesStatusFilterAll => 'Todos los estados';
+
+  @override
+  String get posSalesNewSaleAction => 'Nueva venta';
+
+  @override
+  String get posSalesColumnReference => 'Folio';
+
+  @override
+  String get posSalesColumnDate => 'Fecha';
+
+  @override
+  String get posSalesColumnCustomer => 'Cliente';
+
+  @override
+  String get posSalesColumnStatus => 'Estado';
+
+  @override
+  String get posSalesColumnTotal => 'Total';
+
+  @override
+  String get posSalesColumnBalance => 'Saldo';
+
+  @override
+  String get posSalesEmptyToday => 'Sin ventas en esta caja hoy';
+
+  @override
+  String get posSalesNoRegister => 'Esta cuenta no tiene una caja asignada.';
+
+  @override
+  String get posSalesNewSaleBlockedNoSession =>
+      'Debes abrir una sesión de caja antes de iniciar una venta.';
+
+  @override
+  String get dateRangeFilterToday => 'Hoy';
+
+  @override
+  String dateRangeFilterRange(String from, String to) {
+    return '$from – $to';
+  }
+
+  @override
+  String get dateRangeFilterClear => 'Volver a hoy';
+
+  @override
+  String get posSaleStatusDraft => 'En captura';
+
+  @override
+  String get posSaleStatusCompleted => 'Por cobrar';
+
+  @override
+  String get posSaleStatusPaid => 'Pagada';
+
+  @override
+  String get posSaleStatusCancelled => 'Cancelada';
+
+  @override
+  String get posSaleUnreachableTitle => 'Esta venta no se puede abrir';
+
+  @override
+  String get posSaleUnreachableUnknown => 'No se encontró esta venta.';
+
+  @override
+  String get posSaleUnreachableCancelled =>
+      'Esta venta fue cancelada y ya no se puede abrir.';
+
+  @override
+  String get posSaleUnreachableOtherRegister =>
+      'Esta venta pertenece a otra caja.';
+
+  @override
+  String get posSaleBackToListAction => 'Volver a ventas';
+
+  @override
+  String get posNoLinesHint => 'Sin líneas — busca o escanea un producto';
 
   @override
   String get posAmountLabel => 'Monto';
@@ -2724,10 +2813,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posCustomerCreditLabel => 'Crédito';
 
   @override
-  String get posCustomerNoCredit => 'Sin línea';
+  String get posCustomerPriceListLabel => 'Lista de precios';
 
   @override
-  String get posCustomerPriceListLabel => 'Lista de precios';
+  String get posCustomerSearchAction => 'Buscar';
+
+  @override
+  String get posCustomerCreateAction => 'Nuevo';
+
+  @override
+  String get posCustomerSearchCancelAction => 'Cancelar búsqueda';
+
+  @override
+  String get posCustomerNoCreditHint => 'Sin línea de crédito';
 
   @override
   String get newContactDialogTitle => 'Nuevo contacto';

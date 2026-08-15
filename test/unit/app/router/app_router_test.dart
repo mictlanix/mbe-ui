@@ -38,8 +38,10 @@ import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockProductRepository extends Mock implements ProductRepository {}
@@ -69,6 +71,8 @@ class MockTaxpayerIssuerRepository extends Mock
     implements TaxpayerIssuerRepository {}
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
+
+class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
 
 /// Bypasses `AuthNotifier.build()`'s real `TokenStorage`/`AuthRepository`
 /// round-trip, resolving directly to a fixed [AuthState] — this test only
@@ -357,6 +361,25 @@ void main() {
       (_) async => const CurrentSession(state: SessionState.none),
     );
 
+    // 023-pos-ux-improvements: `PosSalesListScreen` (T026 onward) watches
+    // `PosSalesListController`, which calls `listSales` whenever the signed-in
+    // user has a register configured. None of the fixture users below do
+    // (`User.settings` is unset), so this override is unexercised for now —
+    // added here, like `cashSessionRepository` above, so this shared file is
+    // edited once rather than twice.
+    final salesOrderRepository = MockSalesOrderRepository();
+    when(
+      () => salesOrderRepository.listSales(
+        pointSale: any(named: 'pointSale'),
+        status: any(named: 'status'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
+
     final container = ProviderContainer(
       overrides: [
         authNotifierProvider.overrideWith(
@@ -390,6 +413,7 @@ void main() {
         ),
         facilityRepositoryProvider.overrideWithValue(facilityRepository),
         cashSessionRepositoryProvider.overrideWithValue(cashSessionRepository),
+        salesOrderRepositoryProvider.overrideWithValue(salesOrderRepository),
       ],
     );
     addTearDown(container.dispose);
@@ -681,6 +705,80 @@ void main() {
           await pumpAt(tester, _posReaderUser, '/sales/cash-sessions');
           final shell = tester.widget<AppShell>(find.byType(AppShell));
           expect(shell.navigationShell.currentIndex, NavBranch.cashSessions);
+        },
+      );
+    },
+  );
+
+  group(
+    '023-pos-ux-improvements — /sales/pos is the sales list (in the shell), '
+    'the sale workspace moved to top-level sibling routes (research R1, '
+    'contracts/pos-workspace.md §1)',
+    () {
+      testWidgets('a user with pos:read reaches /sales/pos (the sales list)', (
+        tester,
+      ) async {
+        final handle = await pumpAt(tester, _posReaderUser, '/sales/pos');
+        expect(handle.router.state.uri.path, '/sales/pos');
+      });
+
+      testWidgets(
+        'a user without pos:read is redirected away from /sales/pos',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/sales/pos');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'activates shell branch NavBranch.pos (18) for /sales/pos — the '
+        'branch itself is unchanged; only what it renders moved',
+        (tester) async {
+          await pumpAt(tester, _posReaderUser, '/sales/pos');
+          final shell = tester.widget<AppShell>(find.byType(AppShell));
+          expect(shell.navigationShell.currentIndex, NavBranch.pos);
+        },
+      );
+
+      testWidgets(
+        'a user with pos:read reaches /sales/pos/new — the sale workspace, '
+        'a top-level route with no shell around it',
+        (tester) async {
+          final handle = await pumpAt(tester, _posReaderUser, '/sales/pos/new');
+          expect(handle.router.state.uri.path, '/sales/pos/new');
+          // The initial `/` page's AppShell is still mid-exit-transition
+          // right after `pumpAt`'s two bounded `pump()`s (which are enough
+          // for `_redirect`'s own synchronous decision, but not for a page
+          // transition to finish) — settle before asserting on the tree.
+          await tester.pumpAndSettle();
+          expect(find.byType(AppShell), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'a user without pos:read is redirected away from /sales/pos/new',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/new');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'the workspace route /sales/pos/:saleId parses its int param, gates '
+        'identically to /new, and also renders with no shell',
+        (tester) async {
+          final handle = await pumpAt(tester, _posReaderUser, '/sales/pos/42');
+          expect(handle.router.state.uri.path, '/sales/pos/42');
+          await tester.pumpAndSettle();
+          expect(find.byType(AppShell), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'a user without pos:read is redirected away from /sales/pos/:saleId too',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/42');
+          expect(handle.router.state.uri.path, '/');
         },
       );
     },

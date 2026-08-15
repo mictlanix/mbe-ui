@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/core/network/photo_url.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart' show unitLabelOf;
 
 part 'product_lookup_result.freezed.dart';
@@ -19,6 +20,8 @@ class ProductLookupResult with _$ProductLookupResult {
     String? model,
     String? barCode,
     String? unit,
+    // The product's photo, already resolved to a fetchable URL — mbe-api#157.
+    String? photo,
     required String price,
     required String taxRate,
     required bool taxIncluded,
@@ -38,6 +41,7 @@ class ProductLookupResult with _$ProductLookupResult {
         model: r.model,
         barCode: r.barCode,
         unit: unitLabelOf(r.unitOfMeasurement),
+        photo: resolvePhotoUrl(r.photo),
         price: r.price,
         taxRate: r.taxRate,
         taxIncluded: r.taxIncluded,

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_lookup_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -37,17 +41,52 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
   List<ProductLookupResult> _results = const [];
   bool _searching = false;
   bool _searchedEmpty = false;
+  Timer? _debounce;
+  // Tags every lookup so a slower, superseded one can never overwrite what a
+  // faster, later one already found — the race a debounced *and* an
+  // immediate (scanner) path both feeding the same state can hit, which a
+  // submit-only field never could (spec 023 FR-035).
+  int _requestId = 0;
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _search() async {
-    final pattern = _controller.text.trim();
+  void _onChanged(String value) {
+    _debounce?.cancel();
+    final pattern = value.trim();
+    if (pattern.isEmpty) {
+      setState(() {
+        _results = const [];
+        _searching = false;
+        _searchedEmpty = false;
+      });
+      return;
+    }
+    // FR-033: offered as the cashier types, debounced — never auto-added.
+    // Only `onSubmitted` (the scanner's Enter) may add a line directly.
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => _search(pattern, autoAddSingleMatch: false),
+    );
+  }
+
+  Future<void> _onSubmitted(String value) async {
+    _debounce?.cancel();
+    final pattern = value.trim();
     if (pattern.isEmpty) return;
+    // FR-034: a keyboard-wedge scanner types the code and sends Enter — the
+    // one path that still adds a single exact match directly, unchanged
+    // from before this field could search on every keystroke.
+    await _search(pattern, autoAddSingleMatch: true);
+  }
+
+  Future<void> _search(String pattern, {required bool autoAddSingleMatch}) async {
+    final requestId = ++_requestId;
     setState(() {
       _searching = true;
       _searchedEmpty = false;
@@ -55,8 +94,8 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     final results = await ref.read(
       productLookupControllerProvider(pattern, warehouse: widget.warehouse).future,
     );
-    if (!mounted) return;
-    if (results.length == 1) {
+    if (!mounted || requestId != _requestId) return;
+    if (autoAddSingleMatch && results.length == 1) {
       _select(results.first);
       return;
     }
@@ -85,9 +124,26 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     });
   }
 
+  /// The theme's own input borders, re-shaped as pills — the mock draws this
+  /// field as a stadium (`border-radius:30` on a 60 px box, i.e. fully
+  /// rounded), which is `Shapes.full`'s intent. That token is a `ShapeBorder`
+  /// and `InputDecoration` takes an `InputBorder`, so the radius is applied by
+  /// `copyWith` on whatever the theme already resolved: every colour and width
+  /// still comes from `inputDecorationTheme`, and only the corners change.
+  InputBorder? _pill(InputBorder? source) => source is OutlineInputBorder
+      ? source.copyWith(borderRadius: BorderRadius.circular(_pillRadius))
+      : source;
+
+  /// Larger than any box this field is drawn at, so the corners always
+  /// resolve to a full stadium rather than to a fixed radius that would read
+  /// as "very rounded" at one height and as a pill at another.
+  static const _pillRadius = 999.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final inputTheme = theme.inputDecorationTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,6 +164,20 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
             decoration: InputDecoration(
               labelText: l10n.posProductSearchLabel,
               prefixIcon: const Icon(Icons.qr_code_scanner),
+              // Four more on every side than the theme's own field insets —
+              // this one is the surface a cashier scans into all day, and the
+              // mock gives it a 60 px box against the 52 px the line fields
+              // get. 20 horizontal is the mock's own value.
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: theme.spacing.md + theme.spacing.xxs,
+                vertical: theme.spacing.sm + theme.spacing.xxs,
+              ),
+              border: _pill(inputTheme.border),
+              enabledBorder: _pill(inputTheme.enabledBorder),
+              focusedBorder: _pill(inputTheme.focusedBorder),
+              disabledBorder: _pill(inputTheme.disabledBorder),
+              errorBorder: _pill(inputTheme.errorBorder),
+              focusedErrorBorder: _pill(inputTheme.focusedErrorBorder),
               suffixIcon: _searching
                   ? const Padding(
                       padding: EdgeInsets.all(12),
@@ -120,7 +190,8 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
                   : null,
             ),
             textInputAction: TextInputAction.search,
-            onSubmitted: (_) => _search(),
+            onChanged: _onChanged,
+            onSubmitted: _onSubmitted,
           ),
         ),
         if (_searchedEmpty)
@@ -139,6 +210,10 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
                 itemBuilder: (context, index) {
                   final result = _results[index];
                   return ListTile(
+                    // The looked-up product's own photo (mbe-api#157) — the
+                    // same leading thumbnail `CatalogEntityPicker` gives a
+                    // product candidate, and no extra call to get it.
+                    leading: ProductPhoto(photoUrl: result.photo, size: 40),
                     title: Text('${result.code} — ${result.name}'),
                     subtitle: Text(result.brand ?? ''),
                     trailing: Text(result.price),

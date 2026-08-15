@@ -87,6 +87,37 @@ void main() {
       expect(requests.single.queryParameters.containsKey('date_from'), isFalse);
     });
   });
+
+  group('listSales query parameters', () {
+    test('a single-day range spans that whole day — `date_to` at plain '
+        'midnight selects nothing', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode({'items': <Object?>[], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.listSales(
+        pointSale: 18,
+        dateFrom: DateTime(2026, 8, 10),
+        dateTo: DateTime(2026, 8, 10),
+      );
+
+      final query = requests.single.queryParameters;
+      expect(query['date_from'], '2026-08-10T00:00:00.000Z');
+      expect(
+        query['date_to'],
+        '2026-08-10T23:59:59.999Z',
+        reason: 'mbe-api compares date_to against the sale\'s full timestamp, '
+            'inclusively — encoding it as midnight made the default '
+            '"today" filter answer total: 0 for a register that had traded',
+      );
+    });
+  });
 }
 
 SalesOrderRepositoryImpl _repositoryWith(

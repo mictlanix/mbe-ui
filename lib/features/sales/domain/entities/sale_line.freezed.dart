@@ -23,7 +23,12 @@ mixin _$SaleLine {
   String get productName =>
       throw _privateConstructorUsedError; // The SAT unit's symbol when it has one ("Pza"), else its name
   // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
-  String? get unit => throw _privateConstructorUsedError;
+  String? get unit =>
+      throw _privateConstructorUsedError; // The product's photo as a fetchable URL — mbe-api#157, which put it on
+  // both shapes a till reads so a resumed sale's own lines are not the blank
+  // ones. Already resolved through `resolvePhotoUrl`, so a call site hands it
+  // straight to `ProductPhoto`. Null for a product with no photo.
+  String? get photo => throw _privateConstructorUsedError;
   String get quantity => throw _privateConstructorUsedError;
   String get cost => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
@@ -59,6 +64,7 @@ abstract class $SaleLineCopyWith<$Res> {
     String productCode,
     String productName,
     String? unit,
+    String? photo,
     String quantity,
     String cost,
     String price,
@@ -94,6 +100,7 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
     Object? productCode = null,
     Object? productName = null,
     Object? unit = freezed,
+    Object? photo = freezed,
     Object? quantity = null,
     Object? cost = null,
     Object? price = null,
@@ -128,6 +135,10 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
             unit: freezed == unit
                 ? _value.unit
                 : unit // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            photo: freezed == photo
+                ? _value.photo
+                : photo // ignore: cast_nullable_to_non_nullable
                       as String?,
             quantity: null == quantity
                 ? _value.quantity
@@ -198,6 +209,7 @@ abstract class _$$SaleLineImplCopyWith<$Res>
     String productCode,
     String productName,
     String? unit,
+    String? photo,
     String quantity,
     String cost,
     String price,
@@ -232,6 +244,7 @@ class __$$SaleLineImplCopyWithImpl<$Res>
     Object? productCode = null,
     Object? productName = null,
     Object? unit = freezed,
+    Object? photo = freezed,
     Object? quantity = null,
     Object? cost = null,
     Object? price = null,
@@ -266,6 +279,10 @@ class __$$SaleLineImplCopyWithImpl<$Res>
         unit: freezed == unit
             ? _value.unit
             : unit // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        photo: freezed == photo
+            ? _value.photo
+            : photo // ignore: cast_nullable_to_non_nullable
                   as String?,
         quantity: null == quantity
             ? _value.quantity
@@ -329,6 +346,7 @@ class _$SaleLineImpl implements _SaleLine {
     required this.productCode,
     required this.productName,
     this.unit,
+    this.photo,
     required this.quantity,
     required this.cost,
     required this.price,
@@ -355,6 +373,12 @@ class _$SaleLineImpl implements _SaleLine {
   // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
   @override
   final String? unit;
+  // The product's photo as a fetchable URL — mbe-api#157, which put it on
+  // both shapes a till reads so a resumed sale's own lines are not the blank
+  // ones. Already resolved through `resolvePhotoUrl`, so a call site hands it
+  // straight to `ProductPhoto`. Null for a product with no photo.
+  @override
+  final String? photo;
   @override
   final String quantity;
   @override
@@ -386,7 +410,7 @@ class _$SaleLineImpl implements _SaleLine {
 
   @override
   String toString() {
-    return 'SaleLine(id: $id, product: $product, productCode: $productCode, productName: $productName, unit: $unit, quantity: $quantity, cost: $cost, price: $price, discountRate: $discountRate, taxRate: $taxRate, taxIncluded: $taxIncluded, warehouse: $warehouse, comment: $comment, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, availability: $availability)';
+    return 'SaleLine(id: $id, product: $product, productCode: $productCode, productName: $productName, unit: $unit, photo: $photo, quantity: $quantity, cost: $cost, price: $price, discountRate: $discountRate, taxRate: $taxRate, taxIncluded: $taxIncluded, warehouse: $warehouse, comment: $comment, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, availability: $availability)';
   }
 
   @override
@@ -401,6 +425,7 @@ class _$SaleLineImpl implements _SaleLine {
             (identical(other.productName, productName) ||
                 other.productName == productName) &&
             (identical(other.unit, unit) || other.unit == unit) &&
+            (identical(other.photo, photo) || other.photo == photo) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
             (identical(other.cost, cost) || other.cost == cost) &&
@@ -430,6 +455,7 @@ class _$SaleLineImpl implements _SaleLine {
     productCode,
     productName,
     unit,
+    photo,
     quantity,
     cost,
     price,
@@ -460,6 +486,7 @@ abstract class _SaleLine implements SaleLine {
     required final String productCode,
     required final String productName,
     final String? unit,
+    final String? photo,
     required final String quantity,
     required final String cost,
     required final String price,
@@ -484,7 +511,12 @@ abstract class _SaleLine implements SaleLine {
   String get productName; // The SAT unit's symbol when it has one ("Pza"), else its name
   // ("Pieza") — mbe-api#145. Null for a product with no unit on file.
   @override
-  String? get unit;
+  String? get unit; // The product's photo as a fetchable URL — mbe-api#157, which put it on
+  // both shapes a till reads so a resumed sale's own lines are not the blank
+  // ones. Already resolved through `resolvePhotoUrl`, so a call site hands it
+  // straight to `ProductPhoto`. Null for a product with no photo.
+  @override
+  String? get photo;
   @override
   String get quantity;
   @override

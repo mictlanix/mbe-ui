@@ -4817,6 +4817,12 @@ abstract class AppLocalizations {
   /// **'Qty.'**
   String get posLineQuantityLabel;
 
+  /// No description provided for @posLineQuantityWithUnitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty. ({unit})'**
+  String posLineQuantityWithUnitLabel(String unit);
+
   /// No description provided for @posLinePriceLabel.
   ///
   /// In en, this message translates to:
@@ -4859,35 +4865,41 @@ abstract class AppLocalizations {
   /// **'Adjust to available'**
   String get posLineAdjustToAvailable;
 
-  /// No description provided for @posTotalsCounts.
+  /// `units` is the formatted quantity (it may be fractional, e.g. 2.5); `unitsValue` is the same figure as a number, carried only so the noun can agree with it.
   ///
   /// In en, this message translates to:
-  /// **'{lines} lines · {units} units'**
-  String posTotalsCounts(int lines, String units);
+  /// **'{lines, plural, =1{{lines} line} other{{lines} lines}} · {units} {unitsValue, plural, =1{unit} other{units}}'**
+  String posTotalsCounts(int lines, String units, num unitsValue);
 
-  /// No description provided for @posTotalsSubtotal.
+  /// No description provided for @posTotalsArticlesLabel.
   ///
   /// In en, this message translates to:
-  /// **'Subtotal: {amount}'**
-  String posTotalsSubtotal(String amount);
+  /// **'Items'**
+  String get posTotalsArticlesLabel;
 
-  /// No description provided for @posTotalsDiscount.
+  /// No description provided for @posTotalsSubtotalLabel.
   ///
   /// In en, this message translates to:
-  /// **'Discount: {amount}'**
-  String posTotalsDiscount(String amount);
+  /// **'Subtotal'**
+  String get posTotalsSubtotalLabel;
 
-  /// No description provided for @posTotalsTax.
+  /// No description provided for @posTotalsDiscountLabel.
   ///
   /// In en, this message translates to:
-  /// **'Tax: {amount}'**
-  String posTotalsTax(String amount);
+  /// **'Discounts'**
+  String get posTotalsDiscountLabel;
 
-  /// No description provided for @posTotalsTotal.
+  /// No description provided for @posTotalsTaxLabel.
   ///
   /// In en, this message translates to:
-  /// **'Total: {amount}'**
-  String posTotalsTotal(String amount);
+  /// **'Tax'**
+  String get posTotalsTaxLabel;
+
+  /// No description provided for @posTotalsTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get posTotalsTotalLabel;
 
   /// No description provided for @posSaleReadOnlyBanner.
   ///
@@ -4895,17 +4907,161 @@ abstract class AppLocalizations {
   /// **'The sale is already confirmed; its details are read-only.'**
   String get posSaleReadOnlyBanner;
 
+  /// No description provided for @posSalesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search sales'**
+  String get posSalesSearchLabel;
+
+  /// No description provided for @posSalesStatusFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get posSalesStatusFilterLabel;
+
+  /// No description provided for @posSalesStatusFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All statuses'**
+  String get posSalesStatusFilterAll;
+
+  /// No description provided for @posSalesNewSaleAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New sale'**
+  String get posSalesNewSaleAction;
+
+  /// No description provided for @posSalesColumnReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get posSalesColumnReference;
+
+  /// No description provided for @posSalesColumnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get posSalesColumnDate;
+
+  /// No description provided for @posSalesColumnCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get posSalesColumnCustomer;
+
+  /// No description provided for @posSalesColumnStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get posSalesColumnStatus;
+
+  /// No description provided for @posSalesColumnTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get posSalesColumnTotal;
+
+  /// No description provided for @posSalesColumnBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get posSalesColumnBalance;
+
+  /// No description provided for @posSalesEmptyToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No sales on this register today'**
+  String get posSalesEmptyToday;
+
+  /// No description provided for @posSalesNoRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has no register assigned.'**
+  String get posSalesNoRegister;
+
+  /// No description provided for @posSalesNewSaleBlockedNoSession.
+  ///
+  /// In en, this message translates to:
+  /// **'You must open a cash session before starting a sale.'**
+  String get posSalesNewSaleBlockedNoSession;
+
+  /// No description provided for @dateRangeFilterToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dateRangeFilterToday;
+
+  /// No description provided for @dateRangeFilterRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} – {to}'**
+  String dateRangeFilterRange(String from, String to);
+
+  /// No description provided for @dateRangeFilterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to today'**
+  String get dateRangeFilterClear;
+
+  /// No description provided for @posSaleStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Capturing'**
+  String get posSaleStatusDraft;
+
+  /// No description provided for @posSaleStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment due'**
+  String get posSaleStatusCompleted;
+
+  /// No description provided for @posSaleStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get posSaleStatusPaid;
+
+  /// No description provided for @posSaleStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get posSaleStatusCancelled;
+
+  /// No description provided for @posSaleUnreachableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale can\'t be opened'**
+  String get posSaleUnreachableTitle;
+
+  /// No description provided for @posSaleUnreachableUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale could not be found.'**
+  String get posSaleUnreachableUnknown;
+
+  /// No description provided for @posSaleUnreachableCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale was cancelled and can no longer be opened.'**
+  String get posSaleUnreachableCancelled;
+
+  /// No description provided for @posSaleUnreachableOtherRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale belongs to a different register.'**
+  String get posSaleUnreachableOtherRegister;
+
+  /// No description provided for @posSaleBackToListAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sales'**
+  String get posSaleBackToListAction;
+
   /// No description provided for @posNoLinesHint.
   ///
   /// In en, this message translates to:
   /// **'No lines — search or scan a product'**
   String get posNoLinesHint;
-
-  /// No description provided for @posContinueToPayment.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to payment'**
-  String get posContinueToPayment;
 
   /// No description provided for @posAmountLabel.
   ///
@@ -5033,17 +5189,35 @@ abstract class AppLocalizations {
   /// **'Credit line'**
   String get posCustomerCreditLabel;
 
-  /// No description provided for @posCustomerNoCredit.
-  ///
-  /// In en, this message translates to:
-  /// **'No credit line'**
-  String get posCustomerNoCredit;
-
   /// No description provided for @posCustomerPriceListLabel.
   ///
   /// In en, this message translates to:
   /// **'Price list'**
   String get posCustomerPriceListLabel;
+
+  /// No description provided for @posCustomerSearchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get posCustomerSearchAction;
+
+  /// No description provided for @posCustomerCreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get posCustomerCreateAction;
+
+  /// No description provided for @posCustomerSearchCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel search'**
+  String get posCustomerSearchCancelAction;
+
+  /// No description provided for @posCustomerNoCreditHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No credit line'**
+  String get posCustomerNoCreditHint;
 
   /// No description provided for @newContactDialogTitle.
   ///

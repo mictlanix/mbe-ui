@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -14,17 +19,18 @@ import 'pos_test_harness.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
-Customer _customer({String creditLimit = '5000.00'}) => Customer(
-  customerId: 7,
-  code: 'C-7',
-  name: 'PÚBLICO EN GENERAL',
-  creditLimit: creditLimit,
-  creditDays: 30,
-  priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-  shipping: true,
-  shippingRequiredDocument: false,
-  status: EntityStatus.active,
-);
+Customer _customer({String creditLimit = '5000.00', String name = 'PÚBLICO EN GENERAL'}) =>
+    Customer(
+      customerId: 7,
+      code: 'C-7',
+      name: name,
+      creditLimit: creditLimit,
+      creditDays: 30,
+      priceList: const PriceListRef(id: 1, name: 'Mostrador'),
+      shipping: true,
+      shippingRequiredDocument: false,
+      status: EntityStatus.active,
+    );
 
 void main() {
   late MockCustomerRepository customerRepository;
@@ -45,14 +51,18 @@ void main() {
     ).thenAnswer((_) async => '2091.00');
   });
 
-  Future<void> pumpBar(WidgetTester tester, {Customer? customer}) async {
+  Future<void> pumpBar(
+    WidgetTester tester, {
+    Customer? customer,
+    Sale? sale,
+  }) async {
     when(
       () => customerRepository.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => customer ?? _customer());
 
     await pumpPos(
       tester,
-      CustomerBar(sale: testSale()),
+      CustomerBar(sale: sale ?? testSale()),
       overrides: [
         customerRepositoryProvider.overrideWithValue(customerRepository),
         customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
@@ -60,19 +70,35 @@ void main() {
     );
   }
 
-  group('the customer area (FR-011)', () {
-    testWidgets('shows the customer name, credit line and price list', (
+  group('the facts face, by default (FR-011, FR-022)', () {
+    testWidgets('shows the customer name, payment terms and price list', (
       tester,
     ) async {
       await pumpBar(tester);
 
       expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
       expect(find.text('PÚBLICO EN GENERAL'), findsOneWidget);
-      expect(find.text(r'$5,000.00'), findsOneWidget);
       expect(find.text('Mostrador'), findsOneWidget);
+      expect(find.byKey(const Key('pos_payment_terms_dropdown')), findsOneWidget);
     });
 
-    testWidgets('shows the outstanding balance, summed from the customer\'s '
+    testWidgets(
+      'the resolved customer name is visible even when the sale itself '
+      'carries none — the blank-field bug (research R8)',
+      (tester) async {
+        await pumpBar(
+          tester,
+          // The walk-in customer on a real sale: `customerName` is null,
+          // exactly the case that used to render a blank field.
+          sale: testSale(),
+          customer: _customer(name: 'PÚBLICO EN GENERAL'),
+        );
+
+        expect(find.text('PÚBLICO EN GENERAL'), findsWidgets);
+      },
+    );
+
+    testWidgets("shows the outstanding balance, summed from the customer's "
         'open orders', (tester) async {
       await pumpBar(tester);
       expect(find.text(r'$2,091.00'), findsOneWidget);
@@ -93,19 +119,6 @@ void main() {
       expect(find.text('Mostrador'), findsOneWidget);
     });
 
-    testWidgets('a customer with no credit limit reads "sin línea" rather '
-        r'than "$0.00"', (tester) async {
-      await pumpBar(tester, customer: _customer(creditLimit: '0'));
-
-      expect(find.text(l10n.posCustomerNoCredit), findsOneWidget);
-    });
-
-    testWidgets('the sale still opens with its customer preselected in the '
-        'picker (FR-011)', (tester) async {
-      await pumpBar(tester);
-      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
-    });
-
     testWidgets('a customer whose details cannot be read does not block '
         'capture', (tester) async {
       when(
@@ -121,8 +134,205 @@ void main() {
         ],
       );
 
+      expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
+      expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+    });
+
+    testWidgets('both actions share the mode selector\'s baseline — one '
+        'height for every control in the header row', (tester) async {
+      when(
+        () => customerRepository.get(customerId: any(named: 'customerId')),
+      ).thenAnswer((_) async => _customer());
+      await pumpPos(
+        tester,
+        CustomerBar(sale: testSale()),
+        overrides: [
+          customerRepositoryProvider.overrideWithValue(customerRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
+          // An administrator short-circuits every privilege check, which is
+          // what makes the create action render at all here.
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              const AuthState.authenticated(
+                token: 't',
+                user: User(
+                  userId: 'cajero',
+                  email: 'cajero@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
+      final search = tester.getSize(
+        find.byKey(const Key('pos_customer_search_button')),
+      );
+      final create = tester.getSize(
+        find.byKey(const Key('pos_create_customer_button')),
+      );
+
+      // Material's minimum interactive dimension — once the height
+      // `SegmentedButton` could not be pushed past, now simply the size the
+      // mock gives these two: buttons inside the band, smaller than the band,
+      // not peers of the 56 px mode selector beside it.
+      expect(search.height, kMinInteractiveDimension);
+      expect(create.height, kMinInteractiveDimension);
+
+      // ...and they sit on one line, not offset from each other.
+      expect(
+        tester.getCenter(find.byKey(const Key('pos_customer_search_button'))).dy,
+        tester.getCenter(find.byKey(const Key('pos_create_customer_button'))).dy,
+      );
+    });
+  });
+
+  group('the payment-terms dropdown (FR-028, FR-029, FR-030)', () {
+    testWidgets('shows the credit limit as supporting text when the '
+        'customer has a credit line', (tester) async {
+      await pumpBar(tester, customer: _customer(creditLimit: '5000.00'));
+
+      expect(find.text(r'$5,000.00'), findsOneWidget);
+    });
+
+    testWidgets(
+      'shows the "no credit line" hint, and Crédito is not selectable, '
+      'when the customer has none',
+      (tester) async {
+        await pumpBar(tester, customer: _customer(creditLimit: '0'));
+
+        expect(find.text(l10n.posCustomerNoCreditHint), findsOneWidget);
+
+        final dropdown = tester.widget<DropdownButton<PaymentTerms>>(
+          find.byKey(const Key('pos_payment_terms_dropdown')),
+        );
+        final creditItem = dropdown.items!.firstWhere(
+          (item) => item.value == PaymentTerms.netD,
+        );
+        expect(creditItem.enabled, isFalse);
+      },
+    );
+
+    testWidgets('reflects the sale\'s own terms rather than the default', (
+      tester,
+    ) async {
+      await pumpBar(
+        tester,
+        sale: testSale(paymentTerms: PaymentTerms.netD),
+        customer: _customer(creditLimit: '5000.00'),
+      );
+
+      final dropdown = tester.widget<DropdownButton<PaymentTerms>>(
+        find.byKey(const Key('pos_payment_terms_dropdown')),
+      );
+      expect(dropdown.value, PaymentTerms.netD);
+    });
+  });
+
+  group('searching (FR-023, FR-025, FR-026, FR-027)', () {
+    testWidgets('Buscar swaps the facts for the customer picker', (
+      tester,
+    ) async {
+      await pumpBar(tester);
+      expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+
+      await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+      await tester.pumpAndSettle();
+
       expect(find.byKey(const Key('pos_customer_facts')), findsNothing);
       expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
     });
+
+    testWidgets('dismissing the search restores the facts, unchanged', (
+      tester,
+    ) async {
+      await pumpBar(tester);
+      await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('pos_customer_search_cancel_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
+      expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+      expect(find.text('PÚBLICO EN GENERAL'), findsOneWidget);
+    });
+
+    testWidgets('picking a customer attaches it and returns to the facts '
+        'face', (tester) async {
+      when(
+        () => customerRepository.list(
+          search: any(named: 'search'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => CustomerPage(
+          items: [
+            const CustomerListItem(
+              customerId: 8,
+              code: 'C-8',
+              name: 'ACME SA DE CV',
+              creditLimit: '0',
+              creditDays: 0,
+              priceList: PriceListRef(id: 1, name: 'Mostrador'),
+              status: EntityStatus.active,
+            ),
+          ],
+          total: 1,
+        ),
+      );
+
+      final sale = testSale();
+      await pumpPos(
+        tester,
+        CustomerBar(sale: sale),
+        overrides: [
+          customerRepositoryProvider.overrideWithValue(customerRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
+          salesOrderOverride(_updateHeaderStub(sale)),
+        ],
+      );
+      when(
+        () => customerRepository.get(customerId: any(named: 'customerId')),
+      ).thenAnswer((_) async => _customer());
+
+      await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('pos_customer_picker')), 'ACME');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('C-8 — ACME SA DE CV'));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
+      expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+    });
   });
+}
+
+/// A `SalesOrderRepository` stubbed just enough for `updateHeader` to
+/// answer with [sale] carrying the new customer — the rest of the interface
+/// is never called by this test.
+MockSalesOrderRepository _updateHeaderStub(Sale sale) {
+  final repository = MockSalesOrderRepository();
+  // `PosSaleController.updateHeader` calls `ensureOpen()` first — its own
+  // `state` was never seeded by this test, so it opens a sale before
+  // updating it, exactly as it would on a register nobody has touched yet.
+  when(() => repository.open()).thenAnswer((_) async => sale);
+  when(
+    () => repository.updateHeader(
+      saleId: any(named: 'saleId'),
+      customer: any(named: 'customer'),
+      paymentTerms: any(named: 'paymentTerms'),
+      currency: any(named: 'currency'),
+      shipTo: any(named: 'shipTo'),
+      contact: any(named: 'contact'),
+      customerName: any(named: 'customerName'),
+    ),
+  ).thenAnswer((_) async => sale.copyWith(customer: 8, customerName: 'ACME SA DE CV'));
+  return repository;
 }

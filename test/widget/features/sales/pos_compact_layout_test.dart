@@ -180,7 +180,13 @@ void main() {
       );
 
       final action = find.byKey(const Key('pos_continue_to_payment'));
-      final totals = find.text(l10n.posTotalsTotal(r'$116.00'));
+      // Scoped to the footer: every line here also totals $116.00
+      // (testLine()'s own default), which would otherwise collide with the
+      // grand total's bare figure now that it no longer reads "Total: …".
+      final totals = find.descendant(
+        of: find.byKey(const Key('pos_totals_footer')),
+        matching: find.text(r'$116.00'),
+      );
       final actionBefore = tester.getTopLeft(action);
       expect(totals, findsOneWidget);
 
@@ -205,7 +211,10 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
+      // The customer band shows facts by default now, not the picker —
+      // spec 023's redesign (customer_bar_test.dart covers the picker
+      // itself, reached via Buscar).
+      expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
       expect(find.text(l10n.posFulfillmentCounter), findsOneWidget);
       expect(find.byType(ProductSearchField), findsOneWidget);
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
@@ -18,15 +20,23 @@ import 'package:mbe_ui/features/sales/presentation/customer_inline_create.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Customer identity and payment terms (FR-011, FR-012, FR-016). Preselected
-/// with the walk-in customer the sale already opened with; the cashier may
-/// search a different one or toggle immediate/credit terms, both wired
-/// straight to `PosSaleController.updateHeader`. FR-015's re-pricing needs no
-/// special handling here: the response already carries every line re-priced,
-/// and the controller's normal wholesale replace picks it up.
+/// Customer identity and payment terms (FR-011, FR-012, FR-016;
+/// spec 023 contracts/capture-surface.md §1). Two mutually exclusive faces,
+/// animated between:
 ///
-/// Shows everything FR-011 asks for: the customer's name, credit line,
-/// outstanding balance and price list.
+/// - **facts** (default): the customer's standing facts — name, payment
+///   terms, price list, outstanding balance — read as information, with
+///   Buscar/Nuevo actions trailing.
+/// - **searching**: Buscar swaps the facts for the customer picker, in
+///   place, until a customer is chosen or the search is dismissed
+///   (FR-023, FR-025, FR-026).
+///
+/// The payment-terms segmented control from spec 020 is gone; terms are now
+/// a dropdown in the credit-line slot, gated on whether the customer
+/// actually has a credit line, and never written except by the cashier's
+/// own choice (FR-028–FR-030). FR-015's re-pricing needs no special
+/// handling here: the response already carries every line re-priced, and
+/// the controller's normal wholesale replace picks it up.
 class CustomerBar extends ConsumerStatefulWidget {
   const CustomerBar({super.key, required this.sale, this.enabled = true});
 
@@ -37,9 +47,12 @@ class CustomerBar extends ConsumerStatefulWidget {
   ConsumerState<CustomerBar> createState() => _CustomerBarState();
 }
 
+enum _CustomerBandMode { facts, searching }
+
 class _CustomerBarState extends ConsumerState<CustomerBar> {
   AppError? _error;
   bool _busy = false;
+  _CustomerBandMode _mode = _CustomerBandMode.facts;
 
   Future<void> _updateHeader({int? customer, PaymentTerms? paymentTerms}) async {
     setState(() {
@@ -50,6 +63,11 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
       await ref
           .read(posSaleControllerProvider.notifier)
           .updateHeader(customer: customer, paymentTerms: paymentTerms);
+      // A customer was just attached — return to reporting facts for it
+      // (FR-023). A terms-only change has no face to return from.
+      if (customer != null && mounted) {
+        setState(() => _mode = _CustomerBandMode.facts);
+      }
     } on AppError catch (e) {
       setState(() => _error = e);
     } finally {
@@ -67,48 +85,89 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
     await _updateHeader(customer: created);
   }
 
+  void _startSearch() {
+    setState(() {
+      _error = null;
+      _mode = _CustomerBandMode.searching;
+    });
+  }
+
+  /// FR-026: dismissing the picker restores facts with nothing changed.
+  void _cancelSearch() => setState(() => _mode = _CustomerBandMode.facts);
+
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final sale = widget.sale;
+    final spacing = Theme.of(context).spacing;
+    final enabled = widget.enabled && !_busy;
+
+    final theme = Theme.of(context);
+
     return Card(
+      // Material's own default `Card` margin, left in place, inset this band
+      // a few pixels further than the product search field directly beneath
+      // it — a misalignment visible against that field's edge. The step
+      // already owns every horizontal inset here (`horizontalInset` in
+      // `capture_step.dart`), so the card contributes none of its own.
+      margin: EdgeInsets.zero,
+      // Outlined, as the mock draws this band (`border:1px solid #26262F`
+      // over a barely-lighter fill): at this size a shadow alone did not
+      // read as an edge, and the band needs one to sit as a peer beside the
+      // mode selector's own outline. `outlineVariant` is M3's subtle-border
+      // role, and the radius stays the card theme's own `shapes.lg` so this
+      // is still the same card shape every other surface uses.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.lgRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        // Tighter than the generic `spacing.cardPadding` (24 at this tier),
+        // which made a band of one-line facts as tall as a form. The mock
+        // gives this band no vertical padding at all — a fixed 56 px with the
+        // content centred (`padding:0 8px 0 16px`) — which is not reachable
+        // here while the actions keep the 48 px height they share with the
+        // mode selector beside them (FR-038a). `sm` vertical is the floor that
+        // leaves those buttons breathing room; `md` horizontal is the mock's
+        // own leading inset.
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.md,
+          vertical: spacing.sm,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_error != null) ...[
               ErrorBanner(error: _error!, onDismiss: () => setState(() => _error = null)),
-              const SizedBox(height: 8),
+              SizedBox(height: spacing.xs),
             ],
-            // Phone width cannot hold the picker, the create button and a
-            // three-segment terms control on one line, so the terms control
-            // drops below (US5, SC-007).
-            if (LayoutBreakpoints.isCompact(context)) ...[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(child: _picker(l10n, sale)),
-                  if (_canCreateCustomers) _createButton(l10n),
-                ],
+            AnimatedSize(
+              duration: kThemeAnimationDuration,
+              curve: Curves.easeInOut,
+              alignment: Alignment.topCenter,
+              child: AnimatedSwitcher(
+                duration: kThemeAnimationDuration,
+                child: _mode == _CustomerBandMode.facts
+                    ? _FactsView(
+                        key: const ValueKey('facts'),
+                        sale: sale,
+                        enabled: enabled,
+                        busy: _busy,
+                        canCreate: _canCreateCustomers,
+                        onSearch: _startSearch,
+                        onCreate: _createCustomer,
+                        onTermsChanged: (terms) => _updateHeader(paymentTerms: terms),
+                      )
+                    : _SearchingView(
+                        key: const ValueKey('searching'),
+                        enabled: enabled,
+                        busy: _busy,
+                        initialDisplayText: sale.customerName,
+                        onSelected: (customer) =>
+                            _updateHeader(customer: customer.customerId),
+                        onCancel: _cancelSearch,
+                      ),
               ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: _paymentTermsControl(l10n, sale),
-              ),
-            ] else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(child: _picker(l10n, sale)),
-                  if (_canCreateCustomers) _createButton(l10n),
-                  const SizedBox(width: 12),
-                  _paymentTermsControl(l10n, sale),
-                ],
-              ),
-            const SizedBox(height: 8),
-            _CustomerFacts(customerId: sale.customer),
+            ),
           ],
         ),
       ),
@@ -118,91 +177,270 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   bool get _canCreateCustomers => ref
       .watch(accessControlProvider)
       .can(SystemObject.customers, AccessRight.create);
-
-  Widget _createButton(AppLocalizations l10n) => IconButton(
-    key: const Key('pos_create_customer_button'),
-    icon: const Icon(Icons.person_add_alt),
-    tooltip: l10n.posCreateCustomerAction,
-    onPressed: (widget.enabled && !_busy) ? _createCustomer : null,
-  );
-
-  Widget _paymentTermsControl(AppLocalizations l10n, Sale sale) =>
-      SegmentedButton<PaymentTerms>(
-        segments: [
-          ButtonSegment(
-            value: PaymentTerms.immediate,
-            label: Text(l10n.posPaymentTermsImmediate),
-          ),
-          ButtonSegment(
-            value: PaymentTerms.netD,
-            label: Text(l10n.posPaymentTermsCredit),
-          ),
-        ],
-        selected: {sale.paymentTerms},
-        onSelectionChanged: (widget.enabled && !_busy)
-            ? (selection) => _updateHeader(paymentTerms: selection.first)
-            : null,
-      );
-
-  Widget _picker(AppLocalizations l10n, Sale sale) =>
-      CatalogEntityPicker<CustomerListItem>(
-        key: const Key('pos_customer_picker'),
-        label: l10n.posCustomerLabel,
-        initialDisplayText: sale.customerName,
-        enabled: widget.enabled && !_busy,
-        displayStringForOption: (c) => '${c.code} — ${c.name}',
-        optionsBuilder: (query) async {
-          final result = await ref
-              .read(customerRepositoryProvider)
-              .list(search: query, limit: 10);
-          return result.items;
-        },
-        onSelected: (c) => _updateHeader(customer: c.customerId),
-      );
 }
 
-/// FR-011's standing facts about the selected customer: credit line and price
-/// list, read from the full `Customer` record (the sale itself carries only
-/// the id and a display name).
-///
-/// The **outstanding balance** comes from a second call
-/// ([customerOutstandingBalanceProvider]): `CustomerResponse` carries no such
-/// field, so it is summed from the customer's open orders. It renders on its
-/// own once it arrives, so a slow or failing sum never holds up the rest.
-class _CustomerFacts extends ConsumerWidget {
-  const _CustomerFacts({required this.customerId});
+/// The default face: the customer's standing facts, read-only, with the
+/// Buscar/Nuevo actions trailing (contracts/capture-surface.md §1.1).
+class _FactsView extends ConsumerWidget {
+  const _FactsView({
+    required super.key,
+    required this.sale,
+    required this.enabled,
+    required this.busy,
+    required this.canCreate,
+    required this.onSearch,
+    required this.onCreate,
+    required this.onTermsChanged,
+  });
 
-  final int customerId;
+  final Sale sale;
+  final bool enabled;
+  final bool busy;
+  final bool canCreate;
+  final VoidCallback onSearch;
+  final VoidCallback onCreate;
+  final ValueChanged<PaymentTerms> onTermsChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final customer = ref.watch(saleCustomerControllerProvider(customerId));
-    return customer.when(
-      data: (value) => Wrap(
-        key: const Key('pos_customer_facts'),
-        spacing: 24,
-        runSpacing: 4,
-        children: [
-          fact(context, l10n.posCustomerNameLabel, value.name),
-          fact(
-            context,
-            l10n.posCustomerCreditLabel,
-            isZeroAmount(value.creditLimit)
-                ? l10n.posCustomerNoCredit
-                : MoneyFormatters.currency(value.creditLimit),
+    final theme = Theme.of(context);
+    final customerAsync = ref.watch(saleCustomerControllerProvider(sale.customer));
+    // FR-023: the resolved customer record's name is preferred — it is what
+    // was missing entirely before this fix, since the picker this face
+    // replaces used to seed only from `sale.customerName`, which is null for
+    // the walk-in customer even while this same record already knows the
+    // name.
+    final displayName = customerAsync.valueOrNull?.name ?? sale.customerName ?? '—';
+
+    // Both actions share one height, so they sit on a single baseline rather
+    // than each on its own.
+    //
+    // That height was originally the one `SegmentedButton` could not be pushed
+    // past; the mode selector is hand-rolled now and stands at 56
+    // (`fulfillmentModeSelectorHeight`), so the constraint is gone. These stay
+    // at Material's minimum interactive dimension because that is what the
+    // mock gives them — buttons *inside* the band, smaller than the band, not
+    // peers of the selector beside it.
+    final buttonStyle = OutlinedButton.styleFrom(
+      minimumSize: const Size(0, kMinInteractiveDimension),
+    );
+
+    final actions = Wrap(
+      spacing: 8,
+      children: [
+        OutlinedButton.icon(
+          key: const Key('pos_customer_search_button'),
+          style: buttonStyle,
+          icon: busy
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.search),
+          label: Text(l10n.posCustomerSearchAction),
+          onPressed: enabled ? onSearch : null,
+        ),
+        if (canCreate)
+          // Same affordance as Buscar, deliberately: the mock draws the pair
+          // as two identical outlined pills, and as a bare icon this one read
+          // as a lesser control while also being the only unlabelled thing in
+          // the band. The longer `posCreateCustomerAction` stays as the
+          // tooltip, so the short visible label costs nothing in clarity.
+          OutlinedButton.icon(
+            key: const Key('pos_create_customer_button'),
+            style: buttonStyle,
+            icon: const Icon(Icons.person_add_alt),
+            label: Text(l10n.posCustomerCreateAction),
+            onPressed: enabled ? onCreate : null,
           ),
-          fact(context, l10n.posCustomerPriceListLabel, value.priceList.name),
-          _BalanceFact(customerId: customerId),
-        ],
-      ),
-      loading: () => const SizedBox(height: 20),
-      // A customer whose details cannot be read must not block capture — the
-      // sale already knows who it is for.
-      error: (error, stackTrace) => const SizedBox(height: 20),
+      ],
+    );
+
+    final facts = Wrap(
+      spacing: 24,
+      runSpacing: 4,
+      children: [
+        _CustomerBarFact.fact(context, l10n.posCustomerNameLabel, displayName),
+        _TermsFact(sale: sale, enabled: enabled, onChanged: onTermsChanged),
+        customerAsync.when(
+          data: (value) => _CustomerBarFact.fact(
+            context,
+            l10n.posCustomerPriceListLabel,
+            value.priceList.name,
+          ),
+          loading: () => const SizedBox(height: 20),
+          error: (error, stackTrace) => const SizedBox(height: 20),
+        ),
+        _BalanceFact(customerId: sale.customer),
+      ],
+    );
+
+    // Beside the facts where there is room, beneath them on a phone. Both
+    // actions carry a label now, and the pair is wide enough that keeping it
+    // on the facts' row at 390 px squeezed the `Expanded` below the terms
+    // dropdown's own fixed width — which, being fixed, overflowed rather
+    // than shrinking with it.
+    return LayoutBreakpoints.isCompact(context)
+        ? Column(
+            key: const Key('pos_customer_facts'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              facts,
+              SizedBox(height: theme.spacing.xs),
+              actions,
+            ],
+          )
+        : Row(
+            // Centred so the facts and the action pills share one line
+            // rather than the pills hanging from the facts' top edge — the
+            // same centring the step applies between this band and the mode
+            // selector, so all three read as one row of controls.
+            key: const Key('pos_customer_facts'),
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: facts),
+              SizedBox(width: theme.spacing.sm),
+              actions,
+            ],
+          );
+  }
+}
+
+/// The credit-line fact, now a payment-terms dropdown (FR-028, FR-029,
+/// FR-030) rather than a plain figure: it shows the sale's *current* terms
+/// and never writes them on its own, whether or not the customer has a
+/// credit line — only [onChanged] does, and only when the cashier actually
+/// picks a value.
+class _TermsFact extends ConsumerWidget {
+  const _TermsFact({required this.sale, required this.enabled, required this.onChanged});
+
+  final Sale sale;
+  final bool enabled;
+  final ValueChanged<PaymentTerms> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final customer = ref.watch(saleCustomerControllerProvider(sale.customer));
+    final creditLimit = customer.valueOrNull?.creditLimit;
+    final hasCredit = creditLimit != null && !isZeroAmount(creditLimit);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.posCustomerCreditLabel, style: theme.textTheme.labelSmall),
+        // A fixed width, rather than left to `DropdownButton`'s own
+        // widest-item measurement pass: that auto-sizing is known to
+        // overflow its own render box by a sub-pixel hair at some text
+        // scales (a longstanding Flutter framework quirk, not particular to
+        // this text) — reproduced live by a phone-width widget test.
+        // 132 px comfortably fits "Crédito"/"Contado" plus the built-in
+        // dropdown arrow with room to spare.
+        SizedBox(
+          width: 132,
+          child: DropdownButton<PaymentTerms>(
+            key: const Key('pos_payment_terms_dropdown'),
+            value: sale.paymentTerms,
+            isDense: true,
+            isExpanded: true,
+            underline: const SizedBox.shrink(),
+            style: theme.textTheme.bodyMedium,
+            onChanged: enabled ? (terms) => terms != null ? onChanged(terms) : null : null,
+            items: [
+              DropdownMenuItem(
+                value: PaymentTerms.immediate,
+                child: Text(l10n.posPaymentTermsImmediate),
+              ),
+              DropdownMenuItem(
+                value: PaymentTerms.netD,
+                enabled: hasCredit,
+                child: Text(l10n.posPaymentTermsCredit),
+              ),
+            ],
+          ),
+        ),
+        // research R9: the credit-limit figure the dropdown's slot used to
+        // show is not lost — it becomes supporting text beneath the
+        // control, exactly like the "no credit line" hint it replaces when
+        // there is nothing to show instead.
+        Text(
+          hasCredit ? MoneyFormatters.currency(creditLimit) : l10n.posCustomerNoCreditHint,
+          style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline),
+        ),
+      ],
     );
   }
+}
 
+/// The searching face: the customer picker in place of the facts, with an
+/// explicit way to dismiss it without picking anything (FR-026).
+class _SearchingView extends ConsumerWidget {
+  const _SearchingView({
+    required super.key,
+    required this.enabled,
+    required this.busy,
+    required this.initialDisplayText,
+    required this.onSelected,
+    required this.onCancel,
+  });
+
+  final bool enabled;
+  final bool busy;
+  final String? initialDisplayText;
+  final ValueChanged<CustomerListItem> onSelected;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+          onCancel();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: CatalogEntityPicker<CustomerListItem>(
+              key: const Key('pos_customer_picker'),
+              label: l10n.posCustomerLabel,
+              initialDisplayText: initialDisplayText,
+              enabled: enabled && !busy,
+              autofocus: true,
+              displayStringForOption: (c) => '${c.code} — ${c.name}',
+              optionsBuilder: (query) async {
+                final result = await ref
+                    .read(customerRepositoryProvider)
+                    .list(search: query, limit: 10);
+                return result.items;
+              },
+              onSelected: onSelected,
+            ),
+          ),
+          IconButton(
+            key: const Key('pos_customer_search_cancel_button'),
+            icon: const Icon(Icons.close),
+            tooltip: l10n.posCustomerSearchCancelAction,
+            onPressed: busy ? null : onCancel,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// FR-011's standing facts about the selected customer, shared by
+/// [_FactsView]'s name/price-list entries and [_BalanceFact] — the same
+/// `Column(label, value)` shape spec 020 already used.
+abstract final class _CustomerBarFact {
   static Widget fact(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
     return Column(
@@ -216,9 +454,9 @@ class _CustomerFacts extends ConsumerWidget {
   }
 }
 
-/// FR-011's outstanding balance. Separate from [_CustomerFacts] so its own
-/// loading and failure states stay local: an unavailable balance leaves a
-/// blank where the figure goes rather than blanking the customer area.
+/// FR-011's outstanding balance. Separate from the rest of the facts so its
+/// own loading and failure states stay local: an unavailable balance leaves
+/// a blank where the figure goes rather than blanking the customer area.
 class _BalanceFact extends ConsumerWidget {
   const _BalanceFact({required this.customerId});
 
@@ -229,7 +467,7 @@ class _BalanceFact extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final balance = ref.watch(customerOutstandingBalanceProvider(customerId));
     return balance.when(
-      data: (value) => _CustomerFacts.fact(
+      data: (value) => _CustomerBarFact.fact(
         context,
         l10n.posCustomerBalanceLabel,
         MoneyFormatters.currency(value),

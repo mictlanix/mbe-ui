@@ -52,10 +52,12 @@ Map<String, Object?> _lineJson({
   String taxRate = '0.16',
   int? warehouse = 3,
   Object? unit = _noUnit,
+  String? photo,
 }) => {
   'unit_of_measurement': unit == _noUnit
       ? {'id': 'H87', 'name': 'Pieza', 'symbol': 'Pza'}
       : unit,
+  'photo': photo,
   'sales_order_detail_id': salesOrderDetailId,
   'product': 11,
   'product_code': 'P-11',
@@ -229,6 +231,29 @@ void main() {
         )!,
       );
       expect(line.unit, isNull);
+    });
+
+    test('the product\'s photo is resolved to a fetchable URL (mbe-api#157)', () {
+      final line = SaleLine.fromResponse(
+        api.standardSerializers.deserializeWith(
+          api.SalesOrderLineResponse.serializer,
+          // An absolute URL — what mbe-api sends with its own
+          // `IMAGES_BASE_URL` configured — passes through untouched.
+          _lineJson(photo: 'https://cdn.example.com/images/p-11.jpg'),
+        )!,
+      );
+      expect(line.photo, 'https://cdn.example.com/images/p-11.jpg');
+    });
+
+    test('a product with no photo maps to null, so the line placeholders '
+        '(mbe-api#157)', () {
+      final line = SaleLine.fromResponse(
+        api.standardSerializers.deserializeWith(
+          api.SalesOrderLineResponse.serializer,
+          _lineJson(),
+        )!,
+      );
+      expect(line.photo, isNull);
     });
 
     test('a line with no warehouse maps to null rather than a sentinel', () {

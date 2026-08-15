@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
@@ -51,6 +52,11 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     ref.read(productStockCacheProvider.notifier).update(
       (cache) => {...cache, result.product: result.stock},
     );
+    // The product table's tax rate, cached for the line's tax picker
+    // (FR-038b) — the lookup is the only payload that carries it.
+    ref.read(productTaxRateCacheProvider.notifier).update(
+      (cache) => {...cache, result.product: result.taxRate},
+    );
     await ref
         .read(posSaleControllerProvider.notifier)
         .addLine(
@@ -96,11 +102,18 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final defaultWarehouse = pointSale == null
         ? const AsyncValue<int>.loading()
         : ref.watch(defaultWarehouseControllerProvider(pointSale));
+    final spacing = Theme.of(context).spacing;
+    // One horizontal margin for every header item, applied once per item
+    // rather than each widget also carrying its own — the doubled
+    // `EdgeInsets.all(12)` this replaces (the step's own wrapper *and*
+    // CustomerBar's Card padding) was what misaligned the customer card's
+    // edges against the search field below it (spec 023 research R12).
+    final horizontalInset = EdgeInsets.symmetric(horizontal: spacing.screenMargin);
 
     final header = <Widget>[
       if (_confirmError != null)
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
           child: ErrorBanner(
             error: _confirmError!,
             onDismiss: () => setState(() => _confirmError = null),
@@ -108,20 +121,54 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         ),
       if (!enabled)
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+          padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
           child: Text(l10n.posSaleReadOnlyBanner),
         ),
       // Both describe a sale, so they wait for one. Scanning creates it.
-      if (sale != null) ...[
+      //
+      // Beside each other at ≥ 840 px (contracts/capture-surface.md §2,
+      // matching the mock's frame `2a`); phone/tablet-portrait widths keep
+      // them stacked, where a three-segment mode control has no room left
+      // beside the customer band.
+      if (sale != null)
         Padding(
-          padding: const EdgeInsets.all(12),
-          child: CustomerBar(sale: sale, enabled: enabled),
+          // Top inset only: the search field below carries its own, and
+          // doubling them left a dead band between the two (the mock's own
+          // customer row is `12px 24px 0` for the same reason).
+          padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
+          child: LayoutBreakpoints.isExpanded(context)
+              ? Row(
+                  // Centred, not top-aligned: the mode control is a single
+                  // 56 px pill while the customer band is a taller card, so
+                  // `start` pinned it to the band's top edge and read as
+                  // misaligned. The mock centres the pair (`align-items:
+                  // center`) for exactly this reason.
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: CustomerBar(sale: sale, enabled: enabled)),
+                    SizedBox(width: spacing.sm),
+                    FulfillmentModeSelector(sale: sale, enabled: enabled),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomerBar(sale: sale, enabled: enabled),
+                    SizedBox(height: spacing.sm),
+                    // Stretched here and only here: stacked, it is one element
+                    // in a column where the band above it and the search field
+                    // below both run margin to margin, and a track hugging its
+                    // labels leaves dead space against the trailing edge —
+                    // most of it at tablet-portrait widths, where the natural
+                    // track is far narrower than the column.
+                    FulfillmentModeSelector(
+                      sale: sale,
+                      enabled: enabled,
+                      stretch: true,
+                    ),
+                  ],
+                ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: FulfillmentModeSelector(sale: sale, enabled: enabled),
-        ),
-      ],
       Padding(
         // Keyed because this list changes shape underneath it: the customer
         // bar and mode selector appear above the search field the moment the
@@ -130,7 +177,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         // found would never be added — verified live, where the first scan
         // of a sale silently added nothing and the second worked.
         key: const Key('pos_product_search_field'),
-        padding: const EdgeInsets.all(12),
+        padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
         child: ProductSearchField(
           enabled: enabled,
           warehouse: defaultWarehouse.value,
@@ -158,7 +205,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                     child: Center(child: Text(l10n.posNoLinesHint)),
                   )
                 else
-                  ..._lines(sale, enabled, compact: true),
+                  ..._lines(sale, enabled, compact: true, inset: horizontalInset),
               ],
             ),
           )
@@ -168,36 +215,25 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
             child: sale == null || sale.lines.isEmpty
                 ? Center(child: Text(l10n.posNoLinesHint))
                 : ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    // The same inset every header item carries, so a line's
+                    // edges sit directly under the search field's rather than
+                    // 12 px inside them.
+                    padding: horizontalInset,
                     children: _lines(sale, enabled, compact: false),
                   ),
           ),
         ],
-        if (sale != null) SaleTotalsBar(sale: sale),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: SizedBox(
-            // A pinned bottom action is a thumb target on a phone, so it
-            // takes the full width there rather than hugging one corner.
-            width: compact ? double.infinity : null,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                key: const Key('pos_continue_to_payment'),
-                onPressed:
-                    (enabled && (sale?.lineCount ?? 0) > 0 && !_confirming)
-                    ? _confirm
-                    : null,
-                child: _confirming
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.posContinueToPayment),
-              ),
-            ),
-          ),
+        // One footer band: the primary action lives inside SaleTotalsBar
+        // now, not in a second Padding block beneath it (contracts/
+        // pos-workspace.md §3.1) — the extra band was exactly the dead
+        // vertical space the workspace exists to reclaim. Rendered
+        // unconditionally, same as the button always was — SaleTotalsBar
+        // itself skips the stats when there is no sale yet.
+        SaleTotalsBar(
+          sale: sale,
+          compact: compact,
+          confirming: _confirming,
+          onContinue: (enabled && (sale?.lineCount ?? 0) > 0 && !_confirming) ? _confirm : null,
         ),
       ],
     );
@@ -205,11 +241,20 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
 
   /// [SaleLineCard] on a phone, [SaleLineRow] anywhere wider — the same line,
   /// stacked or strung out (T098/T099).
-  List<Widget> _lines(Sale sale, bool enabled, {required bool compact}) => [
+  ///
+  /// [inset] is the step's own horizontal margin. On a phone the cards are
+  /// items in the one scrolling list, so each carries it directly; wider tiers
+  /// put it on the lines `ListView` instead.
+  List<Widget> _lines(
+    Sale sale,
+    bool enabled, {
+    required bool compact,
+    EdgeInsets inset = EdgeInsets.zero,
+  }) => [
     for (final line in sale.lines)
       if (compact)
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: inset,
           child: SaleLineCard(
             key: ValueKey(line.id),
             line: line,
