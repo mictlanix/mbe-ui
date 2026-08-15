@@ -292,6 +292,17 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(privileges: updated, error: null, errorDetail: null);
   }
 
+  /// Drops every cached page of the users list so a create/update/delete is
+  /// visible the moment the form pops back to it. The list is a family keyed
+  /// by filter, and the list screen stays mounted underneath the pushed form
+  /// — so without this its provider keeps its listener, serves the stale
+  /// cached page, and the change appears to have been lost. `deleteUser` and
+  /// `applyProfile` already did this; `save` did not, so a newly created
+  /// account was missing from the list until the filter changed.
+  void _invalidateCaches() {
+    ref.invalidate(usersControllerProvider);
+  }
+
   /// Creates or updates the user. Pass [existingUserId] for edit mode (null
   /// for create). On a successful update of the signed-in administrator's own
   /// account, refreshes the in-memory session (FR-014).
@@ -370,6 +381,7 @@ class UserFormController extends _$UserFormController {
           );
         }
       }
+      _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {
@@ -416,7 +428,7 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
       await ref.read(userRepositoryProvider).delete(userId: userId);
-      ref.invalidate(usersControllerProvider);
+      _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {
@@ -463,7 +475,7 @@ class UserFormController extends _$UserFormController {
         profileId: updated.profileId,
         profileName: updated.profileName ?? '',
       );
-      ref.invalidate(usersControllerProvider);
+      _invalidateCaches();
     } on AppError catch (e) {
       state = state.copyWith(
         submitting: false,

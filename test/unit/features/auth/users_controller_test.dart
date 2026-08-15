@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
@@ -383,6 +384,146 @@ void main() {
 
       final privileges = container.read(userFormControllerProvider).privileges;
       expect(privileges, isEmpty);
+    });
+  });
+
+  group('users list cache invalidation after a write (regression)', () {
+    // Found live during the 024 quickstart walkthrough: creating a user
+    // saved server-side but the users list still showed the old page. The
+    // list screen stays mounted underneath the pushed form, so its family
+    // provider keeps its listener and serves the cached page until
+    // something invalidates it. `deleteUser` and `applyProfile` did
+    // invalidate; `save` did not — so a newly created account (and the
+    // Perfil column that 024 added) looked like it had been lost.
+    //
+    // Pre-dates spec 024 (verified at f597768) but is asserted here
+    // because 024's origin column is what makes it user-visible.
+    UserSummary summary(String id) => UserSummary(
+      userId: id,
+      email: '$id@example.com',
+      administrator: false,
+      status: EntityStatus.active,
+    );
+
+    /// Reads the list (caching a page holding only `jdoe`), runs [write]
+    /// against a server that now also has `newbie`, then reads again and
+    /// returns what the list shows. Asserts on the visible rows rather
+    /// than a call count, so it stays pinned to the observable symptom.
+    Future<List<String>> listIdsAfter(
+      Future<void> Function(UserFormController notifier) write,
+    ) async {
+      var serverHasSecondUser = false;
+      when(
+        () => userRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          profileId: any(named: 'profileId'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => UserListResult(
+          items: [
+            summary('jdoe'),
+            if (serverHasSecondUser) summary('newbie'),
+          ],
+          total: serverHasSecondUser ? 2 : 1,
+        ),
+      );
+
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      const filter = UserFilter();
+      final first = await container.read(
+        usersControllerProvider(filter).future,
+      );
+      expect(first.items.map((u) => u.userId), ['jdoe']);
+
+      serverHasSecondUser = true;
+      await write(container.read(userFormControllerProvider.notifier));
+
+      final second = await container.read(
+        usersControllerProvider(filter).future,
+      );
+      return second.items.map((u) => u.userId).toList();
+    }
+
+    test('a create invalidates the users list', () async {
+      when(
+        () => userRepository.create(
+          userId: any(named: 'userId'),
+          password: any(named: 'password'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          profileId: any(named: 'profileId'),
+        ),
+      ).thenAnswer((_) async => _testUser);
+
+      final ids = await listIdsAfter((notifier) async {
+        notifier.userIdChanged('newbie');
+        notifier.passwordChanged('secret1');
+        notifier.emailChanged('newbie@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
+        await notifier.save();
+      });
+
+      expect(
+        ids,
+        ['jdoe', 'newbie'],
+        reason: 'the users list must show a newly created account',
+      );
+    });
+
+    test('an update invalidates the users list', () async {
+      when(
+        () => userRepository.update(
+          userId: any(named: 'userId'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          administrator: any(named: 'administrator'),
+          status: any(named: 'status'),
+          privileges: any(named: 'privileges'),
+          settings: any(named: 'settings'),
+        ),
+      ).thenAnswer((_) async => _testUser);
+
+      final ids = await listIdsAfter((notifier) async {
+        notifier.emailChanged('updated@example.com');
+        await notifier.save(existingUserId: 'jdoe');
+      });
+
+      expect(
+        ids,
+        ['jdoe', 'newbie'],
+        reason: 'the users list must re-read after an update',
+      );
+    });
+
+    test('a failed save does NOT invalidate — nothing changed server-side',
+        () async {
+      when(
+        () => userRepository.create(
+          userId: any(named: 'userId'),
+          password: any(named: 'password'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          profileId: any(named: 'profileId'),
+        ),
+      ).thenThrow(const AppError.server(message: 'boom'));
+
+      final ids = await listIdsAfter((notifier) async {
+        notifier.userIdChanged('newbie');
+        notifier.passwordChanged('secret1');
+        notifier.emailChanged('newbie@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
+        await notifier.save();
+      });
+
+      expect(
+        ids,
+        ['jdoe'],
+        reason: 'a rejected save changed nothing, so the cached page stands',
+      );
     });
   });
 
