@@ -30,13 +30,23 @@ void main() {
     );
 
     test('defaults both from and to to the calendar date, time stripped', () {
+      final today = DateTime(2026, 8, 10, 23, 59, 59, 999);
+      final filter = PosSalesFilter.fromQuery(const ListQuery(), today: today);
+
+      expect(filter.from, DateTime(2026, 8, 10));
+      expect(filter.to, DateTime(2026, 8, 10));
+      // Judged against the date it was built from, whatever day this test runs
+      // on: `isToday` used to read the clock itself, which passed only on
+      // 2026-08-10 and failed every day after.
+      expect(filter.isToday(today), isTrue);
+    });
+
+    test('the default range is not "today" once the day has turned over', () {
       final filter = PosSalesFilter.fromQuery(
         const ListQuery(),
         today: DateTime(2026, 8, 10, 23, 59, 59, 999),
       );
-      expect(filter.from, DateTime(2026, 8, 10));
-      expect(filter.to, DateTime(2026, 8, 10));
-      expect(filter.isToday, isTrue);
+      expect(filter.isToday(DateTime(2026, 8, 11, 0, 0, 1)), isFalse);
     });
 
     test('an explicit date-from/date-to facet overrides the default', () {
@@ -48,7 +58,7 @@ void main() {
       );
       expect(filter.from, DateTime(2026, 8, 1));
       expect(filter.to, DateTime(2026, 8, 5));
-      expect(filter.isToday, isFalse);
+      expect(filter.isToday(DateTime(2026, 8, 10)), isFalse);
     });
 
     test('an unparseable date facet degrades to today rather than throwing', () {

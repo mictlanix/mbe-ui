@@ -59,7 +59,10 @@ class PosSalesListScreen extends ConsumerWidget {
       );
     }
 
-    final filter = PosSalesFilter.fromQuery(query, today: DateTime.now());
+    // Read once and reused: the filter's default range and every "is this
+    // filtered?" question below must be judged against the same instant.
+    final today = DateTime.now();
+    final filter = PosSalesFilter.fromQuery(query, today: today);
     final pageAsync = ref.watch(posSalesListControllerProvider(pointSale, filter));
 
     // The register's open-sales set — already computed for today by the
@@ -120,7 +123,7 @@ class PosSalesListScreen extends ConsumerWidget {
               DateRangeFilterChip(
                 from: filter.from,
                 to: filter.to,
-                isToday: filter.isToday,
+                isToday: filter.isToday(today),
                 onChanged: (range) => goTo(
                   query
                       .withFacet('date-from', encodePosSalesDateFacet(range.start))
@@ -152,7 +155,7 @@ class PosSalesListScreen extends ConsumerWidget {
             // state — a filtered-empty result gets the shared generic
             // message every other catalog uses, driven by `isFiltered`
             // alone (list_state_views.dart), not a second custom string.
-            isFiltered: !filter.isToday || filter.status != null || filter.search.isNotEmpty,
+            isFiltered: !filter.isToday(today) || filter.status != null || filter.search.isNotEmpty,
             emptyMessage: l10n.posSalesEmptyToday,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_posPath),

@@ -94,20 +94,28 @@ extension PosSalesFilterBadge on PosSalesFilter {
   String get fromFacetValue => encodePosSalesDateFacet(from);
   String get toFacetValue => encodePosSalesDateFacet(to);
 
-  /// The default range: today→today. A filter cleared back to this encodes
-  /// to no `date-from`/`date-to` facet at all (`ListQuery.isDefault`
-  /// convention) — clearing the chip returns to today, never to unbounded
-  /// (research R6: an unfiltered `GET /sales-orders` measured 19,277 rows for
-  /// one register).
-  bool get isToday {
-    final today = DateTime.now();
-    return _isSameDate(from, today) && _isSameDate(to, today);
-  }
+  /// Whether this is the default range: `from == to ==` [today]. A filter
+  /// cleared back to it encodes to no `date-from`/`date-to` facet at all
+  /// (`ListQuery.isDefault` convention) — clearing the chip returns to today,
+  /// never to unbounded (research R6: an unfiltered `GET /sales-orders`
+  /// measured 19,277 rows for one register).
+  ///
+  /// [today] is a parameter rather than a `DateTime.now()` read inside, for the
+  /// same reason [PosSalesFilter.fromQuery] takes one: the caller decides what
+  /// "today" is, and both must agree on it. Reading the clock here instead
+  /// meant a filter built for an injected date was judged against the real one
+  /// — untestable except on the one calendar day the fixture named, and, in the
+  /// screen, two `DateTime.now()` reads that a midnight tick between them could
+  /// separate.
+  bool isToday(DateTime today) =>
+      _isSameDate(from, today) && _isSameDate(to, today);
 
-  int get activeFilterCount =>
-      (isToday ? 0 : 1) + (status != null ? 1 : 0) + (search.isNotEmpty ? 1 : 0);
+  int activeFilterCount(DateTime today) =>
+      (isToday(today) ? 0 : 1) +
+      (status != null ? 1 : 0) +
+      (search.isNotEmpty ? 1 : 0);
 
-  bool get hasActiveFilters => activeFilterCount > 0;
+  bool hasActiveFilters(DateTime today) => activeFilterCount(today) > 0;
 }
 
 bool _isSameDate(DateTime a, DateTime b) =>
