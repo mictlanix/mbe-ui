@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
-import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/applied_payments_panel.dart';
-import 'package:mbe_ui/features/sales/presentation/payment/payment_amount_field.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/payment_capture_pane.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
-import 'package:mbe_ui/features/sales/presentation/payment/payment_method_grid.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/payment_summary_panel.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// The Cobro step (contracts/pos-screen.md §3): tender amount, method,
-/// reference and the applied payments. The close action is gated on a zero
-/// balance, or on credit terms (FR-049, FR-051) — the same guard
-/// `PosStepController.canLeavePayment` owns, asked here rather than
-/// duplicated.
+/// The Cobro step (contracts/pos-screen.md §3, spec 025 contracts/
+/// payment-surface.md): tender amount, method, reference, applied payments
+/// and the money summary. At the Large tier (≥ 1200 px) it is two panes — a
+/// capture pane and a fixed-width rail; below that it is one column with the
+/// summary and the exit action pinned as a footer band (spec 025 research
+/// R1). The close action is gated on a zero balance, or on credit terms
+/// (FR-049, FR-051), asked of `PaymentSummaryPanel`'s own read of
+/// `PosStepController.canLeavePayment` rather than duplicated here.
 class PaymentStep extends ConsumerWidget {
   const PaymentStep({super.key, required this.sale, required this.onClose});
 
@@ -26,109 +28,95 @@ class PaymentStep extends ConsumerWidget {
   /// the host decides what follows (a delivery step, or a finished sale).
   final VoidCallback onClose;
 
+  /// The rail's fixed width at the two-pane tier — what the mock spends on
+  /// its applied-payments column, and what `NumberPad.maxPadWidth` already
+  /// establishes as a comfortable fixed column in this product (research
+  /// R1).
+  static const _railWidth = 360.0;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final draft = ref.watch(paymentControllerProvider);
-    final notifier = ref.read(paymentControllerProvider.notifier);
-    final stepNotifier = ref.read(posStepControllerProvider.notifier);
-    final change = notifier.changeFor(sale.balance);
-    final canClose = stepNotifier.canLeavePayment(
-      balance: sale.balance,
-      isCreditTerms: sale.paymentTerms == PaymentTerms.netD,
-    );
+    final spacing = Theme.of(context).spacing;
+    final enabled = !draft.submitting;
 
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: [
-        // FR-042: total, paid and balance, all read from the sale.
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            // A `Wrap` rather than a `Row`: three currency figures side by
-            // side overflow a phone (US5, SC-007), and large amounts overflow
-            // even a wide one. This reads as a spaced row wherever it fits
-            // and folds onto a second line where it does not — no figure is
-            // ever truncated.
-            child: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              spacing: 16,
-              runSpacing: 12,
-              children: [
-                _figure(context, l10n.posPaymentTotal, sale.total),
-                _figure(context, l10n.posPaymentPaid, subtractAmounts(sale.total, sale.balance)),
-                _figure(context, l10n.posPaymentBalance, sale.balance, emphasize: true),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (draft.error != null) ...[
-          ErrorBanner(error: draft.error!),
-          const SizedBox(height: 12),
-        ],
-        PaymentMethodGrid(facilityId: sale.facility, enabled: !draft.submitting),
-        const SizedBox(height: 12),
-        if (draft.requiresReference)
-          TextField(
-            key: const Key('payment_reference_field'),
-            enabled: !draft.submitting,
-            decoration: InputDecoration(labelText: l10n.posPaymentReferenceLabel),
-            onChanged: notifier.setReference,
-          ),
-        const SizedBox(height: 12),
-        PaymentAmountField(balance: sale.balance, enabled: !draft.submitting),
-        if (!isZeroAmount(change))
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              l10n.posPaymentChange(MoneyFormatters.currency(change)),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerRight,
-          child: FilledButton(
-            key: const Key('payment_submit_button'),
-            onPressed: draft.isSubmittable ? () => notifier.submit(sale) : null,
-            child: draft.submitting
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(l10n.posApplyPayment),
-          ),
-        ),
-        const Divider(height: 32),
-        Text(l10n.posAppliedPaymentsTitle, style: Theme.of(context).textTheme.titleSmall),
-        AppliedPaymentsPanel(saleId: sale.id, enabled: !draft.submitting),
-        const SizedBox(height: 16),
-        FilledButton.tonal(
-          key: const Key('payment_close_button'),
-          onPressed: canClose ? onClose : null,
-          child: Text(l10n.posContinue),
-        ),
-      ],
-    );
-  }
+    final error = draft.error == null
+        ? null
+        : Padding(
+            padding: EdgeInsets.only(bottom: spacing.sm),
+            child: ErrorBanner(error: draft.error!),
+          );
 
-  Widget _figure(
-    BuildContext context,
-    String label,
-    String amount, {
-    bool emphasize = false,
-  }) {
-    final theme = Theme.of(context);
+    final capturePane = PaymentCapturePane(sale: sale, enabled: enabled);
+    final appliedPayments = AppliedPaymentsPanel(saleId: sale.id, enabled: enabled);
+    final summary = PaymentSummaryPanel(sale: sale, onClose: onClose);
+
+    final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
+
+    if (wide) {
+      return Padding(
+        padding: EdgeInsets.all(spacing.screenMargin),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Not scrollable: FR-006 reserves scrolling for the
+            // applied-payments list alone at this tier — the capture pane
+            // stays put, exactly like the rail's header and summary.
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [?error, capturePane],
+              ),
+            ),
+            SizedBox(width: spacing.paneGutter),
+            SizedBox(
+              width: _railWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: spacing.sm),
+                    child: Text(
+                      l10n.posAppliedPaymentsTitle,
+                      style: Theme.of(context).typeRoles.sectionHeading,
+                    ),
+                  ),
+                  Expanded(child: appliedPayments),
+                  summary,
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Below the Large tier: one column, the mock's phone order — balance and
+    // methods first, then the applied payments — with the summary and the
+    // exit pinned as a footer band rather than scrolling with the rest
+    // (research R1, matching `SaleTotalsBar`'s treatment of the capture
+    // step's own footer).
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: theme.textTheme.labelMedium),
-        Text(
-          MoneyFormatters.currency(amount),
-          style: emphasize ? theme.textTheme.titleLarge : theme.textTheme.titleMedium,
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.all(spacing.screenMargin),
+            children: [
+              ?error,
+              capturePane,
+              Divider(height: spacing.xl * 2),
+              Text(
+                l10n.posAppliedPaymentsTitle,
+                style: Theme.of(context).typeRoles.sectionHeading,
+              ),
+              SizedBox(height: spacing.sm),
+              appliedPayments,
+            ],
+          ),
         ),
+        summary,
       ],
     );
   }

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Payment method codes for a Payment Method Option, mirroring mbe-api's
@@ -78,5 +80,31 @@ String paymentMethodLabel(AppLocalizations l10n, int code) {
     PaymentMethod.advancePayments => l10n.paymentMethodAdvancePayments,
     PaymentMethod.toBeDefined => l10n.paymentMethodToBeDefined,
     PaymentMethod.governmentFunding => l10n.paymentMethodGovernmentFunding,
+  };
+}
+
+/// [code]'s icon for the payment method tiles (spec 025 contracts/
+/// payment-surface.md §4), falling back to the same "sin especificar" glyph
+/// an unmapped value gets — [PaymentMethod.fromCode]'s documented posture,
+/// mirrored here rather than only in [paymentMethodLabel].
+IconData paymentMethodIcon(int code) {
+  final method = PaymentMethod.fromCode(code);
+  if (method == null) return Icons.payments_outlined;
+  return switch (method) {
+    PaymentMethod.na => Icons.payments_outlined,
+    PaymentMethod.cash => Icons.payments_outlined,
+    PaymentMethod.check => Icons.receipt_long_outlined,
+    PaymentMethod.eft => Icons.account_balance_outlined,
+    PaymentMethod.creditCard => Icons.credit_score_outlined,
+    PaymentMethod.electronicPurse => Icons.account_balance_wallet_outlined,
+    PaymentMethod.electronicMoney => Icons.account_balance_wallet_outlined,
+    PaymentMethod.foodVouchers => Icons.restaurant_outlined,
+    PaymentMethod.giving => Icons.swap_horiz,
+    PaymentMethod.toTheSatisfactionOfTheCreditor => Icons.payments_outlined,
+    PaymentMethod.debitCard => Icons.credit_card_outlined,
+    PaymentMethod.serviceCard => Icons.credit_card_outlined,
+    PaymentMethod.advancePayments => Icons.schedule_outlined,
+    PaymentMethod.toBeDefined => Icons.payments_outlined,
+    PaymentMethod.governmentFunding => Icons.payments_outlined,
   };
 }

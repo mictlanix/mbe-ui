@@ -5096,7 +5096,7 @@ abstract class AppLocalizations {
   /// No description provided for @posPaymentBalance.
   ///
   /// In en, this message translates to:
-  /// **'Balance'**
+  /// **'Remaining'**
   String get posPaymentBalance;
 
   /// No description provided for @posPaymentReferenceLabel.
@@ -5105,11 +5105,35 @@ abstract class AppLocalizations {
   /// **'Reference'**
   String get posPaymentReferenceLabel;
 
-  /// No description provided for @posPaymentChange.
+  /// No description provided for @posPaymentChangeLabel.
   ///
   /// In en, this message translates to:
-  /// **'Change: {amount}'**
-  String posPaymentChange(String amount);
+  /// **'Change'**
+  String get posPaymentChangeLabel;
+
+  /// No description provided for @posPaymentGateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens once the balance is settled'**
+  String get posPaymentGateHint;
+
+  /// No description provided for @posPaymentMethodRequiresReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires a reference'**
+  String get posPaymentMethodRequiresReference;
+
+  /// No description provided for @posPaymentMethodNoReference.
+  ///
+  /// In en, this message translates to:
+  /// **'No reference needed'**
+  String get posPaymentMethodNoReference;
+
+  /// No description provided for @posPaymentMethodSectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get posPaymentMethodSectionLabel;
 
   /// No description provided for @posApplyPayment.
   ///

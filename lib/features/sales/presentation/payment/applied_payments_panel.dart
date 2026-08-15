@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
@@ -24,54 +25,92 @@ class AppliedPaymentsPanel extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final payments = ref.watch(orderPaymentsControllerProvider(saleId));
 
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
+    final typeRoles = theme.typeRoles;
+
     return payments.when(
       data: (list) {
         if (list.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(l10n.posNoAppliedPayments),
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.all(spacing.md),
+              child: Text(l10n.posNoAppliedPayments),
+            ),
           );
         }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (final payment in list)
-              ListTile(
-                key: Key('applied_payment_${payment.id}'),
-                dense: true,
-                title: Text(paymentMethodLabel(l10n, payment.methodCode)),
-                subtitle: Text(
-                  [
-                    if (payment.reference != null) l10n.posPaymentReferenceValue(payment.reference!),
-                    if (payment.isPendingValidation) l10n.posPaymentPendingValidation,
-                    if (payment.cancelled) l10n.posPaymentCancelled,
-                  ].join(' · '),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      MoneyFormatters.currency(payment.amount),
-                      style: payment.cancelled
-                          ? const TextStyle(decoration: TextDecoration.lineThrough)
-                          : null,
-                    ),
-                    if (enabled && !payment.cancelled)
-                      IconButton(
-                        icon: const Icon(Icons.undo),
-                        tooltip: l10n.posReverseAction,
-                        onPressed: () => _confirmReversal(context, ref, payment),
-                      ),
-                  ],
-                ),
+        return ListView.separated(
+          // `shrinkWrap` so this list is safe in both homes it renders in:
+          // an `Expanded` rail at the two-pane tier (a bounded height, where
+          // this still scrolls independently once content exceeds it) and a
+          // plain item inside the step's own outer `ListView` below that
+          // tier (an unbounded height, where a plain `ListView` here would
+          // throw rather than let the outer list carry the scroll).
+          shrinkWrap: true,
+          padding: EdgeInsets.symmetric(horizontal: spacing.sm),
+          itemCount: list.length,
+          separatorBuilder: (context, index) => SizedBox(height: spacing.xs),
+          itemBuilder: (context, index) {
+            final payment = list[index];
+            return Container(
+              key: Key('applied_payment_${payment.id}'),
+              padding: EdgeInsets.all(spacing.sm),
+              decoration: BoxDecoration(
+                color: theme.elevations.sunken.surfaceColor,
+                borderRadius: theme.shapes.mdRadius,
+                border: Border.all(color: theme.colorScheme.outlineVariant),
               ),
-          ],
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: theme.elevations.engaged.surfaceColor,
+                    foregroundColor: theme.colorScheme.onSurfaceVariant,
+                    child: Icon(paymentMethodIcon(payment.methodCode)),
+                  ),
+                  SizedBox(width: spacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          MoneyFormatters.currency(payment.amount),
+                          style: typeRoles.money.copyWith(
+                            decoration: payment.cancelled
+                                ? TextDecoration.lineThrough
+                                : null,
+                          ),
+                        ),
+                        Text(
+                          [
+                            paymentMethodLabel(l10n, payment.methodCode),
+                            if (payment.reference != null)
+                              l10n.posPaymentReferenceValue(payment.reference!),
+                            if (payment.isPendingValidation)
+                              l10n.posPaymentPendingValidation,
+                            if (payment.cancelled) l10n.posPaymentCancelled,
+                          ].join(' · '),
+                          style: typeRoles.metricLabel,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (enabled && !payment.cancelled)
+                    IconButton(
+                      icon: const Icon(Icons.undo),
+                      tooltip: l10n.posReverseAction,
+                      onPressed: () => _confirmReversal(context, ref, payment),
+                    ),
+                ],
+              ),
+            );
+          },
         );
       },
       loading: () => const LinearProgressIndicator(),
-      error: (error, stackTrace) => const Padding(
-        padding: EdgeInsets.all(8),
-        child: Text('No se pudieron cargar los pagos aplicados'),
+      error: (error, stackTrace) => Padding(
+        padding: EdgeInsets.all(spacing.md),
+        child: const Text('No se pudieron cargar los pagos aplicados'),
       ),
     );
   }

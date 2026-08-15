@@ -1,0 +1,441 @@
+{
+  "workflow": "speckit",
+  "specName": "pos payment ux",
+  "branch": "025-pos-payment-ux",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-15T18:52:27.905Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T18:56:42.661Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "ai",
+      "at": "2026-08-15T19:02:14.843Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T19:05:45.491Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T19:08:39.892Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T19:08:39.946Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "ai",
+      "at": "2026-08-15T19:12:30.773Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T19:14:41.349Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "ai",
+      "at": "2026-08-15T19:23:04.892Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T19:49:14.229Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T21:10:29.402Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "This feature MUST NOT change any payment rule, gate or server interaction — the conditions for applying a tender, computing change, reversing an application and leaving the step MUST behave exactly as they do today."
+    },
+    "FR-002": {
+      "title": "This feature MUST NOT change the step order: payment remains the second step, with delivery following it, and the exit action MUST keep its current label and destination."
+    },
+    "FR-003": {
+      "title": "At wide widths the step MUST render as two panes — a capture pane and a rail — with the applied payments, the money summary and the exit action in the rail."
+    },
+    "FR-004": {
+      "title": "Below the two-pane threshold the step MUST render as one column in the mock's phone order, with the money summary and the exit action pinned to the bottom edge rather than scrolling with the content."
+    },
+    "FR-005": {
+      "title": "The step MUST spend the full width and height it is given: no centred or width-bounded region, and no unused vertical band between the capture pane's content and the bottom edge."
+    },
+    "FR-006": {
+      "title": "In the two-pane shape, only the applied-payments list MUST scroll; the capture pane and the summary MUST stay put at the widths the two-pane shape is used at."
+    },
+    "FR-007": {
+      "title": "A server refusal or a load failure MUST be reported inside the capture pane, above the controls that produced it, and MUST be dismissible or self-clearing exactly as today."
+    },
+    "FR-008": {
+      "title": "The tender amount MUST be the visually dominant element of the capture pane, right-aligned, in tabular figures, with the currency indicated beside it."
+    },
+    "FR-009": {
+      "title": "The amount MUST remain a real, focusable, typable field that accepts decimal entry from a physical keyboard."
+    },
+    "FR-010": {
+      "title": "The quick-amount actions MUST sit directly beneath the amount as one row — the remaining balance, the round notes above it and the half — unchanged in which amounts they offer."
+    },
+    "FR-011": {
+      "title": "The keypad MUST keep its current key aspect ratio and its maximum pad width at every supported width, and MUST NOT scale its keys to the height of the pane it sits in."
+    },
+    "FR-012": {
+      "title": "The keypad and the amount field MUST remain two paths to the same value, neither privileged."
+    },
+    "FR-013": {
+      "title": "Payment methods MUST be presented as a grid of tiles, each carrying the method's icon, its name and a secondary line stating whether it requires a reference."
+    },
+    "FR-014": {
+      "title": "The selected tile MUST be visually distinguished by both an outline and a check mark, not by fill alone."
+    },
+    "FR-015": {
+      "title": "The tiles MUST be built from the facility's own configured payment options, keeping today's fallback to the common tenders when none are configured, and keeping today's loading and failure treatments."
+    },
+    "FR-016": {
+      "title": "The reference field MUST be shown only when the selected option requires one, and MUST sit in the capture pane beneath the tiles."
+    },
+    "FR-017": {
+      "title": "Every tile MUST be reachable by keyboard and MUST announce its name and selected state to a screen reader."
+    },
+    "FR-018": {
+      "title": "The rail MUST list the payments already applied to the sale, each showing its amount, its method, its reference when it has one, and its pending-validation or reversed state."
+    },
+    "FR-019": {
+      "title": "Each listed payment MUST keep its reversal action, with the same mandatory-reason confirmation as today, and a reversed payment MUST remain visible and marked as reversed."
+    },
+    "FR-020": {
+      "title": "The rail MUST show how many payments have been applied, and MUST show an empty state when none have been."
+    },
+    "FR-021": {
+      "title": "The rail MUST show the money summary — total, paid, remaining and change — as one block at its foot, above the exit action."
+    },
+    "FR-022": {
+      "title": "The change figure MUST be a permanent row of that block, reading zero when there is no change, rather than a line that appears only when a tender exceeds the balance."
+    },
+    "FR-023": {
+      "title": "The exit action MUST sit directly beneath the money summary and MUST be enabled by exactly the condition that governs it today."
+    },
+    "FR-024": {
+      "title": "While the exit action is disabled because the balance is outstanding, a short line MUST state what would enable it; it MUST NOT be shown when the action is available."
+    },
+    "FR-025": {
+      "title": "The action that applies a tender MUST belong to the capture pane, sit at its foot, and remain the pane's own primary action."
+    },
+    "FR-026": {
+      "title": "The action that applies a tender and the action that leaves the step MUST NOT be adjacent in the same column at any width, and MUST be distinguishable by more than fill."
+    },
+    "FR-027": {
+      "title": "Both actions MUST keep today's in-flight and disabled treatments."
+    },
+    "FR-028": {
+      "title": "Every colour, spacing, radius, elevation and type size introduced by this feature MUST resolve through the product's theme and design tokens; no literal value from the mock's palette may be hard-coded."
+    },
+    "FR-029": {
+      "title": "Every label this feature introduces MUST exist in both supported locales."
+    },
+    "FR-030": {
+      "title": "Every control disabled while the sale is read-only or a request is in flight today MUST remain disabled under the same conditions."
+    },
+    "FR-031": {
+      "title": "The test keys of the controls that survive this feature MUST be preserved, so the existing widget tests keep addressing them."
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 12,
+    "projectedTasks": 18,
+    "scopeSignal": "larger",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: lib/features/sales/presentation/payment (payment_step, payment_amount_field, payment_method_grid, applied_payments_panel)",
+    "area: lib/core/widgets/number_pad.dart",
+    "reference: artifacts/point_of_sale/POS_Adaptativo.dc.html frame 2c + phone 'Paso 3 · cobro'",
+    "constraint: visual/layout only — no behaviour, no API, no money-rule change",
+    "constraint: payment is the SECOND step; ignore the mock's 'Paso 3 de 3' ordering",
+    "constraint: NumberPad keeps its key aspect ratio and maxPadWidth (live-driving fix, do not regress)",
+    "constraint: all styling resolves through spec 022 design tokens, no literal mock palette values",
+    "prior art: spec 023 capture-surface contract and sale_totals_bar footer band"
+  ],
+  "intent": "Re-shape the POS payment step to the mock's two-pane look — headline amount, method tiles, applied-payments rail with the money summary and exit at its foot — without changing any payment behaviour.",
+  "expectations": [
+    "The mock's 'Validar' action on payments pending terminal validation",
+    "The dashed 'pago en captura' draft-preview row in the applied-payments list",
+    "The mock's header chips (folio, customer, payment terms, currency/exchange rate)",
+    "Multi-currency display or exchange-rate entry",
+    "The mock's step order and 'Paso 3 de 3' labelling",
+    "The delivery step's layout and any further capture-step change",
+    "Any change to mbe-api, the payment controllers or the repositories"
+  ],
+  "currentTask": "T028",
+  "task_summaries": {
+    "T028": {
+      "status": "DONE",
+      "did": "Left open for the user: the visual live-driving walkthrough of quickstart.md's width table needs a human at a real browser. The one automatable piece (the live-backend payment-flow integration test) is skipped by a pre-existing, unrelated .env product-pattern gap already on record."
+    }
+  },
+  "telemetryInstanceId": "af1386e7-5731-4c6b-8eb9-f8ecc27f9343"
+}
