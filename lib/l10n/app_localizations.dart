@@ -5357,11 +5357,17 @@ abstract class AppLocalizations {
   /// **'No user profiles yet — create the first one.'**
   String get noUserProfilesYetMessage;
 
-  /// No description provided for @columnProfileName.
+  /// The profile catalog's own name column — distinct from columnProfile, which heads the users list's origin-profile column
   ///
   /// In en, this message translates to:
   /// **'Name'**
   String get columnProfileName;
+
+  /// Users list column: the profile an account was provisioned from
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get columnProfile;
 
   /// No description provided for @columnProfileDescription.
   ///

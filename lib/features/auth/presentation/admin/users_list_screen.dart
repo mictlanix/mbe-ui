@@ -132,7 +132,7 @@ class UsersListScreen extends ConsumerWidget {
                 // account's current permissions (024-user-profiles FR-027,
                 // FR-030).
                 DataTableColumn.text(
-                  label: l10n.columnProfileName,
+                  label: l10n.columnProfile,
                   text: (u) => u.profileName ?? '',
                   size: ColumnSize.M,
                 ),

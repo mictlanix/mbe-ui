@@ -931,6 +931,7 @@
   "userProfilesSearchLabel": "Buscar por nombre",
   "noUserProfilesYetMessage": "Aún no hay perfiles de usuario — crea el primero.",
   "columnProfileName": "Nombre",
+  "columnProfile": "Perfil",
   "columnProfileDescription": "Descripción",
   "newUserProfileTitle": "Nuevo perfil",
   "editUserProfileTitle": "Editar perfil",

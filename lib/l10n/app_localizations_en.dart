@@ -2876,6 +2876,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get columnProfileName => 'Name';
 
   @override
+  String get columnProfile => 'Profile';
+
+  @override
   String get columnProfileDescription => 'Description';
 
   @override
