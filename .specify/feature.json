@@ -1,7 +1,3 @@
 {
-<<<<<<< HEAD
-  "feature_directory": "specs/023-pos-ux-improvements"
-=======
-  "feature_directory": "specs/024-user-profiles"
->>>>>>> main
+  "feature_directory": "specs/025-pos-payment-ux"
 }
