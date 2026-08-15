@@ -3,7 +3,7 @@
   "specName": "pos ux improvements",
   "branch": "023-pos-ux-improvements",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -571,6 +571,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-10T16:33:44.538Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T18:36:23.768Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -759,5 +766,6 @@
     "Reprinting, invoicing, cancelling or refunding a sale from the list",
     "Any change to mbe-api itself"
   ],
-  "currentTask": "T064"
+  "currentTask": "T064",
+  "telemetryInstanceId": "47ba9195-5145-417e-a9bc-2bd21d063420"
 }
