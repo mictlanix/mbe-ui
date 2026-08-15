@@ -192,6 +192,18 @@ class UserProfileFormController extends _$UserProfileFormController {
     state = state.copyWith(privileges: updated, error: null, errorDetail: null);
   }
 
+  /// Drops every cached page of the catalog list so a create/update/delete
+  /// is visible the moment the form pops back to it. The list is a family
+  /// keyed by filter, and the list screen stays mounted underneath the
+  /// pushed form — so without this its provider keeps its listener, serves
+  /// the stale cached page, and the change appears to have been lost.
+  /// Matches every other catalog form controller (e.g.
+  /// `CustomerFormController`, `LabelFormController._invalidateCaches`).
+  void _invalidateCaches() {
+    ref.invalidate(userProfilesControllerProvider);
+    ref.invalidate(hasActiveUserProfilesProvider);
+  }
+
   /// Creates or updates the profile. Pass [existingProfileId] for edit mode
   /// (null for create).
   Future<void> save({int? existingProfileId}) async {
@@ -227,6 +239,7 @@ class UserProfileFormController extends _$UserProfileFormController {
           privileges: state.privileges,
         );
       }
+      _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {
@@ -247,7 +260,7 @@ class UserProfileFormController extends _$UserProfileFormController {
       await ref.read(userProfileRepositoryProvider).delete(
         profileId: profileId,
       );
-      ref.invalidate(userProfilesControllerProvider);
+      _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {

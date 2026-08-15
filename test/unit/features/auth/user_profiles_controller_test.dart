@@ -358,6 +358,165 @@ void main() {
     });
   });
 
+  group('cache invalidation after a write (regression)', () {
+    // Caught live during the 024 quickstart walkthrough: creating a profile
+    // saved server-side but the catalog list still showed the old page,
+    // because the list screen stays mounted underneath the pushed form —
+    // its family provider keeps its listener and serves the cached page
+    // until something invalidates it. `deleteProfile` did invalidate;
+    // `save` did not, so a create/update looked like it had been lost.
+    // Every other catalog form controller invalidates on all three writes.
+    UserProfileSummary summary(int id, String name) => UserProfileSummary(
+      userProfileId: id,
+      name: name,
+      status: EntityStatus.active,
+    );
+
+    /// Reads the list (establishing a cached page holding only `Cashier`),
+    /// runs [write] against a server that now also has `Warehouse Clerk`,
+    /// then reads again and returns what the list shows. Asserting on the
+    /// visible rows rather than on a call count keeps this pinned to the
+    /// behaviour the user reported — "the list didn't update" — instead of
+    /// to Riverpod's internal refresh bookkeeping.
+    Future<List<String>> listNamesAfter(
+      Future<void> Function(UserProfileFormController notifier) write,
+    ) async {
+      var serverHasSecondProfile = false;
+      when(
+        () => repository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => UserProfileListResult(
+          items: [
+            summary(1, 'Cashier'),
+            if (serverHasSecondProfile) summary(2, 'Warehouse Clerk'),
+          ],
+          total: serverHasSecondProfile ? 2 : 1,
+        ),
+      );
+
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      const filter = UserProfileFilter();
+      final first = await container.read(
+        userProfilesControllerProvider(filter).future,
+      );
+      expect(first.items.map((p) => p.name), ['Cashier']);
+
+      serverHasSecondProfile = true;
+      await write(
+        container.read(userProfileFormControllerProvider.notifier),
+      );
+
+      final second = await container.read(
+        userProfilesControllerProvider(filter).future,
+      );
+      return second.items.map((p) => p.name).toList();
+    }
+
+    test('a create invalidates the catalog list', () async {
+      when(
+        () => repository.create(
+          name: any(named: 'name'),
+          description: any(named: 'description'),
+          status: any(named: 'status'),
+          privileges: any(named: 'privileges'),
+        ),
+      ).thenAnswer(
+        (_) async => const UserProfile(
+          userProfileId: 5,
+          name: 'Cashier',
+          status: EntityStatus.active,
+          privileges: [],
+        ),
+      );
+
+      final names = await listNamesAfter((notifier) async {
+        notifier.nameChanged('Cashier');
+        await notifier.save();
+      });
+
+      expect(
+        names,
+        ['Cashier', 'Warehouse Clerk'],
+        reason: 'the catalog list must show a newly created profile',
+      );
+    });
+
+    test('an update invalidates the catalog list', () async {
+      when(
+        () => repository.update(
+          profileId: any(named: 'profileId'),
+          name: any(named: 'name'),
+          description: any(named: 'description'),
+          status: any(named: 'status'),
+          privileges: any(named: 'privileges'),
+        ),
+      ).thenAnswer(
+        (_) async => const UserProfile(
+          userProfileId: 5,
+          name: 'Cashier',
+          status: EntityStatus.active,
+          privileges: [],
+        ),
+      );
+
+      final names = await listNamesAfter((notifier) async {
+        notifier.nameChanged('Senior Cashier');
+        await notifier.save(existingProfileId: 5);
+      });
+
+      expect(
+        names,
+        ['Cashier', 'Warehouse Clerk'],
+        reason: 'the catalog list must re-read after an update',
+      );
+    });
+
+    test('a delete invalidates the catalog list', () async {
+      when(
+        () => repository.delete(profileId: any(named: 'profileId')),
+      ).thenAnswer((_) async {});
+
+      final names = await listNamesAfter(
+        (notifier) => notifier.deleteProfile(5),
+      );
+
+      expect(
+        names,
+        ['Cashier', 'Warehouse Clerk'],
+        reason: 'the catalog list must re-read after a delete',
+      );
+    });
+
+    test('a failed save does NOT invalidate — nothing changed server-side',
+        () async {
+      when(
+        () => repository.create(
+          name: any(named: 'name'),
+          description: any(named: 'description'),
+          status: any(named: 'status'),
+          privileges: any(named: 'privileges'),
+        ),
+      ).thenThrow(const AppError.server(message: 'boom'));
+
+      final names = await listNamesAfter((notifier) async {
+        notifier.nameChanged('Cashier');
+        await notifier.save();
+      });
+
+      expect(
+        names,
+        ['Cashier'],
+        reason: 'a rejected save changed nothing, so the cached page stands',
+      );
+    });
+  });
+
   group('UserProfileFormController.deleteProfile', () {
     test(
       'a referenced-by-users conflict leaves the profile in place and '
