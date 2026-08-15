@@ -5063,12 +5063,6 @@ abstract class AppLocalizations {
   /// **'No lines — search or scan a product'**
   String get posNoLinesHint;
 
-  /// No description provided for @posContinueToPayment.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to payment'**
-  String get posContinueToPayment;
-
   /// No description provided for @posAmountLabel.
   ///
   /// In en, this message translates to:

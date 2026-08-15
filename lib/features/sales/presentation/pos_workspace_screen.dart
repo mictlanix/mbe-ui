@@ -356,9 +356,16 @@ class _SaleIdentityChip extends StatelessWidget {
 /// one emphasised rather than the others hidden, so the cashier can see what
 /// is still ahead.
 ///
-/// On a phone there is no room for that: three labels and two chevrons would
-/// push the selector off the band, so it collapses to "Paso N de M" (US5,
-/// SC-007). The position is what matters; the names are on the step itself.
+/// One stadium container holding a pill per step, the current one filled and
+/// carrying its own icon, the rest quiet text — the mock's frame `2a` track
+/// (`height:40; border-radius:20` around `height:28; border-radius:14` pills).
+/// There are **no chevrons**: the numbering already states the order, and the
+/// track already groups them, so an arrow between each pair was chrome that
+/// only cost width.
+///
+/// On a phone there is no room for the track at all: three pills would push
+/// the selector off the band, so it collapses to "Paso N de M" (US5, SC-007).
+/// The position is what matters; the names are on the step itself.
 class _StepIndicator extends StatelessWidget {
   const _StepIndicator({required this.step});
 
@@ -377,32 +384,93 @@ class _StepIndicator extends StatelessWidget {
       );
     }
 
-    final labels = [
-      l10n.posStepVenta,
-      l10n.posStepCobro,
-      l10n.posStepEntrega,
-    ].take(step.stepCount).toList();
+    // `PosStep`'s own order — Venta → Cobro → Entrega — which spec 020 settled
+    // and spec 023 put out of scope. The mock numbers them Venta → Entrega →
+    // Cobro; that is the mock disagreeing with the product, not a layout
+    // detail, so only the styling is taken from it.
+    const steps = PosStep.values;
+    final labels = {
+      PosStep.venta: l10n.posStepVenta,
+      PosStep.cobro: l10n.posStepCobro,
+      PosStep.entrega: l10n.posStepEntrega,
+    };
+    final icons = {
+      PosStep.venta: Icons.edit_note,
+      PosStep.cobro: Icons.payments_outlined,
+      PosStep.entrega: Icons.local_shipping_outlined,
+    };
 
-    return Row(
+    return Container(
       key: const Key('pos_step_indicator'),
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < labels.length; i++) ...[
-          Text(
-            '${i + 1}·${labels[i]}',
-            style: i == step.current.index
-                ? theme.textTheme.titleSmall
-                : theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.outline,
-                  ),
-          ),
-          if (i < labels.length - 1)
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: theme.spacing.xs),
-              child: const Icon(Icons.chevron_right, size: 16),
+      height: 40,
+      padding: EdgeInsets.symmetric(horizontal: theme.spacing.xxs),
+      decoration: ShapeDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        shape: StadiumBorder(
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < step.stepCount; i++)
+            _StepPill(
+              position: i + 1,
+              label: labels[steps[i]]!,
+              icon: icons[steps[i]]!,
+              current: i == step.current.index,
             ),
         ],
-      ],
+      ),
+    );
+  }
+}
+
+/// One step in the track. The current one is a filled chip carrying its icon;
+/// the rest are quiet, iconless text at the same height, so the track's
+/// rhythm does not change as the sale advances.
+class _StepPill extends StatelessWidget {
+  const _StepPill({
+    required this.position,
+    required this.label,
+    required this.icon,
+    required this.current,
+  });
+
+  final int position;
+  final String label;
+  final IconData icon;
+  final bool current;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      height: 28,
+      margin: EdgeInsets.symmetric(horizontal: theme.spacing.xxs / 2),
+      padding: EdgeInsets.symmetric(horizontal: theme.spacing.xs),
+      decoration: ShapeDecoration(
+        color: current ? theme.colorScheme.secondaryContainer : null,
+        shape: const StadiumBorder(),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (current) ...[
+            Icon(icon, size: 16, color: theme.colorScheme.onSecondaryContainer),
+            SizedBox(width: theme.spacing.xxs),
+          ],
+          Text(
+            '$position · $label',
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: current
+                  ? theme.colorScheme.onSecondaryContainer
+                  : theme.colorScheme.onSurfaceVariant,
+              fontWeight: current ? FontWeight.w500 : null,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

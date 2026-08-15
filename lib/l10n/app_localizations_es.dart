@@ -2733,9 +2733,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posNoLinesHint => 'Sin líneas — busca o escanea un producto';
 
   @override
-  String get posContinueToPayment => 'Continuar al cobro';
-
-  @override
   String get posAmountLabel => 'Monto';
 
   @override

@@ -882,7 +882,6 @@
   "posSaleUnreachableOtherRegister": "Esta venta pertenece a otra caja.",
   "posSaleBackToListAction": "Volver a ventas",
   "posNoLinesHint": "Sin líneas — busca o escanea un producto",
-  "posContinueToPayment": "Continuar al cobro",
   "posAmountLabel": "Monto",
   "posQuickAmountRemaining": "Restante",
   "posQuickAmountHalf": "Mitad",

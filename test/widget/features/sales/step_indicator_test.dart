@@ -8,11 +8,17 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 
-/// The step indicator is `PosWorkspaceScreen`'s private header band, so this asserts
-/// on the property that drives it — `PosStepState.stepCount` — plus the
-/// labels it renders, through a stand-in that reads the same provider the
-/// real band does. That keeps FR-005's "two steps for a counter-pickup sale"
-/// covered without exporting a private widget purely to test it.
+/// The step indicator is `PosWorkspaceScreen`'s private header band, so this
+/// asserts on the property that drives it — `PosStepState.stepCount` — through
+/// a stand-in that reads the same provider the real band does, across the mode
+/// changes that vary the count.
+///
+/// **Only the count is this file's subject.** The stand-in's own markup is not
+/// the real band's and must not be read as covering it: the band is a stadium
+/// track of pills, and how it *renders* is asserted against the real widget in
+/// `pos_workspace_route_test.dart`. This file once asserted a `1·Venta` label
+/// format that the real band had stopped using, and passed anyway — a
+/// stand-in can only ever hold the provider contract, never the appearance.
 class _StepIndicator extends ConsumerWidget {
   const _StepIndicator();
 

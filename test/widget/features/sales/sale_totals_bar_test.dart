@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -24,6 +25,35 @@ void main() {
       compact: compact,
     ),
   );
+
+  group('the band is its own surface (spec 023 contracts §5)', () {
+    testWidgets('a raised fill under a top hairline, and no rounded corners — '
+        'a full-width band pinned to the bottom edge has none to round', (
+      tester,
+    ) async {
+      await pumpBar(tester, onContinue: () {});
+      final theme = Theme.of(tester.element(find.byType(SaleTotalsBar)));
+
+      final decoration = tester
+          .widget<Container>(find.byKey(const Key('pos_totals_footer')))
+          .decoration! as BoxDecoration;
+
+      // The same plane the line cards sit on, so the summary reads as a
+      // statement about them rather than as one more item among them.
+      expect(decoration.color, theme.elevations.raised.surfaceColor);
+      expect(decoration.borderRadius, isNull);
+      expect(
+        decoration.border,
+        Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
+      );
+    });
+
+    testWidgets('the counts are ruled off from the money by a single divider, '
+        'not one between every figure', (tester) async {
+      await pumpBar(tester, onContinue: () {});
+      expect(find.byKey(const Key('pos_totals_divider')), findsOneWidget);
+    });
+  });
 
   group('labelled groups (spec 023 contracts/capture-surface.md §5)', () {
     testWidgets('shows Artículos, Subtotal and IVA groups, each with a figure', (
@@ -103,7 +133,7 @@ void main() {
     ) async {
       await pumpBar(tester, onContinue: null);
 
-      final button = tester.widget<FilledButton>(
+      final button = tester.widget<FloatingActionButton>(
         find.byKey(const Key('pos_continue_to_payment')),
       );
       expect(button.onPressed, isNull);
@@ -132,7 +162,7 @@ void main() {
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text(l10n.posContinueToPayment), findsNothing);
+      expect(find.text(l10n.posStepCobro), findsNothing);
     });
   });
 

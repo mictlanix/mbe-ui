@@ -118,7 +118,7 @@ void main() {
 
       expect(
         tester
-            .widget<FilledButton>(
+            .widget<FloatingActionButton>(
               find.byKey(const Key('pos_continue_to_payment')),
             )
             .onPressed,

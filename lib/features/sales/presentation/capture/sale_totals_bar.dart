@@ -52,32 +52,72 @@ class SaleTotalsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final spacing = Theme.of(context).spacing;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
     final currentSale = sale;
 
+    // The counts and the money either side of one rule, as in the mock — a
+    // single divider after Artículos, not one between every pair, which would
+    // turn a summary into a table. `Wrap` rather than `Row` so the group still
+    // degrades at the narrow end of the non-compact range instead of
+    // overflowing; the divider simply wraps with them.
     final stats = currentSale == null
         ? const SizedBox.shrink()
         : Wrap(
-            spacing: spacing.md,
+            spacing: spacing.lg,
             runSpacing: spacing.xs,
-            crossAxisAlignment: WrapCrossAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: _groups(context, l10n, currentSale),
           );
 
-    final button = FilledButton(
+    // The total is the mock's own right-aligned block, pushed against the
+    // action rather than trailing the other figures — it is the number the
+    // cashier reads out, not another stat in the row.
+    final total = currentSale == null
+        ? const SizedBox.shrink()
+        : _group(
+            context,
+            l10n.posTotalsTotalLabel,
+            MoneyFormatters.currency(currentSale.total),
+            crossAxisAlignment: CrossAxisAlignment.end,
+            figureStyle: Theme.of(context).typeRoles.metricValue,
+          );
+
+    final button = FloatingActionButton.extended(
       key: const Key('pos_continue_to_payment'),
       onPressed: onContinue,
-      child: confirming
+      // The step being moved to, named plainly, with the arrow after it — the
+      // mock's own `Entrega →`. `FloatingActionButton.extended`'s `icon` slot
+      // would put it in front, so the whole thing is the label.
+      label: confirming
           ? const SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : Text(l10n.posContinueToPayment),
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.posStepCobro),
+                SizedBox(width: spacing.xs),
+                const Icon(Icons.arrow_forward),
+              ],
+            ),
     );
 
-    return Padding(
+    // Its own surface, not the canvas the lines scroll on: the band is a
+    // statement *about* those lines, so it reads as a separate plane beneath
+    // them rather than as one more thing in the list. The same fill the line
+    // cards carry (`elevations.raised`, what `cardTheme` uses), with the
+    // mock's own hairline along the top and square corners — it spans the
+    // full width and is pinned to the bottom edge, so there is no corner for
+    // a radius to round.
+    return Container(
       key: const Key('pos_totals_footer'),
+      decoration: BoxDecoration(
+        color: theme.elevations.raised.surfaceColor,
+        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
+      ),
       padding: EdgeInsets.symmetric(horizontal: spacing.screenMargin, vertical: spacing.sm),
       child: compact
           ? Column(
@@ -85,13 +125,20 @@ class SaleTotalsBar extends StatelessWidget {
               children: [
                 stats,
                 SizedBox(height: spacing.xs),
+                total,
+                SizedBox(height: spacing.xs),
                 button,
               ],
             )
+          // Centred, so the labelled stat blocks, the total and the action all
+          // sit on the band's own middle rather than each on its own edge.
           : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(child: stats),
-                SizedBox(width: spacing.sm),
+                SizedBox(width: spacing.lg),
+                total,
+                SizedBox(width: spacing.lg),
                 button,
               ],
             ),
@@ -111,24 +158,26 @@ class SaleTotalsBar extends StatelessWidget {
         l10n.posTotalsArticlesLabel,
         l10n.posTotalsCounts(sale.lineCount, unitCount.toString()),
       ),
+      // What the sale *is* on one side, what it *costs* on the other.
+      _divider(context),
       _group(context, l10n.posTotalsSubtotalLabel, MoneyFormatters.currency(sale.subtotal)),
       if (!isZeroAmount(discount))
         // The mock's leading minus is display-only — [discount] itself is
         // still the plain magnitude FR-047 derives from Sale.
         _group(context, l10n.posTotalsDiscountLabel, '−${MoneyFormatters.currency(discount)}'),
       _group(context, l10n.posTotalsTaxLabel, MoneyFormatters.currency(sale.taxTotal)),
-      // The dominant element (contracts §5): right-aligned, the largest
-      // available type role, with the total's own $ sign stating the
-      // currency — no separate "MXN" literal needed.
-      _group(
-        context,
-        l10n.posTotalsTotalLabel,
-        MoneyFormatters.currency(sale.total),
-        crossAxisAlignment: CrossAxisAlignment.end,
-        figureStyle: Theme.of(context).typeRoles.metricValue,
-      ),
     ];
   }
+
+  /// The mock's single hairline rule between the counts and the money — a
+  /// fixed 44 px so it reads as a divider between two blocks rather than
+  /// stretching to whatever the tallest neighbour happens to be.
+  Widget _divider(BuildContext context) => Container(
+    key: const Key('pos_totals_divider'),
+    width: 1,
+    height: 44,
+    color: Theme.of(context).colorScheme.outlineVariant,
+  );
 
   /// One labelled stat: the smallest label role, letter-spaced and
   /// uppercased (the same treatment `facility_child_section.dart` gives its

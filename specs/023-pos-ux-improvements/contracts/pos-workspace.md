@@ -82,6 +82,34 @@ Scaffold(
   banner still belongs.
 - On compact, the title collapses the way `_StepIndicator` already does
   (`posStepProgress`, "Paso N de M"), and the selector keeps its chip form.
+
+### 2.1 `_StepIndicator` — a track, not a breadcrumb
+
+One stadium container (`surfaceContainerHighest` under an `outlineVariant`
+border, key `pos_step_indicator`) holding one pill per step, taken from the
+mock's frame `2a` (`height:40; border-radius:20` around `height:28;
+border-radius:14`):
+
+| Pill | Fill | Content |
+|---|---|---|
+| current | `secondaryContainer` / `onSecondaryContainer`, medium weight | its step's icon, then `N · Label` |
+| others | none — `onSurfaceVariant` text at the same height | `N · Label`, no icon |
+
+Icons: `edit_note` (Venta, the mock's own), `payments_outlined` (Cobro),
+`local_shipping_outlined` (Entrega, matching `FulfillmentModeSelector`).
+
+**No chevrons.** The numbering states the order and the track groups the pills,
+so an arrow between each pair was chrome that only cost width.
+
+The pills follow `PosStep`'s order — **Venta → Cobro → Entrega**. The mock
+numbers them Venta → Entrega → Cobro; that is the mock disagreeing with a
+settled spec 020 decision that spec 023 lists as out of scope, not a layout
+detail, so only the styling is taken from it.
+
+Asserted against the real widget in `pos_workspace_route_test.dart`, not
+against `step_indicator_test.dart`'s stand-in — that stand-in covers
+`stepCount` and cannot cover appearance (it once asserted a label format the
+real band had already stopped using, and passed).
 - No `AppShell`: no rail, no drawer, no shell app bar. Back is the only way up.
 
 ## 3. Space rules

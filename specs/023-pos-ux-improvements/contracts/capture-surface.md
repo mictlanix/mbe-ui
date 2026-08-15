@@ -242,16 +242,28 @@ card's existing convention.
 ## 5. `SaleTotalsBar` — the footer band
 
 ```
-ARTÍCULOS        SUBTOTAL      DESCUENTOS     IVA                    TOTAL MXN
-9 líneas · 409 u $25,609.00    −$369.00       $4,038.40           $29,278.40  [Continuar al cobro →]
+ ARTÍCULOS        │ SUBTOTAL      DESCUENTOS     IVA               TOTAL MXN
+ 9 líneas · 409 u │ $25,609.00    −$369.00       $4,038.40        $29,278.40  (Cobro →)
+─────────────────────────────────────────────────────────────────────────────
 ```
+
+The band is **its own surface**: `elevations.raised.surfaceColor` — the fill
+the line cards carry, which is what the mock gives it too — under a
+`outlineVariant` hairline along its top edge, with **square corners**. It spans
+the full width and is pinned to the bottom, so there is no corner to round. The
+point is that a summary *of* the lines should read as a separate plane beneath
+them, not as one more entry in the list.
 
 | Element | Type role | Notes |
 |---|---|---|
 | Group labels | the smallest label role, letter-spaced, uppercase | Artículos, Subtotal, Descuentos, IVA |
 | Group figures | body role | discounts group omitted entirely when zero (today's behaviour) |
-| Total label + figure | label role + the largest display/headline role available in the token scale, right-aligned, with the currency stated | the visually dominant element |
-| Primary action | `FilledButton`, key `pos_continue_to_payment` | **moves into this band**; disabled when `lineCount == 0`, mid-confirm, or the sale is not editable; full-width on compact |
+| Divider | 1 × 44, `outlineVariant`, key `pos_totals_divider` | **exactly one**, after Artículos — what the sale *is* ruled off from what it *costs*. One between every pair would make a table of a summary |
+| Total label + figure | label role + the largest display/headline role available in the token scale, right-aligned, with the currency stated | the visually dominant element, and its **own block** pressed against the action rather than trailing the other figures |
+| Primary action | `FloatingActionButton.extended`, key `pos_continue_to_payment` | **moves into this band**; labelled with the step it moves to (`Cobro`) and a trailing `arrow_forward` — the arrow is part of the label because the FAB's own `icon` slot would put it in front. Disabled when `lineCount == 0`, mid-confirm, or the sale is not editable; full-width on compact |
+
+Gaps are `spacing.lg` (the mock's 26), and the row is centred — every block
+sits on the band's middle rather than each on its own edge.
 
 Every figure still comes from `Sale` as returned — the discount is
 `(subtotal + tax) − total` through `addAmounts`/`subtractAmounts`, unchanged

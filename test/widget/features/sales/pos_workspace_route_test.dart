@@ -24,6 +24,7 @@ import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repositor
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 
@@ -348,4 +349,120 @@ void main() {
       );
     },
   );
+
+  // Asserted against the **real** header and footer, not a stand-in: these are
+  // presentation decisions on private widgets, and the only honest way to hold
+  // them is through the screen that owns them.
+  group('the header step track (spec 023 FR-005, mock frame 2a)', () {
+    Future<void> pumpWorkspace(WidgetTester tester) async {
+      when(() => salesOrders.getById(saleId: 20))
+          .thenAnswer((_) async => testSale(id: 20, lines: [testLine()]));
+      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
+          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/20',
+        overrides: overrides(),
+        surface: const Size(1440, 900),
+      );
+    }
+
+    testWidgets('one stadium track holding a pill per step, and no chevrons '
+        'between them', (tester) async {
+      await pumpWorkspace(tester);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      final track = find.byKey(const Key('pos_step_indicator'));
+      expect(track, findsOneWidget);
+      expect(
+        tester.widget<Container>(track).decoration,
+        isA<ShapeDecoration>().having(
+          (d) => d.shape,
+          'shape',
+          isA<StadiumBorder>(),
+        ),
+      );
+
+      // A counter-pickup sale is two steps (FR-005) — the third is not merely
+      // unhighlighted, it is absent.
+      expect(
+        find.descendant(of: track, matching: find.text('1 · ${l10n.posStepVenta}')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: track, matching: find.text('2 · ${l10n.posStepCobro}')),
+        findsOneWidget,
+      );
+      expect(find.text('3 · ${l10n.posStepEntrega}'), findsNothing);
+
+      // The whole point of the restyle: the order is stated by the numbering,
+      // not by an arrow between each pair.
+      expect(
+        find.descendant(of: track, matching: find.byIcon(Icons.chevron_right)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('the current step is the filled chip — and the only one '
+        'carrying an icon', (tester) async {
+      await pumpWorkspace(tester);
+      final theme = Theme.of(
+        tester.element(find.byKey(const Key('pos_step_indicator'))),
+      );
+
+      // Venta is where a loaded draft opens, so its pill is the filled one.
+      final filled = tester
+          .widgetList<Container>(
+            find.descendant(
+              of: find.byKey(const Key('pos_step_indicator')),
+              matching: find.byType(Container),
+            ),
+          )
+          .where(
+            (c) =>
+                c.decoration is ShapeDecoration &&
+                (c.decoration! as ShapeDecoration).color ==
+                    theme.colorScheme.secondaryContainer,
+          );
+      expect(filled, hasLength(1));
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('pos_step_indicator')),
+          matching: find.byIcon(Icons.edit_note),
+        ),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('the footer band (spec 023 contracts/capture-surface.md §5)', () {
+    testWidgets('the counts are ruled off from the money, and the action names '
+        'the step it moves to', (tester) async {
+      when(() => salesOrders.getById(saleId: 21))
+          .thenAnswer((_) async => testSale(id: 21, lines: [testLine()]));
+      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
+          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/21',
+        overrides: overrides(),
+        surface: const Size(1440, 900),
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      expect(find.byKey(const Key('pos_totals_divider')), findsOneWidget);
+
+      final action = find.byKey(const Key('pos_continue_to_payment'));
+      expect(tester.widget(action), isA<FloatingActionButton>());
+      // Just the step's name and the arrow — not a sentence.
+      expect(
+        find.descendant(of: action, matching: find.text(l10n.posStepCobro)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: action, matching: find.byIcon(Icons.arrow_forward)),
+        findsOneWidget,
+      );
+    });
+  });
 }
