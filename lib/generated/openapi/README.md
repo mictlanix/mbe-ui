@@ -272,6 +272,12 @@ Class | Method | HTTP request | Description
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**getTaxpayerRecipientApiV1TaxpayerRecipientsRfcGet**](doc/TaxpayerRecipientsApi.md#gettaxpayerrecipientapiv1taxpayerrecipientsrfcget) | **GET** /api/v1/taxpayer-recipients/{rfc} | Get Taxpayer Recipient
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**listTaxpayerRecipientsApiV1TaxpayerRecipientsGet**](doc/TaxpayerRecipientsApi.md#listtaxpayerrecipientsapiv1taxpayerrecipientsget) | **GET** /api/v1/taxpayer-recipients | List Taxpayer Recipients
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**updateTaxpayerRecipientApiV1TaxpayerRecipientsRfcPut**](doc/TaxpayerRecipientsApi.md#updatetaxpayerrecipientapiv1taxpayerrecipientsrfcput) | **PUT** /api/v1/taxpayer-recipients/{rfc} | Update Taxpayer Recipient
+[*UserProfilesApi*](doc/UserProfilesApi.md) | [**applyUserProfileApiV1UserProfilesProfileIdApplyUserIdPost**](doc/UserProfilesApi.md#applyuserprofileapiv1userprofilesprofileidapplyuseridpost) | **POST** /api/v1/user-profiles/{profile_id}/apply/{user_id} | Apply User Profile
+[*UserProfilesApi*](doc/UserProfilesApi.md) | [**createUserProfileApiV1UserProfilesPost**](doc/UserProfilesApi.md#createuserprofileapiv1userprofilespost) | **POST** /api/v1/user-profiles | Create User Profile
+[*UserProfilesApi*](doc/UserProfilesApi.md) | [**deleteUserProfileApiV1UserProfilesProfileIdDelete**](doc/UserProfilesApi.md#deleteuserprofileapiv1userprofilesprofileiddelete) | **DELETE** /api/v1/user-profiles/{profile_id} | Delete User Profile
+[*UserProfilesApi*](doc/UserProfilesApi.md) | [**getUserProfileApiV1UserProfilesProfileIdGet**](doc/UserProfilesApi.md#getuserprofileapiv1userprofilesprofileidget) | **GET** /api/v1/user-profiles/{profile_id} | Get User Profile
+[*UserProfilesApi*](doc/UserProfilesApi.md) | [**listUserProfilesApiV1UserProfilesGet**](doc/UserProfilesApi.md#listuserprofilesapiv1userprofilesget) | **GET** /api/v1/user-profiles | List User Profiles
+[*UserProfilesApi*](doc/UserProfilesApi.md) | [**updateUserProfileApiV1UserProfilesProfileIdPut**](doc/UserProfilesApi.md#updateuserprofileapiv1userprofilesprofileidput) | **PUT** /api/v1/user-profiles/{profile_id} | Update User Profile
 [*UsersApi*](doc/UsersApi.md) | [**createUserApiV1UsersPost**](doc/UsersApi.md#createuserapiv1userspost) | **POST** /api/v1/users | Create User
 [*UsersApi*](doc/UsersApi.md) | [**deleteUserApiV1UsersUserIdDelete**](doc/UsersApi.md#deleteuserapiv1usersuseriddelete) | **DELETE** /api/v1/users/{user_id} | Delete User
 [*UsersApi*](doc/UsersApi.md) | [**getUserApiV1UsersUserIdGet**](doc/UsersApi.md#getuserapiv1usersuseridget) | **GET** /api/v1/users/{user_id} | Get User
@@ -464,6 +470,8 @@ Class | Method | HTTP request | Description
  - [ProductResponse](doc/ProductResponse.md)
  - [ProductStockResponse](doc/ProductStockResponse.md)
  - [ProductUpdate](doc/ProductUpdate.md)
+ - [ProfilePrivilegeResponse](doc/ProfilePrivilegeResponse.md)
+ - [ProfilePrivilegeUpdate](doc/ProfilePrivilegeUpdate.md)
  - [ProofOfDeliveryResponse](doc/ProofOfDeliveryResponse.md)
  - [Quantity](doc/Quantity.md)
  - [Quantity1](doc/Quantity1.md)
@@ -511,6 +519,11 @@ Class | Method | HTTP request | Description
  - [UserCreate](doc/UserCreate.md)
  - [UserListItem](doc/UserListItem.md)
  - [UserListResponse](doc/UserListResponse.md)
+ - [UserProfileCreate](doc/UserProfileCreate.md)
+ - [UserProfileListItem](doc/UserProfileListItem.md)
+ - [UserProfileListResponse](doc/UserProfileListResponse.md)
+ - [UserProfileResponse](doc/UserProfileResponse.md)
+ - [UserProfileUpdate](doc/UserProfileUpdate.md)
  - [UserResponse](doc/UserResponse.md)
  - [UserSettingsResponse](doc/UserSettingsResponse.md)
  - [UserSettingsUpdate](doc/UserSettingsUpdate.md)

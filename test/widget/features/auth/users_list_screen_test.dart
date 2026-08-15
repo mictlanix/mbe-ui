@@ -13,8 +13,11 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
+import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -22,6 +25,9 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
+
+class MockUserProfileRepository extends Mock
+    implements UserProfileRepository {}
 
 class MockTokenStorage extends Mock implements TokenStorage {}
 
@@ -55,17 +61,21 @@ const _testUsers = [
     email: 'jdoe@example.com',
     administrator: false,
     status: EntityStatus.active,
+    profileId: 5,
+    profileName: 'Cashier',
   ),
 ];
 
 void main() {
   late MockAuthRepository authRepository;
   late MockUserRepository userRepository;
+  late MockUserProfileRepository userProfileRepository;
   late MockTokenStorage tokenStorage;
 
   setUp(() {
     authRepository = MockAuthRepository();
     userRepository = MockUserRepository();
+    userProfileRepository = MockUserProfileRepository();
     tokenStorage = MockTokenStorage();
     when(() => tokenStorage.read()).thenAnswer((_) async => null);
     when(() => tokenStorage.clear()).thenAnswer((_) async {});
@@ -73,11 +83,41 @@ void main() {
       () => userRepository.list(
         search: any(named: 'search'),
         status: any(named: 'status'),
+        profileId: any(named: 'profileId'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
       (_) async => UserListResult(items: _testUsers, total: _testUsers.length),
+    );
+    when(
+      () => userProfileRepository.list(
+        search: any(named: 'search'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const UserProfileListResult(
+        items: [
+          UserProfileSummary(
+            userProfileId: 5,
+            name: 'Cashier',
+            status: EntityStatus.active,
+          ),
+        ],
+        total: 1,
+      ),
+    );
+    when(
+      () => userProfileRepository.get(profileId: any(named: 'profileId')),
+    ).thenAnswer(
+      (_) async => const UserProfile(
+        userProfileId: 5,
+        name: 'Cashier',
+        status: EntityStatus.active,
+        privileges: [],
+      ),
     );
   });
 
@@ -107,6 +147,9 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           userRepositoryProvider.overrideWithValue(userRepository),
+          userProfileRepositoryProvider.overrideWithValue(
+            userProfileRepository,
+          ),
           tokenStorageProvider.overrideWithValue(tokenStorage),
         ],
         child: MaterialApp.router(
@@ -150,6 +193,9 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           userRepositoryProvider.overrideWithValue(userRepository),
+          userProfileRepositoryProvider.overrideWithValue(
+            userProfileRepository,
+          ),
           tokenStorageProvider.overrideWithValue(tokenStorage),
         ],
         child: MaterialApp.router(
@@ -227,6 +273,7 @@ void main() {
         () => userRepository.list(
           search: any(named: 'search'),
           status: any(named: 'status'),
+          profileId: any(named: 'profileId'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -239,6 +286,7 @@ void main() {
         () => userRepository.list(
           search: 'jdoe',
           status: null,
+          profileId: any(named: 'profileId'),
           skip: 0,
           limit: 20,
         ),
@@ -262,6 +310,7 @@ void main() {
       () => userRepository.list(
         search: any(named: 'search'),
         status: any(named: 'status'),
+        profileId: any(named: 'profileId'),
         skip: 0,
         limit: any(named: 'limit'),
       ),
@@ -270,6 +319,7 @@ void main() {
       () => userRepository.list(
         search: any(named: 'search'),
         status: any(named: 'status'),
+        profileId: any(named: 'profileId'),
         skip: 20,
         limit: any(named: 'limit'),
       ),
@@ -283,7 +333,13 @@ void main() {
 
     verify(
       () =>
-          userRepository.list(search: null, status: null, skip: 20, limit: 20),
+          userRepository.list(
+            search: null,
+            status: null,
+            profileId: any(named: 'profileId'),
+            skip: 20,
+            limit: 20,
+          ),
     ).called(1);
   });
 
@@ -361,6 +417,7 @@ void main() {
           () => userRepository.list(
             search: any(named: 'search'),
             status: any(named: 'status'),
+            profileId: any(named: 'profileId'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
           ),
@@ -382,6 +439,7 @@ void main() {
           () => userRepository.list(
             search: any(named: 'search'),
             status: EntityStatus.inactive,
+            profileId: any(named: 'profileId'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
           ),
@@ -408,5 +466,111 @@ void main() {
         );
       },
     );
+  });
+
+  group('024-user-profiles: origin column and profile filter', () {
+    testWidgets(
+      'the profile column shows profileName, and blank for an account '
+      'with none (FR-027)',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _adminUser);
+
+        expect(find.text('Cashier'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'a profile facet in the URL narrows the list, and the picker '
+      "resolves the id to the profile's name, not the raw id (FR-028)",
+      (tester) async {
+        when(
+          () => userRepository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            profileId: 5,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => UserListResult(items: [_testUsers[1]], total: 1),
+        );
+
+        await pumpScreen(
+          tester,
+          signedInAs: _adminUser,
+          query: const ListQuery(
+            facets: {
+              'profile': ['5'],
+            },
+          ),
+        );
+
+        verify(
+          () => userRepository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            profileId: 5,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+
+        await tester.tap(find.byKey(const Key('users_filter_button')));
+        await tester.pumpAndSettle();
+
+        final picker = find.byKey(const Key('users_filter_profile'));
+        expect(picker, findsOneWidget);
+        final field = tester.widget<TextFormField>(
+          find.descendant(of: picker, matching: find.byType(TextFormField)),
+        );
+        expect(field.controller?.text ?? field.initialValue, 'Cashier');
+      },
+    );
+
+    testWidgets(
+      'omits the profile filter for a non-administrator, since the '
+      'picker itself calls an administrator-only endpoint (FR-034)',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _limitedUser);
+
+        await tester.tap(find.byKey(const Key('users_filter_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('users_filter_profile')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets('clearing filters removes the profile facet alongside status', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        query: const ListQuery(
+          facets: {
+            'status': ['inactive'],
+            'profile': ['5'],
+          },
+        ),
+      );
+
+      await tester.tap(find.byKey(const Key('users_filter_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => userRepository.list(
+          search: any(named: 'search'),
+          status: null,
+          profileId: null,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
+    });
   });
 }

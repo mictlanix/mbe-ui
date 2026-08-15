@@ -265,6 +265,7 @@ class UsersApi {
   /// Parameters:
   /// * [search] - Search by username or email
   /// * [status]
+  /// * [profileId] - Only accounts provisioned from this profile
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -279,6 +280,7 @@ class UsersApi {
   Future<Response<UserListResponse>> listUsersApiV1UsersGet({
     String? search,
     EntityStatus? status,
+    int? profileId,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -313,6 +315,12 @@ class UsersApi {
           _serializers,
           status,
           const FullType(EntityStatus),
+        ),
+      if (profileId != null)
+        r'profile_id': encodeQueryParameter(
+          _serializers,
+          profileId,
+          const FullType(int),
         ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),

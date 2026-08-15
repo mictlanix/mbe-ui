@@ -9,10 +9,13 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/account/change_password_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/account/forgot_password_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/user_profile_detail_screen.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/user_profiles_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
@@ -279,6 +282,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 024-user-profiles: appended last (index 19), same rationale.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/user-profiles',
+                builder: (context, state) =>
+                    UserProfilesListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -301,6 +314,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/users/:userId',
         builder: (context, state) => UserDetailScreen(
           userId: state.pathParameters['userId'],
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
+        path: '/user-profiles/new',
+        builder: (context, state) => const UserProfileDetailScreen(),
+      ),
+      GoRoute(
+        path: '/user-profiles/:profileId',
+        builder: (context, state) => UserProfileDetailScreen(
+          profileId: int.tryParse(state.pathParameters['profileId'] ?? ''),
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
@@ -590,100 +614,112 @@ String? _redirect(Ref ref, GoRouterState state) {
   if (state.matchedLocation == '/auth/login') return '/';
 
   final gate = _routeGate(state.matchedLocation);
-  if (gate != null &&
-      !ref.read(accessControlProvider).can(gate.object, gate.right)) {
-    return '/';
-  }
+  final access = ref.read(accessControlProvider);
+  final allowed = switch (gate) {
+    null => true,
+    PrivilegeGate(:final object, :final right) => access.can(object, right),
+    AdministratorGate() => access.isAdministrator,
+  };
+  if (!allowed) return '/';
   return null;
 }
 
-/// The `(SystemObject, AccessRight)` gate for a route, per
-/// contracts/routes.md. Returns `null` for unguarded routes. Most routes
-/// gate on `AccessRight.read` (the convention — a route's own screen then
-/// further restricts create/update/delete actions); `/products/merge` is a
-/// deliberate exception, since its only purpose is the create-gated merge
-/// action mbe-api itself enforces (specs/008-merge-products research.md §5,
+/// The [NavGate] for a route, per contracts/routes.md. Returns `null` for
+/// unguarded routes. Most routes are a [PrivilegeGate] on `AccessRight.read`
+/// (the convention — a route's own screen then further restricts
+/// create/update/delete actions); `/products/merge` is a deliberate
+/// exception, since its only purpose is the create-gated merge action
+/// mbe-api itself enforces (specs/008-merge-products research.md §5,
 /// plan.md §IV design note) — gating it on Read would expose a screen a
-/// Read-only user could never successfully use.
-({SystemObject object, AccessRight right})? _routeGate(String location) {
+/// Read-only user could never successfully use. `/user-profiles` is an
+/// [AdministratorGate] — mbe-api exposes no `SystemObject` for profiles
+/// (024-user-profiles research.md §2).
+NavGate? _routeGate(String location) {
   if (location == '/products/merge') {
-    return (object: SystemObject.productsMerge, right: AccessRight.create);
+    return PrivilegeGate(SystemObject.productsMerge, AccessRight.create);
+  }
+  // Checked before the generic '/users' gate below: `/user-profiles` does
+  // NOT start with '/users', so ordering is not load-bearing today, but the
+  // two prefixes are kept unambiguous and explicitly tested (024-user-profiles
+  // contracts/routes.md §2) rather than relying on that not mattering.
+  if (location.startsWith('/user-profiles')) {
+    return const AdministratorGate();
   }
   if (location.startsWith('/users')) {
-    return (object: SystemObject.users, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.users, AccessRight.read);
   }
   // Checked before the generic '/products' gate below: this nested route
   // is the product detail screen's "view pricing" shortcut and must gate on
   // pricing read access, not products read access (the button that links
   // here is itself hidden without it — product_detail_screen.dart).
   if (location.startsWith('/products/') && location.endsWith('/pricing')) {
-    return (object: SystemObject.pricing, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.pricing, AccessRight.read);
   }
   if (location.startsWith('/products')) {
-    return (object: SystemObject.products, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.products, AccessRight.read);
   }
   if (location.startsWith('/price-lists')) {
-    return (object: SystemObject.priceLists, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.priceLists, AccessRight.read);
   }
   if (location.startsWith('/pricing')) {
-    return (object: SystemObject.pricing, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.pricing, AccessRight.read);
   }
   if (location.startsWith('/exchange-rates')) {
-    return (object: SystemObject.exchangeRates, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.exchangeRates, AccessRight.read);
   }
   if (location.startsWith('/suppliers')) {
-    return (object: SystemObject.suppliers, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.suppliers, AccessRight.read);
   }
   if (location.startsWith('/labels')) {
-    return (object: SystemObject.labels, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.labels, AccessRight.read);
   }
   if (location.startsWith('/employees')) {
-    return (object: SystemObject.employees, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.employees, AccessRight.read);
   }
   if (location.startsWith('/customers')) {
-    return (object: SystemObject.customers, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.customers, AccessRight.read);
   }
   if (location.startsWith('/taxpayer-recipients')) {
-    return (object: SystemObject.taxpayerRecipients, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.taxpayerRecipients, AccessRight.read);
   }
   if (location.startsWith('/expenses')) {
-    return (object: SystemObject.expenses, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.expenses, AccessRight.read);
   }
   if (location.startsWith('/vehicles')) {
-    return (object: SystemObject.vehicle, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.vehicle, AccessRight.read);
   }
   if (location.startsWith('/vehicle-operators')) {
-    return (object: SystemObject.vehicleOperators, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.vehicleOperators, AccessRight.read);
   }
   if (location.startsWith('/warehouses')) {
-    return (object: SystemObject.warehouses, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.warehouses, AccessRight.read);
   }
   if (location.startsWith('/cash-drawers')) {
-    return (object: SystemObject.cashDrawers, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.cashDrawers, AccessRight.read);
   }
   if (location.startsWith('/points-of-sale')) {
-    return (object: SystemObject.pointsOfSale, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.pointsOfSale, AccessRight.read);
   }
   if (location.startsWith('/facilities')) {
-    return (object: SystemObject.facilities, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.facilities, AccessRight.read);
   }
   if (location.startsWith('/payment-method-options')) {
-    return (object: SystemObject.paymentMethodOptions, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.paymentMethodOptions, AccessRight.read);
   }
   if (location.startsWith('/taxpayer-issuers')) {
-    return (object: SystemObject.taxpayers, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.taxpayers, AccessRight.read);
   }
   // 021-cash-sessions: gated on `pos` (44), not `cashSessionClose` (111) —
   // the latter would lock out the cashiers the screen exists for. Close
   // itself is gated separately, inside the screen (contracts/routes.md §2).
   if (location.startsWith('/sales/cash-sessions')) {
-    return (object: SystemObject.pos, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.pos, AccessRight.read);
   }
   // 020-point-of-sale: same `pos` privilege — line-level mutations are
   // additionally gated on `salesOrders` inside the screen itself
   // (contracts/pos-screen.md §2), not at the route level.
   if (location.startsWith('/sales/pos')) {
-    return (object: SystemObject.pos, right: AccessRight.read);
+    return PrivilegeGate(SystemObject.pos, AccessRight.read);
   }
   return null;
 }

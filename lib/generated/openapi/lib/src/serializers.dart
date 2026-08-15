@@ -181,6 +181,8 @@ import 'package:mbe_api_client/src/model/product_price_update.dart';
 import 'package:mbe_api_client/src/model/product_response.dart';
 import 'package:mbe_api_client/src/model/product_stock_response.dart';
 import 'package:mbe_api_client/src/model/product_update.dart';
+import 'package:mbe_api_client/src/model/profile_privilege_response.dart';
+import 'package:mbe_api_client/src/model/profile_privilege_update.dart';
 import 'package:mbe_api_client/src/model/proof_of_delivery_response.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
 import 'package:mbe_api_client/src/model/quantity1.dart';
@@ -228,6 +230,11 @@ import 'package:mbe_api_client/src/model/token_response.dart';
 import 'package:mbe_api_client/src/model/user_create.dart';
 import 'package:mbe_api_client/src/model/user_list_item.dart';
 import 'package:mbe_api_client/src/model/user_list_response.dart';
+import 'package:mbe_api_client/src/model/user_profile_create.dart';
+import 'package:mbe_api_client/src/model/user_profile_list_item.dart';
+import 'package:mbe_api_client/src/model/user_profile_list_response.dart';
+import 'package:mbe_api_client/src/model/user_profile_response.dart';
+import 'package:mbe_api_client/src/model/user_profile_update.dart';
 import 'package:mbe_api_client/src/model/user_response.dart';
 import 'package:mbe_api_client/src/model/user_settings_response.dart';
 import 'package:mbe_api_client/src/model/user_settings_update.dart';
@@ -414,6 +421,8 @@ part 'serializers.g.dart';
   ProductResponse,
   ProductStockResponse,
   ProductUpdate,
+  ProfilePrivilegeResponse,
+  ProfilePrivilegeUpdate,
   ProofOfDeliveryResponse,
   Quantity,
   Quantity1,
@@ -461,6 +470,11 @@ part 'serializers.g.dart';
   UserCreate,
   UserListItem,
   UserListResponse,
+  UserProfileCreate,
+  UserProfileListItem,
+  UserProfileListResponse,
+  UserProfileResponse,
+  UserProfileUpdate,
   UserResponse,
   UserSettingsResponse,
   UserSettingsUpdate,

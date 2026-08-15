@@ -22,6 +22,12 @@ class User with _$User {
     required int sessionVersion,
     UserSettings? settings,
     required List<Privilege> privileges,
+
+    /// The profile this account was last provisioned from, if any
+    /// (024-user-profiles data-model.md §2). Provenance only — never read by
+    /// `AccessControlService` or any permission decision.
+    int? profileId,
+    String? profileName,
   }) = _User;
 
   factory User.fromResponse(UserResponse response) {
@@ -39,6 +45,8 @@ class User with _$User {
           .map(Privilege.fromResponse)
           .whereType<Privilege>()
           .toList(),
+      profileId: response.profileId,
+      profileName: response.profileName,
     );
   }
 }
@@ -53,6 +61,11 @@ class UserSummary with _$UserSummary {
     int? employeeId,
     required bool administrator,
     required EntityStatus status,
+
+    /// The profile this account was last provisioned from, if any
+    /// (024-user-profiles data-model.md §2). See [User.profileId].
+    int? profileId,
+    String? profileName,
   }) = _UserSummary;
 
   factory UserSummary.fromListItem(UserListItem item) {
@@ -62,6 +75,8 @@ class UserSummary with _$UserSummary {
       employeeId: item.employeeId,
       administrator: item.administrator,
       status: EntityStatus.fromApi(item.status),
+      profileId: item.profileId,
+      profileName: item.profileName,
     );
   }
 }

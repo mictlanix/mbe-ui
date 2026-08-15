@@ -26,6 +26,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserListResult> list({
     String? search,
     EntityStatus? status,
+    int? profileId,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -33,6 +34,7 @@ class UserRepositoryImpl implements UserRepository {
       final response = await _api.listUsersApiV1UsersGet(
         search: search,
         status: status?.toApi(),
+        profileId: profileId,
         skip: skip,
         limit: limit,
       );
@@ -65,6 +67,7 @@ class UserRepositoryImpl implements UserRepository {
     required int employeeId,
     bool administrator = false,
     EntityStatus status = EntityStatus.active,
+    int? profileId,
   }) async {
     try {
       final response = await _api.createUserApiV1UsersPost(
@@ -75,7 +78,8 @@ class UserRepositoryImpl implements UserRepository {
             ..email = email
             ..employeeId = employeeId
             ..administrator = administrator
-            ..status = status.toApi(),
+            ..status = status.toApi()
+            ..profileId = profileId,
         ),
       );
       final user = response.data;

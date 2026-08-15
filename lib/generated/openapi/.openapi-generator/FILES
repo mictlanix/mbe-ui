@@ -191,6 +191,8 @@ doc/ProductResponse.md
 doc/ProductStockResponse.md
 doc/ProductUpdate.md
 doc/ProductsApi.md
+doc/ProfilePrivilegeResponse.md
+doc/ProfilePrivilegeUpdate.md
 doc/ProofOfDeliveryResponse.md
 doc/Quantity.md
 doc/Quantity1.md
@@ -245,6 +247,12 @@ doc/TokenResponse.md
 doc/UserCreate.md
 doc/UserListItem.md
 doc/UserListResponse.md
+doc/UserProfileCreate.md
+doc/UserProfileListItem.md
+doc/UserProfileListResponse.md
+doc/UserProfileResponse.md
+doc/UserProfileUpdate.md
+doc/UserProfilesApi.md
 doc/UserResponse.md
 doc/UserSettingsResponse.md
 doc/UserSettingsUpdate.md
@@ -295,6 +303,7 @@ lib/src/api/suppliers_api.dart
 lib/src/api/taxpayer_certificates_api.dart
 lib/src/api/taxpayer_issuers_api.dart
 lib/src/api/taxpayer_recipients_api.dart
+lib/src/api/user_profiles_api.dart
 lib/src/api/users_api.dart
 lib/src/api/vehicle_operators_api.dart
 lib/src/api/vehicles_api.dart
@@ -474,6 +483,8 @@ lib/src/model/product_price_update.dart
 lib/src/model/product_response.dart
 lib/src/model/product_stock_response.dart
 lib/src/model/product_update.dart
+lib/src/model/profile_privilege_response.dart
+lib/src/model/profile_privilege_update.dart
 lib/src/model/proof_of_delivery_response.dart
 lib/src/model/quantity.dart
 lib/src/model/quantity1.dart
@@ -521,6 +532,11 @@ lib/src/model/token_response.dart
 lib/src/model/user_create.dart
 lib/src/model/user_list_item.dart
 lib/src/model/user_list_response.dart
+lib/src/model/user_profile_create.dart
+lib/src/model/user_profile_list_item.dart
+lib/src/model/user_profile_list_response.dart
+lib/src/model/user_profile_response.dart
+lib/src/model/user_profile_update.dart
 lib/src/model/user_response.dart
 lib/src/model/user_settings_response.dart
 lib/src/model/user_settings_update.dart

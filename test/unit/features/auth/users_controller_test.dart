@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
@@ -75,6 +76,55 @@ void main() {
       expect(filter.search, '');
       expect(filter.status, isNull);
       expect(filter.pageIndex, 0);
+      expect(filter.profileId, isNull);
+    });
+
+    test(
+      'decodes the profile facet into profileId (024-user-profiles FR-028)',
+      () {
+        final filter = UserFilter.fromQuery(
+          const ListQuery(
+            facets: {
+              'profile': ['5'],
+            },
+          ),
+        );
+
+        expect(filter.profileId, 5);
+      },
+    );
+
+    test('an unparseable profile facet degrades to null, not a throw', () {
+      final filter = UserFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'profile': ['not-a-number'],
+          },
+        ),
+      );
+
+      expect(filter.profileId, isNull);
+    });
+  });
+
+  group('UserFilterBadge.activeFilterCount', () {
+    test('0 when nothing is set', () {
+      expect(const UserFilter().activeFilterCount, 0);
+    });
+
+    test('counts status and profileId independently', () {
+      expect(
+        const UserFilter(status: EntityStatus.inactive).activeFilterCount,
+        1,
+      );
+      expect(const UserFilter(profileId: 5).activeFilterCount, 1);
+      expect(
+        const UserFilter(
+          status: EntityStatus.inactive,
+          profileId: 5,
+        ).activeFilterCount,
+        2,
+      );
     });
   });
 
@@ -89,7 +139,7 @@ void main() {
     test('build(filter) fetches page 0 with the given filter', () async {
       when(
         () =>
-            userRepository.list(search: null, status: null, skip: 0, limit: 20),
+            userRepository.list(search: null, status: null, profileId: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 1),
       );
@@ -112,6 +162,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: EntityStatus.inactive,
+            profileId: null,
             skip: 0,
             limit: 20,
           ),
@@ -132,6 +183,44 @@ void main() {
           () => userRepository.list(
             search: null,
             status: EntityStatus.inactive,
+            profileId: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'a profile facet in the filter is passed to the repository '
+      '(024-user-profiles FR-028)',
+      () async {
+        when(
+          () => userRepository.list(
+            search: null,
+            status: null,
+            profileId: 5,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => UserListResult(items: [user('jdoe')], total: 1),
+        );
+
+        final container = makeContainer();
+        addTearDown(container.dispose);
+
+        const filter = UserFilter(profileId: 5);
+        final page = await container.read(
+          usersControllerProvider(filter).future,
+        );
+
+        expect(page.items.single.userId, 'jdoe');
+        verify(
+          () => userRepository.list(
+            search: null,
+            status: null,
+            profileId: 5,
             skip: 0,
             limit: 20,
           ),
@@ -146,6 +235,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: null,
+            profileId: null,
             skip: 0,
             limit: 20,
           ),
@@ -156,6 +246,7 @@ void main() {
           () => userRepository.list(
             search: 'admin',
             status: null,
+            profileId: null,
             skip: 0,
             limit: 20,
           ),
@@ -181,7 +272,7 @@ void main() {
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
         () =>
-            userRepository.list(search: null, status: null, skip: 0, limit: 20),
+            userRepository.list(search: null, status: null, profileId: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 21),
       );
@@ -189,6 +280,7 @@ void main() {
         () => userRepository.list(
           search: null,
           status: null,
+          profileId: null,
           skip: 20,
           limit: 20,
         ),
@@ -221,6 +313,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: null,
+            profileId: null,
             skip: 20,
             limit: 20,
           ),
@@ -236,6 +329,7 @@ void main() {
           () => userRepository.list(
             search: null,
             status: null,
+            profileId: null,
             skip: 20,
             limit: 20,
           ),
@@ -293,9 +387,150 @@ void main() {
     });
   });
 
+  group('users list cache invalidation after a write (regression)', () {
+    // Found live during the 024 quickstart walkthrough: creating a user
+    // saved server-side but the users list still showed the old page. The
+    // list screen stays mounted underneath the pushed form, so its family
+    // provider keeps its listener and serves the cached page until
+    // something invalidates it. `deleteUser` and `applyProfile` did
+    // invalidate; `save` did not — so a newly created account (and the
+    // Perfil column that 024 added) looked like it had been lost.
+    //
+    // Pre-dates spec 024 (verified at f597768) but is asserted here
+    // because 024's origin column is what makes it user-visible.
+    UserSummary summary(String id) => UserSummary(
+      userId: id,
+      email: '$id@example.com',
+      administrator: false,
+      status: EntityStatus.active,
+    );
+
+    /// Reads the list (caching a page holding only `jdoe`), runs [write]
+    /// against a server that now also has `newbie`, then reads again and
+    /// returns what the list shows. Asserts on the visible rows rather
+    /// than a call count, so it stays pinned to the observable symptom.
+    Future<List<String>> listIdsAfter(
+      Future<void> Function(UserFormController notifier) write,
+    ) async {
+      var serverHasSecondUser = false;
+      when(
+        () => userRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          profileId: any(named: 'profileId'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => UserListResult(
+          items: [
+            summary('jdoe'),
+            if (serverHasSecondUser) summary('newbie'),
+          ],
+          total: serverHasSecondUser ? 2 : 1,
+        ),
+      );
+
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      const filter = UserFilter();
+      final first = await container.read(
+        usersControllerProvider(filter).future,
+      );
+      expect(first.items.map((u) => u.userId), ['jdoe']);
+
+      serverHasSecondUser = true;
+      await write(container.read(userFormControllerProvider.notifier));
+
+      final second = await container.read(
+        usersControllerProvider(filter).future,
+      );
+      return second.items.map((u) => u.userId).toList();
+    }
+
+    test('a create invalidates the users list', () async {
+      when(
+        () => userRepository.create(
+          userId: any(named: 'userId'),
+          password: any(named: 'password'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          profileId: any(named: 'profileId'),
+        ),
+      ).thenAnswer((_) async => _testUser);
+
+      final ids = await listIdsAfter((notifier) async {
+        notifier.userIdChanged('newbie');
+        notifier.passwordChanged('secret1');
+        notifier.emailChanged('newbie@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
+        await notifier.save();
+      });
+
+      expect(
+        ids,
+        ['jdoe', 'newbie'],
+        reason: 'the users list must show a newly created account',
+      );
+    });
+
+    test('an update invalidates the users list', () async {
+      when(
+        () => userRepository.update(
+          userId: any(named: 'userId'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          administrator: any(named: 'administrator'),
+          status: any(named: 'status'),
+          privileges: any(named: 'privileges'),
+          settings: any(named: 'settings'),
+        ),
+      ).thenAnswer((_) async => _testUser);
+
+      final ids = await listIdsAfter((notifier) async {
+        notifier.emailChanged('updated@example.com');
+        await notifier.save(existingUserId: 'jdoe');
+      });
+
+      expect(
+        ids,
+        ['jdoe', 'newbie'],
+        reason: 'the users list must re-read after an update',
+      );
+    });
+
+    test('a failed save does NOT invalidate — nothing changed server-side',
+        () async {
+      when(
+        () => userRepository.create(
+          userId: any(named: 'userId'),
+          password: any(named: 'password'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          profileId: any(named: 'profileId'),
+        ),
+      ).thenThrow(const AppError.server(message: 'boom'));
+
+      final ids = await listIdsAfter((notifier) async {
+        notifier.userIdChanged('newbie');
+        notifier.passwordChanged('secret1');
+        notifier.emailChanged('newbie@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
+        await notifier.save();
+      });
+
+      expect(
+        ids,
+        ['jdoe'],
+        reason: 'a rejected save changed nothing, so the cached page stands',
+      );
+    });
+  });
+
   group('UserFormController.save (create mode)', () {
     test(
-      'calls create then update-with-privileges when privileges present',
+      'with no profile chosen, calls create then update-with-privileges '
+      'when privileges present — unchanged from before 024-user-profiles',
       () async {
         when(
           () => userRepository.create(
@@ -303,6 +538,7 @@ void main() {
             password: any(named: 'password'),
             email: any(named: 'email'),
             employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
           ),
         ).thenAnswer((_) async => _testUser);
         when(
@@ -330,6 +566,7 @@ void main() {
             password: 'secret1',
             email: 'jdoe@example.com',
             employeeId: 7,
+            profileId: null,
           ),
         ).called(1);
         verify(
@@ -338,6 +575,56 @@ void main() {
             privileges: any(named: 'privileges'),
           ),
         ).called(1);
+        expect(container.read(userFormControllerProvider).saved, isTrue);
+      },
+    );
+
+    test(
+      'with a profile chosen, calls create with that profileId and skips '
+      'the follow-up privileges PUT entirely, even with a non-empty grid '
+      '(024-user-profiles research.md §7 — the single most damaging slip '
+      'this feature could ship with)',
+      () async {
+        when(
+          () => userRepository.create(
+            userId: any(named: 'userId'),
+            password: any(named: 'password'),
+            email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
+          ),
+        ).thenAnswer((_) async => _testUser);
+
+        final container = makeContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(userFormControllerProvider.notifier);
+
+        notifier.userIdChanged('jdoe');
+        notifier.passwordChanged('secret1');
+        notifier.emailChanged('jdoe@example.com');
+        notifier.employeeSelected(7, 'Jane Doe');
+        // Hand-ticked despite a profile being chosen — must not reach the
+        // server, since the profile already determines the full set.
+        notifier.privilegeChanged(SystemObject.users, 2);
+        notifier.profileSelected(5, 'Cashier');
+
+        await notifier.save();
+
+        verify(
+          () => userRepository.create(
+            userId: 'jdoe',
+            password: 'secret1',
+            email: 'jdoe@example.com',
+            employeeId: 7,
+            profileId: 5,
+          ),
+        ).called(1);
+        verifyNever(
+          () => userRepository.update(
+            userId: any(named: 'userId'),
+            privileges: any(named: 'privileges'),
+          ),
+        );
         expect(container.read(userFormControllerProvider).saved, isTrue);
       },
     );

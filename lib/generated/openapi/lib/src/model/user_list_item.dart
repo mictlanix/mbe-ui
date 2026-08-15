@@ -17,6 +17,8 @@ part 'user_list_item.g.dart';
 /// * [employeeId]
 /// * [administrator]
 /// * [status]
+/// * [profileId]
+/// * [profileName]
 @BuiltValue()
 abstract class UserListItem
     implements Built<UserListItem, UserListItemBuilder> {
@@ -35,6 +37,12 @@ abstract class UserListItem
   @BuiltValueField(wireName: r'status')
   EntityStatus get status;
   // enum statusEnum {  0,  1,  2,  };
+
+  @BuiltValueField(wireName: r'profile_id')
+  int? get profileId;
+
+  @BuiltValueField(wireName: r'profile_name')
+  String? get profileName;
 
   UserListItem._();
 
@@ -84,6 +92,20 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
       object.status,
       specifiedType: const FullType(EntityStatus),
     );
+    if (object.profileId != null) {
+      yield r'profile_id';
+      yield serializers.serialize(
+        object.profileId,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.profileName != null) {
+      yield r'profile_name';
+      yield serializers.serialize(
+        object.profileName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
   }
 
   @override
@@ -152,6 +174,26 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
                   )
                   as EntityStatus;
           result.status = valueDes;
+          break;
+        case r'profile_id':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.profileId = valueDes;
+          break;
+        case r'profile_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.profileName = valueDes;
           break;
         default:
           unhandled.add(key);

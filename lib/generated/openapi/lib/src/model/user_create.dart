@@ -18,6 +18,7 @@ part 'user_create.g.dart';
 /// * [employeeId]
 /// * [administrator]
 /// * [status]
+/// * [profileId]
 @BuiltValue()
 abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   @BuiltValueField(wireName: r'user_id')
@@ -38,6 +39,9 @@ abstract class UserCreate implements Built<UserCreate, UserCreateBuilder> {
   @BuiltValueField(wireName: r'status')
   EntityStatus? get status;
   // enum statusEnum {  0,  1,  2,  };
+
+  @BuiltValueField(wireName: r'profile_id')
+  int? get profileId;
 
   UserCreate._();
 
@@ -96,6 +100,13 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
       yield serializers.serialize(
         object.status,
         specifiedType: const FullType(EntityStatus),
+      );
+    }
+    if (object.profileId != null) {
+      yield r'profile_id';
+      yield serializers.serialize(
+        object.profileId,
+        specifiedType: const FullType.nullable(int),
       );
     }
   }
@@ -175,6 +186,16 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
                   )
                   as EntityStatus;
           result.status = valueDes;
+          break;
+        case r'profile_id':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.profileId = valueDes;
           break;
         default:
           unhandled.add(key);
