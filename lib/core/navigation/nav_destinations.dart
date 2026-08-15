@@ -44,6 +44,11 @@ class NavBranch {
 
   // 020-point-of-sale: appended last, same rationale as `cashSessions` above.
   static const int pos = 18;
+
+  // 024-user-profiles: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree`
+  // (this destination sits right after `users` there), not from this index.
+  static const int userProfiles = 19;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -68,7 +73,16 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.people,
         route: '/users',
         branchIndex: NavBranch.users,
-        gate: (object: SystemObject.users, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.users, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'user-profiles',
+        label: _userProfilesLabel,
+        icon: Icons.badge_outlined,
+        selectedIcon: Icons.badge,
+        route: '/user-profiles',
+        branchIndex: NavBranch.userProfiles,
+        gate: AdministratorGate(),
       ),
       NavDestination(
         id: 'products',
@@ -77,7 +91,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.inventory_2,
         route: '/products',
         branchIndex: NavBranch.products,
-        gate: (object: SystemObject.products, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.products, AccessRight.read),
       ),
       NavDestination(
         id: 'price-lists',
@@ -86,7 +100,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.sell,
         route: '/price-lists',
         branchIndex: NavBranch.priceLists,
-        gate: (object: SystemObject.priceLists, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.priceLists, AccessRight.read),
       ),
       NavDestination(
         id: 'exchange-rates',
@@ -95,7 +109,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.currency_exchange,
         route: '/exchange-rates',
         branchIndex: NavBranch.exchangeRates,
-        gate: (object: SystemObject.exchangeRates, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.exchangeRates, AccessRight.read),
       ),
       NavDestination(
         id: 'suppliers',
@@ -104,7 +118,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.local_shipping,
         route: '/suppliers',
         branchIndex: NavBranch.suppliers,
-        gate: (object: SystemObject.suppliers, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.suppliers, AccessRight.read),
       ),
       NavDestination(
         id: 'labels',
@@ -113,7 +127,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.label,
         route: '/labels',
         branchIndex: NavBranch.labels,
-        gate: (object: SystemObject.labels, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.labels, AccessRight.read),
       ),
       NavDestination(
         id: 'employees',
@@ -122,7 +136,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.badge,
         route: '/employees',
         branchIndex: NavBranch.employees,
-        gate: (object: SystemObject.employees, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.employees, AccessRight.read),
       ),
       NavDestination(
         id: 'customers',
@@ -131,7 +145,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.people_alt,
         route: '/customers',
         branchIndex: NavBranch.customers,
-        gate: (object: SystemObject.customers, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.customers, AccessRight.read),
       ),
       NavDestination(
         id: 'taxpayer-recipients',
@@ -140,9 +154,9 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.receipt_long,
         route: '/taxpayer-recipients',
         branchIndex: NavBranch.taxpayerRecipients,
-        gate: (
-          object: SystemObject.taxpayerRecipients,
-          right: AccessRight.read,
+        gate: PrivilegeGate(
+          SystemObject.taxpayerRecipients,
+          AccessRight.read,
         ),
       ),
       NavDestination(
@@ -152,7 +166,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.payments,
         route: '/expenses',
         branchIndex: NavBranch.expenses,
-        gate: (object: SystemObject.expenses, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.expenses, AccessRight.read),
       ),
       NavDestination(
         id: 'vehicles',
@@ -161,7 +175,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.airport_shuttle,
         route: '/vehicles',
         branchIndex: NavBranch.vehicles,
-        gate: (object: SystemObject.vehicle, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.vehicle, AccessRight.read),
       ),
       NavDestination(
         id: 'vehicle-operators',
@@ -170,7 +184,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.assignment_ind,
         route: '/vehicle-operators',
         branchIndex: NavBranch.vehicleOperators,
-        gate: (object: SystemObject.vehicleOperators, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.vehicleOperators, AccessRight.read),
       ),
       // Warehouses, Cash Drawers and Points of Sale are no longer
       // standalone destinations (018-nested-facility-management): each
@@ -185,7 +199,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.business,
         route: '/facilities',
         branchIndex: NavBranch.facilities,
-        gate: (object: SystemObject.facilities, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.facilities, AccessRight.read),
       ),
       // spec 015: Payment Method Options is a fiscal catalog under Catálogos;
       // its Taxpayer Issuers/Certificates counterparts live under Ventas
@@ -197,9 +211,9 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.payment,
         route: '/payment-method-options',
         branchIndex: NavBranch.paymentMethodOptions,
-        gate: (
-          object: SystemObject.paymentMethodOptions,
-          right: AccessRight.read,
+        gate: PrivilegeGate(
+          SystemObject.paymentMethodOptions,
+          AccessRight.read,
         ),
       ),
     ],
@@ -215,7 +229,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.price_change,
         route: '/pricing',
         branchIndex: NavBranch.pricing,
-        gate: (object: SystemObject.pricing, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.pricing, AccessRight.read),
       ),
       // Taxpayer Certificates has no destination of its own — it is a child
       // section of the Taxpayer Issuer detail screen below, not a standalone
@@ -227,7 +241,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.corporate_fare,
         route: '/taxpayer-issuers',
         branchIndex: NavBranch.taxpayerIssuers,
-        gate: (object: SystemObject.taxpayers, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.taxpayers, AccessRight.read),
       ),
       NavDestination(
         id: 'cash-sessions',
@@ -236,7 +250,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.point_of_sale,
         route: '/sales/cash-sessions',
         branchIndex: NavBranch.cashSessions,
-        gate: (object: SystemObject.pos, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
       ),
       NavDestination(
         id: 'pos',
@@ -245,7 +259,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.shopping_cart,
         route: '/sales/pos',
         branchIndex: NavBranch.pos,
-        gate: (object: SystemObject.pos, right: AccessRight.read),
+        gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
       ),
     ],
   ),
@@ -256,6 +270,7 @@ String _homeLabel(AppLocalizations l10n) => l10n.homeMenuTitle;
 String _catalogsLabel(AppLocalizations l10n) => l10n.catalogsGroupTitle;
 String _salesLabel(AppLocalizations l10n) => l10n.salesGroupTitle;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
+String _userProfilesLabel(AppLocalizations l10n) => l10n.userProfilesMenuTitle;
 String _productsLabel(AppLocalizations l10n) => l10n.productsTitle;
 String _priceListsLabel(AppLocalizations l10n) => l10n.priceListsMenuTitle;
 String _pricingLabel(AppLocalizations l10n) => l10n.pricingMenuTitle;
@@ -308,6 +323,9 @@ List<NavItem> _filterTree(List<NavItem> tree, AccessControlService access) {
 }
 
 bool _isVisible(NavDestination d, AccessControlService access) {
-  final gate = d.gate;
-  return gate == null || access.can(gate.object, gate.right);
+  return switch (d.gate) {
+    null => true,
+    PrivilegeGate(:final object, :final right) => access.can(object, right),
+    AdministratorGate() => access.isAdministrator,
+  };
 }

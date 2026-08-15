@@ -1,0 +1,536 @@
+{
+  "workflow": "speckit",
+  "specName": "user profiles",
+  "branch": "024-user-profiles",
+  "currentStep": "implement",
+  "status": "implementing",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-14T23:12:40.762Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-14T23:16:54.203Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "ai",
+      "at": "2026-08-14T23:27:20.043Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:28:52.851Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:32:39.361Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:32:39.418Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-14T23:39:26.328Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:42:05.784Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-14T23:42:05.844Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "ai",
+      "at": "2026-08-14T23:51:10.595Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.302Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T00:55:21.303Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Administrators MUST be able to browse a paginated list of user profiles showing each profile's name, description and status, using the same list, pagination and empty-state presentation the application's other catalogs use."
+    },
+    "FR-002": {
+      "title": "The profile list MUST support searching by name."
+    },
+    "FR-003": {
+      "title": "The profile list MUST offer a status filter using the same status filter control the other catalogs use, and MUST NOT apply any status filter by default."
+    },
+    "FR-004": {
+      "title": "The profile list's search, status filter and page MUST be carried in the address, so a filtered view survives a reload and can be shared, consistent with every other list in the application."
+    },
+    "FR-005": {
+      "title": "Administrators MUST be able to open a profile read-only and see its name, description, status and its permissions across the full set of system objects."
+    },
+    "FR-006": {
+      "title": "Administrators MUST be able to create a profile with a required name, an optional description, a status, and any set of create/read/update/delete permissions per system object."
+    },
+    "FR-007": {
+      "title": "Administrators MUST be able to edit an existing profile's name, description, status and permissions."
+    },
+    "FR-008": {
+      "title": "Administrators MUST be able to delete a profile, after an explicit confirmation."
+    },
+    "FR-009": {
+      "title": "The profile permission editor MUST present the same create/read/update/delete choice per system object that the user permission editor presents, so an administrator recognises it as the same thing."
+    },
+    "FR-010": {
+      "title": "A profile MUST be saved carrying only the system objects it grants something on; objects left entirely unticked MUST NOT be sent as entries."
+    },
+    "FR-011": {
+      "title": "A profile with no permissions ticked MUST be accepted and saved as a valid profile."
+    },
+    "FR-012": {
+      "title": "When a profile is read back, every system object it does not name MUST be shown as granting nothing, so the editor always presents a complete picture."
+    },
+    "FR-013": {
+      "title": "A refused save caused by a duplicate name — compared without regard to case — MUST be reported against the name field, and MUST NOT discard anything the administrator entered."
+    },
+    "FR-014": {
+      "title": "A refused delete caused by accounts still referencing the profile MUST be reported with the reason the server gives, and the profile MUST remain in the catalog unchanged."
+    },
+    "FR-015": {
+      "title": "An administrator MUST be able to retire a profile by setting its status to inactive, which leaves it readable but no longer applyable."
+    },
+    "FR-016": {
+      "title": "The new-user form MUST offer an optional profile choice, listing only profiles that can actually be applied — that is, active ones."
+    },
+    "FR-017": {
+      "title": "Creating a user with a profile chosen MUST produce an account holding that profile's permissions; creating one with no profile chosen MUST behave exactly as it does today."
+    },
+    "FR-018": {
+      "title": "A user creation refused because the chosen profile is missing or inactive MUST report the reason, and the form MUST remain filled so the administrator can choose again."
+    },
+    "FR-019": {
+      "title": "The user detail screen, when editing an existing account, MUST offer an action to apply a profile, choosing from active profiles."
+    },
+    "FR-020": {
+      "title": "Applying a profile MUST require an explicit confirmation that names the chosen profile and states two consequences plainly: every permission the account currently holds is replaced, and the account's active sessions end."
+    },
+    "FR-021": {
+      "title": "Cancelling the confirmation MUST send nothing and leave the account untouched."
+    },
+    "FR-022": {
+      "title": "On a successful apply, the screen MUST show the account's resulting permissions and its newly recorded origin profile without requiring a manual reload, and MUST confirm the action succeeded."
+    },
+    "FR-023": {
+      "title": "A failed apply MUST report the reason and leave the screen showing the account as it actually stands, never a partially applied state."
+    },
+    "FR-024": {
+      "title": "When an administrator applies a profile to their own account, the confirmation MUST additionally warn that their own session will end, and the sign-out that follows MUST be handled as an ordinary session expiry rather than surfaced as an error."
+    },
+    "FR-025": {
+      "title": "The apply action MUST NOT be offered when the account is being viewed read-only, nor when creating a new account (where the profile choice serves that purpose)."
+    },
+    "FR-026": {
+      "title": "Per-user permission editing MUST continue to work exactly as it does today on every account, including accounts provisioned from a profile, and MUST NOT clear an account's recorded origin."
+    },
+    "FR-027": {
+      "title": "The user list MUST show each account's origin profile, left empty for accounts that have none."
+    },
+    "FR-028": {
+      "title": "The user list MUST offer a filter that narrows it to the accounts provisioned from a chosen profile, carried in the address like every other filter."
+    },
+    "FR-029": {
+      "title": "The user detail screen MUST show the account's origin profile, presented as where the account was provisioned from rather than as a live description of what it currently holds."
+    },
+    "FR-030": {
+      "title": "Nothing in the interface may claim or imply that an account's current permissions still match its origin profile, and no comparison between the two may be offered."
+    },
+    "FR-031": {
+      "title": "Every profile capability — browsing the catalog, creating, editing, deleting, and applying — MUST be available only to administrators, matching what the backend enforces."
+    },
+    "FR-032": {
+      "title": "The profile catalog MUST be reachable at `/user-profiles`, and navigating there without administrator rights MUST be refused the same way any other inaccessible route is."
+    },
+    "FR-033": {
+      "title": "The navigation entry for profiles MUST sit beside the Users entry in the same navigation group, and MUST be hidden from users who are not administrators."
+    },
+    "FR-034": {
+      "title": "The profile choice on the new-user form and the apply action on the user form MUST be hidden from users who are not administrators."
+    },
+    "FR-035": {
+      "title": "All text introduced by this feature MUST be available in both supported locales, with Spanish as the default, and all currency and dates formatted through the application's existing formatting rules."
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 24,
+    "projectedTasks": 32,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: mbe-api spec 014-user-profiles (backend contract, semantics, edge cases)",
+    "area: lib/generated/openapi — UserProfilesApi + UserProfile/ProfilePrivilege models, UserCreate.profile_id, UserResponse/UserListItem profile_id+profile_name, users list profile_id filter",
+    "area: lib/features/auth/presentation/admin — users_list_screen, user_detail_screen, users_controller, privileges_grid",
+    "area: lib/features/auth/domain+data — user_repository and impl",
+    "area: lib/app/router/app_router.dart — route guard maps routes to (SystemObject, AccessRight)",
+    "constraint: Constitution IV deny-by-default RBAC — profiles depart from it with administrator-only gating, to be reconciled in plan",
+    "constraint: spec 017 URL-as-view-state (ListQuery) for list search/filter/page",
+    "constraint: reuse shared catalog widgets and the existing PrivilegesGrid rather than rebuilding"
+  ],
+  "intent": "Surface mbe-api's user profiles in the UI: an administrator-only catalog of reusable permission templates, plus provisioning an account from one and finding the accounts a profile produced.",
+  "expectations": [
+    "Applying a profile to several accounts at once",
+    "Creating a profile from an existing account's permissions",
+    "Detecting or displaying whether an account still matches its origin profile",
+    "Migrating existing accounts onto profiles",
+    "Changing per-user permission-edit semantics (stays a partial upsert)",
+    "Per-facility or otherwise scoped profiles",
+    "Any change to permission enforcement or the permission vocabulary"
+  ],
+  "telemetryInstanceId": "d77b0ab2-e38f-4e8d-9080-7abcb698a990",
+  "currentTask": "T040"
+}

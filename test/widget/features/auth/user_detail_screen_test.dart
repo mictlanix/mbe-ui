@@ -12,8 +12,11 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
+import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -29,6 +32,9 @@ class MockTokenStorage extends Mock implements TokenStorage {}
 class MockUserRepository extends Mock implements UserRepository {}
 
 class MockEmployeeRepository extends Mock implements EmployeeRepository {}
+
+class MockUserProfileRepository extends Mock
+    implements UserProfileRepository {}
 
 const _readOnlyUser = User(
   userId: 'reader',
@@ -57,6 +63,18 @@ const _fullAccessUser = User(
   sessionVersion: 1,
   // read (2) + update (4) + delete (8)
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 14)],
+);
+
+/// Administrator flag set — the gate the profile picker and apply action
+/// actually check (024-user-profiles research.md §2), independent of any
+/// privilege row.
+const _adminUser = User(
+  userId: 'admin',
+  email: 'admin@example.com',
+  administrator: true,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [],
 );
 
 const _targetUser = User(
@@ -95,16 +113,37 @@ void main() {
   late MockTokenStorage tokenStorage;
   late MockUserRepository userRepository;
   late MockEmployeeRepository employeeRepository;
+  late MockUserProfileRepository userProfileRepository;
 
   setUp(() {
     authRepository = MockAuthRepository();
     tokenStorage = MockTokenStorage();
     userRepository = MockUserRepository();
     employeeRepository = MockEmployeeRepository();
+    userProfileRepository = MockUserProfileRepository();
     when(() => tokenStorage.read()).thenAnswer((_) async => 'test-token');
     when(
       () => userRepository.get(userId: any(named: 'userId')),
     ).thenAnswer((_) async => _targetUser);
+    when(
+      () => userProfileRepository.list(
+        search: any(named: 'search'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const UserProfileListResult(
+        items: [
+          UserProfileSummary(
+            userProfileId: 5,
+            name: 'Cashier',
+            status: EntityStatus.active,
+          ),
+        ],
+        total: 1,
+      ),
+    );
   });
 
   Future<void> pumpScreen(
@@ -112,8 +151,18 @@ void main() {
     required User signedInAs,
     String? userId,
     bool forceReadOnly = false,
+    Size? surfaceSize,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
+
+    if (surfaceSize != null) {
+      // The full form (with the profile picker/apply button/permissions
+      // grid all present) is taller than the default 800x600 test surface,
+      // which leaves controls below the fold un-tappable.
+      tester.view.physicalSize = surfaceSize;
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
 
     await tester.pumpWidget(
       ProviderScope(
@@ -122,6 +171,9 @@ void main() {
           tokenStorageProvider.overrideWithValue(tokenStorage),
           userRepositoryProvider.overrideWithValue(userRepository),
           employeeRepositoryProvider.overrideWithValue(employeeRepository),
+          userProfileRepositoryProvider.overrideWithValue(
+            userProfileRepository,
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -319,6 +371,240 @@ void main() {
           ),
         );
         expect(field.initialValue, '#7');
+      },
+    );
+  });
+
+  group('024-user-profiles: profile picker (create mode)', () {
+    testWidgets('appears for an administrator in create mode', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _adminUser);
+
+      expect(find.byKey(const Key('user_profile_picker')), findsOneWidget);
+    });
+
+    testWidgets('is absent in edit mode', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        userId: 'jdoe',
+        surfaceSize: const Size(1400, 1600),
+      );
+
+      expect(find.byKey(const Key('user_profile_picker')), findsNothing);
+    });
+
+    testWidgets(
+      'hides the permission grid once a profile is selected, since the '
+      'profile already determines the full set (research.md §7)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _adminUser,
+          surfaceSize: const Size(1400, 1600),
+        );
+
+        expect(find.byKey(const Key('privileges_grid')), findsOneWidget);
+
+        await tester.enterText(
+          find.byKey(const Key('user_profile_picker')),
+          'Cash',
+        );
+        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Cashier').last);
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('privileges_grid')), findsNothing);
+        expect(
+          find.byKey(const Key('clear_user_profile_button')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('reads "no profiles yet" instead of an empty picker', (
+      tester,
+    ) async {
+      when(
+        () => userProfileRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => const UserProfileListResult(items: [], total: 0),
+      );
+
+      await pumpScreen(tester, signedInAs: _adminUser);
+
+      expect(find.byKey(const Key('user_profile_picker')), findsNothing);
+      expect(
+        find.byKey(const Key('no_user_profiles_yet_on_create')),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('024-user-profiles: Apply Profile action (edit mode)', () {
+    testWidgets('appears for an administrator in edit mode', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        userId: 'jdoe',
+        surfaceSize: const Size(1400, 1600),
+      );
+
+      expect(find.byKey(const Key('apply_profile_button')), findsOneWidget);
+    });
+
+    testWidgets('is absent in read-only view mode', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        userId: 'jdoe',
+        forceReadOnly: true,
+        surfaceSize: const Size(1400, 1600),
+      );
+
+      expect(find.byKey(const Key('apply_profile_button')), findsNothing);
+    });
+
+    testWidgets(
+      'the dialog states both consequences and omits the self-apply '
+      'warning for a different account (FR-020)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _adminUser,
+          userId: 'jdoe',
+          surfaceSize: const Size(1400, 1600),
+        );
+
+        await tester.tap(find.byKey(const Key('apply_profile_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('apply_profile_dialog')), findsOneWidget);
+        expect(
+          find.byKey(const Key('apply_profile_replace_warning')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('apply_profile_session_warning')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('apply_profile_self_warning')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets(
+      'the dialog additionally warns when applying to the signed-in '
+      "administrator's own account (FR-024)",
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _adminUser,
+          userId: _adminUser.userId,
+          surfaceSize: const Size(1400, 1600),
+        );
+
+        await tester.tap(find.byKey(const Key('apply_profile_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('apply_profile_self_warning')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('cancelling the dialog sends nothing (FR-021)', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        userId: 'jdoe',
+        surfaceSize: const Size(1400, 1600),
+      );
+
+      await tester.tap(find.byKey(const Key('apply_profile_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('apply_profile_picker')));
+      await tester.enterText(
+        find.byKey(const Key('apply_profile_picker')),
+        'Cash',
+      );
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cashier').last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('apply_profile_cancel')));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => userProfileRepository.apply(
+          profileId: any(named: 'profileId'),
+          userId: any(named: 'userId'),
+        ),
+      );
+    });
+
+    testWidgets(
+      'confirming updates the displayed permissions and origin without a '
+      'manual reload (FR-022)',
+      (tester) async {
+        when(
+          () => userProfileRepository.apply(
+            profileId: any(named: 'profileId'),
+            userId: any(named: 'userId'),
+          ),
+        ).thenAnswer(
+          (_) async => const User(
+            userId: 'jdoe',
+            email: 'jdoe@example.com',
+            administrator: false,
+            status: EntityStatus.active,
+            sessionVersion: 2,
+            privileges: [
+              Privilege(systemObject: SystemObject.products, rawValue: 2),
+            ],
+            profileId: 5,
+            profileName: 'Cashier',
+          ),
+        );
+
+        await pumpScreen(
+          tester,
+          signedInAs: _adminUser,
+          userId: 'jdoe',
+          surfaceSize: const Size(1400, 1600),
+        );
+
+        await tester.tap(find.byKey(const Key('apply_profile_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('apply_profile_picker')),
+          'Cash',
+        );
+        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Cashier').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('apply_profile_confirm')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('apply_profile_dialog')), findsNothing);
+        expect(
+          find.text('Provisioned from Cashier'),
+          findsOneWidget,
+        );
       },
     );
   });

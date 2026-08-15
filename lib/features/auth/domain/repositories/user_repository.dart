@@ -20,9 +20,12 @@ class RecoverPasswordResult {
 /// ...)` at the screen level.
 abstract class UserRepository {
   /// `GET /api/v1/users` (FR-001, FR-002, FR-011; contracts/mbe-api-users-list.md).
+  /// [profileId] narrows to accounts provisioned from that profile
+  /// (024-user-profiles FR-028).
   Future<UserListResult> list({
     String? search,
     EntityStatus? status,
+    int? profileId,
     int skip = 0,
     int limit = 20,
   });
@@ -31,7 +34,10 @@ abstract class UserRepository {
   Future<User> get({required String userId});
 
   /// `POST /api/v1/users` (FR-012). Note: privileges cannot be set at
-  /// creation — call [update] after creation to assign them.
+  /// creation — call [update] after creation to assign them. [profileId],
+  /// when supplied, provisions the account from that profile in the same
+  /// action (024-user-profiles FR-017); the caller MUST NOT also send
+  /// [update]'s `privileges` in that case (research.md §7).
   Future<User> create({
     required String userId,
     required String password,
@@ -39,6 +45,7 @@ abstract class UserRepository {
     required int employeeId,
     bool administrator = false,
     EntityStatus status = EntityStatus.active,
+    int? profileId,
   });
 
   /// `PUT /api/v1/users/{user_id}` (FR-012/FR-013). All fields optional;

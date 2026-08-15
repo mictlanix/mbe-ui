@@ -26,6 +26,12 @@ mixin _$User {
   UserSettings? get settings => throw _privateConstructorUsedError;
   List<Privilege> get privileges => throw _privateConstructorUsedError;
 
+  /// The profile this account was last provisioned from, if any
+  /// (024-user-profiles data-model.md §2). Provenance only — never read by
+  /// `AccessControlService` or any permission decision.
+  int? get profileId => throw _privateConstructorUsedError;
+  String? get profileName => throw _privateConstructorUsedError;
+
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -46,6 +52,8 @@ abstract class $UserCopyWith<$Res> {
     int sessionVersion,
     UserSettings? settings,
     List<Privilege> privileges,
+    int? profileId,
+    String? profileName,
   });
 
   $UserSettingsCopyWith<$Res>? get settings;
@@ -74,6 +82,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? sessionVersion = null,
     Object? settings = freezed,
     Object? privileges = null,
+    Object? profileId = freezed,
+    Object? profileName = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -109,6 +119,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.privileges
                 : privileges // ignore: cast_nullable_to_non_nullable
                       as List<Privilege>,
+            profileId: freezed == profileId
+                ? _value.profileId
+                : profileId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            profileName: freezed == profileName
+                ? _value.profileName
+                : profileName // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -146,6 +164,8 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     int sessionVersion,
     UserSettings? settings,
     List<Privilege> privileges,
+    int? profileId,
+    String? profileName,
   });
 
   @override
@@ -172,6 +192,8 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? sessionVersion = null,
     Object? settings = freezed,
     Object? privileges = null,
+    Object? profileId = freezed,
+    Object? profileName = freezed,
   }) {
     return _then(
       _$UserImpl(
@@ -207,6 +229,14 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value._privileges
             : privileges // ignore: cast_nullable_to_non_nullable
                   as List<Privilege>,
+        profileId: freezed == profileId
+            ? _value.profileId
+            : profileId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        profileName: freezed == profileName
+            ? _value.profileName
+            : profileName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -224,6 +254,8 @@ class _$UserImpl implements _User {
     required this.sessionVersion,
     this.settings,
     required final List<Privilege> privileges,
+    this.profileId,
+    this.profileName,
   }) : _privileges = privileges;
 
   @override
@@ -248,9 +280,17 @@ class _$UserImpl implements _User {
     return EqualUnmodifiableListView(_privileges);
   }
 
+  /// The profile this account was last provisioned from, if any
+  /// (024-user-profiles data-model.md §2). Provenance only — never read by
+  /// `AccessControlService` or any permission decision.
+  @override
+  final int? profileId;
+  @override
+  final String? profileName;
+
   @override
   String toString() {
-    return 'User(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status, sessionVersion: $sessionVersion, settings: $settings, privileges: $privileges)';
+    return 'User(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status, sessionVersion: $sessionVersion, settings: $settings, privileges: $privileges, profileId: $profileId, profileName: $profileName)';
   }
 
   @override
@@ -272,7 +312,11 @@ class _$UserImpl implements _User {
             const DeepCollectionEquality().equals(
               other._privileges,
               _privileges,
-            ));
+            ) &&
+            (identical(other.profileId, profileId) ||
+                other.profileId == profileId) &&
+            (identical(other.profileName, profileName) ||
+                other.profileName == profileName));
   }
 
   @override
@@ -286,6 +330,8 @@ class _$UserImpl implements _User {
     sessionVersion,
     settings,
     const DeepCollectionEquality().hash(_privileges),
+    profileId,
+    profileName,
   );
 
   /// Create a copy of User
@@ -307,6 +353,8 @@ abstract class _User implements User {
     required final int sessionVersion,
     final UserSettings? settings,
     required final List<Privilege> privileges,
+    final int? profileId,
+    final String? profileName,
   }) = _$UserImpl;
 
   @override
@@ -326,6 +374,14 @@ abstract class _User implements User {
   @override
   List<Privilege> get privileges;
 
+  /// The profile this account was last provisioned from, if any
+  /// (024-user-profiles data-model.md §2). Provenance only — never read by
+  /// `AccessControlService` or any permission decision.
+  @override
+  int? get profileId;
+  @override
+  String? get profileName;
+
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
   @override
@@ -341,6 +397,11 @@ mixin _$UserSummary {
   int? get employeeId => throw _privateConstructorUsedError;
   bool get administrator => throw _privateConstructorUsedError;
   EntityStatus get status => throw _privateConstructorUsedError;
+
+  /// The profile this account was last provisioned from, if any
+  /// (024-user-profiles data-model.md §2). See [User.profileId].
+  int? get profileId => throw _privateConstructorUsedError;
+  String? get profileName => throw _privateConstructorUsedError;
 
   /// Create a copy of UserSummary
   /// with the given fields replaced by the non-null parameter values.
@@ -362,6 +423,8 @@ abstract class $UserSummaryCopyWith<$Res> {
     int? employeeId,
     bool administrator,
     EntityStatus status,
+    int? profileId,
+    String? profileName,
   });
 }
 
@@ -385,6 +448,8 @@ class _$UserSummaryCopyWithImpl<$Res, $Val extends UserSummary>
     Object? employeeId = freezed,
     Object? administrator = null,
     Object? status = null,
+    Object? profileId = freezed,
+    Object? profileName = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -408,6 +473,14 @@ class _$UserSummaryCopyWithImpl<$Res, $Val extends UserSummary>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as EntityStatus,
+            profileId: freezed == profileId
+                ? _value.profileId
+                : profileId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            profileName: freezed == profileName
+                ? _value.profileName
+                : profileName // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -429,6 +502,8 @@ abstract class _$$UserSummaryImplCopyWith<$Res>
     int? employeeId,
     bool administrator,
     EntityStatus status,
+    int? profileId,
+    String? profileName,
   });
 }
 
@@ -451,6 +526,8 @@ class __$$UserSummaryImplCopyWithImpl<$Res>
     Object? employeeId = freezed,
     Object? administrator = null,
     Object? status = null,
+    Object? profileId = freezed,
+    Object? profileName = freezed,
   }) {
     return _then(
       _$UserSummaryImpl(
@@ -474,6 +551,14 @@ class __$$UserSummaryImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as EntityStatus,
+        profileId: freezed == profileId
+            ? _value.profileId
+            : profileId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        profileName: freezed == profileName
+            ? _value.profileName
+            : profileName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -488,6 +573,8 @@ class _$UserSummaryImpl implements _UserSummary {
     this.employeeId,
     required this.administrator,
     required this.status,
+    this.profileId,
+    this.profileName,
   });
 
   @override
@@ -501,9 +588,16 @@ class _$UserSummaryImpl implements _UserSummary {
   @override
   final EntityStatus status;
 
+  /// The profile this account was last provisioned from, if any
+  /// (024-user-profiles data-model.md §2). See [User.profileId].
+  @override
+  final int? profileId;
+  @override
+  final String? profileName;
+
   @override
   String toString() {
-    return 'UserSummary(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status)';
+    return 'UserSummary(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status, profileId: $profileId, profileName: $profileName)';
   }
 
   @override
@@ -517,7 +611,11 @@ class _$UserSummaryImpl implements _UserSummary {
                 other.employeeId == employeeId) &&
             (identical(other.administrator, administrator) ||
                 other.administrator == administrator) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.profileId, profileId) ||
+                other.profileId == profileId) &&
+            (identical(other.profileName, profileName) ||
+                other.profileName == profileName));
   }
 
   @override
@@ -528,6 +626,8 @@ class _$UserSummaryImpl implements _UserSummary {
     employeeId,
     administrator,
     status,
+    profileId,
+    profileName,
   );
 
   /// Create a copy of UserSummary
@@ -546,6 +646,8 @@ abstract class _UserSummary implements UserSummary {
     final int? employeeId,
     required final bool administrator,
     required final EntityStatus status,
+    final int? profileId,
+    final String? profileName,
   }) = _$UserSummaryImpl;
 
   @override
@@ -558,6 +660,13 @@ abstract class _UserSummary implements UserSummary {
   bool get administrator;
   @override
   EntityStatus get status;
+
+  /// The profile this account was last provisioned from, if any
+  /// (024-user-profiles data-model.md §2). See [User.profileId].
+  @override
+  int? get profileId;
+  @override
+  String? get profileName;
 
   /// Create a copy of UserSummary
   /// with the given fields replaced by the non-null parameter values.

@@ -12,8 +12,11 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
+import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
+import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -44,6 +47,9 @@ class MockProductRepository extends Mock implements ProductRepository {}
 class MockFacilityRepository extends Mock implements FacilityRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
+
+class MockUserProfileRepository extends Mock
+    implements UserProfileRepository {}
 
 class MockSupplierRepository extends Mock implements SupplierRepository {}
 
@@ -113,6 +119,17 @@ const _noAccessUser = User(
   userId: 'no-access',
   email: 'no-access@example.com',
   administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [],
+);
+
+/// Administrator flag set — the gate 024-user-profiles' `/user-profiles`
+/// route actually checks (research.md §2), independent of any privilege row.
+const _administratorUser = User(
+  userId: 'administrator',
+  email: 'administrator@example.com',
+  administrator: true,
   status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [],
@@ -215,6 +232,28 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const UserListResult(items: [], total: 0));
+
+    // 024-user-profiles: the real UserProfilesListScreen (T017 onward)
+    // fetches eagerly — added now so this shared file is edited once
+    // (021-cash-sessions T016/T017 precedent).
+    final userProfileRepository = MockUserProfileRepository();
+    when(
+      () => userProfileRepository.list(
+        search: any(named: 'search'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const UserProfileListResult(items: [], total: 0));
+    when(() => userProfileRepository.get(profileId: any(named: 'profileId')))
+        .thenAnswer(
+          (_) async => const UserProfile(
+            userProfileId: 5,
+            name: 'Cashier',
+            status: EntityStatus.active,
+            privileges: [],
+          ),
+        );
 
     final supplierRepository = MockSupplierRepository();
     when(
@@ -333,6 +372,9 @@ void main() {
         productRepositoryProvider.overrideWithValue(productRepository),
         allLabelsProvider.overrideWith((_) async => const []),
         userRepositoryProvider.overrideWithValue(userRepository),
+        userProfileRepositoryProvider.overrideWithValue(
+          userProfileRepository,
+        ),
         supplierRepositoryProvider.overrideWithValue(supplierRepository),
         labelRepositoryProvider.overrideWithValue(labelRepository),
         employeeRepositoryProvider.overrideWithValue(employeeRepository),
@@ -397,6 +439,100 @@ void main() {
         final handle = await pumpAt(tester, _noAccessUser, '/products/merge');
         expect(handle.router.state.uri.path, '/');
       });
+    },
+  );
+
+  group(
+    '/user-profiles — administrator gate, not a SystemObject '
+    '(024-user-profiles research.md §2)',
+    () {
+      testWidgets('an administrator reaches /user-profiles', (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _administratorUser,
+          '/user-profiles',
+        );
+        expect(handle.router.state.uri.path, '/user-profiles');
+      });
+
+      testWidgets(
+        'a non-administrator holding users/read is redirected away from '
+        '/user-profiles — the case most easily missed, since gating on '
+        'SystemObject.users would let this exact user through',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noMergeUser,
+            '/user-profiles',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets('a user with no access at all is redirected away from '
+          '/user-profiles', (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/user-profiles');
+        expect(handle.router.state.uri.path, '/');
+      });
+
+      testWidgets(
+        'an administrator reaches /user-profiles/new',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _administratorUser,
+            '/user-profiles/new',
+          );
+          expect(handle.router.state.uri.path, '/user-profiles/new');
+        },
+      );
+
+      testWidgets(
+        'a non-administrator is redirected away from /user-profiles/new',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noMergeUser,
+            '/user-profiles/new',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'an administrator reaches /user-profiles/:profileId',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _administratorUser,
+            '/user-profiles/5',
+          );
+          expect(handle.router.state.uri.path, '/user-profiles/5');
+        },
+      );
+
+      testWidgets(
+        'a non-administrator is redirected away from '
+        '/user-profiles/:profileId, not just the list route',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noMergeUser,
+            '/user-profiles/5',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'activates shell branch NavBranch.userProfiles (19) — the only '
+        'guard against a silent branch-index mismatch',
+        (tester) async {
+          await pumpAt(tester, _administratorUser, '/user-profiles');
+          final shell = tester.widget<AppShell>(find.byType(AppShell));
+          expect(shell.navigationShell.currentIndex, NavBranch.userProfiles);
+        },
+      );
     },
   );
 

@@ -6,13 +6,20 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
+import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
+import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/apply_profile_dialog.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/user_profiles_controller.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
+import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -63,6 +70,16 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final fieldsEnabled = !formState.submitting && !readOnly;
     final l10n = AppLocalizations.of(context)!;
     final employeeRepo = ref.read(employeeRepositoryProvider);
+    // Applying a profile is administrator-only server-side, matching the
+    // profile catalog itself (024-user-profiles research.md §2) — neither
+    // the create-form picker nor the apply action is a per-object
+    // permission, so they gate on the administrator flag rather than
+    // `canUpdate`.
+    final isAdministrator = access.isAdministrator;
+    final signedInUserId = switch (ref.watch(authNotifierProvider).valueOrNull) {
+      AuthAuthenticated(:final user) => user.userId,
+      _ => null,
+    };
     final title = readOnly
         ? l10n.viewUserTitle
         : (_isEdit ? l10n.editUserTitle : l10n.newUserTitle);
@@ -178,6 +195,20 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 enabled: fieldsEnabled,
               ),
               const SizedBox(height: 12),
+              // Create mode only (024-user-profiles FR-016/FR-017): naming
+              // a profile here provisions the account with it in the same
+              // action, replacing the per-object walk through the grid
+              // below — which this hides while a profile is selected,
+              // since the profile already determines the full permission
+              // set (research.md §7). Built by a method rather than inline
+              // so `hasActiveUserProfilesProvider` — a real network call —
+              // is only ever watched when this branch actually renders,
+              // never on every build of an edit-mode/non-administrator
+              // screen.
+              if (!_isEdit && isAdministrator) ...[
+                _buildProfilePicker(controller, formState, fieldsEnabled, l10n),
+                const SizedBox(height: 12),
+              ],
               SwitchListTile(
                 key: const Key('administrator_switch'),
                 title: Text(l10n.administratorLabel),
@@ -190,19 +221,37 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 value: formState.status,
                 onChanged: fieldsEnabled ? controller.statusChanged : null,
               ),
-              const SizedBox(height: 16),
-              const Divider(key: Key('permissions_divider')),
-              const SizedBox(height: 16),
-              Text(
-                l10n.permissionsLabel,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              PrivilegesGrid(
-                key: const Key('privileges_grid'),
-                privileges: formState.privileges,
-                onChanged: fieldsEnabled ? controller.privilegeChanged : null,
-              ),
+              // Provenance only, both edit and view mode — never implies
+              // the account's current permissions still match this profile
+              // (024-user-profiles FR-029, FR-030).
+              if (_isEdit && formState.profileName.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  l10n.userProvisionedFromLabel(formState.profileName),
+                  key: const Key('user_provisioned_from_label'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+              // Hidden while a profile is selected on create: the profile
+              // already is the account's permission set, so showing the
+              // grid beside it would wrongly imply the two combine.
+              if (_isEdit || formState.profileId == null) ...[
+                const SizedBox(height: 16),
+                const Divider(key: Key('permissions_divider')),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.permissionsLabel,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                PrivilegesGrid(
+                  key: const Key('privileges_grid'),
+                  privileges: formState.privileges,
+                  onChanged: fieldsEnabled
+                      ? controller.privilegeChanged
+                      : null,
+                ),
+              ],
               const SizedBox(height: 24),
               if (_isEdit && canUpdate && !widget.forceReadOnly) ...[
                 OutlinedButton.icon(
@@ -212,6 +261,24 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                   onPressed: formState.submitting
                       ? null
                       : () => controller.recoverPassword(widget.userId!),
+                ),
+                const SizedBox(height: 12),
+              ],
+              // Edit mode only, administrator-only, never in view mode or
+              // on a not-yet-created account (024-user-profiles FR-019,
+              // FR-025).
+              if (_isEdit && isAdministrator && !widget.forceReadOnly) ...[
+                OutlinedButton.icon(
+                  key: const Key('apply_profile_button'),
+                  icon: const Icon(Icons.badge_outlined),
+                  label: Text(l10n.applyProfileButtonLabel),
+                  onPressed: formState.submitting
+                      ? null
+                      : () => showApplyProfileDialog(
+                          context,
+                          userId: widget.userId!,
+                          isSelf: signedInUserId == widget.userId,
+                        ),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -256,6 +323,59 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       controller.save(existingUserId: widget.userId);
     }
+  }
+
+  /// The create-mode profile choice (024-user-profiles FR-016), or a
+  /// "no profiles yet" message when the active catalog is empty (US2
+  /// scenario 14). Only ever called from the `!_isEdit && isAdministrator`
+  /// branch in [build], so `hasActiveUserProfilesProvider` — a real fetch —
+  /// is watched only when this field is actually on screen.
+  Widget _buildProfilePicker(
+    UserFormController controller,
+    UserFormState formState,
+    bool fieldsEnabled,
+    AppLocalizations l10n,
+  ) {
+    final hasProfilesAsync = ref.watch(hasActiveUserProfilesProvider);
+    if (hasProfilesAsync.valueOrNull == false) {
+      return Text(
+        l10n.noUserProfilesYetMessage,
+        key: const Key('no_user_profiles_yet_on_create'),
+      );
+    }
+    final userProfileRepo = ref.read(userProfileRepositoryProvider);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: CatalogEntityPicker<UserProfileSummary>(
+            key: const Key('user_profile_picker'),
+            label: l10n.userProfilePickerLabel,
+            displayStringForOption: (p) => p.name,
+            optionsBuilder: (query) async {
+              final result = await userProfileRepo.list(
+                search: query.isEmpty ? null : query,
+                status: EntityStatus.active,
+              );
+              return result.items;
+            },
+            onSelected: (p) =>
+                controller.profileSelected(p.userProfileId, p.name),
+            initialDisplayText: formState.profileName,
+            enabled: fieldsEnabled,
+          ),
+        ),
+        if (formState.profileId != null)
+          IconButton(
+            key: const Key('clear_user_profile_button'),
+            icon: const Icon(Icons.clear),
+            tooltip: l10n.cancelButton,
+            onPressed: fieldsEnabled
+                ? () => controller.profileSelected(null, '')
+                : null,
+          ),
+      ],
+    );
   }
 }
 

@@ -86,7 +86,13 @@ final _entities = [
     repoMarker: 'list({',
     clientPath: '$_clientDir/users_api.dart',
     clientMarker: 'listUsersApiV1UsersGet({',
-    paramMap: {'search': 'search', 'status': 'status'},
+    // profileId: 024-user-profiles FR-028 — narrows to accounts
+    // provisioned from a given profile.
+    paramMap: {
+      'search': 'search',
+      'status': 'status',
+      'profileId': 'profileId',
+    },
   ),
   const _Entity(
     name: 'Products',
