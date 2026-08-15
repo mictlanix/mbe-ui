@@ -46,12 +46,19 @@ void main() {
     ).thenAnswer((_) async => _customer());
   });
 
-  Future<void> pumpSelector(WidgetTester tester, {bool enabled = true}) =>
-      pumpPos(
-        tester,
-        FulfillmentModeSelector(sale: testSale(), enabled: enabled),
-        overrides: [customerRepositoryProvider.overrideWithValue(customers)],
-      );
+  Future<void> pumpSelector(
+    WidgetTester tester, {
+    bool enabled = true,
+    bool stretch = false,
+  }) => pumpPos(
+    tester,
+    FulfillmentModeSelector(
+      sale: testSale(),
+      enabled: enabled,
+      stretch: stretch,
+    ),
+    overrides: [customerRepositoryProvider.overrideWithValue(customers)],
+  );
 
   group('the track', () {
     testWidgets('is exactly an extended FAB tall, in a stadium', (tester) async {
@@ -89,6 +96,51 @@ void main() {
       // ...and each fills the track's interior — the full height less the
       // 1 px stadium border top and bottom, which the segments sit inside.
       expect(heights.values.first, fulfillmentModeSelectorHeight - 2);
+    });
+
+    testWidgets('hugs its labels by default — the wide-tier layout measures '
+        'it with an unbounded width', (tester) async {
+      await pumpSelector(tester);
+
+      final track = tester.getSize(
+        find.byKey(const Key('pos_fulfillment_selector')),
+      );
+      // Narrower than the surface it was given, which is the whole point of
+      // hugging: beside the customer band there is room for both.
+      expect(track.width, lessThan(tester.view.physicalSize.width));
+
+      // The three segments are their own widths, not equal shares.
+      final widths = {
+        for (final mode in FulfillmentMode.values)
+          mode: tester
+              .getSize(find.byKey(Key('pos_fulfillment_${mode.name}')))
+              .width,
+      };
+      expect(widths.values.toSet().length, greaterThan(1), reason: '$widths');
+    });
+
+    testWidgets('stretched, it fills the width and divides it evenly — no '
+        'dead space beside it when stacked', (tester) async {
+      await pumpSelector(tester, stretch: true);
+
+      final trackWidth = tester
+          .getSize(find.byKey(const Key('pos_fulfillment_selector')))
+          .width;
+      final surface = tester
+          .getSize(find.byType(FulfillmentModeSelector))
+          .width;
+      expect(trackWidth, surface);
+
+      final widths = {
+        for (final mode in FulfillmentMode.values)
+          mode: tester
+              .getSize(find.byKey(Key('pos_fulfillment_${mode.name}')))
+              .width,
+      };
+      // Equal shares of the interior: the full width less the stadium's 1 px
+      // border either side and the two 1 px dividers between the segments.
+      expect(widths.values.toSet(), hasLength(1), reason: '$widths');
+      expect(widths.values.reduce((a, b) => a + b), trackWidth - 2 - 2);
     });
 
     testWidgets('shows all three modes (FR-017)', (tester) async {

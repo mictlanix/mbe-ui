@@ -42,12 +42,17 @@ class _ModeTrack extends StatelessWidget {
     required this.selected,
     required this.enabled,
     required this.onSelected,
+    required this.stretch,
   });
 
   final List<_ModeSegment> segments;
   final FulfillmentMode selected;
   final bool enabled;
   final ValueChanged<FulfillmentMode> onSelected;
+
+  /// Whether the track takes the whole width it is offered, sharing it equally
+  /// between the segments, or hugs its content.
+  final bool stretch;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +68,7 @@ class _ModeTrack extends StatelessWidget {
         shape: StadiumBorder(side: BorderSide(color: theme.colorScheme.outline)),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: stretch ? MainAxisSize.max : MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final (index, segment) in segments.indexed) ...[
@@ -75,13 +80,16 @@ class _ModeTrack extends StatelessWidget {
                 endIndent: 0,
                 color: theme.colorScheme.outline,
               ),
-            // Flexible, not fixed: three segments at their natural width need
-            // ~538 px, which a phone does not have — `SegmentedButton` shrank
-            // its segments to fit and this has to as well. `FlexFit.loose`
-            // means each takes its natural width when the room is there and
-            // its share of what is left when it is not, so the track still
-            // hugs its content on a desktop.
+            // Never fixed: three segments at their natural width need ~538 px,
+            // which a phone does not have — `SegmentedButton` shrank its
+            // segments to fit and this has to as well.
+            //
+            // Loose when hugging, so each takes its natural width where the
+            // room is there and its share of what is left where it is not;
+            // tight when stretching, so the three divide the offered width
+            // evenly however much of it there is.
             Flexible(
+              fit: stretch ? FlexFit.tight : FlexFit.loose,
               child: _ModeSegmentButton(
                 segment: segment,
                 selected: segment.mode == selected,
@@ -132,6 +140,9 @@ class _ModeSegmentButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              // Only bites when the track is stretched and the segment is
+              // wider than its content; a hugging segment is its content.
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // A check in place of the segment's own icon once chosen —
                 // `SegmentedButton`'s `showSelectedIcon` behaviour, and what
@@ -173,10 +184,26 @@ class _ModeSegmentButton extends StatelessWidget {
 /// `shipTo` is what makes the mode survive a reload (FR-057, research §4):
 /// the screen holds no persisted mode of its own.
 class FulfillmentModeSelector extends ConsumerStatefulWidget {
-  const FulfillmentModeSelector({super.key, required this.sale, this.enabled = true});
+  const FulfillmentModeSelector({
+    super.key,
+    required this.sale,
+    this.enabled = true,
+    this.stretch = false,
+  });
 
   final Sale sale;
   final bool enabled;
+
+  /// Whether the track fills the width it is given, dividing it evenly between
+  /// the three segments, instead of hugging its labels.
+  ///
+  /// Stacked under the customer band (contracts/capture-surface.md §2), where
+  /// every other element of the capture surface — the band, the search field,
+  /// the lines, the footer's action — runs margin to margin, a hugging track is
+  /// the one thing left floating against the leading edge. Beside the band on a
+  /// wide tier it must keep hugging: there it is measured with an unbounded
+  /// width, which a filling track has no way to answer.
+  final bool stretch;
 
   @override
   ConsumerState<FulfillmentModeSelector> createState() =>
@@ -244,6 +271,7 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
         _ModeTrack(
           selected: step.mode,
           enabled: enabled,
+          stretch: widget.stretch,
           onSelected: _select,
           segments: [
             (

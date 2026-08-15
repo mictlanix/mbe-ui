@@ -124,12 +124,28 @@ segmented button rather than three buttons:
 | Semantics | each segment `button: true` with `selected`/`enabled` |
 | Keys | `pos_fulfillment_selector` on the track, `pos_fulfillment_<mode>` per segment |
 
-Segments are `Flexible(FlexFit.loose)` with an ellipsizing label: three at their
-natural width need ~538 px, which a phone does not have, so each takes its
-natural width when the room is there and its share of what is left when it is
-not — the track still hugs its content on a desktop. `SegmentedButton` shrank
-its segments the same way, and dropping that was a 148 px overflow at 390 px
-until the widget test caught it.
+Segments are `Flexible` with an ellipsizing label; the fit follows the track's
+`stretch`, which is what the two layouts of §2 need from it:
+
+| | `stretch: false` — beside the band | `stretch: true` — stacked under it |
+|---|---|---|
+| Row | `MainAxisSize.min` | `MainAxisSize.max` |
+| Segments | `FlexFit.loose` | `FlexFit.tight`, equal shares |
+| Width | hugs its labels | fills what it is offered |
+
+Hugging is not optional on a wide tier: beside `Expanded(CustomerBar)` the
+selector is a non-flex `Row` child, so it is measured with an **unbounded**
+width, which a filling track cannot answer. Stacked, hugging is the wrong
+answer instead — the band above and the search field below both run margin to
+margin, so a track at its natural ~538 px leaves dead space against the
+trailing edge, most visibly at tablet-portrait widths where the column is far
+wider than that.
+
+Shrinking is required in both modes: three segments at their natural width need
+~538 px, which a phone does not have. `SegmentedButton` shrank its segments the
+same way, and dropping that was a 148 px overflow at 390 px until the widget
+test caught it. Segment content is `MainAxisAlignment.center`, which only bites
+when a stretched segment is wider than its label.
 
 `ThemeData.segmentedButtonTheme` in `component_themes.dart` is now unused —
 this was the product's only `SegmentedButton`. Left in place: it costs nothing

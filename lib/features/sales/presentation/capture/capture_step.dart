@@ -155,7 +155,17 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                   children: [
                     CustomerBar(sale: sale, enabled: enabled),
                     SizedBox(height: spacing.sm),
-                    FulfillmentModeSelector(sale: sale, enabled: enabled),
+                    // Stretched here and only here: stacked, it is one element
+                    // in a column where the band above it and the search field
+                    // below both run margin to margin, and a track hugging its
+                    // labels leaves dead space against the trailing edge —
+                    // most of it at tablet-portrait widths, where the natural
+                    // track is far narrower than the column.
+                    FulfillmentModeSelector(
+                      sale: sale,
+                      enabled: enabled,
+                      stretch: true,
+                    ),
                   ],
                 ),
         ),
