@@ -3,7 +3,7 @@
   "specName": "pos payment ux",
   "branch": "025-pos-payment-ux",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -298,6 +298,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-15T19:49:55.453Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-15T21:10:29.402Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -429,5 +436,6 @@
       "status": "DONE",
       "did": "Left open for the user: the visual live-driving walkthrough of quickstart.md's width table needs a human at a real browser. The one automatable piece (the live-backend payment-flow integration test) is skipped by a pre-existing, unrelated .env product-pattern gap already on record."
     }
-  }
+  },
+  "telemetryInstanceId": "af1386e7-5731-4c6b-8eb9-f8ecc27f9343"
 }
