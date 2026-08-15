@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_lookup_controller.dart';
@@ -123,9 +124,26 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     });
   }
 
+  /// The theme's own input borders, re-shaped as pills — the mock draws this
+  /// field as a stadium (`border-radius:30` on a 60 px box, i.e. fully
+  /// rounded), which is `Shapes.full`'s intent. That token is a `ShapeBorder`
+  /// and `InputDecoration` takes an `InputBorder`, so the radius is applied by
+  /// `copyWith` on whatever the theme already resolved: every colour and width
+  /// still comes from `inputDecorationTheme`, and only the corners change.
+  InputBorder? _pill(InputBorder? source) => source is OutlineInputBorder
+      ? source.copyWith(borderRadius: BorderRadius.circular(_pillRadius))
+      : source;
+
+  /// Larger than any box this field is drawn at, so the corners always
+  /// resolve to a full stadium rather than to a fixed radius that would read
+  /// as "very rounded" at one height and as a pill at another.
+  static const _pillRadius = 999.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final inputTheme = theme.inputDecorationTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -146,6 +164,20 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
             decoration: InputDecoration(
               labelText: l10n.posProductSearchLabel,
               prefixIcon: const Icon(Icons.qr_code_scanner),
+              // Four more on every side than the theme's own field insets —
+              // this one is the surface a cashier scans into all day, and the
+              // mock gives it a 60 px box against the 52 px the line fields
+              // get. 20 horizontal is the mock's own value.
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: theme.spacing.md + theme.spacing.xxs,
+                vertical: theme.spacing.sm + theme.spacing.xxs,
+              ),
+              border: _pill(inputTheme.border),
+              enabledBorder: _pill(inputTheme.enabledBorder),
+              focusedBorder: _pill(inputTheme.focusedBorder),
+              disabledBorder: _pill(inputTheme.disabledBorder),
+              errorBorder: _pill(inputTheme.errorBorder),
+              focusedErrorBorder: _pill(inputTheme.focusedErrorBorder),
               suffixIcon: _searching
                   ? const Padding(
                       padding: EdgeInsets.all(12),

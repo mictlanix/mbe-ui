@@ -176,9 +176,10 @@ void main() {
         find.byKey(const Key('pos_create_customer_button')),
       );
 
-      // `kMinInteractiveDimension` is the height `SegmentedButton` cannot be
-      // pushed past (see fulfillment_mode_selector.dart), so it is the one
-      // height every control in this row meets.
+      // Material's minimum interactive dimension — once the height
+      // `SegmentedButton` could not be pushed past, now simply the size the
+      // mock gives these two: buttons inside the band, smaller than the band,
+      // not peers of the 56 px mode selector beside it.
       expect(search.height, kMinInteractiveDimension);
       expect(create.height, kMinInteractiveDimension);
 

@@ -70,10 +70,18 @@ question of whether the backend auto-switches terms irrelevant to the UI.
 
 ### 1.4 Insets
 
-`Card` keeps `spacing.cardPadding` internally. The step does **not** wrap it in a
-second `EdgeInsets.all(12)` — that doubling is the odd narrowing visible in the
-screenshot. Horizontal insets for the whole step come from `spacing.screenMargin`,
-applied once, at the step root.
+The card's own padding is `spacing.md` horizontal / `spacing.sm` vertical —
+**not** the generic `spacing.cardPadding` (24 at this tier), which made a band of
+one-line facts as tall as a form. The mock gives it none vertically at all (a
+fixed 56 px with the content centred, `padding:0 8px 0 16px`); that is not
+reachable while the actions keep the 48 px height they share with the mode
+selector beside them (FR-038a), so `sm` is the floor that still leaves those
+buttons room. The band measures 80 px.
+
+The step does **not** wrap the card in a second `EdgeInsets.all(12)` — that
+doubling is the odd narrowing visible in the original screenshot. Horizontal
+insets for the whole step come from `spacing.screenMargin`, applied once, at the
+step root.
 
 ## 2. `FulfillmentModeSelector` — beside, not below
 
@@ -87,6 +95,45 @@ the mandatory delivery-address pick, and the `shipTo` write all stay exactly as
 spec 020 built them. Only the placement changes, and the refusal/error strips
 render under the pair rather than under the selector alone so the row does not
 jump height when one appears.
+
+### 2.1 The track is hand-rolled, not a `SegmentedButton`
+
+`fulfillmentModeSelectorHeight` = **56**, `FloatingActionButton.extended`'s own
+M3 height and the mock's (`height:56px; border-radius:28px`) — the two controls
+bracket the capture surface, so they are the pair most worth agreeing. A
+`StadiumBorder` in `colorScheme.outline`, `Clip.antiAlias` so a segment's fill
+runs into the rounded ends, and 1 px dividers between segments.
+
+`SegmentedButton` could not take that height. It forwards only `textStyle`,
+`padding`, `visualDensity` and `tapTargetSize` to its segments, dropping
+`minimumSize`/`fixedSize` outright, and paints each segment's fill as a plain
+rectangle clipped to a border rect derived from `fontSize + padding.vertical`.
+Height could therefore only be bought with vertical padding, which topped out at
+48; forcing it from outside with a `SizedBox` left the clip rect at the stock
+size while the fill filled the stretched box, so the selected segment showed a
+square-cornered block inside the container's rounded end.
+
+What the replacement keeps, because these are the behaviours that made it a
+segmented button rather than three buttons:
+
+| | |
+|---|---|
+| Selection | one at a time; the chosen segment is filled `secondaryContainer` |
+| Selected marker | a check **in place of** the segment's own icon (`showSelectedIcon`) |
+| Disabled | every segment inert, content at 38 % `onSurface` |
+| Semantics | each segment `button: true` with `selected`/`enabled` |
+| Keys | `pos_fulfillment_selector` on the track, `pos_fulfillment_<mode>` per segment |
+
+Segments are `Flexible(FlexFit.loose)` with an ellipsizing label: three at their
+natural width need ~538 px, which a phone does not have, so each takes its
+natural width when the room is there and its share of what is left when it is
+not — the track still hugs its content on a desktop. `SegmentedButton` shrank
+its segments the same way, and dropping that was a 148 px overflow at 390 px
+until the widget test caught it.
+
+`ThemeData.segmentedButtonTheme` in `component_themes.dart` is now unused —
+this was the product's only `SegmentedButton`. Left in place: it costs nothing
+and still applies to any future one.
 
 ## 3. `ProductSearchField` — options while typing, scanner intact
 
@@ -107,6 +154,23 @@ have the race.
 `(pattern, warehouse)`, which its own docstring describes as "each keystroke's
 request is its own short-lived provider". Debounce interval matches
 `CatalogEntityPicker`'s 300 ms so the two pickers feel the same.
+
+### 3.1 Shape
+
+A **stadium**, as the mock draws it (`border-radius:30` on a 60 px box) — the
+intent of the `Shapes.full` token, which cannot be used directly because it is a
+`ShapeBorder` and `InputDecoration` takes an `InputBorder`. The radius is applied
+by `copyWith` over whatever `inputDecorationTheme` already resolved for each
+state, so every colour and width still comes from the theme and only the corners
+change; a border the theme leaves null stays null rather than being invented.
+
+Content padding is `spacing.md + spacing.xxs` horizontal (20, the mock's own)
+and `spacing.sm + spacing.xxs` vertical — four more per side than the theme's
+field insets. This is the surface a cashier scans into all day, and the mock
+gives it a 60 px box against the 52 px the line fields get; it measures 56.
+
+Each candidate row carries a `leading` `ProductPhoto` (mbe-api#157), the same
+thumbnail `CatalogEntityPicker` gives a product candidate.
 
 ## 4. `SaleLineRow` — one row, with a budget
 

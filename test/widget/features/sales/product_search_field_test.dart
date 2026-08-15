@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../golden/golden_harness.dart';
 import 'pos_test_harness.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
@@ -78,6 +79,63 @@ void main() {
     );
     return selected;
   }
+
+  // Under the **real** app theme: the field re-shapes whatever borders
+  // `inputDecorationTheme` resolved, so a bare `MaterialApp` — which defines
+  // none — would show nothing to assert on.
+  group('the field is a stadium (mock frame 2a)', () {
+    setUpAll(loadGoldenFonts);
+
+    testWidgets('every border state is fully rounded, and keeps the theme\'s '
+        'own colour and width', (tester) async {
+      await pumpGoldenScenario(
+        tester,
+        ProductSearchField(onProductSelected: (_) {}),
+        brightness: Brightness.dark,
+        width: 1440,
+        overrides: [
+          salesOrderOverride(salesOrders),
+          customerRepositoryProvider.overrideWithValue(customers),
+        ],
+      );
+
+      final decoration = tester
+          .widget<TextField>(
+            find.descendant(
+              of: find.byType(ProductSearchField),
+              matching: find.byType(TextField),
+            ),
+          )
+          .decoration!;
+      final themed =
+          Theme.of(
+            tester.element(find.byType(ProductSearchField)),
+          ).inputDecorationTheme;
+
+      for (final (name, border, source) in <(String, InputBorder?, InputBorder?)>[
+        ('border', decoration.border, themed.border),
+        ('enabled', decoration.enabledBorder, themed.enabledBorder),
+        ('focused', decoration.focusedBorder, themed.focusedBorder),
+        ('error', decoration.errorBorder, themed.errorBorder),
+      ]) {
+        final outline = border! as OutlineInputBorder;
+        // Big enough that the corners resolve to a stadium at any height this
+        // field is drawn at, rather than to a fixed "quite rounded".
+        expect(
+          outline.borderRadius.topLeft.x,
+          greaterThan(100),
+          reason: name,
+        );
+        // Only the corners change — the colour and width are still the
+        // theme's, so a brand change still reaches this field.
+        expect(
+          outline.borderSide,
+          (source! as OutlineInputBorder).borderSide,
+          reason: name,
+        );
+      }
+    });
+  });
 
   group('typing offers candidates, debounced, never auto-adding (FR-033, FR-036)', () {
     testWidgets('candidates appear after the debounce with no Enter pressed', (

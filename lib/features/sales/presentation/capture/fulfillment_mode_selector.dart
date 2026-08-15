@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
@@ -10,6 +11,153 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/customer_address_picker.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+/// One segment of [_ModeTrack].
+typedef _ModeSegment = ({FulfillmentMode mode, String label, IconData icon});
+
+/// The height every mode segment takes: `FloatingActionButton.extended`'s own
+/// M3 height, which is also the mock's (`height:56px; border-radius:28px`).
+/// The two controls bracket the capture surface — this one at the top of it,
+/// the footer's action at the bottom — so they are the pair most worth
+/// agreeing.
+const fulfillmentModeSelectorHeight = 56.0;
+
+/// A single-select track that does what `SegmentedButton` does — one choice at
+/// a time, the selected segment filled and marked with a check, an outlined
+/// stadium around the set — but takes its **height** as a given rather than as
+/// something to be inferred.
+///
+/// `SegmentedButton` cannot: it forwards only `textStyle`, `padding`,
+/// `visualDensity` and `tapTargetSize` to its segments, dropping
+/// `minimumSize`/`fixedSize` outright, and it paints each segment's fill as a
+/// plain rectangle clipped to a border rect derived from `fontSize +
+/// padding.vertical`. Height could therefore only be bought with vertical
+/// padding, which topped out at 48 px; forcing it from outside with a `SizedBox`
+/// left the clip rect at the stock size while the fill filled the stretched box,
+/// so the selected segment showed a square-cornered block inside the container's
+/// rounded end. Sixty lines of `Row` have none of that problem.
+class _ModeTrack extends StatelessWidget {
+  const _ModeTrack({
+    required this.segments,
+    required this.selected,
+    required this.enabled,
+    required this.onSelected,
+  });
+
+  final List<_ModeSegment> segments;
+  final FulfillmentMode selected;
+  final bool enabled;
+  final ValueChanged<FulfillmentMode> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      key: const Key('pos_fulfillment_selector'),
+      height: fulfillmentModeSelectorHeight,
+      // The children clip to the stadium, which is what lets the first and
+      // last segment's fill run into the rounded ends instead of stopping
+      // square inside them.
+      clipBehavior: Clip.antiAlias,
+      decoration: ShapeDecoration(
+        shape: StadiumBorder(side: BorderSide(color: theme.colorScheme.outline)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (index, segment) in segments.indexed) ...[
+            if (index > 0)
+              VerticalDivider(
+                width: 1,
+                thickness: 1,
+                indent: 0,
+                endIndent: 0,
+                color: theme.colorScheme.outline,
+              ),
+            // Flexible, not fixed: three segments at their natural width need
+            // ~538 px, which a phone does not have — `SegmentedButton` shrank
+            // its segments to fit and this has to as well. `FlexFit.loose`
+            // means each takes its natural width when the room is there and
+            // its share of what is left when it is not, so the track still
+            // hugs its content on a desktop.
+            Flexible(
+              child: _ModeSegmentButton(
+                segment: segment,
+                selected: segment.mode == selected,
+                enabled: enabled,
+                onPressed: () => onSelected(segment.mode),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ModeSegmentButton extends StatelessWidget {
+  const _ModeSegmentButton({
+    required this.segment,
+    required this.selected,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  final _ModeSegment segment;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final foreground = switch ((selected, enabled)) {
+      (_, false) => theme.colorScheme.onSurface.withValues(alpha: 0.38),
+      (true, _) => theme.colorScheme.onSecondaryContainer,
+      (false, _) => theme.colorScheme.onSurfaceVariant,
+    };
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      enabled: enabled,
+      child: Material(
+        color: selected ? theme.colorScheme.secondaryContainer : Colors.transparent,
+        child: InkWell(
+          key: Key('pos_fulfillment_${segment.mode.name}'),
+          onTap: enabled ? onPressed : null,
+          child: Padding(
+            // The mock's own segment inset.
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // A check in place of the segment's own icon once chosen —
+                // `SegmentedButton`'s `showSelectedIcon` behaviour, and what
+                // the mock draws on its selected segment.
+                Icon(selected ? Icons.check : segment.icon, size: 20, color: foreground),
+                SizedBox(width: theme.spacing.xs),
+                // The label is what gives when the track is squeezed — the
+                // icon and the insets stay, so the segments keep their rhythm
+                // and only the words shorten.
+                Flexible(
+                  child: Text(
+                    segment.label,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.typeRoles.buttonLabel.copyWith(color: foreground),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 /// The three-chip Tienda/Domicilio/Mixta control (FR-017), always visible,
 /// defaulting to counter pickup.
@@ -93,47 +241,27 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Taller than `SegmentedButton`'s stock 40 px, which read as an
-        // afterthought beside the customer band, and driven by **padding** —
-        // the only lever that moves this control's height without breaking
-        // it.
-        //
-        // The mock (frame `2a`) draws this at 56 px, which is not reachable:
-        // `SegmentedButton` forwards only `textStyle`, `padding`,
-        // `visualDensity` and `tapTargetSize` to its segments, dropping
-        // `minimumSize`/`fixedSize` outright, and it paints each segment's
-        // fill as a plain rectangle clipped to a border rect derived from
-        // `fontSize + padding.vertical`. Forcing the height from outside (an
-        // enclosing `SizedBox`) left that clip rect at the stock size while
-        // the fill filled the stretched box — the selected segment then
-        // showed a square-cornered block with the container's rounded end
-        // visible around it, which is exactly the artefact this replaces.
-        // Padding keeps height, clip rect and tap target in agreement, and
-        // lands at 48 px — Material's own minimum interactive dimension.
-        // The horizontal 20 is the mock's own value.
-        SegmentedButton<FulfillmentMode>(
-          style: SegmentedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          ),
+        _ModeTrack(
+          selected: step.mode,
+          enabled: enabled,
+          onSelected: _select,
           segments: [
-            ButtonSegment(
-              value: FulfillmentMode.counterPickup,
-              label: Text(l10n.posFulfillmentCounter),
-              icon: const Icon(Icons.store_outlined),
+            (
+              mode: FulfillmentMode.counterPickup,
+              label: l10n.posFulfillmentCounter,
+              icon: Icons.store_outlined,
             ),
-            ButtonSegment(
-              value: FulfillmentMode.delivery,
-              label: Text(l10n.posFulfillmentDelivery),
-              icon: const Icon(Icons.local_shipping_outlined),
+            (
+              mode: FulfillmentMode.delivery,
+              label: l10n.posFulfillmentDelivery,
+              icon: Icons.local_shipping_outlined,
             ),
-            ButtonSegment(
-              value: FulfillmentMode.mixed,
-              label: Text(l10n.posFulfillmentMixed),
-              icon: const Icon(Icons.call_split),
+            (
+              mode: FulfillmentMode.mixed,
+              label: l10n.posFulfillmentMixed,
+              icon: Icons.call_split,
             ),
           ],
-          selected: {step.mode},
-          onSelectionChanged: enabled ? (s) => _select(s.first) : null,
         ),
         if (_refusal != null)
           Padding(

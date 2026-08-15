@@ -121,7 +121,18 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
         side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Padding(
-        padding: EdgeInsets.all(spacing.cardPadding),
+        // Tighter than the generic `spacing.cardPadding` (24 at this tier),
+        // which made a band of one-line facts as tall as a form. The mock
+        // gives this band no vertical padding at all — a fixed 56 px with the
+        // content centred (`padding:0 8px 0 16px`) — which is not reachable
+        // here while the actions keep the 48 px height they share with the
+        // mode selector beside them (FR-038a). `sm` vertical is the floor that
+        // leaves those buttons breathing room; `md` horizontal is the mock's
+        // own leading inset.
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.md,
+          vertical: spacing.sm,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -202,12 +213,15 @@ class _FactsView extends ConsumerWidget {
     // name.
     final displayName = customerAsync.valueOrNull?.name ?? sale.customerName ?? '—';
 
-    // Every interactive control in this header row shares one height, so the
-    // band's buttons and the mode selector beside it sit on a single
-    // baseline. `SegmentedButton` cannot be pushed past Material's minimum
-    // interactive dimension (see `fulfillment_mode_selector.dart`), so that
-    // is the height everything else meets rather than a taller one nothing
-    // else could reach.
+    // Both actions share one height, so they sit on a single baseline rather
+    // than each on its own.
+    //
+    // That height was originally the one `SegmentedButton` could not be pushed
+    // past; the mode selector is hand-rolled now and stands at 56
+    // (`fulfillmentModeSelectorHeight`), so the constraint is gone. These stay
+    // at Material's minimum interactive dimension because that is what the
+    // mock gives them — buttons *inside* the band, smaller than the band, not
+    // peers of the selector beside it.
     final buttonStyle = OutlinedButton.styleFrom(
       minimumSize: const Size(0, kMinInteractiveDimension),
     );
