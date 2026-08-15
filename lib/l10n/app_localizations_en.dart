@@ -2584,8 +2584,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posLineAdjustToAvailable => 'Adjust to available';
 
   @override
-  String posTotalsCounts(int lines, String units) {
-    return '$lines lines · $units units';
+  String posTotalsCounts(int lines, String units, num unitsValue) {
+    String _temp0 = intl.Intl.pluralLogic(
+      lines,
+      locale: localeName,
+      other: '$lines lines',
+      one: '$lines line',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      unitsValue,
+      locale: localeName,
+      other: 'units',
+      one: 'unit',
+    );
+    return '$_temp0 · $units $_temp1';
   }
 
   @override

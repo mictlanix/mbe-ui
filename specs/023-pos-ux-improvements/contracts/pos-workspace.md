@@ -63,8 +63,7 @@ Scaffold(
     leading: BackButton(key: Key('pos_workspace_back'), onPressed: → /sales/pos),
     title: Row([
       Text(stepTitle),                    // Venta | Cobro | Entrega
-      _SaleIdentityChip(sale),            // reference, and folio once assigned
-      OpenSalesSelector(...),             // moved from PosHeaderBand
+      OpenSalesSelector(...),             // reference, folio, open count — one control
       Spacer(),
       _StepIndicator(step),               // moved from PosHeaderBand
     ]),
@@ -74,9 +73,14 @@ Scaffold(
 )
 ```
 
-- `actions` stays empty (constitution §VI v1.10.0). The identity chip, the
-  selector and the step indicator are title-area content, which is also where the
-  mock draws them (frame `2a`).
+- `actions` stays empty (constitution §VI v1.10.0). The selector and the step
+  indicator are title-area content, which is also where the mock draws them
+  (frame `2a`).
+- **The sale's reference is the selector's own label** — there is no separate
+  identity chip beside it. The mock's header has a single control there (receipt
+  icon, reference, open-count badge, chevron), and `OpenSalesSelector` already
+  renders the id and the folio; a chip as well put the same number on screen
+  twice, which is what shipped until it was seen rendered on 2026-08-15.
 - `PosHeaderBand` is **deleted**; its two children move into the title and its
   `PosGateScreen` child moves to the top of the body, where the stale-session
   banner still belongs.

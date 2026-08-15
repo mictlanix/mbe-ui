@@ -4865,11 +4865,11 @@ abstract class AppLocalizations {
   /// **'Adjust to available'**
   String get posLineAdjustToAvailable;
 
-  /// No description provided for @posTotalsCounts.
+  /// `units` is the formatted quantity (it may be fractional, e.g. 2.5); `unitsValue` is the same figure as a number, carried only so the noun can agree with it.
   ///
   /// In en, this message translates to:
-  /// **'{lines} lines · {units} units'**
-  String posTotalsCounts(int lines, String units);
+  /// **'{lines, plural, =1{{lines} line} other{{lines} lines}} · {units} {unitsValue, plural, =1{unit} other{units}}'**
+  String posTotalsCounts(int lines, String units, num unitsValue);
 
   /// No description provided for @posTotalsArticlesLabel.
   ///

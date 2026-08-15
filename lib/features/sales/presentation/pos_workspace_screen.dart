@@ -263,13 +263,14 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => _leaveWorkspace(context, current),
         ),
+        // The sale's reference is the **selector's** own label, not a chip
+        // beside it: the mock's header has one control there — receipt icon,
+        // reference, open-count badge, chevron (frame `2a`) — and rendering
+        // both put the same number on screen twice, since
+        // `OpenSalesSelector` already shows the id and the folio.
         title: Row(
           children: [
             Text(_stepTitle(context, step.current)),
-            if (current != null) ...[
-              const SizedBox(width: 12),
-              _SaleIdentityChip(sale: current),
-            ],
             if (pointSale != null) ...[
               const SizedBox(width: 12),
               OpenSalesSelector(
@@ -328,27 +329,6 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
       PosStep.cobro => l10n.posStepCobro,
       PosStep.entrega => l10n.posStepEntrega,
     };
-  }
-}
-
-/// The sale's reference (and folio once assigned) in the app bar — the mock's
-/// "Id 337496" chip (frame `2a`).
-class _SaleIdentityChip extends StatelessWidget {
-  const _SaleIdentityChip({required this.sale});
-
-  final Sale sale;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Chip(
-      avatar: const Icon(Icons.receipt_long_outlined, size: 18),
-      label: Text(
-        '${sale.serial ?? sale.provisionalReference}',
-        style: theme.textTheme.bodyMedium,
-      ),
-      visualDensity: VisualDensity.compact,
-    );
   }
 }
 

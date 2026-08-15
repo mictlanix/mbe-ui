@@ -65,7 +65,9 @@ void main() {
       expect(labelText(l10n.posTotalsArticlesLabel), findsOneWidget);
       expect(labelText(l10n.posTotalsSubtotalLabel), findsOneWidget);
       expect(labelText(l10n.posTotalsTaxLabel), findsOneWidget);
-      expect(find.text(l10n.posTotalsCounts(1, '2')), findsOneWidget);
+      expect(find.text(l10n.posTotalsCounts(1, '2', 2)), findsOneWidget);
+      // Both nouns agree with their own figure — one line, two units.
+      expect(find.text('1 línea · 2 uds.'), findsOneWidget);
       expect(find.text(r'$100.00'), findsOneWidget); // subtotal
       expect(find.text(r'$16.00'), findsOneWidget); // IVA
     });

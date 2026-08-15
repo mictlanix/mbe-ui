@@ -848,7 +848,7 @@
   "posLineNoStock": "Sin existencia en este almacén",
   "posLineShortfall": "Solo hay {available} disponibles",
   "posLineAdjustToAvailable": "Ajustar a disponible",
-  "posTotalsCounts": "{lines} líneas · {units} uds.",
+  "posTotalsCounts": "{lines, plural, =1{{lines} línea} other{{lines} líneas}} · {units} {unitsValue, plural, =1{ud.} other{uds.}}",
   "posTotalsArticlesLabel": "Artículos",
   "posTotalsSubtotalLabel": "Subtotal",
   "posTotalsDiscountLabel": "Descuentos",

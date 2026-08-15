@@ -156,7 +156,14 @@ class SaleTotalsBar extends StatelessWidget {
       _group(
         context,
         l10n.posTotalsArticlesLabel,
-        l10n.posTotalsCounts(sale.lineCount, unitCount.toString()),
+        // The figure is passed twice on purpose: as text, so a fractional
+        // quantity prints exactly as `Decimal` rendered it, and as a number,
+        // so the noun beside it can agree.
+        l10n.posTotalsCounts(
+          sale.lineCount,
+          unitCount.toString(),
+          unitCount.toDouble(),
+        ),
       ),
       // What the sale *is* on one side, what it *costs* on the other.
       _divider(context),
