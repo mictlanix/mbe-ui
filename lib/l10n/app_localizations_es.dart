@@ -2760,15 +2760,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posPaymentPaid => 'Pagado';
 
   @override
-  String get posPaymentBalance => 'Saldo';
+  String get posPaymentBalance => 'Restante';
 
   @override
   String get posPaymentReferenceLabel => 'Referencia';
 
   @override
-  String posPaymentChange(String amount) {
-    return 'Cambio: $amount';
-  }
+  String get posPaymentChangeLabel => 'Cambio';
+
+  @override
+  String get posPaymentGateHint => 'Se habilita cuando el saldo queda en cero';
+
+  @override
+  String get posPaymentMethodRequiresReference => 'Requiere referencia';
+
+  @override
+  String get posPaymentMethodNoReference => 'Sin referencia';
+
+  @override
+  String get posPaymentMethodSectionLabel => 'Método de pago';
 
   @override
   String get posApplyPayment => 'Aplicar pago';

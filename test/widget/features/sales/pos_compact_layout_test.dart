@@ -247,19 +247,24 @@ void main() {
       await pumpPayment(tester);
 
       expect(find.byKey(const Key('payment_amount_field')), findsOneWidget);
-      expect(find.text(l10n.posQuickAmountRemaining), findsOneWidget);
+      // Scoped to the chip: "Restante" is also the summary panel's
+      // (always-pinned) balance label since spec 025's rename to that word.
+      expect(
+        find.descendant(
+          of: find.byType(ActionChip),
+          matching: find.text(l10n.posQuickAmountRemaining),
+        ),
+        findsOneWidget,
+      );
       expect(
         find.byKey(Key('payment_method_${PaymentMethod.cash.code}')),
         findsOneWidget,
       );
       expectNoHorizontalScroll(tester);
 
-      await tester.dragUntilVisible(
-        find.byKey(const Key('payment_close_button')),
-        find.byType(ListView),
-        const Offset(0, -120),
-      );
-      await tester.pumpAndSettle();
+      // The close button now lives in a footer pinned outside the scrolling
+      // region (spec 025 FR-004) — it is already on screen with no scroll
+      // gesture at all, not merely reachable by dragging one.
       expect(find.byKey(const Key('payment_close_button')), findsOneWidget);
       expectNoHorizontalScroll(tester);
     });
@@ -269,7 +274,16 @@ void main() {
     ) async {
       // Amounts wide enough to crowd a three-column row at 390 px.
       await pumpPayment(tester, balance: '1234567.89');
-      expect(find.text(l10n.posPaymentBalance), findsOneWidget);
+      // Scoped to the summary panel: "Restante" is also the quick-amount
+      // chip's label since spec 025's rename to that word — unrelated to
+      // this assertion, which is about the pinned money block.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('payment_summary_panel')),
+          matching: find.text(l10n.posPaymentBalance),
+        ),
+        findsOneWidget,
+      );
       expectNoHorizontalScroll(tester);
     });
   });

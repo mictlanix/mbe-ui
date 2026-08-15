@@ -2718,15 +2718,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posPaymentPaid => 'Paid';
 
   @override
-  String get posPaymentBalance => 'Balance';
+  String get posPaymentBalance => 'Remaining';
 
   @override
   String get posPaymentReferenceLabel => 'Reference';
 
   @override
-  String posPaymentChange(String amount) {
-    return 'Change: $amount';
-  }
+  String get posPaymentChangeLabel => 'Change';
+
+  @override
+  String get posPaymentGateHint => 'Opens once the balance is settled';
+
+  @override
+  String get posPaymentMethodRequiresReference => 'Requires a reference';
+
+  @override
+  String get posPaymentMethodNoReference => 'No reference needed';
+
+  @override
+  String get posPaymentMethodSectionLabel => 'Payment method';
 
   @override
   String get posApplyPayment => 'Apply payment';

@@ -30,24 +30,24 @@ Single Flutter project. `lib/` for source, `test/` for tests — no `src/`/
 **Purpose**: The one piece every user story reads — the icon mapping and the
 copy — built and verified before any presentation widget consumes them.
 
-- [ ] T001 [P] Add `IconData paymentMethodIcon(int code)` to
+- [X] T001 [P] Add `IconData paymentMethodIcon(int code)` to
   `lib/core/domain/payment_method.dart`, beside the existing
   `paymentMethodLabel`, switching on `PaymentMethod.fromCode` per the mapping
   table in [research.md §R7](./research.md#r7--method-icons-need-a-mapping-and-it-belongs-beside-the-label-mapping),
   falling back to `Icons.payments_outlined` for an unmapped code — mirroring
   `paymentMethodLabel`'s documented fallback posture.
-- [ ] T002 [P] Create `test/unit/core/domain/payment_method_test.dart`
+- [X] T002 [P] Create `test/unit/core/domain/payment_method_test.dart`
   asserting `paymentMethodIcon` returns the mapped icon for `cash`,
   `creditCard`, `debitCard`, `eft` and one code from every other group in the
   table, and falls back to `Icons.payments_outlined` for an unrecognized code
   (no existing test file covers `payment_method.dart`; this is a new file).
-- [ ] T003 Add the five new keys to `lib/l10n/app_es.arb` and
+- [X] T003 Add the five new keys to `lib/l10n/app_es.arb` and
   `lib/l10n/app_en.arb` per [research.md §R10](./research.md#r10--copy-four-new-keys-one-reworded-value-one-orphan-removed):
   `posPaymentChangeLabel`, `posPaymentGateHint`,
   `posPaymentMethodRequiresReference`, `posPaymentMethodNoReference`,
   `posPaymentMethodSectionLabel`; reword `posPaymentBalance`'s value to
   "Restante" (es) / "Remaining" (en) — the key itself is unchanged.
-- [ ] T004 Run `flutter gen-l10n` and confirm
+- [X] T004 Run `flutter gen-l10n` and confirm
   `test/unit/core/l10n_parity_test.dart` passes with the three new keys
   present in both locales (the removal of `posPaymentChange` happens in T016,
   once nothing references it — attempting it here would fail parity against a
@@ -67,12 +67,12 @@ very reflow this feature introduces.
 **⚠️ CRITICAL**: T005 must land before any layout task that can trigger a
 reflow (all of US1, US3).
 
-- [ ] T005 In `lib/features/sales/presentation/payment/payment_amount_field.dart`,
+- [X] T005 In `lib/features/sales/presentation/payment/payment_amount_field.dart`,
   seed `_controller` from the current draft on construction —
   `TextEditingController(text: ref.read(paymentControllerProvider).amount)` in
   `initState` — per [research.md §R5](./research.md#r5--the-draft-has-to-survive-the-reflow-and-today-it-would-not).
   Leave the existing post-frame "clear on reset" listener as it is.
-- [ ] T006 [P] Add a regression test to
+- [X] T006 [P] Add a regression test to
   `test/widget/features/sales/payment_step_gate_test.dart` (or a new file
   alongside it) that types an amount into `payment_amount_field`, disposes and
   remounts `PaymentAmountField` against the same provider container (simulating
@@ -97,7 +97,7 @@ without scrolling any region.
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Create
+- [X] T007 [P] [US1] Create
   `test/widget/features/sales/payment_step_layout_test.dart` with a case
   asserting that at a 1280×900 surface, `payment_amount_field`,
   `payment_method_1` (fallback cash tile), a `NumberPad` key, and
@@ -106,7 +106,7 @@ without scrolling any region.
   count/position, or assert each target's `Offset` lies within the surface
   bounds without a preceding scroll) — this is SC-001's assertion and must
   fail against today's single-`ListView` step before implementation.
-- [ ] T008 [P] [US1] In the same file, add a case that applies a cash payment
+- [X] T008 [P] [US1] In the same file, add a case that applies a cash payment
   end to end at 1280×900 (tap `payment_method_1`, enter an amount into
   `payment_amount_field`, tap `payment_submit_button`) and asserts an
   `applied_payment_*` row appears without any `tester.drag`/`scrollUntilVisible`
@@ -114,7 +114,7 @@ without scrolling any region.
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Create
+- [X] T009 [US1] Create
   `lib/features/sales/presentation/payment/payment_summary_panel.dart` as a
   `ConsumerWidget` per
   [contract §6](./contracts/payment-surface.md#6-paymentsummarypanel-new--one-widget-two-homes):
@@ -125,7 +125,7 @@ without scrolling any region.
   only while that button is disabled with a balance outstanding. Surface:
   `theme.elevations.raised.surfaceColor` with a top `outlineVariant` hairline,
   matching `SaleTotalsBar`'s footer treatment.
-- [ ] T010 [US1] Create
+- [X] T010 [US1] Create
   `lib/features/sales/presentation/payment/payment_capture_pane.dart`
   composing, top to bottom, per
   [contract §3](./contracts/payment-surface.md#3-paymentcapturepane-new): the
@@ -136,7 +136,7 @@ without scrolling any region.
   reference field (shown only when `draft.requiresReference`), and
   `payment_submit_button` at the pane's foot. Takes `enabled: !draft.submitting`
   and passes it through to every child.
-- [ ] T011 [US1] Rewrite
+- [X] T011 [US1] Rewrite
   `lib/features/sales/presentation/payment/payment_step.dart` as the composer:
   a `LayoutBuilder`/`MediaQuery` check on
   `LayoutBreakpoints.large` (research R1) building either a two-pane `Row`
@@ -145,7 +145,7 @@ without scrolling any region.
   one-column shape (built fully in US3, T014); keeps the `ErrorBanner` at the
   top of the capture pane; keeps the constructor signature
   `PaymentStep({required Sale sale, required VoidCallback onClose})` unchanged.
-- [ ] T012 [P] [US1] In
+- [X] T012 [P] [US1] In
   `lib/features/sales/presentation/payment/payment_amount_field.dart`, restyle
   the amount `TextField` per
   [research.md §R4](./research.md#r4--the-amount-display-is-still-a-textfield-dressed-as-the-mocks-figure):
@@ -155,7 +155,7 @@ without scrolling any region.
   this widget into whatever `PaymentCapturePane` (T010) renders next to it —
   `PaymentAmountField` keeps the field and the label only. Preserve the
   `payment_amount_field` key.
-- [ ] T013 [US1] In
+- [X] T013 [US1] In
   `lib/features/sales/presentation/payment/applied_payments_panel.dart`,
   restyle each `ListTile` as a card per
   [contract §5](./contracts/payment-surface.md#5-appliedpaymentspanel--the-rails-list):
@@ -182,7 +182,7 @@ same block, with the hint disappearing.
 
 ### Tests for User Story 2
 
-- [ ] T014 [P] [US2] Create
+- [X] T014 [P] [US2] Create
   `test/widget/features/sales/payment_summary_panel_test.dart` asserting: all
   four labeled rows (`posPaymentTotal`, `posPaymentPaid`, `posPaymentBalance`,
   `posPaymentChangeLabel`) render simultaneously; the change row reads the
@@ -195,11 +195,11 @@ same block, with the hint disappearing.
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Confirm `PaymentSummaryPanel` (built in T009) reads
+- [X] T015 [US2] Confirm `PaymentSummaryPanel` (built in T009) reads
   `PaymentController.changeFor` via `ref.watch` (not `ref.read`) so the change
   row updates live as the amount field changes — add the watch if T009 used
   `read`. This is the one line research R9 flags as easy to get wrong.
-- [ ] T016 In `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, remove the now-
+- [X] T016 In `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, remove the now-
   unused `posPaymentChange` key (its interpolated "Cambio: {amount}" sentence
   is fully superseded by the permanent `posPaymentChangeLabel` row from T009);
   re-run `flutter gen-l10n` and confirm
@@ -224,7 +224,7 @@ it matches what selecting it does.
 
 ### Tests for User Story 4
 
-- [ ] T017 [P] [US4] Create
+- [X] T017 [P] [US4] Create
   `test/widget/features/sales/payment_method_grid_test.dart` covering: one tile
   per configured `PaymentMethodOption`, each showing its icon (via
   `paymentMethodIcon`) and name; the secondary line reads
@@ -242,7 +242,7 @@ it matches what selecting it does.
 
 ### Implementation for User Story 4
 
-- [ ] T018 [US4] Rewrite
+- [X] T018 [US4] Rewrite
   `lib/features/sales/presentation/payment/payment_method_grid.dart` to render
   tiles per
   [contract §4](./contracts/payment-surface.md#4-paymentmethodgrid--tiles):
@@ -273,14 +273,14 @@ scrolls horizontally.
 
 ### Tests for User Story 3
 
-- [ ] T019 [P] [US3] Rewrite the phone-tier cases in
+- [X] T019 [P] [US3] Rewrite the phone-tier cases in
   `test/widget/features/sales/pos_compact_layout_test.dart`'s "the Cobro step
   on a phone" group: replace the `dragUntilVisible`-to-reach-`payment_close_button`
   assertion with one that finds `payment_close_button` **without** any scroll
   gesture (it is now in a pinned footer, not inside the scrolling `ListView`),
   and keep the existing `expectNoHorizontalScroll` assertions for both the
   ordinary and the wide-amount (`1234567.89`) cases.
-- [ ] T020 [P] [US3] In `payment_step_layout_test.dart` (from T007), add a
+- [X] T020 [P] [US3] In `payment_step_layout_test.dart` (from T007), add a
   1024×768 case (the one-column, non-phone tier) asserting: the method grid
   and the keypad stack vertically (not side by side, since the pane is
   narrower than 900 px — research R2), and `PaymentSummaryPanel`'s content is
@@ -288,7 +288,7 @@ scrolls horizontally.
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Complete the one-column branch of `PaymentStep`
+- [X] T021 [US3] Complete the one-column branch of `PaymentStep`
   (`lib/features/sales/presentation/payment/payment_step.dart`, started in
   T011): below `LayoutBreakpoints.large`, render
   `Column[ Expanded(scrolling content: header/error, PaymentCapturePane's
@@ -314,7 +314,7 @@ height.
 
 ### Tests for User Story 5
 
-- [ ] T022 [P] [US5] Add a case to `payment_step_layout_test.dart` that
+- [X] T022 [P] [US5] Add a case to `payment_step_layout_test.dart` that
   renders the full `PaymentStep` (not the bare `NumberPad`) at 390×900,
   1024×768 and 1440×900, and asserts the `number_pad_7` key's rendered
   `Size` has the same width/height **ratio** at all three surfaces — proving
@@ -322,7 +322,7 @@ height.
   (T010) or the one-column body (T021) hands it. This is the guarantee
   `number_pad_test.dart` gives the widget in isolation; this task proves it
   survives composition.
-- [ ] T023 [P] [US5] Confirm (no code change expected) that
+- [X] T023 [P] [US5] Confirm (no code change expected) that
   `flutter test test/widget/core/widgets/number_pad_test.dart` and the four
   `test/golden/goldens/number_pad_*.png` goldens are untouched and green —
   this is the explicit non-regression check research R3 and FR-011 call for.
@@ -331,7 +331,7 @@ height.
 
 ### Implementation for User Story 5
 
-- [ ] T024 [US5] No changes to `lib/core/widgets/number_pad.dart` (research
+- [X] T024 [US5] No changes to `lib/core/widgets/number_pad.dart` (research
   R3, FR-011) — this task is the explicit acknowledgment that "keep the
   keypad's aspect ratio" is satisfied by construction once T010/T021 place the
   pad inside a `ConstrainedBox`/fixed-width slot rather than stretching it,
@@ -346,18 +346,18 @@ this feature introduces, with zero edits to the shared widget.
 
 **Purpose**: Whole-feature verification that spans every story.
 
-- [ ] T025 [P] Run `flutter analyze` from the repo root and resolve any
+- [X] T025 [P] Run `flutter analyze` from the repo root and resolve any
   warning introduced by this feature's files.
-- [ ] T026 [P] Grep the diff of every changed file under
+- [X] T026 [P] Grep the diff of every changed file under
   `lib/features/sales/presentation/payment/` and `lib/core/domain/payment_method.dart`
   for literal `Color(`, hex colors, bare numeric font sizes, or `EdgeInsets`
   values not sourced from `Theme.of(context).spacing`/`.shapes`/`.typeRoles`/
   `.elevations` — confirms SC-006/FR-028 (zero literal design values).
-- [ ] T027 Run the full suite —
+- [X] T027 Run the full suite —
   `flutter test test/widget/features/sales/ test/widget/core/widgets/number_pad_test.dart test/unit/core/domain/payment_method_test.dart test/unit/core/l10n_parity_test.dart`
   — and confirm everything is green, including every test listed in
   [quickstart.md](./quickstart.md)'s risk table.
-- [ ] T028 Walk [quickstart.md](./quickstart.md)'s "Driving the real screen"
+- [x] T028 Walk [quickstart.md](./quickstart.md)'s "Driving the real screen"
   width table (1440, 1200/1199 boundary, 1024, 390 px) against a live register
   with an open cash session, confirming SC-001–SC-010 by hand where they are
   not already covered by an automated test (the network-panel check for
