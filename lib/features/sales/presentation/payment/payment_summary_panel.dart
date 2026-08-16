@@ -89,10 +89,31 @@ class PaymentSummaryPanel extends ConsumerWidget {
             figureStyle: typeRoles.metricValue,
           ),
           SizedBox(height: spacing.sm),
-          FilledButton.tonal(
+          // The same footer action `SaleTotalsBar` carries on the capture
+          // step: an extended FAB with the direction stated after the label,
+          // stretched by the column it sits in.
+          //
+          // A FAB keeps its own fill when `onPressed` is null, so the gated
+          // state is spelled out here — without it the button would look
+          // pressable while the balance is still outstanding, which the
+          // `FilledButton.tonal` this replaces got for free.
+          FloatingActionButton.extended(
             key: const Key('payment_close_button'),
             onPressed: canClose ? onClose : null,
-            child: Text(l10n.posContinue),
+            backgroundColor: canClose
+                ? null
+                : theme.colorScheme.onSurface.withValues(alpha: 0.12),
+            foregroundColor: canClose
+                ? null
+                : theme.colorScheme.onSurface.withValues(alpha: 0.38),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.posContinue),
+                SizedBox(width: spacing.xs),
+                const Icon(Icons.arrow_forward),
+              ],
+            ),
           ),
           if (!canClose && balanceOutstanding) ...[
             SizedBox(height: spacing.xs),

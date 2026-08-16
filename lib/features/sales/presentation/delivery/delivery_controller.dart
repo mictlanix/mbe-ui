@@ -6,7 +6,6 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_control
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
-import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 
 part 'delivery_controller.g.dart';
 
@@ -67,20 +66,18 @@ class DeliveryController extends _$DeliveryController {
     );
   }
 
-  /// Records one addressed destination and its share of each line.
+  /// Records one addressed destination from its header alone (FR-027) — an
+  /// explicit empty `lines: const []`, never omitted (mbe-api#165, research
+  /// R14): omitting `lines` claims everything the sale still owes, which is
+  /// the opposite of what a destination that has just been named should
+  /// hold. Every quantity is assigned afterwards, on the resulting card's own
+  /// stepper ([assignLine]).
   Future<Destination> addDestination({
     required int shipTo,
     int? contact,
     DateTime? date,
     String? comment,
-    required Map<int, String> quantities,
   }) async {
-    final lines = [
-      for (final entry in quantities.entries)
-        if (!_isZero(entry.value))
-          DestinationLineRequest(salesOrderDetail: entry.key, quantity: entry.value),
-    ];
-
     final created = await ref
         .read(deliveryOrderRepositoryProvider)
         .create(
@@ -90,7 +87,7 @@ class DeliveryController extends _$DeliveryController {
           contact: contact,
           date: date,
           comment: comment,
-          lines: lines,
+          lines: const [],
         );
 
     final labelled = await _labelled(created);
@@ -137,5 +134,62 @@ class DeliveryController extends _$DeliveryController {
     );
   }
 
-  static bool _isZero(String value) => double.tryParse(value) == 0;
+  /// Assigns a sale line to a destination that does not yet carry it
+  /// (mbe-api#163, FR-018). The card's stepper calls this the first time a
+  /// line's quantity is raised above zero; every later change to that same
+  /// line goes through [adjustLine] instead — a second `assignLine` on the
+  /// same pair is refused with a 409 (research R13), so the caller must not
+  /// reach it once `Destination.lines` already carries the line.
+  Future<Destination> assignLine({
+    required int destinationId,
+    required int saleLineId,
+    required String quantity,
+  }) async {
+    final updated = await ref
+        .read(deliveryOrderRepositoryProvider)
+        .addLine(
+          destinationId: destinationId,
+          salesOrderDetail: saleLineId,
+          quantity: quantity,
+        );
+    return _replace(updated);
+  }
+
+  /// Adjusts a line the destination already carries (`lineId` is the
+  /// destination's own line id, not the sale line's).
+  Future<Destination> adjustLine({
+    required int destinationId,
+    required int lineId,
+    required String quantity,
+  }) async {
+    final updated = await ref
+        .read(deliveryOrderRepositoryProvider)
+        .updateLine(destinationId: destinationId, lineId: lineId, quantity: quantity);
+    return _replace(updated);
+  }
+
+  /// Takes a line's quantity to zero (FR-022) — a real delete, not an update
+  /// to `'0'`, since neither `addLine` nor `updateLine` accepts a
+  /// non-positive quantity.
+  Future<Destination> dropLine({
+    required int destinationId,
+    required int lineId,
+  }) async {
+    final updated = await ref
+        .read(deliveryOrderRepositoryProvider)
+        .removeLine(destinationId: destinationId, lineId: lineId);
+    return _replace(updated);
+  }
+
+  /// Re-joins the server's response (which carries no address/contact
+  /// labels of its own) and replaces that one destination in [state] —
+  /// no refetch of the list (SC-010).
+  Future<Destination> _replace(Destination updated) async {
+    final labelled = await _labelled(updated);
+    state = AsyncData([
+      for (final destination in state.valueOrNull ?? const <Destination>[])
+        if (destination.id == labelled.id) labelled else destination,
+    ]);
+    return labelled;
+  }
 }

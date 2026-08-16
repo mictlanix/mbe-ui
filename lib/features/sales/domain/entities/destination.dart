@@ -56,16 +56,25 @@ class Destination with _$Destination {
 
 /// `delivery_order.fulfillment_type` — **a type, not a status; immutable
 /// after creation.** Hand-mapped because the generator emits `number0`/
-/// `number1` with no preserved member names, the same gap `PaymentTerms` and
-/// `CurrencyCode` hit (see `sale.dart`).
+/// `number1`/`number2` with no preserved member names, the same gap
+/// `PaymentTerms` and `CurrencyCode` hit (see `sale.dart`).
 ///
-/// Values verified against mbe-api's own `app/enums.py`
-/// (`DELIVERY = 0`, `COUNTER_PICKUP = 1`) rather than inferred — existing
-/// data has both types with and without a `ship_to`, so the wire alone is
-/// not conclusive.
+/// **Renumbered by mbe-api#171**, a breaking change: `0`/`1` used to mean
+/// delivery/counter-pickup and now mean the reverse, on a scale unified with
+/// `sales_order.fulfillment_intent` (`FulfillmentMode`, `fulfillment_mode.dart`)
+/// — pickup leads because it is the ordinary counter sale, 92.5% of all sales
+/// orders. The server's own member is renamed `PICKUP`; this enum keeps
+/// `counterPickup` as its Dart identifier rather than chasing the rename,
+/// since nothing here reads the wire value as a name.
+///
+/// `number2` (`MIXED`) never reaches this type: a delivery order is one kind
+/// of shipment or the other, and mbe-api's own `create_from_sales_order`
+/// refuses to raise one carrying it (mixed is a *sale*-level concept, not a
+/// shipment-level one). [fromApi]'s fallback exists only so an unexpected
+/// value degrades to the safer of the two rather than throwing.
 enum FulfillmentType {
-  delivery(0),
-  counterPickup(1);
+  counterPickup(0),
+  delivery(1);
 
   const FulfillmentType(this.value);
 
@@ -73,13 +82,13 @@ enum FulfillmentType {
 
   static FulfillmentType fromApi(api.FulfillmentType value) =>
       switch (value.name) {
-        'number1' => FulfillmentType.counterPickup,
+        'number0' => FulfillmentType.counterPickup,
         _ => FulfillmentType.delivery,
       };
 
   api.FulfillmentType toApi() => switch (this) {
-    FulfillmentType.delivery => api.FulfillmentType.number0,
-    FulfillmentType.counterPickup => api.FulfillmentType.number1,
+    FulfillmentType.counterPickup => api.FulfillmentType.number0,
+    FulfillmentType.delivery => api.FulfillmentType.number1,
   };
 }
 

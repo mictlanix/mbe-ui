@@ -7,6 +7,8 @@ import 'package:one_of/any_of.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
+    show wireDate;
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 
@@ -46,7 +48,14 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
             ..fulfillmentType = fulfillmentType.toApi()
             ..shipTo = shipTo
             ..contact = contact
-            ..date = date
+            // `showDatePicker` hands back a **local** midnight, and
+            // built_value's DateTime serializer throws `ArgumentError` on
+            // anything non-UTC — dio then surfaces that as a response-less
+            // `DioException`, so the cashier saw "couldn't reach the server"
+            // for a request that never left the client. [wireDate] is the
+            // encoding the sales-order repository already settled on for
+            // exactly this (spec 023 research R3/R6).
+            ..date = date == null ? null : wireDate(date)
             ..comment = comment;
           // Omitted claims everything the sale still owes — how the
           // counter-pickup remainder is recorded (FR-036).
@@ -86,8 +95,32 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
               b
                 ..shipTo = shipTo
                 ..contact = contact
-                ..date = date
+                // Same non-UTC serialization trap as `create`'s date.
+                ..date = date == null ? null : wireDate(date)
                 ..comment = comment;
+            }),
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return Destination.fromResponse(result);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<Destination> addLine({
+    required int destinationId,
+    required int salesOrderDetail,
+    required String quantity,
+  }) async {
+    try {
+      final response = await _api
+          .addDeliveryOrderLineApiV1DeliveryOrdersDeliveryOrderIdLinesPost(
+            deliveryOrderId: destinationId,
+            deliveryOrderLineRequest: api.DeliveryOrderLineRequest((b) {
+              b.salesOrderDetail = salesOrderDetail;
+              _setQuantity1(b.quantity, quantity);
             }),
           );
       final result = response.data;

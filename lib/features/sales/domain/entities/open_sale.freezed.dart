@@ -19,7 +19,23 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$OpenSale {
   int get id => throw _privateConstructorUsedError;
   int? get serial => throw _privateConstructorUsedError;
+
+  /// The per-document name **override** — mbe's data dictionary calls this
+  /// column "Override customer name on docs", and mbe-api sets it only
+  /// from what a client sends. `null` on every ordinary sale, walk-in ones
+  /// included, which is why it is not the name a row shows on its own
+  /// (mictlanix/mbe-api#172).
   String? get customerName => throw _privateConstructorUsedError;
+
+  /// The customer's own name, joined from the sale's customer by mbe-api
+  /// (mictlanix/mbe-api#173). This is what a row displays when the sale
+  /// carries no override — and it is why nothing here has to resolve a
+  /// customer per row any more.
+  ///
+  /// Nullable because the field is optional in the schema: a deployment
+  /// running an mbe-api older than #173 simply omits it, and the row falls
+  /// back to the override and then to a dash rather than breaking.
+  String? get customerDisplayName => throw _privateConstructorUsedError;
   String get total => throw _privateConstructorUsedError;
   String get balance => throw _privateConstructorUsedError;
   SaleStatus get status => throw _privateConstructorUsedError;
@@ -41,6 +57,7 @@ abstract class $OpenSaleCopyWith<$Res> {
     int id,
     int? serial,
     String? customerName,
+    String? customerDisplayName,
     String total,
     String balance,
     SaleStatus status,
@@ -66,6 +83,7 @@ class _$OpenSaleCopyWithImpl<$Res, $Val extends OpenSale>
     Object? id = null,
     Object? serial = freezed,
     Object? customerName = freezed,
+    Object? customerDisplayName = freezed,
     Object? total = null,
     Object? balance = null,
     Object? status = null,
@@ -84,6 +102,10 @@ class _$OpenSaleCopyWithImpl<$Res, $Val extends OpenSale>
             customerName: freezed == customerName
                 ? _value.customerName
                 : customerName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            customerDisplayName: freezed == customerDisplayName
+                ? _value.customerDisplayName
+                : customerDisplayName // ignore: cast_nullable_to_non_nullable
                       as String?,
             total: null == total
                 ? _value.total
@@ -120,6 +142,7 @@ abstract class _$$OpenSaleImplCopyWith<$Res>
     int id,
     int? serial,
     String? customerName,
+    String? customerDisplayName,
     String total,
     String balance,
     SaleStatus status,
@@ -144,6 +167,7 @@ class __$$OpenSaleImplCopyWithImpl<$Res>
     Object? id = null,
     Object? serial = freezed,
     Object? customerName = freezed,
+    Object? customerDisplayName = freezed,
     Object? total = null,
     Object? balance = null,
     Object? status = null,
@@ -162,6 +186,10 @@ class __$$OpenSaleImplCopyWithImpl<$Res>
         customerName: freezed == customerName
             ? _value.customerName
             : customerName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        customerDisplayName: freezed == customerDisplayName
+            ? _value.customerDisplayName
+            : customerDisplayName // ignore: cast_nullable_to_non_nullable
                   as String?,
         total: null == total
             ? _value.total
@@ -191,6 +219,7 @@ class _$OpenSaleImpl implements _OpenSale {
     required this.id,
     this.serial,
     this.customerName,
+    this.customerDisplayName,
     required this.total,
     required this.balance,
     required this.status,
@@ -201,8 +230,25 @@ class _$OpenSaleImpl implements _OpenSale {
   final int id;
   @override
   final int? serial;
+
+  /// The per-document name **override** — mbe's data dictionary calls this
+  /// column "Override customer name on docs", and mbe-api sets it only
+  /// from what a client sends. `null` on every ordinary sale, walk-in ones
+  /// included, which is why it is not the name a row shows on its own
+  /// (mictlanix/mbe-api#172).
   @override
   final String? customerName;
+
+  /// The customer's own name, joined from the sale's customer by mbe-api
+  /// (mictlanix/mbe-api#173). This is what a row displays when the sale
+  /// carries no override — and it is why nothing here has to resolve a
+  /// customer per row any more.
+  ///
+  /// Nullable because the field is optional in the schema: a deployment
+  /// running an mbe-api older than #173 simply omits it, and the row falls
+  /// back to the override and then to a dash rather than breaking.
+  @override
+  final String? customerDisplayName;
   @override
   final String total;
   @override
@@ -214,7 +260,7 @@ class _$OpenSaleImpl implements _OpenSale {
 
   @override
   String toString() {
-    return 'OpenSale(id: $id, serial: $serial, customerName: $customerName, total: $total, balance: $balance, status: $status, date: $date)';
+    return 'OpenSale(id: $id, serial: $serial, customerName: $customerName, customerDisplayName: $customerDisplayName, total: $total, balance: $balance, status: $status, date: $date)';
   }
 
   @override
@@ -226,6 +272,8 @@ class _$OpenSaleImpl implements _OpenSale {
             (identical(other.serial, serial) || other.serial == serial) &&
             (identical(other.customerName, customerName) ||
                 other.customerName == customerName) &&
+            (identical(other.customerDisplayName, customerDisplayName) ||
+                other.customerDisplayName == customerDisplayName) &&
             (identical(other.total, total) || other.total == total) &&
             (identical(other.balance, balance) || other.balance == balance) &&
             (identical(other.status, status) || other.status == status) &&
@@ -238,6 +286,7 @@ class _$OpenSaleImpl implements _OpenSale {
     id,
     serial,
     customerName,
+    customerDisplayName,
     total,
     balance,
     status,
@@ -258,6 +307,7 @@ abstract class _OpenSale implements OpenSale {
     required final int id,
     final int? serial,
     final String? customerName,
+    final String? customerDisplayName,
     required final String total,
     required final String balance,
     required final SaleStatus status,
@@ -268,8 +318,25 @@ abstract class _OpenSale implements OpenSale {
   int get id;
   @override
   int? get serial;
+
+  /// The per-document name **override** — mbe's data dictionary calls this
+  /// column "Override customer name on docs", and mbe-api sets it only
+  /// from what a client sends. `null` on every ordinary sale, walk-in ones
+  /// included, which is why it is not the name a row shows on its own
+  /// (mictlanix/mbe-api#172).
   @override
   String? get customerName;
+
+  /// The customer's own name, joined from the sale's customer by mbe-api
+  /// (mictlanix/mbe-api#173). This is what a row displays when the sale
+  /// carries no override — and it is why nothing here has to resolve a
+  /// customer per row any more.
+  ///
+  /// Nullable because the field is optional in the schema: a deployment
+  /// running an mbe-api older than #173 simply omits it, and the row falls
+  /// back to the override and then to a dash rather than breaking.
+  @override
+  String? get customerDisplayName;
   @override
   String get total;
   @override

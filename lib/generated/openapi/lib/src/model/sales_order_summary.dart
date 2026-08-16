@@ -17,6 +17,7 @@ part 'sales_order_summary.g.dart';
 /// * [serial]
 /// * [customer]
 /// * [customerName]
+/// * [customerDisplayName]
 /// * [salesperson]
 /// * [date]
 /// * [dueDate]
@@ -38,6 +39,9 @@ abstract class SalesOrderSummary
 
   @BuiltValueField(wireName: r'customer_name')
   String? get customerName;
+
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
 
   @BuiltValueField(wireName: r'salesperson')
   int get salesperson;
@@ -105,13 +109,20 @@ class _$SalesOrderSummarySerializer
       object.customer,
       specifiedType: const FullType(int),
     );
-    yield r'customer_name';
-    yield object.customerName == null
-        ? null
-        : serializers.serialize(
-            object.customerName,
-            specifiedType: const FullType.nullable(String),
-          );
+    if (object.customerName != null) {
+      yield r'customer_name';
+      yield serializers.serialize(
+        object.customerName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'salesperson';
     yield serializers.serialize(
       object.salesperson,
@@ -205,6 +216,16 @@ class _$SalesOrderSummarySerializer
                   as String?;
           if (valueDes == null) continue;
           result.customerName = valueDes;
+          break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
           break;
         case r'salesperson':
           final valueDes =

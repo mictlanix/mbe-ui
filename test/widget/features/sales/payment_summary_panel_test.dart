@@ -35,8 +35,8 @@ void main() {
     ),
   );
 
-  FilledButton closeButton(WidgetTester tester) =>
-      tester.widget<FilledButton>(find.byKey(const Key('payment_close_button')));
+  FloatingActionButton closeButton(WidgetTester tester) => tester
+      .widget<FloatingActionButton>(find.byKey(const Key('payment_close_button')));
 
   testWidgets('total, paid, remaining and change all render at once', (
     tester,

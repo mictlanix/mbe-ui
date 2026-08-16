@@ -226,7 +226,13 @@ OpenSale testOpenSale({
   int id = 42,
   SaleStatus status = SaleStatus.draft,
   int? serial,
-  String customerName = 'Público en general',
+  /// The per-document name *override*, null on every ordinary sale — which
+  /// is why it defaults to null here, the shape mbe-api actually returns.
+  String? customerName,
+
+  /// The customer's own name, joined per page by mbe-api (#173) — what a row
+  /// displays when there is no override.
+  String? customerDisplayName = 'Público en general',
   String total = '116.00',
   String? balance,
   DateTime? date,
@@ -234,6 +240,7 @@ OpenSale testOpenSale({
   id: id,
   serial: serial,
   customerName: customerName,
+  customerDisplayName: customerDisplayName,
   total: total,
   balance: balance ?? (status == SaleStatus.paid ? '0' : total),
   status: status,

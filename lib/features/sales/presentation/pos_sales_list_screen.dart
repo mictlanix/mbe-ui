@@ -179,7 +179,7 @@ class PosSalesListScreen extends ConsumerWidget {
                 ),
                 DataTableColumn.text(
                   label: l10n.posSalesColumnCustomer,
-                  text: (sale) => sale.customerName ?? '—',
+                  text: posSaleCustomerLabel,
                   size: ColumnSize.L,
                 ),
                 DataTableColumn(

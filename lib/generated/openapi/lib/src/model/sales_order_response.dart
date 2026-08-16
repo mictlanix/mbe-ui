@@ -8,6 +8,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/sales_order_line_response.dart';
 import 'package:mbe_api_client/src/model/document_status.dart';
 import 'package:mbe_api_client/src/model/priority.dart';
+import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/currency_code.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -37,6 +38,7 @@ part 'sales_order_response.g.dart';
 /// * [exchangeRate]
 /// * [priority]
 /// * [comment]
+/// * [fulfillmentIntent]
 /// * [status]
 /// * [lines]
 /// * [subtotal]
@@ -108,6 +110,10 @@ abstract class SalesOrderResponse
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
+
+  @BuiltValueField(wireName: r'fulfillment_intent')
+  FulfillmentType? get fulfillmentIntent;
+  // enum fulfillmentIntentEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'status')
   DocumentStatus get status;
@@ -271,6 +277,13 @@ class _$SalesOrderResponseSerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
+    if (object.fulfillmentIntent != null) {
+      yield r'fulfillment_intent';
+      yield serializers.serialize(
+        object.fulfillmentIntent,
+        specifiedType: const FullType.nullable(FulfillmentType),
+      );
+    }
     yield r'status';
     yield serializers.serialize(
       object.status,
@@ -504,6 +517,16 @@ class _$SalesOrderResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'fulfillment_intent':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(FulfillmentType),
+                  )
+                  as FulfillmentType?;
+          if (valueDes == null) continue;
+          result.fulfillmentIntent = valueDes;
           break;
         case r'status':
           final valueDes =

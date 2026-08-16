@@ -21,21 +21,36 @@ Future<int> facilityAddressController(Ref ref, int facilityId) async {
 /// Where a sale should reopen, derived from the sale itself rather than from
 /// anything the screen held (FR-057, contracts/pos-screen.md §5).
 ///
-/// [facilityAddressId] is `null` while it is still loading; the mode then
-/// falls back to counter pickup, which is also what a `null` `shipTo` means,
-/// so a slow lookup never silently turns a delivery sale into a counter one —
-/// it only delays the third step appearing.
+/// [sale.fulfillmentIntent] is tried first — it is what a sale captured after
+/// mbe-api#171 actually recorded, `mixed` included. A `null` intent (every
+/// older sale, or one from a client that never asks) falls back to the
+/// address heuristic, which cannot answer `mixed` and defaults to counter
+/// pickup — the delivery step's own "leave the rest at the counter" action is
+/// what recovers a mixed sale caught by that fallback (`LineDistributionFoot`).
+///
+/// [facilityAddressId] is `null` while it is still loading; the fallback then
+/// reads as counter pickup, which is also what a `null` `shipTo` means, so a
+/// slow lookup never silently turns a delivery sale into a counter one — it
+/// only delays the third step appearing.
 ({PosStep step, FulfillmentMode mode}) resumeTargetFor(
   Sale sale, {
   required int? facilityAddressId,
 }) {
-  final isDelivery =
-      facilityAddressId != null &&
-      FulfillmentModeEncoding.impliesDelivery(
-        shipTo: sale.shipTo,
-        facilityAddressId: facilityAddressId,
-      );
-  final mode = isDelivery ? FulfillmentMode.delivery : FulfillmentMode.counterPickup;
+  final recorded = sale.fulfillmentIntent;
+  final FulfillmentMode mode;
+  final bool isDelivery;
+  if (recorded != null) {
+    mode = recorded;
+    isDelivery = recorded != FulfillmentMode.counterPickup;
+  } else {
+    isDelivery =
+        facilityAddressId != null &&
+        FulfillmentModeEncoding.impliesDelivery(
+          shipTo: sale.shipTo,
+          facilityAddressId: facilityAddressId,
+        );
+    mode = isDelivery ? FulfillmentMode.delivery : FulfillmentMode.counterPickup;
+  }
 
   final step = switch (sale.status) {
     // Still being captured.

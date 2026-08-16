@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 
 part 'sale.freezed.dart';
@@ -26,6 +27,11 @@ class Sale with _$Sale {
     required Currency currency,
     required String exchangeRate,
     int? shipTo,
+    // `null` for a sale predating mbe-api#171 or raised by a client that
+    // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
+    // keeps that distinction rather than guessing). The capture step writes
+    // this via `updateHeader` once the cashier picks a mode.
+    FulfillmentMode? fulfillmentIntent,
     required DateTime promiseDate,
     required SaleStatus status,
     @Default(<SaleLine>[]) List<SaleLine> lines,
@@ -47,6 +53,7 @@ class Sale with _$Sale {
     currency: currencyFromApi(r.currency),
     exchangeRate: r.exchangeRate,
     shipTo: r.shipTo,
+    fulfillmentIntent: FulfillmentMode.fromApi(r.fulfillmentIntent),
     promiseDate: r.promiseDate,
     status: SaleStatus.fromApi(r.status),
     lines: (r.lines ?? const <api.SalesOrderLineResponse>[])

@@ -70,7 +70,9 @@ void main() {
       final post = _decodeBody(requests.first.data);
       expect(requests.first.method, 'POST');
       expect(post['sales_order'], 42);
-      expect(post['fulfillment_type'], 0);
+      // 1, not 0 — mbe-api#171 renumbered the wire scale (pickup=0,
+      // delivery=1, mixed=2), unifying it with `sales_order.fulfillment_intent`.
+      expect(post['fulfillment_type'], 1);
       expect((post['lines'] as List).single, {
         'sales_order_detail': 1,
         'quantity': '4',
@@ -83,7 +85,7 @@ void main() {
       final repository = _repositoryWith((options) async {
         requests.add(options);
         return ResponseBody.fromString(
-          jsonEncode(_orderJson(fulfillmentType: 1)),
+          jsonEncode(_orderJson(fulfillmentType: 0)),
           201,
           headers: _jsonHeaders,
         );
@@ -96,7 +98,8 @@ void main() {
 
       final post = _decodeBody(requests.single.data);
       expect(post.containsKey('lines'), isFalse);
-      expect(post['fulfillment_type'], 1);
+      // 0, not 1 — see the renumbering note above.
+      expect(post['fulfillment_type'], 0);
     });
 
     test('the header rides along on the same call (mbe-api#146)', () async {
@@ -130,6 +133,46 @@ void main() {
       expect(destination.shipTo, 77);
     });
 
+    test('a delivery date picked from the calendar reaches the wire — a '
+        'local DateTime must not blow up serialization before the request '
+        'is even sent', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(shipTo: 11)),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      // Exactly what `showDatePicker` hands back: midnight, **local**.
+      // built_value's DateTime serializer throws `ArgumentError` on a
+      // non-UTC value, and dio surfaces that as a response-less
+      // `DioException` — which maps to `NetworkError`, so the cashier sees
+      // "couldn't reach the server" for a request that never left the
+      // client.
+      final picked = DateTime(2026, 8, 17);
+      expect(picked.isUtc, isFalse, reason: 'the fixture must be a local date');
+
+      await repository.create(
+        salesOrder: 42,
+        fulfillmentType: FulfillmentType.delivery,
+        shipTo: 11,
+        date: picked,
+        lines: const [],
+      );
+
+      final post = _decodeBody(requests.single.data);
+      expect(post['date'], isNotNull);
+      expect(
+        post['date'],
+        contains('2026-08-17'),
+        reason: 'the calendar day the cashier picked, not shifted by the '
+            'local UTC offset',
+      );
+    });
+
     test('a refused create leaves nothing behind to roll back', () async {
       final requests = <RequestOptions>[];
       final repository = _repositoryWith((options) async {
@@ -154,6 +197,64 @@ void main() {
         requests.map((r) => r.method),
         ['POST'],
         reason: 'the destination was never partially created (FR-037)',
+      );
+    });
+  });
+
+  group('addLine — assigning a line to an existing destination (mbe-api#163)', () {
+    test('posts the line and returns the updated destination', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(lines: [_lineJson(salesOrderDetail: 5, quantity: '6')])),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final destination = await repository.addLine(
+        destinationId: 500,
+        salesOrderDetail: 5,
+        quantity: '6',
+      );
+
+      final request = requests.single;
+      expect(request.method, 'POST');
+      expect(request.path, endsWith('/delivery-orders/500/lines'));
+      expect(_decodeBody(request.data), {'sales_order_detail': 5, 'quantity': '6'});
+      expect(destination.lines.single.quantity, '6');
+    });
+
+    test('a sale line already on this destination is refused with 409, not '
+        'folded into the existing row', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Line 5 is already on this delivery order as line 900'}),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.addLine(destinationId: 500, salesOrderDetail: 5, quantity: '2'),
+        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+      );
+    });
+
+    test('an over-claim or an unknown/foreign line is refused with 422',
+        () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'The sales order line has 2 left to deliver; 6 was requested'}),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.addLine(destinationId: 500, salesOrderDetail: 5, quantity: '6'),
+        throwsA(isA<ValidationError>()),
       );
     });
   });

@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 
 part 'pos_sale_controller.g.dart';
@@ -82,6 +83,7 @@ class PosSaleController extends _$PosSaleController {
     int? shipTo,
     int? contact,
     String? customerName,
+    FulfillmentMode? fulfillmentIntent,
   }) async {
     final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
@@ -93,6 +95,7 @@ class PosSaleController extends _$PosSaleController {
       shipTo: shipTo,
       contact: contact,
       customerName: customerName,
+      fulfillmentIntent: fulfillmentIntent,
     );
     state = AsyncValue.data(updated);
   }

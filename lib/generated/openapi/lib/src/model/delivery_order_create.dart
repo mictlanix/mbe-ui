@@ -29,7 +29,7 @@ abstract class DeliveryOrderCreate
 
   @BuiltValueField(wireName: r'fulfillment_type')
   FulfillmentType? get fulfillmentType;
-  // enum fulfillmentTypeEnum {  0,  1,  };
+  // enum fulfillmentTypeEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'lines')
   BuiltList<DeliveryOrderLineRequest>? get lines;

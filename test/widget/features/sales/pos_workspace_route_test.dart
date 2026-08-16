@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/access/privilege.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
@@ -107,7 +109,14 @@ void main() {
     }
   });
 
-  List<Override> overrides({int? registerPointSaleId = _registerPointSale}) => [
+  /// [privileges] is empty by default — these tests are about routing, not
+  /// RBAC, and every screen under test renders without one. The list's own
+  /// "Nueva venta" action is the exception: it is absent without `pos`
+  /// create, so the test that drives it asks for that privilege explicitly.
+  List<Override> overrides({
+    int? registerPointSaleId = _registerPointSale,
+    List<Privilege> privileges = const [],
+  }) => [
     authNotifierProvider.overrideWith(
       () => _FixedAuthNotifier(
         AuthState.authenticated(
@@ -121,7 +130,7 @@ void main() {
             settings: registerPointSaleId == null
                 ? null
                 : UserSettings(pointSaleId: registerPointSaleId),
-            privileges: const [],
+            privileges: privileges,
           ),
         ),
       ),
@@ -270,6 +279,69 @@ void main() {
       verify(() => salesOrders.cancel(saleId: 77)).called(1);
       expect(router.state.uri.path, '/sales/pos');
     });
+  });
+
+  group('returning to the list refreshes it (FR-009)', () {
+    /// The list stays mounted underneath a pushed workspace, so its providers
+    /// are never disposed and re-read on the way back — every route into the
+    /// workspace has to invalidate them itself once the cashier returns.
+    testWidgets(
+      'a sale recorded from "Nueva venta" re-queries the list on the way back',
+      (tester) async {
+        stubListSales(salesOrders, page: const OpenSalePage(items: [], total: 0));
+        // A sale with lines: the Back path only cancels an *empty* draft, so
+        // this is one that was actually recorded.
+        when(() => salesOrders.open())
+            .thenAnswer((_) async => testSale(id: 77, lines: [testLine()]));
+        when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
+            .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+
+        final (router, container) = await pumpPosRouted(
+          tester,
+          initialLocation: '/sales/pos',
+          overrides: overrides(
+            privileges: const [
+              Privilege(systemObject: SystemObject.pos, rawValue: 1),
+            ],
+          ),
+        );
+        verify(
+          () => salesOrders.listSales(
+            pointSale: any(named: 'pointSale'),
+            status: any(named: 'status'),
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
+
+        // The list's own primary action, not a synthetic `router.push` — the
+        // button is the path that was missing the refresh.
+        await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
+        await tester.pumpAndSettle();
+        await container.read(posSaleControllerProvider.notifier).ensureOpen();
+        await tester.pumpAndSettle();
+        expect(router.state.uri.path, '/sales/pos/77');
+
+        await tester.tap(find.byKey(const Key('pos_workspace_back')));
+        await tester.pumpAndSettle();
+
+        expect(router.state.uri.path, '/sales/pos');
+        verify(
+          () => salesOrders.listSales(
+            pointSale: any(named: 'pointSale'),
+            status: any(named: 'status'),
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
+      },
+    );
   });
 
   group(

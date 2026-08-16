@@ -7,9 +7,12 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -21,6 +24,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 import 'pos_test_harness.dart';
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
+
+class MockCustomerRepository extends Mock implements CustomerRepository {}
 
 class _FixedAuthNotifier extends AuthNotifier {
   _FixedAuthNotifier(this._state);
@@ -54,10 +59,18 @@ User _user({
 void main() {
   late MockSalesOrderRepository salesOrders;
   late MockCashSessionRepository cashSessions;
+  late MockCustomerRepository customers;
 
   setUp(() {
     salesOrders = MockSalesOrderRepository();
     cashSessions = MockCashSessionRepository();
+    customers = MockCustomerRepository();
+    // Nothing here should ever reach for a customer: the Cliente column
+    // reads the name mbe-api joins onto the row (#173). Stubbed to throw so
+    // a regression that reintroduces the per-row lookup fails loudly rather
+    // than quietly costing a request per row.
+    when(() => customers.get(customerId: any(named: 'customerId')))
+        .thenAnswer((_) async => throw const AppError.notFound());
     // The register's open-sales set (`openSalesSelectorControllerProvider`)
     // is watched for `saleIsWorkable`'s resumable-ids fallback — stubbed
     // empty by default so it resolves without needing delivery/facility
@@ -99,6 +112,7 @@ void main() {
         ),
         salesOrderOverride(salesOrders),
         cashSessionRepositoryProvider.overrideWithValue(cashSessions),
+        customerRepositoryProvider.overrideWithValue(customers),
       ],
     );
   }
@@ -188,6 +202,72 @@ void main() {
       // MoneyFormatters.currency's own format, not a literal "116.00".
       expect(find.textContaining('116,00'), findsWidgets);
     });
+
+    testWidgets(
+      'the Cliente column names the customer from the joined display name — '
+      'the shape every ordinary row has',
+      (tester) async {
+        // `customer_name` is the per-document override, null on every
+        // ordinary sale (mictlanix/mbe-api#172). mbe-api#173 joins the
+        // customer's own name onto the summary instead, which is what this
+        // column reads — and why nothing here resolves a customer per row.
+        stubListSales(
+          salesOrders,
+          page: testSalesPage([
+            testOpenSale(
+              id: 7,
+              customerName: null,
+              customerDisplayName: 'FERRETERÍA LOS PINOS',
+            ),
+          ]),
+        );
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        expect(find.text('FERRETERÍA LOS PINOS'), findsOneWidget);
+        expect(find.text('—'), findsNothing);
+        verifyNever(() => customers.get(customerId: any(named: 'customerId')));
+      },
+    );
+
+    testWidgets(
+      'a sale carrying a name override shows that instead — the document '
+      'deliberately names someone else',
+      (tester) async {
+        stubListSales(
+          salesOrders,
+          page: testSalesPage([
+            testOpenSale(
+              id: 8,
+              customerName: 'OBRA LOS ENCINOS',
+              customerDisplayName: 'FERRETERÍA LOS PINOS',
+            ),
+          ]),
+        );
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        expect(find.text('OBRA LOS ENCINOS'), findsOneWidget);
+        expect(find.text('FERRETERÍA LOS PINOS'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'a row from an mbe-api older than #173 still falls back rather than '
+      'breaking',
+      (tester) async {
+        stubListSales(
+          salesOrders,
+          page: testSalesPage([
+            testOpenSale(id: 9, customerName: null, customerDisplayName: null),
+          ]),
+        );
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        expect(find.text('—'), findsOneWidget);
+      },
+    );
   });
 
   group('PosSalesListScreen — date range default and empty states', () {

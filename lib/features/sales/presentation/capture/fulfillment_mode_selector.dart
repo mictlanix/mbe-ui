@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/pos_defaults.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
@@ -191,7 +192,12 @@ class FulfillmentModeSelector extends ConsumerStatefulWidget {
     this.stretch = false,
   });
 
-  final Sale sale;
+  /// `null` before the first action has opened a sale — the track renders
+  /// either way, beside the customer band, so the capture surface opens with
+  /// its whole header rather than growing one once the first scan lands.
+  /// Choosing a delivery mode is itself a legitimate first action:
+  /// `updateHeader` opens the sale before writing `shipTo`.
+  final Sale? sale;
   final bool enabled;
 
   /// Whether the track fills the width it is given, dividing it evenly between
@@ -211,6 +217,11 @@ class FulfillmentModeSelector extends ConsumerStatefulWidget {
 }
 
 class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelector> {
+  /// The sale's customer, or the walk-in default until a sale exists — the
+  /// same resolution `CustomerBar` beside this makes, so the shipping check
+  /// and the address picker ask about the customer the band is naming.
+  int get _customerId => widget.sale?.customer ?? posDefaultCustomerId;
+
   AppError? _error;
   String? _refusal;
   bool _busy = false;
@@ -222,6 +233,10 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     });
 
     if (mode == FulfillmentMode.counterPickup) {
+      // No address to name, so no round trip — a `null` `shipTo` already
+      // means counter pickup unambiguously (`FulfillmentModeEncoding`), and
+      // recording `fulfillmentIntent` here would only add a request with
+      // nothing at stake if it fails.
       ref.read(posStepControllerProvider.notifier).setMode(mode);
       return;
     }
@@ -229,7 +244,7 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     // FR-019 — a customer not permitted deliveries cannot use either
     // delivery mode, and is told why rather than silently refused.
     final customer = await ref.read(
-      saleCustomerControllerProvider(widget.sale.customer).future,
+      saleCustomerControllerProvider(_customerId).future,
     );
     if (!mounted) return;
     if (!customer.shipping) {
@@ -241,15 +256,19 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     // not a later step.
     final addressId = await showCustomerAddressPicker(
       context,
-      customerId: widget.sale.customer,
+      customerId: _customerId,
     );
     if (addressId == null || !mounted) return;
 
     setState(() => _busy = true);
     try {
+      // `fulfillmentIntent` rides the same call as `shipTo` — one request,
+      // and the mode now survives a resume as itself rather than being
+      // reconstructed from the address, which cannot tell `delivery` and
+      // `mixed` apart (mbe-api#170/#171).
       await ref
           .read(posSaleControllerProvider.notifier)
-          .updateHeader(shipTo: addressId);
+          .updateHeader(shipTo: addressId, fulfillmentIntent: mode);
       if (mounted) ref.read(posStepControllerProvider.notifier).setMode(mode);
     } on AppError catch (e) {
       setState(() => _error = e);

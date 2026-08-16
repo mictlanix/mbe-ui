@@ -124,14 +124,21 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
           child: Text(l10n.posSaleReadOnlyBanner),
         ),
-      // Both describe a sale, so they wait for one. Scanning creates it.
+      // Rendered from the first frame, sale or no sale: both fall back to
+      // the walk-in customer mbe-api would raise the sale against anyway
+      // (`posDefaultCustomerId`), so the step opens as the surface the
+      // cashier works on rather than as a bare search field that grows a
+      // header the instant the first scan lands — which shoved the field and
+      // every line down with it. Neither writes anything before the cashier
+      // acts, and both actions that *do* write open the sale themselves
+      // (`PosSaleController.updateHeader`), so the anti-empty-draft rule is
+      // untouched.
       //
       // Beside each other at ≥ 840 px (contracts/capture-surface.md §2,
       // matching the mock's frame `2a`); phone/tablet-portrait widths keep
       // them stacked, where a three-segment mode control has no room left
       // beside the customer band.
-      if (sale != null)
-        Padding(
+      Padding(
           // Top inset only: the search field below carries its own, and
           // doubling them left a dead band between the two (the mock's own
           // customer row is `12px 24px 0` for the same reason).
