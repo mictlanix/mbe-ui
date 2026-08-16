@@ -16,6 +16,7 @@ part 'outstanding_order_response.g.dart';
 /// * [serial]
 /// * [customer]
 /// * [customerName]
+/// * [customerDisplayName]
 /// * [date]
 /// * [dueDate]
 /// * [currency]
@@ -36,6 +37,9 @@ abstract class OutstandingOrderResponse
 
   @BuiltValueField(wireName: r'customer_name')
   String? get customerName;
+
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
 
   @BuiltValueField(wireName: r'date')
   DateTime get date;
@@ -100,13 +104,20 @@ class _$OutstandingOrderResponseSerializer
       object.customer,
       specifiedType: const FullType(int),
     );
-    yield r'customer_name';
-    yield object.customerName == null
-        ? null
-        : serializers.serialize(
-            object.customerName,
-            specifiedType: const FullType.nullable(String),
-          );
+    if (object.customerName != null) {
+      yield r'customer_name';
+      yield serializers.serialize(
+        object.customerName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'date';
     yield serializers.serialize(
       object.date,
@@ -190,6 +201,16 @@ class _$OutstandingOrderResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.customerName = valueDes;
+          break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
           break;
         case r'date':
           final valueDes =
