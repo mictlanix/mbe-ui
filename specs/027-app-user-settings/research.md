@@ -5,6 +5,11 @@
 Every unknown in the plan's Technical Context is resolved here. Findings that
 change the shape of the work are marked **⚠**.
 
+> **Descope note (2026-08-16).** Value formatting was moved out of 027 into a
+> future spec *because of* R8's audit. **R3, R4 and R8's formatting half stay
+> here, complete and unchanged** — they are that spec's finished Phase 0, and
+> re-deriving them costs a full re-audit. They describe work 027 does not do.
+
 ---
 
 ## R1 — How four app-wide text-size levels are applied
@@ -113,7 +118,7 @@ precisely for this.
 
 ---
 
-## R3 — The shape of the shared formatting surface
+## R3 — The shape of the shared formatting surface *(deferred — future spec)*
 
 **Decision**: a Riverpod `Provider<AppFormatters>` (`formattersProvider`),
 derived from `appSettingsProvider` and the resolved locale. `AppFormatters` is
@@ -168,7 +173,7 @@ what `MoneyFormatters` already is).
 
 ---
 
-## R4 — The out-of-band formatting guard (FR-015)
+## R4 — The out-of-band formatting guard (FR-015) *(deferred — future spec)*
 
 **Decision**: a source-scanning unit test, following the precedent already in
 this repo. `test/unit/core/layering_test.dart` scans `lib/` for a banned
@@ -335,10 +340,10 @@ for deployments would contradict FR-002's "one place".
 
 **Consequence for testing**: integration tests run with
 `--dart-define-from-file=.env`, so they pick up whatever app settings that
-file sets. Tests that assert formatted output must override
+file sets. Tests asserting configured behaviour must override
 `appSettingsProvider` rather than depend on the developer's `.env` — otherwise
-a developer with `CURRENCY_SYMBOL=€` in their local file sees spurious
-failures. This is why `appSettingsProvider` is overridable (constitution §II).
+a developer with a local override sees spurious failures. This is why
+`appSettingsProvider` is overridable (constitution §II).
 
 ---
 
@@ -358,7 +363,8 @@ into `filters:` and open `showCatalogFilterSheet`; 5 (labels, expenses,
 price_lists, suppliers, taxpayer_recipients/issuers) pass no `filters:` at all
 because they have no facets — compliant by construction, not by omission.
 
-**Formatting rule — migration size:**
+**Formatting rule — migration size** *(this audit is why formatting was
+descoped; the numbers size the future spec)*:
 
 - **53** `MoneyFormatters.*` call sites across **22** files.
 - **24** call sites of the `money.dart` display helpers.
@@ -366,9 +372,10 @@ because they have no facets — compliant by construction, not by omission.
 - 1 `DateFormat` that is *correctly* exempt (`pos_sales_list_controller.dart`,
   query encoder — R4).
 
-≈78 call sites. Mechanical, but large enough that it must be its own task
-phase with the guard test landing **last**, after the last call site moves —
-otherwise the guard fails the suite for the whole migration.
+≈78 call sites. Mechanical, but larger than the rest of 027 combined, and
+**indivisible**: the guard test only becomes satisfiable once the last call
+site moves, so a partial migration leaves both paths alive *and* no guard.
+That is what took it out of this feature and into its own spec.
 
 **Symmetry rule**: not mechanically detectable by grep. Scope stays the POS
 sale line (US6); the constitution rule governs new work.
@@ -399,8 +406,7 @@ as a behavior to assert in a widget test rather than a risk to design around.
 
 | Requirement | Instrument | Notes |
 |---|---|---|
-| FR-008…014 | unit tests on `AppFormatters` | incl. FR-012 round-trip as a property |
-| FR-015 | source-scanning test (R4) | lands **after** the migration |
+| ~~FR-008…015~~ | *(deferred with the formatting spec)* | R3/R4 hold the design |
 | FR-001…007 | unit tests on `AppSettings.fromEnvironment` | malformed-value fallbacks |
 | FR-016…023 | widget tests on the settings screen | prefs via `setMockInitialValues` |
 | FR-024 | `sale_line_row_test.dart` × 4 levels | R2 |

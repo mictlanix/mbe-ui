@@ -443,10 +443,18 @@ The product catalog detail screen (`features/catalog/presentation/product_detail
 is the reference implementation of all three (two-column field grid, section
 dividers, switches|labels two-column band).
 
-**One formatting surface** (specs/027-app-user-settings): dates, date-times,
-currency, percentages and quantities MUST all render through a single shared
-formatting component in `core/`, driven by app settings plus the active
-locale. This is not a style preference — the app had drifted into three
+**One formatting surface** — *decided, not yet in force.*
+specs/027-app-user-settings specified this and then **descoped it** (2026-08-16)
+into a future spec, because the migration is ≈78 call sites across 22 files
+and is indivisible: the guard test below cannot land until the last call site
+moves. The design is finished and carried in that feature's
+`contracts/formatting-surface.md` and `research.md` R3/R4/R8; the constitution
+rule is deliberately withheld until the surface exists. What follows is the
+decision, for the spec that takes it on.
+
+Dates, date-times, currency, percentages and quantities are to render through
+a single shared formatting component in `core/`, driven by app settings plus
+the active locale. This is not a style preference — the app had drifted into three
 parallel paths (`core/widgets/money_formatters.dart` with a hard-coded `$` and
 an `'es_MX'` default; the display helpers in
 `features/sales/domain/money.dart` doing `Decimal.toStringAsFixed` and
@@ -496,10 +504,10 @@ immediately. Currency/number formatting (MXN) and date formats should use
 **Two levels of configuration** (specs/027-app-user-settings). The app now
 distinguishes them, and they must not be conflated:
 
-- **App settings** are *deployment* configuration — formatting options
-  (currency symbol/code/decimal digits, date, date-time, percentage and
-  quantity patterns), the deployment's default locale, endpoints, brand
-  tokens and POS defaults. They resolve once at startup from build-time
+- **App settings** are *deployment* configuration — the deployment's default
+  locale, endpoints, brand tokens and POS defaults (plus, once the formatting
+  surface above exists, its formatting options; those keys were descoped with
+  it rather than shipped with no consumer). They resolve once at startup from build-time
   values supplied via `--dart-define-from-file=.env`, the mechanism
   `brand_config.dart`, `dio_client.dart`, `photo_url.dart` and
   `pos_defaults.dart` already use individually and which this consolidates

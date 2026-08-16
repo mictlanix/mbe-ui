@@ -19,7 +19,7 @@ Never mutable from the UI (FR-007). Lives in `lib/core/config/`.
 | `photosBaseUrl` | `String` | `PHOTOS_BASE_URL` | *= `apiBaseUrl`* | **must stay a `const` cross-reference** (research R7) |
 | `posDefaultCustomerId` | `int` | `POS_DEFAULT_CUSTOMER_ID` | `1` | moved from `pos_defaults.dart` |
 | `brand` | `BrandConfig` | `BRAND_*` | *(see §1.1)* | **composed, not absorbed** |
-| `formatting` | `FormattingSettings` | *(see §1.2)* | | new |
+| ~~`formatting`~~ | ~~`FormattingSettings`~~ | | | **descoped — §1.2** |
 | `defaultLocale` | `Locale` | `DEFAULT_LOCALE` | `es_MX` | replaces the hard-coded literal in `app.dart:30` |
 
 **Validation**: every field parses with fallback to its default. A malformed
@@ -35,7 +35,10 @@ set to the same value" distinction (spec 019 FR-007). `AppSettings` holds it
 as a field; `brandConfigProvider` is re-pointed at `appSettingsProvider.brand`
 so there remains one instance, not two.
 
-### 1.2 `FormattingSettings` — the formatting knobs
+### 1.2 `FormattingSettings` — the formatting knobs *(descoped — future spec)*
+
+> Descoped 2026-08-16: keys nothing reads would be configuration without a
+> consumer. The table below is the design the formatting spec adds back.
 
 | Field | Type | Env key | Default | Renders today's output |
 |---|---|---|---|---|
@@ -52,7 +55,10 @@ deployment changes appearance on upgrade (spec Assumptions).
 
 ---
 
-## 2. `AppFormatters` — the single formatting surface
+## 2. `AppFormatters` — the single formatting surface *(descoped — future spec)*
+
+> Descoped from 027 on 2026-08-16 along with the rest of the formatting work.
+> Retained as the finished design; see [contracts/formatting-surface.md](contracts/formatting-surface.md).
 
 Derived, not configured: a value object built from `FormattingSettings` +
 resolved locale (§4). Lives in `lib/core/formatting/`. Exposed as

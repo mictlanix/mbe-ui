@@ -31,17 +31,22 @@ owned by integration-test credentials:
 | `deploy/<customer>.env` | the deployment | that customer's endpoints, brand, formats |
 | `.env.template` | documentation | **both** sections, every key with its default |
 
-A test that asserts formatted output overrides `appSettingsProvider` rather
-than depending on whatever the developer's `.env` happens to say.
+A test that asserts configured behaviour (base URL, brand, default locale)
+overrides `appSettingsProvider` rather than depending on whatever the
+developer's `.env` happens to say.
 
 ### How they are read
 
 ```dart
 final settings = ref.watch(appSettingsProvider);
 settings.apiBaseUrl
-settings.formatting.currencySymbol
+settings.defaultLocale
 settings.brand.displayName        // BrandConfig, composed unchanged
 ```
+
+*(`settings.formatting.*` does not exist yet — those keys were descoped along
+with the formatting surface itself; see
+[formatting-surface.md](formatting-surface.md).)*
 
 Never `String.fromEnvironment` at a feature call site. The four existing sites
 (`dio_client.dart`, `photo_url.dart`, `pos_defaults.dart`,
@@ -64,16 +69,14 @@ scripts keep working with no edit.
 | `BRAND_MARK_ASSET` | `assets/brand/nav_lockup.png` | existing |
 | `ENABLE_FLUTTER_DRIVER_EXTENSION` | `true` | existing |
 | `DEFAULT_LOCALE` | `es_MX` | **new** |
-| `CURRENCY_SYMBOL` | `$` | **new** |
-| `CURRENCY_CODE` | `MXN` | **new** |
-| `CURRENCY_DECIMAL_DIGITS` | `2` | **new** |
-| `DATE_FORMAT` | `yMd` | **new** |
-| `DATE_TIME_FORMAT` | `yMd Hm` | **new** |
-| `PERCENT_DECIMAL_DIGITS` | `2` | **new** |
-| `QUANTITY_DECIMAL_DIGITS` | `0` | **new** |
 
 `PHOTOS_BASE_URL` defaulting to `API_BASE_URL` is a **const cross-reference**;
 both must remain compile-time constants for that defaulting to resolve.
+
+*(The formatting keys — `CURRENCY_SYMBOL`, `CURRENCY_CODE`,
+`CURRENCY_DECIMAL_DIGITS`, `DATE_FORMAT`, `DATE_TIME_FORMAT`,
+`PERCENT_DECIMAL_DIGITS`, `QUANTITY_DECIMAL_DIGITS` — were descoped with the
+formatting surface; see [formatting-surface.md](formatting-surface.md).)*
 
 ### Guarantees
 
@@ -109,7 +112,7 @@ conventions: shared responsive form grid, empty `AppBar.actions`.
 |---|---|---|
 | Appearance | Light / Dark / System | `MaterialApp.themeMode` |
 | Text size | four levels | `MediaQuery.textScaler` |
-| Language | Español / English / follow system | `MaterialApp.locale` **and** formatting |
+| Language | Español / English / follow system | `MaterialApp.locale` |
 
 Every change applies **immediately** — no restart, no re-login — and persists
 on that device.

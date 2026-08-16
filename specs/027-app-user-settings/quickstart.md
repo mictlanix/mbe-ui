@@ -11,8 +11,8 @@ is the run guide.
 ## Prerequisites
 
 - Flutter toolchain as used by the repo (`flutter --version`).
-- mbe-api reachable at `API_BASE_URL` for the live scenarios (§4). The
-  automated suites in §1–§3 need no backend.
+- mbe-api reachable at `API_BASE_URL` for the live scenarios (§3 onward).
+  The automated suites in §1–§2 need no backend.
 - A `.env` at the repo root for local work — gitignored, and already the home
   of integration-test credentials. `.env.template` documents both sections
   (test credentials and app settings); copy it and fill in only what you need.
@@ -28,89 +28,62 @@ flutter analyze
 flutter test test/unit/core/
 ```
 
-Expected:
+Expected: `layering_test.dart` and `l10n_parity_test.dart` pass — the new
+settings screen adds strings to **both** `.arb` files.
 
-- `formatting_guard_test.dart` **passes** — no file outside the allowlist
-  imports `package:intl` or calls `toStringAsFixed` under `presentation/`.
-- `layering_test.dart` and `l10n_parity_test.dart` still pass — the new
-  settings screen adds strings to **both** `.arb` files.
-
-To see the guard actually bite, temporarily add `import 'package:intl/intl.dart';`
-to any screen and re-run: the test must fail and name that file.
+> Formatting is **out of scope** for this feature (spec.md Clarifications), so
+> there is no formatting guard and no formatter migration to validate. The
+> checks for those live with the future formatting spec; its contract is
+> already written in [contracts/formatting-surface.md](contracts/formatting-surface.md).
 
 ---
 
-## 2. Formatting
-
-```bash
-flutter test test/unit/core/formatting/
-```
-
-Expected:
-
-- Every `display.*` formatter renders the documented es-MX default output.
-- **Round-trip property**: `parseX(field.x(v)) == v` for every generated
-  value — this is FR-012 and the reason the editable-field group exists
-  separately.
-- `null` and unparseable input render `—` from every method.
-
-**Cross-screen identity (SC-002)** — the point of the whole feature:
-
-```bash
-flutter test test/widget/features/ -n "formats"
-```
-
-The same amount rendered by the POS sales list and by the cash-sessions
-history must produce byte-identical strings.
-
----
-
-## 3. Regression safety
+## 2. Nothing rendered changed
 
 ```bash
 flutter test test/golden/ test/screenshots/
 ```
 
-Expected: **pass with no re-baselining.** The default text-size level is the
-identity composition, so the default rendering is unchanged. If these fail,
-the text-scaling mechanism has drifted from research R1 — investigate before
-running `--update-goldens`, because a mass re-baseline here would hide real
-regressions.
+Expected: **pass with no re-baselining** — the strongest single check that
+this feature is behaviour-preserving everywhere it isn't deliberately changing
+a screen. Two things could break it: a formatting call touched by accident, or
+a text-scaling mechanism that isn't the identity at the default level
+(research R1). Investigate before running `--update-goldens`; a mass
+re-baseline here would hide real regressions.
 
 ---
 
-## 4. Deployment configuration
+## 3. Deployment configuration
 
-Change a format without touching source:
+Configure a deployment without touching source:
 
 ```bash
 cat > /tmp/alt.env <<'EOF'
-CURRENCY_SYMBOL=€
-CURRENCY_DECIMAL_DIGITS=3
-DATE_FORMAT=yMMMd
 DEFAULT_LOCALE=en_US
+API_BASE_URL=http://192.168.1.50:8000
+BRAND_DISPLAY_NAME=CASA MAESTRA
 EOF
 
 flutter run -d macos --dart-define-from-file=/tmp/alt.env
 ```
 
-Expected: every money amount shows `€` with three decimals, dates render in
-the new pattern, and the interface comes up in English — on every screen, not
-just the ones you remember to check.
+Expected: the interface comes up in English, against that host, under that
+brand name — with no source change.
 
 Then prove the fallbacks:
 
 ```bash
-flutter run -d macos                                    # no .env at all
-flutter run -d macos --dart-define=CURRENCY_DECIMAL_DIGITS=abc
+flutter run -d macos                                 # no .env at all
+flutter run -d macos --dart-define=DEFAULT_LOCALE=xx_YY
+flutter run -d macos --dart-define=POS_DEFAULT_CUSTOMER_ID=abc
 ```
 
-Expected: both start normally on documented defaults. A malformed value must
-never prevent startup.
+Expected: all three start normally on documented defaults. A malformed value
+must never prevent startup.
 
 ---
 
-## 5. User settings
+## 4. User settings
 
 ```bash
 flutter run -d macos --dart-define-from-file=.env
@@ -119,9 +92,8 @@ flutter run -d macos --dart-define-from-file=.env
 1. Open the user menu → **Settings**. It sits beside Change password.
 2. **Appearance** → Dark. The whole app changes immediately.
 3. **Text size** → each of the four levels. Text scales app-wide.
-4. **Language** → English, then Español. Interface *and* formatted dates and
-   numbers change together — if only one changes, the locale provider is not
-   the single source (research R3/R9).
+4. **Language** → English, then Español. The interface language changes
+   immediately (research R9).
 5. Restart the app. All three choices are still in effect, **with no flash of
    the default theme on launch** — that flash exists today and this feature
    removes it (research R5).
@@ -133,7 +105,7 @@ flutter test test/widget/features/settings/
 
 ---
 
-## 6. The largest text size (FR-024)
+## 5. The largest text size (FR-024)
 
 The one place this genuinely constrains the design:
 
@@ -152,7 +124,7 @@ hides content.
 
 ---
 
-## 7. The two remediated screens
+## 6. The two remediated screens
 
 **POS sales list** (`/sales/pos`):
 
@@ -184,7 +156,7 @@ flutter test test/widget/features/sales/
 
 ---
 
-## 8. Alignment (FR-031/032/035)
+## 7. Alignment (FR-031/032/035)
 
 ```bash
 flutter test test/widget/features/sales/ -n "symmetry"

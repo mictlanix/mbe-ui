@@ -16,42 +16,34 @@
 - Q: How should app settings load from `.env`? → A: Build-time only, via `--dart-define-from-file=.env` feeding compile-time constants — the pattern `brand_config.dart`, `dio_client.dart`, `photo_url.dart` and `pos_defaults.dart` already use, and the mechanism the existing `.env`/`.env.template` already serve for integration tests. No runtime-parsed config file, no new dependency; constitution §V's build-time rule stays intact.
 - Q: Where do the user's display preferences (theme, text size, language) live? → A: Device-local, extending the existing `shared_preferences`-backed `ThemeModeController`. Not server-side: mbe-api's `UserSettingsResponse` carries no display fields and this feature must ship with **zero** backend dependency.
 - Q: Should the user be able to pick a language? → A: Yes, at both levels — the deployment's default locale becomes an app setting (replacing the hard-coded `Locale('es', 'MX')` in `lib/app/app.dart`), and the user settings screen offers a per-user override (Español / English / follow system). Both `app_es.arb` and `app_en.arb` already exist.
-- Q: The alignment/symmetry rule is described as a constitution change. Is the constitution amendment part of this feature? → A: The amendment is authored alongside this spec (constitution §VI, plus the formatting rule under §V) and governs future work; this feature's own scope is the code that makes the amendment true for the named screens.
+- Q: The alignment/symmetry rule is described as a constitution change. Is the constitution amendment part of this feature? → A: The amendment is authored alongside this spec (constitution §VI, plus the configuration-levels and text-size rules under §V) and governs future work; this feature's own scope is the code that makes the amendment true for the named screens. *(The formatting rule originally included here was withdrawn when formatting was descoped — see the entry below.)*
 - Q: Where does the open/close-shift panel go once it comes off the cash-sessions list? → A: Into a dialog or side sheet launched from a toolbar action beside the search row, leaving the route a pure list screen that conforms to every other catalog. The cost — one click to reach a many-times-daily action, and the shift's state no longer visible at a glance — is accepted, with the mitigation that the toolbar action itself must communicate the current shift state rather than reading as a neutral button (FR-028a).
+- Q: **Descope (decided after planning, 2026-08-16.)** Planning sized the formatting work at ≈78 call sites across 22 files — larger than the rest of the feature combined, and a single indivisible change, since the guard test cannot land until the last call site moves. Should it stay in this feature? → A: **No.** Value formatting moves to a future spec. Removed from this feature: US1, FR-008…FR-015, SC-001/002/010, and the formatting keys FR-002 would have added to app settings. The audit and the design work survive in `research.md` R3/R4, `contracts/formatting-surface.md` and `data-model.md` §2, all marked as carried forward, so the future spec starts from a finished design rather than re-deriving it. Two consequences follow: app settings ships covering the deployment default locale and the consolidation of existing environment values only (formatting keys would otherwise be configuration nothing reads), and the formatting-surface rule comes **back out** of constitution v1.11.0 — a rule requiring every screen to use a surface that does not exist yet is unsatisfiable, and this repo's own governance lands a rule with the first code that complies with it.
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - The same kind of value always reads the same way (Priority: P1)
-
-A user moves between the POS capture screen, the POS sales list, the cash-sessions history, the pricing screens and the taxpayer-certificates section. Every date reads in one format, every date-time in one format, every money amount with one symbol and one decimal count, every percentage in one style, every quantity in one style — regardless of which screen renders it or which feature team wrote it.
-
-**Why this priority**: This is the defect the user reported first and the one visible on every screen. It also has the widest blast radius: two divergent formatting code paths exist today (`core/widgets/money_formatters.dart` and the display helpers in `features/sales/domain/money.dart`), plus at least one screen that builds its own formatter inline (`taxpayer_certificates_section.dart`). Consolidating them is a prerequisite for the app settings in US2 to have anything to configure.
-
-**Independent Test**: Fully testable on its own — render every screen that shows a date, date-time, money amount, percentage or quantity and assert the rendered strings match a single formatting contract. Delivers value with no settings screen and no `.env` work: the drift disappears the moment there is one formatter.
-
-**Acceptance Scenarios**:
-
-1. **Given** a money amount rendered on the POS sales list and the same amount rendered on the cash-sessions history, **When** both screens are displayed, **Then** the two strings are byte-identical (same symbol, same grouping, same decimal count).
-2. **Given** a date-time rendered by the cash-sessions history and one rendered by the POS sales list, **When** both are displayed under the same active locale, **Then** they use the same pattern.
-3. **Given** a percentage rendered read-only (e.g. a tax rate in a picker) and the same rate rendered inside an editable field, **When** both are displayed, **Then** the read-only form carries the percent symbol and the editable form does not — the two display intents remain distinguishable, and both derive from the same formatting surface.
-4. **Given** a developer adds a new screen that formats a date without going through the shared formatting surface, **When** the test suite runs, **Then** a guard fails and names the offending call site.
+> **Numbering note.** US1 and FR-008…FR-015 covered value formatting and were
+> **descoped on 2026-08-16** (see Clarifications) into a future spec. The
+> remaining stories and requirements keep their original numbers rather than
+> being renumbered, so the cross-references in `plan.md`, `research.md` and
+> `contracts/` stay valid. The gaps are deliberate.
 
 ---
 
 ### User Story 2 - A deployment is configured without touching source (Priority: P2)
 
-Someone deploying MBE for a customer sets that deployment's formats, default locale, API endpoints and brand tokens in one `.env` file, builds, and gets a correctly-configured app. They can see every available option, and its default, in one documented place.
+Someone deploying MBE for a customer sets that deployment's default locale, API endpoints and brand tokens in one `.env` file, builds, and gets a correctly-configured app. They can see every available option, and its default, in one documented place.
 
-**Why this priority**: Turns US1's single formatting surface into something configurable rather than hard-coded (the `$` symbol and `es_MX` default are literals in `money_formatters.dart` today). Also consolidates the deployment options currently scattered across four unrelated files, which is what makes "what can I configure?" answerable at all.
+**Why this priority**: Consolidates the deployment options currently scattered across four unrelated files, which is what makes "what can I configure?" answerable at all, and gives the deployment's default locale a home — the value US3's language override falls back to. With formatting descoped, this is the highest-value story remaining.
 
-**Independent Test**: Build with a `.env` that changes the currency symbol, decimal digits, date pattern and default locale; confirm every screen from US1 reflects the change. Build with no `.env` at all; confirm the app starts and renders MXN/`es-MX` defaults.
+**Independent Test**: Build with a `.env` that changes the default locale and the API base URL; confirm the app comes up in that language against that host. Build with no `.env` at all; confirm it starts on the documented defaults.
 
 **Acceptance Scenarios**:
 
-1. **Given** a `.env` setting a non-default currency symbol and decimal-digit count, **When** the app is built with it and any money amount is displayed, **Then** that amount uses the configured symbol and decimal count.
-2. **Given** a `.env` setting the default locale to English, **When** a user with no personal language override opens the app, **Then** the interface and all formatted values render in English.
+1. **Given** a `.env` setting a non-default API base URL, **When** the app is built with it, **Then** every request targets that host — the consolidation changes where the value is read from, never what it is.
+2. **Given** a `.env` setting the default locale to English, **When** a user with no personal language override opens the app, **Then** the interface renders in English.
 3. **Given** no `.env` file is supplied at build time, **When** the app starts, **Then** it runs with documented defaults and no missing-configuration error.
-4. **Given** a `.env` with a malformed value (e.g. a non-numeric decimal-digit count or an unsupported locale code), **When** the app starts, **Then** it falls back to that option's default rather than failing to start.
+4. **Given** a `.env` with a malformed value (e.g. an unsupported locale code or a non-numeric customer id), **When** the app starts, **Then** it falls back to that option's default rather than failing to start.
 5. **Given** `.env.template`, **When** a deployer reads it, **Then** every configurable option is listed with its default and a one-line description.
 
 ---
@@ -60,7 +52,7 @@ Someone deploying MBE for a customer sets that deployment's formats, default loc
 
 A signed-in user opens their settings from the user menu and chooses a light or dark appearance, one of four overall text sizes, and their preferred language. Every choice applies immediately and survives a restart of the app on that device.
 
-**Why this priority**: This is the accessibility half of the request and the only net-new screen. It is independent of US1/US2 — the theme preference already exists and is already persisted; this exposes it, adds text size and language beside it, and gives the app a home for future per-user display preferences.
+**Why this priority**: This is the accessibility half of the request and the only net-new screen. It is independent of US2 apart from the default locale it falls back to — the theme preference already exists and is already persisted; this exposes it, adds text size and language beside it, and gives the app a home for future per-user display preferences.
 
 **Independent Test**: Open the settings screen, change each control, observe the app update without a reload, restart, and confirm the choices persisted.
 
@@ -134,9 +126,6 @@ A user scanning a list of sale lines sees each line's controls and its line tota
 - **Preference set on one device only.** Device-local persistence means a user signing in elsewhere gets the deployment defaults, not their choices. Expected, and must not be presented as a sync failure.
 - **Preference storage unavailable or corrupt.** Unreadable stored preferences must fall back to defaults silently, never block startup.
 - **Language changed mid-task.** Changing the language while a form holds unsaved input must not discard that input.
-- **A formatted value that is null, empty or unparseable.** Every formatter must have one defined rendering for absent/invalid input, identical across screens — today's paths disagree (some return the raw string, some return zero, one screen renders an em dash).
-- **Editable-field formatting.** Values formatted *into* an editable field (unit price, discount rate, quantity) must round-trip: what is displayed must parse back to the stored value without drifting through locale-specific separators.
-- **Currency symbol vs. locale.** A deployment configuring a currency symbol while the user picks a different language must produce a coherent result (configured symbol, locale-appropriate separators), not two settings fighting.
 - **Clearing filters on a screen with a default filter.** The POS sales list defaults to today's range; "clear all" must return to that default, not to an unbounded range.
 - **Navigating out of the shift sheet.** The open-shift form can surface a blocked-by-another-session error whose remedy navigates to that session's detail screen; from inside a sheet, that navigation must dismiss the sheet cleanly rather than leaving it stranded over a new route.
 - **The shift sheet at the largest text size.** The sheet is a new surface carrying a form; it must satisfy FR-024 at the largest text-size level like every other screen.
@@ -148,23 +137,25 @@ A user scanning a list of sale lines sees each line's controls and its line tota
 #### App settings (deployment-level)
 
 - **FR-001**: The app MUST resolve a single, centrally-defined app-settings value at startup, from build-time environment values supplied by a `.env` file.
-- **FR-002**: App settings MUST cover, at minimum: currency symbol, currency code, currency decimal digits, date pattern, date-time pattern, percentage style, quantity style, and the deployment's default locale.
+- **FR-002**: App settings MUST cover the deployment's default locale. *(Formatting options — currency symbol/code/decimal digits, date, date-time, percentage and quantity patterns — were descoped with the formatting work on 2026-08-16; adding keys nothing reads would be configuration without a consumer. The future formatting spec adds them here.)*
 - **FR-003**: App settings MUST consolidate the deployment options currently defined at scattered call sites — API base URL, photos base URL, brand tokens (display name, seed color, welcome/lockup/mark assets), and POS defaults — so one place lists every deployment-configurable option. Existing option names and defaults MUST be preserved so current deployment scripts keep working.
 - **FR-004**: Every app setting MUST have a documented default; the app MUST start and function with no `.env` supplied.
 - **FR-005**: A malformed or unrecognized value for any app setting MUST fall back to that setting's default rather than preventing startup.
 - **FR-006**: `.env.template` MUST list every app setting with its default and a one-line description, and MUST remain the single source of that documentation.
 - **FR-007**: App settings MUST NOT be reachable or mutable from the user interface — they are deployment configuration, not preferences.
 
-#### Formatting (the consistency mechanism)
+#### Formatting — **descoped 2026-08-16, moved to a future spec**
 
-- **FR-008**: The app MUST expose exactly one shared formatting surface, in the shared core layer, for dates, date-times, currency, percentages and quantities.
-- **FR-009**: Every screen in the app MUST render those value kinds through that surface. `MoneyFormatters` and the display helpers in the sales feature's `money.dart` MUST both be subsumed by it, and the inline formatter in the taxpayer-certificates section MUST be replaced by it.
-- **FR-010**: The formatting surface MUST derive its output from app settings (FR-002) combined with the active locale (FR-018).
-- **FR-011**: The formatting surface MUST distinguish read-only display formatting from editable-field formatting, and MUST preserve today's editable-field behavior: no currency symbol, trailing zeros dropped for quantities, rates shown as the percentage the user thinks in.
-- **FR-012**: Editable-field formatting MUST round-trip — a value formatted into a field and read back MUST parse to the stored value unchanged.
-- **FR-013**: Call sites MUST NOT be required to pass the active locale by hand; the surface MUST obtain it itself.
-- **FR-014**: Each formatter MUST define one rendering for absent or unparseable input, identical on every screen.
-- **FR-015**: An automated guard MUST fail the build or test suite when a display-formatting path (a raw date/number formatter or a manual fixed-decimal string) is introduced outside the shared surface, and MUST name the offending call site. Files that legitimately need the underlying formatters (the shared surface itself, generated code, request/response encoding such as the date-facet parameter) MUST be explicitly exempt.
+FR-008 … FR-015 covered the single formatting surface, its read-only/editable
+split, its round-trip guarantee and its guard test. They are **not** part of
+this feature. The finished design is carried forward in
+[contracts/formatting-surface.md](contracts/formatting-surface.md),
+[research.md](research.md) R3/R4 and [data-model.md](data-model.md) §2 for the
+spec that takes it on; the audit that sized it (≈78 call sites across 22
+files, in three divergent paths) is in research.md R8.
+
+This feature therefore does **not** change how any value is currently
+rendered.
 
 #### User settings (device-level)
 
@@ -200,40 +191,36 @@ A user scanning a list of sale lines sees each line's controls and its line tota
 
 #### Governance
 
-- **FR-036**: The project constitution MUST be amended to state, as binding rules: the single-formatting-surface rule (FR-008/FR-009), the list-screen filter-drawer rule (FR-025), the no-embedded-form rule (FR-027), and the symmetry/baseline rules (FR-031/FR-032/FR-034). The amendment MUST follow the constitution's own governance process, including the DESIGN.md update that precedes it.
+- **FR-036**: The project constitution MUST be amended to state, as binding rules: the two-levels-of-configuration and text-size rules (FR-001/FR-007, FR-019/FR-024), the list-screen filter-drawer rule (FR-025), the no-embedded-form rule (FR-027), and the symmetry/baseline rules (FR-031/FR-032/FR-034). The amendment MUST follow the constitution's own governance process, including the DESIGN.md update that precedes it. The single-formatting-surface rule MUST NOT be included: it requires a surface this feature no longer builds, and this repo's governance lands a rule together with the first code that complies with it. It belongs to the future formatting spec.
 
 ### Key Entities
 
-- **App Settings**: The deployment's fixed configuration — formatting options, default locale, endpoints, brand tokens, POS defaults. Resolved once at startup from build-time values; immutable for the life of the process; never user-editable.
+- **App Settings**: The deployment's fixed configuration — default locale, endpoints, brand tokens, POS defaults. Resolved once at startup from build-time values; immutable for the life of the process; never user-editable.
 - **User Display Preferences**: The signed-in user's device-local choices — appearance, text size, language. Mutable at any time, applied immediately, persisted per device, independent of the server-side user settings that already carry the user's cash drawer and point of sale.
-- **Formatting Surface**: The single shared component that turns a domain value (date, date-time, money, percentage, quantity) into display text, or into editable-field text, given app settings and the active locale.
 - **Text Size Level**: One of exactly four named accessibility steps, each mapping to a defined app-wide text scale.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: 100% of dates, date-times, money amounts, percentages and quantities rendered anywhere in the app come from one formatting surface — zero screens format these values independently.
-- **SC-002**: The same value rendered on any two screens produces identical text, verified across every screen that renders each of the five value kinds.
-- **SC-003**: A deployer can change the currency symbol, decimal digits, date format and default locale for a whole deployment by editing one file, with no source change.
+- **SC-003**: A deployer can change the default locale, endpoints and brand for a whole deployment by editing one file, with no source change.
 - **SC-004**: Every deployment-configurable option is discoverable from one document, with its default stated.
 - **SC-005**: A user can change appearance, text size and language and see each take effect in under 3 seconds, with no restart, and finds all three choices intact after restarting the app.
 - **SC-006**: At the largest text-size level, zero screens clip, overflow or hide content at supported desktop widths.
 - **SC-007**: 100% of list screens in this feature's scope present facet filters through the badged filters button and drawer; zero present them inline.
 - **SC-008**: Opening or closing a shift takes no more interactions than it does today, plus at most one.
 - **SC-009**: A POS sale line's measured top and bottom insets are equal, and its control-band and line-total baselines coincide, in all three of its layouts.
-- **SC-010**: An attempt to introduce an out-of-band formatting call fails the test suite and names the file and line.
+- **SC-010**: No value anywhere in the app renders differently after this feature than before it — formatting is untouched.
 - **SC-011**: No mbe-api change is required; the feature ships against the current backend.
 
 ## Assumptions
 
-- **Reuse over replacement for existing behavior**: `es-MX` formatting with the `$` symbol and 2 decimals remains the default, so nothing a current deployment renders changes unless its `.env` says so. The consolidation is about where the value comes from, not what it is.
+- **Reuse over replacement for existing behavior**: existing environment keys and defaults are preserved exactly, so nothing a current deployment does changes unless its `.env` says so. The consolidation is about where a value comes from, not what it is.
 - **Text-size levels**: four levels spanning roughly 0.9× to 1.3× of the base scale, with the second level as the default (1.0×). Exact factors are a planning decision; the count (four) and the "applies app-wide, immediately" behavior are the requirement.
 - **Language coverage**: the supported set is the two locales that already have translation files (`es`, `en`). Adding locales is out of scope; the settings screen must simply list whatever is supported rather than hard-coding two options.
 - **Settings screen placement**: a route beside the existing account/password route, entered from the user menu. No new navigation section.
 - **No RBAC gate on user settings**: display preferences are personal, available to every signed-in user; no privilege check applies.
 - **The server-side `UserSettings` (cash drawer, point of sale) is untouched.** The new preferences are a separate, device-local concern that must not be confused with it — naming in the implementation should keep the two distinguishable.
-- **The formatting guard is a test, not a custom lint**, unless planning finds a lint rule cheaper. Either satisfies FR-015; a test keeps the toolchain unchanged.
 - **The constitution amendment is authored in the same change as the first screens that comply with it**, per the governance precedent of not leaving shipped screens between two rules.
 - **The POS capture screen's column budget is the main text-size risk.** Its widths were tuned against specific text sizes and a documented minimum width; FR-024's verification should start there.
 
@@ -246,7 +233,8 @@ A user scanning a list of sale lines sees each line's controls and its line tota
 
 ## Out of Scope
 
-- Sweeping every remaining screen for formatting or filter-drawer compliance. Screens outside the named two are inventoried (FR-030) and corrected when next touched.
+- **All value formatting** — the single formatting surface, its guard test, and the ≈78-call-site migration. Descoped 2026-08-16 into a future spec, which inherits the finished design in `contracts/formatting-surface.md`, `research.md` R3/R4/R8 and `data-model.md` §2.
+- Sweeping every remaining screen for filter-drawer compliance. Screens outside the named two are inventoried (FR-030) and corrected when next touched.
 - Any mbe-api change, including syncing display preferences to the server.
 - Adding new locales or new translations beyond what the existing translation files carry.
 - Compact/phone-tier redesign work beyond what the settings screen itself and FR-024's text-size verification require.

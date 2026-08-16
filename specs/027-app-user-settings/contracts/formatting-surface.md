@@ -1,6 +1,15 @@
 # Contract: The Formatting Surface
 
-**Feature**: 027-app-user-settings
+**Feature**: 027-app-user-settings → **carried forward to a future spec**
+
+> ⚠️ **Not built by 027.** Value formatting was descoped on 2026-08-16 (see
+> spec.md Clarifications): the migration is ≈78 call sites across 22 files and
+> cannot be split, since the guard test only becomes satisfiable once the last
+> one moves. This contract is complete and stays here as the finished design
+> for the spec that takes it on — together with `research.md` R3 (why a
+> Riverpod provider rather than a `BuildContext` extension), R4 (how the guard
+> is built) and R8 (the audit that sized it). Nothing in this file describes
+> current behaviour.
 
 The contract between value formatting and every screen in the product.
 Consumers: every feature module author. Supersedes `MoneyFormatters` and the
