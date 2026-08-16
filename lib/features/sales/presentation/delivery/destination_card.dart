@@ -255,6 +255,13 @@ class _DestinationCardState extends State<DestinationCard> {
     return Card(
       key: Key('destination_card_${destination.id}'),
       margin: EdgeInsets.symmetric(vertical: spacing.xxs),
+      // The mock's own `border:1px solid #23232C` on the destination card.
+      // `cardTheme`'s shape is kept — only the hairline is added — so the
+      // radius stays the one every other card in the product uses.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.lgRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -53,6 +53,13 @@ class DestinationCounterRow extends StatelessWidget {
     return Card(
       key: const Key('destination_counter_row'),
       margin: EdgeInsets.symmetric(vertical: spacing.xxs),
+      // The same hairline the destination cards beside it carry, so the
+      // counter row reads as one of the group rather than a lighter panel
+      // above it.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.lgRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: Padding(
         padding: EdgeInsets.all(spacing.sm),
         child: Row(

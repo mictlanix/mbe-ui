@@ -257,6 +257,18 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
 
     return Scaffold(
       appBar: AppBar(
+        // The mock's own header rule (`border-bottom:1px solid #1E1E26`),
+        // and the one thing separating the band from the step beneath it:
+        // `AppBarTheme` paints it on `scheme.surface`, which is exactly the
+        // canvas every step's content sits on, so with no rule the title,
+        // the selector and the step track floated on the same plane as the
+        // sale. A hairline rather than an elevation — a shadow only shows
+        // once something scrolls under it (`scrolledUnderElevation`), and
+        // the border is what the rails, the footer bands and the cards in
+        // this workspace already use to state a boundary.
+        shape: Border(
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
         leading: IconButton(
           key: const Key('pos_workspace_back'),
           icon: const Icon(Icons.arrow_back),
