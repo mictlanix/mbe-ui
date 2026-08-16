@@ -232,7 +232,9 @@ as the step's own split (FR-026), not at the catalog sheet's `expanded`. Below
 
 ## R11 — Localization inventory
 
-**Decision**: eight new keys; one existing key reused for the counter row.
+**Decision**: nine new keys; one existing key reused for the counter row. The
+ninth (`posAddDestinationNothingLeft`) was added once [R14](#r14--the-empty-create)
+established that the add action needs a disabled-state reason.
 
 | Key | Purpose |
 |---|---|
@@ -244,6 +246,7 @@ as the step's own split (FR-026), not at the catalog sheet's `expanded`. Below
 | `posAddDestinationSheetTitle` | the sheet's title |
 | `posDestinationCounterChip` | the rail chip for the counter's share |
 | `posDeliveryAssignmentRefused` | the per-line refusal line |
+| `posAddDestinationNothingLeft` | the add action's disabled-state reason, FR-016/R14 |
 
 `posCounterPickupRemainder` already reads "Se recoge en tienda" / "Counter
 pickup remainder" and needs no change. `posDistributionClaimAll` already labels

@@ -76,7 +76,7 @@ completion gate and the counter sweep untouched (FR-001)
 `lines: []` on create). Neither blocks any phase.
 
 **Scale/Scope**: one step of one screen — five presentation files, two of them
-new, one controller extended, eight localization keys
+new, one controller extended, nine localization keys
 
 ## Constitution Check
 
@@ -88,7 +88,7 @@ new, one controller extended, eight localization keys
 | II. Riverpod for state and DI | **Pass** | No new provider. `DeliveryController` gains three methods over repository methods that already exist; `state` stays `AsyncValue<List<Destination>>` ([data-model §3](./data-model.md)) |
 | III. Contract-driven API integration | **Pass** | No hand-written DTO. The two gaps this design needed were **filed against mbe-api (#163, #165), not patched from here**, per §III; both shipped and phases F–G consume the regenerated client |
 | IV. Deny-by-default RBAC | **Pass** | No new action to gate. The POS route gate and the step's existing gating are untouched |
-| V. Material 3, white-labeled | **Pass** | Material 3 throughout (`Card`, `InkWell`, `IconButton`, `TextField`, `FilledButton`, modal sheets). All colour and type from the theme and the spec 022 tokens; all eight new labels shipped in `es-MX` and `en` (FR-040) |
+| V. Material 3, white-labeled | **Pass** | Material 3 throughout (`Card`, `InkWell`, `IconButton`, `TextField`, `FilledButton`, modal sheets). All colour and type from the theme and the spec 022 tokens; all nine new labels shipped in `es-MX` and `en` (FR-040) |
 | VI. Desktop/web-first, compact-ready | **Pass** | Breakpoints from `core/layout/breakpoints.dart`. The list/table, row-action, form-grid and `AppBar.actions` rules do not apply — the POS workspace is not a catalog list or a record form, as specs 023 and 025 established for the same reason. §VI's truncation rule **does** apply and is honoured: addresses and product names ellipsize, counts and quantities never do ([contract §4.1](./contracts/delivery-surface.md)) |
 | VII. Online-only | **Pass** | Nothing cached, nothing stored; every assignment is a round trip |
 
@@ -170,7 +170,7 @@ Ordered so each phase leaves the tree green. Nothing waits on mbe-api.
 
 ### The visual restyle
 
-**Phase A — the copy.** Add the eight keys of [research R11](./research.md) to
+**Phase A — the copy.** Add the nine keys of [research R11](./research.md) to
 both `.arb` files; run `flutter gen-l10n`. `posDestinationQuantitiesTitle`'s
 removal waits for F, when its last caller goes.
 
