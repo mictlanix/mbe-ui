@@ -133,8 +133,14 @@ class _OpenSaleRow extends StatelessWidget {
                     l10n.posOpenSaleSerial(serial),
                     style: theme.textTheme.labelSmall,
                   ),
-                if (sale.customerName case final name?
-                    when name.isNotEmpty)
+                // `customerName` alone used to be read here, which is the
+                // per-document override — null on every ordinary sale — so
+                // this line was simply absent for almost every entry. It
+                // degraded quietly rather than showing a dash, which is why
+                // it outlived the same bug on the sales list
+                // (mictlanix/mbe-api#172, fixed by #173).
+                if (posSaleCustomerLabel(sale) case final name
+                    when name != '—')
                   Text(
                     name,
                     style: theme.textTheme.labelSmall,

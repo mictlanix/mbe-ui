@@ -52,7 +52,6 @@ OpenSale _openSale({
 }) => OpenSale(
   id: id,
   serial: serial,
-  customer: 7,
   customerName: customerName,
   total: total,
   balance: status == SaleStatus.paid ? '0' : total,

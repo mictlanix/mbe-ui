@@ -23,8 +23,10 @@
 /// the moment there is one — so the worst case is a briefly wrong label, never
 /// a sale raised against the wrong customer.
 ///
-/// Delete this once mbe-api exposes the default customer (mictlanix/mbe-api
-/// issue filed alongside #172).
+/// Delete this if mbe-api ever exposes the default customer. #173 did **not**
+/// — it joined the customer's name onto a list row, which is a different gap
+/// (mictlanix/mbe-api#172); the id a *new* sale would default to is still
+/// server-only config, so nothing here is obsolete yet.
 const posDefaultCustomerId = int.fromEnvironment(
   'POS_DEFAULT_CUSTOMER_ID',
   defaultValue: 1,

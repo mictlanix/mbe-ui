@@ -12,7 +12,6 @@ import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
@@ -66,9 +65,10 @@ void main() {
     salesOrders = MockSalesOrderRepository();
     cashSessions = MockCashSessionRepository();
     customers = MockCustomerRepository();
-    // Unresolved by default: the Cliente column then falls back to the
-    // sale's own name override, which is what most fixtures here set. A test
-    // that cares about resolution stubs the id it uses.
+    // Nothing here should ever reach for a customer: the Cliente column
+    // reads the name mbe-api joins onto the row (#173). Stubbed to throw so
+    // a regression that reintroduces the per-row lookup fails loudly rather
+    // than quietly costing a request per row.
     when(() => customers.get(customerId: any(named: 'customerId')))
         .thenAnswer((_) async => throw const AppError.notFound());
     // The register's open-sales set (`openSalesSelectorControllerProvider`)
@@ -204,57 +204,68 @@ void main() {
     });
 
     testWidgets(
-      'the Cliente column names the customer even with no name override on '
-      'the sale — the shape every real row has',
+      'the Cliente column names the customer from the joined display name — '
+      'the shape every ordinary row has',
       (tester) async {
-        // `customer_name` is the per-document override mbe's data dictionary
-        // calls "Override customer name on docs": null on every ordinary
-        // sale, walk-in ones included. Reading it alone rendered "—" for the
-        // whole list even though the customer record knows the name.
+        // `customer_name` is the per-document override, null on every
+        // ordinary sale (mictlanix/mbe-api#172). mbe-api#173 joins the
+        // customer's own name onto the summary instead, which is what this
+        // column reads — and why nothing here resolves a customer per row.
         stubListSales(
           salesOrders,
           page: testSalesPage([
-            testOpenSale(id: 7, customer: 55, customerName: null),
+            testOpenSale(
+              id: 7,
+              customerName: null,
+              customerDisplayName: 'FERRETERÍA LOS PINOS',
+            ),
           ]),
-        );
-        when(() => customers.get(customerId: 55)).thenAnswer(
-          (_) async => const Customer(
-            customerId: 55,
-            code: 'C-55',
-            name: 'FERRETERÍA LOS PINOS',
-            creditLimit: '0',
-            creditDays: 0,
-            priceList: PriceListRef(id: 1, name: 'Mostrador'),
-            shipping: false,
-            shippingRequiredDocument: false,
-            status: EntityStatus.active,
-          ),
         );
         await pumpList(tester);
         await tester.pumpAndSettle();
 
         expect(find.text('FERRETERÍA LOS PINOS'), findsOneWidget);
         expect(find.text('—'), findsNothing);
+        verifyNever(() => customers.get(customerId: any(named: 'customerId')));
       },
     );
 
     testWidgets(
-      'a sale carrying a name override keeps it — the document deliberately '
-      'names someone else',
+      'a sale carrying a name override shows that instead — the document '
+      'deliberately names someone else',
       (tester) async {
         stubListSales(
           salesOrders,
           page: testSalesPage([
-            testOpenSale(id: 8, customer: 55, customerName: 'OBRA LOS ENCINOS'),
+            testOpenSale(
+              id: 8,
+              customerName: 'OBRA LOS ENCINOS',
+              customerDisplayName: 'FERRETERÍA LOS PINOS',
+            ),
           ]),
-        );
-        when(() => customers.get(customerId: 55)).thenAnswer(
-          (_) async => throw const AppError.notFound(),
         );
         await pumpList(tester);
         await tester.pumpAndSettle();
 
         expect(find.text('OBRA LOS ENCINOS'), findsOneWidget);
+        expect(find.text('FERRETERÍA LOS PINOS'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'a row from an mbe-api older than #173 still falls back rather than '
+      'breaking',
+      (tester) async {
+        stubListSales(
+          salesOrders,
+          page: testSalesPage([
+            testOpenSale(id: 9, customerName: null, customerDisplayName: null),
+          ]),
+        );
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        expect(find.text('—'), findsOneWidget);
       },
     );
   });

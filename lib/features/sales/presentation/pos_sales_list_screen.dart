@@ -18,7 +18,6 @@ import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/sale_workability.dart';
-import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_controller.dart';
@@ -178,10 +177,10 @@ class PosSalesListScreen extends ConsumerWidget {
                   cellBuilder: (context, sale) =>
                       Text(MoneyFormatters.dateTime(sale.date, locale: locale)),
                 ),
-                DataTableColumn(
+                DataTableColumn.text(
                   label: l10n.posSalesColumnCustomer,
+                  text: posSaleCustomerLabel,
                   size: ColumnSize.L,
-                  cellBuilder: (context, sale) => _CustomerCell(sale: sale),
                 ),
                 DataTableColumn(
                   label: l10n.posSalesColumnStatus,
@@ -234,41 +233,6 @@ class PosSalesListScreen extends ConsumerWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// The customer a sale is for, resolved from its own `customer` id.
-///
-/// `OpenSale.customerName` alone is not the answer, which is why this column
-/// read "—" for every row: that field is the per-document *override* mbe's
-/// data dictionary calls "Override customer name on docs", and mbe-api sets
-/// it only from what a client sends — so it is null on every ordinary sale,
-/// the walk-in customer included, even while the customer record itself
-/// knows the name. `CustomerBar` hit this exact problem on the sale surface
-/// and resolves the same way (FR-023); reusing its provider means a page of
-/// sales for one customer costs one lookup, not one per row, since the
-/// family caches per id.
-///
-/// The override still wins nothing — it is the fallback — because a sale
-/// carrying one is a sale whose document deliberately names someone else.
-class _CustomerCell extends ConsumerWidget {
-  const _CustomerCell({required this.sale});
-
-  final OpenSale sale;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final resolved = ref
-        .watch(saleCustomerControllerProvider(sale.customer))
-        .valueOrNull;
-    final name = resolved?.name ?? sale.customerName ?? '—';
-    // The same treatment `DataTableColumn.text` gives every other text cell,
-    // since this is one — a tooltip carrying the full value behind a
-    // single ellipsized line.
-    return Tooltip(
-      message: name,
-      child: Text(name, overflow: TextOverflow.ellipsis, maxLines: 1),
     );
   }
 }
