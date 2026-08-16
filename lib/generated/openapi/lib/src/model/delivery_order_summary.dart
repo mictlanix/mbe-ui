@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/delivery_order_status.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:built_value/built_value.dart';
@@ -17,7 +18,7 @@ part 'delivery_order_summary.g.dart';
 /// * [facility]
 /// * [serial]
 /// * [customer]
-/// * [salesOrder]
+/// * [salesOrders]
 /// * [shipTo]
 /// * [date]
 /// * [priority]
@@ -39,8 +40,8 @@ abstract class DeliveryOrderSummary
   @BuiltValueField(wireName: r'customer')
   int get customer;
 
-  @BuiltValueField(wireName: r'sales_order')
-  int? get salesOrder;
+  @BuiltValueField(wireName: r'sales_orders')
+  BuiltList<int>? get salesOrders;
 
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
@@ -68,7 +69,8 @@ abstract class DeliveryOrderSummary
       _$DeliveryOrderSummary;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(DeliveryOrderSummaryBuilder b) => b;
+  static void _defaults(DeliveryOrderSummaryBuilder b) =>
+      b..salesOrders = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<DeliveryOrderSummary> get serializer =>
@@ -113,11 +115,11 @@ class _$DeliveryOrderSummarySerializer
       object.customer,
       specifiedType: const FullType(int),
     );
-    if (object.salesOrder != null) {
-      yield r'sales_order';
+    if (object.salesOrders != null) {
+      yield r'sales_orders';
       yield serializers.serialize(
-        object.salesOrder,
-        specifiedType: const FullType.nullable(int),
+        object.salesOrders,
+        specifiedType: const FullType(BuiltList, [FullType(int)]),
       );
     }
     yield r'ship_to';
@@ -211,15 +213,14 @@ class _$DeliveryOrderSummarySerializer
                   as int;
           result.customer = valueDes;
           break;
-        case r'sales_order':
+        case r'sales_orders':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(int),
+                    specifiedType: const FullType(BuiltList, [FullType(int)]),
                   )
-                  as int?;
-          if (valueDes == null) continue;
-          result.salesOrder = valueDes;
+                  as BuiltList<int>;
+          result.salesOrders.replace(valueDes);
           break;
         case r'ship_to':
           final valueDes =

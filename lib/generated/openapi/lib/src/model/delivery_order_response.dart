@@ -19,7 +19,7 @@ part 'delivery_order_response.g.dart';
 /// * [facility]
 /// * [serial]
 /// * [customer]
-/// * [salesOrder]
+/// * [salesOrders]
 /// * [shipTo]
 /// * [date]
 /// * [priority]
@@ -48,8 +48,8 @@ abstract class DeliveryOrderResponse
   @BuiltValueField(wireName: r'customer')
   int get customer;
 
-  @BuiltValueField(wireName: r'sales_order')
-  int? get salesOrder;
+  @BuiltValueField(wireName: r'sales_orders')
+  BuiltList<int>? get salesOrders;
 
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
@@ -99,8 +99,9 @@ abstract class DeliveryOrderResponse
   ]) = _$DeliveryOrderResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(DeliveryOrderResponseBuilder b) =>
-      b..lines = ListBuilder();
+  static void _defaults(DeliveryOrderResponseBuilder b) => b
+    ..salesOrders = ListBuilder()
+    ..lines = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<DeliveryOrderResponse> get serializer =>
@@ -145,11 +146,11 @@ class _$DeliveryOrderResponseSerializer
       object.customer,
       specifiedType: const FullType(int),
     );
-    if (object.salesOrder != null) {
-      yield r'sales_order';
+    if (object.salesOrders != null) {
+      yield r'sales_orders';
       yield serializers.serialize(
-        object.salesOrder,
-        specifiedType: const FullType.nullable(int),
+        object.salesOrders,
+        specifiedType: const FullType(BuiltList, [FullType(int)]),
       );
     }
     yield r'ship_to';
@@ -290,15 +291,14 @@ class _$DeliveryOrderResponseSerializer
                   as int;
           result.customer = valueDes;
           break;
-        case r'sales_order':
+        case r'sales_orders':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(int),
+                    specifiedType: const FullType(BuiltList, [FullType(int)]),
                   )
-                  as int?;
-          if (valueDes == null) continue;
-          result.salesOrder = valueDes;
+                  as BuiltList<int>;
+          result.salesOrders.replace(valueDes);
           break;
         case r'ship_to':
           final valueDes =
