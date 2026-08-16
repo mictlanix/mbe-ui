@@ -145,6 +145,14 @@ class _DestinationCardState extends State<DestinationCard> {
       }
     }
 
+    // The field is the one part of this card that does not re-read the
+    // authoritative value on rebuild — it is a controller, seeded once — so
+    // it has to be written here or the stepper's own figure goes stale while
+    // the header, the chips and the rail all move (mirrors
+    // `SaleLineEditing.step()`, which writes its controller before calling
+    // `update`). Reverted below if the server refuses.
+    _controllerFor(line.saleLineId, current).text = formatQuantity(requested);
+
     setState(() {
       _busyLines.add(line.saleLineId);
       _lineErrors.remove(line.saleLineId);

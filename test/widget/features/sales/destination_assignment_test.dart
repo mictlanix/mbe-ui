@@ -238,6 +238,68 @@ void main() {
     });
   });
 
+  group("the stepper's own figure follows the value it just sent", () {
+    testWidgets('tapping + updates the field, not only the header and the '
+        'rail', (tester) async {
+      when(
+        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer(
+        (_) async => [
+          existingDestination(
+            lines: const [
+              DestinationLine(
+                id: 900,
+                salesOrderDetail: 5,
+                product: 11,
+                productCode: 'P-11',
+                productName: 'Widget',
+                quantity: '4',
+              ),
+            ],
+          ),
+        ],
+      );
+      when(
+        () => deliveries.updateLine(
+          destinationId: any(named: 'destinationId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+        ),
+      ).thenAnswer(
+        (_) async => updatedWith([
+          const DestinationLine(
+            id: 900,
+            salesOrderDetail: 5,
+            product: 11,
+            productCode: 'P-11',
+            productName: 'Widget',
+            quantity: '5',
+          ),
+        ]),
+      );
+
+      await pumpStep(tester);
+      await expand(tester);
+
+      expect(
+        tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+        '4',
+      );
+
+      await tester.tap(find.byIcon(Icons.add).first);
+      await tester.pumpAndSettle();
+
+      // The controller is seeded once and never re-read on rebuild, so
+      // without an explicit write it would still show the pre-tap value
+      // while the header and the rail moved to 5.
+      expect(
+        tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+        '5',
+        reason: "the stepper's figure must follow the value it just sent",
+      );
+    });
+  });
+
   group('the client-side clamp sends nothing out of range (FR-021, SC-006)', () {
     testWidgets('typing more than the sale still owes sends no request',
         (tester) async {
