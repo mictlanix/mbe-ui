@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
@@ -99,18 +100,38 @@ void main() {
       );
     });
 
-    testWidgets('shows nothing that describes a sale, because there is none', (
+    testWidgets(
+      'still shows the header, seeded with the walk-in customer — and opens '
+      'no sale to do it',
+      (tester) async {
+        await pumpRegister(tester);
+
+        // The band and the mode track render from the first frame now, on
+        // `posDefaultCustomerId` — the customer mbe-api would raise the sale
+        // against anyway. Before this they waited for a sale, so the whole
+        // header appeared the instant the first scan landed and shoved the
+        // search field and lines down with it.
+        expect(find.text('PÚBLICO EN GENERAL'), findsOneWidget);
+        expect(find.text(l10n.posFulfillmentCounter), findsOneWidget);
+
+        // The point of the whole file: rendering that header is not an
+        // action, so nothing is created to render it.
+        verifyNever(() => salesOrders.open());
+      },
+    );
+
+    testWidgets('reads zeros, not blanks, for the sale that does not exist', (
       tester,
     ) async {
       await pumpRegister(tester);
 
+      // The band opens reporting facts, not searching — the picker is a face
+      // the cashier asks for.
       expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
-      expect(find.text(l10n.posFulfillmentCounter), findsNothing);
-      expect(
-        find.text(l10n.posTotalsTotalLabel.toUpperCase()),
-        findsNothing,
-        reason: 'no totals bar until there are totals',
-      );
+      // The footer shows the same figures a sale opened a moment later
+      // starts on, so it does not grow a stats row mid-flow.
+      expect(find.text(l10n.posTotalsTotalLabel.toUpperCase()), findsOneWidget);
+      expect(find.text(MoneyFormatters.currency('0')), findsWidgets);
     });
 
     testWidgets('cannot be confirmed', (tester) async {

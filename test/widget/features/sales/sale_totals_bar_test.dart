@@ -169,17 +169,28 @@ void main() {
   });
 
   group('no sale yet (spec 020 — only Venta can render that)', () {
-    testWidgets('renders the button, disabled, with no stats at all', (
-      tester,
-    ) async {
-      await pumpPos(
-        tester,
-        const SaleTotalsBar(sale: null, onContinue: null, confirming: false),
-      );
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+    testWidgets(
+      'renders the whole band on zeros, so it does not change shape when the '
+      'first action opens a sale',
+      (tester) async {
+        await pumpPos(
+          tester,
+          const SaleTotalsBar(sale: null, onContinue: null, confirming: false),
+        );
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      expect(find.byKey(const Key('pos_continue_to_payment')), findsOneWidget);
-      expect(labelText(l10n.posTotalsTotalLabel), findsNothing);
-    });
+        expect(find.byKey(const Key('pos_continue_to_payment')), findsOneWidget);
+        // Every group a real sale shows, reading what a freshly opened one
+        // reads — the band used to render none of them and then grow the row
+        // in place the instant a sale appeared.
+        expect(labelText(l10n.posTotalsTotalLabel), findsOneWidget);
+        expect(labelText(l10n.posTotalsArticlesLabel), findsOneWidget);
+        expect(labelText(l10n.posTotalsSubtotalLabel), findsOneWidget);
+        expect(labelText(l10n.posTotalsTaxLabel), findsOneWidget);
+        // Nothing is owed on a sale that does not exist, so the discount
+        // group stays absent exactly as it does on a sale without one.
+        expect(labelText(l10n.posTotalsDiscountLabel), findsNothing);
+      },
+    );
   });
 }

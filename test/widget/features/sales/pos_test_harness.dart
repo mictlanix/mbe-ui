@@ -226,13 +226,17 @@ OpenSale testOpenSale({
   int id = 42,
   SaleStatus status = SaleStatus.draft,
   int? serial,
-  String customerName = 'Público en general',
+  int customer = 7,
+  /// The per-document name *override*, which is null on every ordinary sale
+  /// — pass `null` for a row shaped like the ones mbe-api actually returns.
+  String? customerName = 'Público en general',
   String total = '116.00',
   String? balance,
   DateTime? date,
 }) => OpenSale(
   id: id,
   serial: serial,
+  customer: customer,
   customerName: customerName,
   total: total,
   balance: balance ?? (status == SaleStatus.paid ? '0' : total),

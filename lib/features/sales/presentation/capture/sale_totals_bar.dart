@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -33,8 +34,9 @@ class SaleTotalsBar extends StatelessWidget {
   });
 
   /// `null` on an untouched register (spec 020 — only Venta can render that).
-  /// The button still renders (disabled) in that case; only the stats are
-  /// skipped, since there is nothing yet to summarize.
+  /// The band renders in full there too, reading zeros — the same figures a
+  /// sale opened a moment later starts on — so nothing about this footer
+  /// moves when the first action creates one.
   final Sale? sale;
 
   /// `null` disables the button — there is no sale yet, it has no lines, it
@@ -61,27 +63,23 @@ class SaleTotalsBar extends StatelessWidget {
     // turn a summary into a table. `Wrap` rather than `Row` so the group still
     // degrades at the narrow end of the non-compact range instead of
     // overflowing; the divider simply wraps with them.
-    final stats = currentSale == null
-        ? const SizedBox.shrink()
-        : Wrap(
-            spacing: spacing.lg,
-            runSpacing: spacing.xs,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: _groups(context, l10n, currentSale),
-          );
+    final stats = Wrap(
+      spacing: spacing.lg,
+      runSpacing: spacing.xs,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: _groups(context, l10n, currentSale),
+    );
 
     // The total is the mock's own right-aligned block, pushed against the
     // action rather than trailing the other figures — it is the number the
     // cashier reads out, not another stat in the row.
-    final total = currentSale == null
-        ? const SizedBox.shrink()
-        : _group(
-            context,
-            l10n.posTotalsTotalLabel,
-            MoneyFormatters.currency(currentSale.total),
-            crossAxisAlignment: CrossAxisAlignment.end,
-            figureStyle: Theme.of(context).typeRoles.metricValue,
-          );
+    final total = _group(
+      context,
+      l10n.posTotalsTotalLabel,
+      MoneyFormatters.currency(currentSale?.total ?? '0'),
+      crossAxisAlignment: CrossAxisAlignment.end,
+      figureStyle: Theme.of(context).typeRoles.metricValue,
+    );
 
     final button = FloatingActionButton.extended(
       key: const Key('pos_continue_to_payment'),
@@ -145,12 +143,23 @@ class SaleTotalsBar extends StatelessWidget {
     );
   }
 
-  List<Widget> _groups(BuildContext context, AppLocalizations l10n, Sale sale) {
-    final unitCount = sale.lines.fold(
+  /// [sale] is `null` on a register nobody has started yet, and the figures
+  /// are then all zero — which is *exactly* what a freshly opened sale reads
+  /// too, so the band does not change shape at the moment the first action
+  /// creates one. It used to render nothing there and then grow this whole
+  /// row in place, one of the jumps that made starting a sale feel like the
+  /// screen was reassembling itself.
+  List<Widget> _groups(BuildContext context, AppLocalizations l10n, Sale? sale) {
+    final unitCount = (sale?.lines ?? const <SaleLine>[]).fold(
       Decimal.zero,
       (sum, line) => sum + (Decimal.tryParse(line.quantity) ?? Decimal.zero),
     );
-    final discount = subtractAmounts(addAmounts(sale.subtotal, sale.taxTotal), sale.total);
+    final subtotal = sale?.subtotal ?? '0';
+    final taxTotal = sale?.taxTotal ?? '0';
+    final discount = subtractAmounts(
+      addAmounts(subtotal, taxTotal),
+      sale?.total ?? '0',
+    );
 
     return [
       _group(
@@ -160,19 +169,19 @@ class SaleTotalsBar extends StatelessWidget {
         // quantity prints exactly as `Decimal` rendered it, and as a number,
         // so the noun beside it can agree.
         l10n.posTotalsCounts(
-          sale.lineCount,
+          sale?.lineCount ?? 0,
           unitCount.toString(),
           unitCount.toDouble(),
         ),
       ),
       // What the sale *is* on one side, what it *costs* on the other.
       _divider(context),
-      _group(context, l10n.posTotalsSubtotalLabel, MoneyFormatters.currency(sale.subtotal)),
+      _group(context, l10n.posTotalsSubtotalLabel, MoneyFormatters.currency(subtotal)),
       if (!isZeroAmount(discount))
         // The mock's leading minus is display-only — [discount] itself is
         // still the plain magnitude FR-047 derives from Sale.
         _group(context, l10n.posTotalsDiscountLabel, '−${MoneyFormatters.currency(discount)}'),
-      _group(context, l10n.posTotalsTaxLabel, MoneyFormatters.currency(sale.taxTotal)),
+      _group(context, l10n.posTotalsTaxLabel, MoneyFormatters.currency(taxTotal)),
     ];
   }
 

@@ -384,6 +384,12 @@ void main() {
         overrides: [
           authOverride(),
           salesOrderOverride(salesOrders),
+          // The Cliente column resolves each row's customer by id now (the
+          // `customer_name` on a summary is only the per-document override,
+          // null on every one of these rows in reality) — unstubbed it
+          // reaches the real dio client and its secure-storage-backed auth
+          // interceptor, same hazard `pointSales` is stubbed against above.
+          customerRepositoryProvider.overrideWithValue(customers),
           cashSessionRepositoryProvider.overrideWithValue(cashSessions),
         ],
       );

@@ -62,6 +62,7 @@ Customer _customer({int id = 7}) => Customer(
 
 OpenSale _openSale({required int id, required SaleStatus status}) => OpenSale(
   id: id,
+  customer: 7,
   customerName: 'FERRETERÍA LOS PINOS DEL VALLE',
   total: '1160.00',
   balance: status == SaleStatus.paid ? '0' : '1160.00',

@@ -19,6 +19,16 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$OpenSale {
   int get id => throw _privateConstructorUsedError;
   int? get serial => throw _privateConstructorUsedError;
+
+  /// Who the sale is for. Carried because [customerName] is **not** the
+  /// customer's name: mbe's data dictionary calls that column "Override
+  /// customer name on docs", and mbe-api sets it only from what a client
+  /// sends — so it is null on every ordinary sale, walk-in ones included.
+  /// The name a list shows has to be resolved from this id, exactly as
+  /// `CustomerBar` already does on the sale itself (FR-023).
+  int get customer => throw _privateConstructorUsedError;
+
+  /// The per-document name override, or `null` — see [customer].
   String? get customerName => throw _privateConstructorUsedError;
   String get total => throw _privateConstructorUsedError;
   String get balance => throw _privateConstructorUsedError;
@@ -40,6 +50,7 @@ abstract class $OpenSaleCopyWith<$Res> {
   $Res call({
     int id,
     int? serial,
+    int customer,
     String? customerName,
     String total,
     String balance,
@@ -65,6 +76,7 @@ class _$OpenSaleCopyWithImpl<$Res, $Val extends OpenSale>
   $Res call({
     Object? id = null,
     Object? serial = freezed,
+    Object? customer = null,
     Object? customerName = freezed,
     Object? total = null,
     Object? balance = null,
@@ -81,6 +93,10 @@ class _$OpenSaleCopyWithImpl<$Res, $Val extends OpenSale>
                 ? _value.serial
                 : serial // ignore: cast_nullable_to_non_nullable
                       as int?,
+            customer: null == customer
+                ? _value.customer
+                : customer // ignore: cast_nullable_to_non_nullable
+                      as int,
             customerName: freezed == customerName
                 ? _value.customerName
                 : customerName // ignore: cast_nullable_to_non_nullable
@@ -119,6 +135,7 @@ abstract class _$$OpenSaleImplCopyWith<$Res>
   $Res call({
     int id,
     int? serial,
+    int customer,
     String? customerName,
     String total,
     String balance,
@@ -143,6 +160,7 @@ class __$$OpenSaleImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? serial = freezed,
+    Object? customer = null,
     Object? customerName = freezed,
     Object? total = null,
     Object? balance = null,
@@ -159,6 +177,10 @@ class __$$OpenSaleImplCopyWithImpl<$Res>
             ? _value.serial
             : serial // ignore: cast_nullable_to_non_nullable
                   as int?,
+        customer: null == customer
+            ? _value.customer
+            : customer // ignore: cast_nullable_to_non_nullable
+                  as int,
         customerName: freezed == customerName
             ? _value.customerName
             : customerName // ignore: cast_nullable_to_non_nullable
@@ -190,6 +212,7 @@ class _$OpenSaleImpl implements _OpenSale {
   const _$OpenSaleImpl({
     required this.id,
     this.serial,
+    required this.customer,
     this.customerName,
     required this.total,
     required this.balance,
@@ -201,6 +224,17 @@ class _$OpenSaleImpl implements _OpenSale {
   final int id;
   @override
   final int? serial;
+
+  /// Who the sale is for. Carried because [customerName] is **not** the
+  /// customer's name: mbe's data dictionary calls that column "Override
+  /// customer name on docs", and mbe-api sets it only from what a client
+  /// sends — so it is null on every ordinary sale, walk-in ones included.
+  /// The name a list shows has to be resolved from this id, exactly as
+  /// `CustomerBar` already does on the sale itself (FR-023).
+  @override
+  final int customer;
+
+  /// The per-document name override, or `null` — see [customer].
   @override
   final String? customerName;
   @override
@@ -214,7 +248,7 @@ class _$OpenSaleImpl implements _OpenSale {
 
   @override
   String toString() {
-    return 'OpenSale(id: $id, serial: $serial, customerName: $customerName, total: $total, balance: $balance, status: $status, date: $date)';
+    return 'OpenSale(id: $id, serial: $serial, customer: $customer, customerName: $customerName, total: $total, balance: $balance, status: $status, date: $date)';
   }
 
   @override
@@ -224,6 +258,8 @@ class _$OpenSaleImpl implements _OpenSale {
             other is _$OpenSaleImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.serial, serial) || other.serial == serial) &&
+            (identical(other.customer, customer) ||
+                other.customer == customer) &&
             (identical(other.customerName, customerName) ||
                 other.customerName == customerName) &&
             (identical(other.total, total) || other.total == total) &&
@@ -237,6 +273,7 @@ class _$OpenSaleImpl implements _OpenSale {
     runtimeType,
     id,
     serial,
+    customer,
     customerName,
     total,
     balance,
@@ -257,6 +294,7 @@ abstract class _OpenSale implements OpenSale {
   const factory _OpenSale({
     required final int id,
     final int? serial,
+    required final int customer,
     final String? customerName,
     required final String total,
     required final String balance,
@@ -268,6 +306,17 @@ abstract class _OpenSale implements OpenSale {
   int get id;
   @override
   int? get serial;
+
+  /// Who the sale is for. Carried because [customerName] is **not** the
+  /// customer's name: mbe's data dictionary calls that column "Override
+  /// customer name on docs", and mbe-api sets it only from what a client
+  /// sends — so it is null on every ordinary sale, walk-in ones included.
+  /// The name a list shows has to be resolved from this id, exactly as
+  /// `CustomerBar` already does on the sale itself (FR-023).
+  @override
+  int get customer;
+
+  /// The per-document name override, or `null` — see [customer].
   @override
   String? get customerName;
   @override

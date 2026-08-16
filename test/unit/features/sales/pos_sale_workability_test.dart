@@ -13,6 +13,7 @@ OpenSale _sale({
   int id = 1,
 }) => OpenSale(
   id: id,
+  customer: 7,
   customerName: 'Acme',
   total: '100.00',
   balance: balance,

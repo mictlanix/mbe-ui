@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/pos_defaults.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/customer_inline_create.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
@@ -40,7 +41,17 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 class CustomerBar extends ConsumerStatefulWidget {
   const CustomerBar({super.key, required this.sale, this.enabled = true});
 
-  final Sale sale;
+  /// `null` before the first action has opened a sale. The band still renders
+  /// — on [posDefaultCustomerId], the walk-in customer mbe-api would raise
+  /// the sale against anyway — so the capture surface opens complete instead
+  /// of the band appearing from nowhere once the first scan lands (and
+  /// shoving the search field and lines down as it does).
+  ///
+  /// Nothing here writes that fallback: both actions this band offers go
+  /// through `PosSaleController.updateHeader`, which opens the sale itself
+  /// (its own "editing the header is a legitimate first action"), and the
+  /// sale's real `customer` takes over from that moment on.
+  final Sale? sale;
   final bool enabled;
 
   @override
@@ -95,9 +106,17 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   /// FR-026: dismissing the picker restores facts with nothing changed.
   void _cancelSearch() => setState(() => _mode = _CustomerBandMode.facts);
 
+  /// The customer the band reports on: the sale's own once there is one,
+  /// the configured walk-in default until then.
+  int get _customerId => widget.sale?.customer ?? posDefaultCustomerId;
+
+  /// Immediate is what mbe-api itself derives for a customer with no credit
+  /// line, which the walk-in customer is — so the dropdown shows the terms
+  /// the sale would actually be raised on, not a guess.
+  PaymentTerms get _terms => widget.sale?.paymentTerms ?? PaymentTerms.immediate;
+
   @override
   Widget build(BuildContext context) {
-    final sale = widget.sale;
     final spacing = Theme.of(context).spacing;
     final enabled = widget.enabled && !_busy;
 
@@ -149,7 +168,8 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                 child: _mode == _CustomerBandMode.facts
                     ? _FactsView(
                         key: const ValueKey('facts'),
-                        sale: sale,
+                        customerId: _customerId,
+                        terms: _terms,
                         enabled: enabled,
                         busy: _busy,
                         canCreate: _canCreateCustomers,
@@ -161,7 +181,7 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                         key: const ValueKey('searching'),
                         enabled: enabled,
                         busy: _busy,
-                        initialDisplayText: sale.customerName,
+                        initialDisplayText: widget.sale?.customerName,
                         onSelected: (customer) =>
                             _updateHeader(customer: customer.customerId),
                         onCancel: _cancelSearch,
@@ -184,7 +204,8 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
 class _FactsView extends ConsumerWidget {
   const _FactsView({
     required super.key,
-    required this.sale,
+    required this.customerId,
+    required this.terms,
     required this.enabled,
     required this.busy,
     required this.canCreate,
@@ -193,7 +214,10 @@ class _FactsView extends ConsumerWidget {
     required this.onTermsChanged,
   });
 
-  final Sale sale;
+  /// The sale's customer, or the walk-in default before a sale exists —
+  /// resolved by [CustomerBar], so this face never asks which it is.
+  final int customerId;
+  final PaymentTerms terms;
   final bool enabled;
   final bool busy;
   final bool canCreate;
@@ -205,13 +229,12 @@ class _FactsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final customerAsync = ref.watch(saleCustomerControllerProvider(sale.customer));
-    // FR-023: the resolved customer record's name is preferred — it is what
-    // was missing entirely before this fix, since the picker this face
-    // replaces used to seed only from `sale.customerName`, which is null for
-    // the walk-in customer even while this same record already knows the
-    // name.
-    final displayName = customerAsync.valueOrNull?.name ?? sale.customerName ?? '—';
+    final customerAsync = ref.watch(saleCustomerControllerProvider(customerId));
+    // FR-023: the resolved customer record's name is what this shows. The
+    // sale's own `customerName` is only the per-document override — null for
+    // the walk-in customer even while this same record knows the name — so
+    // reading it first left the band blank (mictlanix/mbe-api#172).
+    final displayName = customerAsync.valueOrNull?.name ?? '—';
 
     // Both actions share one height, so they sit on a single baseline rather
     // than each on its own.
@@ -263,7 +286,12 @@ class _FactsView extends ConsumerWidget {
       runSpacing: 4,
       children: [
         _CustomerBarFact.fact(context, l10n.posCustomerNameLabel, displayName),
-        _TermsFact(sale: sale, enabled: enabled, onChanged: onTermsChanged),
+        _TermsFact(
+          customerId: customerId,
+          terms: terms,
+          enabled: enabled,
+          onChanged: onTermsChanged,
+        ),
         customerAsync.when(
           data: (value) => _CustomerBarFact.fact(
             context,
@@ -273,7 +301,7 @@ class _FactsView extends ConsumerWidget {
           loading: () => const SizedBox(height: 20),
           error: (error, stackTrace) => const SizedBox(height: 20),
         ),
-        _BalanceFact(customerId: sale.customer),
+        _BalanceFact(customerId: customerId),
       ],
     );
 
@@ -314,9 +342,15 @@ class _FactsView extends ConsumerWidget {
 /// credit line — only [onChanged] does, and only when the cashier actually
 /// picks a value.
 class _TermsFact extends ConsumerWidget {
-  const _TermsFact({required this.sale, required this.enabled, required this.onChanged});
+  const _TermsFact({
+    required this.customerId,
+    required this.terms,
+    required this.enabled,
+    required this.onChanged,
+  });
 
-  final Sale sale;
+  final int customerId;
+  final PaymentTerms terms;
   final bool enabled;
   final ValueChanged<PaymentTerms> onChanged;
 
@@ -324,7 +358,7 @@ class _TermsFact extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final customer = ref.watch(saleCustomerControllerProvider(sale.customer));
+    final customer = ref.watch(saleCustomerControllerProvider(customerId));
     final creditLimit = customer.valueOrNull?.creditLimit;
     final hasCredit = creditLimit != null && !isZeroAmount(creditLimit);
 
@@ -344,7 +378,7 @@ class _TermsFact extends ConsumerWidget {
           width: 132,
           child: DropdownButton<PaymentTerms>(
             key: const Key('pos_payment_terms_dropdown'),
-            value: sale.paymentTerms,
+            value: terms,
             isDense: true,
             isExpanded: true,
             underline: const SizedBox.shrink(),
