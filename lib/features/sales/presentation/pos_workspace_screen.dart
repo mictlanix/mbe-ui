@@ -20,6 +20,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sales_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
@@ -182,12 +183,30 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   /// beneath it.
   Future<void> _leaveWorkspace(BuildContext context, Sale? current) async {
     await _discardIfEmpty(current);
+    _refreshSalesList();
     if (!context.mounted) return;
     if (context.canPop()) {
       context.pop();
     } else {
       context.go('/sales/pos');
     }
+  }
+
+  /// FR-009: whatever this workspace did to the sale — rang it up, finished
+  /// it, cancelled an empty draft — must be visible on the list the cashier
+  /// lands back on. `PosSalesListScreen` cannot do this on its own for a sale
+  /// started here: it awaits the `push` it issued, and `_maybeRewriteUrl`
+  /// **replaces** `/sales/pos/new` with the sale's real id, which leaves that
+  /// future permanently uncompleted (verified against go_router) — so the
+  /// list's own refresh never runs for exactly the sale that needs it most,
+  /// the one it has never seen.
+  ///
+  /// The whole family, not one instance: the list is keyed by
+  /// `(pointSale, PosSalesFilter)` and this screen knows nothing about the
+  /// filter the cashier left behind.
+  void _refreshSalesList() {
+    ref.invalidate(posSalesListControllerProvider);
+    ref.invalidate(openSalesSelectorControllerProvider);
   }
 
   Future<void> _selectSale(OpenSale selected) async {
@@ -554,6 +573,12 @@ class _StepHost extends ConsumerWidget {
   /// The sale is done — show its folio and offer the next one (FR-050).
   void _finish(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    // The sale that just finished is no longer one the register can resume,
+    // so the header selector's own listing has to be re-read — the same
+    // refresh `_startNewSale` and `_selectSale` already do when *they* move
+    // off a sale. Without it the selector keeps offering the finished sale
+    // (and counting it) for the whole of the next one.
+    ref.invalidate(openSalesSelectorControllerProvider);
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
