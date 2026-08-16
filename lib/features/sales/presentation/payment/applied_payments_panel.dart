@@ -56,7 +56,11 @@ class AppliedPaymentsPanel extends ConsumerWidget {
               key: Key('applied_payment_${payment.id}'),
               padding: EdgeInsets.all(spacing.sm),
               decoration: BoxDecoration(
-                color: theme.elevations.sunken.surfaceColor,
+                // A step *above* the rail this list lives in, as in the mock
+                // (`#16161C` cards on a `#131319` rail) — `sunken` put them
+                // below it instead, which reads as a well cut into the rail
+                // rather than a card resting on it.
+                color: theme.elevations.engaged.surfaceColor,
                 borderRadius: theme.shapes.mdRadius,
                 border: Border.all(color: theme.colorScheme.outlineVariant),
               ),

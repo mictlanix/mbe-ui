@@ -193,7 +193,7 @@ void main() {
       expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
       expect(find.text('Falta asignar: Cemento (20)'), findsOneWidget);
 
-      final button = tester.widget<FilledButton>(
+      final button = tester.widget<FloatingActionButton>(
         find.byKey(const Key('delivery_close_button')),
       );
       expect(button.onPressed, isNull);
@@ -204,7 +204,7 @@ void main() {
       await pumpFoot(tester, onClose: () {});
       expect(find.byKey(const Key('delivery_outstanding_notice')), findsNothing);
 
-      final button = tester.widget<FilledButton>(
+      final button = tester.widget<FloatingActionButton>(
         find.byKey(const Key('delivery_close_button')),
       );
       expect(button.onPressed, isNotNull);

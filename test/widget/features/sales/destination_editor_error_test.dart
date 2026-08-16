@@ -202,7 +202,9 @@ void main() {
       expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
       expect(
         tester
-            .widget<FilledButton>(find.byKey(const Key('delivery_close_button')))
+            .widget<FloatingActionButton>(
+              find.byKey(const Key('delivery_close_button')),
+            )
             .onPressed,
         isNull,
       );
@@ -311,7 +313,7 @@ void main() {
       );
       expect(find.textContaining('Widget'), findsWidgets);
 
-      final close = tester.widget<FilledButton>(
+      final close = tester.widget<FloatingActionButton>(
         find.byKey(const Key('delivery_close_button')),
       );
       expect(close.onPressed, isNull);

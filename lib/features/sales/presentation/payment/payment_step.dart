@@ -38,7 +38,8 @@ class PaymentStep extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final draft = ref.watch(paymentControllerProvider);
-    final spacing = Theme.of(context).spacing;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
     final enabled = !draft.submitting;
 
     final error = draft.error == null
@@ -55,40 +56,66 @@ class PaymentStep extends ConsumerWidget {
     final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
 
     if (wide) {
-      return Padding(
-        padding: EdgeInsets.all(spacing.screenMargin),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Not scrollable: FR-006 reserves scrolling for the
-            // applied-payments list alone at this tier — the capture pane
-            // stays put, exactly like the rail's header and summary.
-            Expanded(
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Not scrollable: FR-006 reserves scrolling for the
+          // applied-payments list alone at this tier — the capture pane
+          // stays put, exactly like the rail's header and summary.
+          //
+          // The screen margin is the *pane's* now, not the whole step's: the
+          // rail beside it is a full-bleed plane running edge to edge, so an
+          // outer padding would leave it floating inside a gutter instead of
+          // meeting the window's own edges.
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(spacing.screenMargin),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [?error, capturePane],
               ),
             ),
-            SizedBox(width: spacing.paneGutter),
-            SizedBox(
-              width: _railWidth,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: spacing.sm),
-                    child: Text(
-                      l10n.posAppliedPaymentsTitle,
-                      style: Theme.of(context).typeRoles.sectionHeading,
-                    ),
-                  ),
-                  Expanded(child: appliedPayments),
-                  summary,
-                ],
+          ),
+          // The mock's own rail (`background:#131319; border-left:1px solid
+          // #23232C`): its own surface a step above the canvas the capture
+          // pane sits on, with a hairline stating where one ends and the
+          // other begins. The `paneGutter` this replaces separated the two
+          // by absence — nothing but empty canvas — which is exactly why the
+          // rail read as part of the same plane.
+          Container(
+            width: _railWidth,
+            decoration: BoxDecoration(
+              color: theme.elevations.raised.surfaceColor,
+              border: Border(
+                left: BorderSide(color: theme.colorScheme.outlineVariant),
               ),
             ),
-          ],
-        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    spacing.sm,
+                    spacing.md,
+                    spacing.sm,
+                    spacing.sm,
+                  ),
+                  child: Text(
+                    l10n.posAppliedPaymentsTitle,
+                    style: theme.typeRoles.sectionHeading,
+                  ),
+                ),
+                // The mock's `border-bottom` under the rail title — full
+                // bleed, so it reads as the rail's own header rule rather
+                // than a divider between two list items.
+                Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                SizedBox(height: spacing.sm),
+                Expanded(child: appliedPayments),
+                summary,
+              ],
+            ),
+          ),
+        ],
       );
     }
 

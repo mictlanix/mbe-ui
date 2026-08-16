@@ -293,7 +293,22 @@ class _DestinationCardState extends State<DestinationCard> {
           ),
           AnimatedSize(
             duration: const Duration(milliseconds: 200),
-            child: _expanded ? _body(context, l10n) : const SizedBox.shrink(),
+            // A rule under the header once the card is open: expanded, the
+            // quantity list ran straight into the address block with nothing
+            // stating where the identity ends and the assignment begins.
+            child: _expanded
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Divider(
+                        height: 1,
+                        color: theme.colorScheme.outlineVariant,
+                      ),
+                      _body(context, l10n),
+                    ],
+                  )
+                : const SizedBox.shrink(),
           ),
         ],
       ),

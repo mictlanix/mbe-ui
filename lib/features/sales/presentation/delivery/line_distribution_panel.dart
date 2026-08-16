@@ -61,21 +61,36 @@ class LineDistributionPanel extends StatelessWidget {
     final spacing = theme.spacing;
     final typeRoles = theme.typeRoles;
 
-    final header = Padding(
-      padding: EdgeInsets.symmetric(vertical: spacing.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.posDistributionTitle, style: typeRoles.sectionHeading),
-          Text(
-            l10n.posDistributionRailSubtitle(
-              distribution.length,
-              destinationGroupCount,
-            ),
-            style: typeRoles.metricLabel,
+    // The mock's `border-bottom` under the rail title — the header states
+    // what the list below it is, so a rule closes it rather than leaving the
+    // first row to run straight into the subtitle.
+    final header = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+            spacing.none,
+            spacing.md,
+            spacing.none,
+            spacing.sm,
           ),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.posDistributionTitle, style: typeRoles.sectionHeading),
+              Text(
+                l10n.posDistributionRailSubtitle(
+                  distribution.length,
+                  destinationGroupCount,
+                ),
+                style: typeRoles.metricLabel,
+              ),
+            ],
+          ),
+        ),
+        Divider(height: 1, color: theme.colorScheme.outlineVariant),
+        SizedBox(height: spacing.xs),
+      ],
     );
 
     final rows = ListView.separated(
@@ -283,16 +298,38 @@ class LineDistributionFoot extends StatelessWidget {
             ],
           ],
           SizedBox(height: spacing.sm),
-          FilledButton(
+          // The same footer action `SaleTotalsBar` carries on the capture
+          // step: an extended FAB, stretched by the column it sits in, with
+          // the icon after the label. A check rather than an arrow — this
+          // one ends the sale instead of moving to the next step.
+          //
+          // A FAB keeps its own fill when `onPressed` is null, so the gated
+          // state is spelled out here — without it the button would look
+          // pressable while units are still unassigned, which the
+          // `FilledButton` this replaces got for free.
+          FloatingActionButton.extended(
             key: const Key('delivery_close_button'),
             onPressed: onClose,
-            child: closing
+            backgroundColor: onClose == null
+                ? theme.colorScheme.onSurface.withValues(alpha: 0.12)
+                : null,
+            foregroundColor: onClose == null
+                ? theme.colorScheme.onSurface.withValues(alpha: 0.38)
+                : null,
+            label: closing
                 ? const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(l10n.posFinishSale),
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(l10n.posFinishSale),
+                      SizedBox(width: spacing.xs),
+                      const Icon(Icons.check),
+                    ],
+                  ),
           ),
         ],
       ),

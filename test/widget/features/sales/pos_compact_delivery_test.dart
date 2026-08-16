@@ -184,7 +184,9 @@ void main() {
       );
       expect(
         tester
-            .widget<FilledButton>(find.byKey(const Key('delivery_close_button')))
+            .widget<FloatingActionButton>(
+              find.byKey(const Key('delivery_close_button')),
+            )
             .onPressed,
         isNull,
         reason: '6 of 10 units are still unassigned',
@@ -273,7 +275,9 @@ void main() {
 
       expect(
         tester
-            .widget<FilledButton>(find.byKey(const Key('delivery_close_button')))
+            .widget<FloatingActionButton>(
+              find.byKey(const Key('delivery_close_button')),
+            )
             .onPressed,
         isNotNull,
       );

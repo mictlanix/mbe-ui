@@ -59,8 +59,8 @@ void main() {
     );
   }
 
-  FilledButton closeButton(WidgetTester tester) =>
-      tester.widget<FilledButton>(find.byKey(const Key('payment_close_button')));
+  FloatingActionButton closeButton(WidgetTester tester) => tester
+      .widget<FloatingActionButton>(find.byKey(const Key('payment_close_button')));
 
   group('close gate (FR-049, FR-051)', () {
     testWidgets('disabled while a balance is outstanding on immediate terms', (

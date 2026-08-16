@@ -301,16 +301,21 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
 
         if (wide) {
-          return Padding(
-            padding: EdgeInsets.all(spacing.screenMargin),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Not scrollable as a whole: FR-007 reserves scrolling for
-                // the destination list and the distribution list, each on
-                // its own — the destinations region below is itself a
-                // `ListView`, but this outer column is not.
-                Expanded(
+          final theme = Theme.of(context);
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Not scrollable as a whole: FR-007 reserves scrolling for
+              // the destination list and the distribution list, each on
+              // its own — the destinations region below is itself a
+              // `ListView`, but this outer column is not.
+              //
+              // The screen margin belongs to this region alone now: the rail
+              // beside it is a full-bleed plane meeting the window's edges,
+              // and an outer padding would leave it floating in a gutter.
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(spacing.screenMargin),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -319,13 +324,26 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                     ],
                   ),
                 ),
-                SizedBox(width: spacing.paneGutter),
-                SizedBox(
-                  width: 360,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
+              ),
+              // The mock's own rail (`background:#131319; border-left:1px
+              // solid #23232C`) — its own surface a step above the canvas the
+              // destinations sit on, with a hairline stating the boundary.
+              // The `paneGutter` this replaces separated the two by absence,
+              // which is why the rail read as part of the same plane.
+              Container(
+                width: 360,
+                decoration: BoxDecoration(
+                  color: theme.elevations.raised.surfaceColor,
+                  border: Border(
+                    left: BorderSide(color: theme.colorScheme.outlineVariant),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: spacing.sm),
                         child: LineDistributionPanel(
                           distribution: distribution,
                           badges: badges,
@@ -335,23 +353,23 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                           fillHeight: true,
                         ),
                       ),
-                      LineDistributionFoot(
-                        assigned: assignedUnits,
-                        total: totalUnits,
-                        outstandingMessage: outstandingMessage,
-                        onClose: (complete && !_closing)
-                            ? () => _close(distribution)
-                            : null,
-                        closing: _closing,
-                        onSweepAndClose: outstandingMessage == null
-                            ? null
-                            : () => _close(distribution, sweepRemainder: true),
-                      ),
-                    ],
-                  ),
+                    ),
+                    LineDistributionFoot(
+                      assigned: assignedUnits,
+                      total: totalUnits,
+                      outstandingMessage: outstandingMessage,
+                      onClose: (complete && !_closing)
+                          ? () => _close(distribution)
+                          : null,
+                      closing: _closing,
+                      onSweepAndClose: outstandingMessage == null
+                          ? null
+                          : () => _close(distribution, sweepRemainder: true),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         }
 
