@@ -36,9 +36,10 @@ narrower than it needs at 1200.
 
 ## R2 — What mbe-api can and cannot do
 
-**Updated 2026-08-15, after both [#163](https://github.com/mictlanix/mbe-api/issues/163)
-and [#165](https://github.com/mictlanix/mbe-api/issues/165) landed** (merged in
-#164 and #166) and the client was regenerated. Nothing in this feature is
+**Updated 2026-08-15, after [#163](https://github.com/mictlanix/mbe-api/issues/163),
+[#165](https://github.com/mictlanix/mbe-api/issues/165) and
+[#171](https://github.com/mictlanix/mbe-api/pull/171) landed** (merged in #164,
+#166 and #171) and the client was regenerated. Nothing in this feature is
 blocked on mbe-api any more.
 
 **Verified at the source** (`~/development/repos/mictlanix/mbe-api`), not
@@ -51,6 +52,7 @@ inferred from the client:
 | **Add a line to an existing destination** | `POST /api/v1/delivery-orders/{id}/lines` | ✅ **new** — `delivery_order_service.add_line`; see [R13](#r13--add_lines-semantics) |
 | Adjust an existing line | `PUT /api/v1/delivery-orders/{id}/lines/{line_id}` | ✅ — `update_line`, validated against `_covered_quantities` |
 | Remove an existing line | `DELETE /api/v1/delivery-orders/{id}/lines/{line_id}` | ✅ — `delete_line` |
+| Record the cashier's fulfilment intent on the sale | `POST`/`PUT /api/v1/sales-orders` → `fulfillment_intent` | ✅ **new** — nullable, three-valued; see [R15](#r15--the-fulfilment-vocabulary-was-unified-and-renumbered) |
 
 **Rationale**: decisions 2 and 3 — header-only creation and in-card assignment —
 are both buildable as specified.
@@ -94,9 +96,15 @@ until #165 lands anyway.
 ## R4 — The counter row without a counter-pickup record
 
 **Decision**: one widget, two sources. When the sale has a `Destination` with
-`isCounterPickup`, render from it. Otherwise, for a **mixed** sale only, render
-from the distribution the step already computes: the lines with a non-zero
-`atCounter` are its lines, and their sum is its units.
+`isCounterPickup`, render from it — **whatever the mode says**. Otherwise, for a
+**mixed** sale only, render from the distribution the step already computes:
+the lines with a non-zero `atCounter` are its lines, and their sum is its units.
+
+The "whatever the mode says" half was missed in the first implementation, which
+gated the whole row on `_isMixed`: a sale that resumed with a `null` intent read
+as plain delivery, so a real counter-pickup record rendered *no row at all* and
+its units counted toward the assigned total while being invisible. Found by
+driving the real screen; FR-010 now states both halves.
 
 **Rationale**: `distributionFor` is pure and already called on every build; the
 remainder is `LineDistribution.atCounter` per line. Nothing is fetched and
@@ -137,17 +145,38 @@ delivery-side equivalent. Do not extract a shared mixin.
 display-formatted `TextEditingController`, a server round trip per edit, a
 `_busy` flag that inerts the controls while one is in flight, and a
 `syncFields()` that restores the last accepted value when the server refuses
-(`sale_line_editing.dart:99-105`). FR-024 and FR-025 are that behaviour,
-verbatim. But the mixin is bound to `SaleLine`, `posSaleControllerProvider` and
-a warehouse/tax picker; nothing generic survives extraction except the shape.
+(`sale_line_editing.dart:99-105`). FR-024 is that behaviour verbatim. But the
+mixin is bound to `SaleLine`, `posSaleControllerProvider` and a warehouse/tax
+picker; nothing generic survives extraction except the shape.
 
-Two differences to encode deliberately:
+Three differences to encode deliberately:
 
 - `SaleLineEditing.step()` refuses to reach zero (`if (next.sign <= 0) return;`)
   because a sale line at zero is meaningless. A **destination** line at zero is
   meaningful — FR-022 makes it the removal gesture — so the delivery `step()`
   clamps at zero and calls remove there.
 - The capture stepper's ceiling is stock; the delivery stepper's is R7's.
+- **The capture step's `_busy` flag is not copied.** Inerting the row for each
+  round trip is what made a burst of taps feel frozen when driven live, so the
+  delivery stepper debounces instead (~400 ms per line, FR-025) and leaves the
+  controls responsive. One write per line at a time; a tap landing mid-flight
+  is coalesced into the next; anything pending is flushed on dispose so a step
+  followed immediately by leaving is not lost.
+
+**One line of the pattern must not be dropped.** `SaleLineEditing.step()` writes
+the new value into its controller *before* calling `update`:
+
+```dart
+quantityField.text = text;   // ← easy to omit; do not
+update(quantity: text);
+```
+
+Omitting it was a real bug here: the header counts, the "Tienda" chip and the
+rail all moved on each tap while the stepper's own figure sat at its seeded
+value, because a `TextEditingController` is the one thing on the card that does
+not re-read the authoritative value on rebuild. The regression test asserts the
+controller's text, not just which repository method was called — asserting the
+call alone cannot see a stale display.
 
 **Reused for free**: `posLineDecreaseQuantity` / `posLineIncreaseQuantity`
 already exist in both locales (`app_es.arb:956-957`, `app_en.arb:2113-2116`) and
@@ -349,3 +378,95 @@ means first freeing units from an existing one, which the steppers now allow.
 correcting it — the placeholder FR-003 forbids. Letting the sheet post and
 rendering the 409 — rejected: a refusal the client can predict is a disabled
 control with a reason, not a round trip.
+
+---
+
+## R15 — The fulfilment vocabulary was unified, and renumbered
+
+**Decision**: remap `FulfillmentType`'s wire values, add `FulfillmentMode`'s,
+and assert both against `api.FulfillmentType`'s own wire numbers in a test.
+
+**Rationale**: [#171](https://github.com/mictlanix/mbe-api/pull/171) resolved
+[#170](https://github.com/mictlanix/mbe-api/issues/170) by adding
+`sales_order.fulfillment_intent` — but it also unified the vocabulary across
+both columns and **renumbered the existing one**, which is a breaking change
+this client had to absorb:
+
+| | before | after (#171) |
+|---|---|---|
+| `PICKUP` / `COUNTER_PICKUP` | 1 | **0** |
+| `DELIVERY` | 0 | **1** |
+| `MIXED` | — | 2 |
+
+Pickup leads because it is the ordinary counter sale: 310,609 of 335,763 sales
+orders, 92.5%, never produced a delivery order at all. The old numbering came
+from migration 008 deriving the column from the legacy `picked_up` boolean, so
+`0` had meant opposite things on two adjacent, similarly-named columns.
+
+**Why this is the dangerous kind of change.** mbe-ui hand-maps this enum
+(`destination.dart`) because the generator emits `number0`/`number1` with no
+member names. Keeping the old mapping would not fail to compile, would not
+throw, and would pass every test that asserts on *members* — `FulfillmentType.delivery`
+still exists, only the integer beneath it moved. It would simply write pickups
+as deliveries and read deliveries as pickups, silently, forever.
+
+`test/unit/features/sales/fulfillment_mapping_test.dart` exists for exactly
+this: it asserts against `api.FulfillmentType.number0`/`number1`/`number2`
+rather than the Dart member, which is the only assertion a renumbering cannot
+satisfy by accident.
+
+**Two client-side notes**:
+
+- `MIXED` never reaches `delivery_order.fulfillment_type` — a shipment is one
+  kind or the other, and `create_from_sales_order` refuses it with a 422. The
+  three-valued enum belongs to the *sale*; `FulfillmentType.fromApi`'s fallback
+  exists only so an unexpected value degrades rather than throws.
+- The Dart member stays `counterPickup` even though the server's is renamed
+  `PICKUP`. Chasing the rename would touch ~26 call sites for no behavioural
+  gain, and nothing here reads the wire value as a name.
+
+**Alternatives considered**: switching the hand-mapped enums to the generated
+`api.FulfillmentType` directly — rejected for the reason `PaymentTerms` and
+`CurrencyCode` were hand-mapped in the first place (`number0` reads as nothing
+at a call site). Pinning the client to the pre-#171 API — rejected: the
+renumbering is already live on the server this client talks to.
+
+---
+
+## R16 — A picked date must reach the wire as UTC
+
+**Decision**: pass every `DateTime` through `wireDate()` in the repository, not
+in the widget.
+
+**Rationale**: found by driving the real screen — adding a destination with a
+delivery date failed with "no se pudo conectar con el servidor", and no request
+ever left the client. `showDatePicker` returns a **local** `DateTime`;
+built_value's serializer refuses anything non-UTC outright:
+
+```dart
+if (!dateTime.isUtc) throw ArgumentError.value(dateTime, 'dateTime', 'Must be in utc for serialization.');
+```
+
+That throws *inside* dio, before the request is sent, so dio surfaces it as a
+`DioException` with no `response` — which `mapDioException` maps to
+`NetworkError`. Hence a connectivity message for a request that never touched
+the network.
+
+`wireDate(DateTime local) => DateTime.utc(local.year, local.month, local.day)`
+already existed in `sales_order_repository_impl.dart`, written for this exact
+trap in spec 023 (research R3/R6), and carries the second half of the reasoning
+too: mbe-api reads the value as local wall-clock time, so midnight-flagged-UTC
+preserves the calendar day the cashier picked instead of shifting it by the
+offset.
+
+**Applied to `create` and `updateHeader` both** — the latter had the same
+latent defect with no caller yet.
+
+**Why no test caught it**: the delivery step's widget tests mock
+`DeliveryOrderRepository`, so serialization never runs. The regression test
+goes through the real `DeliveryOrderRepositoryImpl` against a fake HTTP
+adapter — the layer where this class of bug lives. **Any future endpoint taking
+a `DateTime` needs `wireDate` and a real-serialization test, not a mocked one.**
+
+**Note**: this bug predates the feature. Spec 020's composer passed the same
+local `DateTime` through; the rewrite inherited it.

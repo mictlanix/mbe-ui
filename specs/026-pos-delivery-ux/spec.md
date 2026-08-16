@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-15
 
-**Status**: Draft — unblocked; [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) and [#165](https://github.com/mictlanix/mbe-api/issues/165) both landed 2026-08-15
+**Status**: Draft — unblocked; [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163), [#165](https://github.com/mictlanix/mbe-api/issues/165) and [#171](https://github.com/mictlanix/mbe-api/pull/171) all landed 2026-08-15
 
 **Input**: User description: "Improve the POS delivery step screen (`lib/features/sales/presentation/delivery/delivery_step.dart` and its widgets `destination_card.dart`, `destination_editor.dart`, `line_distribution_panel.dart`) and make its design more like `artifacts/point_of_sale/POS_Adaptativo.dc.html`. The screen currently works fine; we are aiming to improve its look & feel. From the mockup, ignore the order of the screens — delivery figures there as the second step ("Paso 2 de 3"), but during development we moved it to the last step. Keep the delivery destinations grouped just as shown on the mock, and also keep the items distribution summary panel."
 
@@ -12,14 +12,15 @@
 
 ### Session 2026-08-15
 
-- Q: When should the "Recoge en tienda" counter row appear in the destination list? → A: On mixed sales only, always as the first destination in the list, with addressed destinations added after it.
+- Q: When should the "Recoge en tienda" counter row appear in the destination list? → A: On mixed sales only, always as the first destination in the list, with addressed destinations added after it. **Widened during implementation** — it also shows whenever a counter-pickup destination actually exists, whatever the mode says, or a resumed sale hides units it is still counting (FR-010).
 - Q: How far should the quantity control follow the mock's `−`/`+` pill? → A: All the way — a working stepper pill, not a restyled plain field.
 - Q: Where should the new-destination composer open at wide widths? → A: As a side sheet over the distribution rail.
 - Q: At what width should the step switch from one column to two regions? → A: The product's Large tier (1200 px), matching the payment step.
 - Q: What should the side sheet capture? → A: The header only — address, contact, date and instructions. Every quantity is assigned afterwards, inside the destination's own card, as the mock draws it.
 - Q: There is no endpoint to add a line to an existing delivery order, which the header-only flow requires. How should the feature handle it? → A: Block on mbe-api. The gap is filed as mbe-api#163 and recorded here as a blocking external dependency; no client-side workaround is to be built.
-- Q: A mixed sale reopened after a restart could never be finished — its remainder blocked the close with no way out, because `resumeTargetFor` reconstructs only `delivery`/`counterPickup` and never `mixed`. How should the step recover? → A: The step asks. An explicit secondary "leave the rest at the counter" action appears beside the blocking notice and performs the sweep (FR-028a), and the counter row is now shown whenever a counter-pickup destination actually exists, not only when the mode says mixed (FR-010).
+- Q: A mixed sale reopened after a restart could never be finished — its remainder blocked the close with no way out, because `resumeTargetFor` reconstructs only `delivery`/`counterPickup` and never `mixed`. How should the step recover? → A: The step asks. An explicit secondary "leave the rest at the counter" action appears beside the blocking notice and performs the sweep (FR-037a), and the counter row is now shown whenever a counter-pickup destination actually exists, not only when the mode says mixed (FR-010).
 - Q: Every stepper press fired its own request and inerted the row for the round trip, so a burst of taps felt frozen. Should the writes be debounced? → A: Yes — coalesce a burst into one write of the final value (~400 ms), keep the controls live throughout, and flush anything pending before the card is disposed. FR-025 was rewritten from "disable the row in flight" to this.
+- Q: `FulfillmentMode.mixed` is UI-only state, so a resumed sale cannot tell mixed from delivery. Should mbe-api persist the cashier's intent? → A: Filed as mbe-api#170. Declined at first — the intent gates one decision at one moment, and the step now asks — then **reconsidered and shipped as #171**: `sales_order.fulfillment_intent`, a nullable field on a scale unified with `delivery_order.fulfillment_type`. The client records it alongside `ship_to` and trusts it on resume, falling back to the address heuristic only when it is `null`. The step's "leave the rest at the counter" action (FR-037a) stays regardless: it is what recovers a sale whose intent was never recorded.
 - Q: #163 shipped, but `DeliveryOrderCreate.lines` keeps `min_length=1`, so a destination still cannot be created empty. How should the header-only sheet get its destination? → A: File the follow-up (mbe-api#165) and keep blocking. Deferring creation to the first assignment was rejected: a card with no server record behind it is a state the whole step would have to reason about. **Resolved 2026-08-15** — #165 landed; the sheet creates with an explicit `lines: []`.
 
 ## Overview
@@ -109,13 +110,21 @@ The step order is unchanged: Entrega is the last step and finishing it completes
 the sale, whatever the mock's "Paso 2 de 3" says. The distribution arithmetic,
 the completion gate and the counter sweep are untouched.
 
-**Both API gaps this design needed are closed.**
+**Every API gap this design needed is closed.**
 [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) added a line to a
 destination that already exists, and
 [#165](https://github.com/mictlanix/mbe-api/issues/165) made an explicit
 `lines: []` create a destination carrying nothing — the two things decisions 2
-and 3 required. Both landed on 2026-08-15 and the client is regenerated, so
+and 3 required. [#171](https://github.com/mictlanix/mbe-api/pull/171) then added
+`sales_order.fulfillment_intent`, so the cashier's choice of pickup, delivery or
+mixed is recorded rather than smuggled into `ship_to`, and a resumed sale knows
+which it was. All three landed on 2026-08-15 and the client is regenerated, so
 every requirement below is buildable as written.
+
+#171 also **renumbered** `delivery_order.fulfillment_type` — `0`/`1` used to
+mean delivery/pickup and now mean the reverse, on one scale shared with the new
+intent field — which is a silent-corruption hazard for any client that keeps
+the old mapping ([research R15](./research.md)).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -289,8 +298,14 @@ finish action.
   where the units would go.
 - **A sale with every unit already assigned.** The add action is unavailable and
   says so; freeing units from an existing destination makes it available again.
-- **A pure-delivery sale.** No counter row is shown at any point; an unassigned
-  remainder is an outstanding condition, not a destination.
+- **A pure-delivery sale.** No counter row is shown while nothing has been swept
+  to the counter; an unassigned remainder is an outstanding condition, not a
+  destination. Once the cashier uses the sweep action (FR-037a), the resulting
+  counter-pickup destination does show as the counter row.
+- **A sale resumed with no recorded intent** — captured before mbe-api#171, or
+  by a client that does not set it. The address heuristic decides, so a mixed
+  sale reads as plain delivery and its remainder blocks the close until the
+  cashier uses the sweep action. This is the case FR-037a exists for.
 - **A mixed sale fully assigned to addresses.** The counter row remains, reading
   zero lines and zero units, and the finish action is available.
 - **A resumed sale that already has a counter-pickup destination.** It renders
@@ -300,6 +315,10 @@ finish action.
   badge, counts and lines.
 - **A quantity entered by keyboard rather than stepper.** It is subject to the
   same clamping and the same refusal handling as the stepper.
+- **A destination given a delivery date.** It saves like any other. The date is
+  a calendar day as the cashier picked it, neither shifted by the local UTC
+  offset nor able to fail the request before it is sent
+  ([research R16](./research.md)).
 - **A fractional unit** (a line sold by weight or length). The stepper's step
   does not force the quantity onto whole numbers, and a typed fraction survives.
 - **Two cards expanded at once**, both showing the same sale line. Raising it in
@@ -361,9 +380,11 @@ finish action.
   were recorded, then the add action.
 - **FR-010**: The counter row MUST be shown, always in first position, for a
   mixed sale and for any sale that already has a recorded counter-pickup
-  destination — the latter because `FulfillmentMode.mixed` is UI-only state
-  that a resume cannot reconstruct, so a swept sale reopens looking like plain
-  delivery and would otherwise count those units while hiding them.
+  destination. The second clause is not redundant: a sale captured before
+  mbe-api#171, or by any client that does not record `fulfillment_intent`,
+  resumes with a `null` intent and falls back to the address heuristic, which
+  reads a swept sale as plain delivery — without this clause its counter units
+  would count toward the total while being invisible on screen.
 - **FR-011**: The counter row MUST state its line and unit counts and MUST offer
   no removal action.
 - **FR-012**: Each addressed destination MUST carry a positional index badge
@@ -448,11 +469,14 @@ finish action.
   on a pure-delivery sale, the line naming the outstanding lines and their
   quantities MUST be shown directly above the action; it MUST NOT be shown when
   the action is available.
-- **FR-028a**: While that line is shown, the step MUST offer an explicit,
-  secondary action that sweeps the remainder to the counter and finishes —
-  the cashier answering the question the fulfilment mode cannot answer after a
-  resume. It MUST NOT be the primary action, and MUST disappear the moment
-  nothing is outstanding.
+- **FR-037a**: While that line is shown, the step MUST offer an explicit,
+  secondary action that sweeps the remainder to the counter and finishes — the
+  cashier answering, for a sale whose recorded intent cannot answer it, the
+  question the mode would otherwise settle. Since mbe-api#171 a sale captured
+  with `fulfillment_intent` resumes as `mixed` and never reaches this state;
+  the action remains for the sales that resume with a `null` intent, and for a
+  cashier who changes their mind. It MUST NOT be the primary action, and MUST
+  disappear the moment nothing is outstanding.
 - **FR-038**: The finish action MUST sit directly beneath the assigned-units
   block and MUST be enabled by exactly the condition that governs it today,
   keeping today's in-flight treatment.
@@ -530,8 +554,9 @@ finish action.
   is a coarse but harmless default, because the field remains typable; the plan
   may refine it per unit of measure if driving the real screen shows the need.
 - **Assignment persists per change** rather than being batched behind a save
-  action — the card is not a form and has no submit. Whether identical rapid
-  changes are coalesced before being sent is left to the plan.
+  action — the card is not a form and has no submit. Rapid changes *are*
+  coalesced: settled during implementation as a ~400 ms debounce per line
+  (FR-025), after live driving showed one round trip per press felt frozen.
 - **The counter row's figures come from the distribution the step already
   computes** for a mixed sale with no counter-pickup record yet; nothing is
   created early and no request is issued to draw it.
@@ -540,6 +565,12 @@ finish action.
   is invented.
 - **The mock's palette, font sizes and pixel dimensions are a presentation.**
   They are read as proportions and hierarchy, not as values to reproduce.
+- **A recorded `fulfillment_intent` is trusted over the address.** Since
+  mbe-api#171 the sale carries the cashier's own answer; the `ship_to`
+  heuristic is the fallback for a `null` intent, not a cross-check. The two can
+  legitimately disagree — a mixed sale writes a customer address exactly as a
+  pure-delivery one does — and the recorded answer is the one that means
+  anything.
 - **Nothing about the distribution arithmetic, the completion gate or the sweep
   changes.** They stay exactly where they are.
 
@@ -557,6 +588,15 @@ finish action.
   reaches the requirements: creating an empty destination is refused on a sale
   with nothing left unassigned, which is why FR-016 disables the add action in
   that state.
+- **[mbe-api#171](https://github.com/mictlanix/mbe-api/pull/171) — landed
+  2026-08-15**, resolving [#170](https://github.com/mictlanix/mbe-api/issues/170).
+  Adds `sales_order.fulfillment_intent` (nullable) and unifies the vocabulary
+  onto one `FulfillmentType` — `PICKUP=0, DELIVERY=1, MIXED=2` — serving both
+  that field and `delivery_order.fulfillment_type`. Two consequences reach this
+  feature: the capture step records the intent alongside `ship_to` so a mixed
+  sale survives a resume as itself, and the delivery order's wire numbers are
+  **reversed from what the client previously sent**, which had to be remapped
+  ([research R15](./research.md)).
 - Spec 020 (Point of Sale) — the delivery step, its controller, its distribution
   arithmetic and its completion gate.
 - Spec 022 (Design System Tokens) — the spacing, shape, elevation and type-role

@@ -24,15 +24,17 @@ badge (`D1`, `D2`) that keys its chips in the rail, and expands to show the
 sale's lines with what this destination takes of each. Creating a destination
 moves into a side sheet that asks only where, who, when and any instructions.
 
-**Nothing is blocked any more.** The design needed two things mbe-api did not
-have; both were filed rather than patched from here, and both landed on
+**Nothing is blocked any more.** The design needed three things mbe-api did not
+have; all were filed rather than patched from here, and all landed on
 2026-08-15 with the client regenerated — [#163](https://github.com/mictlanix/mbe-api/issues/163)
-adds a line to a destination that already exists, and
+adds a line to a destination that already exists,
 [#165](https://github.com/mictlanix/mbe-api/issues/165) lets an explicit
-`lines: []` create one that carries nothing ([research R2](./research.md)). The
-phases below are ordered by dependency alone.
+`lines: []` create one that carries nothing, and
+[#171](https://github.com/mictlanix/mbe-api/pull/171) records the cashier's
+fulfilment intent on the sale ([research R2](./research.md)). The phases below
+are ordered by dependency alone.
 
-Four findings are worth reading before implementing. The 1200-px threshold and
+Six findings are worth reading before implementing. The 1200-px threshold and
 the 360-px rail are arithmetic on the real spacing tokens
 ([R1](./research.md)). The stepper must dispatch between three endpoints on
 local state — a duplicate `POST` is a 409, not a fold, and neither `POST` nor
@@ -41,7 +43,12 @@ explicit `lines: []`, because an omitted `lines` claims the entire sale — the
 one mistake in this feature that produces a wrong sale rather than an error
 ([R14](./research.md)). And the stepper's behaviour already exists in this
 codebase: `SaleLineEditing` is the same per-edit-round-trip, revert-on-refusal
-shape, with two deliberate differences ([R6](./research.md)).
+shape, with three deliberate differences ([R6](./research.md)). #171 renumbered
+`delivery_order.fulfillment_type`, which a client that keeps the old mapping
+absorbs silently — no compile error, no test failure, just inverted data
+([R15](./research.md)). And any `DateTime` sent to mbe-api must go through
+`wireDate()`, or it dies in serialization and surfaces as a connectivity error
+([R16](./research.md)).
 
 ## Technical Context
 
@@ -69,11 +76,16 @@ assignment (SC-010)
 surviving widget-test key preserved (FR-042); the distribution arithmetic, the
 completion gate and the counter sweep untouched (FR-001)
 
-**External dependencies**: both **landed 2026-08-15, client regenerated** —
+**External dependencies**: all three **landed 2026-08-15, client regenerated** —
 [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) (`POST
-/api/v1/delivery-orders/{id}/lines`) and
+/api/v1/delivery-orders/{id}/lines`),
 [mbe-api#165](https://github.com/mictlanix/mbe-api/issues/165) (an explicit
-`lines: []` on create). Neither blocks any phase.
+`lines: []` on create) and
+[mbe-api#171](https://github.com/mictlanix/mbe-api/pull/171)
+(`sales_order.fulfillment_intent`, plus a **breaking renumber** of
+`delivery_order.fulfillment_type` — [R15](./research.md)). None blocks any
+phase; #171 arrived after the phases below were written and is absorbed in
+Phase H.
 
 **Scale/Scope**: one step of one screen — five presentation files, two of them
 new, one controller extended, nine localization keys
@@ -104,7 +116,7 @@ presentation layer. No Complexity Tracking entry is required.
 specs/026-pos-delivery-ux/
 ├── plan.md              # This file
 ├── spec.md              # Feature specification
-├── research.md          # Phase 0 output — R1…R13
+├── research.md          # Phase 0 output — R1…R16
 ├── data-model.md        # Phase 1 output — read-only inventory + 3 new methods
 ├── quickstart.md        # Phase 1 output — how to prove it works
 ├── contracts/
@@ -125,11 +137,15 @@ lib/
 ├── features/sales/
 │   ├── domain/entities/
 │   │   ├── line_distribution.dart       # UNTOUCHED (research R9)
-│   │   └── destination.dart             # UNTOUCHED
+│   │   ├── destination.dart             # FulfillmentType renumbered         [edit, H]
+│   │   ├── fulfillment_mode.dart        # + fromApi/toApi, 3 values          [edit, H]
+│   │   └── sale.dart                    # + fulfillmentIntent                [edit, H]
 │   ├── domain/repositories/
-│   │   └── delivery_order_repository.dart # + addLine                        [edit, F]
+│   │   ├── delivery_order_repository.dart # + addLine                        [edit, F]
+│   │   └── sales_order_repository.dart  # updateHeader + fulfillmentIntent    [edit, H]
 │   ├── data/
-│   │   └── delivery_order_repository_impl.dart # + addLine                   [edit, F]
+│   │   ├── delivery_order_repository_impl.dart # + addLine, wireDate on dates [edit, F]
+│   │   └── sales_order_repository_impl.dart # sends fulfillment_intent        [edit, H]
 │   └── presentation/
 │       ├── delivery/
 │       │   ├── delivery_step.dart       # composer: one column or two regions [rewrite]
@@ -138,7 +154,10 @@ lib/
 │       │   ├── line_distribution_panel.dart # table → rail + foot             [rewrite]
 │       │   ├── destination_editor.dart  # inline form → header-only sheet     [rewrite, G]
 │       │   └── delivery_controller.dart # +assignLine/adjustLine/dropLine     [edit, F]
+│       ├── pos_resume_controller.dart  # trusts fulfillmentIntent first      [edit, H]
+│       ├── pos_sale_controller.dart     # threads fulfillmentIntent           [edit, H]
 │       └── capture/
+│           ├── fulfillment_mode_selector.dart # records the intent            [edit, H]
 │           ├── sale_totals_bar.dart     # footer-band treatment               [read]
 │           └── sale_line_editing.dart   # the stepper pattern (research R6)   [read]
 └── l10n/
@@ -215,6 +234,32 @@ sheet ([§6](./contracts/delivery-surface.md)); drop `addDestination`'s
 [quickstart §4.4](./quickstart.md), including the network-panel check that the
 create body carries `"lines": []`.
 
+### Absorbing mbe-api#171
+
+**Phase H — the fulfilment vocabulary.** Landed after the phases above were
+written, and independent of them; do it whenever, but do the renumber before
+anything is driven against a live server.
+
+1. **Remap `FulfillmentType`** (`destination.dart`) to the new scale —
+   `counterPickup(0)`, `delivery(1)` — and add
+   `fulfillment_mapping_test.dart`, asserting against
+   `api.FulfillmentType`'s wire numbers rather than the Dart members
+   ([R15](./research.md)). This is the corruption-risk step: nothing else here
+   fails loudly if it is skipped.
+2. **Give `FulfillmentMode` its API mapping** (`fulfillment_mode.dart`) —
+   three values, `null` preserved as "not recorded", never collapsed to a mode.
+3. **Add `Sale.fulfillmentIntent`** and regenerate freezed; map it in
+   `fromResponse`.
+4. **Thread it through** `SalesOrderRepository.updateHeader` → its impl →
+   `pos_sale_controller.dart` → `fulfillment_mode_selector.dart`, which sends
+   it on the call it already makes for `shipTo` (`data-model §3.1`).
+5. **Trust it on resume** in `pos_resume_controller.dart`, falling back to the
+   `ship_to` heuristic only for a `null` intent, and add the regression test
+   that a `mixed` intent survives.
+6. Fix the two wire-number assertions in
+   `delivery_order_repository_impl_test.dart` — they assert the *integers*, so
+   they are the tests that legitimately change with a renumbering.
+
 ## Risks
 
 | Risk | Mitigation |
@@ -229,6 +274,9 @@ create body carries `"lines": []`.
 | Literal values creep in while chasing the mock's look | SC-008 is a diff-level check; the contract names a token for every element |
 | The create sends an omitted `lines` instead of `[]`, silently claiming the whole sale | The repository already distinguishes null from empty, and the generated serializer emits `[]` for a non-null empty list; the quickstart checks the wire body directly ([R14](./research.md)) |
 | The add action offers itself on a fully-assigned sale and 409s | FR-016 disables it on exactly the condition that opens the finish gate ([R14](./research.md)) |
+| An enum renumber on the API side is absorbed silently — no compile error, no test failure, just inverted data | `fulfillment_mapping_test.dart` asserts against `api.FulfillmentType`'s wire numbers, not the Dart member names, which is the only assertion a renumbering cannot satisfy by accident ([R15](./research.md)) |
+| A `DateTime` reaches a request as local time and dies in serialization, surfacing as a connectivity error | Every date goes through `wireDate()` in the repository, with a real-serialization regression test rather than a mocked one ([R16](./research.md)) |
+| A resumed sale with `null` intent silently reads as delivery and strands a mixed remainder | The sweep action (FR-037a) is the recovery, and stays regardless of #171 |
 
 ## Complexity Tracking
 

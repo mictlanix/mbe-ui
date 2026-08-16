@@ -7,14 +7,18 @@
 **Tests**: Included — FR-042/SC-009 require the existing widget-test keys to
 keep passing, and this feature adds specific guarantees (independent card
 expansion, badge↔chip agreement, clamp-before-send, dispatch correctness) that
-are only checkable with new widget tests. The two mbe-api dependencies this
+are only checkable with new widget tests. The three mbe-api dependencies this
 plan carried ([#163](https://github.com/mictlanix/mbe-api/issues/163),
-[#165](https://github.com/mictlanix/mbe-api/issues/165)) have both landed and
-the client is regenerated — nothing below is blocked.
+[#165](https://github.com/mictlanix/mbe-api/issues/165),
+[#171](https://github.com/mictlanix/mbe-api/pull/171)) have all landed and the
+client is regenerated — nothing below is blocked.
+
+Phase 9 is **retrospective**: work done after T031 in response to live driving
+and to #171 arriving mid-flight.
 
 **Organization**: Tasks are grouped by user story (spec.md priorities), so each
 story is a complete, independently testable increment. Build order follows
-plan.md's dependency chain (A→G) rather than story-number order in places: US2
+plan.md's dependency chain (A→H) rather than story-number order in places: US2
 extends the card US1 builds, and US4's sheet reuses US2's `addLine` dispatch
 groundwork, so both land after US1 even though US2 is also P1.
 
@@ -178,7 +182,8 @@ action without a scroll gesture (spec.md US1).
   the rail's foot pinned; only the destination list and the distribution list
   scroll (FR-007); no `Center`/`contentMaxWidth` clamp (FR-006); keep the
   `ErrorBanner`/load-failure handling exactly as today (FR-008). Destinations
-  region order: counter row (T012, mixed sales only) → cards (T011) → add
+  region order: counter row (T012, mixed sales only — **widened by T036** to
+  any sale with a counter-pickup destination) → cards (T011) → add
   action (key `delivery_add_destination_button`, unchanged label/icon for now)
   → empty state when the list is empty (depends on T011, T012, T013).
 
@@ -413,6 +418,51 @@ correctly with the full feature working at each.
 
 ---
 
+## Phase 9: Live-Driving Fixes and mbe-api#171
+
+**Purpose**: everything found after T031, by driving the real screen and by
+absorbing an API change that landed mid-flight. Not part of the original plan —
+recorded here so the task list matches what was actually built.
+
+Four of these are defects the automated suite could not have caught, for a
+reason worth carrying forward: three were invisible because the widget tests
+mock the repository (so serialization never runs) or assert on *calls* rather
+than on *displayed state*; the fourth was an API renumber that keeps compiling.
+
+- [X] T033 Pass every `DateTime` through `wireDate()` in
+  `lib/features/sales/data/delivery_order_repository_impl.dart` (`create` and
+  `updateHeader`), and add a real-serialization regression test to
+  `test/unit/features/sales/delivery_order_repository_impl_test.dart` — a local
+  `DateTime` throws inside dio and surfaces as `NetworkError`
+  ([research R16](./research.md)). Pre-existing since spec 020.
+- [X] T034 Write the requested value into the stepper's `TextEditingController`
+  in `lib/features/sales/presentation/delivery/destination_card.dart` before
+  sending, mirroring `SaleLineEditing.step()`; assert the controller's *text*
+  in `destination_assignment_test.dart`, not just which method was called
+  ([research R6](./research.md)).
+- [X] T035 Debounce assignment (~400 ms per line) in `destination_card.dart`:
+  a `_pending` value the row renders and clamps against, one write per line in
+  flight, coalescing a mid-flight tap, and a flush on dispose. Keep the
+  out-of-range snap-back. Rewrite FR-025 to match, and add the
+  three-taps-one-request test.
+- [X] T036 Add the sweep escape hatch — `LineDistributionFoot.onSweepAndClose`
+  and `_close(sweepRemainder:)` in `delivery_step.dart`, plus
+  `posDeliverRestAtCounter` in both locales (FR-037a); and show the counter row
+  whenever a counter-pickup destination exists, not only when the mode says
+  mixed (FR-010, [research R4](./research.md)).
+- [X] T037 Absorb mbe-api#171 — plan.md's Phase H, six steps: renumber
+  `FulfillmentType`, give `FulfillmentMode` its API mapping, add
+  `Sale.fulfillmentIntent` (+ freezed), thread it through
+  `updateHeader` → `pos_sale_controller` → `fulfillment_mode_selector`, trust
+  it in `resumeTargetFor`, and fix the two wire-number assertions. New:
+  `test/unit/features/sales/fulfillment_mapping_test.dart`
+  ([research R15](./research.md)).
+
+**Checkpoint**: `flutter analyze` clean, 1822 tests passing. T032 (the live
+width-table walk) remains the only open task.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -536,8 +586,13 @@ US3 and US5 are short passes best picked up by whoever finishes first.
 - Verify each "Tests" task fails before its matching implementation task, where
   both exist.
 - No task in this list touches `line_distribution.dart`'s arithmetic,
-  `isDistributionComplete`, or the counter-pickup sweep — FR-001 keeps those
-  exactly as they are; T016 *moves* the gate's rendering, never its logic.
+  `isDistributionComplete`, or the counter-pickup sweep's *logic* — FR-001
+  keeps those exactly as they are. T016 *moves* the gate's rendering, and T036
+  adds a second caller for the existing sweep; neither changes what either
+  computes.
+- Phase 9 is retrospective: those tasks were done reactively, in response to
+  live driving and to an API change, rather than planned up front. They are
+  listed so the task list is a true record of the work.
 - `lib/core/widgets/catalog_filter_sheet.dart` appears in no implementation
   task's file list on purpose (T024 only *models* its mechanics) — it is read,
   not edited.

@@ -4,9 +4,10 @@
 
 What each region owns, what it renders, and which token every value resolves
 through. Written so a widget test can be read off it. Every section is
-buildable: [#163](https://github.com/mictlanix/mbe-api/issues/163) and
-[#165](https://github.com/mictlanix/mbe-api/issues/165) both landed and the
-client is regenerated ([research R2](./research.md)).
+buildable: [#163](https://github.com/mictlanix/mbe-api/issues/163),
+[#165](https://github.com/mictlanix/mbe-api/issues/165) and
+[#171](https://github.com/mictlanix/mbe-api/pull/171) all landed and the client
+is regenerated ([research R2](./research.md)).
 
 Token access is always `Theme.of(context).spacing` / `.shapes` / `.typeRoles` /
 `.elevations` — no literal colour, spacing, radius or size anywhere (FR-039).
@@ -47,7 +48,7 @@ Invariants:
 
 Vertical list, `spacing.sm` between children, in this order (FR-009):
 
-1. §3 counter row — **mixed sales only**, always first (FR-010)
+1. §3 counter row — always first; shown for a mixed sale **or** for any sale that already has a counter-pickup destination (FR-010)
 2. §4 destination card, one per addressed destination, in recorded order
 3. the add action
 4. the empty state, when there are no destinations at all (FR-017)
@@ -73,9 +74,11 @@ expand affordance and **without a remove action** (FR-011).
 | title | `posCounterPickupRemainder` | `typeRoles.cardTitle` |
 | counts | `posDestinationCounts(lines, units)` | `typeRoles.metricLabel` |
 
-Figures come from the counter-pickup `Destination` when one exists, otherwise
-from the distribution ([research R4](./research.md)). Not rendered at all on a
-pure-delivery sale.
+Figures come from the counter-pickup `Destination` when one exists — whatever
+the sale's mode says — otherwise from the distribution, for a mixed sale only
+([research R4](./research.md)). So a sale that resumed with a `null`
+`fulfillment_intent` and reads as plain delivery still shows its swept counter
+units rather than counting them invisibly.
 
 ---
 
@@ -174,6 +177,11 @@ In order (FR-036 → FR-038):
 2. the outstanding notice — key `delivery_outstanding_notice`,
    `posDeliveryOutstanding(lines)`, `colorScheme.error`; **only** when the
    finish action is disabled on a pure-delivery sale
+2a. the sweep action — key `delivery_sweep_to_counter_button`,
+   `OutlinedButton.icon`, `Icons.store_outlined`, `posDeliverRestAtCounter`;
+   shown **only** while the notice above it is (FR-037a), disabled while a
+   close is in flight. Sweeps the remainder to the counter and finishes.
+   Secondary by construction — the primary action stays the one below it.
 3. the finish action — key `delivery_close_button`, `FilledButton`,
    `posFinishSale`, enabled by `isDistributionComplete(distribution, isMixed:)`
    exactly as today, spinner while closing
