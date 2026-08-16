@@ -1,7 +1,32 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.10.0
+Version change: 1.0.0 → 1.11.0
 Modified principles:
+  - V. Material 3, White-Labeled Design System — materially expanded with
+    three rules [1.11.0]: (a) **one formatting surface** — dates,
+    date-times, currency, percentages and quantities MUST all render through
+    a single shared component in `core/`, driven by app settings plus the
+    active locale, distinguishing read-only display from editable-field
+    formatting, with an automated guard against out-of-band formatters;
+    (b) **two levels of configuration, kept distinct** — deployment
+    configuration resolves once at startup from build-time
+    `--dart-define-from-file=.env` values and is never UI-mutable, while
+    personal display preferences are device-local and never synced through
+    mbe-api; (c) **accessibility text size** — four app-wide levels beside
+    appearance and language on a user settings screen, with the largest
+    level verified against fixed-column-budget screens rather than assumed
+    to fit. Prompted by user-reported formatting drift and by
+    specs/027-app-user-settings' finding that the app had grown three
+    parallel formatting paths — `core/widgets/money_formatters.dart`
+    (hard-coded `$`, `'es_MX'` default, `locale:` threaded per call site),
+    the display helpers in `features/sales/domain/money.dart`
+    (`Decimal.toStringAsFixed`, hand-built `"16.00 %"`), and an inline
+    `DateFormat.yMd()` in
+    `features/catalog/presentation/taxpayer_certificates_section.dart` — so
+    the same kind of value read differently depending on which screen
+    rendered it. Rule (b) widens, rather than contradicts, the existing
+    "Users MUST be able to choose Light/Dark/System, persisted per device"
+    sentence [1.11.0]
   - III. Contract-Driven API Integration — materially expanded with a rule
     on binary file uploads (`multipart/form-data`): the dio generator has
     repeatedly emitted `String`-typed parameters for OpenAPI fields marked
@@ -72,9 +97,32 @@ Modified principles:
     that splitting one continuous task (view → edit → save/delete) across
     two screen regions was itself the friction the v1.8.0 rule hadn't
     addressed; the previously-allowed app-bar delete exception (Users admin
-    screen precedent) is retained verbatim [1.10.0]
-Added sections: none (redefinition of an existing principle's operative
-  rule, not a new principle)
+    screen precedent) is retained verbatim [1.10.0], then further expanded
+    with three structural rules [1.11.0]: (a) **facet filters live behind
+    the shared drawer** — every list screen presents its facets through the
+    badged filters icon button and `showCatalogFilterSheet`, never inline
+    chips/menus/date pickers in the filter row, and a screen whose endpoint
+    has no free-text search omits the search control rather than passing an
+    empty placeholder; (b) **no form stacked above a list** — a list route
+    is a filter row, a list and pagination, with any form moved to its own
+    route or to a dialog/sheet whose launching toolbar action carries the
+    state the inline form used to show; (c) **symmetry and baseline
+    alignment** — vertical padding within a row/card is symmetric, controls
+    sharing a horizontal band share a text baseline, values come from the
+    spec 022 design tokens, and compliance is asserted by widget tests
+    measuring real insets and baselines. Prompted by user-reported feedback
+    on three screens: `pos_sales_list_screen.dart` (inline date-range and
+    status chips where every catalog screen used the drawer),
+    `cash_sessions_screen.dart` (an open-shift form stacked above the
+    history list, plus an empty `search:` placeholder), and the POS sale
+    lines, which read bottom-heavy because the control band sits off the
+    line-total's baseline — an alignment that took many iterations to land
+    the first time (see the derivation comments in
+    `features/sales/presentation/capture/sale_line_layout.dart`), which is
+    why rule (c) requires a measuring test rather than trusting the eye
+    [1.11.0]
+Added sections: none (two existing principles materially expanded, no new
+  principle and no removal)
 Removed sections: none
 Templates requiring updates:
   - .specify/templates/plan-template.md ✅ (Constitution Check gate is
@@ -90,13 +138,25 @@ Templates requiring updates:
     amendment, landing in the same change as the first converted detail
     screen (specs/017-ui-consistency-filters plan.md Phase 3) so no shipped
     screen is ever mid-flight between the two rules.
+  - DESIGN.md §4.3/§4.4/§4.5 ✅ (1.11.0) updated ahead of this amendment,
+    per Governance: §4.3 gained the one-formatting-surface,
+    list-screen-structure and alignment/symmetry notes; §4.4 gained the
+    app-settings vs. user-preferences split and why runtime-parsed config
+    was rejected; §4.5 gained the user settings screen and the text-size
+    constraint. specs/027-app-user-settings is the feature landing the first
+    compliant code — the shared formatting surface, app/user settings, the
+    POS sales list drawer conversion, the cash-sessions shift sheet, and the
+    POS sale-line symmetry fix.
 Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
   updated to "switches|labels" once specs/007-catalog-ui-improvements-2
   shipped the labels-in-place-of-prices change. specs/008-merge-products'
   mbe-api dependency (mictlanix/mbe-api#76, sku on ProductListItem) remains
   open and unaffected by this amendment. specs/017-ui-consistency-filters'
   remaining 17 detail-screen conversions are tracked in that feature's own
-  tasks.md, not here.
+  tasks.md, not here. Likewise, screens still violating the v1.11.0 filter-
+  drawer and formatting rules beyond the two named ones are inventoried in
+  specs/027-app-user-settings' plan for correction when next touched, not
+  tracked here.
 -->
 
 # MBE-UI Constitution
@@ -223,10 +283,58 @@ Cupertino-specific branches.
 - `es-MX` MUST be treated as a first-class locale from the start via
   `flutter_localizations` + `intl` (`.arb` files); currency (MXN) and date
   formatting MUST use `intl`, not manual string formatting.
+- Dates, date-times, currency, percentages and quantities MUST all render
+  through **one** shared formatting surface in `core/`, driven by app
+  settings plus the active locale. Feature modules MUST NOT define their own
+  display formatters, and no screen MAY construct a `DateFormat`/
+  `NumberFormat` or hand-assemble a fixed-decimal or percent string inline.
+  That surface MUST distinguish *read-only display* formatting from
+  *editable-field* formatting — a field the user types into carries no
+  currency symbol and MUST round-trip back to the stored value unchanged —
+  and MUST define one rendering for absent or unparseable input, identical
+  on every screen. Call sites MUST NOT pass the active locale by hand. An
+  automated guard MUST fail when a raw formatting path appears outside the
+  surface, naming the offending call site; the only exemptions are the
+  surface itself, generated code, and request/response encoding (e.g. a
+  date query facet), which are not display paths at all.
+- Deployment configuration and personal preference are two distinct levels
+  and MUST NOT be conflated:
+  - **App settings** (formatting options, default locale, endpoints, brand
+    tokens, POS defaults) MUST resolve once at startup from build-time
+    values supplied via `--dart-define-from-file=.env`, MUST be listed with
+    their defaults in `.env.template`, MUST fall back to a documented
+    default on a malformed or absent value rather than failing startup, and
+    MUST NOT be reachable or mutable from the UI.
+  - **User display preferences** (appearance, text size, language) MUST be
+    device-local via `shared_preferences`, MUST apply immediately with no
+    restart or re-login, and MUST NOT be synced through mbe-api. They are
+    distinct from the server-side `UserSettings` carrying the user's cash
+    drawer and point of sale — operational assignments, not display taste —
+    and naming MUST keep the two distinguishable.
+- The app MUST offer exactly **four** overall text-size levels, applied
+  app-wide, alongside the appearance and language choices on a user settings
+  screen reachable from the user menu. No RBAC gate applies — display
+  preferences are personal and available to every signed-in user. At the
+  largest level, no screen at supported desktop widths MAY clip, overflow or
+  hide content; a screen with a fixed column budget (the POS capture surface
+  above all) MUST be verified at that level, never assumed to absorb it.
 
 **Rationale**: MBE is open source and deployed for multiple customers from
 one codebase — consistent structure with swappable branding avoids
-per-customer forks (DESIGN.md §4.1, §4.4, §4.5).
+per-customer forks (DESIGN.md §4.1, §4.4, §4.5). The single-formatting-surface
+rule was added (v1.11.0) after user-reported drift: the app had grown three
+parallel paths — `core/widgets/money_formatters.dart` with a hard-coded `$`
+and an `'es_MX'` default, the display helpers in
+`features/sales/domain/money.dart` doing `Decimal.toStringAsFixed` and
+hand-building `"16.00 %"`, and an inline `DateFormat.yMd()` in
+`taxpayer_certificates_section.dart` — so the same kind of value read
+differently depending on which screen rendered it. The
+`Localizations.localeOf(context).toString()` boilerplate repeated at every
+call site was itself part of that drift, which is why locale threading is
+banned rather than merely discouraged. Splitting deployment configuration
+from personal preference keeps the white-label seam (§V's whole premise)
+from being blurred by user-facing controls, and keeps a personal taste
+setting from acquiring a backend dependency it does not need.
 
 ### VI. Desktop/Web-First, Compact-Ready Layout
 
@@ -255,6 +363,28 @@ multi-column forms.
   filter controls) using the shared filter pattern from `core/widgets/`. A
   catalog MUST NOT ship search-less, even if pagination alone could make
   it "usable."
+- Those facet filters MUST be presented through the shared badged filters
+  icon button opening the shared filter drawer (`CatalogFilterBar` +
+  `showCatalogFilterSheet`). Facet controls — chips, popup menus, date-range
+  pickers — MUST NOT be placed inline in the filter row, which reserves that
+  row for the search box and the screen's entity actions. Where a screen's
+  endpoint genuinely has no free-text search, the shared filter row MUST
+  omit the search control; a screen MUST NOT pass an empty placeholder
+  widget to reserve space for one that does not exist.
+- A list screen MUST be a filter row, a list, and pagination. A form MUST
+  NOT be embedded above the list on a list route: it belongs on its own
+  route, or in a dialog/sheet launched from a toolbar action in the filter
+  row. When a form moves into such a sheet, the toolbar action that launches
+  it MUST communicate the state the inline form used to show, so that
+  relocating it does not hide state the user relied on seeing at a glance.
+- Within a row or card, vertical padding MUST be symmetric — the space above
+  the content equals the space below it — and controls and text sharing a
+  horizontal band MUST share a text baseline. Padding and margin values MUST
+  come from the shared design tokens (`core/design/spacing.dart`, spec 022),
+  never ad-hoc literals. Because this kind of alignment is hard to eyeball
+  and easy to regress, a screen with a non-trivial control band MUST assert
+  it with widget tests measuring real insets and baselines, not by
+  inspection.
 - Every catalog/list screen's row MUST expose Edit as its primary
   row-level action, using one fixed icon sourced from `core/widgets/`. A
   module MUST NOT invent its own icon for Edit, and MUST NOT render the
@@ -362,7 +492,18 @@ continuous task (view → edit → save/delete) across two screen regions (an
 app-bar icon, then form-body buttons) was itself the friction the v1.8.0 rule
 hadn't addressed. Centralizing all three actions in one component
 (`RecordFormActions`) also means the next such change is a one-file edit
-across all 18 record screens, not an 18-screen edit.
+across all 18 record screens, not an 18-screen edit. The three structural
+rules added in v1.11.0 come from user-reported feedback on specific screens:
+`pos_sales_list_screen.dart` had grown a date-range chip and a status
+popup-menu chip inline while every catalog screen used the drawer;
+`cash_sessions_screen.dart` stacked an open-shift form above its history
+list and passed an empty `search:` placeholder because its endpoint has no
+search parameter; and the POS sale lines read bottom-heavy because the
+control band sits off the line-total's baseline. The measuring-test
+requirement exists because that same band's shared height and baseline took
+many iterations to land the first time — the derivation is recorded in
+`features/sales/presentation/capture/sale_line_layout.dart`, and an
+alignment that expensive to get right must not be left to the eye to keep.
 
 ### VII. Online-Only, Server-Rendered Documents
 
@@ -425,4 +566,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.10.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-07-25
+**Version**: 1.11.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-08-16

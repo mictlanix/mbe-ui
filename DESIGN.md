@@ -443,6 +443,48 @@ The product catalog detail screen (`features/catalog/presentation/product_detail
 is the reference implementation of all three (two-column field grid, section
 dividers, switches|labels two-column band).
 
+**One formatting surface** (specs/027-app-user-settings): dates, date-times,
+currency, percentages and quantities MUST all render through a single shared
+formatting component in `core/`, driven by app settings plus the active
+locale. This is not a style preference — the app had drifted into three
+parallel paths (`core/widgets/money_formatters.dart` with a hard-coded `$` and
+an `'es_MX'` default; the display helpers in
+`features/sales/domain/money.dart` doing `Decimal.toStringAsFixed` and
+hand-building `"16.00 %"`; and `taxpayer_certificates_section.dart` building
+its own `DateFormat.yMd()` inline), so the same kind of value read differently
+depending on which screen rendered it. The surface distinguishes *read-only
+display* formatting from *editable-field* formatting (a field the user types
+into must not carry a `$`, and must round-trip back to the stored value), and
+defines one rendering for absent/unparseable input. Call sites do not pass a
+locale by hand — the repeated
+`Localizations.localeOf(context).toString()` boilerplate was itself a source of
+drift. An automated guard fails when a raw formatter is introduced outside it.
+
+**List-screen structure** (specs/027-app-user-settings): a list screen is a
+filter row, a list, and pagination. Facet filters belong behind the shared
+badged filters button and its right-hand drawer (`CatalogFilterBar` +
+`showCatalogFilterSheet`) — not inline in the filter row as chips, menus or
+date pickers, which is what `pos_sales_list_screen.dart` had grown. A form
+does not belong stacked above a list: `cash_sessions_screen.dart` had an
+open-shift form there, and it moves into a sheet launched from a toolbar
+action, with that action carrying the shift state the inline panel used to
+show. Where a screen's endpoint has no free-text search, the shared filter row
+omits the search control rather than each screen passing an empty placeholder.
+
+**Alignment and symmetry** (specs/027-app-user-settings): within a row or
+card, vertical padding is symmetric — the space above the content equals the
+space below it — and controls sharing a horizontal band share a text baseline.
+Padding and margin values come from the spec 022 design tokens
+(`core/design/spacing.dart`), never ad-hoc literals. The POS sale line is the
+worked example and the cautionary one: it reads bottom-heavy because its
+control band sits off the line-total's baseline, and getting that band's
+several control types to agree on one height *and* one baseline took many
+iterations (see the derivation in
+`features/sales/presentation/capture/sale_line_layout.dart`). Because that
+kind of alignment is hard to eyeball and easy to regress, compliance is
+asserted by widget tests measuring real insets and baselines, the way
+`sale_line_row_test.dart` already pins the line's overflow budget.
+
 ### 4.4 Localization
 
 Mictlanix operates in Mexico — plan for **es-MX** as a first-class locale
@@ -451,11 +493,50 @@ pipeline (`.arb` files) from the start even if English isn't needed
 immediately. Currency/number formatting (MXN) and date formats should use
 `intl` rather than manual string formatting.
 
+**Two levels of configuration** (specs/027-app-user-settings). The app now
+distinguishes them, and they must not be conflated:
+
+- **App settings** are *deployment* configuration — formatting options
+  (currency symbol/code/decimal digits, date, date-time, percentage and
+  quantity patterns), the deployment's default locale, endpoints, brand
+  tokens and POS defaults. They resolve once at startup from build-time
+  values supplied via `--dart-define-from-file=.env`, the mechanism
+  `brand_config.dart`, `dio_client.dart`, `photo_url.dart` and
+  `pos_defaults.dart` already use individually and which this consolidates
+  into one documented place, with `.env.template` as the single source of
+  that documentation. They are never reachable or mutable from the UI, and a
+  malformed or absent value falls back to a documented default rather than
+  breaking startup. Runtime-parsed config files were rejected: they would
+  contradict §4.1's build-time brand rule, ship the file to the browser on
+  web anyway, and add a dependency for no gain in this deployment model.
+- **User display preferences** are *personal* and *device-local* — appearance
+  (Light/Dark/System), one of four overall text-size levels for accessibility,
+  and a language override among the supported locales (or follow-system).
+  They persist via `shared_preferences`, extending the existing
+  `ThemeModeController`, and apply immediately with no restart. They are
+  deliberately **not** synced through mbe-api: `UserSettingsResponse` carries
+  the user's cash drawer and point of sale, which are operational assignments,
+  not display taste — the two must stay distinguishable in naming and in
+  storage. The consequence, accepted: preferences do not follow a user to
+  another machine.
+
+The deployment default applies to any user who has expressed no preference.
+
 ### 4.5 Theming
 
 Light/dark mode support via Material 3's `ColorScheme.fromSeed`, with the
 seed color matching Mictlanix branding. Keep the current scaffold's
 placeholder theme (`Colors.deepPurple` seed) only as a temporary value.
+
+The user's appearance choice, their text-size level and their language
+override are surfaced together on a **user settings screen** reached from the
+user menu (`core/widgets/user_menu_button.dart`), beside the existing
+change-password entry (specs/027-app-user-settings). No RBAC gate applies —
+display preferences are personal, available to every signed-in user. Text size
+is the constraint to watch: it scales the whole app, and screens with a fixed
+column budget (the POS capture surface above all, whose widths were tuned
+against specific text sizes) must be verified at the largest level rather than
+assumed to absorb it.
 
 ---
 
