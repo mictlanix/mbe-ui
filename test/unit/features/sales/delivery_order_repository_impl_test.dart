@@ -130,6 +130,46 @@ void main() {
       expect(destination.shipTo, 77);
     });
 
+    test('a delivery date picked from the calendar reaches the wire — a '
+        'local DateTime must not blow up serialization before the request '
+        'is even sent', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(shipTo: 11)),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      // Exactly what `showDatePicker` hands back: midnight, **local**.
+      // built_value's DateTime serializer throws `ArgumentError` on a
+      // non-UTC value, and dio surfaces that as a response-less
+      // `DioException` — which maps to `NetworkError`, so the cashier sees
+      // "couldn't reach the server" for a request that never left the
+      // client.
+      final picked = DateTime(2026, 8, 17);
+      expect(picked.isUtc, isFalse, reason: 'the fixture must be a local date');
+
+      await repository.create(
+        salesOrder: 42,
+        fulfillmentType: FulfillmentType.delivery,
+        shipTo: 11,
+        date: picked,
+        lines: const [],
+      );
+
+      final post = _decodeBody(requests.single.data);
+      expect(post['date'], isNotNull);
+      expect(
+        post['date'],
+        contains('2026-08-17'),
+        reason: 'the calendar day the cashier picked, not shifted by the '
+            'local UTC offset',
+      );
+    });
+
     test('a refused create leaves nothing behind to roll back', () async {
       final requests = <RequestOptions>[];
       final repository = _repositoryWith((options) async {
