@@ -31,24 +31,30 @@
 
 ## Notes
 
-- Six clarifications were accepted, one more than the standard five. The last
-  two were not in the drafted queue: the requester's correction — that
+- Seven clarifications were accepted, two more than the standard five, and the
+  seventh arrived after planning when mbe-api#163 shipped. The last three were
+  not in the drafted queue: the requester's correction — that
   quantities belong in the destination's own card, which the mock does draw that
   way — opened an area the first draft had closed with FR-013 ("lines inside an
   expanded card MUST be read-only"). That requirement is gone; assignment in the
   card is now the feature's second P1 story.
-- **The feature is blocked, and the spec says so in its Status.** In-card
-  assignment needs a line added to a delivery order that already exists, and
-  mbe-api has no endpoint for it. Verified at the source rather than inferred:
-  `app/api/v1/endpoints/delivery_orders.py` has `PUT`/`DELETE` on
-  `/{delivery_order_id}/lines/{line_id}` and no `POST` counterpart, and
-  `DeliveryOrderCreate.lines` is `Field(default=None, min_length=1)`, so an
-  explicit empty list is refused as well. Filed as mbe-api#163 and recorded as a
-  blocking dependency; FR-003 forbids building a client-side substitute.
-- The dependency is partitioned rather than total: the Dependencies section
-  names the client work that can proceed without it — the two-region layout, the
-  destination grouping, the counter row, the rail, the badges, the pinned foot.
-  Planning can sequence around the block.
+- **No longer blocked.** Both gaps this design needed — adding a line to an
+  existing destination (mbe-api#163) and creating one that carries nothing
+  (#165) — shipped on 2026-08-15 with the client regenerated. Every requirement
+  is buildable as written, and the Status says so.
+- Both gaps were verified against mbe-api's own source rather than inferred from
+  the client, which is what caught the second one: #163's commit touched no
+  schema, so "the endpoint landed" did not mean "the flow is unblocked". The
+  same reading caught two behaviours that would have been bugs — a duplicate
+  `POST` is a 409 rather than a fold, and the "already fully delivered" guard
+  runs before the narrowing step, so an empty create is refused on a
+  fully-assigned sale.
+- That last one is the only requirement the API work changed: FR-016 now
+  disables the add action when nothing is left unassigned, rather than making a
+  request the server would refuse.
+- FR-003 was widened when the deferred-creation alternative came up: it now
+  forbids a card with no server record behind it by name, alongside the
+  placeholder line and the cancel-and-recreate substitutes.
 - Three judgement calls are assumptions rather than requirements, so the plan may
   revise them without touching a requirement: the two-region threshold (1200 px —
   FR-004/FR-005 state *that* the shape changes with width, not at which pixel),

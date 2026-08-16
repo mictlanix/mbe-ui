@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-15
 
-**Status**: Draft — blocked on [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163)
+**Status**: Draft — unblocked; [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) and [#165](https://github.com/mictlanix/mbe-api/issues/165) both landed 2026-08-15
 
 **Input**: User description: "Improve the POS delivery step screen (`lib/features/sales/presentation/delivery/delivery_step.dart` and its widgets `destination_card.dart`, `destination_editor.dart`, `line_distribution_panel.dart`) and make its design more like `artifacts/point_of_sale/POS_Adaptativo.dc.html`. The screen currently works fine; we are aiming to improve its look & feel. From the mockup, ignore the order of the screens — delivery figures there as the second step ("Paso 2 de 3"), but during development we moved it to the last step. Keep the delivery destinations grouped just as shown on the mock, and also keep the items distribution summary panel."
 
@@ -18,6 +18,7 @@
 - Q: At what width should the step switch from one column to two regions? → A: The product's Large tier (1200 px), matching the payment step.
 - Q: What should the side sheet capture? → A: The header only — address, contact, date and instructions. Every quantity is assigned afterwards, inside the destination's own card, as the mock draws it.
 - Q: There is no endpoint to add a line to an existing delivery order, which the header-only flow requires. How should the feature handle it? → A: Block on mbe-api. The gap is filed as mbe-api#163 and recorded here as a blocking external dependency; no client-side workaround is to be built.
+- Q: #163 shipped, but `DeliveryOrderCreate.lines` keeps `min_length=1`, so a destination still cannot be created empty. How should the header-only sheet get its destination? → A: File the follow-up (mbe-api#165) and keep blocking. Deferring creation to the first assignment was rejected: a card with no server record behind it is a state the whole step would have to reason about. **Resolved 2026-08-15** — #165 landed; the sheet creates with an explicit `lines: []`.
 
 ## Overview
 
@@ -106,13 +107,13 @@ The step order is unchanged: Entrega is the last step and finishing it completes
 the sale, whatever the mock's "Paso 2 de 3" says. The distribution arithmetic,
 the completion gate and the counter sweep are untouched.
 
-**This feature cannot ship until [mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163)
-does.** Decisions 2 and 3 require adding a line to a delivery order that already
-exists, and mbe-api has no endpoint for it — `POST /api/v1/delivery-orders`'s
-`lines` is the only way a line is ever created, `PUT`/`DELETE` on
-`/lines/{line_id}` both need a line that already exists, and
-`DeliveryOrderCreate.lines` carries `min_length=1`, so a destination cannot even
-be created empty. The gap is filed; no workaround is to be built around it.
+**Both API gaps this design needed are closed.**
+[mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) added a line to a
+destination that already exists, and
+[#165](https://github.com/mictlanix/mbe-api/issues/165) made an explicit
+`lines: []` create a destination carrying nothing — the two things decisions 2
+and 3 required. Both landed on 2026-08-15 and the client is regenerated, so
+every requirement below is buildable as written.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -284,6 +285,8 @@ finish action.
 - **A sale with no destinations yet.** The list shows its empty state; on a
   mixed sale the counter row is present and holds everything, since that is
   where the units would go.
+- **A sale with every unit already assigned.** The add action is unavailable and
+  says so; freeing units from an existing destination makes it available again.
 - **A pure-delivery sale.** No counter row is shown at any point; an unassigned
   remainder is an outstanding condition, not a destination.
 - **A mixed sale fully assigned to addresses.** The counter row remains, reading
@@ -325,9 +328,10 @@ finish action.
 - **FR-002**: This feature MUST NOT change the step order: Entrega remains the
   last step, and the step's exit action MUST keep its current label and outcome.
 - **FR-003**: Quantity assignment MUST go through the delivery order's own line
-  endpoints, including the add-line endpoint tracked as mbe-api#163. A
-  client-side substitute — cancelling and re-creating a destination to add a
-  line, or creating it with a placeholder line — MUST NOT be built.
+  endpoints — add, update and remove. A client-side substitute for a missing
+  endpoint — cancelling and re-creating a destination to add a line, creating it
+  with a placeholder line, or showing a destination that has no server record
+  behind it — MUST NOT be built.
 
 **The delivery surface**
 
@@ -371,7 +375,9 @@ finish action.
   disabled-while-closing behaviour.
 - **FR-016**: The add action MUST sit at the end of the destination list, styled
   as the mock's full-width dashed affordance, and MUST be unavailable while the
-  add sheet is open or a close is in flight.
+  add sheet is open, while a close is in flight, and when no line has anything
+  left unassigned — in the last case it MUST state why, rather than making a
+  request the server would refuse.
 - **FR-017**: When no destinations exist, the destinations region MUST show its
   empty state.
 
@@ -525,17 +531,18 @@ finish action.
 
 ## Dependencies
 
-- **[mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) — blocking.**
-  `POST /api/v1/delivery-orders/{delivery_order_id}/lines`, to add a line to a
-  delivery order that already exists. Today a line can only be created by the
-  `POST /api/v1/delivery-orders` call that creates the destination; `PUT` and
-  `DELETE` on `/lines/{line_id}` both require a line that already exists, and
-  `DeliveryOrderCreate.lines` carries `min_length=1`, so a destination cannot be
-  created empty either. Decisions 2 and 3 of this spec — header-only creation
-  and in-card assignment — cannot be built until this lands. The client work
-  that does not depend on it (the two-region layout, the destination grouping,
-  the counter row, the rail, the badges, the pinned foot) can proceed
-  independently.
+- **[mbe-api#163](https://github.com/mictlanix/mbe-api/issues/163) — landed
+  2026-08-15.** `POST /api/v1/delivery-orders/{delivery_order_id}/lines`, adding
+  a line to a delivery order that already exists. The client is regenerated.
+  This unblocks in-card assignment (FR-018 → FR-025) in full, including
+  restoring a line dropped to zero.
+- **[mbe-api#165](https://github.com/mictlanix/mbe-api/issues/165) — landed
+  2026-08-15.** An explicit `lines: []` on create now makes a destination that
+  carries nothing, distinct from omitting the field (which still claims
+  everything the sale owes). This unblocks FR-027 and FR-029. One consequence
+  reaches the requirements: creating an empty destination is refused on a sale
+  with nothing left unassigned, which is why FR-016 disables the add action in
+  that state.
 - Spec 020 (Point of Sale) — the delivery step, its controller, its distribution
   arithmetic and its completion gate.
 - Spec 022 (Design System Tokens) — the spacing, shape, elevation and type-role
@@ -579,8 +586,8 @@ finish action.
 - The gate that governs the finish action: `isDistributionComplete` in
   `lib/features/sales/domain/entities/line_distribution.dart`.
 - The repository methods the assignment work uses:
-  `DeliveryOrderRepository.updateLine` and `.removeLine`, plus the add-line
-  method that mbe-api#163 will make possible.
+  `DeliveryOrderRepository.updateLine` and `.removeLine`, plus the `addLine`
+  method to be added over mbe-api#163's endpoint.
 - The token access rule this feature's styling follows:
   `Theme.of(context).spacing` / `.shapes` / `.typeRoles` / `.elevations`.
 - The two-region threshold: `LayoutBreakpoints.large`.

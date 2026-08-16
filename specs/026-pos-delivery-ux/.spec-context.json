@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Point of Sale — Delivery Step Look & Feel",
   "branch": "026-pos-delivery-ux",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,27 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-15T21:24:22.965Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T22:24:19.373Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T22:24:19.431Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-15T22:24:19.485Z"
     }
   ]
 }
