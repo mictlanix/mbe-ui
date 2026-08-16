@@ -70,7 +70,9 @@ void main() {
       final post = _decodeBody(requests.first.data);
       expect(requests.first.method, 'POST');
       expect(post['sales_order'], 42);
-      expect(post['fulfillment_type'], 0);
+      // 1, not 0 — mbe-api#171 renumbered the wire scale (pickup=0,
+      // delivery=1, mixed=2), unifying it with `sales_order.fulfillment_intent`.
+      expect(post['fulfillment_type'], 1);
       expect((post['lines'] as List).single, {
         'sales_order_detail': 1,
         'quantity': '4',
@@ -83,7 +85,7 @@ void main() {
       final repository = _repositoryWith((options) async {
         requests.add(options);
         return ResponseBody.fromString(
-          jsonEncode(_orderJson(fulfillmentType: 1)),
+          jsonEncode(_orderJson(fulfillmentType: 0)),
           201,
           headers: _jsonHeaders,
         );
@@ -96,7 +98,8 @@ void main() {
 
       final post = _decodeBody(requests.single.data);
       expect(post.containsKey('lines'), isFalse);
-      expect(post['fulfillment_type'], 1);
+      // 0, not 1 — see the renumbering note above.
+      expect(post['fulfillment_type'], 0);
     });
 
     test('the header rides along on the same call (mbe-api#146)', () async {

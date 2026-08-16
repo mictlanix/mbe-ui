@@ -27,7 +27,12 @@ mixin _$Sale {
   PaymentTerms get paymentTerms => throw _privateConstructorUsedError;
   Currency get currency => throw _privateConstructorUsedError;
   String get exchangeRate => throw _privateConstructorUsedError;
-  int? get shipTo => throw _privateConstructorUsedError;
+  int? get shipTo =>
+      throw _privateConstructorUsedError; // `null` for a sale predating mbe-api#171 or raised by a client that
+  // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
+  // keeps that distinction rather than guessing). The capture step writes
+  // this via `updateHeader` once the cashier picks a mode.
+  FulfillmentMode? get fulfillmentIntent => throw _privateConstructorUsedError;
   DateTime get promiseDate => throw _privateConstructorUsedError;
   SaleStatus get status => throw _privateConstructorUsedError;
   List<SaleLine> get lines => throw _privateConstructorUsedError;
@@ -59,6 +64,7 @@ abstract class $SaleCopyWith<$Res> {
     Currency currency,
     String exchangeRate,
     int? shipTo,
+    FulfillmentMode? fulfillmentIntent,
     DateTime promiseDate,
     SaleStatus status,
     List<SaleLine> lines,
@@ -95,6 +101,7 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
     Object? currency = null,
     Object? exchangeRate = null,
     Object? shipTo = freezed,
+    Object? fulfillmentIntent = freezed,
     Object? promiseDate = null,
     Object? status = null,
     Object? lines = null,
@@ -149,6 +156,10 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.shipTo
                 : shipTo // ignore: cast_nullable_to_non_nullable
                       as int?,
+            fulfillmentIntent: freezed == fulfillmentIntent
+                ? _value.fulfillmentIntent
+                : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
+                      as FulfillmentMode?,
             promiseDate: null == promiseDate
                 ? _value.promiseDate
                 : promiseDate // ignore: cast_nullable_to_non_nullable
@@ -203,6 +214,7 @@ abstract class _$$SaleImplCopyWith<$Res> implements $SaleCopyWith<$Res> {
     Currency currency,
     String exchangeRate,
     int? shipTo,
+    FulfillmentMode? fulfillmentIntent,
     DateTime promiseDate,
     SaleStatus status,
     List<SaleLine> lines,
@@ -236,6 +248,7 @@ class __$$SaleImplCopyWithImpl<$Res>
     Object? currency = null,
     Object? exchangeRate = null,
     Object? shipTo = freezed,
+    Object? fulfillmentIntent = freezed,
     Object? promiseDate = null,
     Object? status = null,
     Object? lines = null,
@@ -290,6 +303,10 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.shipTo
             : shipTo // ignore: cast_nullable_to_non_nullable
                   as int?,
+        fulfillmentIntent: freezed == fulfillmentIntent
+            ? _value.fulfillmentIntent
+            : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
+                  as FulfillmentMode?,
         promiseDate: null == promiseDate
             ? _value.promiseDate
             : promiseDate // ignore: cast_nullable_to_non_nullable
@@ -338,6 +355,7 @@ class _$SaleImpl extends _Sale {
     required this.currency,
     required this.exchangeRate,
     this.shipTo,
+    this.fulfillmentIntent,
     required this.promiseDate,
     required this.status,
     final List<SaleLine> lines = const <SaleLine>[],
@@ -370,6 +388,12 @@ class _$SaleImpl extends _Sale {
   final String exchangeRate;
   @override
   final int? shipTo;
+  // `null` for a sale predating mbe-api#171 or raised by a client that
+  // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
+  // keeps that distinction rather than guessing). The capture step writes
+  // this via `updateHeader` once the cashier picks a mode.
+  @override
+  final FulfillmentMode? fulfillmentIntent;
   @override
   final DateTime promiseDate;
   @override
@@ -394,7 +418,7 @@ class _$SaleImpl extends _Sale {
 
   @override
   String toString() {
-    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance)';
+    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance)';
   }
 
   @override
@@ -421,6 +445,8 @@ class _$SaleImpl extends _Sale {
             (identical(other.exchangeRate, exchangeRate) ||
                 other.exchangeRate == exchangeRate) &&
             (identical(other.shipTo, shipTo) || other.shipTo == shipTo) &&
+            (identical(other.fulfillmentIntent, fulfillmentIntent) ||
+                other.fulfillmentIntent == fulfillmentIntent) &&
             (identical(other.promiseDate, promiseDate) ||
                 other.promiseDate == promiseDate) &&
             (identical(other.status, status) || other.status == status) &&
@@ -434,7 +460,7 @@ class _$SaleImpl extends _Sale {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     serial,
@@ -447,6 +473,7 @@ class _$SaleImpl extends _Sale {
     currency,
     exchangeRate,
     shipTo,
+    fulfillmentIntent,
     promiseDate,
     status,
     const DeepCollectionEquality().hash(_lines),
@@ -454,7 +481,7 @@ class _$SaleImpl extends _Sale {
     taxTotal,
     total,
     balance,
-  );
+  ]);
 
   /// Create a copy of Sale
   /// with the given fields replaced by the non-null parameter values.
@@ -478,6 +505,7 @@ abstract class _Sale extends Sale {
     required final Currency currency,
     required final String exchangeRate,
     final int? shipTo,
+    final FulfillmentMode? fulfillmentIntent,
     required final DateTime promiseDate,
     required final SaleStatus status,
     final List<SaleLine> lines,
@@ -509,7 +537,12 @@ abstract class _Sale extends Sale {
   @override
   String get exchangeRate;
   @override
-  int? get shipTo;
+  int? get shipTo; // `null` for a sale predating mbe-api#171 or raised by a client that
+  // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
+  // keeps that distinction rather than guessing). The capture step writes
+  // this via `updateHeader` once the cashier picks a mode.
+  @override
+  FulfillmentMode? get fulfillmentIntent;
   @override
   DateTime get promiseDate;
   @override

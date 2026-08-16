@@ -222,6 +222,10 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     });
 
     if (mode == FulfillmentMode.counterPickup) {
+      // No address to name, so no round trip — a `null` `shipTo` already
+      // means counter pickup unambiguously (`FulfillmentModeEncoding`), and
+      // recording `fulfillmentIntent` here would only add a request with
+      // nothing at stake if it fails.
       ref.read(posStepControllerProvider.notifier).setMode(mode);
       return;
     }
@@ -247,9 +251,13 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
 
     setState(() => _busy = true);
     try {
+      // `fulfillmentIntent` rides the same call as `shipTo` — one request,
+      // and the mode now survives a resume as itself rather than being
+      // reconstructed from the address, which cannot tell `delivery` and
+      // `mixed` apart (mbe-api#170/#171).
       await ref
           .read(posSaleControllerProvider.notifier)
-          .updateHeader(shipTo: addressId);
+          .updateHeader(shipTo: addressId, fulfillmentIntent: mode);
       if (mounted) ref.read(posStepControllerProvider.notifier).setMode(mode);
     } on AppError catch (e) {
       setState(() => _error = e);

@@ -1,4 +1,5 @@
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -28,6 +29,11 @@ abstract class SalesOrderRepository {
     int? shipTo,
     int? contact,
     String? customerName,
+    // How the cashier said the goods reach the customer (mbe-api#170/#171) —
+    // the fulfilment step's mode selection writes this in the same call it
+    // already makes to set [shipTo], so a mixed sale survives a resume
+    // instead of being reconstructed from the address alone.
+    FulfillmentMode? fulfillmentIntent,
   });
 
   /// `POST /sales-orders/{id}/lines`. Omit [price] to take the customer's

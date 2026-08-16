@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -60,6 +61,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     int? shipTo,
     int? contact,
     String? customerName,
+    FulfillmentMode? fulfillmentIntent,
   }) async {
     try {
       final response = await _api.updateSalesOrderApiV1SalesOrdersSalesOrderIdPut(
@@ -71,7 +73,8 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
             ..currency = currency == null ? null : currencyToApi(currency)
             ..shipTo = shipTo
             ..contact = contact
-            ..customerName = customerName;
+            ..customerName = customerName
+            ..fulfillmentIntent = fulfillmentIntent?.toApi();
         }),
       );
       final result = response.data;
