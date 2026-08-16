@@ -16,6 +16,11 @@ enum SignOutReason {
   /// Any authenticated request returned `401` (token expired or
   /// `session_version` revoked server-side).
   sessionInvalid,
+
+  /// mbe-api could not be reached, or answered `5xx`. Distinct from
+  /// [invalidCredentials]/[sessionInvalid]: nothing is wrong with the
+  /// credentials or the stored token, so it is *not* discarded.
+  backendUnavailable,
 }
 
 /// Client-side session lifecycle (data-model.md "AuthSession / AuthState",
@@ -25,6 +30,7 @@ enum SignOutReason {
 /// unauthenticated --(submit credentials)--> authenticating
 /// authenticating --(200 + user fetched)--> authenticated
 /// authenticating --(401/422)--> unauthenticated(reason: invalidCredentials)
+/// authenticating --(unreachable/5xx)--> unauthenticated(reason: backendUnavailable)
 /// authenticated --(sign out)--> unauthenticated(reason: signedOut)
 /// authenticated --(any request returns 401)--> unauthenticated(reason: sessionInvalid)
 /// ```

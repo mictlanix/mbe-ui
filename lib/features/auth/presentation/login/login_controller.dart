@@ -48,13 +48,16 @@ class LoginController extends _$LoginController {
         .signIn(username: state.username, password: state.password);
 
     final authState = ref.read(authNotifierProvider).valueOrNull;
-    final invalidCredentials =
-        authState is AuthUnauthenticated &&
-        authState.reason == SignOutReason.invalidCredentials;
+    final reason = authState is AuthUnauthenticated ? authState.reason : null;
 
     state = state.copyWith(
       submitting: false,
-      error: invalidCredentials ? 'Invalid username or password.' : null,
+      error: switch (reason) {
+        SignOutReason.invalidCredentials => 'Invalid username or password.',
+        SignOutReason.backendUnavailable =>
+          'Could not reach the server. Please try again.',
+        _ => null,
+      },
     );
   }
 }

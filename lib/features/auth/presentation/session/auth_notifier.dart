@@ -31,10 +31,16 @@ class AuthNotifier extends _$AuthNotifier {
     try {
       final user = await ref.read(authRepositoryProvider).me();
       return AuthState.authenticated(token: token, user: user);
-    } on AppError {
+    } on AuthError {
       await tokenStorage.clear();
       return const AuthState.unauthenticated(
         reason: SignOutReason.sessionInvalid,
+      );
+    } on AppError {
+      // Unreachable backend or `5xx`: the stored token may still be valid, so
+      // it is kept for the next attempt rather than discarded as invalid.
+      return const AuthState.unauthenticated(
+        reason: SignOutReason.backendUnavailable,
       );
     }
   }
@@ -42,7 +48,10 @@ class AuthNotifier extends _$AuthNotifier {
   /// Submits credentials to `POST /api/v1/auth/login`, then fetches the user
   /// via `GET /api/v1/auth/me` (FR-001). On `401`/`422`, transitions to
   /// `unauthenticated(reason: invalidCredentials)` with FR-008's generic
-  /// error — the caller does not see which field was wrong.
+  /// error — the caller does not see which field was wrong. A backend that
+  /// is unreachable or answers `5xx` is reported as
+  /// `unauthenticated(reason: backendUnavailable)` instead, so the form does
+  /// not blame the credentials for an outage.
   Future<void> signIn({
     required String username,
     required String password,
@@ -59,11 +68,17 @@ class AuthNotifier extends _$AuthNotifier {
       await tokenStorage.write(token);
       final user = await repository.me();
       state = AsyncData(AuthState.authenticated(token: token, user: user));
-    } on AppError {
-      await tokenStorage.clear();
-      state = const AsyncData(
-        AuthState.unauthenticated(reason: SignOutReason.invalidCredentials),
-      );
+    } on AppError catch (error) {
+      if (error is AuthError || error is ValidationError) {
+        await tokenStorage.clear();
+        state = const AsyncData(
+          AuthState.unauthenticated(reason: SignOutReason.invalidCredentials),
+        );
+      } else {
+        state = const AsyncData(
+          AuthState.unauthenticated(reason: SignOutReason.backendUnavailable),
+        );
+      }
     }
   }
 

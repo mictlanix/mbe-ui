@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Wraps `flutter_secure_storage` for the mbe-api access token
@@ -23,5 +24,19 @@ class TokenStorage {
   Future<void> write(String token) =>
       _storage.write(key: _tokenKey, value: token);
 
-  Future<void> clear() => _storage.delete(key: _tokenKey);
+  /// Best-effort: callers clear the token from *within* an error handler
+  /// (`AuthNotifier.build`/`signIn`), so a keychain failure here would replace
+  /// the error being handled and surface instead of it. macOS hits this
+  /// routinely: the plugin's delete always probes the synchronizable
+  /// (iCloud) keychain first, which answers `-34018`
+  /// (`errSecMissingEntitlement`) on locally-signed builds — no `MacOsOptions`
+  /// setting suppresses that probe.
+  Future<void> clear() async {
+    try {
+      await _storage.delete(key: _tokenKey);
+    } on PlatformException {
+      // The token stays behind, but the session is already unauthenticated
+      // in memory and the next successful sign-in overwrites it.
+    }
+  }
 }
