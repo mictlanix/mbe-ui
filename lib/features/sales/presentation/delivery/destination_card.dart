@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
@@ -89,18 +91,43 @@ class _DestinationCardState extends State<DestinationCard> {
   /// same value (FR-020), so both read and write the same controller.
   final Map<int, TextEditingController> _quantityControllers = {};
 
-  /// Sale line ids with a request in flight — their row's controls are
-  /// inert until it settles (FR-025).
-  final Set<int> _busyLines = {};
+  /// Sale line id → the quantity the cashier has stepped to but which has
+  /// not reached the server yet. While an entry exists here it — not
+  /// `perDestination` — is the truth the row renders and clamps against, so
+  /// a burst of taps stays responsive instead of blocking on one round trip
+  /// per press.
+  final Map<int, String> _pending = {};
+
+  /// Sale line id → the timer that will flush [_pending] for it.
+  final Map<int, Timer> _debounce = {};
+
+  /// Sale line ids with a request actually in flight. Deliberately does
+  /// **not** disable the row: the debounce already guarantees there is only
+  /// ever one write per line at a time, and a second tap during a flight is
+  /// coalesced into the next one rather than dropped.
+  final Set<int> _inFlight = {};
 
   /// Sale line id → the server's own refusal message (FR-024).
   final Map<int, String> _lineErrors = {};
+
+  /// Long enough to swallow a burst of taps, short enough that the rail and
+  /// the header still feel like they follow the stepper. Tuned by hand
+  /// against a live register.
+  static const _debounceWindow = Duration(milliseconds: 400);
 
   bool get _interactive =>
       widget.onAssign != null && widget.onAdjust != null && widget.onDrop != null;
 
   @override
   void dispose() {
+    // Fire whatever is still pending before going away — a cashier who taps
+    // + and immediately collapses the card, or leaves the step, must not
+    // silently lose the change. Fire-and-forget: the controller owns the
+    // state, so it lands even though this widget is gone.
+    for (final entry in _debounce.entries) {
+      entry.value.cancel();
+      if (_pending.containsKey(entry.key)) unawaited(_send(entry.key));
+    }
     for (final controller in _quantityControllers.values) {
       controller.dispose();
     }
@@ -121,60 +148,100 @@ class _DestinationCardState extends State<DestinationCard> {
   String _ceilingFor(LineDistribution line) =>
       addAmounts(line.claimable, line.perDestination[widget.destination.id] ?? '0');
 
-  /// Dispatches on whether this destination already carries [line]
-  /// (research R13): `onAssign` the first time, `onAdjust` after,
-  /// `onDrop` at zero — never a second `onAssign`, which the server would
-  /// refuse with a 409.
-  Future<void> _setQuantity(LineDistribution line, String requested) async {
-    final current = line.perDestination[widget.destination.id] ?? '0';
-    if (compareAmounts(requested, current) == 0) return;
+  /// What this row is showing for [line] right now: the value the cashier
+  /// has stepped to if one is still pending, else the server's own.
+  String _displayed(LineDistribution line) =>
+      _pending[line.saleLineId] ?? (line.perDestination[widget.destination.id] ?? '0');
 
+  /// The distribution row for [saleLineId] as of the latest build — the
+  /// closure that scheduled a flush may be holding a stale one.
+  LineDistribution? _lineFor(int saleLineId) {
+    for (final line in widget.distribution) {
+      if (line.saleLineId == saleLineId) return line;
+    }
+    return null;
+  }
+
+  /// Records [requested] locally, moves the field to it immediately, and
+  /// schedules the round trip. Clamped here (FR-021, SC-006), against the
+  /// pending value rather than the server's, so a burst of taps is bounded
+  /// the same way one tap is.
+  void _request(LineDistribution line, String requested) {
     final ceiling = _ceilingFor(line);
     if (compareAmounts(requested, '0') < 0 || compareAmounts(requested, ceiling) > 0) {
-      // Refused client-side, before a request that would only be refused
-      // server-side anyway (FR-021, SC-006).
-      _controllerFor(line.saleLineId, current).text = formatQuantity(current);
+      // Out of range: nothing is sent (SC-006), and a value typed into the
+      // field snaps back to what is actually assigned rather than sitting
+      // there looking accepted.
+      final displayed = _displayed(line);
+      _controllerFor(line.saleLineId, displayed).text = formatQuantity(displayed);
+      return;
+    }
+
+    _controllerFor(line.saleLineId, requested).text = formatQuantity(requested);
+    setState(() {
+      _pending[line.saleLineId] = requested;
+      _lineErrors.remove(line.saleLineId);
+    });
+
+    _debounce[line.saleLineId]?.cancel();
+    _debounce[line.saleLineId] = Timer(_debounceWindow, () {
+      unawaited(_send(line.saleLineId));
+    });
+  }
+
+  /// Sends whatever is pending for [saleLineId], dispatching on whether this
+  /// destination already carries the line (research R13): `onAssign` the
+  /// first time, `onAdjust` after, `onDrop` at zero — never a second
+  /// `onAssign`, which the server refuses with a 409.
+  ///
+  /// One write per line at a time; a tap that lands mid-flight simply leaves
+  /// a newer [_pending] behind, which this re-sends on the way out.
+  Future<void> _send(int saleLineId) async {
+    if (_inFlight.contains(saleLineId)) return;
+    final requested = _pending[saleLineId];
+    if (requested == null) return;
+
+    final line = _lineFor(saleLineId);
+    final server = line?.perDestination[widget.destination.id] ?? '0';
+    if (compareAmounts(requested, server) == 0) {
+      _pending.remove(saleLineId);
       return;
     }
 
     DestinationLine? existingLine;
     for (final destinationLine in widget.destination.lines) {
-      if (destinationLine.salesOrderDetail == line.saleLineId) {
+      if (destinationLine.salesOrderDetail == saleLineId) {
         existingLine = destinationLine;
         break;
       }
     }
 
-    // The field is the one part of this card that does not re-read the
-    // authoritative value on rebuild — it is a controller, seeded once — so
-    // it has to be written here or the stepper's own figure goes stale while
-    // the header, the chips and the rail all move (mirrors
-    // `SaleLineEditing.step()`, which writes its controller before calling
-    // `update`). Reverted below if the server refuses.
-    _controllerFor(line.saleLineId, current).text = formatQuantity(requested);
-
-    setState(() {
-      _busyLines.add(line.saleLineId);
-      _lineErrors.remove(line.saleLineId);
-    });
+    _inFlight.add(saleLineId);
     try {
       if (isZeroAmount(requested)) {
         if (existingLine != null) await widget.onDrop!(lineId: existingLine.id);
       } else if (existingLine != null) {
         await widget.onAdjust!(lineId: existingLine.id, quantity: requested);
       } else {
-        await widget.onAssign!(saleLineId: line.saleLineId, quantity: requested);
+        await widget.onAssign!(saleLineId: saleLineId, quantity: requested);
       }
+      // Only clear the pending value if nothing newer arrived while this was
+      // in flight — otherwise it is the next send's input.
+      if (_pending[saleLineId] == requested) _pending.remove(saleLineId);
     } on AppError catch (e) {
+      _pending.remove(saleLineId);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _lineErrors[line.saleLineId] =
+        _lineErrors[saleLineId] =
             l10n.posDeliveryAssignmentRefused(e.serverMessage ?? l10n.errorServerGeneric);
       });
-      _controllerFor(line.saleLineId, current).text = formatQuantity(current);
+      _controllerFor(saleLineId, server).text = formatQuantity(server);
     } finally {
-      if (mounted) setState(() => _busyLines.remove(line.saleLineId));
+      _inFlight.remove(saleLineId);
+      if (mounted) setState(() {});
+      // A tap that landed mid-flight is still waiting to be sent.
+      if (_pending.containsKey(saleLineId)) unawaited(_send(saleLineId));
     }
   }
 
@@ -337,7 +404,9 @@ class _DestinationCardState extends State<DestinationCard> {
   Widget _assignableRow(BuildContext context, AppLocalizations l10n, LineDistribution line) {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
-    final current = line.perDestination[widget.destination.id] ?? '0';
+    // The pending value while one is in flight, so a second tap steps from
+    // what the cashier can see rather than from the server's older figure.
+    final current = _displayed(line);
     final error = _lineErrors[line.saleLineId];
 
     return Padding(
@@ -389,8 +458,8 @@ class _DestinationCardState extends State<DestinationCard> {
                 key: Key('destination_claim_all_${line.saleLineId}'),
                 tooltip: l10n.posDistributionClaimAll,
                 icon: const Icon(Icons.keyboard_double_arrow_left),
-                onPressed: widget.enabled && !_busyLines.contains(line.saleLineId)
-                    ? () => _setQuantity(line, _ceilingFor(line))
+                onPressed: widget.enabled
+                    ? () => _request(line, _ceilingFor(line))
                     : null,
               ),
               _stepper(context, l10n, line, current),
@@ -414,8 +483,10 @@ class _DestinationCardState extends State<DestinationCard> {
   ) {
     final theme = Theme.of(context);
     final controller = _controllerFor(line.saleLineId, current);
-    final busy = _busyLines.contains(line.saleLineId);
-    final enabled = widget.enabled && !busy;
+    // Deliberately not gated on an in-flight request: the debounce coalesces
+    // a burst into one write, so the controls stay live and the cashier can
+    // keep tapping instead of waiting out a round trip per press.
+    final enabled = widget.enabled;
     final ceiling = _ceilingFor(line);
 
     return Container(
@@ -434,7 +505,7 @@ class _DestinationCardState extends State<DestinationCard> {
             tooltip: l10n.posLineDecreaseQuantity,
             visualDensity: VisualDensity.compact,
             onPressed: enabled && compareAmounts(current, '0') > 0
-                ? () => _setQuantity(line, subtractAmounts(current, '1'))
+                ? () => _request(line, subtractAmounts(current, '1'))
                 : null,
           ),
           SizedBox(
@@ -450,7 +521,7 @@ class _DestinationCardState extends State<DestinationCard> {
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
-              onSubmitted: (value) => _setQuantity(line, value),
+              onSubmitted: (value) => _request(line, value),
             ),
           ),
           IconButton(
@@ -458,7 +529,7 @@ class _DestinationCardState extends State<DestinationCard> {
             tooltip: l10n.posLineIncreaseQuantity,
             visualDensity: VisualDensity.compact,
             onPressed: enabled && compareAmounts(current, ceiling) < 0
-                ? () => _setQuantity(line, addAmounts(current, '1'))
+                ? () => _request(line, addAmounts(current, '1'))
                 : null,
           ),
         ],

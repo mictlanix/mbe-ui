@@ -160,6 +160,146 @@ void main() {
     });
   });
 
+  group("a remainder meant for the counter is never a dead end", () {
+    testWidgets('a sale whose mode came back as plain delivery can still '
+        'sweep the rest to the counter and finish', (tester) async {
+      when(
+        () => deliveryRepository.create(
+          salesOrder: any(named: 'salesOrder'),
+          fulfillmentType: any(named: 'fulfillmentType'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          date: any(named: 'date'),
+          comment: any(named: 'comment'),
+          lines: any(named: 'lines'),
+        ),
+      ).thenAnswer(
+        (_) async => Destination(
+          id: 600,
+          fulfillmentType: FulfillmentType.counterPickup,
+          status: DeliveryOrderStatus.draft,
+        ),
+      );
+      var closed = false;
+
+      // `FulfillmentMode.delivery` is what `resumeTargetFor` reconstructs
+      // for *any* addressed sale — a genuinely mixed one included, since
+      // `mixed` is UI-only state it cannot recover.
+      await pumpPos(
+        tester,
+        DeliveryStep(
+          sale: testSale(lines: [testLine(id: 5, quantity: '10')]),
+          mode: FulfillmentMode.delivery,
+          onClose: () => closed = true,
+        ),
+        overrides: [
+          deliveryOrderRepositoryProvider.overrideWithValue(deliveryRepository),
+          customerRepositoryProvider.overrideWithValue(customerRepository),
+        ],
+      );
+
+      // 6 of 10 unassigned: the close is blocked and says so.
+      expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const Key('delivery_close_button')))
+            .onPressed,
+        isNull,
+      );
+
+      await tester.tap(find.byKey(const Key('delivery_sweep_to_counter_button')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => deliveryRepository.create(
+          salesOrder: any(named: 'salesOrder'),
+          fulfillmentType: FulfillmentType.counterPickup,
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          date: any(named: 'date'),
+          comment: any(named: 'comment'),
+          lines: null,
+        ),
+      ).called(1);
+      expect(closed, isTrue);
+    });
+
+    testWidgets('the sweep action is absent once nothing is outstanding',
+        (tester) async {
+      when(
+        () => deliveryRepository.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer(
+        (_) async => [
+          Destination(
+            id: 500,
+            fulfillmentType: FulfillmentType.delivery,
+            shipTo: 11,
+            addressSummary: 'Av. Reforma 100',
+            status: DeliveryOrderStatus.draft,
+            lines: const [
+              DestinationLine(
+                id: 900,
+                salesOrderDetail: 5,
+                product: 11,
+                productCode: 'P-11',
+                productName: 'Widget',
+                quantity: '10',
+              ),
+            ],
+          ),
+        ],
+      );
+
+      await pumpStep(tester);
+
+      expect(find.byKey(const Key('delivery_outstanding_notice')), findsNothing);
+      expect(find.byKey(const Key('delivery_sweep_to_counter_button')), findsNothing);
+    });
+  });
+
+  group('a recorded counter-pickup destination stays visible', () {
+    testWidgets('a resumed sale shows its counter row even though the mode '
+        'came back as delivery — and offers no way to remove it',
+        (tester) async {
+      when(
+        () => deliveryRepository.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer(
+        (_) async => [
+          _existing(),
+          Destination(
+            id: 600,
+            fulfillmentType: FulfillmentType.counterPickup,
+            status: DeliveryOrderStatus.draft,
+            lines: const [
+              DestinationLine(
+                id: 901,
+                salesOrderDetail: 5,
+                product: 11,
+                productCode: 'P-11',
+                productName: 'Widget',
+                quantity: '6',
+              ),
+            ],
+          ),
+        ],
+      );
+
+      await pumpStep(tester);
+
+      expect(find.byKey(const Key('destination_counter_row')), findsOneWidget);
+      // The addressed destination keeps its delete; the counter never has one.
+      expect(find.byKey(const Key('destination_remove_500')), findsOneWidget);
+      expect(find.byKey(const Key('destination_remove_600')), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('destination_counter_row')),
+          matching: find.byIcon(Icons.delete_outline),
+        ),
+        findsNothing,
+      );
+    });
+  });
+
   group('the close gate', () {
     testWidgets('a pure-delivery sale names what is still unassigned '
         '(FR-035)', (tester) async {

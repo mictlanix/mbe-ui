@@ -5453,6 +5453,12 @@ abstract class AppLocalizations {
   /// **'Nothing left to assign'**
   String get posAddDestinationNothingLeft;
 
+  /// No description provided for @posDeliverRestAtCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the rest at the counter'**
+  String get posDeliverRestAtCounter;
+
   /// No description provided for @posDeliveryDateLabel.
   ///
   /// In en, this message translates to:

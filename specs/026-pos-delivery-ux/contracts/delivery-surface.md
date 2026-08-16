@@ -128,7 +128,11 @@ the ones this destination carries (FR-018).
   rather than sending (FR-021, SC-006).
 - Step is `1`; a typed fraction is preserved (spec Assumptions).
 - At `0` the line is dropped and its units return to the pool (FR-022).
-- While in flight the row's controls are inert (FR-025).
+- A burst of steps is **debounced** into one write of the final value
+  (~400 ms) and the row stays live throughout (FR-025) — the controls are
+  never inerted for a round trip. Only one write per line is in flight at a
+  time; a step landing mid-flight is sent once that one settles, and anything
+  still pending is flushed on dispose.
 - On refusal: message on the row, quantity re-read from `state` (FR-024) —
   the `syncFields()` shape from `SaleLineEditing`. All three refusal paths
   (over-claim, foreign line, already-present) render identically

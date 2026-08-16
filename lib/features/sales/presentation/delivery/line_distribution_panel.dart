@@ -212,6 +212,7 @@ class LineDistributionFoot extends StatelessWidget {
     this.outstandingMessage,
     required this.onClose,
     required this.closing,
+    this.onSweepAndClose,
   });
 
   final String assigned;
@@ -224,6 +225,18 @@ class LineDistributionFoot extends StatelessWidget {
   /// `null` disables the button.
   final VoidCallback? onClose;
   final bool closing;
+
+  /// Sweeps whatever is unassigned to the counter and finishes, offered only
+  /// while [outstandingMessage] is blocking the close.
+  ///
+  /// Without it a sale whose remainder is *meant* for the counter is a dead
+  /// end: `FulfillmentMode.mixed` is UI-only state that `resumeTargetFor`
+  /// cannot reconstruct (it answers `delivery` or `counterPickup` only), so
+  /// any resumed mixed sale comes back looking pure-delivery and its
+  /// remainder blocks the close forever. Asking here is what
+  /// `fulfillment_mode.dart` means by "the delivery step itself asks about
+  /// rather than inferring".
+  final VoidCallback? onSweepAndClose;
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +268,19 @@ class LineDistributionFoot extends StatelessWidget {
               outstandingMessage!,
               style: TextStyle(color: theme.colorScheme.error),
             ),
+            if (onSweepAndClose != null) ...[
+              SizedBox(height: spacing.xs),
+              // Secondary, and only ever shown beside the reason the close is
+              // blocked, so the remainder still has to be a deliberate
+              // decision rather than something the primary button does
+              // quietly.
+              OutlinedButton.icon(
+                key: const Key('delivery_sweep_to_counter_button'),
+                onPressed: closing ? null : onSweepAndClose,
+                icon: const Icon(Icons.store_outlined),
+                label: Text(l10n.posDeliverRestAtCounter),
+              ),
+            ],
           ],
           SizedBox(height: spacing.sm),
           FilledButton(

@@ -2098,6 +2098,8 @@
   "@posDeliveryAssignmentRefused": {"placeholders": {"reason": {"type": "String"}}},
   "posAddDestinationNothingLeft": "Nothing left to assign",
   "@posAddDestinationNothingLeft": {},
+  "posDeliverRestAtCounter": "Leave the rest at the counter",
+  "@posDeliverRestAtCounter": {},
   "posDeliveryDateLabel": "Delivery date",
   "@posDeliveryDateLabel": {},
   "posDeliveryInstructions": "Delivery instructions",

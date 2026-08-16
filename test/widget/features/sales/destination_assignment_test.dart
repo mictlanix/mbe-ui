@@ -300,6 +300,81 @@ void main() {
     });
   });
 
+  group('a burst of taps is coalesced into one write', () {
+    testWidgets('three rapid + taps send a single request for the final '
+        'value, and the field tracks every tap', (tester) async {
+      when(
+        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer(
+        (_) async => [
+          existingDestination(
+            lines: const [
+              DestinationLine(
+                id: 900,
+                salesOrderDetail: 5,
+                product: 11,
+                productCode: 'P-11',
+                productName: 'Widget',
+                quantity: '4',
+              ),
+            ],
+          ),
+        ],
+      );
+      when(
+        () => deliveries.updateLine(
+          destinationId: any(named: 'destinationId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+        ),
+      ).thenAnswer(
+        (_) async => updatedWith([
+          const DestinationLine(
+            id: 900,
+            salesOrderDetail: 5,
+            product: 11,
+            productCode: 'P-11',
+            productName: 'Widget',
+            quantity: '7',
+          ),
+        ]),
+      );
+
+      await pumpStep(tester);
+      await expand(tester);
+
+      final plus = find.byIcon(Icons.add).first;
+      await tester.tap(plus);
+      await tester.pump();
+      await tester.tap(plus);
+      await tester.pump();
+      await tester.tap(plus);
+      await tester.pump();
+
+      // Every tap is already on screen, before any request goes out.
+      expect(
+        tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+        '7',
+        reason: 'the field must not wait for the network',
+      );
+      verifyNever(
+        () => deliveries.updateLine(
+          destinationId: any(named: 'destinationId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+        ),
+      );
+
+      // Let the debounce window elapse.
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '7'),
+      ).called(1);
+    });
+  });
+
   group('the client-side clamp sends nothing out of range (FR-021, SC-006)', () {
     testWidgets('typing more than the sale still owes sends no request',
         (tester) async {

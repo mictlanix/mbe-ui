@@ -2924,6 +2924,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posAddDestinationNothingLeft => 'Nothing left to assign';
 
   @override
+  String get posDeliverRestAtCounter => 'Leave the rest at the counter';
+
+  @override
   String get posDeliveryDateLabel => 'Delivery date';
 
   @override

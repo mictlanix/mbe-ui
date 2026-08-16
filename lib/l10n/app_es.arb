@@ -947,6 +947,7 @@
   "posDestinationCounterChip": "Tienda {units}",
   "posDeliveryAssignmentRefused": "No se pudo asignar: {reason}",
   "posAddDestinationNothingLeft": "No queda nada por asignar",
+  "posDeliverRestAtCounter": "Entregar el resto en tienda",
   "posDeliveryDateLabel": "Fecha de entrega",
   "posDeliveryInstructions": "Instrucciones de entrega",
   "posAddDestination": "Agregar destino",

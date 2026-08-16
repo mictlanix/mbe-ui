@@ -62,15 +62,24 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
 
   bool get _isMixed => widget.mode == FulfillmentMode.mixed;
 
-  Future<void> _close(List<LineDistribution> distribution) async {
+  /// [sweepRemainder] forces the counter sweep for a sale whose mode says
+  /// pure delivery — the cashier answering, at the step, the question
+  /// `FulfillmentMode.mixed` cannot answer after a resume (it is UI-only
+  /// state; `resumeTargetFor` reconstructs only `delivery`/`counterPickup`).
+  Future<void> _close(
+    List<LineDistribution> distribution, {
+    bool sweepRemainder = false,
+  }) async {
     setState(() {
       _closing = true;
       _error = null;
     });
     try {
-      // FR-036: only mixed sweeps, and only when something is actually left.
+      // FR-036: sweep only when something is actually left, and only when
+      // this sale's remainder is meant for the counter — either because the
+      // mode says so, or because the cashier just said so.
       final hasRemainder = distribution.any((d) => !d.isFullyDistributed);
-      if (_isMixed && hasRemainder) {
+      if ((_isMixed || sweepRemainder) && hasRemainder) {
         await ref
             .read(deliveryControllerProvider(widget.sale).notifier)
             .sweepRemainderToCounter();
@@ -334,6 +343,9 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                             ? () => _close(distribution)
                             : null,
                         closing: _closing,
+                        onSweepAndClose: outstandingMessage == null
+                            ? null
+                            : () => _close(distribution, sweepRemainder: true),
                       ),
                     ],
                   ),
@@ -373,6 +385,9 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
               outstandingMessage: outstandingMessage,
               onClose: (complete && !_closing) ? () => _close(distribution) : null,
               closing: _closing,
+              onSweepAndClose: outstandingMessage == null
+                  ? null
+                  : () => _close(distribution, sweepRemainder: true),
             ),
           ],
         );
@@ -398,7 +413,14 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
     final spacing = Theme.of(context).spacing;
 
     return [
-      if (_isMixed) ...[
+      // Mixed previews where the remainder will go; **any** sale shows a
+      // counter-pickup destination that actually exists, which is the case a
+      // resumed sale lands in — its mode comes back as plain `delivery`
+      // (research R4's "one widget, two sources"), and without this its
+      // units counted toward the total while being invisible on screen.
+      // It never carries a removal action: it is the sweep, not a
+      // destination the cashier composed (FR-011).
+      if (_isMixed || counterDestination != null) ...[
         DestinationCounterRow(
           counterDestination: counterDestination,
           distribution: distribution,

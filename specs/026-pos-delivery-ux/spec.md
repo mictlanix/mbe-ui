@@ -18,6 +18,8 @@
 - Q: At what width should the step switch from one column to two regions? → A: The product's Large tier (1200 px), matching the payment step.
 - Q: What should the side sheet capture? → A: The header only — address, contact, date and instructions. Every quantity is assigned afterwards, inside the destination's own card, as the mock draws it.
 - Q: There is no endpoint to add a line to an existing delivery order, which the header-only flow requires. How should the feature handle it? → A: Block on mbe-api. The gap is filed as mbe-api#163 and recorded here as a blocking external dependency; no client-side workaround is to be built.
+- Q: A mixed sale reopened after a restart could never be finished — its remainder blocked the close with no way out, because `resumeTargetFor` reconstructs only `delivery`/`counterPickup` and never `mixed`. How should the step recover? → A: The step asks. An explicit secondary "leave the rest at the counter" action appears beside the blocking notice and performs the sweep (FR-028a), and the counter row is now shown whenever a counter-pickup destination actually exists, not only when the mode says mixed (FR-010).
+- Q: Every stepper press fired its own request and inerted the row for the round trip, so a burst of taps felt frozen. Should the writes be debounced? → A: Yes — coalesce a burst into one write of the final value (~400 ms), keep the controls live throughout, and flush anything pending before the card is disposed. FR-025 was rewritten from "disable the row in flight" to this.
 - Q: #163 shipped, but `DeliveryOrderCreate.lines` keeps `min_length=1`, so a destination still cannot be created empty. How should the header-only sheet get its destination? → A: File the follow-up (mbe-api#165) and keep blocking. Deferring creation to the first assignment was rejected: a card with no server record behind it is a state the whole step would have to reason about. **Resolved 2026-08-15** — #165 landed; the sheet creates with an explicit `lines: []`.
 
 ## Overview
@@ -357,9 +359,11 @@ finish action.
 - **FR-009**: The destinations MUST be grouped as the mock groups them: the
   counter row first, then one card per addressed destination in the order they
   were recorded, then the add action.
-- **FR-010**: The counter row MUST be shown for a mixed sale and only for a
-  mixed sale, always in first position, whether it represents a recorded
-  counter-pickup destination or the remainder that will become one on close.
+- **FR-010**: The counter row MUST be shown, always in first position, for a
+  mixed sale and for any sale that already has a recorded counter-pickup
+  destination — the latter because `FulfillmentMode.mixed` is UI-only state
+  that a resume cannot reconstruct, so a swept sale reopens looking like plain
+  delivery and would otherwise count those units while hiding them.
 - **FR-011**: The counter row MUST state its line and unit counts and MUST offer
   no removal action.
 - **FR-012**: Each addressed destination MUST carry a positional index badge
@@ -401,8 +405,13 @@ finish action.
   which sets a line to everything the sale still owes for it.
 - **FR-024**: A refused assignment MUST be reported on the offending line, and
   the displayed quantity MUST return to the value the server still holds.
-- **FR-025**: While an assignment is in flight, that line's controls MUST show
-  it and MUST NOT accept a second conflicting change.
+- **FR-025**: A line's controls MUST stay responsive while an assignment is in
+  flight — a burst of steps MUST be coalesced into a single write of the final
+  value rather than one round trip per press, and the row MUST show each step
+  immediately. Two conflicting writes for the same line MUST NOT be in flight
+  at once; a step that lands mid-flight is sent after the one before it
+  settles. Whatever is still pending MUST be sent before the card goes away,
+  so a step followed immediately by leaving the step is not silently lost.
 
 **The add sheet**
 
@@ -439,6 +448,11 @@ finish action.
   on a pure-delivery sale, the line naming the outstanding lines and their
   quantities MUST be shown directly above the action; it MUST NOT be shown when
   the action is available.
+- **FR-028a**: While that line is shown, the step MUST offer an explicit,
+  secondary action that sweeps the remainder to the counter and finishes —
+  the cashier answering the question the fulfilment mode cannot answer after a
+  resume. It MUST NOT be the primary action, and MUST disappear the moment
+  nothing is outstanding.
 - **FR-038**: The finish action MUST sit directly beneath the assigned-units
   block and MUST be enabled by exactly the condition that governs it today,
   keeping today's in-flight treatment.
