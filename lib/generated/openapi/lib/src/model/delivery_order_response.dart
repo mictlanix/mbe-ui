@@ -66,7 +66,7 @@ abstract class DeliveryOrderResponse
 
   @BuiltValueField(wireName: r'fulfillment_type')
   FulfillmentType get fulfillmentType;
-  // enum fulfillmentTypeEnum {  0,  1,  };
+  // enum fulfillmentTypeEnum {  0,  1,  2,  };
 
   @BuiltValueField(wireName: r'parent_delivery_order')
   int? get parentDeliveryOrder;

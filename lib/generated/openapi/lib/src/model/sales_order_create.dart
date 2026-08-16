@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/payment_terms.dart';
 import 'package:mbe_api_client/src/model/priority.dart';
+import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/currency_code.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -27,6 +28,7 @@ part 'sales_order_create.g.dart';
 /// * [customerName]
 /// * [priority]
 /// * [comment]
+/// * [fulfillmentIntent]
 @BuiltValue()
 abstract class SalesOrderCreate
     implements Built<SalesOrderCreate, SalesOrderCreateBuilder> {
@@ -71,6 +73,10 @@ abstract class SalesOrderCreate
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
+
+  @BuiltValueField(wireName: r'fulfillment_intent')
+  FulfillmentType? get fulfillmentIntent;
+  // enum fulfillmentIntentEnum {  0,  1,  2,  };
 
   SalesOrderCreate._();
 
@@ -188,6 +194,13 @@ class _$SalesOrderCreateSerializer
       yield serializers.serialize(
         object.comment,
         specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.fulfillmentIntent != null) {
+      yield r'fulfillment_intent';
+      yield serializers.serialize(
+        object.fulfillmentIntent,
+        specifiedType: const FullType.nullable(FulfillmentType),
       );
     }
   }
@@ -345,6 +358,16 @@ class _$SalesOrderCreateSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'fulfillment_intent':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(FulfillmentType),
+                  )
+                  as FulfillmentType?;
+          if (valueDes == null) continue;
+          result.fulfillmentIntent = valueDes;
           break;
         default:
           unhandled.add(key);
