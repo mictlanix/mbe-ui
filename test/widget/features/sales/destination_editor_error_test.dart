@@ -98,8 +98,9 @@ void main() {
   }
 
   group('a destination the server refuses (FR-037)', () {
-    testWidgets('shows the server\'s own message inline and leaves every '
-        'already-created destination untouched', (tester) async {
+    testWidgets('shows the server\'s own message inline, inside the sheet, '
+        'and leaves every already-created destination untouched',
+        (tester) async {
       when(
         () => deliveryRepository.create(
           salesOrder: any(named: 'salesOrder'),
@@ -112,8 +113,8 @@ void main() {
         ),
       ).thenThrow(
         const AppError.server(
-          statusCode: 422,
-          message: 'Widget: only 6 remain undelivered',
+          statusCode: 409,
+          message: 'La dirección no pertenece al cliente',
         ),
       );
 
@@ -122,65 +123,40 @@ void main() {
       // The already-created destination is on screen before we try.
       expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
 
+      // Opens as a sheet (contract §6) rather than replacing the list.
       await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
       await tester.pumpAndSettle();
+      expect(find.byKey(const Key('destination_editor')), findsOneWidget);
+      // The already-recorded destination stays reachable behind the sheet.
+      expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
 
-      // Compose a destination that over-claims.
       await tester.tap(find.byKey(const Key('destination_address_button')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('address_option_11')));
-      await tester.pumpAndSettle();
-      await tester.enterText(
-        find.byKey(const Key('destination_quantity_5')),
-        '6',
-      );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('destination_save_button')));
       await tester.pumpAndSettle();
 
-      // The server's own wording, in place, on the still-open editor.
+      // The server's own wording, in place, on the still-open sheet — no
+      // quantity to send, so the create carries an explicit empty `lines`
+      // (research R14).
       expect(find.byKey(const Key('destination_editor')), findsOneWidget);
       expect(find.byKey(const Key('destination_editor_error')), findsOneWidget);
-      expect(find.textContaining('only 6 remain undelivered'), findsOneWidget);
-
-      // And nothing already recorded was disturbed.
-      expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
-    });
-
-    testWidgets('a client-side over-claim is caught before the round trip', (
-      tester,
-    ) async {
-      await pumpStep(tester);
-
-      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('destination_address_button')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('address_option_11')));
-      await tester.pumpAndSettle();
-
-      // Only 6 remain; claim 7.
-      await tester.enterText(
-        find.byKey(const Key('destination_quantity_5')),
-        '7',
-      );
-      await tester.pumpAndSettle();
-
-      final save = tester.widget<FilledButton>(
-        find.byKey(const Key('destination_save_button')),
-      );
-      expect(save.onPressed, isNull, reason: 'over-claim must not be sendable');
-      verifyNever(
+      expect(find.textContaining('La dirección no pertenece'), findsOneWidget);
+      verify(
         () => deliveryRepository.create(
           salesOrder: any(named: 'salesOrder'),
           fulfillmentType: any(named: 'fulfillmentType'),
-          shipTo: any(named: 'shipTo'),
+          shipTo: 11,
           contact: any(named: 'contact'),
           date: any(named: 'date'),
           comment: any(named: 'comment'),
-          lines: any(named: 'lines'),
+          lines: const [],
         ),
-      );
+      ).called(1);
+
+      // And nothing already recorded was disturbed.
+      expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
     });
   });
 

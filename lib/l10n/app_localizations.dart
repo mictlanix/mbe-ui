@@ -5399,6 +5399,60 @@ abstract class AppLocalizations {
   /// **'Take everything left'**
   String get posDistributionClaimAll;
 
+  /// No description provided for @posDestinationBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'D{ordinal}'**
+  String posDestinationBadge(int ordinal);
+
+  /// No description provided for @posDeliveryDestinationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery destinations'**
+  String get posDeliveryDestinationsTitle;
+
+  /// No description provided for @posDistributionRailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{lines} lines · {destinations} destinations'**
+  String posDistributionRailSubtitle(int lines, int destinations);
+
+  /// No description provided for @posDeliveryAssignedUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'{assigned} / {total} units assigned'**
+  String posDeliveryAssignedUnits(String assigned, String total);
+
+  /// No description provided for @posDestinationLinesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity to deliver from this destination'**
+  String get posDestinationLinesTitle;
+
+  /// No description provided for @posAddDestinationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery details'**
+  String get posAddDestinationSheetTitle;
+
+  /// No description provided for @posDestinationCounterChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter {units}'**
+  String posDestinationCounterChip(String units);
+
+  /// No description provided for @posDeliveryAssignmentRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t assign: {reason}'**
+  String posDeliveryAssignmentRefused(String reason);
+
+  /// No description provided for @posAddDestinationNothingLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to assign'**
+  String get posAddDestinationNothingLeft;
+
   /// No description provided for @posDeliveryDateLabel.
   ///
   /// In en, this message translates to:
@@ -5410,12 +5464,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delivery instructions'**
   String get posDeliveryInstructions;
-
-  /// No description provided for @posDestinationQuantitiesTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Quantities for this destination'**
-  String get posDestinationQuantitiesTitle;
 
   /// No description provided for @posAddDestination.
   ///

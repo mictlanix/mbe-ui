@@ -42,6 +42,17 @@ abstract class DeliveryOrderRepository {
     String? comment,
   });
 
+  /// `POST /delivery-orders/{id}/lines` — add one of the sale's lines to a
+  /// destination that already exists (mbe-api#163). Refused with a 409 if
+  /// [destinationId] already carries [salesOrderDetail] — the caller's
+  /// [updateLine] is the way to change an amount already there, not a second
+  /// `addLine`.
+  Future<Destination> addLine({
+    required int destinationId,
+    required int salesOrderDetail,
+    required String quantity,
+  });
+
   /// `PUT /delivery-orders/{id}/lines/{lineId}` — adjust an already-created
   /// destination's line.
   Future<Destination> updateLine({

@@ -2930,13 +2930,47 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posDistributionClaimAll => 'Tomar todo lo disponible';
 
   @override
+  String posDestinationBadge(int ordinal) {
+    return 'D$ordinal';
+  }
+
+  @override
+  String get posDeliveryDestinationsTitle => 'Destinos de entrega';
+
+  @override
+  String posDistributionRailSubtitle(int lines, int destinations) {
+    return '$lines líneas · $destinations destinos';
+  }
+
+  @override
+  String posDeliveryAssignedUnits(String assigned, String total) {
+    return '$assigned / $total unidades asignadas';
+  }
+
+  @override
+  String get posDestinationLinesTitle => 'Cantidad a entregar en este destino';
+
+  @override
+  String get posAddDestinationSheetTitle => 'Datos de entrega';
+
+  @override
+  String posDestinationCounterChip(String units) {
+    return 'Tienda $units';
+  }
+
+  @override
+  String posDeliveryAssignmentRefused(String reason) {
+    return 'No se pudo asignar: $reason';
+  }
+
+  @override
+  String get posAddDestinationNothingLeft => 'No queda nada por asignar';
+
+  @override
   String get posDeliveryDateLabel => 'Fecha de entrega';
 
   @override
   String get posDeliveryInstructions => 'Instrucciones de entrega';
-
-  @override
-  String get posDestinationQuantitiesTitle => 'Cantidades para este destino';
 
   @override
   String get posAddDestination => 'Agregar destino';

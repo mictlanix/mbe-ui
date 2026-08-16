@@ -99,6 +99,29 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
   }
 
   @override
+  Future<Destination> addLine({
+    required int destinationId,
+    required int salesOrderDetail,
+    required String quantity,
+  }) async {
+    try {
+      final response = await _api
+          .addDeliveryOrderLineApiV1DeliveryOrdersDeliveryOrderIdLinesPost(
+            deliveryOrderId: destinationId,
+            deliveryOrderLineRequest: api.DeliveryOrderLineRequest((b) {
+              b.salesOrderDetail = salesOrderDetail;
+              _setQuantity1(b.quantity, quantity);
+            }),
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return Destination.fromResponse(result);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
   Future<Destination> updateLine({
     required int destinationId,
     required int lineId,

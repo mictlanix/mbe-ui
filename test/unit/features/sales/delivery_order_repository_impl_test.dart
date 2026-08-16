@@ -158,6 +158,64 @@ void main() {
     });
   });
 
+  group('addLine — assigning a line to an existing destination (mbe-api#163)', () {
+    test('posts the line and returns the updated destination', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(lines: [_lineJson(salesOrderDetail: 5, quantity: '6')])),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final destination = await repository.addLine(
+        destinationId: 500,
+        salesOrderDetail: 5,
+        quantity: '6',
+      );
+
+      final request = requests.single;
+      expect(request.method, 'POST');
+      expect(request.path, endsWith('/delivery-orders/500/lines'));
+      expect(_decodeBody(request.data), {'sales_order_detail': 5, 'quantity': '6'});
+      expect(destination.lines.single.quantity, '6');
+    });
+
+    test('a sale line already on this destination is refused with 409, not '
+        'folded into the existing row', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Line 5 is already on this delivery order as line 900'}),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.addLine(destinationId: 500, salesOrderDetail: 5, quantity: '2'),
+        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+      );
+    });
+
+    test('an over-claim or an unknown/foreign line is refused with 422',
+        () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'The sales order line has 2 left to deliver; 6 was requested'}),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.addLine(destinationId: 500, salesOrderDetail: 5, quantity: '6'),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+  });
+
   group('listForSale — filtered by the sale (mbe-api#147)', () {
     test('asks the server for this sale\'s delivery orders and reads each '
         'back in full, because the summary carries no lines', () async {

@@ -36,7 +36,7 @@ Single Flutter project. `lib/` for source, `test/` for tests — no `src/`/
 **Purpose**: The nine new labels and one removal every later widget references,
 built and verified in isolation before any presentation file consumes them.
 
-- [ ] T001 [P] Add eight of the nine new keys from
+- [X] T001 [P] Add eight of the nine new keys from
   [research.md §R11](./research.md#r11--localization-inventory) to
   `lib/l10n/app_es.arb`: `posDestinationBadge`, `posDeliveryDestinationsTitle`,
   `posDistributionRailSubtitle`, `posDeliveryAssignedUnits`,
@@ -45,14 +45,14 @@ built and verified in isolation before any presentation file consumes them.
   `posDestinationQuantitiesTitle` (line 943) and `posAddDestinationNothingLeft`
   in place for now — the former is removed in T030 once nothing references it,
   the latter is added in T002 alongside its English pair for FR-016.
-- [ ] T002 [P] Add the same eight keys plus `posAddDestinationNothingLeft` (the
+- [X] T002 [P] Add the same eight keys plus `posAddDestinationNothingLeft` (the
   ninth, FR-016/R14's disabled-add reason) to `lib/l10n/app_en.arb`, matching
   the `@key: {}`/placeholder metadata pattern already used by neighbouring
   entries (e.g. `posDestinationCounts`'s `{lines}`/`{units}` placeholders).
-- [ ] T003 Also add `posAddDestinationNothingLeft` to `lib/l10n/app_es.arb`
+- [X] T003 Also add `posAddDestinationNothingLeft` to `lib/l10n/app_es.arb`
   (kept separate from T001 since it was decided later, per R14) — do this
   before T004 so both locales gain it together.
-- [ ] T004 Run `flutter gen-l10n` and confirm
+- [X] T004 Run `flutter gen-l10n` and confirm
   `test/unit/core/l10n_parity_test.dart` passes with all nine new keys present
   in both locales (depends on T001–T003).
 
@@ -73,16 +73,16 @@ from the endpoint's name alone.
 **⚠️ CRITICAL**: T005–T007 must land before any US2 task that calls `addLine`.
 US1, US3 and US5 do not touch these files and are not blocked by this phase.
 
-- [ ] T005 Add `Future<Destination> addLine({required int destinationId, required int salesLineId, required String quantity})`
+- [X] T005 Add `Future<Destination> addLine({required int destinationId, required int salesLineId, required String quantity})`
   to the `DeliveryOrderRepository` interface in
   `lib/features/sales/domain/repositories/delivery_order_repository.dart`,
   documented like its `updateLine`/`removeLine` neighbours.
-- [ ] T006 Implement `addLine` in
+- [X] T006 Implement `addLine` in
   `lib/features/sales/data/delivery_order_repository_impl.dart`, calling
   `DeliveryOrdersApi.addDeliveryOrderLineApiV1DeliveryOrdersDeliveryOrderIdLinesPost`
   and mapping the response through `Destination.fromResponse`, mirroring
   `updateLine`'s try/`DioException` shape (depends on T005).
-- [ ] T007 [P] Add a `group('addLine —` block to
+- [X] T007 [P] Add a `group('addLine —` block to
   `test/unit/features/sales/delivery_order_repository_impl_test.dart` (mirror
   the existing `create`/`listForSale` group style and `_FakeHttpClientAdapter`)
   covering: a successful add returns the updated destination; a 409 body
@@ -109,7 +109,7 @@ action without a scroll gesture (spec.md US1).
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Create `test/widget/features/sales/delivery_step_layout_test.dart`
+- [X] T008 [P] [US1] Create `test/widget/features/sales/delivery_step_layout_test.dart`
   with cases per [quickstart §3](./quickstart.md#3-the-width-table): at 1440 px
   the counter row, both cards, the add action and the rail are all visible with
   no `Scrollable` needed to reach any of them (mirror
@@ -118,7 +118,7 @@ action without a scroll gesture (spec.md US1).
   with the rail's foot pinned to the bottom edge; at 320–1920 px nothing
   overflows horizontally (`expectNoHorizontalScroll` from `pos_test_harness.dart`).
   These must fail against today's single-`ListView` `DeliveryStep`.
-- [ ] T009 [P] [US1] Create `test/widget/features/sales/destination_card_test.dart`
+- [X] T009 [P] [US1] Create `test/widget/features/sales/destination_card_test.dart`
   asserting, per [contract §4](./contracts/delivery-surface.md#4-destination-card--destination_carddart):
   the collapsed header shows badge, address (or the pending-address fallback),
   contact/phone/date, and line/unit counts on one line; tapping the header
@@ -126,7 +126,7 @@ action without a scroll gesture (spec.md US1).
   independent (expanding one does not change the other, and the list does not
   reorder); the remove action's key (`destination_remove_${id}`) is present on
   an addressed card and absent on the counter row.
-- [ ] T010 [P] [US1] Create `test/widget/features/sales/line_distribution_rail_test.dart`
+- [X] T010 [P] [US1] Create `test/widget/features/sales/line_distribution_rail_test.dart`
   asserting, per [contract §5](./contracts/delivery-surface.md#5-distribution-rail--line_distribution_paneldart):
   the header states line and destination counts
   (`posDistributionRailSubtitle`); each `distribution_row_*` shows one chip per
@@ -137,7 +137,7 @@ action without a scroll gesture (spec.md US1).
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Rewrite `destination_card.dart`
+- [X] T011 [P] [US1] Rewrite `destination_card.dart`
   (`lib/features/sales/presentation/delivery/destination_card.dart`) as a
   `StatefulWidget` with its own `_expanded` flag
   ([research R5](./research.md#r5--card-expansion-hand-rolled-not-expansiontile)):
@@ -150,14 +150,14 @@ action without a scroll gesture (spec.md US1).
   keys verbatim. Takes the badge label as a constructor parameter rather than
   computing it itself, so it agrees with the rail by construction
   ([research R8](./research.md#r8--badges-and-the-idbadge-map)).
-- [ ] T012 [P] [US1] Create `destination_counter_row.dart`
+- [X] T012 [P] [US1] Create `destination_counter_row.dart`
   (`lib/features/sales/presentation/delivery/destination_counter_row.dart`)
   per [contract §3](./contracts/delivery-surface.md#3-counter-row): a `Card`
   with no expand affordance and no remove action, reading its line/unit counts
   from the counter-pickup `Destination` when one exists, otherwise (mixed sale
   only) from the distribution's non-zero `atCounter` lines
   ([research R4](./research.md#r4--the-counter-row-without-a-counter-pickup-record)).
-- [ ] T013 [US1] Rewrite `line_distribution_panel.dart`
+- [X] T013 [US1] Rewrite `line_distribution_panel.dart`
   (`lib/features/sales/presentation/delivery/line_distribution_panel.dart`) as
   the rail per [contract §5.1–§5.2](./contracts/delivery-surface.md#5-distribution-rail--line_distribution_paneldart):
   header with `posDistributionTitle` + `posDistributionRailSubtitle`; one
@@ -168,7 +168,7 @@ action without a scroll gesture (spec.md US1).
   gate line, finish action) is US3's — leave a `foot` slot/parameter this task
   does not fill in yet (depends on T011 for the badge shape, but not on its
   implementation body).
-- [ ] T014 [US1] Rewrite `delivery_step.dart`
+- [X] T014 [US1] Rewrite `delivery_step.dart`
   (`lib/features/sales/presentation/delivery/delivery_step.dart`) as the
   two-shape host per [contract §1–§2](./contracts/delivery-surface.md#1-step-host--delivery_stepdart):
   build the badge map once over the addressed destinations in list order
@@ -201,7 +201,7 @@ become available in that same region (spec.md US3).
 
 ### Tests for User Story 3
 
-- [ ] T015 [P] [US3] Add cases to `line_distribution_rail_test.dart` (T010)
+- [X] T015 [P] [US3] Add cases to `line_distribution_rail_test.dart` (T010)
   asserting, per [contract §5.3](./contracts/delivery-surface.md#53-foot-pinned):
   the foot shows `posDeliveryAssignedUnits` against the sale's total; on a
   pure-delivery sale with a remainder, `delivery_outstanding_notice` names the
@@ -212,7 +212,7 @@ become available in that same region (spec.md US3).
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] Fill `LineDistributionPanel`'s foot (started as a slot in
+- [X] T016 [US3] Fill `LineDistributionPanel`'s foot (started as a slot in
   T013) per [contract §5.3](./contracts/delivery-surface.md#53-foot-pinned): the
   assigned-units line, then `delivery_outstanding_notice`
   (`posDeliveryOutstanding`) only while `isDistributionComplete(distribution, isMixed:)`
@@ -241,7 +241,7 @@ assigned-units total agree with the cards throughout (spec.md US2).
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Create `test/widget/features/sales/destination_assignment_test.dart`
+- [X] T017 [P] [US2] Create `test/widget/features/sales/destination_assignment_test.dart`
   covering, per [contract §4.3–§4.4](./contracts/delivery-surface.md#43-line-row)
   and [quickstart §4.3](./quickstart.md#43-assignment-us2): raising a line
   within its ceiling calls `addLine` when the destination does not yet carry it
@@ -256,7 +256,7 @@ assigned-units total agree with the cards throughout (spec.md US2).
 
 ### Implementation for User Story 2
 
-- [ ] T018 [US2] Add `assignLine`, `adjustLine` and `dropLine` to
+- [X] T018 [US2] Add `assignLine`, `adjustLine` and `dropLine` to
   `DeliveryController`
   (`lib/features/sales/presentation/delivery/delivery_controller.dart`) per
   [data-model §3](./data-model.md#3-the-one-new-controller-surface): each calls
@@ -265,7 +265,7 @@ assigned-units total agree with the cards throughout (spec.md US2).
   (SC-010). A refusal propagates by throwing, leaving `state` untouched, which
   is what makes the caller's re-read a revert rather than a rollback (depends
   on T006).
-- [ ] T019 [US2] Build the stepper pill in `destination_card.dart`'s line rows
+- [X] T019 [US2] Build the stepper pill in `destination_card.dart`'s line rows
   (extends T011) per [contract §4.4](./contracts/delivery-surface.md#44-stepper-pill),
   mirroring `SaleLineEditing`'s per-edit-round-trip/`_busy`/`syncFields()` shape
   ([research R6](./research.md#r6--the-stepper-reuse-the-pattern-not-the-code)):
@@ -297,13 +297,13 @@ US4).
 
 ### Tests for User Story 4
 
-- [ ] T020 [P] [US4] Rewrite the pump in
+- [X] T020 [P] [US4] Rewrite the pump in
   `test/widget/features/sales/destination_editor_error_test.dart` to open the
   sheet (via the add action) rather than pumping `DestinationEditor` inline,
   keeping its assertions on `destination_editor` and `destination_editor_error`
   unchanged (the widget behind those keys still exists — only how it opens
   changes).
-- [ ] T021 [P] [US4] Add cases to `delivery_step_layout_test.dart` (T008) per
+- [X] T021 [P] [US4] Add cases to `delivery_step_layout_test.dart` (T008) per
   [quickstart §4.4](./quickstart.md#44-adding-a-destination-us4): at ≥ 1200 px
   the sheet is right-anchored over the rail and the destination cards remain
   visible behind it; below 1200 px it is a full-width bottom sheet; a refused
@@ -314,7 +314,7 @@ US4).
 
 ### Implementation for User Story 4
 
-- [ ] T022 [US4] Rewrite `destination_editor.dart`
+- [X] T022 [US4] Rewrite `destination_editor.dart`
   (`lib/features/sales/presentation/delivery/destination_editor.dart`) as the
   header-only sheet per [contract §6](./contracts/delivery-surface.md#6-add-sheet--destination_editordart):
   keep the address/contact/date/instructions controls
@@ -324,11 +324,11 @@ US4).
   per-line quantity fields and `posDestinationQuantitiesTitle`'s usage; call
   `addDestination` with `lines: const []` — an explicit empty list, never
   omitted ([research R14](./research.md#r14--the-empty-create)).
-- [ ] T023 [US4] Drop the `quantities` parameter from
+- [X] T023 [US4] Drop the `quantities` parameter from
   `DeliveryController.addDestination`
   (`lib/features/sales/presentation/delivery/delivery_controller.dart`), since
   the sheet no longer supplies any (depends on T022).
-- [ ] T024 [US4] Add a delivery-specific side-sheet opener (a small function
+- [X] T024 [US4] Add a delivery-specific side-sheet opener (a small function
   in or alongside `delivery_step.dart`, modelled on
   `showCatalogFilterSheet` in `lib/core/widgets/catalog_filter_sheet.dart` per
   [research R10](./research.md#r10--the-side-sheet)): right-anchored
@@ -337,7 +337,7 @@ US4).
   `StatefulShellBranch` navigator would otherwise tear the sheet down);
   presents `posAddDestinationSheetTitle` and hosts `DestinationEditor` (T022).
   Wire `delivery_step.dart`'s add action (T014) to call it (depends on T022).
-- [ ] T025 [US4] In `delivery_step.dart`, disable
+- [X] T025 [US4] In `delivery_step.dart`, disable
   `delivery_add_destination_button` and show `posAddDestinationNothingLeft`
   when every line is fully distributed — an empty create is refused by the
   server in that state ([research R14](./research.md#r14--the-empty-create))
@@ -361,7 +361,7 @@ finish action (spec.md US5).
 
 ### Tests for User Story 5
 
-- [ ] T026 [P] [US5] Update `pos_compact_delivery_test.dart`'s quantity-field
+- [X] T026 [P] [US5] Update `pos_compact_delivery_test.dart`'s quantity-field
   assertions to address `destination_quantity_*`/`destination_claim_all_*`
   inside an expanded `destination_card_*` rather than inside
   `destination_editor` (they moved there in T019); keep its existing
@@ -370,7 +370,7 @@ finish action (spec.md US5).
 
 ### Implementation for User Story 5
 
-- [ ] T027 [US5] No dedicated phone-tier widget: `delivery_step.dart` (T014)
+- [X] T027 [US5] No dedicated phone-tier widget: `delivery_step.dart` (T014)
   already renders the one-column shape below `LayoutBreakpoints.large`, using
   the same `DestinationCard`/`DestinationCounterRow`/`LineDistributionPanel`
   built for US1–US4. This task is the explicit acknowledgment that US5 is
@@ -387,19 +387,19 @@ correctly with the full feature working at each.
 
 **Purpose**: Whole-feature verification that spans every story.
 
-- [ ] T028 [P] Run `flutter analyze` from the repo root and resolve any warning
+- [X] T028 [P] Run `flutter analyze` from the repo root and resolve any warning
   introduced by this feature's files.
-- [ ] T029 [P] Grep the diff of every changed file under
+- [X] T029 [P] Grep the diff of every changed file under
   `lib/features/sales/presentation/delivery/` for literal `Color(`, hex colors,
   bare numeric font sizes, or `EdgeInsets` values not sourced from
   `Theme.of(context).spacing`/`.shapes`/`.typeRoles`/`.elevations` — confirms
   SC-008/FR-039 (zero literal design values).
-- [ ] T030 Remove `posDestinationQuantitiesTitle` from `lib/l10n/app_es.arb` and
+- [X] T030 Remove `posDestinationQuantitiesTitle` from `lib/l10n/app_es.arb` and
   `lib/l10n/app_en.arb` (depends on T022 removing its last usage); re-run
   `flutter gen-l10n` and confirm `test/unit/core/l10n_parity_test.dart` still
   passes and `grep -rn posDestinationQuantitiesTitle lib/` returns nothing
   outside the generated localization files.
-- [ ] T031 Run the full suite —
+- [X] T031 Run the full suite —
   `flutter test test/widget/features/sales/ test/unit/features/sales/ test/unit/core/l10n_parity_test.dart`
   — and confirm everything is green, including
   `line_distribution_test.dart` and `delivery_order_repository_impl_test.dart`

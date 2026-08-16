@@ -192,8 +192,9 @@ void main() {
       expectNoHorizontalScroll(tester);
     });
 
-    testWidgets('the editor — address picker, contact picker, date and the '
-        'per-line quantities — opens and fits', (tester) async {
+    testWidgets('the add sheet — address picker, contact picker, date and '
+        'instructions, no quantity — opens as a full-width bottom sheet and '
+        'fits (FR-026, FR-027)', (tester) async {
       await pumpStep(tester);
 
       await tester.dragUntilVisible(
@@ -206,7 +207,56 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(DestinationEditor), findsOneWidget);
-      expect(find.text(l10n.posDestinationQuantitiesTitle), findsWidgets);
+      expect(find.byKey(const Key('destination_address_button')), findsOneWidget);
+      expect(find.byKey(const Key('destination_contact_button')), findsOneWidget);
+      expect(find.byKey(const Key('destination_date_button')), findsOneWidget);
+      expect(find.byKey(const Key('destination_comment_field')), findsOneWidget);
+      // No quantity field at all — FR-027's header-only sheet.
+      expect(find.byKey(const Key('destination_quantity_5')), findsNothing);
+      expectNoHorizontalScroll(tester);
+    });
+
+    testWidgets("a card's stepper is reachable and works at phone width "
+        '(US5 independent test)', (tester) async {
+      // The existing destination already carries sale line 5 (quantity 4),
+      // so raising it dispatches to `updateLine`, not `addLine`.
+      when(
+        () => deliveries.updateLine(
+          destinationId: any(named: 'destinationId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+        ),
+      ).thenAnswer(
+        (_) async => Destination(
+          id: 500,
+          fulfillmentType: FulfillmentType.delivery,
+          shipTo: 11,
+          contact: 21,
+          status: DeliveryOrderStatus.draft,
+          date: DateTime(2026, 8, 12),
+          lines: const [
+            DestinationLine(
+              id: 900,
+              salesOrderDetail: 5,
+              product: 11,
+              productCode: 'P-11',
+              productName: 'Widget',
+              quantity: '5',
+            ),
+          ],
+        ),
+      );
+
+      await pumpStep(tester);
+      await tester.tap(find.byKey(const Key('destination_card_500')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.add).first);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '5'),
+      ).called(1);
       expectNoHorizontalScroll(tester);
     });
 
