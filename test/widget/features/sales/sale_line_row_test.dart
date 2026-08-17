@@ -409,7 +409,9 @@ void main() {
   group('one box height, one baseline, under the real theme (FR-038a)', () {
     setUpAll(loadGoldenFonts);
 
-    testWidgets('every control in the band is $saleLineFieldHeight tall and '
+    testWidgets(
+        'every control in the band is '
+        '${saleLineFieldHeight(TextScaler.noScaling)} tall and '
         'every value in it — the line total included — sits on one baseline', (
       tester,
     ) async {
@@ -438,7 +440,7 @@ void main() {
                 ),
               )
               .height,
-          saleLineFieldHeight,
+          saleLineFieldHeight(TextScaler.noScaling),
           reason: label,
         );
       }
@@ -467,8 +469,9 @@ void main() {
   });
 
   group('one height for every editable control (FR-038a)', () {
-    testWidgets('warehouse, quantity, price, discount and tax are all '
-        '$saleLineFieldHeight tall and share one vertical centre', (
+    testWidgets(
+        'warehouse, quantity, price, discount and tax are all '
+        '${saleLineFieldHeight(TextScaler.noScaling)} tall and share one vertical centre', (
       tester,
     ) async {
       await pumpPos(
@@ -498,7 +501,7 @@ void main() {
         expect(boxFor(label), findsOneWidget, reason: label);
         expect(
           tester.getSize(boxFor(label)).height,
-          saleLineFieldHeight,
+          saleLineFieldHeight(TextScaler.noScaling),
           reason: label,
         );
         centres.add(tester.getCenter(boxFor(label)).dy);
@@ -643,7 +646,10 @@ void main() {
         // the two combined is the fallback.
         expect(
           tester.getSize(find.byType(SaleLineRow)).height,
-          lessThan(saleLineRowHeight + saleLineFieldHeight),
+          lessThan(
+            saleLineRowHeight(TextScaler.noScaling) +
+                saleLineFieldHeight(TextScaler.noScaling),
+          ),
         );
       },
     );

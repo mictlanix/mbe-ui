@@ -10,13 +10,17 @@ import 'package:mbe_ui/core/layout/breakpoints.dart';
 class CatalogFilterBar extends StatelessWidget {
   const CatalogFilterBar({
     super.key,
-    required this.search,
+    this.search,
     this.filters = const [],
     this.actions = const [],
   });
 
-  /// The catalog's search control (typically a [CatalogSearchBar]).
-  final Widget search;
+  /// The catalog's search control (typically a [CatalogSearchBar]), or
+  /// `null` when the underlying endpoint has no free-text `search` parameter
+  /// (spec 027 FR-029) — omitted cleanly rather than a screen passing
+  /// `const SizedBox.shrink()` to reserve space for a control that will
+  /// never exist.
+  final Widget? search;
 
   /// Facet filter widgets (e.g. `FilterChip`s), shown after [search] and
   /// [actions].
@@ -38,8 +42,8 @@ class CatalogFilterBar extends StatelessWidget {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(flex: 2, child: search),
-              if (trailing.isNotEmpty) const SizedBox(width: 8),
+              if (search != null) Expanded(flex: 2, child: search!),
+              if (search != null && trailing.isNotEmpty) const SizedBox(width: 8),
               ...trailing.map(
                 (widget) => Padding(
                   padding: const EdgeInsets.only(right: 8),
@@ -52,8 +56,8 @@ class CatalogFilterBar extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            search,
-            if (trailing.isNotEmpty) const SizedBox(height: 8),
+            ?search,
+            if (search != null && trailing.isNotEmpty) const SizedBox(height: 8),
             if (trailing.isNotEmpty)
               Wrap(spacing: 8, runSpacing: 8, children: trailing),
           ],

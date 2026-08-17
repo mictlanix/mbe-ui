@@ -1,0 +1,30 @@
+{
+  "workflow": "speckit",
+  "specName": "App Settings, User Settings & Cross-Widget Consistency",
+  "branch": "027-app-user-settings",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-16T21:51:35.285Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-16T22:15:50.699Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-16T23:02:30.878Z"
+    }
+  ]
+}

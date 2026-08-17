@@ -158,6 +158,51 @@ class AppLocalizationsEs extends AppLocalizations {
       'Contraseña restablecida exitosamente. Ya puede iniciar sesión.';
 
   @override
+  String get settingsMenuTitle => 'Configuración';
+
+  @override
+  String get settingsTitle => 'Configuración';
+
+  @override
+  String get settingsAppearanceLabel => 'Apariencia';
+
+  @override
+  String get settingsAppearanceLight => 'Claro';
+
+  @override
+  String get settingsAppearanceDark => 'Oscuro';
+
+  @override
+  String get settingsAppearanceSystem => 'Sistema';
+
+  @override
+  String get settingsTextSizeLabel => 'Tamaño de texto';
+
+  @override
+  String get settingsTextSizeSmall => 'Pequeño';
+
+  @override
+  String get settingsTextSizeNormal => 'Normal';
+
+  @override
+  String get settingsTextSizeLarge => 'Grande';
+
+  @override
+  String get settingsTextSizeExtraLarge => 'Muy grande';
+
+  @override
+  String get settingsLanguageLabel => 'Idioma';
+
+  @override
+  String get settingsLanguageSpanish => 'Español';
+
+  @override
+  String get settingsLanguageEnglish => 'Inglés';
+
+  @override
+  String get settingsLanguageSystem => 'Igual que el sistema';
+
+  @override
   String get usersTitle => 'Usuarios';
 
   @override
@@ -2406,6 +2451,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cashSessionCloseButtonLabel => 'Cerrar sesión';
+
+  @override
+  String get cashSessionShiftSheetTitle => 'Turno';
+
+  @override
+  String get cashSessionShiftButtonTooltip => 'Turno';
 
   @override
   String get cashSessionPaymentsByMethodLabel =>

@@ -158,6 +158,51 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password reset successfully. You can now sign in.';
 
   @override
+  String get settingsMenuTitle => 'Settings';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAppearanceLabel => 'Appearance';
+
+  @override
+  String get settingsAppearanceLight => 'Light';
+
+  @override
+  String get settingsAppearanceDark => 'Dark';
+
+  @override
+  String get settingsAppearanceSystem => 'System';
+
+  @override
+  String get settingsTextSizeLabel => 'Text size';
+
+  @override
+  String get settingsTextSizeSmall => 'Small';
+
+  @override
+  String get settingsTextSizeNormal => 'Normal';
+
+  @override
+  String get settingsTextSizeLarge => 'Large';
+
+  @override
+  String get settingsTextSizeExtraLarge => 'Extra large';
+
+  @override
+  String get settingsLanguageLabel => 'Language';
+
+  @override
+  String get settingsLanguageSpanish => 'Spanish';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsLanguageSystem => 'Follow system';
+
+  @override
   String get usersTitle => 'Users';
 
   @override
@@ -2368,6 +2413,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cashSessionCloseButtonLabel => 'Close session';
+
+  @override
+  String get cashSessionShiftSheetTitle => 'Shift';
+
+  @override
+  String get cashSessionShiftButtonTooltip => 'Shift';
 
   @override
   String get cashSessionPaymentsByMethodLabel => 'Payments taken this shift';

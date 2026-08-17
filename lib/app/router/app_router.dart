@@ -55,6 +55,7 @@ import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.da
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
+import 'package:mbe_ui/features/settings/presentation/user_settings_screen.dart';
 
 /// Redirect guard skeleton (contracts/routes.md "Redirect guard summary").
 /// Routes are registered by later phases; this provider gives them a
@@ -301,6 +302,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/account/password',
         builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: '/auth/account/settings',
+        builder: (context, state) => const UserSettingsScreen(),
       ),
       GoRoute(
         path: '/auth/recover',

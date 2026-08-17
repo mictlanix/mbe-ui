@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/app/app.dart';
@@ -9,6 +10,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
@@ -77,6 +79,9 @@ void main() {
       ),
     ).thenAnswer((_) async => const []);
 
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -84,6 +89,7 @@ void main() {
           tokenStorageProvider.overrideWithValue(tokenStorage),
           productRepositoryProvider.overrideWithValue(productRepository),
           allLabelsProvider.overrideWith((_) async => const []),
+          sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: const App(),
       ),

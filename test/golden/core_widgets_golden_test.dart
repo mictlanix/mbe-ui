@@ -49,6 +49,7 @@ const _excludedFiles = {
 /// Every widget file with real golden coverage below.
 const _coveredFiles = {
   'app_navigation.dart',
+  'app_side_sheet.dart', // spec 027 R6 — shell extracted from catalog_filter_sheet.dart, covered by its golden below (showCatalogFilterSheet delegates to showAppSideSheet)
   'brand_logo.dart',
   'brand_nav_header.dart',
   'catalog_entity_picker.dart',

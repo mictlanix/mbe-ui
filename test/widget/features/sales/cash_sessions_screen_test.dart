@@ -165,11 +165,19 @@ void main() {
       ],
     );
 
+    // Wide surface: the toolbar/shift sheet renders as the right-anchored
+    // side sheet above LayoutBreakpoints.expanded, matching how this screen
+    // is actually used (desktop/web first, constitution §VI).
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
           routerConfig: router,
+          locale: const Locale('es', 'MX'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
@@ -178,16 +186,95 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group('CashSessionsScreen — none state (US1)', () {
+  Future<void> openShiftSheet(WidgetTester tester) async {
+    await tester.tap(find.byKey(const Key('cash_sessions_shift_button')));
+    await tester.pumpAndSettle();
+  }
+
+  group('CashSessionsScreen — the route is a standard list screen (US5, FR-027)', () {
+    testWidgets('no form is embedded above the history list', (tester) async {
+      await pumpScreen(
+        tester,
+        user: _canOpenWithDrawerAccessUser,
+        current: const CurrentSession(state: SessionState.none),
+        historyItems: [_session()],
+      );
+
+      // The open-shift form's own fields must not be visible until the
+      // sheet is opened — they used to sit directly on the screen.
+      expect(find.byKey(const Key('cash_session_drawer_field')), findsNothing);
+      expect(find.byKey(const Key('cash_session_opening_amount_field')), findsNothing);
+      expect(find.byKey(const Key('cash_sessions_table')), findsOneWidget);
+    });
+  });
+
+  group('CashSessionsScreen — shift toolbar action (US5, FR-027/FR-028a)', () {
     testWidgets(
-      'a user with pos:create and cashDrawers:read sees the picker-based '
-      'open form',
+      'no shift: reads as "open a shift" and is visible without scrolling',
       (tester) async {
         await pumpScreen(
           tester,
           user: _canOpenWithDrawerAccessUser,
           current: const CurrentSession(state: SessionState.none),
         );
+
+        final l10n = await AppLocalizations.delegate.load(const Locale('es', 'MX'));
+        expect(find.byKey(const Key('cash_sessions_shift_button')), findsOneWidget);
+        expect(find.text(l10n.cashSessionOpenButtonLabel), findsOneWidget);
+      },
+    );
+
+    testWidgets('open shift: shows the drawer name and an open status chip', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        user: _canOpenWithDrawerAccessUser,
+        current: CurrentSession(state: SessionState.open, session: _session()),
+      );
+
+      expect(find.byKey(const Key('cash_sessions_shift_button')), findsOneWidget);
+      expect(find.text('Caja 1'), findsOneWidget);
+      expect(find.byKey(const Key('cash_session_status_chip_open')), findsOneWidget);
+    });
+
+    testWidgets('stale shift: the toolbar action itself signals staleness', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        user: _canOpenWithDrawerAccessUser,
+        current: CurrentSession(state: SessionState.stale, session: _session()),
+      );
+
+      expect(find.byKey(const Key('cash_sessions_shift_button')), findsOneWidget);
+      expect(find.byKey(const Key('cash_session_status_chip_stale')), findsOneWidget);
+    });
+
+    testWidgets(
+      'absent — not disabled — for a user without pos:create (FR-009, constitution §VI)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          user: _cannotOpenUser,
+          current: const CurrentSession(state: SessionState.none),
+        );
+
+        expect(find.byKey(const Key('cash_sessions_shift_button')), findsNothing);
+      },
+    );
+  });
+
+  group('CashSessionsScreen — shift sheet, no open shift (US1)', () {
+    testWidgets(
+      'a user with pos:create and cashDrawers:read sees the picker-based open form',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          user: _canOpenWithDrawerAccessUser,
+          current: const CurrentSession(state: SessionState.none),
+        );
+        await openShiftSheet(tester);
 
         expect(find.byKey(const Key('cash_session_drawer_field')), findsOneWidget);
         expect(
@@ -207,6 +294,7 @@ void main() {
           user: _canOpenNoDrawerAccessAssignedUser,
           current: const CurrentSession(state: SessionState.none),
         );
+        await openShiftSheet(tester);
 
         expect(
           find.byKey(const Key('cash_session_drawer_static_label')),
@@ -228,14 +316,14 @@ void main() {
 
     testWidgets(
       'a user with neither cashDrawers:read nor an assigned drawer sees no '
-      'open affordance at all — only the administrator-directed message '
-      '(FR-007a)',
+      'open affordance at all — only the administrator-directed message (FR-007a)',
       (tester) async {
         await pumpScreen(
           tester,
           user: _canOpenNoDrawerAtAllUser,
           current: const CurrentSession(state: SessionState.none),
         );
+        await openShiftSheet(tester);
 
         expect(
           find.byKey(const Key('cash_session_drawer_blocked_message')),
@@ -251,26 +339,36 @@ void main() {
     );
 
     testWidgets(
-      'a user without pos:create sees no open affordance anywhere — absent, '
-      'not disabled (FR-009 last scenario)',
+      'submitting successfully dismisses the sheet (FR-028b) — the form\'s '
+      '"saved" flag flipping true is what triggers the pop',
       (tester) async {
+        when(
+          () => cashSessionRepository.open(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            openingAmount: any(named: 'openingAmount'),
+          ),
+        ).thenAnswer((_) async => _session());
+
+        // The assigned-drawer user needs no autocomplete interaction — its
+        // drawer is seeded automatically, so tapping Open alone exercises
+        // the success path this test cares about (spec 027's own listener,
+        // not the pre-existing form-validation logic).
         await pumpScreen(
           tester,
-          user: _cannotOpenUser,
+          user: _canOpenNoDrawerAccessAssignedUser,
           current: const CurrentSession(state: SessionState.none),
         );
+        await openShiftSheet(tester);
+
+        await tester.tap(find.byKey(const Key('cash_session_open_button')));
+        await tester.pumpAndSettle();
 
         expect(find.byKey(const Key('cash_session_open_button')), findsNothing);
-        expect(find.byKey(const Key('cash_session_drawer_field')), findsNothing);
-        expect(
-          find.byKey(const Key('cash_session_opening_amount_field')),
-          findsNothing,
-        );
       },
     );
   });
 
-  group('CashSessionsScreen — open/stale states (US1)', () {
+  group('CashSessionsScreen — shift sheet, open/stale states (US1)', () {
     testWidgets(
       'an open session shows its drawer, start time, opening amount and '
       'per-method payments, plus a Close button',
@@ -280,11 +378,16 @@ void main() {
           user: _canOpenWithDrawerAccessUser,
           current: CurrentSession(state: SessionState.open, session: _session()),
         );
+        await openShiftSheet(tester);
 
-        expect(find.text('Caja 1'), findsOneWidget);
-        expect(find.byKey(const Key('cash_session_status_chip_open')), findsOneWidget);
+        // es-MX formatting: period thousands separator, comma decimal
+        // ("3.240,00 $") — the harness now pins `Locale('es', 'MX')`
+        // explicitly (previously undetermined, defaulting to the test
+        // environment's own locale), which is what surfaced this
+        // assertion's prior '3,240' (US-style) as never having actually
+        // exercised es-MX formatting.
+        expect(find.textContaining('3.240'), findsOneWidget);
         expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
-        expect(find.textContaining('3,240'), findsOneWidget);
       },
     );
 
@@ -296,26 +399,31 @@ void main() {
           user: _canOpenWithDrawerAccessUser,
           current: CurrentSession(state: SessionState.stale, session: _session()),
         );
+        await openShiftSheet(tester);
 
-        expect(find.byKey(const Key('cash_session_status_chip_stale')), findsOneWidget);
         expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
       },
     );
 
-    testWidgets('tapping Close navigates to that session\'s detail route', (
-      tester,
-    ) async {
-      await pumpScreen(
-        tester,
-        user: _canOpenWithDrawerAccessUser,
-        current: CurrentSession(state: SessionState.open, session: _session()),
-      );
+    testWidgets(
+      'tapping Close dismisses the sheet and navigates to that session\'s detail route '
+      '(FR-028b, Edge Cases: never stranded over the pushed route)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          user: _canOpenWithDrawerAccessUser,
+          current: CurrentSession(state: SessionState.open, session: _session()),
+        );
+        await openShiftSheet(tester);
 
-      await tester.tap(find.byKey(const Key('cash_session_close_button')));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('cash_session_close_button')));
+        await tester.pumpAndSettle();
 
-      expect(find.text('detail-1'), findsOneWidget);
-    });
+        expect(find.text('detail-1'), findsOneWidget);
+        // The sheet itself must be gone, not left open behind the new route.
+        expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
+      },
+    );
   });
 
   group('CashSessionsScreen — other open sessions warning (US4)', () {
@@ -328,6 +436,7 @@ void main() {
           current: CurrentSession(state: SessionState.open, session: _session()),
           otherOpenSessionsTotalFor: 100,
         );
+        await openShiftSheet(tester);
 
         expect(find.byKey(const Key('cash_session_other_sessions_warning')), findsOneWidget);
       },
@@ -341,6 +450,7 @@ void main() {
           user: _canOpenWithDrawerAccessUser,
           current: CurrentSession(state: SessionState.open, session: _session()),
         );
+        await openShiftSheet(tester);
 
         expect(find.byKey(const Key('cash_session_other_sessions_warning')), findsNothing);
       },
@@ -362,7 +472,9 @@ void main() {
     });
 
     testWidgets('the search slot renders nothing — a deliberate departure, '
-        'not a missing feature (research.md §12, spec D-003)', (tester) async {
+        'not a missing feature (research.md §12, spec D-003, spec 027 FR-029)', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         user: _canOpenWithDrawerAccessUser,
@@ -371,8 +483,8 @@ void main() {
 
       // Every other list screen's search box is a CatalogSearchBar — its
       // absence here is the deliberate departure (research.md §12), not the
-      // absence of every TextField on the page (the shift panel's own open
-      // form legitimately has some).
+      // absence of every TextField on the page (the shift sheet legitimately
+      // has some, once opened).
       expect(find.byType(CatalogSearchBar), findsNothing);
       expect(find.byKey(const Key('cash_sessions_filter_button')), findsOneWidget);
     });

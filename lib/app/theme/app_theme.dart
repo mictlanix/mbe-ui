@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/branding/brand_config_provider.dart';
 import 'package:mbe_ui/core/branding/brand_ink.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
-
-part 'app_theme.g.dart';
-
-const _themeModePrefKey = 'theme_mode';
 
 /// Light/dark `ThemeData`, both derived from the same [BrandConfig.seedColor]
 /// via `ColorScheme.fromSeed` (constitution §V; spec 019 research R1/R2).
@@ -143,30 +138,3 @@ class AppTheme {
 final appThemeProvider = Provider<AppTheme>(
   (ref) => AppTheme.of(ref.watch(brandConfigProvider)),
 );
-
-/// User's Light/Dark/System preference, persisted per device via
-/// `shared_preferences` (constitution §V).
-@Riverpod(keepAlive: true)
-class ThemeModeController extends _$ThemeModeController {
-  @override
-  ThemeMode build() {
-    _restore();
-    return ThemeMode.system;
-  }
-
-  Future<void> _restore() async {
-    final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString(_themeModePrefKey);
-    if (stored == null) return;
-    state = ThemeMode.values.firstWhere(
-      (mode) => mode.name == stored,
-      orElse: () => ThemeMode.system,
-    );
-  }
-
-  Future<void> setThemeMode(ThemeMode mode) async {
-    state = mode;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeModePrefKey, mode.name);
-  }
-}

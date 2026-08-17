@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -15,7 +16,6 @@ import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
-import 'package:mbe_ui/features/sales/pos_defaults.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/customer_inline_create.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
@@ -108,7 +108,8 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
 
   /// The customer the band reports on: the sale's own once there is one,
   /// the configured walk-in default until then.
-  int get _customerId => widget.sale?.customer ?? posDefaultCustomerId;
+  int get _customerId =>
+      widget.sale?.customer ?? ref.read(appSettingsProvider).posDefaultCustomerId;
 
   /// Immediate is what mbe-api itself derives for a customer with no credit
   /// line, which the walk-in customer is — so the dropdown shows the terms
