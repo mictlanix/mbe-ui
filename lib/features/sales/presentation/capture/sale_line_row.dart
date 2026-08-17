@@ -228,24 +228,18 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
     children: [
       _stepperButton(Icons.remove, enabled ? () => step(-1) : null, l10n.posLineDecreaseQuantity),
       Expanded(
-        // The stepper's own `Row` would otherwise give the field its intrinsic
-        // height, leaving it shorter than the band it sits in — the two
-        // buttons beside it are what stop the field from filling on its own.
-        child: SizedBox(
-          height: saleLineFieldHeight(_textScaler),
-          child: TextField(
-            controller: quantityField,
-            enabled: enabled,
-            textAlign: TextAlign.center,
-            style: _fieldStyle,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: _fieldDecoration(
-              line.unit == null
-                  ? l10n.posLineQuantityLabel
-                  : l10n.posLineQuantityWithUnitLabel(line.unit!),
-            ),
-            onSubmitted: (v) => update(quantity: v),
+        child: TextField(
+          controller: quantityField,
+          enabled: enabled,
+          textAlign: TextAlign.center,
+          style: _fieldStyle,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: _fieldDecoration(
+            line.unit == null
+                ? l10n.posLineQuantityLabel
+                : l10n.posLineQuantityWithUnitLabel(line.unit!),
           ),
+          onSubmitted: (v) => update(quantity: v),
         ),
       ),
       _stepperButton(Icons.add, enabled ? () => step(1) : null, l10n.posLineIncreaseQuantity),
@@ -309,10 +303,23 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   /// A control sized to the band: [width] wide, [saleLineFieldHeight] tall,
   /// centred in the row's own [saleLineRowHeight] so all five controls share
   /// one top and one bottom edge.
+  ///
+  /// [Center] rather than a tight-height passthrough: `saleLineTextFieldPadding`/
+  /// `saleLineDropdownPadding` only *predict* the content padding an
+  /// `InputDecorator` needs to reach this height — Flutter computes its
+  /// border container's real height from actual label/baseline metrics and
+  /// always paints it flush with the *top* of whatever box it's given
+  /// (`_RenderDecoration` positions the border at `Offset(x, 0.0)`,
+  /// unconditionally). Any drift between our prediction and that real
+  /// computation — observed in production at the Large text-size level,
+  /// where a dropdown's real content height came in ~8px under this band's
+  /// height — used to land entirely as dead space below the box. Centering
+  /// the child turns that same drift into an even top/bottom margin instead
+  /// (FR-031), regardless of how exact the prediction is.
   Widget _band({required double width, required Widget child}) => SizedBox(
     width: width,
     height: saleLineFieldHeight(_textScaler),
-    child: child,
+    child: Center(child: child),
   );
 
   Widget _totalCell(SaleLine line) => Text(

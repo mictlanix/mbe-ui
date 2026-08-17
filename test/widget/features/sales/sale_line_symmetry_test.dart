@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 
 import '../../../golden/golden_harness.dart';
@@ -26,18 +27,29 @@ Warehouse _warehouse(int id, String name) => Warehouse(
 /// (FR-024). Verified by measurement — never by inspection (FR-035).
 ///
 /// **Investigation note**: planning suspected this needed a source fix
-/// (a floating-label-vs-bare-Text baseline mismatch). Measured directly
-/// against the real app theme (`pumpGoldenScenario`, which applies the
-/// actual `InputDecorationTheme` from `core/design/component_themes.dart`),
-/// no mismatch is present — `saleLineTextFieldPadding`/`saleLineDropdownPadding`
-/// (spec 022/023) already equalize every control's value-text position to
-/// the line total's. An earlier attempt to "fix" this against a bare
-/// `MaterialApp` (framework default decoration, no custom
-/// `InputDecorationTheme`) was reproducing an artifact of the wrong theme,
-/// not the shipped one — reverted. This file exists to lock the
-/// already-correct invariant in as a permanent regression guard, and to
-/// verify it continues to hold once `sale_line_layout.dart`'s dimensions
-/// scale with text size (FR-024).
+/// (a floating-label-vs-bare-Text baseline mismatch). Measured against the
+/// real app theme at the *default* text-size level, no mismatch was
+/// present — an earlier attempt to "fix" this against a bare `MaterialApp`
+/// (framework default decoration, no custom `InputDecorationTheme`) had
+/// been reproducing an artifact of the wrong theme. That conclusion turned
+/// out to be incomplete, not wrong: a real, *scale-dependent* asymmetry
+/// surfaced later, live, in production — reported and diagnosed via the
+/// Flutter widget inspector, not by this suite. `_RenderDecoration`
+/// (`input_decorator.dart`) sizes its border container from the decorator's
+/// own computed content height, not from whatever outer height it's given,
+/// and always paints that container flush with the *top* of its box
+/// (`Offset(x, 0.0)`, unconditionally). `saleLineTextFieldPadding`/
+/// `saleLineDropdownPadding` only *predict* the content padding needed to
+/// make that computed height land exactly on `saleLineFieldHeight`; any
+/// drift between the prediction and Flutter's real metrics — observed at
+/// the Large text-size level, ~8px on the tax dropdown — used to collect
+/// entirely below the box. Fixed by centering each field within its band
+/// (`sale_line_row.dart`'s `_band`) rather than depending on the prediction
+/// being exact: now any leftover from the same kind of drift splits evenly
+/// top/bottom instead. This file's `(top, height)` comparisons on *value
+/// text* didn't catch this class of bug — text position doesn't move when
+/// slack shifts from one side of the border to the other — which is why the
+/// "no shortfall" pixel-scan is not a text measurement (below).
 void main() {
   setUpAll(loadGoldenFonts);
 
@@ -231,6 +243,47 @@ void main() {
         );
         expect(tester.takeException(), isNull);
       });
+
+      testWidgets(
+        'every band field centers its decorator rather than top-anchoring it '
+        '(regression: a real ~8px one-sided gap on the tax dropdown, live at '
+        'the Large text-size level, found via the Flutter widget inspector — '
+        'not by the baseline check above, since text position doesn\'t move '
+        'when slack shifts from one side of the border to the other)',
+        (tester) async {
+          await pumpGoldenScenario(
+            tester,
+            naturallySized(
+              MediaQuery(
+                data: MediaQueryData(textScaler: TextScaler.linear(level)),
+                child: SaleLineRow(line: testLine(quantity: '2'), facilityId: 9),
+              ),
+            ),
+            brightness: Brightness.light,
+            width: 1440,
+            overrides: [warehouseOverride(warehouseRepository)],
+          );
+          expect(tester.takeException(), isNull);
+
+          final targetHeight = saleLineFieldHeight(TextScaler.linear(level));
+          final bandBoxes = find.byWidgetPredicate(
+            (w) => w is SizedBox && w.height != null && (w.height! - targetHeight).abs() < 0.01,
+          );
+          expect(bandBoxes, findsNWidgets(5), reason: 'expected one band SizedBox per control');
+          for (final element in bandBoxes.evaluate()) {
+            final sizedBox = element.widget as SizedBox;
+            expect(
+              sizedBox.child,
+              isA<Center>(),
+              reason:
+                  'a band SizedBox\'s direct child must be a Center — without it, '
+                  'any drift between saleLineTextFieldPadding/saleLineDropdownPadding\'s '
+                  'prediction and Flutter\'s real content height collects entirely '
+                  'below the box instead of splitting evenly (FR-031)',
+            );
+          }
+        },
+      );
     });
   }
 
