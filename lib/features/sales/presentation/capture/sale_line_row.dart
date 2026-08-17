@@ -182,6 +182,11 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   /// that all do the same job should not be set in two sizes.
   TextStyle? get _fieldStyle => Theme.of(context).textTheme.bodyMedium;
 
+  /// The effective text scaler (spec 027 research R1/R2) every height in this
+  /// file derives from, so the band grows at larger text-size levels instead
+  /// of clipping the text inside it (FR-024).
+  TextScaler get _textScaler => MediaQuery.textScalerOf(context);
+
   Widget _warehouseCell(AppLocalizations l10n) => warehousePicker(
     decoration: _fieldDecoration(l10n.posLineWarehouseLabel, dropdown: true),
     style: _fieldStyle,
@@ -227,7 +232,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         // height, leaving it shorter than the band it sits in — the two
         // buttons beside it are what stop the field from filling on its own.
         child: SizedBox(
-          height: saleLineFieldHeight,
+          height: saleLineFieldHeight(_textScaler),
           child: TextField(
             controller: quantityField,
             enabled: enabled,
@@ -281,8 +286,8 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         contentPadding: EdgeInsets.symmetric(
           horizontal: 8,
           vertical: dropdown
-              ? saleLineDropdownPadding
-              : saleLineTextFieldPadding,
+              ? saleLineDropdownPadding(_textScaler)
+              : saleLineTextFieldPadding(_textScaler),
         ),
       );
 
@@ -306,7 +311,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   /// one top and one bottom edge.
   Widget _band({required double width, required Widget child}) => SizedBox(
     width: width,
-    height: saleLineFieldHeight,
+    height: saleLineFieldHeight(_textScaler),
     child: child,
   );
 
@@ -347,7 +352,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   ) {
     final gap = SizedBox(width: spacing.xs);
     return SizedBox(
-      height: saleLineRowHeight,
+      height: saleLineRowHeight(_textScaler),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -399,7 +404,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: saleLineRowHeight,
+          height: saleLineRowHeight(_textScaler),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -414,7 +419,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         ),
         SizedBox(height: spacing.xxs),
         SizedBox(
-          height: saleLineFieldHeight,
+          height: saleLineFieldHeight(_textScaler),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

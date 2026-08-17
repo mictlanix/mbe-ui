@@ -110,10 +110,13 @@ extension PosSalesFilterBadge on PosSalesFilter {
   bool isToday(DateTime today) =>
       _isSameDate(from, today) && _isSameDate(to, today);
 
+  /// Facets shown in the filter drawer (spec 027 FR-025/FR-026) — date range
+  /// and status. `search` is deliberately excluded: it has its own visible
+  /// affordance (`CatalogSearchBar`) outside the drawer, matching every other
+  /// catalog's badge convention (`CashSessionFilterBadge.activeFilterCount`,
+  /// which has no search facet to exclude in the first place).
   int activeFilterCount(DateTime today) =>
-      (isToday(today) ? 0 : 1) +
-      (status != null ? 1 : 0) +
-      (search.isNotEmpty ? 1 : 0);
+      (isToday(today) ? 0 : 1) + (status != null ? 1 : 0);
 
   bool hasActiveFilters(DateTime today) => activeFilterCount(today) > 0;
 }

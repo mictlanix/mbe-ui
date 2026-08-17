@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
-import 'package:mbe_ui/features/sales/pos_defaults.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
@@ -220,7 +220,8 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
   /// The sale's customer, or the walk-in default until a sale exists — the
   /// same resolution `CustomerBar` beside this makes, so the shipping check
   /// and the address picker ask about the customer the band is naming.
-  int get _customerId => widget.sale?.customer ?? posDefaultCustomerId;
+  int get _customerId =>
+      widget.sale?.customer ?? ref.read(appSettingsProvider).posDefaultCustomerId;
 
   AppError? _error;
   String? _refusal;

@@ -368,6 +368,96 @@ abstract class AppLocalizations {
   /// **'Password reset successfully. You can now sign in.'**
   String get passwordResetSuccess;
 
+  /// User menu entry opening the user settings screen (spec 027 FR-016)
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsMenuTitle;
+
+  /// User settings screen AppBar title
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// User settings: appearance control label
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearanceLabel;
+
+  /// No description provided for @settingsAppearanceLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsAppearanceLight;
+
+  /// No description provided for @settingsAppearanceDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsAppearanceDark;
+
+  /// No description provided for @settingsAppearanceSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsAppearanceSystem;
+
+  /// User settings: text-size control label (spec 027 FR-019)
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get settingsTextSizeLabel;
+
+  /// No description provided for @settingsTextSizeSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get settingsTextSizeSmall;
+
+  /// No description provided for @settingsTextSizeNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get settingsTextSizeNormal;
+
+  /// No description provided for @settingsTextSizeLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get settingsTextSizeLarge;
+
+  /// No description provided for @settingsTextSizeExtraLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Extra large'**
+  String get settingsTextSizeExtraLarge;
+
+  /// User settings: language control label (spec 027 FR-018)
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageLabel;
+
+  /// No description provided for @settingsLanguageSpanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get settingsLanguageSpanish;
+
+  /// No description provided for @settingsLanguageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow system'**
+  String get settingsLanguageSystem;
+
   /// No description provided for @usersTitle.
   ///
   /// In en, this message translates to:
@@ -4476,6 +4566,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close session'**
   String get cashSessionCloseButtonLabel;
+
+  /// Title of the open/close-shift sheet (spec 027 US5)
+  ///
+  /// In en, this message translates to:
+  /// **'Shift'**
+  String get cashSessionShiftSheetTitle;
+
+  /// Tooltip on the toolbar action opening the shift sheet while its state is loading or errored (spec 027 US5)
+  ///
+  /// In en, this message translates to:
+  /// **'Shift'**
+  String get cashSessionShiftButtonTooltip;
 
   /// No description provided for @cashSessionPaymentsByMethodLabel.
   ///

@@ -380,6 +380,20 @@ That is what took it out of this feature and into its own spec.
 **Symmetry rule**: not mechanically detectable by grep. Scope stays the POS
 sale line (US6); the constitution rule governs new work.
 
+**Post-implementation check (T053)**: re-scanned after US4/US5/US6 landed.
+The `exchange_rates_list_screen.dart` violation above still holds, unchanged,
+still out of scope. No further filter-drawer-rule violation surfaced among
+the 17 screens. One implementation bug surfaced that this audit's grep
+methodology couldn't have found, because it isn't a per-screen compliance
+gap but a defect in the shared component the rule itself points to: the
+`CatalogFilterSheet` footer (`Row` + `Spacer` sizing two buttons to equal
+flex-share) overflows under long translated labels — es-MX's "Limpiar
+filtros" (15 chars) vs. the golden test's hardcoded "Clear all" (9 chars) —
+and so silently affected every one of the 10 screens using the drawer
+correctly, not just the two flagged above. Fixed in T045 with `OverflowBar`;
+noted here because a future formatting/consistency spec auditing this file
+again should not re-discover it as new.
+
 ---
 
 ## R9 — Runtime locale switching

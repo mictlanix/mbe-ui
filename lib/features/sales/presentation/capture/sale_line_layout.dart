@@ -1,3 +1,7 @@
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart' show TextScaler;
+
 /// Which of the three sale-line arrangements applies, and the one place the
 /// width thresholds between them live (spec 023 data-model §5, research
 /// R10). `SaleLineRow` is the only caller that actually branches on this —
@@ -37,48 +41,74 @@ enum SaleLineLayout { singleRow, twoRow, card }
 /// whole row taller with it.
 const saleLineSingleRowMinWidth = 950.0;
 
+/// The body role's base font size these dimensions are derived from — 14 px
+/// at the theme's 1.43 line height, unscaled. `bodyMedium` (what every
+/// control in the band renders in) is left at Material 3's own default size
+/// by the app's brand theming (`AppTheme._brandTextTheme` only re-fonts
+/// display/headline/title/label roles), so this really is the constant it
+/// looks like, not a value that could silently drift out of sync with the
+/// theme.
+const _saleLineBaseFontSize = 14.0;
+
+/// How much larger a line's whole vertical rhythm should be at the given
+/// [scaler] than at the unscaled default — anchored to how much the body
+/// role's own font size grows under it (spec 027 FR-024, research R2).
+/// `1.0` at the default text-size level (`TextSizeLevel.normal`'s factor is
+/// `1.0`, and [ComposedTextScaler] is the identity there), which is what
+/// keeps every dimension below byte-identical to before this feature at that
+/// level — no golden/screenshot re-baselining required there.
+double _saleLineScaleRatio(TextScaler scaler) =>
+    scaler.scale(_saleLineBaseFontSize) / _saleLineBaseFontSize;
+
 /// The height every control in a line shares — warehouse picker, quantity
 /// stepper, price, discount and tax (FR-038a: one height, so the band reads as
 /// one row of controls rather than five differently-sized boxes). Sized for the
 /// body role every one of them now renders in — 14 px rather than the 12 px
 /// they used to differ in — under a floating label, with the dense content
-/// padding `SaleLineRow` applies.
-const saleLineFieldHeight = 52.0;
+/// padding `SaleLineRow` applies. Scales with [_saleLineScaleRatio] so a
+/// larger text-size level grows the band instead of clipping the text inside
+/// it (FR-024).
+double saleLineFieldHeight(TextScaler scaler) => 52.0 * _saleLineScaleRatio(scaler);
 
 /// The height of the box a **text field** puts inside its decoration: one line
-/// of the body role (14 px at the theme's 1.43 line height).
-const _saleLineTextContentHeight = 20.0;
+/// of the body role (14 px at the theme's 1.43 line height), scaled.
+double _saleLineTextContentHeight(TextScaler scaler) => 20.0 * _saleLineScaleRatio(scaler);
 
 /// The height of the box a **dropdown** puts inside its decoration. Flutter's
 /// own `_kDenseButtonHeight` floor — `max(lineHeight, max(iconSize, 24))` in
 /// `DropdownButton._denseButtonHeight` — so a dense dropdown is 4 px taller
-/// inside than a dense text field however its icon and text are sized.
-const _saleLineDropdownContentHeight = 24.0;
+/// inside than a dense text field however its icon and text are sized, at the
+/// unscaled default. The `24` (icon-related, not font-derived) does not scale
+/// with text size, but Flutter's own `max(...)` does still apply here: once
+/// the scaled line height exceeds 24 (around 1.2x, before this feature's
+/// largest level of 1.3x), the taller line height wins the same way it would
+/// inside the real dropdown.
+double _saleLineDropdownContentHeight(TextScaler scaler) =>
+    math.max(20.0 * _saleLineScaleRatio(scaler), 24.0);
 
 /// The vertical content padding that brings a **text field** to
 /// [saleLineFieldHeight].
-const saleLineTextFieldPadding =
-    (saleLineFieldHeight - _saleLineTextContentHeight) / 2;
+double saleLineTextFieldPadding(TextScaler scaler) =>
+    (saleLineFieldHeight(scaler) - _saleLineTextContentHeight(scaler)) / 2;
 
 /// The vertical content padding that brings a **dropdown** to
-/// [saleLineFieldHeight] — 2 px less than a text field's, because its inner box
-/// is 4 px taller.
+/// [saleLineFieldHeight] — 2 px less than a text field's at the unscaled
+/// default, because its inner box is 4 px taller there.
 ///
 /// Paying the difference in *padding* rather than forcing the outer height is
 /// what makes the two kinds of control agree on both counts at once: the boxes
-/// come out the same height, and since each one centres a 20-px line of text
-/// inside the same 52-px decoration, the text lands on the same baseline too —
-/// the same baseline the line total sits on, being a 20-px line centred in the
-/// same band.
-const saleLineDropdownPadding =
-    (saleLineFieldHeight - _saleLineDropdownContentHeight) / 2;
+/// come out the same height, and since each one centres a line of text
+/// inside the same decoration, the text lands on the same baseline too —
+/// the same baseline the line total sits on.
+double saleLineDropdownPadding(TextScaler scaler) =>
+    (saleLineFieldHeight(scaler) - _saleLineDropdownContentHeight(scaler)) / 2;
 
 /// The height of the single row's control band, fixed so every line in the
 /// list is the same height whether its product name takes one line or two.
 /// Sized for the taller of the two things in it: the field band
 /// ([saleLineFieldHeight]) and the product cell's reserved two name lines plus
-/// its code line.
-const saleLineRowHeight = 60.0;
+/// its code line. Scales with [_saleLineScaleRatio], same as the field band.
+double saleLineRowHeight(TextScaler scaler) => 60.0 * _saleLineScaleRatio(scaler);
 
 /// Below this, even the two-row fallback has nowhere left to shrink — the
 /// caller substitutes `SaleLineCard` at this width today, so `SaleLineRow`

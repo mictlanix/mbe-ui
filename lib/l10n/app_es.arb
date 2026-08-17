@@ -55,6 +55,25 @@
   "setNewPasswordButton": "Establecer nueva contraseña",
   "passwordResetSuccess": "Contraseña restablecida exitosamente. Ya puede iniciar sesión.",
 
+  "settingsMenuTitle": "Configuración",
+  "settingsTitle": "Configuración",
+
+  "settingsAppearanceLabel": "Apariencia",
+  "settingsAppearanceLight": "Claro",
+  "settingsAppearanceDark": "Oscuro",
+  "settingsAppearanceSystem": "Sistema",
+
+  "settingsTextSizeLabel": "Tamaño de texto",
+  "settingsTextSizeSmall": "Pequeño",
+  "settingsTextSizeNormal": "Normal",
+  "settingsTextSizeLarge": "Grande",
+  "settingsTextSizeExtraLarge": "Muy grande",
+
+  "settingsLanguageLabel": "Idioma",
+  "settingsLanguageSpanish": "Español",
+  "settingsLanguageEnglish": "Inglés",
+  "settingsLanguageSystem": "Igual que el sistema",
+
   "usersTitle": "Usuarios",
   "newUserTooltip": "Nuevo usuario",
   "usersSearchLabel": "Buscar por usuario o correo",
@@ -784,6 +803,8 @@
   "cashSessionDrawerBusyError": "Esa caja ya tiene una sesión abierta. Elige otra caja.",
   "cashSessionCashierBusyError": "Ya tienes una sesión abierta. Cierra esa sesión antes de abrir otra.",
   "cashSessionCloseButtonLabel": "Cerrar sesión",
+  "cashSessionShiftSheetTitle": "Turno",
+  "cashSessionShiftButtonTooltip": "Turno",
   "cashSessionPaymentsByMethodLabel": "Pagos recibidos en este turno",
   "cashSessionStaleWarningMessage": "Esta sesión se abrió en un día anterior y debe cerrarse antes de continuar vendiendo.",
   "cashSessionOpenFailedError": "No se pudo abrir la sesión de caja.",

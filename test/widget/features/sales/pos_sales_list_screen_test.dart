@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -9,6 +10,7 @@ import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -115,6 +117,33 @@ void main() {
         customerRepositoryProvider.overrideWithValue(customers),
       ],
     );
+  }
+
+  // A real `GoRouter`, for tests that actually trigger a `context.go` (the
+  // filter drawer's own navigation calls) rather than only inspecting
+  // widget state — `pumpList`/`pumpPos` above have no GoRouter in their
+  // tree at all, which is fine for read-only assertions but throws the
+  // moment anything calls `context.go`.
+  Future<GoRouter> pumpListRouted(
+    WidgetTester tester, {
+    ListQuery query = const ListQuery(),
+  }) async {
+    when(() => cashSessions.getCurrent()).thenAnswer(
+      (_) async => const CurrentSession(state: SessionState.open),
+    );
+    final (router, _) = await pumpPosRouted(
+      tester,
+      initialLocation: query.toUri('/sales/pos').toString(),
+      overrides: [
+        authNotifierProvider.overrideWith(
+          () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _user())),
+        ),
+        salesOrderOverride(salesOrders),
+        cashSessionRepositoryProvider.overrideWithValue(cashSessions),
+        customerRepositoryProvider.overrideWithValue(customers),
+      ],
+    );
+    return router;
   }
 
   group('PosSalesListScreen — rows and Edit gating (FR-006, FR-006a)', () {
@@ -279,7 +308,14 @@ void main() {
 
       final l10n = await AppLocalizations.delegate.load(const Locale('es', 'MX'));
       expect(find.text(l10n.posSalesEmptyToday), findsOneWidget);
-      expect(find.text(l10n.dateRangeFilterToday), findsOneWidget);
+      // The date-range/status facets moved into the shared filter drawer
+      // (spec 027 US4) — no inline chip renders any more; the badged button
+      // is what's visible in the filter row, with no badge count since
+      // today's default range and "every status" are both inactive.
+      expect(find.byKey(const Key('pos_sales_filter_button')), findsOneWidget);
+      expect(find.text(l10n.dateRangeFilterToday), findsNothing);
+      final badge = tester.widget<Badge>(find.byType(Badge));
+      expect(badge.isLabelVisible, isFalse);
     });
 
     testWidgets(
@@ -299,6 +335,92 @@ void main() {
         // generic message every other catalog uses.
         expect(find.text(l10n.filteredEmptyTitle), findsOneWidget);
         expect(find.text(l10n.posSalesEmptyToday), findsNothing);
+      },
+    );
+  });
+
+  group('PosSalesListScreen — filter drawer (spec 027 US4/FR-025/FR-026)', () {
+    testWidgets(
+      'no inline facet chips — only the search box, primary action and one '
+      'badged filters button',
+      (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DateRangeFilterChip), findsNothing);
+        expect(find.byKey(const Key('pos_sales_status_filter_chip')), findsNothing);
+        expect(find.byKey(const Key('pos_sales_search_field')), findsOneWidget);
+        expect(find.byKey(const Key('pos_sales_new_sale_button')), findsOneWidget);
+        expect(find.byKey(const Key('pos_sales_filter_button')), findsOneWidget);
+      },
+    );
+
+    testWidgets('the badge reflects an active status facet', (tester) async {
+      stubListSales(salesOrders, page: testSalesPage(const []));
+      await pumpList(
+        tester,
+        query: const ListQuery(facets: {'status': ['draft']}),
+      );
+      await tester.pumpAndSettle();
+
+      final badge = tester.widget<Badge>(find.byType(Badge));
+      expect(badge.isLabelVisible, isTrue);
+      expect((badge.label as Text?)?.data, '1');
+    });
+
+    testWidgets(
+      'opening the drawer and choosing a status navigates to a URL carrying '
+      'that facet',
+      (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpListRouted(tester);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('pos_sales_filter_status_draft')));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => salesOrders.listSales(
+            pointSale: any(named: 'pointSale'),
+            status: SaleStatus.draft,
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(greaterThan(0));
+      },
+    );
+
+    testWidgets(
+      'clear-all from the drawer returns to today\'s range and no status — '
+      'never an unbounded range',
+      (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpListRouted(
+          tester,
+          query: const ListQuery(
+            facets: {
+              'date-from': ['2026-08-01'],
+              'date-to': ['2026-08-01'],
+              'status': ['draft'],
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+        await tester.pumpAndSettle();
+
+        final badge = tester.widget<Badge>(find.byType(Badge));
+        expect(badge.isLabelVisible, isFalse);
       },
     );
   });

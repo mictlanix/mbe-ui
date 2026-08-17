@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/widgets/app_side_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -33,12 +34,13 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _cashSessionsPath = '/sales/cash-sessions';
 
-/// The shift panel + history list screen (contracts/cash-session-screens.md
-/// §1). Shift panel (US1) stacked above the history list (US3), in one
-/// scroll view — not a filter bar `search:` slot, since the endpoint has no
-/// `search` parameter and a session has no free-text field (research.md §12,
-/// spec D-003); the slot renders an empty [SizedBox], a deliberate,
-/// documented departure from every other list screen.
+/// The register's shift management + history list screen (spec 027 US5;
+/// contracts/cash-session-screens.md §1 as amended). A standard list screen
+/// — filter row, list, pagination — matching every other catalog: the
+/// shift panel that used to sit above the history list (spec 021) now lives
+/// in a sheet launched from [_ShiftToolbarAction], which itself carries the
+/// shift's state so relocating the panel does not hide information a
+/// cashier used to see at a glance (FR-027, FR-028, FR-028a).
 class CashSessionsScreen extends ConsumerWidget {
   const CashSessionsScreen({super.key, required this.query});
 
@@ -46,24 +48,84 @@ class CashSessionsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _ShiftPanel(),
-          const SizedBox(height: 24),
-          const Divider(),
-          const SizedBox(height: 16),
-          _HistoryListSection(query: query),
-        ],
+    return _HistoryListSection(query: query);
+  }
+}
+
+/// The toolbar action that opens the shift sheet (FR-027) — and, since the
+/// shift's state is no longer visible inline, the one place that state must
+/// now be communicated (FR-028a): absent for a user who cannot open a shift
+/// and has none to close; "open a shift" when there is none; the drawer
+/// name plus a status chip when there is one, stale included.
+class _ShiftToolbarAction extends ConsumerWidget {
+  const _ShiftToolbarAction();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final access = ref.watch(accessControlProvider);
+    final canOpen = access.can(SystemObject.pos, AccessRight.create);
+    final currentAsync = ref.watch(currentSessionControllerProvider);
+
+    void openSheet() => showAppSideSheet(
+      context,
+      title: l10n.cashSessionShiftSheetTitle,
+      builder: (_) => const _ShiftSheetContent(),
+    );
+
+    return currentAsync.when(
+      // Loading/error still need an affordance — the sheet's own body
+      // reproduces the same `.when` and shows the real error there; the
+      // button itself just can't yet say which state it's opening into.
+      loading: () => IconButton.outlined(
+        key: const Key('cash_sessions_shift_button'),
+        icon: const Icon(Icons.point_of_sale_outlined),
+        tooltip: l10n.cashSessionShiftButtonTooltip,
+        onPressed: openSheet,
       ),
+      error: (error, _) => IconButton.outlined(
+        key: const Key('cash_sessions_shift_button'),
+        icon: Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
+        tooltip: l10n.cashSessionShiftButtonTooltip,
+        onPressed: openSheet,
+      ),
+      data: (current) {
+        if (current.state == SessionState.none && !canOpen) {
+          return const SizedBox.shrink();
+        }
+        if (current.state == SessionState.none) {
+          return OutlinedButton.icon(
+            key: const Key('cash_sessions_shift_button'),
+            icon: const Icon(Icons.point_of_sale_outlined),
+            label: Text(l10n.cashSessionOpenButtonLabel),
+            onPressed: openSheet,
+          );
+        }
+        final status = current.state == SessionState.stale
+            ? CashSessionStatus.stale
+            : CashSessionStatus.open;
+        return OutlinedButton(
+          key: const Key('cash_sessions_shift_button'),
+          onPressed: openSheet,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(current.session!.cashDrawerName),
+              const SizedBox(width: 8),
+              CashSessionStatusChip(status: status),
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
-class _ShiftPanel extends ConsumerWidget {
-  const _ShiftPanel();
+/// The shift sheet's body — open-shift form or open/stale shift summary,
+/// carried over unchanged from the screen's former inline panel (FR-028):
+/// nothing here was dropped, only relocated.
+class _ShiftSheetContent extends ConsumerWidget {
+  const _ShiftSheetContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -96,6 +158,16 @@ class _OpenForm extends ConsumerWidget {
     final canOpen = access.can(SystemObject.pos, AccessRight.create);
     final canBrowseDrawers = access.can(SystemObject.cashDrawers, AccessRight.read);
     final hasAssignedDrawer = settings?.cashDrawerId != null;
+
+    // Dismiss the sheet the moment a submit succeeds (FR-028b) — the form's
+    // own `saved` flag flips true right after `currentSessionControllerProvider`
+    // is invalidated, so the history list and the toolbar action are already
+    // refreshing by the time this pops.
+    ref.listen(openSessionFormControllerProvider, (previous, next) {
+      if (next.saved && !(previous?.saved ?? false)) {
+        Navigator.of(context).pop();
+      }
+    });
 
     // Seeded here, not from the screen's initState: `openSessionFormControllerProvider`
     // is autoDispose, so seeding it before anything watches it (e.g. from a
@@ -177,9 +249,13 @@ class _OpenForm extends ConsumerWidget {
           if (formState.blockingSessionId != null)
             TextButton(
               key: const Key('cash_session_go_close_blocking_session_button'),
-              onPressed: () => context.push(
-                '$_cashSessionsPath/${formState.blockingSessionId}',
-              ),
+              onPressed: () {
+                // Dismiss the sheet first (Edge Cases: "Navigating out of
+                // the shift sheet") — never leave it stranded over the
+                // pushed route.
+                Navigator.of(context).pop();
+                context.push('$_cashSessionsPath/${formState.blockingSessionId}');
+              },
               child: Text(l10n.cashSessionCloseButtonLabel),
             ),
           const SizedBox(height: 8),
@@ -264,8 +340,14 @@ class _OpenShiftCard extends ConsumerWidget {
         const SizedBox(height: 16),
         FilledButton(
           key: const Key('cash_session_close_button'),
-          onPressed: () =>
-              context.push('$_cashSessionsPath/${session.cashSessionId}'),
+          onPressed: () {
+            // Dismiss the sheet first (FR-028b/Edge Cases) — the close
+            // action navigates away to the session's own detail screen
+            // rather than submitting in place, so the sheet must not be
+            // left stranded over that pushed route.
+            Navigator.of(context).pop();
+            context.push('$_cashSessionsPath/${session.cashSessionId}');
+          },
           child: Text(l10n.cashSessionCloseButtonLabel),
         ),
       ],
@@ -288,37 +370,46 @@ class _HistoryListSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatalogFilterBar(
-          // No `search:` capability exists for this endpoint (research.md
-          // §12) — the slot is required by the widget, so it renders empty
-          // rather than a dead search box wired to nothing.
-          search: const SizedBox.shrink(),
-          filters: [
-            Badge.count(
-              count: filter.activeFilterCount,
-              isLabelVisible: filter.hasActiveFilters,
-              child: IconButton.outlined(
-                key: const Key('cash_sessions_filter_button'),
-                icon: const Icon(Icons.tune),
-                tooltip: l10n.filtersTooltip,
-                onPressed: () => showCatalogFilterSheet(
-                  context,
-                  title: l10n.filtersButton,
-                  clearAllLabel: l10n.clearAllFilters,
-                  applyLabel: l10n.applyFilters,
-                  onClearAll: () => context.go(_cashSessionsPath),
-                  builder: (_) => CurrentListQueryBuilder(
-                    builder: (context, query) =>
-                        _CashSessionFiltersPanel(query: query),
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: CatalogFilterBar(
+            // No `search:` capability exists for this endpoint (research.md
+            // §12) — omitted entirely (spec 027 FR-029) rather than a dead
+            // search box wired to nothing.
+            actions: const [_ShiftToolbarAction()],
+            filters: [
+              Badge.count(
+                count: filter.activeFilterCount,
+                isLabelVisible: filter.hasActiveFilters,
+                child: IconButton.outlined(
+                  key: const Key('cash_sessions_filter_button'),
+                  icon: const Icon(Icons.tune),
+                  tooltip: l10n.filtersTooltip,
+                  onPressed: () => showCatalogFilterSheet(
+                    context,
+                    title: l10n.filtersButton,
+                    clearAllLabel: l10n.clearAllFilters,
+                    applyLabel: l10n.applyFilters,
+                    onClearAll: () => context.go(_cashSessionsPath),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, query) =>
+                          _CashSessionFiltersPanel(query: query),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 480,
+        // `Expanded`, not a fixed height (spec 027 FR-027): a bounded
+        // `SizedBox` made sense while this section sat inside a whole-page
+        // `SingleChildScrollView` alongside the shift panel (spec 021) —
+        // now that the route is a standard list screen (filter row, list,
+        // pagination), it fills whatever height the `Scaffold` body gives
+        // it, exactly like every other catalog list, instead of overflowing
+        // a shorter viewport by a fixed 480px demand.
+        Expanded(
           child: CatalogListStateView<CashSession>(
             state: pageAsync,
             isFiltered: query.isFiltered,

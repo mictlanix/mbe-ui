@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/app/app.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 
 /// Opt out with `--dart-define=ENABLE_FLUTTER_DRIVER_EXTENSION=false` for a
 /// manual debug run where the driver extension isn't wanted (e.g. it can
@@ -39,5 +41,15 @@ Future<void> main() async {
   // DateFormat beyond the generated l10n code (specs/011-product-pricing
   // research.md §10).
   await initializeDateFormatting();
-  runApp(const ProviderScope(child: App()));
+  // Resolved here, before runApp, so every UserDisplayPreferencesController
+  // read is synchronous and the first frame already reflects a stored
+  // choice — no flash of the default theme/locale/text-size on launch
+  // (spec 027 research.md R5).
+  final prefs = await SharedPreferences.getInstance();
+  runApp(
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      child: const App(),
+    ),
+  );
 }

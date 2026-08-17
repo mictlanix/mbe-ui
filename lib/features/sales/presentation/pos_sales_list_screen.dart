@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
+import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
@@ -120,29 +121,32 @@ class PosSalesListScreen extends ConsumerWidget {
               ),
             ],
             filters: [
-              DateRangeFilterChip(
-                from: filter.from,
-                to: filter.to,
-                isToday: filter.isToday(today),
-                onChanged: (range) => goTo(
-                  query
-                      .withFacet('date-from', encodePosSalesDateFacet(range.start))
-                      .withFacet('date-to', encodePosSalesDateFacet(range.end))
-                      .copyWith(pageIndex: 0),
-                ),
-                onClear: () => goTo(
-                  query
-                      .withFacet('date-from', null)
-                      .withFacet('date-to', null)
-                      .copyWith(pageIndex: 0),
-                ),
-              ),
-              _StatusFilterChip(
-                status: filter.status,
-                onChanged: (status) => goTo(
-                  query
-                      .withFacet('status', status?.name)
-                      .copyWith(pageIndex: 0),
+              Badge.count(
+                count: filter.activeFilterCount(today),
+                isLabelVisible: filter.hasActiveFilters(today),
+                child: IconButton.outlined(
+                  key: const Key('pos_sales_filter_button'),
+                  icon: const Icon(Icons.tune),
+                  tooltip: l10n.filtersTooltip,
+                  onPressed: () => showCatalogFilterSheet(
+                    context,
+                    title: l10n.filtersButton,
+                    clearAllLabel: l10n.clearAllFilters,
+                    applyLabel: l10n.applyFilters,
+                    onClearAll: () => goTo(
+                      query
+                          .withFacet('date-from', null)
+                          .withFacet('date-to', null)
+                          .withFacet('status', null)
+                          .copyWith(pageIndex: 0),
+                    ),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, currentQuery) => _PosSalesFiltersPanel(
+                        query: currentQuery,
+                        today: today,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -267,40 +271,72 @@ class _NewSaleAction extends StatelessWidget {
   }
 }
 
-/// Single-select status facet (contracts/pos-sales-list.md §4.2), absent
-/// meaning every status. A menu rather than four separate chips — mbe-api's
-/// `status` filter answers with more than what was asked (spec 020's own
-/// finding on `listOpen`), which the list controller narrows client-side;
-/// this control only picks the one status a cashier means.
-class _StatusFilterChip extends StatelessWidget {
-  const _StatusFilterChip({required this.status, required this.onChanged});
+/// The list's two facets (spec 027 US4, contracts/pos-sales-list.md §4):
+/// date range and status, moved off the filter row into the shared drawer
+/// (constitution §VI) — mirroring `cash_sessions_screen.dart`'s
+/// `_CashSessionFiltersPanel`. `search` has no facet here: it stays in the
+/// filter row's own search box, outside the drawer.
+class _PosSalesFiltersPanel extends StatelessWidget {
+  const _PosSalesFiltersPanel({required this.query, required this.today});
 
-  final SaleStatus? status;
-  final ValueChanged<SaleStatus?> onChanged;
+  final ListQuery query;
+  final DateTime today;
 
   @override
   Widget build(BuildContext context) {
+    final filter = PosSalesFilter.fromQuery(query, today: today);
     final l10n = AppLocalizations.of(context)!;
-    final label = status == null
-        ? l10n.posSalesStatusFilterAll
-        : posSaleStatusLabel(l10n, status!);
 
-    return PopupMenuButton<SaleStatus?>(
-      key: const Key('pos_sales_status_filter_chip'),
-      tooltip: l10n.posSalesStatusFilterLabel,
-      onSelected: onChanged,
-      itemBuilder: (context) => [
-        PopupMenuItem(value: null, child: Text(l10n.posSalesStatusFilterAll)),
-        for (final s in SaleStatus.values)
-          PopupMenuItem(value: s, child: Text(posSaleStatusLabel(l10n, s))),
+    void goTo(ListQuery updated) => context.go(updated.toUri(_posPath).toString());
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.dateRangeFilterLabel, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        DateRangeFilterChip(
+          from: filter.from,
+          to: filter.to,
+          isToday: filter.isToday(today),
+          onChanged: (range) => goTo(
+            query
+                .withFacet('date-from', encodePosSalesDateFacet(range.start))
+                .withFacet('date-to', encodePosSalesDateFacet(range.end))
+                .copyWith(pageIndex: 0),
+          ),
+          onClear: () => goTo(
+            query
+                .withFacet('date-from', null)
+                .withFacet('date-to', null)
+                .copyWith(pageIndex: 0),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(l10n.posSalesStatusFilterLabel, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ChoiceChip(
+              key: const Key('pos_sales_filter_status_all'),
+              label: Text(l10n.posSalesStatusFilterAll),
+              selected: filter.status == null,
+              onSelected: (_) =>
+                  goTo(query.withFacet('status', null).copyWith(pageIndex: 0)),
+            ),
+            for (final status in SaleStatus.values)
+              ChoiceChip(
+                key: Key('pos_sales_filter_status_${status.name}'),
+                label: Text(posSaleStatusLabel(l10n, status)),
+                selected: filter.status == status,
+                onSelected: (_) =>
+                    goTo(query.withFacet('status', status.name).copyWith(pageIndex: 0)),
+              ),
+          ],
+        ),
       ],
-      child: Chip(
-        avatar: const Icon(Icons.filter_alt_outlined, size: 18),
-        label: Text(label),
-        backgroundColor: status != null
-            ? Theme.of(context).colorScheme.secondaryContainer
-            : null,
-      ),
     );
   }
 }

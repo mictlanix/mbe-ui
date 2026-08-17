@@ -50,6 +50,12 @@ class UserMenuButton extends ConsumerWidget {
           child: Text(l10n.changePasswordMenuTitle),
         ),
         MenuItemButton(
+          key: const Key('user_menu_settings'),
+          leadingIcon: const Icon(Icons.settings_outlined),
+          onPressed: () => context.push('/auth/account/settings'),
+          child: Text(l10n.settingsMenuTitle),
+        ),
+        MenuItemButton(
           key: const Key('user_menu_logout'),
           leadingIcon: const Icon(Icons.logout),
           onPressed: () => ref.read(authNotifierProvider.notifier).signOut(),

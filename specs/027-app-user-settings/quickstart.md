@@ -159,12 +159,18 @@ flutter test test/widget/features/sales/
 ## 7. Alignment (FR-031/032/035)
 
 ```bash
-flutter test test/widget/features/sales/ -n "symmetry"
+flutter test test/widget/features/sales/sale_line_symmetry_test.dart
 ```
 
 Expected: measured top inset equals bottom inset, and the control band's text
-baseline equals the line total's, in all three sale-line layouts. Visually,
-the extra space under a sale line reported in the spec is gone.
+baseline equals the line total's, in all three sale-line layouts, at all four
+text-size levels. This is a regression lock, not a bug fix: investigating the
+originally-reported bottom-heavy/baseline-mismatch rendering found it does not
+reproduce under the app's real theme (a bare-`MaterialApp` test harness had
+masked the real decoration insets during the original diagnosis) — see
+research.md R8's symmetry note and DESIGN.md §4.3. What this test locks in is
+that the already-correct alignment stays correct as text-size support is
+added.
 
 ---
 
