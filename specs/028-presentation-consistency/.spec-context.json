@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Presentation Consistency — One Formatting Surface & Flex Spacing",
   "branch": "028-presentation-consistency",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-17T10:35:44.170Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-17T10:51:45.234Z"
     }
   ]
 }
