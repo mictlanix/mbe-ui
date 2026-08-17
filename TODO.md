@@ -33,3 +33,6 @@
   - Formatos de fecha, montos, idioma de la aplicación
 - Configuraciones del usuario
   - Tema de la aplicacion (light / dark)
+
+## 2026-08-16
+- Falta botón para editar destinos (destination card)
