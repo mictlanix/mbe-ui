@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -16,6 +17,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/cash_drawer_repository.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/cash_session_status.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
@@ -133,8 +135,11 @@ void main() {
       );
     }
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         authNotifierProvider.overrideWith(
           () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
         ),
@@ -380,13 +385,17 @@ void main() {
         );
         await openShiftSheet(tester);
 
-        // es-MX formatting: period thousands separator, comma decimal
-        // ("3.240,00 $") — the harness now pins `Locale('es', 'MX')`
-        // explicitly (previously undetermined, defaulting to the test
-        // environment's own locale), which is what surfaced this
-        // assertion's prior '3,240' (US-style) as never having actually
-        // exercised es-MX formatting.
-        expect(find.textContaining('3.240'), findsOneWidget);
+        // spec 028: this screen's own `Localizations.localeOf(context)
+        // .toString()` used to resolve to bare 'es' (Spain-style: period
+        // thousands, comma decimal — "3.240,00 $"), not 'es_MX', because
+        // Flutter resolves against `supportedLocales`' bare `Locale('es')`
+        // entry and drops the country subtag. `formattersProvider` reads
+        // `resolvedLocaleProvider` instead, which deliberately preserves the
+        // country subtag for exactly this reason (research.md R1/R9) — so
+        // this now renders genuine es-MX (US-style: "$3,240.00"), matching
+        // every other currency site in the app, which never had this bug
+        // because they never called `Localizations.localeOf` themselves.
+        expect(find.textContaining(r'$3,240.00'), findsOneWidget);
         expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
       },
     );

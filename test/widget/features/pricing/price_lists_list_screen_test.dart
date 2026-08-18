@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -15,6 +16,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -91,9 +93,13 @@ void main() {
       ],
     );
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           priceListRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
@@ -114,8 +120,11 @@ void main() {
 
     expect(find.text('Retail'), findsOneWidget);
     expect(find.text('Wholesale'), findsOneWidget);
-    expect(find.text('40%'), findsOneWidget);
-    expect(find.text('10%'), findsOneWidget);
+    // spec 028: display.percent renders '40.00 %', not the old bare '40%'
+    // (research.md R4 — the two percent paths this feature unifies never
+    // agreed, so unifying them changes this rendering deliberately).
+    expect(find.text('40.00 %'), findsOneWidget);
+    expect(find.text('10.00 %'), findsOneWidget);
   });
 
   testWidgets('search box and pagination are present', (tester) async {
@@ -181,9 +190,13 @@ void main() {
         ],
       );
 
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             priceListRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),

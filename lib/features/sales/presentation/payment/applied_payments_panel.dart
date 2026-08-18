@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
@@ -24,6 +24,7 @@ class AppliedPaymentsPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final payments = ref.watch(orderPaymentsControllerProvider(saleId));
+    final fmt = ref.watch(formattersProvider);
 
     final theme = Theme.of(context);
     final spacing = theme.spacing;
@@ -78,7 +79,7 @@ class AppliedPaymentsPanel extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          MoneyFormatters.currency(payment.amount),
+                          fmt.display.currency(payment.amount),
                           style: typeRoles.money.copyWith(
                             decoration: payment.cancelled
                                 ? TextDecoration.lineThrough

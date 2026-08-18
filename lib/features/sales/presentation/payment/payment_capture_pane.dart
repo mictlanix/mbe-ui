@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
@@ -79,6 +79,7 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
     final enabled = widget.enabled;
     final draft = ref.watch(paymentControllerProvider);
     final notifier = ref.read(paymentControllerProvider.notifier);
+    final fmt = ref.watch(formattersProvider);
 
     // Keep the field in step when the controller resets the draft after a
     // successful tender.
@@ -104,7 +105,7 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
             ),
             for (final note in _noteChips(sale.balance))
               ActionChip(
-                label: Text(MoneyFormatters.currency(note)),
+                label: Text(fmt.display.currency(note)),
                 onPressed: enabled ? () => _quickAmount(note) : null,
               ),
             ActionChip(

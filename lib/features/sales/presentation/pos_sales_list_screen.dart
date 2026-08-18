@@ -13,8 +13,8 @@ import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -87,7 +87,7 @@ class PosSalesListScreen extends ConsumerWidget {
     final sessionOpen =
         ref.watch(currentSessionControllerProvider).valueOrNull?.state !=
         SessionState.none;
-    final locale = Localizations.localeOf(context).toString();
+    final fmt = ref.watch(formattersProvider);
 
     void goTo(ListQuery updated) => context.go(updated.toUri(_posPath).toString());
 
@@ -179,7 +179,7 @@ class PosSalesListScreen extends ConsumerWidget {
                   label: l10n.posSalesColumnDate,
                   size: ColumnSize.M,
                   cellBuilder: (context, sale) =>
-                      Text(MoneyFormatters.dateTime(sale.date, locale: locale)),
+                      Text(fmt.display.dateTime(sale.date)),
                 ),
                 DataTableColumn.text(
                   label: l10n.posSalesColumnCustomer,
@@ -196,14 +196,14 @@ class PosSalesListScreen extends ConsumerWidget {
                   numeric: true,
                   size: ColumnSize.S,
                   cellBuilder: (context, sale) =>
-                      Text(MoneyFormatters.currency(sale.total, locale: locale)),
+                      Text(fmt.display.currency(sale.total)),
                 ),
                 DataTableColumn(
                   label: l10n.posSalesColumnBalance,
                   numeric: true,
                   size: ColumnSize.S,
                   cellBuilder: (context, sale) =>
-                      Text(MoneyFormatters.currency(sale.balance, locale: locale)),
+                      Text(fmt.display.currency(sale.balance)),
                 ),
               ],
               rows: page.items,

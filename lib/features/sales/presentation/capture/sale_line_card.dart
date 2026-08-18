@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
@@ -54,6 +54,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
     final line = widget.line;
     final enabled = this.enabled;
     final shortfall = this.shortfall(l10n);
+    final fmt = ref.watch(formattersProvider);
 
     return Card(
       key: Key('sale_line_card_${line.id}'),
@@ -67,6 +68,14 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          // Every gap in this column is a uniform 8px (spec 028 US2 worked
+          // example, contracts/spacing-conversion.md) — declared once here
+          // rather than as a SizedBox between every child. The conditional
+          // shortfall child below needed a Padding(top: 8) only because a
+          // collection-`if` child can't take a preceding spacer; `spacing`
+          // handles that natively; when `shortfall` is null the child never
+          // enters the list, so no gap is left dangling.
+          spacing: 8,
           children: [
             // Product and the line's own total — the two things worth seeing
             // without reading any further.
@@ -94,7 +103,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  MoneyFormatters.currency(line.total),
+                  fmt.display.currency(line.total),
                   style: theme.textTheme.titleMedium,
                 ),
                 // The error colour every destructive action in the product
@@ -109,7 +118,6 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                 ),
               ],
             ),
-            const SizedBox(height: 8),
             // Quantity gets its own row: it is the field a cashier touches
             // most, and the steppers need room for a thumb.
             Row(
@@ -143,7 +151,6 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                 ),
               ],
             ),
-            const SizedBox(height: 8),
             // Read-only here as in the wide row (FR-038c) — a price is
             // adjusted through the discount, not typed over.
             TextField(
@@ -156,8 +163,8 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
               ),
               decoration: InputDecoration(labelText: l10n.posLinePriceLabel),
             ),
-            const SizedBox(height: 8),
             Row(
+              spacing: 8,
               children: [
                 Expanded(
                   child: TextField(
@@ -172,44 +179,41 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                     onSubmitted: (v) => updateRate(discountRate: v),
                   ),
                 ),
-                const SizedBox(width: 8),
                 // Chosen, not typed (FR-038b).
                 Expanded(child: taxRatePicker()),
               ],
             ),
-            const SizedBox(height: 8),
             warehousePicker(),
+            // Stacked rather than side by side: the warning text and the
+            // adjust action both need the full width here. No Padding(top: 8)
+            // wrapper — the outer Column's own `spacing` supplies that gap,
+            // and only when this child is actually present.
             if (shortfall != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                // Stacked rather than side by side: the warning text and the
-                // adjust action both need the full width here.
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.warning_amber,
-                          size: 16,
-                          color: theme.colorScheme.error,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            shortfall,
-                            style: TextStyle(color: theme.colorScheme.error),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (enabled)
-                      TextButton(
-                        onPressed: () => update(quantity: availableQuantity),
-                        child: Text(l10n.posLineAdjustToAvailable),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    spacing: 4,
+                    children: [
+                      Icon(
+                        Icons.warning_amber,
+                        size: 16,
+                        color: theme.colorScheme.error,
                       ),
-                  ],
-                ),
+                      Expanded(
+                        child: Text(
+                          shortfall,
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (enabled)
+                    TextButton(
+                      onPressed: () => update(quantity: availableQuantity),
+                      child: Text(l10n.posLineAdjustToAvailable),
+                    ),
+                ],
               ),
           ],
         ),

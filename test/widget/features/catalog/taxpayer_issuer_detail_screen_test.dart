@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_api_client/mbe_api_client.dart'
     hide EntityStatus, ValidationError;
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -12,6 +13,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_certificate_repository_impl.dart';
@@ -84,9 +86,13 @@ void main() {
       when(() => repository.getDetail(rfc)).thenAnswer((_) async => _issuer);
     }
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
           satCatalogRepositoryProvider.overrideWithValue(satRepository),
           taxpayerCertificateRepositoryProvider.overrideWithValue(
@@ -204,9 +210,13 @@ void main() {
       ],
     );
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
           satCatalogRepositoryProvider.overrideWithValue(satRepository),
           taxpayerCertificateRepositoryProvider.overrideWithValue(
@@ -261,8 +271,11 @@ void main() {
       ]),
     );
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
         satCatalogRepositoryProvider.overrideWithValue(satRepository),
         taxpayerCertificateRepositoryProvider.overrideWithValue(

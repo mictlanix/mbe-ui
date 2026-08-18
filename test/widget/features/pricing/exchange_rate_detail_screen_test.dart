@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -14,8 +15,8 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockExchangeRateRepository extends Mock
@@ -63,9 +64,13 @@ void main() {
       ).thenAnswer((_) async => _existing);
     }
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           exchangeRateRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
         ],
@@ -118,14 +123,11 @@ void main() {
 
   testWidgets(
     'the date field opens showDatePicker and displays the selected date '
-    'formatted per locale',
+    'in the ISO format the formatting surface defaults to (spec 028 FR-011)',
     (tester) async {
       await pumpScreen(tester, exchangeRateId: 1);
 
-      expect(
-        find.text(MoneyFormatters.date(DateTime(2026, 7, 17))),
-        findsOneWidget,
-      );
+      expect(find.text('2026-07-17'), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('exchange_rate_date_field')));
       await tester.pumpAndSettle();

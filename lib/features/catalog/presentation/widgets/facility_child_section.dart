@@ -65,6 +65,7 @@ class FacilityChildSection extends StatelessWidget {
       key: sectionKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
         children: [
           Row(
             children: [
@@ -88,7 +89,6 @@ class FacilityChildSection extends StatelessWidget {
               if (action != null) ...[const SizedBox(width: 12), action],
             ],
           ),
-          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsetsDirectional.only(start: 6),
             child: DecoratedBox(

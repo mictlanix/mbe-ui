@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -19,6 +20,7 @@ import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/product_price_repository.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_controller.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -86,9 +88,13 @@ void main() {
       initialProductDisplayText: initialProductDisplayText,
       standalone: standalone,
     );
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
           productPriceRepositoryProvider.overrideWithValue(
@@ -172,8 +178,10 @@ void main() {
       // 2026-07-18 — live verification showed values like 0.00/1.00 across
       // every list, matching the legacy "profit threshold" semantics
       // PriceList's own margins already use, FR-006/FR-011).
-      expect(find.text('10%'), findsOneWidget);
-      expect(find.text('40%'), findsOneWidget);
+      // spec 028: display.percent renders '10.00 %'/'40.00 %', not the old
+      // bare '10%'/'40%' (research.md R4).
+      expect(find.text('10.00 %'), findsOneWidget);
+      expect(find.text('40.00 %'), findsOneWidget);
     },
   );
 

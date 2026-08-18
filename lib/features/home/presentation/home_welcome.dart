@@ -112,11 +112,10 @@ class _XbeDashboard extends ConsumerWidget {
         constraints: const BoxConstraints(maxWidth: 1200),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 24,
           children: [
             _GreetingCard(greetingName: greetingName, l10n: l10n, theme: theme),
-            const SizedBox(height: 24),
             const HomeDashboardTiles(),
-            const SizedBox(height: 24),
             const HomeActivityFeed(),
           ],
         ),

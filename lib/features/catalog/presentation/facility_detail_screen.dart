@@ -395,9 +395,9 @@ class _AddressField extends StatelessWidget {
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Expanded(child: picker),
-        const SizedBox(width: 8),
         Padding(
           padding: const EdgeInsets.only(top: 4),
           child: IconButton.outlined(

@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
@@ -33,7 +35,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// hand-rolled header rather than `ExpansionTile`, since the header packs a
 /// badge, a divider and two trailing icons that `ExpansionTile`'s
 /// leading/trailing slots don't have room for.
-class DestinationCard extends StatefulWidget {
+class DestinationCard extends ConsumerStatefulWidget {
   const DestinationCard({
     super.key,
     required this.destination,
@@ -80,10 +82,10 @@ class DestinationCard extends StatefulWidget {
   final bool initiallyExpanded;
 
   @override
-  State<DestinationCard> createState() => _DestinationCardState();
+  ConsumerState<DestinationCard> createState() => _DestinationCardState();
 }
 
-class _DestinationCardState extends State<DestinationCard> {
+class _DestinationCardState extends ConsumerState<DestinationCard> {
   late bool _expanded = widget.initiallyExpanded;
 
   /// One controller per sale line, created lazily and kept for the card's
@@ -138,7 +140,7 @@ class _DestinationCardState extends State<DestinationCard> {
     final existing = _quantityControllers[saleLineId];
     if (existing != null) return existing;
     return _quantityControllers[saleLineId] = TextEditingController(
-      text: formatQuantity(value),
+      text: ref.read(formattersProvider).field.quantity(value),
     );
   }
 
@@ -173,11 +175,13 @@ class _DestinationCardState extends State<DestinationCard> {
       // field snaps back to what is actually assigned rather than sitting
       // there looking accepted.
       final displayed = _displayed(line);
-      _controllerFor(line.saleLineId, displayed).text = formatQuantity(displayed);
+      _controllerFor(line.saleLineId, displayed).text =
+          ref.read(formattersProvider).field.quantity(displayed);
       return;
     }
 
-    _controllerFor(line.saleLineId, requested).text = formatQuantity(requested);
+    _controllerFor(line.saleLineId, requested).text =
+        ref.read(formattersProvider).field.quantity(requested);
     setState(() {
       _pending[line.saleLineId] = requested;
       _lineErrors.remove(line.saleLineId);
@@ -236,7 +240,7 @@ class _DestinationCardState extends State<DestinationCard> {
         _lineErrors[saleLineId] =
             l10n.posDeliveryAssignmentRefused(e.serverMessage ?? l10n.errorServerGeneric);
       });
-      _controllerFor(saleLineId, server).text = formatQuantity(server);
+      _controllerFor(saleLineId, server).text = ref.read(formattersProvider).field.quantity(server);
     } finally {
       _inFlight.remove(saleLineId);
       if (mounted) setState(() {});
@@ -251,6 +255,7 @@ class _DestinationCardState extends State<DestinationCard> {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final destination = widget.destination;
+    final fmt = ref.watch(formattersProvider);
 
     return Card(
       key: Key('destination_card_${destination.id}'),
@@ -282,7 +287,7 @@ class _DestinationCardState extends State<DestinationCard> {
                   // divider-plus-label footprint there overflowed a phone
                   // width the moment the address was more than a few
                   // characters (SC-007).
-                  Expanded(child: _identity(context, l10n)),
+                  Expanded(child: _identity(context, l10n, fmt)),
                   if (widget.enabled && widget.onRemove != null)
                     IconButton(
                       key: Key('destination_remove_${destination.id}'),
@@ -312,7 +317,7 @@ class _DestinationCardState extends State<DestinationCard> {
                         height: 1,
                         color: theme.colorScheme.outlineVariant,
                       ),
-                      _body(context, l10n),
+                      _body(context, l10n, fmt),
                     ],
                   )
                 : const SizedBox.shrink(),
@@ -336,13 +341,13 @@ class _DestinationCardState extends State<DestinationCard> {
     );
   }
 
-  Widget _identity(BuildContext context, AppLocalizations l10n) {
+  Widget _identity(BuildContext context, AppLocalizations l10n, AppFormatters fmt) {
     final theme = Theme.of(context);
     final destination = widget.destination;
     final subtitle = [
       if (destination.contactName != null) destination.contactName!,
       if (destination.contactPhone != null) destination.contactPhone!,
-      if (destination.date != null) MoneyFormatters.date(destination.date!),
+      if (destination.date != null) fmt.display.date(destination.date),
     ].join(' · ');
 
     return Column(
@@ -367,7 +372,7 @@ class _DestinationCardState extends State<DestinationCard> {
           child: Text(
             l10n.posDestinationCounts(
               destination.lineCount,
-              formatQuantity(destination.unitCount),
+              fmt.field.quantity(destination.unitCount),
             ),
             style: theme.typeRoles.metricLabel.copyWith(
               color: theme.colorScheme.primary,
@@ -378,7 +383,7 @@ class _DestinationCardState extends State<DestinationCard> {
     );
   }
 
-  Widget _body(BuildContext context, AppLocalizations l10n) {
+  Widget _body(BuildContext context, AppLocalizations l10n, AppFormatters fmt) {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
 
@@ -389,7 +394,9 @@ class _DestinationCardState extends State<DestinationCard> {
         children: [
           Text(l10n.posDestinationLinesTitle, style: theme.typeRoles.metricLabel),
           for (final line in widget.distribution)
-            _interactive ? _assignableRow(context, l10n, line) : _readOnlyRow(context, line),
+            _interactive
+                ? _assignableRow(context, l10n, fmt, line)
+                : _readOnlyRow(context, fmt, line),
         ],
       ),
     );
@@ -398,7 +405,7 @@ class _DestinationCardState extends State<DestinationCard> {
   /// Before this destination has assignment callbacks wired (or in a test
   /// that doesn't need them) — the quantity this destination takes, and
   /// nothing to interact with.
-  Widget _readOnlyRow(BuildContext context, LineDistribution line) {
+  Widget _readOnlyRow(BuildContext context, AppFormatters fmt, LineDistribution line) {
     final theme = Theme.of(context);
     final quantity = line.perDestination[widget.destination.id] ?? '0';
     return Padding(
@@ -414,7 +421,7 @@ class _DestinationCardState extends State<DestinationCard> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(formatQuantity(quantity), style: theme.typeRoles.recordId),
+          Text(fmt.field.quantity(quantity), style: theme.typeRoles.recordId),
         ],
       ),
     );
@@ -423,7 +430,12 @@ class _DestinationCardState extends State<DestinationCard> {
   /// Contract §4.3: product name and what the sale still owes, an
   /// "elsewhere" chip when the counter holds some of it, and the stepper
   /// pill (§4.4).
-  Widget _assignableRow(BuildContext context, AppLocalizations l10n, LineDistribution line) {
+  Widget _assignableRow(
+    BuildContext context,
+    AppLocalizations l10n,
+    AppFormatters fmt,
+    LineDistribution line,
+  ) {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     // The pending value while one is in flight, so a second tap steps from
@@ -460,7 +472,7 @@ class _DestinationCardState extends State<DestinationCard> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          l10n.posDistributionOrdered(formatQuantity(line.ordered)),
+                          l10n.posDistributionOrdered(fmt.field.quantity(line.ordered)),
                           style: theme.typeRoles.metricLabel,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -468,7 +480,7 @@ class _DestinationCardState extends State<DestinationCard> {
                         if (!isZeroAmount(line.atCounter))
                           _chip(
                             context,
-                            l10n.posDestinationCounterChip(formatQuantity(line.atCounter)),
+                            l10n.posDestinationCounterChip(fmt.field.quantity(line.atCounter)),
                           ),
                       ],
                     ),

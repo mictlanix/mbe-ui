@@ -133,13 +133,13 @@ class PointSaleChildRow extends StatelessWidget {
           message: pointSale.warehouseDisplayName(l10n.unknownWarehouseLabel),
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            spacing: 4,
             children: [
               Icon(
                 Icons.inventory_2_outlined,
                 size: 16,
                 color: scheme.onSurfaceVariant,
               ),
-              const SizedBox(width: 4),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 160),
                 child: Text(
@@ -162,9 +162,9 @@ class PointSaleChildRow extends StatelessWidget {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              spacing: 4,
               children: [
                 Icon(Icons.link, size: 14, color: scheme.onTertiaryContainer),
-                const SizedBox(width: 4),
                 Text(
                   l10n.pointSaleForeignFacilityBadge,
                   style: theme.textTheme.labelSmall?.copyWith(

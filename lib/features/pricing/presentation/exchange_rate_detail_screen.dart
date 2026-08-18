@@ -7,9 +7,9 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rate_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -52,6 +52,7 @@ class _ExchangeRateDetailScreenState
     final formState = ref.watch(exchangeRateFormControllerProvider);
     final controller = ref.read(exchangeRateFormControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
+    final fmt = ref.watch(formattersProvider);
     final canCreate = access.can(
       SystemObject.exchangeRates,
       AccessRight.create,
@@ -139,11 +140,10 @@ class _ExchangeRateDetailScreenState
                       formState.fieldErrors['date'],
                     ),
                   ),
-                  child: Text(
-                    formState.date != null
-                        ? MoneyFormatters.date(formState.date!)
-                        : '',
-                  ),
+                  // fmt.display.date renders '—' for a null date
+                  // (spec 028 FR-008), replacing this field's own empty
+                  // string rendering.
+                  child: Text(fmt.display.date(formState.date)),
                 ),
               ),
             ),

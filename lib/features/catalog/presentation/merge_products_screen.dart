@@ -219,6 +219,7 @@ class MergeProductsScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 12,
           children: [
             Text(
               l10n.mergeConfirmMessage(
@@ -231,14 +232,12 @@ class MergeProductsScreen extends ConsumerWidget {
             // A separate line rather than a placeholder inside the sentence
             // above, so a pending or failed preview simply drops it instead
             // of forcing a blank or zero into the copy (FR-009).
-            if (relatedTotal != null) ...[
-              const SizedBox(height: 12),
+            if (relatedTotal != null)
               Text(
                 l10n.mergeConfirmTotalLine(relatedTotal),
                 key: const Key('merge_confirm_total_line'),
                 style: Theme.of(ctx).textTheme.bodySmall,
               ),
-            ],
           ],
         ),
         actions: [

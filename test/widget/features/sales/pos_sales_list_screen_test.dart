@@ -227,9 +227,14 @@ void main() {
 
       expect(find.text('Acme Corp'), findsOneWidget);
       expect(find.byKey(const Key('pos_sale_status_chip_draft')), findsOneWidget);
-      // es-MX renders as "116,00 $" (comma decimal, trailing symbol) —
-      // MoneyFormatters.currency's own format, not a literal "116.00".
-      expect(find.textContaining('116,00'), findsWidgets);
+      // spec 028: this used to render "116,00 $" (Spain-style comma
+      // decimal) because this screen's own `Localizations.localeOf(context)
+      // .toString()` resolved to bare 'es' (Flutter drops the country
+      // subtag when matching `supportedLocales`' bare `Locale('es')` entry),
+      // not 'es_MX'. `formattersProvider` reads `resolvedLocaleProvider`
+      // instead, which preserves the country subtag (research.md R1/R9) —
+      // so this now renders genuine es-MX: "$116.00".
+      expect(find.textContaining(r'$116.00'), findsWidgets);
     });
 
     testWidgets(

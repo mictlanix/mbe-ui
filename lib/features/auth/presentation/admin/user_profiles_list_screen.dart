@@ -163,12 +163,12 @@ class _UserProfileFiltersPanel extends ConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Text(
           l10n.statusFilterLabel,
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        const SizedBox(height: 8),
         EntityStatusFilterChips(
           filterKey: 'user_profiles_filter_status',
           value: filter.status,

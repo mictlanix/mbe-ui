@@ -111,13 +111,13 @@ class FacilityCard extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
                     children: [
                       ErrorBanner(
                         error: error is AppError
                             ? error
                             : const AppError.server(),
                       ),
-                      const SizedBox(height: 8),
                       OutlinedButton(
                         key: Key(
                           'facility_children_retry_${facility.facilityId}',
@@ -204,6 +204,7 @@ class _Header extends StatelessWidget {
 
     final nameRow = Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 10,
       children: [
         Flexible(
           child: Tooltip(
@@ -215,16 +216,15 @@ class _Header extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 10),
         FacilityCodeChip(code: facility.code),
       ],
     );
 
     final typeRow = Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 6,
       children: [
         Icon(typeIcon, size: 14, color: scheme.onSurfaceVariant),
-        const SizedBox(width: 6),
         Text(
           typeLabel,
           style: theme.textTheme.bodySmall?.copyWith(
@@ -277,7 +277,8 @@ class _Header extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
-                      children: [nameRow, const SizedBox(height: 3), typeRow],
+                      spacing: 3,
+                      children: [nameRow, typeRow],
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -319,6 +320,10 @@ class _CountsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
+      // Uniform 14px gap between however many badges actually render —
+      // `spacing` applies to the rendered list, so it is correct whether
+      // `isStore` contributes its two extra badges or not (spec 028 US2).
+      spacing: 14,
       children: [
         _CountBadge(
           icon: Icons.warehouse_outlined,
@@ -327,14 +332,12 @@ class _CountsRow extends StatelessWidget {
           readable: children?.warehousesReadable ?? true,
         ),
         if (isStore) ...[
-          const SizedBox(width: 14),
           _CountBadge(
             icon: Icons.point_of_sale_outlined,
             count: children?.pointSaleCount,
             hasError: hasError,
             readable: children?.pointsOfSaleReadable ?? true,
           ),
-          const SizedBox(width: 14),
           _CountBadge(
             icon: Icons.account_balance_wallet_outlined,
             count: children?.cashDrawerCount,
@@ -368,9 +371,9 @@ class _CountBadge extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 6,
       children: [
         Icon(icon, size: 18, color: scheme.onSurfaceVariant),
-        const SizedBox(width: 6),
         if (hasError)
           Icon(Icons.error_outline, size: 14, color: scheme.error)
         else if (count == null)
@@ -523,13 +526,13 @@ class _ExpandedBody extends StatelessWidget {
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
               children: [
                 Icon(
                   Icons.info_outline,
                   size: 18,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     l10n.productionSiteChildrenNote,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
@@ -323,7 +323,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   );
 
   Widget _totalCell(SaleLine line) => Text(
-    MoneyFormatters.currency(line.total),
+    ref.watch(formattersProvider).display.currency(line.total),
     textAlign: TextAlign.right,
     style: Theme.of(context).typeRoles.money,
   );

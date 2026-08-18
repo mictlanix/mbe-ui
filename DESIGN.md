@@ -443,30 +443,44 @@ The product catalog detail screen (`features/catalog/presentation/product_detail
 is the reference implementation of all three (two-column field grid, section
 dividers, switches|labels two-column band).
 
-**One formatting surface** — *decided, not yet in force.*
+**One formatting surface** — *in force since spec 028.*
 specs/027-app-user-settings specified this and then **descoped it** (2026-08-16)
-into a future spec, because the migration is ≈78 call sites across 22 files
-and is indivisible: the guard test below cannot land until the last call site
-moves. The design is finished and carried in that feature's
-`contracts/formatting-surface.md` and `research.md` R3/R4/R8; the constitution
-rule is deliberately withheld until the surface exists. What follows is the
-decision, for the spec that takes it on.
+into a future spec, because the migration is ≈76 call sites across ~28 files
+and is indivisible: the guard test could not land until the last call site
+moved. specs/028-presentation-consistency built it, carrying the finished
+design forward into its own `contracts/formatting-surface.md` and
+`research.md` R1–R8, with two corrections found during that migration:
+the default date is **ISO 8601** (`yyyy-MM-dd`), not the locale-derived
+rendering the app used before — a deliberate choice, so one deployment
+serving multiple locales still shows one unambiguous date everywhere; and the
+guard's allowlist covers `lib/l10n/` (generated localizations), not
+`lib/generated/` (the OpenAPI client) as first assumed.
 
-Dates, date-times, currency, percentages and quantities are to render through
-a single shared formatting component in `core/`, driven by app settings plus
-the active locale. This is not a style preference — the app had drifted into three
-parallel paths (`core/widgets/money_formatters.dart` with a hard-coded `$` and
-an `'es_MX'` default; the display helpers in
+Dates, date-times, currency, percentages and quantities render through a
+single shared formatting component, `formattersProvider`
+(`lib/core/formatting/`), driven by deployment-level app settings
+(`DATE_FORMAT`, `DATE_TIME_FORMAT`, `CURRENCY_SYMBOL`, `CURRENCY_CODE`,
+`CURRENCY_DECIMAL_DIGITS`, `PERCENT_DECIMAL_DIGITS`, `QUANTITY_DECIMAL_DIGITS`
+— see `.env.template`) plus the active locale. This is not a style preference
+— the app had drifted into three parallel paths (`core/widgets/money_formatters.dart`
+with a hard-coded `$` and an `'es_MX'` default; the display helpers in
 `features/sales/domain/money.dart` doing `Decimal.toStringAsFixed` and
 hand-building `"16.00 %"`; and `taxpayer_certificates_section.dart` building
-its own `DateFormat.yMd()` inline), so the same kind of value read differently
-depending on which screen rendered it. The surface distinguishes *read-only
-display* formatting from *editable-field* formatting (a field the user types
-into must not carry a `$`, and must round-trip back to the stored value), and
-defines one rendering for absent/unparseable input. Call sites do not pass a
-locale by hand — the repeated
-`Localizations.localeOf(context).toString()` boilerplate was itself a source of
-drift. An automated guard fails when a raw formatter is introduced outside it.
+its own `DateFormat.yMd()` inline — all three now deleted), so the same kind
+of value read differently depending on which screen rendered it. The surface
+distinguishes *read-only display* formatting (`fmt.display.*`) from
+*editable-field* formatting (`fmt.field.*` — a field the user types into
+carries no `$`, and round-trips back to the stored value), and renders one
+placeholder, `—`, for absent/unparseable input everywhere. Call sites do not
+pass a locale by hand — the repeated
+`Localizations.localeOf(context).toString()` boilerplate was itself a source
+of drift, and dropped the country subtag Flutter's own locale resolution
+discards, which surfaced as a real bug: the two screens that called it
+directly (`cash_sessions_screen.dart`, `pos_sales_list_screen.dart`) were
+rendering Spain-style numbers (`"3.240,00 $"`) instead of Mexican ones
+(`"$3,240.00"`) without anyone noticing. `test/unit/core/formatting_guard_test.dart`
+fails the suite when a raw formatter is introduced outside the surface,
+naming the offending file and line.
 
 **List-screen structure** (specs/027-app-user-settings): a list screen is a
 filter row, a list, and pagination. Facet filters belong behind the shared

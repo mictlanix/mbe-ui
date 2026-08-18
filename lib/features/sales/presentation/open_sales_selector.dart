@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/layout/breakpoints.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
@@ -101,19 +101,21 @@ class OpenSalesSelector extends ConsumerWidget {
   }
 }
 
-class _OpenSaleRow extends StatelessWidget {
+class _OpenSaleRow extends ConsumerWidget {
   const _OpenSaleRow({required this.sale});
 
   final OpenSale sale;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final fmt = ref.watch(formattersProvider);
 
     return SizedBox(
       width: 360,
       child: Row(
+        spacing: 12,
         children: [
           Expanded(
             flex: 2,
@@ -149,8 +151,7 @@ class _OpenSaleRow extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
-          Text(MoneyFormatters.currency(sale.total)),
+          Text(fmt.display.currency(sale.total)),
         ],
       ),
     );

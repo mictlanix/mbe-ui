@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/line_distribution_panel.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -65,18 +68,25 @@ void main() {
     Destination? counterDestination,
   }) async {
     final distribution = distributionFor(sale: sale, destinations: destinations);
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
     await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('es', 'MX'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: LineDistributionPanel(
-            distribution: distribution,
-            badges: badges,
-            destinationGroupCount: destinations.length,
-            isMixed: isMixed,
-            counterDestination: counterDestination,
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
+        child: MaterialApp(
+          locale: const Locale('es', 'MX'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: LineDistributionPanel(
+              distribution: distribution,
+              badges: badges,
+              destinationGroupCount: destinations.length,
+              isMixed: isMixed,
+              counterDestination: counterDestination,
+            ),
           ),
         ),
       ),
@@ -156,18 +166,25 @@ void main() {
       VoidCallback? onClose,
       bool closing = false,
     }) async {
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('es', 'MX'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: LineDistributionFoot(
-              assigned: assigned,
-              total: total,
-              outstandingMessage: outstandingMessage,
-              onClose: onClose,
-              closing: closing,
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: MaterialApp(
+            locale: const Locale('es', 'MX'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LineDistributionFoot(
+                assigned: assigned,
+                total: total,
+                outstandingMessage: outstandingMessage,
+                onClose: onClose,
+                closing: closing,
+              ),
             ),
           ),
         ),

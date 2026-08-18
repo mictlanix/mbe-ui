@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
@@ -131,7 +130,7 @@ void main() {
       // The footer shows the same figures a sale opened a moment later
       // starts on, so it does not grow a stats row mid-flow.
       expect(find.text(l10n.posTotalsTotalLabel.toUpperCase()), findsOneWidget);
-      expect(find.text(MoneyFormatters.currency('0')), findsWidgets);
+      expect(find.text(r'$0.00'), findsWidgets);
     });
 
     testWidgets('cannot be confirmed', (tester) async {

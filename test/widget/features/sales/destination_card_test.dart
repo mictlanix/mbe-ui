@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_card.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_counter_row.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -49,17 +52,24 @@ void main() {
     String badge = 'D1',
     VoidCallback? onRemove,
   }) async {
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
     await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('es', 'MX'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: DestinationCard(
-            destination: d,
-            badge: badge,
-            distribution: buildDistribution([d]),
-            onRemove: onRemove,
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
+        child: MaterialApp(
+          locale: const Locale('es', 'MX'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: DestinationCard(
+              destination: d,
+              badge: badge,
+              distribution: buildDistribution([d]),
+              onRemove: onRemove,
+            ),
           ),
         ),
       ),
@@ -117,17 +127,24 @@ void main() {
       final d2 = destination(id: 501, addressSummary: 'Destino dos');
       final distribution = buildDistribution([d1, d2]);
 
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('es', 'MX'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: Column(
-              children: [
-                DestinationCard(destination: d1, badge: 'D1', distribution: distribution),
-                DestinationCard(destination: d2, badge: 'D2', distribution: distribution),
-              ],
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: MaterialApp(
+            locale: const Locale('es', 'MX'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: Column(
+                children: [
+                  DestinationCard(destination: d1, badge: 'D1', distribution: distribution),
+                  DestinationCard(destination: d2, badge: 'D2', distribution: distribution),
+                ],
+              ),
             ),
           ),
         ),
@@ -165,13 +182,20 @@ void main() {
     });
 
     testWidgets('is absent from the counter row', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('es', 'MX'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: DestinationCounterRow(distribution: buildDistribution(const [])),
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: MaterialApp(
+            locale: const Locale('es', 'MX'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: DestinationCounterRow(distribution: buildDistribution(const [])),
+            ),
           ),
         ),
       );

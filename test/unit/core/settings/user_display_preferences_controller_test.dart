@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/config/app_settings.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/settings/user_display_preferences_controller.dart';
@@ -138,6 +139,7 @@ void main() {
           posDefaultCustomerId: 1,
           brand: BrandConfig(displayName: 'X'),
           defaultLocale: Locale('en', 'US'),
+          formatting: FormattingSettings(),
         ),
       );
       addTearDown(container.dispose);
@@ -160,6 +162,7 @@ void main() {
           posDefaultCustomerId: 1,
           brand: BrandConfig(displayName: 'X'),
           defaultLocale: Locale('xx', 'YY'),
+          formatting: FormattingSettings(),
         ),
       );
       addTearDown(container.dispose);

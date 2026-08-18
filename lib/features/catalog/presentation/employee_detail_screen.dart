@@ -7,10 +7,10 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/gender.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/employee_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -55,6 +55,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
   Widget build(BuildContext context) {
     final formState = ref.watch(employeeFormControllerProvider);
     final controller = ref.read(employeeFormControllerProvider.notifier);
+    final fmt = ref.watch(formattersProvider);
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.employees, AccessRight.create);
     final canUpdate = access.can(SystemObject.employees, AccessRight.update);
@@ -208,11 +209,10 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                       formState.fieldErrors['birthday'],
                     ),
                   ),
-                  child: Text(
-                    formState.birthday != null
-                        ? MoneyFormatters.date(formState.birthday!)
-                        : '',
-                  ),
+                  // fmt.display.date renders '—' for a null birthday
+                  // (spec 028 FR-008), replacing this field's own empty
+                  // string rendering.
+                  child: Text(fmt.display.date(formState.birthday)),
                 ),
               ),
             ),
@@ -240,11 +240,8 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                       formState.fieldErrors['startJobDate'],
                     ),
                   ),
-                  child: Text(
-                    formState.startJobDate != null
-                        ? MoneyFormatters.date(formState.startJobDate!)
-                        : '',
-                  ),
+                  // Same em-dash rule as birthday above.
+                  child: Text(fmt.display.date(formState.startJobDate)),
                 ),
               ),
             ),

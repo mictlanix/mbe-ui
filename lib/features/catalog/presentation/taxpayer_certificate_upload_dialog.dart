@@ -53,12 +53,12 @@ class _TaxpayerCertificateUploadDialog extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
               Text(
                 l10n.newCertificateDialogTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
               ResponsiveFormGrid(
                 maxColumns: 1,
                 children: [
@@ -133,6 +133,7 @@ class _TaxpayerCertificateUploadDialog extends ConsumerWidget {
                     span: FormGridSpan.full,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
+                      spacing: 8,
                       children: [
                         TextButton(
                           onPressed: state.submitting
@@ -140,7 +141,6 @@ class _TaxpayerCertificateUploadDialog extends ConsumerWidget {
                               : () => Navigator.of(context).pop(),
                           child: Text(l10n.cancelButton),
                         ),
-                        const SizedBox(width: 8),
                         FilledButton(
                           key: const Key('upload_certificate_button'),
                           onPressed: state.submitting
@@ -208,6 +208,7 @@ class _FilePickerField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Expanded(
           child: TextFormField(
@@ -220,7 +221,6 @@ class _FilePickerField extends StatelessWidget {
             decoration: InputDecoration(labelText: label, errorText: errorText),
           ),
         ),
-        const SizedBox(width: 8),
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: OutlinedButton(

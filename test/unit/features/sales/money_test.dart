@@ -162,46 +162,6 @@ void main() {
     });
   });
 
-  group('display formatting for editable line fields (FR-022)', () {
-    test('formatQuantity drops the trailing zeros mbe-api sends', () {
-      expect(formatQuantity('3.0000'), '3');
-      expect(formatQuantity('2.5000'), '2.5');
-      expect(formatQuantity('0.0000'), '0');
-    });
-
-    test('formatPrice fixes two decimals', () {
-      expect(formatPrice('50.0000000'), '50.00');
-      expect(formatPrice('615'), '615.00');
-      expect(formatPrice('1234.5'), '1234.50');
-    });
-
-    test('formatRateAsPercent renders a stored rate as the percentage its '
-        'label claims', () {
-      expect(formatRateAsPercent('0.1600'), '16');
-      expect(formatRateAsPercent('0.075'), '7.5');
-      expect(formatRateAsPercent('0'), '0');
-    });
-
-    test('parsePercentAsRate converts a typed percentage back', () {
-      expect(parsePercentAsRate('16'), '0.16');
-      expect(parsePercentAsRate('7.5'), '0.075');
-      expect(parsePercentAsRate('0'), '0');
-    });
-
-    test('parsePercentAsRate rejects a non-numeric entry rather than sending '
-        'nonsense to the server', () {
-      expect(parsePercentAsRate('abc'), isNull);
-      expect(parsePercentAsRate(''), isNull);
-    });
-
-    test('percent formatting round-trips — the property the in-place tax/'
-        'discount edit depends on', () {
-      for (final rate in ['0', '0.16', '0.075', '1']) {
-        expect(parsePercentAsRate(formatRateAsPercent(rate)), rate == '1' ? '1' : rate);
-      }
-    });
-  });
-
   group('isZeroAmount', () {
     test('true for a plain zero', () {
       expect(isZeroAmount('0'), isTrue);

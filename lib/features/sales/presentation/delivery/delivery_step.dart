@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
@@ -206,6 +207,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final destinations = ref.watch(deliveryControllerProvider(widget.sale));
+    final fmt = ref.watch(formattersProvider);
 
     return destinations.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -271,7 +273,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                 outstanding
                     .map(
                       (d) =>
-                          '${d.productName} (${formatQuantity(d.atCounter)})',
+                          '${d.productName} (${fmt.field.quantity(d.atCounter)})',
                     )
                     .join(', '),
               )

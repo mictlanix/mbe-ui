@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// A `FilterChip` reporting a selected date range, opening
@@ -15,7 +16,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// that calls [onClear] — clearing returns to today, never to an unbounded
 /// range, since an unfiltered sales query has been measured at 19k+ rows for
 /// a single register.
-class DateRangeFilterChip extends StatelessWidget {
+class DateRangeFilterChip extends ConsumerWidget {
   const DateRangeFilterChip({
     super.key,
     required this.from,
@@ -44,14 +45,14 @@ class DateRangeFilterChip extends StatelessWidget {
   final DateTime? firstDate;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
+    final fmt = ref.watch(formattersProvider);
     final label = isToday
         ? l10n.dateRangeFilterToday
         : l10n.dateRangeFilterRange(
-            MoneyFormatters.date(from, locale: locale),
-            MoneyFormatters.date(to, locale: locale),
+            fmt.display.date(from),
+            fmt.display.date(to),
           );
 
     return FilterChip(
