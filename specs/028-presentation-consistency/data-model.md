@@ -131,12 +131,12 @@ does not re-implement the formatter.
 
 | Replaced | Sites | By |
 |---|---|---|
-| `MoneyFormatters.currency/percent/date/dateTime` | 53 (24 files) | `display.*` |
+| `MoneyFormatters.currency/percent/date/dateTime` | 50 (22 files) | `display.*` |
 | `money.dart`: `formatQuantity`, `formatPrice`, `formatRateAsPercent`, `formatRateAsPercentWithSymbol`, `parsePercentAsRate` | 25 | `field.*` / `display.percent` |
 | inline `DateFormat.yMd()` — `taxpayer_certificates_section.dart:51` | 1 | `display.date` |
 | `_dateFacetFormat` — `pos_sales_list_controller.dart:19` | 1 | **not migrated** — URL query encoder, exempt |
 
-**≈79 migrated call sites.** `money.dart`'s decimal *arithmetic* is not in this
+**≈76 migrated call sites.** `money.dart`'s decimal *arithmetic* is not in this
 table and does not move — see research R6 for the full stay/go split and the
 `formatAmount` trap.
 

@@ -134,19 +134,29 @@ should move there.
 
 ---
 
-## R3 — Migration inventory *(re-verified 2026-08-17)*
+## R3 — Migration inventory *(re-verified 2026-08-17, corrected once)*
 
 The 027 audit's numbers were re-measured on this branch rather than assumed.
-**They have drifted upward slightly** — the spec's Assumptions anticipated
-this.
+**First pass over-counted**: a plain `grep -rn "MoneyFormatters\." lib/`
+includes three doc-comment mentions (two in `money.dart`'s own docstring, one
+in `main.dart` explaining why `initializeDateFormatting()` takes no argument)
+that are not call sites. Re-run excluding `//`/`///` lines:
 
 | Path | 027 audit (2026-08-16) | Re-verified (2026-08-17) | Δ |
 |---|---|---|---|
-| `MoneyFormatters.*` call sites | 53 across **22** files | **53** across **24** files | files +2 |
+| `MoneyFormatters.*` call sites | 53 across **22** files | **50** across **22** files | sites −3, files unchanged |
 | `money.dart` display helpers | 24 | **25** | +1 |
 | inline `DateFormat.yMd()` | 1 | **1** (`taxpayer_certificates_section.dart:51`) | — |
-| **Total** | ≈78 | **≈79** | +1 |
+| **Total** | ≈78 | **≈76** | −2 |
 | Correctly exempt | 1 (`_dateFacetFormat`) | **1**, unchanged | — |
+
+The file count matching the original audit exactly, once comments are
+excluded, is a useful cross-check: it means the 027 audit's own methodology
+already excluded comments (or got lucky), and the one real drift since
+2026-08-16 is `money.dart` gaining one `formatQuantity` call site. Tasks
+generated from this inventory use **50 / 22 / 25 / 5 / 1** — call sites and
+files per path — as the authoritative counts; do not re-derive from a naive
+grep.
 
 `money.dart` display-helper breakdown as measured (call sites in `lib/`,
 excluding the definitions themselves):

@@ -7,7 +7,7 @@
 ## Summary
 
 Replace three divergent display-formatting implementations with one
-`formattersProvider`-backed surface in `lib/core/formatting/`, migrate ≈79 call
+`formattersProvider`-backed surface in `lib/core/formatting/`, migrate ≈76 call
 sites to it, make its output configurable per deployment through build-time
 keys on the existing `AppSettings`, and lock the result with a source-scanning
 guard test. Separately and independently, convert `SizedBox` spacers to the
@@ -17,9 +17,10 @@ same size.
 The design was authored during spec 027 and descoped intact; Phase 0 carried it
 forward and **re-verified it against the code**, which produced three
 corrections that change implementation: the guard's allowlist misses the
-generated localizations, the migration is one call site larger than audited,
-and the ISO default is not the only rendering that changes — merging the two
-percent paths changes output too, because they never agreed. See
+generated localizations, the migration count itself was inflated by doc-comment
+mentions a naive grep can't tell from real call sites (true count ≈76, not
+≈78), and the ISO default is not the only rendering that changes — merging the
+two percent paths changes output too, because they never agreed. See
 [research.md](research.md) R2, R3 and R4.
 
 ## Technical Context
@@ -55,7 +56,7 @@ surface resolves once per build (research R1).
 - **Zero backend dependency** — nothing here touches mbe-api.
 - US2 must change no rendered pixel.
 
-**Scale/Scope**: US1 — ≈79 call sites across ~26 files, 7 new deployment keys,
+**Scale/Scope**: US1 — ≈76 call sites across ~28 files (22 + 5 + 1), 7 new deployment keys,
 92+8 baselines re-recorded once. US2 — 85 candidate Flexes, ≥40 convertible
 across 23 files.
 
