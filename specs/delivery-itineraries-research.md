@@ -315,8 +315,16 @@ ItineraryUpdate {
 - **Quantities**: `Decimal(18,4)` on delivery order lines, `Decimal(20,6)` on itinerary lines.
 - **Supports**: Fractional units (e.g., "2.5 boxes" or "1500.5000 grams").
 
+### FulfillmentType Enum (Updated: Breaking Change in mbe-api ce70bfe)
+⚠️ **BREAKING CHANGE** (commit ce70bfe, 2026-08-15):
+- `PICKUP` (0) — counter pickup (was `COUNTER_PICKUP=1` before)
+- `DELIVERY` (1) — delivery (was `DELIVERY=0` before)  
+- `MIXED` (2) — NEW: mixed sale (pickup + delivery), never used on delivery order (refused by create)
+
+The enum was renumbered to unify `sales_order.fulfillment_intent` and `delivery_order.fulfillment_type` on the same scale. PICKUP=0 because 92.5% of sales orders are counter sales.
+
 ### Immutable-After-Creation Constraints
-- **fulfillment_type** — set at creation, cannot change (DELIVERY vs COUNTER_PICKUP).
+- **fulfillment_type** — set at creation, cannot change (PICKUP or DELIVERY only; MIXED refused).
 - **warehouse** — snapshotted at delivery-order creation.
 
 ---
