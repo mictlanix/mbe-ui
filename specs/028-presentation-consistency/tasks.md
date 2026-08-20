@@ -110,7 +110,7 @@ Grouped by feature module; files within a group are `[P]` (disjoint files, all d
 
 - [X] T045 [US1] Run `flutter test test/golden` post-migration to enumerate every baseline broken by the ISO-date and percent-rendering changes — this failure list *is* the inventory, per research R5
 - [X] T046 [US1] Re-record with `flutter test test/golden --update-goldens && flutter test test/screenshots --update-goldens`; open at least one regenerated PNG and confirm real Archivo glyphs render, not placeholder boxes, before trusting the run (`test/golden/README.md`'s font check)
-- [X] T047 [US1] Land the re-recorded baselines through CI per `test/golden/README.md` ("CI is the source of truth"); a local-only `--update-goldens` is not sufficient to close this task
+- [ ] T047 [US1] Land the re-recorded baselines through CI per `test/golden/README.md` ("CI is the source of truth"); a local-only `--update-goldens` is not sufficient to close this task. **Blocked, not just pending**: no CI pipeline exists in this repo at all (confirmed 2026-08-19 — no `.github/workflows`, no other provider config). A `.github/workflows/test.yml` was built, pushed, and its first run failed on a real, separate gap (gitignored `.g.dart` riverpod/json_serializable output never regenerated in CI — fixed and verified locally in 19s, unrelated to this feature or to the OpenAPI client, whose generated source is checked into git and needs no live mbe-api to resolve). The user then asked to keep CI out of scope for now; the workflow was reverted (2026-08-20) rather than carried forward with a fix. Re-open this task, or accept the branch push as the de facto "landing" mechanism, if/when this repo gets a CI pipeline.
 
 ### Governance
 
