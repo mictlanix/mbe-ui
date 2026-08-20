@@ -965,6 +965,8 @@
   "posDeliveryAssignedUnits": "{assigned} / {total} unidades asignadas",
   "posDestinationLinesTitle": "Cantidad a entregar en este destino",
   "posAddDestinationSheetTitle": "Datos de entrega",
+  "posEditDestinationSheetTitle": "Editar destino",
+  "posCounterPickupLinesTitle": "Cantidad que se queda en tienda",
   "posDestinationCounterChip": "Tienda {units}",
   "posDeliveryAssignmentRefused": "No se pudo asignar: {reason}",
   "posAddDestinationNothingLeft": "No queda nada por asignar",

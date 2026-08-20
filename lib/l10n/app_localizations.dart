@@ -5537,6 +5537,18 @@ abstract class AppLocalizations {
   /// **'Delivery details'**
   String get posAddDestinationSheetTitle;
 
+  /// No description provided for @posEditDestinationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit destination'**
+  String get posEditDestinationSheetTitle;
+
+  /// No description provided for @posCounterPickupLinesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity staying at the store'**
+  String get posCounterPickupLinesTitle;
+
   /// No description provided for @posDestinationCounterChip.
   ///
   /// In en, this message translates to:

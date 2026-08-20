@@ -8,6 +8,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Everything a sale line does, minus how it is laid out: the
@@ -26,11 +27,22 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// by the line itself.
   bool get lineEnabled;
 
-  // Fields hold display-formatted text (FR-022) — trimmed quantities,
-  // two-decimal prices, and rates as the percentages their labels claim.
-  // [syncFields] converts back whenever the server's copy changes underneath.
-  late final quantityField = TextEditingController(
-    text: ref.read(formattersProvider).field.quantity(line.quantity),
+  // Fields hold display-formatted text (FR-022) — two-decimal prices and
+  // rates as the percentages their labels claim. [syncFields] converts back
+  // whenever the server's copy changes underneath. Quantity is no longer one
+  // of these — [quantityStepper] owns it (spec 030).
+  //
+  /// The debounced quantity control (spec 030 FR-001…FR-016), shared with the
+  /// delivery destination card. Floored at one unit — a line is removed with
+  /// [removeLine], never stepped to zero — and uncapped: stock is a
+  /// non-blocking warning on this surface ([shortfall]), never a bound.
+  /// [onCommit] is [_commitQuantity], which does **not** set [_busy] (FR-004)
+  /// but does share every other field's write queue ([_enqueue], research
+  /// R6) so two writes for this line are never in flight together.
+  late final quantityStepper = QuantityStepperController(
+    value: line.quantity,
+    min: '1',
+    onCommit: _commitQuantity,
   );
 
   /// Read-only (FR-038c): a line's price comes from the customer's price list
@@ -55,20 +67,38 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// line again.
   int _rejections = 0;
 
-  /// True while an edit is in flight; controls stay inert until it settles.
+  /// Serializes every write this line makes — quantity included — so two
+  /// never land in flight together (spec 030 research R6). Without it,
+  /// `PosSaleController.updateLine` replacing the *whole sale* on each
+  /// response would let the later one silently revert the earlier: `_busy`
+  /// used to prevent that by inerting the whole line for every write, which
+  /// is exactly the freeze this feature removes from the quantity path.
+  Future<void> _writes = Future<void>.value();
+
+  Future<R> _enqueue<R>(Future<R> Function() action) {
+    final result = _writes.then((_) => action());
+    _writes = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  /// True while a **non-quantity** edit is in flight; those controls stay
+  /// inert until it settles, as before this feature. The quantity stepper is
+  /// deliberately not gated by this (FR-004) — its own controller stays live
+  /// through its own commits, and [_enqueue] is what keeps its writes from
+  /// racing with these.
   bool get enabled => lineEnabled && !_busy;
 
   /// Re-renders every field from the line's authoritative values.
   void syncFields() {
     final fmt = ref.read(formattersProvider);
-    quantityField.text = fmt.field.quantity(line.quantity);
+    quantityStepper.sync(value: line.quantity);
     priceField.text = fmt.field.price(line.price);
     discountField.text = fmt.field.rate(line.discountRate);
   }
 
   @override
   void dispose() {
-    quantityField.dispose();
+    quantityStepper.dispose();
     priceField.dispose();
     discountField.dispose();
     super.dispose();
@@ -86,15 +116,17 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }) async {
     setState(() => _busy = true);
     try {
-      await ref
-          .read(posSaleControllerProvider.notifier)
-          .updateLine(
-            lineId: line.id,
-            quantity: quantity,
-            discountRate: discountRate,
-            taxRate: taxRate,
-            warehouse: warehouse,
-          );
+      await _enqueue(
+        () => ref
+            .read(posSaleControllerProvider.notifier)
+            .updateLine(
+              lineId: line.id,
+              quantity: quantity,
+              discountRate: discountRate,
+              taxRate: taxRate,
+              warehouse: warehouse,
+            ),
+      );
     } on Object {
       // Rejected — restore the controls to the last accepted values
       // (contracts/pos-screen.md §6); PosSaleController already left `state`
@@ -104,6 +136,26 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       _rejections++;
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// [quantityStepper]'s `onCommit` (spec 030 research R3): performs the
+  /// write, queued behind every other pending write for this line, and
+  /// reports whether it stuck rather than throwing — a caught `AppError`
+  /// becomes `false`, which is what makes the controller restore the last
+  /// accepted quantity and animate the reset (FR-013). Deliberately does not
+  /// touch [_busy]: the quantity control stays live through its own writes
+  /// (FR-004).
+  Future<bool> _commitQuantity(String value) async {
+    try {
+      await _enqueue(
+        () => ref
+            .read(posSaleControllerProvider.notifier)
+            .updateLine(lineId: line.id, quantity: value),
+      );
+      return true;
+    } on Object {
+      return false;
     }
   }
 
@@ -187,14 +239,6 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   Future<void> removeLine() =>
       ref.read(posSaleControllerProvider.notifier).removeLine(line.id);
-
-  void step(int delta) {
-    final next = Decimal.parse(quantityField.text) + Decimal.fromInt(delta);
-    if (next.sign <= 0) return;
-    final text = next.toString();
-    quantityField.text = text;
-    update(quantity: text);
-  }
 
   /// [decoration] and [style] let each tier size the picker as its own band
   /// requires; both default to Material's own, which is what the compact card

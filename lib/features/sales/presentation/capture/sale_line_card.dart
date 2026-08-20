@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One line, compact tier (US5, FR-053, SC-007): the same controls as
@@ -119,37 +120,24 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
               ],
             ),
             // Quantity gets its own row: it is the field a cashier touches
-            // most, and the steppers need room for a thumb.
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  tooltip: l10n.posLineDecreaseQuantity,
-                  onPressed: enabled ? () => step(-1) : null,
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: quantityField,
-                    enabled: enabled,
-                    textAlign: TextAlign.center,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: l10n.posLineQuantityLabel,
-                      // FR-022's unit, inline rather than in a column of its
-                      // own — there is no room for one at this width.
-                      suffixText: line.unit,
-                    ),
-                    onSubmitted: (v) => update(quantity: v),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  tooltip: l10n.posLineIncreaseQuantity,
-                  onPressed: enabled ? () => step(1) : null,
-                ),
-              ],
+            // most, and the steppers need room for a thumb. [QuantityStepper]
+            // (spec 030), gated on [lineEnabled] alone rather than [enabled]:
+            // the quantity control stays live through a discount/tax/
+            // warehouse write in flight (FR-004) — `_enqueue` in
+            // `sale_line_editing.dart` is what keeps the writes from racing.
+            QuantityStepper(
+              key: ValueKey('quantity-stepper-${line.id}'),
+              controller: quantityStepper,
+              enabled: lineEnabled,
+              fieldKey: Key('sale_line_quantity_${line.id}'),
+              decoration: InputDecoration(
+                labelText: l10n.posLineQuantityLabel,
+                // FR-022's unit, inline rather than in a column of its
+                // own — there is no room for one at this width.
+                suffixText: line.unit,
+              ),
+              decrementTooltip: l10n.posLineDecreaseQuantity,
+              incrementTooltip: l10n.posLineIncreaseQuantity,
             ),
             // Read-only here as in the wide row (FR-038c) — a price is
             // adjusted through the discount, not typed over.
@@ -210,7 +198,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                   ),
                   if (enabled)
                     TextButton(
-                      onPressed: () => update(quantity: availableQuantity),
+                      onPressed: () => quantityStepper.set(availableQuantity),
                       child: Text(l10n.posLineAdjustToAvailable),
                     ),
                 ],

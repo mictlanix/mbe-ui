@@ -300,6 +300,102 @@ void main() {
     });
   });
 
+  group('the shared quantity stepper (spec 030 FR-001…FR-006)', () {
+    testWidgets('a burst of taps on + coalesces into one write, with the '
+        'field following every tap and no control greyed out mid-burst', (
+      tester,
+    ) async {
+      final salesOrder = MockSalesOrderRepository();
+      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(
+        () => salesOrder.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer((_) async => testSale(lines: [testLine(quantity: '6')]));
+
+      final container = await pumpPos(
+        tester,
+        Consumer(
+          builder: (context, ref, _) {
+            ref.watch(posSaleControllerProvider);
+            return SaleLineRow(line: testLine(quantity: '1'), facilityId: 9);
+          },
+        ),
+        overrides: [
+          warehouseOverride(warehouseRepository),
+          salesOrderOverride(salesOrder),
+        ],
+        surface: const Size(1400, 900),
+      );
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      await tester.pumpAndSettle();
+
+      final addButton = find.ancestor(
+        of: find.byIcon(Icons.add),
+        matching: find.byType(IconButton),
+      );
+      final quantityField = find.byKey(const Key('sale_line_quantity_5'));
+
+      for (var i = 0; i < 5; i++) {
+        await tester.tap(addButton);
+        await tester.pump(); // one frame — no time advances, no debounce fires
+        expect(
+          tester.widget<TextField>(quantityField).controller!.text,
+          '${i + 2}',
+          reason: 'the field follows every tap immediately',
+        );
+        // Every control in the band stays live through the burst (SC-002) —
+        // the warehouse picker, in particular, since it is what a cashier
+        // reaches for mid-burst.
+        expect(
+          tester
+              .widget<DropdownButtonFormField<int>>(
+                find.byType(DropdownButtonFormField<int>),
+              )
+              .onChanged,
+          isNotNull,
+        );
+      }
+
+      // Nothing sent yet — still inside the debounce window.
+      verifyNever(
+        () => salesOrder.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      );
+
+      await tester.pump(const Duration(milliseconds: 450));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => salesOrder.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: 5,
+          quantity: '6',
+          price: null,
+          discountRate: null,
+          taxRate: null,
+          warehouse: null,
+          comment: null,
+        ),
+      ).called(1);
+    });
+  });
+
   group('display formatting (FR-022)', () {
     testWidgets('renders mbe-api\'s full-scale decimals readably, and rates as '
         'the percentages their labels claim', (tester) async {

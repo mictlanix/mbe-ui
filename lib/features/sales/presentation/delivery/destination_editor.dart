@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_controller.dart';
@@ -21,10 +22,24 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// customer's own or created inline — never free text. A refused submit keeps
 /// the editor open with the server's own message and leaves every
 /// already-created destination untouched (FR-037).
+///
+/// [destination] non-null switches this from composing a new destination to
+/// editing that one's header (spec 030 FR-018/FR-019): every field prefills
+/// from it, the confirm action reads "Guardar" instead of "Agregar destino",
+/// and saving calls [DeliveryController.updateDestination] instead of
+/// [DeliveryController.addDestination] — never both, and never a second
+/// destination. Line assignments are untouched either way; this widget never
+/// reads or writes [Destination.lines].
 class DestinationEditor extends ConsumerStatefulWidget {
-  const DestinationEditor({super.key, required this.sale, required this.onDone});
+  const DestinationEditor({
+    super.key,
+    required this.sale,
+    required this.onDone,
+    this.destination,
+  });
 
   final Sale sale;
+  final Destination? destination;
 
   /// Invoked once the destination is saved, or Cancel is pressed — the
   /// caller (the sheet opener, `delivery_step.dart`) decides what that means
@@ -41,10 +56,23 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
   int? _contact;
   String? _contactLabel;
   DateTime? _date;
-  final _comment = TextEditingController();
+  late final _comment = TextEditingController(text: widget.destination?.comment ?? '');
 
   AppError? _error;
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final destination = widget.destination;
+    if (destination != null) {
+      _shipTo = destination.shipTo;
+      _addressLabel = destination.addressSummary;
+      _contact = destination.contact;
+      _contactLabel = destination.contactName;
+      _date = destination.date;
+    }
+  }
 
   @override
   void dispose() {
@@ -102,17 +130,27 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       _error = null;
     });
     try {
-      await ref
-          .read(deliveryControllerProvider(widget.sale).notifier)
-          .addDestination(
-            shipTo: _shipTo!,
-            contact: _contact,
-            date: _date,
-            comment: _comment.text.trim().isEmpty ? null : _comment.text.trim(),
-          );
+      final comment = _comment.text.trim().isEmpty ? null : _comment.text.trim();
+      final destination = widget.destination;
+      if (destination == null) {
+        await ref
+            .read(deliveryControllerProvider(widget.sale).notifier)
+            .addDestination(shipTo: _shipTo!, contact: _contact, date: _date, comment: comment);
+      } else {
+        await ref
+            .read(deliveryControllerProvider(widget.sale).notifier)
+            .updateDestination(
+              destinationId: destination.id,
+              shipTo: _shipTo,
+              contact: _contact,
+              date: _date,
+              comment: comment,
+            );
+      }
       if (mounted) widget.onDone();
     } on AppError catch (e) {
-      // Stays open with the reason; nothing already created is affected.
+      // Stays open with the reason; nothing already created/edited is
+      // affected (FR-022, FR-037).
       setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -198,7 +236,7 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(l10n.posAddDestination),
+                    : Text(widget.destination == null ? l10n.posAddDestination : l10n.saveButton),
               ),
             ],
           ),

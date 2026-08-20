@@ -110,12 +110,22 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
   /// `useRootNavigator: true`: the POS lives inside a `StatefulShellBranch`
   /// with its own nested Navigator, which would tear the sheet down the
   /// moment this step's own state changed underneath it.
-  Future<void> _openAddDestinationSheet() async {
+  ///
+  /// [destination] non-null opens the composer in edit mode (spec 030
+  /// FR-018) — same presentation, same mechanics, a different title
+  /// (FR-019) and a `DestinationEditor` that already carries that
+  /// destination's own values. `_markJustCreated` only ever finds something
+  /// new when adding; editing changes no id, so it is a harmless no-op there.
+  Future<void> _openDestinationSheet({Destination? destination}) async {
     final l10n = AppLocalizations.of(context)!;
     final spacing = Theme.of(context).spacing;
     final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
+    final title = destination == null
+        ? l10n.posAddDestinationSheetTitle
+        : l10n.posEditDestinationSheetTitle;
     final editor = DestinationEditor(
       sale: widget.sale,
+      destination: destination,
       onDone: () => Navigator.of(context, rootNavigator: true).pop(),
     );
     final priorIds = (ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
@@ -129,7 +139,21 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         useRootNavigator: true,
         isScrollControlled: true,
         showDragHandle: true,
-        builder: (ctx) => editor,
+        builder: (ctx) => SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(spacing.md, 0, spacing.md, spacing.xs),
+                  child: Text(title, style: Theme.of(ctx).typeRoles.sectionHeading),
+                ),
+                editor,
+              ],
+            ),
+          ),
+        ),
       );
       _markJustCreated(priorIds);
       return;
@@ -139,7 +163,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
       context: context,
       useRootNavigator: true,
       barrierDismissible: true,
-      barrierLabel: l10n.posAddDestinationSheetTitle,
+      barrierLabel: title,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (ctx, _, _) => Align(
@@ -165,7 +189,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                       children: [
                         Expanded(
                           child: Text(
-                            l10n.posAddDestinationSheetTitle,
+                            title,
                             style: Theme.of(ctx).typeRoles.sectionHeading,
                           ),
                         ),
@@ -465,6 +489,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
           enabled: !_closing,
           initiallyExpanded: destination.id == _justCreatedId,
           onRemove: () => _remove(destination.id, l10n.posRemoveDestinationReason),
+          onEdit: () => _openDestinationSheet(destination: destination),
           onAssign: ({required saleLineId, required quantity}) => ref
               .read(deliveryControllerProvider(widget.sale).notifier)
               .assignLine(
@@ -484,7 +509,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         alignment: Alignment.centerLeft,
         child: OutlinedButton.icon(
           key: const Key('delivery_add_destination_button'),
-          onPressed: (_closing || nothingLeftToAssign) ? null : _openAddDestinationSheet,
+          onPressed: (_closing || nothingLeftToAssign) ? null : _openDestinationSheet,
           icon: const Icon(Icons.add_location_alt_outlined),
           label: Text(
             nothingLeftToAssign ? l10n.posAddDestinationNothingLeft : l10n.posAddDestination,
