@@ -13,6 +13,9 @@ just the Flutter version — treat a diff on a different machine/CI image as
 inconclusive until reproduced on the generating configuration. This repo
 designates **CI** as the source of truth for goldens; a local
 `--update-goldens` run is advisory, not authoritative, until it lands there.
+CI is `.github/workflows/test.yml` (added spec 028 T047 — no workflow existed
+before that, so this line was aspirational until then), pinned to the same
+Flutter 3.44.2 the baselines above were generated on.
 
 ## Workflow
 

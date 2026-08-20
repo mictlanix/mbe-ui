@@ -110,7 +110,7 @@ Grouped by feature module; files within a group are `[P]` (disjoint files, all d
 
 - [X] T045 [US1] Run `flutter test test/golden` post-migration to enumerate every baseline broken by the ISO-date and percent-rendering changes — this failure list *is* the inventory, per research R5
 - [X] T046 [US1] Re-record with `flutter test test/golden --update-goldens && flutter test test/screenshots --update-goldens`; open at least one regenerated PNG and confirm real Archivo glyphs render, not placeholder boxes, before trusting the run (`test/golden/README.md`'s font check)
-- [ ] T047 [US1] Land the re-recorded baselines through CI per `test/golden/README.md` ("CI is the source of truth"); a local-only `--update-goldens` is not sufficient to close this task
+- [X] T047 [US1] Land the re-recorded baselines through CI per `test/golden/README.md` ("CI is the source of truth"); a local-only `--update-goldens` is not sufficient to close this task
 
 ### Governance
 
