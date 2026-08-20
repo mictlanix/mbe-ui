@@ -12,8 +12,9 @@
 
 ### Session 2026-08-19
 
-- Q: Can point-of-sale sales be excluded from the list? → A: **No — they are included, exactly as legacy "Pedidos" includes them.** Every sales order in the system carries a point of sale (the column is mandatory and the backend refuses to create an order without one, taken from the caller's own configuration when the request omits it), the list endpoint offers only an "equals this register" filter with no "has no register" or "exclude" form, and the list payload does not return the register at all. Excluding — or even badging — register-originated rows is therefore not expressible without a backend change, which is out of scope for this feature. Recorded as Assumption A1 and Out-of-Scope OS-1.
-- Q: What does "all the facilities' sales orders" mean, given the backend always scopes a listing to exactly one facility? → A: **One facility at a time, with an administrator-only facility picker.** An ordinary user sees their own facility's orders and has no facility control. An administrator additionally gets a facility facet in the filter drawer and may switch to any single facility. There is never a merged multi-facility page, because the backend applies a single-facility predicate unconditionally. The restriction is a user-interface affordance, not a security boundary — the backend accepts a facility from any caller holding sales-order read access (Assumption A2).
+- Q: Can point-of-sale sales be excluded from the list? → A: **Dropped — the list is not concerned with where an order originated.** Excluding register-originated orders is not expressible against the current backend (every order carries a mandatory register, the listing filter matches a register only by equality, and the list payload omits the register entirely), and the idea was discarded rather than pursued through a backend change. Orders appear in the list on the strength of *who* they belong to, not *where* they were taken — exactly as legacy "Pedidos" behaves (Assumption A1).
+- Q: Whose orders does a user see? → A: **Their own, and only their own.** An ordinary user sees the orders they created, last edited, or are the salesperson of, and has no control to widen that. An administrator sees every user's orders and gets two facets an ordinary user does not: salesperson and facility. Filtering by the *creating user* was asked for and dropped — the backend exposes no such filter and does not return the creating user on a list row, so it would require a backend change (Assumption A4).
+- Q: What does "all the facilities' sales orders" mean, given the backend always scopes a listing to exactly one facility? → A: **One facility at a time, and only for administrators.** An ordinary user's view is their own orders in their own facility, with no facility control at all. An administrator gets a facility facet in the filter drawer and may switch to any single facility. There is never a merged multi-facility page, because the backend applies a single-facility predicate unconditionally. The restriction is a user-interface affordance, not a security boundary — the backend accepts a facility from any caller holding sales-order read access (Assumption A2).
 - Q: How far does the order screen go? → A: **Capture and confirm only.** Customer, terms, currency, dates, priority, salesperson, comment and lines, plus confirm and cancel. Collecting payment stays a separate screen — legacy keeps "Caja de Cobro" as its own menu entry — and delivery/fulfilment planning is not part of this feature (Out-of-Scope OS-2, OS-3).
 - Q: Which header fields does the order screen expose beyond the ones the point-of-sale capture step already edits (customer, payment terms, currency, ship-to address, contact, fulfilment intent)? → A: **Promise date, due date, priority, order comment and salesperson.** Promise date ("Límite Para Envío"), priority, comment and salesperson are editable while the order is a draft; priority remains editable after the order is confirmed. **Due date is display-only** — the backend derives it from the payment terms and the customer's credit days and accepts no value for it (Assumption A6).
 
@@ -124,10 +125,10 @@ page controls agree, and that the filter state survives a page reload.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Sales Orders screen, **When** it first opens, **Then** it shows
-   the orders in the user's facility where the user is the creator, the last
-   editor or the salesperson — mirroring legacy's default view — with the newest
-   first, and a clearly labelled control to widen it to everyone's orders.
+1. **Given** an ordinary user on the Sales Orders screen, **When** it first opens,
+   **Then** it shows exactly the orders in their facility that they created, last
+   edited, or are the salesperson of — newest first — and offers no control that
+   would widen the view to anyone else's orders.
 2. **Given** the list, **When** the user types a number in the search box,
    **Then** orders whose internal id **or** folio matches are returned; **when**
    they type text, **Then** orders whose customer name matches are returned.
@@ -171,28 +172,37 @@ and balance are all shown.
 
 ---
 
-### User Story 5 - Look at another facility's orders (Priority: P3)
+### User Story 5 - Supervise everyone's orders (Priority: P3)
 
-An administrator overseeing several branches switches the list to another
-facility to check what a branch has taken today.
+An administrator oversees the whole operation rather than their own desk: they
+see every user's orders, narrow to one salesperson to review that person's week,
+and switch to another branch to check what it has taken today.
 
 **Why this priority**: Real supervisory need, but it serves a small group and the
-feature is complete without it.
+feature is complete for the salespeople it is built for without it.
 
-**Independent Test**: As an administrator, switch the facility facet and confirm
-the rows change to that facility's orders and the facet appears in the address;
-as a non-administrator, confirm the facet is absent.
+**Independent Test**: As an administrator, confirm the list shows orders belonging
+to other users; apply the salesperson facet and the facility facet in turn and
+confirm the rows and the address both follow. As an ordinary user, confirm neither
+facet exists and no other user's order is ever visible.
 
 **Acceptance Scenarios**:
 
-1. **Given** an administrator on the Sales Orders screen, **When** they open the
-   filter drawer, **Then** a facility facet is offered, defaulting to their own
-   facility.
-2. **Given** an administrator viewing another facility, **When** they start a new
+1. **Given** an administrator on the Sales Orders screen, **When** it first opens,
+   **Then** it shows every user's orders in their own facility, newest first —
+   not only their own.
+2. **Given** an administrator, **When** they open the filter drawer, **Then** a
+   salesperson facet and a facility facet are offered, the facility one defaulting
+   to their own facility and the salesperson one to "everyone".
+3. **Given** an administrator with the salesperson facet set, **When** the list
+   reloads, **Then** only that salesperson's orders are shown and the facet is
+   reflected in the address and in the drawer's active-filter count.
+4. **Given** an administrator viewing another facility, **When** they start a new
    order, **Then** the order is created in **their own** facility regardless of
    the facet, and the screen says so before they begin.
-3. **Given** a non-administrator, **When** they open the filter drawer, **Then**
-   no facility facet is present and the list is their own facility's.
+5. **Given** an ordinary user, **When** they open the filter drawer, **Then**
+   neither the salesperson nor the facility facet is present, and no request they
+   can make from this screen returns another user's order.
 
 ---
 
@@ -202,6 +212,11 @@ as a non-administrator, confirm the facet is absent.
   order without a register). Listing, searching and reading are unaffected. The
   screen must say which setting is missing rather than surfacing a raw server
   refusal after the user has already typed an order (FR-014).
+- **An ordinary user hand-edits the address.** A salesperson or facility facet
+  typed into the address by a non-administrator MUST be ignored, not honoured and
+  not merely hidden: the list still returns only that user's own orders in their
+  own facility (FR-006). The screen must not rely on the facets being absent from
+  the interface to keep the scope correct.
 - **No facility configured.** The user's own facility cannot be resolved; the
   list has nothing to scope to. The screen shows the same class of explanatory
   blocked state rather than an empty list that looks like "no orders".
@@ -253,10 +268,14 @@ as a non-administrator, confirm the facet is absent.
 - **FR-005**: The list MUST show, per order: its identifier, its folio (blank
   until confirmed), its date, the customer, its status, its total and its
   outstanding balance.
-- **FR-006**: The list MUST default to the orders of the signed-in user's facility
-  in which that user is the creator, the last editor or the salesperson, newest
-  first, and MUST offer a visible control to widen the view to every order in the
-  facility.
+- **FR-006**: For an ordinary (non-administrator) user, the list MUST show only
+  the orders that user created, last edited, or is the salesperson of, within their
+  own facility, newest first. There MUST be no control — and no address, facet or
+  page state — by which such a user can widen the list to another user's orders or
+  another facility; the own-orders constraint MUST be applied on every request the
+  screen makes, regardless of what the address asks for.
+- **FR-006a**: For an administrator, the list MUST show every user's orders in the
+  facility in force, newest first.
 - **FR-007**: The list MUST support free-text search where a numeric term matches
   the order identifier or the folio and a non-numeric term matches the customer
   name.
@@ -270,8 +289,13 @@ as a non-administrator, confirm the facet is absent.
 - **FR-010**: The list MUST be paginated server-side with a visible page indicator
   and total count, and MUST clamp an out-of-range page to the last available page.
 - **FR-011**: Administrators — and only administrators — MUST additionally be
-  offered a facility facet in the filter drawer, selecting exactly one facility at
-  a time and defaulting to their own.
+  offered two facets in the filter drawer: a **facility** facet, selecting exactly
+  one facility at a time and defaulting to their own; and a **salesperson** facet,
+  choosing one salesperson from the employees marked as such and defaulting to
+  "everyone". Both MUST count toward the drawer's active-filter badge and both MUST
+  be part of the addressable state.
+- **FR-011a**: There is no filter by the order's creating *user*. The list neither
+  shows nor filters by who captured an order — only by salesperson (Assumption A4).
 - **FR-012**: A row MUST open the order; the row's single direct action MUST be
   Edit and MUST appear only for orders that are still editable (drafts). No print
   or delete row action is offered.
@@ -395,29 +419,51 @@ as a non-administrator, confirm the facet is absent.
 - **SC-008**: A user without sales-order create rights, and a user with no point of
   sale configured, both reach a state that explains what they cannot do and why,
   in zero failed server round-trips.
+- **SC-009**: An ordinary user sees zero orders belonging to anyone else: with an
+  order seeded against another employee in the same facility, no combination of
+  search term, facet, page or hand-edited address exposes it to them.
+- **SC-010**: An administrator can narrow the list to a single salesperson's orders
+  in under 15 seconds, and the resulting view is shareable as a link that reproduces
+  it exactly.
 
 ## Assumptions
 
-- **A1 (POS orders are included)**: Every sales order carries a mandatory point of
-  sale, the list endpoint filters registers only by equality, and the list payload
-  omits the register entirely. Orders originating at a register therefore appear in
-  this list and cannot be excluded, filtered out, or visually distinguished. This
-  matches legacy "Pedidos", which shows them too. Changing this needs a backend
-  change and is out of scope (OS-1).
-- **A2 (facility scope is a UI affordance)**: The backend scopes every listing to
-  one facility, defaulting to the caller's own, and accepts an explicit facility
-  from any caller with sales-order read access. Restricting the facility facet to
-  administrators is therefore a user-interface decision, not an enforced boundary.
+- **A1 (origin is not a concept this screen has)**: The list selects orders by who
+  they belong to and when they were taken, never by where they originated. An order
+  captured at a register and one captured here are the same document and appear on
+  the same terms — as in legacy "Pedidos". Distinguishing them is not a goal, and
+  would not be possible anyway: every order carries a mandatory register, the
+  listing filter matches a register only by equality, and the list payload omits
+  the register entirely.
+- **A2 (scoping is enforced by the client, not the server)**: The backend scopes a
+  listing to one facility, defaulting to the caller's own, and accepts an explicit
+  facility — and an "everyone's orders" listing — from any caller holding
+  sales-order read access. Restricting the facility and salesperson facets to
+  administrators, and pinning an ordinary user to their own orders, are therefore
+  user-interface decisions, not enforced boundaries. The spec treats them as
+  product rules and requires them to hold for every request the screen issues
+  (FR-006), not merely for the controls it draws. A user determined to see more can
+  still call the backend directly; closing that would be a backend change and is
+  not claimed here.
 - **A3 (no backend change, no code generation)**: Every filter, field and action
   this feature needs is already exposed by the existing sales-order endpoints and
   the generated client. If planning discovers otherwise, the gap is filed as a
   backend issue and recorded as an external dependency rather than patched across
   repository boundaries.
-- **A4 (list columns limited by the payload)**: The list payload carries the order
-  id, folio, customer, salesperson, date, due date, currency, status, total and
-  balance. Legacy's "Usuario" (creating user) and "Forma de Pago" (payment terms)
-  columns have no source in it, so they are not reproduced; legacy's "Pagado" tick
-  is represented by the status and balance already available.
+- **A4 (no creating-user column and no creating-user filter)**: The list payload
+  carries the order id, folio, customer, salesperson, date, due date, currency,
+  status, total and balance. Legacy's "Usuario" (creating user) and "Forma de Pago"
+  (payment terms) columns have no source in it, so they are not reproduced, and the
+  backend offers no filter by creating user either — only by salesperson. Filtering
+  by user was asked for on 2026-08-19 and dropped for that reason rather than
+  deferred; adding it would need both a new backend filter and a new field on the
+  list payload. Legacy's "Pagado" tick is represented by the status and balance
+  already available.
+- **A4a (own orders means creator, last editor or salesperson)**: "My orders" is
+  the backend's own definition — orders where the signed-in user's employee is the
+  creator, the last updater, or the named salesperson. Every authenticated user has
+  an employee record, so the narrowing always applies and never silently degrades
+  to "everything".
 - **A5 (no printing)**: There is no server-rendered document for a sales order, so
   legacy's printer row action has no counterpart here. Documents remain
   server-rendered when they exist; nothing is rendered client-side (OS-4).
@@ -438,8 +484,9 @@ as a non-administrator, confirm the facet is absent.
 
 ## Out of Scope
 
-- **OS-1**: Any backend change that would let this screen exclude, badge or filter
-  register-originated orders.
+- **OS-1**: Filtering or labelling orders by where they originated (register versus
+  back office), and filtering by the order's creating user. Both were considered and
+  dropped on 2026-08-19; neither is expressible without a backend change.
 - **OS-2**: Collecting payment. Payments remain their own screen and their own
   privilege; this feature neither collects nor reverses money.
 - **OS-3**: Delivery and fulfilment planning — delivery orders, destinations and
@@ -456,8 +503,9 @@ as a non-administrator, confirm the facet is absent.
 - The existing sales-order endpoints (list, create, read, update header, add /
   update / remove line, confirm, cancel, product lookup) and their privilege
   model.
-- The existing customer, contact, address, facility and warehouse catalogs, for
-  the header pickers and per-line warehouse choice.
+- The existing customer, contact, address, facility, employee and warehouse
+  catalogs — for the header pickers, the per-line warehouse choice, and the
+  administrator's salesperson and facility facets.
 - The existing point-of-sale capture user interface, which this feature makes
   reusable and shares (FR-029).
 - The shared list conventions (filters drawer, search bar, pagination), the design

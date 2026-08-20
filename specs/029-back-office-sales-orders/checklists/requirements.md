@@ -44,9 +44,17 @@
   point of sale configured — the server refuses it. The blocked state is a
   first-class requirement, not an edge case, because the failure would otherwise
   land *after* a salesperson has typed a whole order.
-- **A1 records a request that could not be granted.** "Exclude point-of-sale
-  orders" was the user's original hope; it is not expressible against the current
-  backend and was confirmed as out of scope (OS-1) rather than silently dropped.
+- **Two asks were dropped, both recorded with their reason.** "Exclude
+  point-of-sale orders" (A1) and "filter by the creating user" (A4) are each
+  impossible against the current backend; both were discarded by the user on
+  2026-08-19 rather than deferred, and OS-1 says so, so planning does not reopen
+  them.
+- **Scoping is a product rule the client enforces (A2).** The backend will serve
+  any facility, any salesperson and everyone's orders to any caller holding
+  sales-order read access. FR-006 therefore binds every request the screen makes,
+  not just the controls it draws — an ordinary user hand-editing the address must
+  still get only their own orders (SC-009). The spec does not claim this is a
+  security boundary.
 - **The reuse refactor (A9, FR-029–FR-031) is the feature's main technical risk**
   and is the first thing `/speckit-plan` should size: the point-of-sale capture
   widgets read one screen-scoped sale directly, and two screens must be able to
