@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -15,6 +16,7 @@ import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.da
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -81,9 +83,13 @@ void main() {
       ).thenAnswer((_) async => _existing);
     }
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           vehicleOperatorRepositoryProvider.overrideWithValue(repository),
           employeeRepositoryProvider.overrideWithValue(employeeRepository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),

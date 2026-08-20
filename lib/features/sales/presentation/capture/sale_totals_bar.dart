@@ -1,8 +1,10 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
@@ -24,7 +26,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// dominant, right-aligned element the mock gives it. No literal font size
 /// or color: the mock's palette and 32 px total are a presentation, not a
 /// requirement — everything here resolves through the spec 022 tokens.
-class SaleTotalsBar extends StatelessWidget {
+class SaleTotalsBar extends ConsumerWidget {
   const SaleTotalsBar({
     super.key,
     required this.sale,
@@ -52,11 +54,12 @@ class SaleTotalsBar extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final currentSale = sale;
+    final fmt = ref.watch(formattersProvider);
 
     // The counts and the money either side of one rule, as in the mock — a
     // single divider after Artículos, not one between every pair, which would
@@ -67,7 +70,7 @@ class SaleTotalsBar extends StatelessWidget {
       spacing: spacing.lg,
       runSpacing: spacing.xs,
       crossAxisAlignment: WrapCrossAlignment.center,
-      children: _groups(context, l10n, currentSale),
+      children: _groups(context, fmt, l10n, currentSale),
     );
 
     // The total is the mock's own right-aligned block, pushed against the
@@ -76,7 +79,7 @@ class SaleTotalsBar extends StatelessWidget {
     final total = _group(
       context,
       l10n.posTotalsTotalLabel,
-      MoneyFormatters.currency(currentSale?.total ?? '0'),
+      fmt.display.currency(currentSale?.total ?? '0'),
       crossAxisAlignment: CrossAxisAlignment.end,
       figureStyle: Theme.of(context).typeRoles.metricValue,
     );
@@ -149,7 +152,12 @@ class SaleTotalsBar extends StatelessWidget {
   /// creates one. It used to render nothing there and then grow this whole
   /// row in place, one of the jumps that made starting a sale feel like the
   /// screen was reassembling itself.
-  List<Widget> _groups(BuildContext context, AppLocalizations l10n, Sale? sale) {
+  List<Widget> _groups(
+    BuildContext context,
+    AppFormatters fmt,
+    AppLocalizations l10n,
+    Sale? sale,
+  ) {
     final unitCount = (sale?.lines ?? const <SaleLine>[]).fold(
       Decimal.zero,
       (sum, line) => sum + (Decimal.tryParse(line.quantity) ?? Decimal.zero),
@@ -176,12 +184,12 @@ class SaleTotalsBar extends StatelessWidget {
       ),
       // What the sale *is* on one side, what it *costs* on the other.
       _divider(context),
-      _group(context, l10n.posTotalsSubtotalLabel, MoneyFormatters.currency(subtotal)),
+      _group(context, l10n.posTotalsSubtotalLabel, fmt.display.currency(subtotal)),
       if (!isZeroAmount(discount))
         // The mock's leading minus is display-only — [discount] itself is
         // still the plain magnitude FR-047 derives from Sale.
-        _group(context, l10n.posTotalsDiscountLabel, '−${MoneyFormatters.currency(discount)}'),
-      _group(context, l10n.posTotalsTaxLabel, MoneyFormatters.currency(taxTotal)),
+        _group(context, l10n.posTotalsDiscountLabel, '−${fmt.display.currency(discount)}'),
+      _group(context, l10n.posTotalsTaxLabel, fmt.display.currency(taxTotal)),
     ];
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
@@ -18,7 +20,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 ///
 /// No expand affordance and no removal action (FR-011) — it is not a
 /// destination the cashier composed.
-class DestinationCounterRow extends StatelessWidget {
+class DestinationCounterRow extends ConsumerWidget {
   const DestinationCounterRow({
     super.key,
     this.counterDestination,
@@ -33,10 +35,11 @@ class DestinationCounterRow extends StatelessWidget {
   final List<LineDistribution> distribution;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final spacing = theme.spacing;
+    final fmt = ref.watch(formattersProvider);
 
     final destination = counterDestination;
     final int lines;
@@ -95,7 +98,7 @@ class DestinationCounterRow extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(top: spacing.xxs),
                     child: Text(
-                      l10n.posDestinationCounts(lines, formatQuantity(units)),
+                      l10n.posDestinationCounts(lines, fmt.field.quantity(units)),
                       style: theme.typeRoles.metricLabel.copyWith(
                         color: theme.colorScheme.primary,
                       ),

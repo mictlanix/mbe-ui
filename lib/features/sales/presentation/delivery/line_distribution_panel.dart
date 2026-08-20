@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
@@ -19,7 +22,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// `Expanded` (the wide rail, where it scrolls on its own, FR-007) and as a
 /// plain child of the step's own outer `ListView` below the two-region
 /// threshold (mirrors `AppliedPaymentsPanel`'s precedent).
-class LineDistributionPanel extends StatelessWidget {
+class LineDistributionPanel extends ConsumerWidget {
   const LineDistributionPanel({
     super.key,
     required this.distribution,
@@ -55,11 +58,12 @@ class LineDistributionPanel extends StatelessWidget {
   final bool fillHeight;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final typeRoles = theme.typeRoles;
+    final fmt = ref.watch(formattersProvider);
 
     // The mock's `border-bottom` under the rail title — the header states
     // what the list below it is, so a rule closes it rather than leaving the
@@ -102,7 +106,7 @@ class LineDistributionPanel extends StatelessWidget {
         height: 1,
         color: theme.colorScheme.outlineVariant,
       ),
-      itemBuilder: (context, index) => _row(context, l10n, distribution[index]),
+      itemBuilder: (context, index) => _row(context, l10n, fmt, distribution[index]),
     );
 
     if (fillHeight) {
@@ -117,7 +121,12 @@ class LineDistributionPanel extends StatelessWidget {
     );
   }
 
-  Widget _row(BuildContext context, AppLocalizations l10n, LineDistribution line) {
+  Widget _row(
+    BuildContext context,
+    AppLocalizations l10n,
+    AppFormatters fmt,
+    LineDistribution line,
+  ) {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final typeRoles = theme.typeRoles;
@@ -130,13 +139,13 @@ class LineDistributionPanel extends StatelessWidget {
       if (isZeroAmount(entry.value)) continue;
       final badge = badges[entry.key];
       if (badge == null) continue;
-      chips.add('$badge ${formatQuantity(entry.value)}');
+      chips.add('$badge ${fmt.field.quantity(entry.value)}');
     }
     final counterShare = counterDestination != null
         ? (line.perDestination[counterDestination!.id] ?? '0')
         : line.atCounter;
     if (!isZeroAmount(counterShare)) {
-      chips.add(l10n.posDestinationCounterChip(formatQuantity(counterShare)));
+      chips.add(l10n.posDestinationCounterChip(fmt.field.quantity(counterShare)));
     }
 
     // FR-034: a pure-delivery line still outstanding is marked, never by
@@ -188,7 +197,7 @@ class LineDistributionPanel extends StatelessWidget {
               ),
             ),
           Text(
-            formatQuantity(line.ordered),
+            fmt.field.quantity(line.ordered),
             style: typeRoles.recordId.copyWith(
               color: overClaimed
                   ? theme.colorScheme.error
@@ -219,7 +228,7 @@ class LineDistributionPanel extends StatelessWidget {
 /// total, the outstanding-lines reason while the gate is closed, and the
 /// finish action — `isDistributionComplete` and the close handling moved
 /// here from `delivery_step.dart`, not reimplemented (FR-001).
-class LineDistributionFoot extends StatelessWidget {
+class LineDistributionFoot extends ConsumerWidget {
   const LineDistributionFoot({
     super.key,
     required this.assigned,
@@ -254,10 +263,11 @@ class LineDistributionFoot extends StatelessWidget {
   final VoidCallback? onSweepAndClose;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final spacing = theme.spacing;
+    final fmt = ref.watch(formattersProvider);
 
     return Container(
       padding: EdgeInsets.all(spacing.cardPadding),
@@ -271,8 +281,8 @@ class LineDistributionFoot extends StatelessWidget {
         children: [
           Text(
             l10n.posDeliveryAssignedUnits(
-              formatQuantity(assigned),
-              formatQuantity(total),
+              fmt.field.quantity(assigned),
+              fmt.field.quantity(total),
             ),
             style: theme.typeRoles.metricLabel,
           ),

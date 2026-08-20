@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/network/dio_client.dart' as dio_client;
 import 'package:mbe_ui/core/network/photo_url.dart' as photo_url;
 import 'package:mbe_ui/features/sales/pos_defaults.dart' as pos_defaults;
@@ -32,6 +33,7 @@ class AppSettings {
     required this.posDefaultCustomerId,
     required this.brand,
     required this.defaultLocale,
+    required this.formatting,
   });
 
   /// mbe-api base URL. Mirrors `dio_client.dart`'s `apiBaseUrl` const.
@@ -54,6 +56,12 @@ class AppSettings {
   /// (spec 027 FR-018).
   final Locale defaultLocale;
 
+  /// Deployment-level value-formatting configuration (spec 028 FR-010) — date
+  /// patterns, currency symbol/code, and decimal-digit counts. Never
+  /// reachable from the UI and never a per-user preference; consumed
+  /// exclusively through `formattersProvider` (`lib/core/formatting/`).
+  final FormattingSettings formatting;
+
   static const _defaultLocaleEnv = String.fromEnvironment(
     'DEFAULT_LOCALE',
     defaultValue: 'es_MX',
@@ -70,6 +78,7 @@ class AppSettings {
       posDefaultCustomerId: pos_defaults.posDefaultCustomerId,
       brand: BrandConfig.fromEnvironment(),
       defaultLocale: _parseLocale(_defaultLocaleEnv),
+      formatting: FormattingSettings.fromEnvironment(),
     );
   }
 

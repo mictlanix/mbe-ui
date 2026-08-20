@@ -44,12 +44,12 @@ class _AddressInlineCreateDialog extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
               Text(
                 l10n.newAddressDialogTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
               ResponsiveFormGrid(
                 maxColumns: 2,
                 children: [
@@ -226,6 +226,7 @@ class _AddressInlineCreateDialog extends ConsumerWidget {
                     span: FormGridSpan.full,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
+                      spacing: 8,
                       children: [
                         TextButton(
                           onPressed: state.submitting
@@ -233,7 +234,6 @@ class _AddressInlineCreateDialog extends ConsumerWidget {
                               : () => Navigator.of(context).pop(),
                           child: Text(l10n.cancelButton),
                         ),
-                        const SizedBox(width: 8),
                         FilledButton(
                           key: const Key('create_address_button'),
                           onPressed: state.submitting

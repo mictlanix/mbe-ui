@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/denominations.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 
@@ -11,24 +12,22 @@ import 'package:mbe_ui/features/sales/domain/money.dart';
 /// [CloseSessionFormController], matching the repo-wide convention of
 /// validating in the controller rather than constraining input as it's
 /// typed.
-class DenominationCountTable extends StatelessWidget {
+class DenominationCountTable extends ConsumerWidget {
   const DenominationCountTable({
     super.key,
     required this.quantities,
     required this.onQuantityChanged,
     this.enabled = true,
-    this.locale,
   });
 
   /// Current quantity per denomination string; a missing key reads as 0.
   final Map<String, int> quantities;
   final void Function(String denomination, int quantity) onQuantityChanged;
   final bool enabled;
-  final String? locale;
 
   @override
-  Widget build(BuildContext context) {
-    final locale = this.locale ?? Localizations.localeOf(context).toString();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fmt = ref.watch(formattersProvider);
 
     return Column(
       children: [
@@ -39,7 +38,7 @@ class DenominationCountTable extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 2,
-                  child: Text(MoneyFormatters.currency(denomination, locale: locale)),
+                  child: Text(fmt.display.currency(denomination)),
                 ),
                 Expanded(
                   child: TextFormField(
@@ -57,9 +56,8 @@ class DenominationCountTable extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Text(
-                    MoneyFormatters.currency(
+                    fmt.display.currency(
                       extendedAmount(denomination, quantities[denomination] ?? 0),
-                      locale: locale,
                     ),
                     textAlign: TextAlign.right,
                   ),

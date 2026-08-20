@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -14,6 +15,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -93,9 +95,13 @@ void main() {
       ],
     );
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           exchangeRateRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],

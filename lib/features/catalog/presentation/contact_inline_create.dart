@@ -130,12 +130,12 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
+                spacing: 8,
                 children: [
                   TextButton(
                     onPressed: fieldsEnabled ? () => Navigator.of(context).pop() : null,
                     child: Text(l10n.cancelButton),
                   ),
-                  const SizedBox(width: 8),
                   FilledButton(
                     key: const Key('contact_save_button'),
                     onPressed: fieldsEnabled ? controller.submit : null,

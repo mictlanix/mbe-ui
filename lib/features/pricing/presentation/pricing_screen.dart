@@ -7,8 +7,8 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_controller.dart';
@@ -134,6 +134,7 @@ class _PricingTable extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
     return DataTableView<ProductPriceRow>(
       key: const Key('pricing_table'),
       columns: [
@@ -155,27 +156,24 @@ class _PricingTable extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.outline,
                   ),
                 )
-              : Text(MoneyFormatters.currency(row.price!.price)),
+              : Text(fmt.display.currency(row.price!.price)),
         ),
         DataTableColumn(
           label: l10n.columnLowProfit,
           numeric: true,
           fixedWidth: 140,
-          cellBuilder: (context, row) => Text(
-            row.price == null
-                ? '—'
-                : MoneyFormatters.percent(row.price!.lowProfit),
-          ),
+          // fmt.display.percent renders '—' for a null value itself
+          // (spec 028 FR-008), so the ternary this cell used to need is gone.
+          cellBuilder: (context, row) =>
+              Text(fmt.display.percent(row.price?.lowProfit)),
         ),
         DataTableColumn(
           label: l10n.columnHighProfit,
           numeric: true,
           fixedWidth: 140,
-          cellBuilder: (context, row) => Text(
-            row.price == null
-                ? '—'
-                : MoneyFormatters.percent(row.price!.highProfit),
-          ),
+          // Same em-dash simplification as lowProfit above.
+          cellBuilder: (context, row) =>
+              Text(fmt.display.percent(row.price?.highProfit)),
         ),
         if (canUpdate)
           DataTableColumn(

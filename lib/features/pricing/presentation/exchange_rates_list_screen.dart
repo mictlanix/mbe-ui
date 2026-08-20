@@ -11,8 +11,8 @@ import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -48,6 +48,7 @@ class ExchangeRatesListScreen extends ConsumerWidget {
       AccessRight.update,
     );
     final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
 
     return Column(
       children: [
@@ -71,8 +72,8 @@ class ExchangeRatesListScreen extends ConsumerWidget {
                 label: Text(
                   filter.dateFrom == null
                       ? l10n.dateRangeFilterLabel
-                      : '${MoneyFormatters.date(filter.dateFrom!)} – '
-                            '${MoneyFormatters.date(filter.dateTo ?? filter.dateFrom!)}',
+                      : '${fmt.display.date(filter.dateFrom!)} – '
+                            '${fmt.display.date(filter.dateTo ?? filter.dateFrom!)}',
                 ),
                 onPressed: () async {
                   final range = await showDateRangePicker(
@@ -155,8 +156,7 @@ class ExchangeRatesListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.columnDate,
                   fixedWidth: 140,
-                  cellBuilder: (context, r) =>
-                      Text(MoneyFormatters.date(r.date)),
+                  cellBuilder: (context, r) => Text(fmt.display.date(r.date)),
                 ),
                 DataTableColumn.text(
                   label: l10n.columnBaseCurrency,

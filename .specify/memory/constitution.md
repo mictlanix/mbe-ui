@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.11.0
+Version change: 1.0.0 → 1.12.0
 Modified principles:
   - V. Material 3, White-Labeled Design System — materially expanded with
     two rules [1.11.0]: (a) **two levels of configuration, kept distinct** —
@@ -157,8 +157,29 @@ Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
   filter-drawer rule beyond the two named ones
   (`features/pricing/presentation/exchange_rates_list_screen.dart`) is
   inventoried in specs/027-app-user-settings' research.md R8 for correction
-  when next touched, not tracked here — as is the formatting drift, which
-  awaits its own spec.
+  when next touched, not tracked here.
+  - V. Material 3, White-Labeled Design System — the **one formatting
+    surface** rule drafted for v1.11.0 and withheld there now lands:
+    `formattersProvider` (`lib/core/formatting/`) is the single path every
+    screen MUST use to render a date, date-time, currency amount, percentage
+    or quantity; no widget MAY construct a `DateFormat`/`NumberFormat` or
+    call `toStringAsFixed` for display, enforced by
+    `test/unit/core/formatting_guard_test.dart`. Formatting configuration
+    (date/date-time patterns, currency symbol/code, decimal-digit counts)
+    is deployment-level only — the same build-time, never-UI-mutable level
+    as the rest of app settings — with **no per-user override**, keeping
+    v1.11.0's two-configuration-levels split intact. The date default is
+    **ISO 8601** (`yyyy-MM-dd`), a deliberate change from the locale-derived
+    rendering the app used before, made so one deployment serving multiple
+    locales still shows one unambiguous date everywhere; a deployment
+    preferring a local rendering sets `DATE_FORMAT` explicitly. Prompted by
+    specs/028-presentation-consistency, which also found that the two
+    screens computing their own locale via
+    `Localizations.localeOf(context).toString()` were silently rendering
+    Spain-style numbers instead of Mexican ones — Flutter's locale
+    resolution drops the country subtag that `formattersProvider` (via
+    `resolvedLocaleProvider`, v1.11.0) deliberately preserves — a live bug
+    this migration fixed as a side effect [1.12.0]
 -->
 
 # MBE-UI Constitution
@@ -285,6 +306,20 @@ Cupertino-specific branches.
 - `es-MX` MUST be treated as a first-class locale from the start via
   `flutter_localizations` + `intl` (`.arb` files); currency (MXN) and date
   formatting MUST use `intl`, not manual string formatting.
+- **One formatting surface.** Every date, date-time, currency amount,
+  percentage and quantity a screen displays MUST be reached through
+  `formattersProvider` (`lib/core/formatting/`) — no widget MAY construct a
+  `DateFormat`/`NumberFormat` or call `toStringAsFixed` for display, a rule
+  enforced by an automated guard (`test/unit/core/formatting_guard_test.dart`)
+  that fails the suite and names the offending file/line, not left to review.
+  No call site MAY resolve its own locale (e.g.
+  `Localizations.localeOf(context).toString()`) for this purpose — the
+  provider owns the locale so the interface language and every formatted
+  value can never disagree. The surface MUST distinguish read-only display
+  formatting from editable-field formatting (a field the user types into
+  carries no currency symbol and MUST round-trip to the stored value), and
+  MUST render one placeholder for absent/unparseable input everywhere,
+  never a screen-specific improvisation.
 - Deployment configuration and personal preference are two distinct levels
   and MUST NOT be conflated:
   - **App settings** (formatting options, default locale, endpoints, brand
@@ -292,7 +327,10 @@ Cupertino-specific branches.
     values supplied via `--dart-define-from-file=.env`, MUST be listed with
     their defaults in `.env.template`, MUST fall back to a documented
     default on a malformed or absent value rather than failing startup, and
-    MUST NOT be reachable or mutable from the UI.
+    MUST NOT be reachable or mutable from the UI. Formatting options
+    (date/date-time patterns, currency symbol/code, decimal-digit counts)
+    are app settings, not user display preferences — there is no per-user
+    override, keeping this split unblurred.
   - **User display preferences** (appearance, text size, language) MUST be
     device-local via `shared_preferences`, MUST apply immediately with no
     restart or re-login, and MUST NOT be synced through mbe-api. They are
@@ -313,14 +351,15 @@ per-customer forks (DESIGN.md §4.1, §4.4, §4.5). Splitting deployment
 configuration from personal preference (v1.11.0) keeps the white-label seam
 — §V's whole premise — from being blurred by user-facing controls, and keeps
 a personal taste setting from acquiring a backend dependency it does not
-need. A **single-formatting-surface** rule was drafted for v1.11.0 and
-deliberately **withheld**: specs/027-app-user-settings descoped the surface
-itself (≈78 call sites across three divergent paths — see that feature's
-research.md R3/R4/R8 and contracts/formatting-surface.md), and a rule
-requiring every screen to use a component that does not exist yet is
-unsatisfiable, contradicting this constitution's own practice of landing a
-rule with the first code that complies with it. It amends in with the spec
-that builds the surface.
+need. The **single-formatting-surface** rule was drafted for v1.11.0 and
+deliberately withheld then, because specs/027-app-user-settings descoped the
+surface itself (≈78 call sites across three divergent paths — see that
+feature's research.md R3/R4/R8 and contracts/formatting-surface.md) and a
+rule requiring every screen to use a component that did not exist yet was
+unsatisfiable. specs/028-presentation-consistency built the surface and
+migrated every call site (≈76, re-verified — the count drifted slightly once
+comment-only mentions were excluded from the naive grep), so the rule lands
+now, with the code that satisfies it, per this constitution's own practice.
 
 ### VI. Desktop/Web-First, Compact-Ready Layout
 
@@ -552,4 +591,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.11.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-08-16
+**Version**: 1.12.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-08-17

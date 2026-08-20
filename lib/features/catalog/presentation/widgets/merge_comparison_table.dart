@@ -227,6 +227,7 @@ class _ValueRowState extends State<_ValueRow> {
         : base;
 
     final label = Row(
+      spacing: 6,
       children: [
         Flexible(
           child: Text(
@@ -236,8 +237,7 @@ class _ValueRowState extends State<_ValueRow> {
             ),
           ),
         ),
-        if (row.differs) ...[
-          const SizedBox(width: 6),
+        if (row.differs)
           Container(
             key: const Key('merge_diff_badge'),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -252,7 +252,6 @@ class _ValueRowState extends State<_ValueRow> {
               ),
             ),
           ),
-        ],
       ],
     );
 
@@ -297,7 +296,8 @@ class _ValueRowState extends State<_ValueRow> {
             // wide enough to read without horizontal scrolling.
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [label, const SizedBox(height: 4), values],
+                spacing: 4,
+                children: [label, values],
               )
             : Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,11 +1,11 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
@@ -48,10 +48,11 @@ class TaxpayerCertificatesSection extends ConsumerWidget {
     final canAdd =
         !readOnly && access.can(SystemObject.taxpayers, AccessRight.create);
     final l10n = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat.yMd();
+    final fmt = ref.watch(formattersProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
       children: [
         Row(
           children: [
@@ -70,7 +71,6 @@ class TaxpayerCertificatesSection extends ConsumerWidget {
               ),
           ],
         ),
-        const SizedBox(height: 8),
         certificatesAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => ListFailedView(
@@ -101,12 +101,12 @@ class TaxpayerCertificatesSection extends ConsumerWidget {
                       ),
                       DataTableColumn.text(
                         label: l10n.columnValidFrom,
-                        text: (c) => dateFormat.format(c.validFrom),
+                        text: (c) => fmt.display.date(c.validFrom),
                         size: ColumnSize.S,
                       ),
                       DataTableColumn.text(
                         label: l10n.columnValidTo,
-                        text: (c) => dateFormat.format(c.validTo),
+                        text: (c) => fmt.display.date(c.validTo),
                         size: ColumnSize.S,
                       ),
                       DataTableColumn(

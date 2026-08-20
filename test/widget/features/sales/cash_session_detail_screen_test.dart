@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -12,6 +13,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -77,8 +79,11 @@ void main() {
       () => repository.get(cashSessionId: session.cashSessionId),
     ).thenAnswer((_) async => session);
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
     final container = ProviderContainer(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         cashSessionRepositoryProvider.overrideWithValue(repository),
         accessControlProvider.overrideWithValue(
           AccessControlService(AuthState.authenticated(token: 't', user: user)),

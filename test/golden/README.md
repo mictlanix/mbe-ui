@@ -14,6 +14,12 @@ inconclusive until reproduced on the generating configuration. This repo
 designates **CI** as the source of truth for goldens; a local
 `--update-goldens` run is advisory, not authoritative, until it lands there.
 
+⚠ No CI pipeline exists yet (checked 2026-08-19/20 — no `.github/workflows`,
+no other provider config). Spec 028 T047 tried adding one; deliberately
+backed out for now rather than carried forward — see that spec's tasks.md.
+Until CI exists, a baseline committed on this branch **is** the source of
+truth in practice.
+
 ## Workflow
 
 ```bash

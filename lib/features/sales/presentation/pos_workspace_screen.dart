@@ -466,11 +466,10 @@ class _StepPill extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        spacing: theme.spacing.xxs,
         children: [
-          if (current) ...[
+          if (current)
             Icon(icon, size: 16, color: theme.colorScheme.onSecondaryContainer),
-            SizedBox(width: theme.spacing.xxs),
-          ],
           Text(
             '$position · $label',
             style: theme.textTheme.labelLarge?.copyWith(

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_controller.dart';
@@ -124,6 +124,7 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
     final l10n = AppLocalizations.of(context)!;
     final canSubmit = !_submitting && _shipTo != null;
     final spacing = Theme.of(context).spacing;
+    final fmt = ref.watch(formattersProvider);
 
     return Padding(
       key: const Key('destination_editor'),
@@ -163,7 +164,7 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
                 label: Text(
                   _date == null
                       ? l10n.posDeliveryDateLabel
-                      : MoneyFormatters.date(_date!),
+                      : fmt.display.date(_date),
                 ),
               ),
             ],

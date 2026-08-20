@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show FontLoader, rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/app/theme/app_theme.dart';
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The two logical-pixel widths captured for every golden (spec 022 FR-020):
@@ -65,6 +67,13 @@ Future<void> loadGoldenFonts() async {
 /// exactly as `lib/app/app.dart` wires it) at a fixed logical-pixel [width],
 /// with [overrides] applied to a [ProviderScope] for any widget that reads
 /// Riverpod state. Returns once the frame is settled.
+///
+/// Defaults [sharedPreferencesProvider] to an in-memory instance (spec 028):
+/// `formattersProvider` reads through `resolvedLocaleProvider` ->
+/// `userDisplayPreferencesControllerProvider`, so any widget formatting a
+/// value now needs one. A caller-supplied override for the same provider,
+/// appended after this default, still wins (Riverpod resolves duplicate
+/// overrides last-one-wins).
 Future<void> pumpGoldenScenario(
   WidgetTester tester,
   Widget child, {
@@ -83,9 +92,15 @@ Future<void> pumpGoldenScenario(
   final appTheme = AppTheme.of(_defaultBrand);
   final base = brightness == Brightness.light ? appTheme.light : appTheme.dark;
 
+  SharedPreferences.setMockInitialValues({});
+  final sharedPreferences = await SharedPreferences.getInstance();
+
   await tester.pumpWidget(
     ProviderScope(
-      overrides: overrides,
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ...overrides,
+      ],
       child: MaterialApp(
         theme: base,
         debugShowCheckedModeBanner: false,

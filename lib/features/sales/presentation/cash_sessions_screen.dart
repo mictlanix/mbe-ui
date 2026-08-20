@@ -15,8 +15,8 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
@@ -109,9 +109,9 @@ class _ShiftToolbarAction extends ConsumerWidget {
           onPressed: openSheet,
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            spacing: 8,
             children: [
               Text(current.session!.cashDrawerName),
-              const SizedBox(width: 8),
               CashSessionStatusChip(status: status),
             ],
           ),
@@ -190,9 +190,9 @@ class _OpenForm extends ConsumerWidget {
     if (!canBrowseDrawers && !hasAssignedDrawer) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
         children: [
           Text(l10n.cashSessionNoOpenSessionMessage),
-          const SizedBox(height: 8),
           Text(
             l10n.cashSessionDrawerBlockedMessage,
             key: const Key('cash_session_drawer_blocked_message'),
@@ -293,16 +293,16 @@ class _OpenShiftCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
+    final fmt = ref.watch(formattersProvider);
     final hasOtherOpenSessions = ref.watch(hasOtherOpenSessionsProvider).valueOrNull ?? false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          spacing: 8,
           children: [
             Text(session.cashDrawerName, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(width: 8),
             CashSessionStatusChip(status: stale ? CashSessionStatus.stale : CashSessionStatus.open),
           ],
         ),
@@ -311,17 +311,17 @@ class _OpenShiftCard extends ConsumerWidget {
           Text(l10n.cashSessionStaleWarningMessage),
         ],
         const SizedBox(height: 8),
-        Text('${l10n.cashSessionStartFieldLabel}: ${MoneyFormatters.dateTime(session.start, locale: locale)}'),
+        Text('${l10n.cashSessionStartFieldLabel}: ${fmt.display.dateTime(session.start)}'),
         Text(
           '${l10n.cashSessionOpeningAmountFieldLabel}: '
-          '${MoneyFormatters.currency(session.openingAmount, locale: locale)}',
+          '${fmt.display.currency(session.openingAmount)}',
         ),
         const SizedBox(height: 8),
         Text(l10n.cashSessionPaymentsByMethodLabel, style: Theme.of(context).textTheme.titleSmall),
         for (final total in session.paymentsByMethod)
           Text(
             '${paymentMethodLabel(l10n, total.method)}: '
-            '${MoneyFormatters.currency(total.total, locale: locale)}',
+            '${fmt.display.currency(total.total)}',
           ),
         // FR-004: `hasOtherOpenSessionsProvider` is a direct, exact query
         // (cashier + status=open), not an approximation — but it can only
@@ -365,10 +365,11 @@ class _HistoryListSection extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final filter = CashSessionFilter.fromQuery(query);
     final pageAsync = ref.watch(cashSessionsListControllerProvider(filter));
-    final locale = Localizations.localeOf(context).toString();
+    final fmt = ref.watch(formattersProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 16,
       children: [
         Padding(
           padding: const EdgeInsets.all(8),
@@ -401,7 +402,6 @@ class _HistoryListSection extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(height: 16),
         // `Expanded`, not a fixed height (spec 027 FR-027): a bounded
         // `SizedBox` made sense while this section sat inside a whole-page
         // `SingleChildScrollView` alongside the shift panel (spec 021) —
@@ -434,15 +434,16 @@ class _HistoryListSection extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.cashSessionColumnStart,
                   size: ColumnSize.M,
-                  cellBuilder: (context, s) =>
-                      Text(MoneyFormatters.dateTime(s.start, locale: locale)),
+                  cellBuilder: (context, s) => Text(fmt.display.dateTime(s.start)),
                 ),
                 DataTableColumn(
                   label: l10n.cashSessionColumnEnd,
                   size: ColumnSize.M,
-                  cellBuilder: (context, s) => Text(
-                    s.end == null ? '—' : MoneyFormatters.dateTime(s.end!, locale: locale),
-                  ),
+                  // fmt.display.dateTime renders '—' for a null value
+                  // itself (spec 028 FR-008), so this cell's own hand-written
+                  // em-dash — one of the three behaviors this feature
+                  // unifies — is gone.
+                  cellBuilder: (context, s) => Text(fmt.display.dateTime(s.end)),
                 ),
                 DataTableColumn(
                   label: l10n.cashSessionColumnStatus,

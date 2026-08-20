@@ -6,9 +6,10 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/cash_session_status.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
@@ -56,7 +57,7 @@ class _DetailBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
+    final fmt = ref.watch(formattersProvider);
     final status = cashSessionStatusOf(session, today: DateTime.now());
     final access = ref.watch(accessControlProvider);
     final canClose = access.can(SystemObject.cashSessionClose, AccessRight.update);
@@ -65,6 +66,9 @@ class _DetailBody extends ConsumerWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        // Uniform 24px gap, present only when the conditional block below
+        // actually renders something (spec 028 US2 collection-if case).
+        spacing: 24,
         children: [
           ResponsiveFormGrid(
             maxColumns: 2,
@@ -82,14 +86,14 @@ class _DetailBody extends ConsumerWidget {
               FormGridChild(
                 _LabeledText(
                   l10n.cashSessionStartFieldLabel,
-                  MoneyFormatters.dateTime(session.start, locale: locale),
+                  fmt.display.dateTime(session.start),
                 ),
               ),
               if (session.end != null)
                 FormGridChild(
                   _LabeledText(
                     l10n.cashSessionEndFieldLabel,
-                    MoneyFormatters.dateTime(session.end!, locale: locale),
+                    fmt.display.dateTime(session.end),
                   ),
                 ),
               if (session.cashSupervisorName != null)
@@ -102,16 +106,15 @@ class _DetailBody extends ConsumerWidget {
               FormGridChild(
                 _LabeledText(
                   l10n.cashSessionOpeningAmountFieldLabel,
-                  MoneyFormatters.currency(session.openingAmount, locale: locale),
+                  fmt.display.currency(session.openingAmount),
                 ),
               ),
               FormGridChild(
                 span: FormGridSpan.full,
-                _PaymentsByMethodSection(session: session, locale: locale),
+                _PaymentsByMethodSection(session: session),
               ),
             ],
           ),
-          const SizedBox(height: 24),
           if (status != CashSessionStatus.closed)
             if (canClose)
               _CloseSection(session: session)
@@ -144,15 +147,15 @@ class _LabeledText extends StatelessWidget {
   }
 }
 
-class _PaymentsByMethodSection extends StatelessWidget {
-  const _PaymentsByMethodSection({required this.session, required this.locale});
+class _PaymentsByMethodSection extends ConsumerWidget {
+  const _PaymentsByMethodSection({required this.session});
 
   final CashSession session;
-  final String locale;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -163,7 +166,7 @@ class _PaymentsByMethodSection extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(child: Text(paymentMethodLabel(l10n, total.method))),
-                Text(MoneyFormatters.currency(total.total, locale: locale)),
+                Text(fmt.display.currency(total.total)),
               ],
             ),
           ),
@@ -180,7 +183,7 @@ class _CloseSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
+    final fmt = ref.watch(formattersProvider);
     final formState = ref.watch(closeSessionFormControllerProvider);
     final controller = ref.read(closeSessionFormControllerProvider.notifier);
 
@@ -215,20 +218,19 @@ class _CloseSection extends ConsumerWidget {
           quantities: formState.quantities,
           onQuantityChanged: controller.quantityChanged,
           enabled: !formState.submitting,
-          locale: locale,
         ),
         const SizedBox(height: 16),
         _TotalsRow(
           label: l10n.cashSessionCountedTotalLabel,
-          value: MoneyFormatters.currency(formState.countedTotal, locale: locale),
+          value: fmt.display.currency(formState.countedTotal),
         ),
         _TotalsRow(
           label: l10n.cashSessionExpectedCashLabel,
-          value: MoneyFormatters.currency(formState.expectedCash, locale: locale),
+          value: fmt.display.currency(formState.expectedCash),
         ),
         _TotalsRow(
           label: l10n.cashSessionDifferenceLabel,
-          value: _differenceDisplay(l10n, formState.difference, locale),
+          value: _differenceDisplay(l10n, formState.difference, fmt),
         ),
         const SizedBox(height: 8),
         Text(
@@ -240,7 +242,7 @@ class _CloseSection extends ConsumerWidget {
           key: const Key('cash_session_close_button'),
           onPressed: formState.submitting
               ? null
-              : () => _handleClose(context, ref, l10n, locale),
+              : () => _handleClose(context, ref, l10n, fmt),
           child: Text(l10n.cashSessionCloseButtonLabel),
         ),
       ],
@@ -251,7 +253,7 @@ class _CloseSection extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
-    String locale,
+    AppFormatters fmt,
   ) async {
     final controller = ref.read(closeSessionFormControllerProvider.notifier);
     final quantities = ref.read(closeSessionFormControllerProvider).quantities;
@@ -291,9 +293,9 @@ class _CloseSection extends ConsumerWidget {
         title: Text(l10n.cashSessionCloseSuccessTitle),
         content: Text(
           l10n.cashSessionCloseSuccessMessage(
-            MoneyFormatters.currency(state.countedTotal, locale: locale),
-            MoneyFormatters.currency(state.expectedCash, locale: locale),
-            MoneyFormatters.currency(state.difference, locale: locale),
+            fmt.display.currency(state.countedTotal),
+            fmt.display.currency(state.expectedCash),
+            fmt.display.currency(state.difference),
           ),
         ),
         actions: [
@@ -345,9 +347,9 @@ String _localizeCloseFormError(AppLocalizations l10n, String code) {
   }
 }
 
-String _differenceDisplay(AppLocalizations l10n, String difference, String locale) {
+String _differenceDisplay(AppLocalizations l10n, String difference, AppFormatters fmt) {
   final amount = num.tryParse(difference) ?? 0;
-  final formatted = MoneyFormatters.currency(difference, locale: locale);
+  final formatted = fmt.display.currency(difference);
   if (amount > 0) return '$formatted (${l10n.cashSessionDifferenceOver})';
   if (amount < 0) return '$formatted (${l10n.cashSessionDifferenceShort})';
   return '$formatted (${l10n.cashSessionDifferenceZero})';

@@ -11,7 +11,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -362,6 +362,7 @@ class _TermsFact extends ConsumerWidget {
     final customer = ref.watch(saleCustomerControllerProvider(customerId));
     final creditLimit = customer.valueOrNull?.creditLimit;
     final hasCredit = creditLimit != null && !isZeroAmount(creditLimit);
+    final fmt = ref.watch(formattersProvider);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -403,7 +404,7 @@ class _TermsFact extends ConsumerWidget {
         // control, exactly like the "no credit line" hint it replaces when
         // there is nothing to show instead.
         Text(
-          hasCredit ? MoneyFormatters.currency(creditLimit) : l10n.posCustomerNoCreditHint,
+          hasCredit ? fmt.display.currency(creditLimit) : l10n.posCustomerNoCreditHint,
           style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline),
         ),
       ],
@@ -501,11 +502,12 @@ class _BalanceFact extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final balance = ref.watch(customerOutstandingBalanceProvider(customerId));
+    final fmt = ref.watch(formattersProvider);
     return balance.when(
       data: (value) => _CustomerBarFact.fact(
         context,
         l10n.posCustomerBalanceLabel,
-        MoneyFormatters.currency(value),
+        fmt.display.currency(value),
       ),
       loading: () => const SizedBox.shrink(),
       error: (error, stackTrace) => const SizedBox.shrink(),

@@ -174,9 +174,9 @@ class _MergeReviewPanel extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 12,
               children: [
                 ProductPhoto(photoUrl: product.photo, size: 72),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

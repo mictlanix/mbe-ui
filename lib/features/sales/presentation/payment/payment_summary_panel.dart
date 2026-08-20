@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
@@ -37,6 +38,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final typeRoles = theme.typeRoles;
@@ -65,12 +67,13 @@ class PaymentSummaryPanel extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _row(context, l10n.posPaymentTotal, sale.total),
+          _row(context, fmt, l10n.posPaymentTotal, sale.total),
           SizedBox(height: spacing.xs),
-          _row(context, l10n.posPaymentPaid, paid),
+          _row(context, fmt, l10n.posPaymentPaid, paid),
           SizedBox(height: spacing.xs),
           _row(
             context,
+            fmt,
             l10n.posPaymentBalance,
             sale.balance,
             // The same figure the mock draws in amber — here, as everywhere
@@ -84,6 +87,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
           ),
           _row(
             context,
+            fmt,
             l10n.posPaymentChangeLabel,
             change,
             figureStyle: typeRoles.metricValue,
@@ -146,6 +150,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
 
   Widget _row(
     BuildContext context,
+    AppFormatters fmt,
     String label,
     String amount, {
     TextStyle? figureStyle,
@@ -163,7 +168,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
         // amount, so it wraps instead of being ellipsized (constitution §VI).
         Expanded(
           child: Text(
-            MoneyFormatters.currency(amount),
+            fmt.display.currency(amount),
             textAlign: TextAlign.end,
             style: figureStyle ?? typeRoles.money,
           ),

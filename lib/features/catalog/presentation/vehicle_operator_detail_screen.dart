@@ -6,11 +6,11 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/core/widgets/money_formatters.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
@@ -59,6 +59,7 @@ class _VehicleOperatorDetailScreenState
     final formState = ref.watch(vehicleOperatorFormControllerProvider);
     final controller = ref.read(vehicleOperatorFormControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
+    final fmt = ref.watch(formattersProvider);
     final canCreate = access.can(
       SystemObject.vehicleOperators,
       AccessRight.create,
@@ -201,11 +202,10 @@ class _VehicleOperatorDetailScreenState
                       formState.fieldErrors['issueDate'],
                     ),
                   ),
-                  child: Text(
-                    formState.issueDate != null
-                        ? MoneyFormatters.date(formState.issueDate!)
-                        : '',
-                  ),
+                  // fmt.display.date renders '—' for a null date
+                  // (spec 028 FR-008), replacing this field's own empty
+                  // string rendering.
+                  child: Text(fmt.display.date(formState.issueDate)),
                 ),
               ),
             ),
@@ -234,11 +234,8 @@ class _VehicleOperatorDetailScreenState
                       formState.fieldErrors['expirationDate'],
                     ),
                   ),
-                  child: Text(
-                    formState.expirationDate != null
-                        ? MoneyFormatters.date(formState.expirationDate!)
-                        : '',
-                  ),
+                  // Same em-dash rule as issueDate above.
+                  child: Text(fmt.display.date(formState.expirationDate)),
                 ),
               ),
             ),

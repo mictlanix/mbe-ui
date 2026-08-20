@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
@@ -93,6 +95,11 @@ SaleLine testLine({
 
 /// Pumps [child] inside a localized `MaterialApp` with the POS providers
 /// overridden. Returns the container so a test can read controllers back.
+///
+/// Defaults `sharedPreferencesProvider` to an in-memory instance (spec 028):
+/// `formattersProvider` reads through `resolvedLocaleProvider`, which needs
+/// one. A caller-supplied override for the same provider still wins
+/// (Riverpod resolves duplicate overrides last-one-wins).
 Future<ProviderContainer> pumpPos(
   WidgetTester tester,
   Widget child, {
@@ -106,7 +113,14 @@ Future<ProviderContainer> pumpPos(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
-  final container = ProviderContainer(overrides: overrides);
+  SharedPreferences.setMockInitialValues({});
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ...overrides,
+    ],
+  );
   addTearDown(container.dispose);
 
   await tester.pumpWidget(
@@ -151,7 +165,14 @@ Future<PosRoutedHarness> pumpPosRouted(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
-  final container = ProviderContainer(overrides: overrides);
+  SharedPreferences.setMockInitialValues({});
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ...overrides,
+    ],
+  );
   addTearDown(container.dispose);
 
   final router = GoRouter(

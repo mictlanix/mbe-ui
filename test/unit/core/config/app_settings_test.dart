@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/config/app_settings.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 
 void main() {
@@ -23,6 +24,9 @@ void main() {
       expect(settings.posDefaultCustomerId, 1);
       expect(settings.defaultLocale, const Locale('es', 'MX'));
       expect(settings.brand, const BrandConfig(displayName: 'Mictlanix Business Essentials'));
+      // spec 028 FR-011: the date default is ISO, not the locale-derived
+      // rendering the app used before this feature.
+      expect(settings.formatting, const FormattingSettings());
     });
   });
 
@@ -66,6 +70,7 @@ void main() {
         posDefaultCustomerId: 42,
         brand: BrandConfig(displayName: 'Test Brand'),
         defaultLocale: Locale('en', 'US'),
+        formatting: FormattingSettings(),
       );
       final container = ProviderContainer(
         overrides: [appSettingsProvider.overrideWithValue(overridden)],
@@ -85,6 +90,7 @@ void main() {
         posDefaultCustomerId: 1,
         brand: BrandConfig(displayName: 'X'),
         defaultLocale: Locale('es', 'MX'),
+        formatting: FormattingSettings(),
       );
       final container = ProviderContainer(
         overrides: [appSettingsProvider.overrideWithValue(overridden)],
@@ -93,6 +99,59 @@ void main() {
 
       final dio = container.read(dioProvider);
       expect(dio.options.baseUrl, 'https://override.example.com');
+    });
+  });
+
+  // spec 028 T003: FormattingSettings.fromEnvironment falls back per-key on
+  // a malformed value rather than throwing, the same rule
+  // BrandConfig._parseSeedColor already applies to a bad hex color.
+  // FormattingSettings._parseDigits/_nonEmptyOrDefault are private; this
+  // group mirrors their documented rules directly (brand_config_test.dart's
+  // convention for BrandConfig._parseSeedColor).
+  group('FormattingSettings fallback rules (spec 028 FR-013)', () {
+    int parseDigits(String value, int fallback) {
+      final parsed = int.tryParse(value);
+      if (parsed == null || parsed < 0) return fallback;
+      return parsed;
+    }
+
+    String nonEmptyOrDefault(String value, String fallback) =>
+        value.isEmpty ? fallback : value;
+
+    test('a non-numeric digit count falls back to the default', () {
+      expect(parseDigits('abc', 2), 2);
+      expect(parseDigits('', 0), 0);
+    });
+
+    test('a negative digit count falls back to the default', () {
+      expect(parseDigits('-1', 2), 2);
+    });
+
+    test('a valid non-negative digit count is used as given', () {
+      expect(parseDigits('4', 2), 4);
+      expect(parseDigits('0', 2), 0);
+    });
+
+    test('an empty pattern/symbol string falls back to the default', () {
+      expect(nonEmptyOrDefault('', 'yyyy-MM-dd'), 'yyyy-MM-dd');
+    });
+
+    test('a non-empty pattern/symbol string is used as given', () {
+      expect(nonEmptyOrDefault('d/M/yyyy', 'yyyy-MM-dd'), 'd/M/yyyy');
+    });
+
+    test('FormattingSettings.fromEnvironment reproduces the ISO default with no --dart-define', () {
+      // Mirrors the AppSettings.fromEnvironment() test above: fromEnvironment()
+      // reads compile-time values, so this only proves the no-.env path.
+      final settings = FormattingSettings.fromEnvironment();
+
+      expect(settings.datePattern, 'yyyy-MM-dd');
+      expect(settings.dateTimePattern, 'yyyy-MM-dd HH:mm');
+      expect(settings.currencySymbol, r'$');
+      expect(settings.currencyCode, 'MXN');
+      expect(settings.currencyDecimalDigits, 2);
+      expect(settings.percentDecimalDigits, 2);
+      expect(settings.quantityDecimalDigits, 0);
     });
   });
 }

@@ -2,9 +2,9 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
-import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
@@ -30,15 +30,17 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   // two-decimal prices, and rates as the percentages their labels claim.
   // [syncFields] converts back whenever the server's copy changes underneath.
   late final quantityField = TextEditingController(
-    text: formatQuantity(line.quantity),
+    text: ref.read(formattersProvider).field.quantity(line.quantity),
   );
 
   /// Read-only (FR-038c): a line's price comes from the customer's price list
   /// and is never typed over here. The controller stays because the price is
   /// still *displayed* in a field, and still has to follow the server's copy.
-  late final priceField = TextEditingController(text: formatPrice(line.price));
+  late final priceField = TextEditingController(
+    text: ref.read(formattersProvider).field.price(line.price),
+  );
   late final discountField = TextEditingController(
-    text: formatRateAsPercent(line.discountRate),
+    text: ref.read(formattersProvider).field.rate(line.discountRate),
   );
 
   bool _busy = false;
@@ -58,9 +60,10 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   /// Re-renders every field from the line's authoritative values.
   void syncFields() {
-    quantityField.text = formatQuantity(line.quantity);
-    priceField.text = formatPrice(line.price);
-    discountField.text = formatRateAsPercent(line.discountRate);
+    final fmt = ref.read(formattersProvider);
+    quantityField.text = fmt.field.quantity(line.quantity);
+    priceField.text = fmt.field.price(line.price);
+    discountField.text = fmt.field.rate(line.discountRate);
   }
 
   @override
@@ -110,7 +113,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// Tax no longer comes through here — it is chosen, not typed (FR-038b); see
   /// [selectTaxRate].
   Future<void> updateRate({required String discountRate}) async {
-    final raw = parsePercentAsRate(discountRate);
+    final raw = ref.read(formattersProvider).field.parseRate(discountRate);
     if (raw == null) {
       syncFields();
       return;
@@ -154,6 +157,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// sizing; the label and the items are the same either way.
   Widget taxRatePicker({InputDecoration? decoration, TextStyle? style}) {
     final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
     return KeyedSubtree(
       key: ValueKey('tax-$_rejections'),
       child: DropdownButtonFormField<Decimal>(
@@ -167,7 +171,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
           for (final rate in taxRateOptions)
             DropdownMenuItem(
               value: rate,
-              child: Text(formatRateAsPercentWithSymbol(rate.toString())),
+              child: Text(fmt.display.percent(rate.toString())),
             ),
         ],
         onChanged: enabled
@@ -269,7 +273,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// (FR-022), trimmed for display; `null` when nothing is known.
   String? _availabilityIn(int warehouseId) {
     final stock = _stockIn(warehouseId);
-    return stock == null ? null : formatQuantity(stock.available);
+    return stock == null ? null : ref.read(formattersProvider).field.quantity(stock.available);
   }
 
   /// FR-025/FR-026: a non-blocking warning when the ordered quantity exceeds
@@ -278,6 +282,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// when there is nothing to warn about.
   String? shortfall(AppLocalizations l10n) {
     final cached = ref.watch(productStockCacheProvider)[line.product];
+    final fmt = ref.watch(formattersProvider);
     if (cached == null || line.warehouse == null) return null;
     final entry = _stockIn(line.warehouse);
     if (entry == null) return null;
@@ -285,7 +290,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     final ordered = Decimal.tryParse(line.quantity) ?? Decimal.zero;
     if (available.sign <= 0) return l10n.posLineNoStock;
     if (ordered > available) {
-      return l10n.posLineShortfall(formatQuantity(entry.available));
+      return l10n.posLineShortfall(fmt.field.quantity(entry.available));
     }
     return null;
   }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -147,16 +150,23 @@ void main() {
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
       // Not pumpBar/pumpPos: the spinner is an indeterminate animation, so
       // pumpAndSettle would time out waiting for it to stop.
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('es', 'MX'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: SaleTotalsBar(
-              sale: testSale(lines: [testLine()]),
-              onContinue: () {},
-              confirming: true,
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: MaterialApp(
+            locale: const Locale('es', 'MX'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: SaleTotalsBar(
+                sale: testSale(lines: [testLine()]),
+                onContinue: () {},
+                confirming: true,
+              ),
             ),
           ),
         ),

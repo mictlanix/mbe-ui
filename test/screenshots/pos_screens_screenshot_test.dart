@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/app/theme/app_theme.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -14,6 +15,7 @@ import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -167,6 +169,12 @@ final _lines = [
 
 /// Full-bleed variant of `pumpGoldenScenario`: the screens under test *are*
 /// the page, so nothing centres or shrink-wraps them.
+///
+/// Defaults `sharedPreferencesProvider` to an in-memory instance, matching
+/// `golden_harness.dart`'s `pumpGoldenScenario` fix (spec 028) —
+/// `formattersProvider` reads through `resolvedLocaleProvider`, which needs
+/// one. A caller-supplied override for the same provider still wins
+/// (Riverpod resolves duplicate overrides last-one-wins).
 Future<void> pumpScreen(
   WidgetTester tester,
   Widget child, {
@@ -182,9 +190,14 @@ Future<void> pumpScreen(
   addTearDown(tester.view.platformDispatcher.clearTextScaleFactorTestValue);
 
   final appTheme = AppTheme.of(_brand);
+  SharedPreferences.setMockInitialValues({});
+  final sharedPreferences = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
-      overrides: overrides,
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ...overrides,
+      ],
       child: MaterialApp(
         theme: brightness == Brightness.light ? appTheme.light : appTheme.dark,
         debugShowCheckedModeBanner: false,

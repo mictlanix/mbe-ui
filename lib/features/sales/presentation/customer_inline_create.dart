@@ -252,12 +252,12 @@ class _CustomerInlineCreateFormState
           span: FormGridSpan.full,
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
+            spacing: 8,
             children: [
               TextButton(
                 onPressed: enabled ? () => Navigator.of(context).pop() : null,
                 child: Text(l10n.cancelButton),
               ),
-              const SizedBox(width: 8),
               FilledButton(
                 key: const Key('pos_new_customer_save'),
                 onPressed: enabled ? controller.submitCreate : null,

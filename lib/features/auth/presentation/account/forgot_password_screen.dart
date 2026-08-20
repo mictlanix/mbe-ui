@@ -143,13 +143,13 @@ class _SuccessView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      spacing: 16,
       children: [
         Icon(
           Icons.check_circle_outline,
           color: Theme.of(context).brandInk.primary,
           size: 64,
         ),
-        const SizedBox(height: 16),
         Text(AppLocalizations.of(context)!.passwordResetSuccess),
       ],
     );

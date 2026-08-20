@@ -400,12 +400,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
+                        spacing: 8,
                         children: [
                           Text(
                             l10n.labelsLabel,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          const SizedBox(height: 8),
                           LabelMultiPicker(
                             key: const Key('label_multi_picker'),
                             labels: allLabels,
@@ -502,15 +502,16 @@ class _SwitchesLabelsBand extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
-        children: [switches, const SizedBox(height: 24), labels!],
+        spacing: 24,
+        children: [switches, labels!],
       );
     }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 32,
       children: [
         Expanded(child: switches),
-        const SizedBox(width: 32),
         Expanded(child: labels!),
       ],
     );
@@ -615,28 +616,32 @@ class _PhotoSection extends StatelessWidget {
     } else if (compact) {
       media = Column(
         mainAxisSize: MainAxisSize.min,
-        children: [thumbnail, const SizedBox(height: 8), actions],
+        spacing: 8,
+        children: [thumbnail, actions],
       );
     } else {
       media = Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [thumbnail, const SizedBox(width: 16), actions],
+        spacing: 16,
+        children: [thumbnail, actions],
       );
     }
 
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        // Uniform 4px gap, only ever between `media` and the error text
+        // below it — `spacing` supplies no gap when `photoError` is null and
+        // the collection-if evaluates away (spec 028 US2).
+        spacing: 4,
         children: [
           media,
-          if (photoError case final error?) ...[
-            const SizedBox(height: 4),
+          if (photoError case final error?)
             Text(
               error,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-          ],
         ],
       ),
     );

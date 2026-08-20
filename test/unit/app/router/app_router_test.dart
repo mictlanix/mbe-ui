@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/app/router/app_router.dart';
@@ -11,6 +12,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
@@ -380,8 +382,15 @@ void main() {
       ),
     ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
 
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     final container = ProviderContainer(
       overrides: [
+        // formattersProvider (spec 028) reads through resolvedLocaleProvider,
+        // which needs a real SharedPreferences instance — every destination
+        // screen migrated to the formatting surface now needs this.
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         authNotifierProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: user),
