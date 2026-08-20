@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Back-Office Sales Orders (\"Pedidos\")",
   "branch": "029-back-office-sales-orders",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-20T02:12:44.567Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-20T03:20:39.750Z"
     }
   ]
 }
