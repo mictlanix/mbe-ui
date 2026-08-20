@@ -3,7 +3,7 @@
   "specName": "App Settings, User Settings & Cross-Widget Consistency",
   "branch": "027-app-user-settings",
   "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,14 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-16T23:02:30.878Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-20T00:33:03.045Z"
     }
-  ]
+  ],
+  "telemetryInstanceId": "48732607-c4b1-4123-8984-d81ea346e775"
 }
