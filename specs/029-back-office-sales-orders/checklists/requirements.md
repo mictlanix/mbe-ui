@@ -59,3 +59,8 @@
   and is the first thing `/speckit-plan` should size: the point-of-sale capture
   widgets read one screen-scoped sale directly, and two screens must be able to
   hold two independent orders without the register's behaviour changing (SC-007).
+- **One requirement was corrected during planning.** FR-020 originally listed the
+  unit price as editable. It is not — the shared capture surface makes price
+  read-only by design, and the legacy screenshot agrees. Building it as written
+  would have forced a fork of the shared widget (breaking FR-029) or a change to
+  the register (breaking FR-031). See research §R9.1.

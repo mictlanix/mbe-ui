@@ -326,8 +326,11 @@ facet exists and no other user's order is ever visible.
   it as a line, with the price defaulted from the customer's price list, the
   quantity from the product's minimum order quantity (floored at one) and the tax
   rate from the product.
-- **FR-020**: Each line MUST allow editing quantity, unit price, discount, tax
-  rate, source warehouse and a per-line comment, and MUST allow removing the line.
+- **FR-020**: Each line MUST allow editing quantity, discount, tax rate, source
+  warehouse and a per-line comment, and MUST allow removing the line. The unit
+  price MUST be shown but MUST NOT be editable: it comes from the customer's price
+  list, the shared capture surface already makes it read-only, and legacy
+  "Pedidos" shows it read-only too (corrected during planning — research §R9.1).
 - **FR-021**: Subtotal, tax and total MUST always be the values the server
   returned for the order; the screen MUST NOT compute or "correct" them locally.
 - **FR-022**: The screen MUST show, per line, what stock the chosen warehouse can
