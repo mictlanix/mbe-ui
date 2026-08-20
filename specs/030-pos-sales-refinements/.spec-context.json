@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Point of Sale — Sale & Delivery Refinements",
   "branch": "030-pos-sales-refinements",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-20T10:14:02.468Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-20T10:30:33.241Z"
     }
   ]
 }
