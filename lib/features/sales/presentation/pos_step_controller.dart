@@ -81,4 +81,16 @@ class PosStepController extends _$PosStepController {
   void setWriteInFlight(bool value) {
     state = state.copyWith(writeInFlight: value);
   }
+
+  /// Back to Venta, counter pickup, nothing in flight — what a genuinely new
+  /// sale starts from. Distinct from [jumpTo]: that reconstructs a *resumed*
+  /// sale's own step/mode (contracts/pos-screen.md §5) and must keep whatever
+  /// mode it is given, where this always goes to the one default a fresh
+  /// `Sale? == null` starts from. Without it, `PosSaleController.startNew()`
+  /// left this controller's `mode` exactly as the finished sale left it, so
+  /// `FulfillmentModeSelector` kept showing the previous sale's delivery/mixed
+  /// choice already selected on a sale that has not chosen anything yet.
+  void reset() {
+    state = const PosStepState();
+  }
 }
