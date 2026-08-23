@@ -141,4 +141,29 @@ void main() {
     // The tint clears itself on the same 250 ms schedule even without motion.
     await tester.pump(const Duration(milliseconds: 300));
   });
+
+  testWidgets('clearing the field to empty does not crash (regression)', (
+    tester,
+  ) async {
+    final controller = QuantityStepperController(
+      value: '7',
+      min: '1',
+      onCommit: (_) async => true,
+    );
+    addTearDown(controller.dispose);
+    await pumpStepper(tester, controller);
+
+    await tester.enterText(find.byKey(const Key('qty')), '');
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '');
+
+    // Abandoning the empty draft animates back to the last accepted value,
+    // exactly like any other discard.
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '7');
+  });
 }

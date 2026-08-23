@@ -84,11 +84,20 @@ class QuantityStepperController extends ChangeNotifier {
   /// overwrite the field's live text (spec 030 research, widget wiring).
   bool get hasUnconfirmedText => _typed != null;
 
+  /// What a step actually acts on — [_pending] if a burst is already under
+  /// way, [_accepted] otherwise, matching [step]'s own base. Deliberately
+  /// **not** [displayed]: unconfirmed [_typed] text is not a value a step
+  /// applies to (FR-015), and it is not even guaranteed to be a parseable
+  /// decimal at every keystroke — an emptied field, a lone `-` or `.` while
+  /// the cashier is still typing would otherwise throw here on every
+  /// rebuild.
+  String get _stepBase => _pending ?? _accepted;
+
   bool get canDecrement =>
-      compareAmounts(subtractAmounts(displayed, stepBy), min) >= 0;
+      compareAmounts(subtractAmounts(_stepBase, stepBy), min) >= 0;
 
   bool get canIncrement =>
-      max == null || compareAmounts(addAmounts(displayed, stepBy), max!) <= 0;
+      max == null || compareAmounts(addAmounts(_stepBase, stepBy), max!) <= 0;
 
   void _notify() {
     if (!_disposed) notifyListeners();
@@ -128,10 +137,9 @@ class QuantityStepperController extends ChangeNotifier {
   /// unconfirmed [_typed] text (FR-015): a draft the cashier never confirmed
   /// is not a base to step from.
   void step(int delta) {
-    final base = _pending ?? _accepted;
     final candidate = delta > 0
-        ? addAmounts(base, stepBy)
-        : subtractAmounts(base, stepBy);
+        ? addAmounts(_stepBase, stepBy)
+        : subtractAmounts(_stepBase, stepBy);
     if (compareAmounts(candidate, min) < 0) return;
     if (max != null && compareAmounts(candidate, max!) > 0) return;
     _typed = null;

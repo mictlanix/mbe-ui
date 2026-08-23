@@ -224,6 +224,28 @@ void main() {
       expect(controller.resetTick, ticksBefore);
     });
 
+    test('canDecrement/canIncrement never parse unconfirmed text — an '
+        'emptied or partial field must not throw (regression: cashier '
+        'clearing the field crashed the app)', () {
+      final controller = QuantityStepperController(
+        value: '7',
+        min: '1',
+        onCommit: (_) async => true,
+      );
+      addTearDown(controller.dispose);
+
+      for (final draft in ['', '-', '.', 'abc']) {
+        controller.edit(draft);
+        expect(controller.displayed, draft);
+        expect(() => controller.canDecrement, returnsNormally);
+        expect(() => controller.canIncrement, returnsNormally);
+        // Both reflect the last accepted value (7), not the unparseable
+        // draft — stepping ignores the draft too (FR-015).
+        expect(controller.canDecrement, isTrue);
+        expect(controller.canIncrement, isTrue);
+      }
+    });
+
     test('a step taken with unconfirmed text present steps from the '
         'accepted value, not the typed one (FR-015)', () {
       final controller = QuantityStepperController(
