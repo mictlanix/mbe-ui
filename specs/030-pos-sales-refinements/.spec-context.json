@@ -3,7 +3,7 @@
   "specName": "Point of Sale — Sale & Delivery Refinements",
   "branch": "030-pos-sales-refinements",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -336,7 +336,15 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-20T11:29:53.599Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-23T22:03:54.419Z"
     }
   ],
-  "currentTask": "T038"
+  "currentTask": "T038",
+  "telemetryInstanceId": "8c373231-5d6f-4306-84e9-42c603e1f44f"
 }
