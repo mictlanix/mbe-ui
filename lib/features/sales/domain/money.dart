@@ -20,6 +20,16 @@ import 'package:mbe_ui/features/sales/domain/entities/denomination_count.dart';
 /// not a user input to degrade gracefully from.
 Decimal parseAmount(String value) => Decimal.parse(value);
 
+/// [parseAmount]'s degrading counterpart: `null` on malformed input rather
+/// than a throw, for a caller validating text a user typed — where malformed
+/// input is expected, not a programming error (spec 030's quantity stepper).
+/// Returns the canonical string form on success, exactly as [formatAmount]
+/// would.
+String? tryParseAmount(String value) {
+  final parsed = Decimal.tryParse(value.trim());
+  return parsed == null ? null : formatAmount(parsed);
+}
+
 /// The canonical string form of [value] — the wire-format decimal string the
 /// formatting surface's `display.currency`/`field.price` consume (spec 028
 /// research.md R6). Despite the name, this is not itself a display

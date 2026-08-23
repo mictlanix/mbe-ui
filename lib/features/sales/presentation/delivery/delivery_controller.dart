@@ -95,6 +95,36 @@ class DeliveryController extends _$DeliveryController {
     return labelled;
   }
 
+  /// Edits an already-created destination's header (spec 030 FR-017…FR-022)
+  /// through the endpoint spec 026 already exposed on
+  /// [DeliveryOrderRepository] but never called (`updateHeader`) — this is
+  /// its first caller. `null` means "unchanged" at every layer, mbe-api's own
+  /// `update_order` included (research R9), so a field left as the
+  /// destination had it can simply be re-sent as-is; there is no way to
+  /// *clear* a previously-set field through this call.
+  ///
+  /// Line assignments are untouched — this writes the header only, and
+  /// [_replace] swaps in the server's response for this one destination
+  /// without refetching the list (FR-020, FR-021).
+  Future<Destination> updateDestination({
+    required int destinationId,
+    int? shipTo,
+    int? contact,
+    DateTime? date,
+    String? comment,
+  }) async {
+    final updated = await ref
+        .read(deliveryOrderRepositoryProvider)
+        .updateHeader(
+          destinationId: destinationId,
+          shipTo: shipTo,
+          contact: contact,
+          date: date,
+          comment: comment,
+        );
+    return _replace(updated);
+  }
+
   /// FR-036 — sweeps whatever is left into a counter-pickup destination.
   /// `lines` is deliberately omitted: that claims everything the sale still
   /// owes, which is exactly the remainder, computed server-side against the

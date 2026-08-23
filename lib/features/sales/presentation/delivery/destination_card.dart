@@ -1,16 +1,17 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery/destination_line_row.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One already-created destination (FR-029, contract §4): a collapsible card
@@ -42,6 +43,7 @@ class DestinationCard extends ConsumerStatefulWidget {
     required this.badge,
     required this.distribution,
     this.onRemove,
+    this.onEdit,
     this.onAssign,
     this.onAdjust,
     this.onDrop,
@@ -60,6 +62,11 @@ class DestinationCard extends ConsumerStatefulWidget {
   final List<LineDistribution> distribution;
 
   final VoidCallback? onRemove;
+
+  /// Opens the composer, prefilled, to edit this destination's header (spec
+  /// 030 FR-017…FR-022) — `null` on the store row, which uses
+  /// `DestinationCounterRow` instead and never carries this callback.
+  final VoidCallback? onEdit;
 
   /// Assigns a sale line to this destination for the first time
   /// (`POST .../lines`, mbe-api#163) — called only for a line
@@ -88,60 +95,28 @@ class DestinationCard extends ConsumerStatefulWidget {
 class _DestinationCardState extends ConsumerState<DestinationCard> {
   late bool _expanded = widget.initiallyExpanded;
 
-  /// One controller per sale line, created lazily and kept for the card's
-  /// whole lifetime — the stepper and the typed field are two paths to the
-  /// same value (FR-020), so both read and write the same controller.
-  final Map<int, TextEditingController> _quantityControllers = {};
-
-  /// Sale line id → the quantity the cashier has stepped to but which has
-  /// not reached the server yet. While an entry exists here it — not
-  /// `perDestination` — is the truth the row renders and clamps against, so
-  /// a burst of taps stays responsive instead of blocking on one round trip
-  /// per press.
-  final Map<int, String> _pending = {};
-
-  /// Sale line id → the timer that will flush [_pending] for it.
-  final Map<int, Timer> _debounce = {};
-
-  /// Sale line ids with a request actually in flight. Deliberately does
-  /// **not** disable the row: the debounce already guarantees there is only
-  /// ever one write per line at a time, and a second tap during a flight is
-  /// coalesced into the next one rather than dropped.
-  final Set<int> _inFlight = {};
+  /// One [QuantityStepperController] per sale line, created lazily and kept
+  /// for the card's whole lifetime (spec 030 research R1/R2) — the debounce,
+  /// the pending-value display and the discard-and-reset that used to be
+  /// hand-rolled here now live in the shared control every sale line on the
+  /// capture step also uses.
+  final Map<int, QuantityStepperController> _quantityControllers = {};
 
   /// Sale line id → the server's own refusal message (FR-024).
   final Map<int, String> _lineErrors = {};
-
-  /// Long enough to swallow a burst of taps, short enough that the rail and
-  /// the header still feel like they follow the stepper. Tuned by hand
-  /// against a live register.
-  static const _debounceWindow = Duration(milliseconds: 400);
 
   bool get _interactive =>
       widget.onAssign != null && widget.onAdjust != null && widget.onDrop != null;
 
   @override
   void dispose() {
-    // Fire whatever is still pending before going away — a cashier who taps
-    // + and immediately collapses the card, or leaves the step, must not
-    // silently lose the change. Fire-and-forget: the controller owns the
-    // state, so it lands even though this widget is gone.
-    for (final entry in _debounce.entries) {
-      entry.value.cancel();
-      if (_pending.containsKey(entry.key)) unawaited(_send(entry.key));
-    }
+    // Each controller flushes its own still-pending commit on the way out
+    // (spec 030 research R8) — the hand-rolled "fire whatever is pending"
+    // loop this used to be is now the controller's own contract.
     for (final controller in _quantityControllers.values) {
       controller.dispose();
     }
     super.dispose();
-  }
-
-  TextEditingController _controllerFor(int saleLineId, String value) {
-    final existing = _quantityControllers[saleLineId];
-    if (existing != null) return existing;
-    return _quantityControllers[saleLineId] = TextEditingController(
-      text: ref.read(formattersProvider).field.quantity(value),
-    );
   }
 
   /// FR-021's clamp: the destination could hold everything [line] still
@@ -150,68 +125,35 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
   String _ceilingFor(LineDistribution line) =>
       addAmounts(line.claimable, line.perDestination[widget.destination.id] ?? '0');
 
-  /// What this row is showing for [line] right now: the value the cashier
-  /// has stepped to if one is still pending, else the server's own.
-  String _displayed(LineDistribution line) =>
-      _pending[line.saleLineId] ?? (line.perDestination[widget.destination.id] ?? '0');
-
-  /// The distribution row for [saleLineId] as of the latest build — the
-  /// closure that scheduled a flush may be holding a stale one.
-  LineDistribution? _lineFor(int saleLineId) {
-    for (final line in widget.distribution) {
-      if (line.saleLineId == saleLineId) return line;
-    }
-    return null;
-  }
-
-  /// Records [requested] locally, moves the field to it immediately, and
-  /// schedules the round trip. Clamped here (FR-021, SC-006), against the
-  /// pending value rather than the server's, so a burst of taps is bounded
-  /// the same way one tap is.
-  void _request(LineDistribution line, String requested) {
+  /// The controller for [line], created on first use and re-synced from the
+  /// latest server value and ceiling on every build (research R7's `sync`
+  /// precedence — a burst in progress is left alone; an ordinary update is
+  /// adopted).
+  QuantityStepperController _controllerFor(LineDistribution line) {
+    final accepted = line.perDestination[widget.destination.id] ?? '0';
     final ceiling = _ceilingFor(line);
-    if (compareAmounts(requested, '0') < 0 || compareAmounts(requested, ceiling) > 0) {
-      // Out of range: nothing is sent (SC-006), and a value typed into the
-      // field snaps back to what is actually assigned rather than sitting
-      // there looking accepted.
-      final displayed = _displayed(line);
-      _controllerFor(line.saleLineId, displayed).text =
-          ref.read(formattersProvider).field.quantity(displayed);
-      return;
+    final existing = _quantityControllers[line.saleLineId];
+    if (existing != null) {
+      existing.sync(value: accepted, max: ceiling);
+      return existing;
     }
-
-    _controllerFor(line.saleLineId, requested).text =
-        ref.read(formattersProvider).field.quantity(requested);
-    setState(() {
-      _pending[line.saleLineId] = requested;
-      _lineErrors.remove(line.saleLineId);
-    });
-
-    _debounce[line.saleLineId]?.cancel();
-    _debounce[line.saleLineId] = Timer(_debounceWindow, () {
-      unawaited(_send(line.saleLineId));
-    });
+    return _quantityControllers[line.saleLineId] = QuantityStepperController(
+      value: accepted,
+      max: ceiling,
+      onCommit: (value) => _commit(line.saleLineId, value),
+    );
   }
 
-  /// Sends whatever is pending for [saleLineId], dispatching on whether this
-  /// destination already carries the line (research R13): `onAssign` the
-  /// first time, `onAdjust` after, `onDrop` at zero — never a second
-  /// `onAssign`, which the server refuses with a 409.
+  /// [QuantityStepperController.onCommit] for one sale line: dispatches on
+  /// whether this destination already carries the line (research R13):
+  /// `onAssign` the first time, `onAdjust` after, `onDrop` at zero — never a
+  /// second `onAssign`, which the server refuses with a 409.
   ///
-  /// One write per line at a time; a tap that lands mid-flight simply leaves
-  /// a newer [_pending] behind, which this re-sends on the way out.
-  Future<void> _send(int saleLineId) async {
-    if (_inFlight.contains(saleLineId)) return;
-    final requested = _pending[saleLineId];
-    if (requested == null) return;
-
-    final line = _lineFor(saleLineId);
-    final server = line?.perDestination[widget.destination.id] ?? '0';
-    if (compareAmounts(requested, server) == 0) {
-      _pending.remove(saleLineId);
-      return;
-    }
-
+  /// Looks the line up fresh from [widget.distribution] rather than trusting
+  /// a captured one — the controller in [_controllerFor] is created once and
+  /// kept for the card's whole lifetime, so the `line` a closure captured at
+  /// creation time may be stale by the time this actually runs.
+  Future<bool> _commit(int saleLineId, String requested) async {
     DestinationLine? existingLine;
     for (final destinationLine in widget.destination.lines) {
       if (destinationLine.salesOrderDetail == saleLineId) {
@@ -220,7 +162,6 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
       }
     }
 
-    _inFlight.add(saleLineId);
     try {
       if (isZeroAmount(requested)) {
         if (existingLine != null) await widget.onDrop!(lineId: existingLine.id);
@@ -229,23 +170,16 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
       } else {
         await widget.onAssign!(saleLineId: saleLineId, quantity: requested);
       }
-      // Only clear the pending value if nothing newer arrived while this was
-      // in flight — otherwise it is the next send's input.
-      if (_pending[saleLineId] == requested) _pending.remove(saleLineId);
+      if (mounted) setState(() => _lineErrors.remove(saleLineId));
+      return true;
     } on AppError catch (e) {
-      _pending.remove(saleLineId);
-      if (!mounted) return;
+      if (!mounted) return false;
       final l10n = AppLocalizations.of(context)!;
       setState(() {
         _lineErrors[saleLineId] =
             l10n.posDeliveryAssignmentRefused(e.serverMessage ?? l10n.errorServerGeneric);
       });
-      _controllerFor(saleLineId, server).text = ref.read(formattersProvider).field.quantity(server);
-    } finally {
-      _inFlight.remove(saleLineId);
-      if (mounted) setState(() {});
-      // A tap that landed mid-flight is still waiting to be sent.
-      if (_pending.containsKey(saleLineId)) unawaited(_send(saleLineId));
+      return false;
     }
   }
 
@@ -288,6 +222,16 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
                   // width the moment the address was more than a few
                   // characters (SC-007).
                   Expanded(child: _identity(context, l10n, fmt)),
+                  // Edit before remove before the chevron — the mock's own
+                  // order (spec 030 FR-017), and the fixed Edit icon every
+                  // action set in the product uses (constitution §VI).
+                  if (widget.enabled && widget.onEdit != null)
+                    IconButton(
+                      key: Key('destination_edit_${destination.id}'),
+                      icon: Icon(CatalogAction.edit.icon),
+                      tooltip: l10n.editActionTooltip,
+                      onPressed: widget.onEdit,
+                    ),
                   if (widget.enabled && widget.onRemove != null)
                     IconButton(
                       key: Key('destination_remove_${destination.id}'),
@@ -404,28 +348,15 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
 
   /// Before this destination has assignment callbacks wired (or in a test
   /// that doesn't need them) — the quantity this destination takes, and
-  /// nothing to interact with.
-  Widget _readOnlyRow(BuildContext context, AppFormatters fmt, LineDistribution line) {
-    final theme = Theme.of(context);
-    final quantity = line.perDestination[widget.destination.id] ?? '0';
-    return Padding(
-      key: Key('destination_line_${widget.destination.id}_${line.saleLineId}'),
-      padding: EdgeInsets.symmetric(vertical: theme.spacing.xxs),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              line.productName,
-              style: theme.typeRoles.tableCell,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Text(fmt.field.quantity(quantity), style: theme.typeRoles.recordId),
-        ],
-      ),
-    );
-  }
+  /// nothing to interact with. [DestinationLineRow] (spec 030 research R11)
+  /// is the same shape `DestinationCounterRow`'s expanded body draws.
+  Widget _readOnlyRow(BuildContext context, AppFormatters fmt, LineDistribution line) =>
+      DestinationLineRow(
+        key: Key('destination_line_${widget.destination.id}_${line.saleLineId}'),
+        productName: line.productName,
+        quantity: line.perDestination[widget.destination.id] ?? '0',
+        fmt: fmt,
+      );
 
   /// Contract §4.3: product name and what the sale still owes, an
   /// "elsewhere" chip when the counter holds some of it, and the stepper
@@ -438,9 +369,7 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
   ) {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
-    // The pending value while one is in flight, so a second tap steps from
-    // what the cashier can see rather than from the server's older figure.
-    final current = _displayed(line);
+    final controller = _controllerFor(line);
     final error = _lineErrors[line.saleLineId];
 
     return Padding(
@@ -493,10 +422,16 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
                 tooltip: l10n.posDistributionClaimAll,
                 icon: const Icon(Icons.keyboard_double_arrow_left),
                 onPressed: widget.enabled
-                    ? () => _request(line, _ceilingFor(line))
+                    ? () => controller.set(_ceilingFor(line))
                     : null,
               ),
-              _stepper(context, l10n, line, current),
+              QuantityStepper(
+                controller: controller,
+                enabled: widget.enabled,
+                fieldKey: Key('destination_quantity_${line.saleLineId}'),
+                decrementTooltip: l10n.posLineDecreaseQuantity,
+                incrementTooltip: l10n.posLineIncreaseQuantity,
+              ),
             ],
           ),
           if (error != null)
@@ -504,68 +439,6 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
               padding: EdgeInsets.only(top: spacing.xxs),
               child: Text(error, style: TextStyle(color: theme.colorScheme.error)),
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _stepper(
-    BuildContext context,
-    AppLocalizations l10n,
-    LineDistribution line,
-    String current,
-  ) {
-    final theme = Theme.of(context);
-    final controller = _controllerFor(line.saleLineId, current);
-    // Deliberately not gated on an in-flight request: the debounce coalesces
-    // a burst into one write, so the controls stay live and the cashier can
-    // keep tapping instead of waiting out a round trip per press.
-    final enabled = widget.enabled;
-    final ceiling = _ceilingFor(line);
-
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-        borderRadius: theme.shapes.xlRadius,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.remove, size: 18),
-            tooltip: l10n.posLineDecreaseQuantity,
-            visualDensity: VisualDensity.compact,
-            onPressed: enabled && compareAmounts(current, '0') > 0
-                ? () => _request(line, subtractAmounts(current, '1'))
-                : null,
-          ),
-          SizedBox(
-            width: 56,
-            child: TextField(
-              key: Key('destination_quantity_${line.saleLineId}'),
-              controller: controller,
-              enabled: enabled,
-              textAlign: TextAlign.center,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-              onSubmitted: (value) => _request(line, value),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.add, size: 18),
-            tooltip: l10n.posLineIncreaseQuantity,
-            visualDensity: VisualDensity.compact,
-            onPressed: enabled && compareAmounts(current, ceiling) < 0
-                ? () => _request(line, addAmounts(current, '1'))
-                : null,
-          ),
         ],
       ),
     );

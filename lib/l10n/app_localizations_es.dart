@@ -3005,6 +3005,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posAddDestinationSheetTitle => 'Datos de entrega';
 
   @override
+  String get posEditDestinationSheetTitle => 'Editar destino';
+
+  @override
+  String get posCounterPickupLinesTitle => 'Cantidad que se queda en tienda';
+
+  @override
   String posDestinationCounterChip(String units) {
     return 'Tienda $units';
   }

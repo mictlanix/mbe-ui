@@ -259,6 +259,67 @@ void main() {
     });
   });
 
+  group('updateHeader — editing an already-created destination (spec 030)', () {
+    test('a successful update returns the changed destination', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(shipTo: 22, lines: [_lineJson()])),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final destination = await repository.updateHeader(
+        destinationId: 500,
+        shipTo: 22,
+        contact: 8,
+        comment: 'Entregar por la tarde',
+      );
+
+      final request = requests.single;
+      expect(request.method, 'PUT');
+      expect(request.path, endsWith('/delivery-orders/500'));
+      expect(
+        _decodeBody(request.data),
+        {'ship_to': 22, 'contact': 8, 'comment': 'Entregar por la tarde'},
+      );
+      expect(destination.shipTo, 22);
+    });
+
+    test('a non-draft order (mbe-api\'s assert_editable) is refused with '
+        '409', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'A delivery order in CONFIRMED can no longer be edited'}),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.updateHeader(destinationId: 500, shipTo: 22),
+        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+      );
+    });
+
+    test('a malformed payload is refused with 422', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'priority must be >= 0'}),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.updateHeader(destinationId: 500, shipTo: 22),
+        throwsA(isA<ValidationError>()),
+      );
+    });
+  });
+
   group('listForSale — filtered by the sale (mbe-api#147)', () {
     test('asks the server for this sale\'s delivery orders and reads each '
         'back in full, because the summary carries no lines', () async {
