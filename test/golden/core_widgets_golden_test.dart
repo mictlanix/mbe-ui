@@ -15,6 +15,7 @@ import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
+import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
@@ -56,6 +57,7 @@ const _coveredFiles = {
   'catalog_filter_bar.dart',
   'catalog_filter_sheet.dart',
   'catalog_search_bar.dart',
+  'confirmable_text_field.dart', // spec 031 — extracted from quantity_stepper.dart
   'data_table_view.dart',
   'date_range_filter_chip.dart', // spec 023 T023 — the sales list's date filter
   'entity_status_controls.dart',
@@ -340,6 +342,24 @@ void main() {
         'list_state_views',
         (brightness, width) =>
             const ListEmptyView(message: 'No products found'),
+      );
+    });
+
+    testWidgets('ConfirmableTextField', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'confirmable_text_field',
+        (brightness, width) => SizedBox(
+          width: 200,
+          child: ConfirmableTextField(
+            controller: ConfirmableFieldController(
+              value: '15',
+              parse: (t) => t,
+              commit: (_) async => true,
+            ),
+            decoration: const InputDecoration(labelText: 'Desc. %'),
+          ),
+        ),
       );
     });
 

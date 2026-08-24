@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One line, expanded tier (FR-022, FR-023): product, warehouse picker with
@@ -110,7 +112,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                     ),
                     if (enabled)
                       TextButton(
-                        onPressed: () => update(quantity: availableQuantity),
+                        onPressed: () => quantityStepper.set(availableQuantity),
                         child: Text(l10n.posLineAdjustToAvailable),
                       ),
                   ],
@@ -215,7 +217,13 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   );
 
   /// A compact −/field/+ stepper, at the same height as every other control
-  /// in the band ([saleLineFieldHeight]).
+  /// in the band ([saleLineFieldHeight]) — [QuantityStepper]'s field skin,
+  /// `dense: true` for the row's own 32 px shrink-wrapped buttons (spec 030
+  /// research R5). Gated on [lineEnabled] alone, not [enabled] (which also
+  /// factors in a discount/tax/warehouse write in flight): the quantity
+  /// control stays live through any of those (FR-004), since [_enqueue]
+  /// (in `sale_line_editing.dart`) is what actually keeps the writes from
+  /// racing, not disabling the row.
   ///
   /// The product's SAT unit rides in the field's **label** — `Cant. (Pza)` —
   /// rather than in a column of its own. A unit is one short symbol, and
@@ -223,46 +231,20 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   /// could not carry for free; the width it frees is what pays for the wider
   /// warehouse, price, discount and tax columns. `Cant.` alone when the
   /// product has no unit on file (mbe-api#145 leaves it null for those).
-  Widget _quantityStepper(AppLocalizations l10n, bool enabled) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      _stepperButton(Icons.remove, enabled ? () => step(-1) : null, l10n.posLineDecreaseQuantity),
-      Expanded(
-        child: TextField(
-          controller: quantityField,
-          enabled: enabled,
-          textAlign: TextAlign.center,
-          style: _fieldStyle,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: _fieldDecoration(
-            line.unit == null
-                ? l10n.posLineQuantityLabel
-                : l10n.posLineQuantityWithUnitLabel(line.unit!),
-          ),
-          onSubmitted: (v) => update(quantity: v),
-        ),
-      ),
-      _stepperButton(Icons.add, enabled ? () => step(1) : null, l10n.posLineIncreaseQuantity),
-    ],
-  );
-
-  /// `tapTargetSize: shrinkWrap` is what actually makes the 32 px
-  /// `constraints` below hold: without it Material adds its 48 px minimum
-  /// tap target around the button, which is why an earlier, apparently
-  /// generous column still overflowed with `padding`/`constraints` already
-  /// overridden. Dropping below the 48 px target is deliberate and confined
-  /// to this arrangement — the single row is only ever laid out at
-  /// [saleLineSingleRowMinWidth] and above, where the input is a pointer
-  /// (contracts/capture-surface.md §6); the phone tier renders
-  /// `SaleLineCard`, whose steppers keep Material's full touch target.
-  Widget _stepperButton(IconData icon, VoidCallback? onPressed, String tooltip) => IconButton(
-    icon: Icon(icon, size: 18),
-    tooltip: tooltip,
-    padding: EdgeInsets.zero,
-    constraints: const BoxConstraints.tightFor(width: 32, height: 32),
-    visualDensity: VisualDensity.compact,
-    style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-    onPressed: onPressed,
+  Widget _quantityStepper(AppLocalizations l10n) => QuantityStepper(
+    key: ValueKey('quantity-stepper-${line.id}'),
+    controller: quantityStepper,
+    enabled: lineEnabled,
+    dense: true,
+    fieldKey: Key('sale_line_quantity_${line.id}'),
+    textStyle: _fieldStyle,
+    decoration: _fieldDecoration(
+      line.unit == null
+          ? l10n.posLineQuantityLabel
+          : l10n.posLineQuantityWithUnitLabel(line.unit!),
+    ),
+    decrementTooltip: l10n.posLineDecreaseQuantity,
+    incrementTooltip: l10n.posLineIncreaseQuantity,
   );
 
   /// One decoration for every control in the band, so they come out the same
@@ -285,19 +267,23 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         ),
       );
 
+  /// [ConfirmableTextField] wires its own commit/discard path from
+  /// [controller] (spec 031 FR-013…FR-018) — this only supplies the same
+  /// look every field in the band shares (FR-038a).
   Widget _rateField({
-    required TextEditingController controller,
+    required ConfirmableFieldController controller,
     required bool enabled,
     required String label,
-    required ValueChanged<String> onSubmitted,
-  }) => TextField(
+    Key? fieldKey,
+  }) => ConfirmableTextField(
     controller: controller,
+    fieldKey: fieldKey,
     enabled: enabled,
     textAlign: TextAlign.end,
     style: _fieldStyle,
     keyboardType: const TextInputType.numberWithOptions(decimal: true),
     decoration: _fieldDecoration(label),
-    onSubmitted: onSubmitted,
+    format: (wire) => ref.read(formattersProvider).field.rate(wire),
   );
 
   /// A control sized to the band: [width] wide, [saleLineFieldHeight] tall,
@@ -369,7 +355,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
           gap,
           _band(
             width: columns.quantity,
-            child: _quantityStepper(l10n, enabled),
+            child: _quantityStepper(l10n),
           ),
           gap,
           _band(width: columns.price, child: _priceCell(l10n)),
@@ -380,7 +366,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
               controller: discountField,
               enabled: enabled,
               label: l10n.posLineDiscountLabel,
-              onSubmitted: (v) => updateRate(discountRate: v),
+              fieldKey: Key('sale_line_discount_${line.id}'),
             ),
           ),
           gap,
@@ -432,7 +418,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
             children: [
               _band(
                 width: columns.quantity,
-                child: _quantityStepper(l10n, enabled),
+                child: _quantityStepper(l10n),
               ),
               gap,
               Expanded(child: _priceCell(l10n)),
@@ -442,7 +428,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                   controller: discountField,
                   enabled: enabled,
                   label: l10n.posLineDiscountLabel,
-                  onSubmitted: (v) => updateRate(discountRate: v),
+                  fieldKey: Key('sale_line_discount_${line.id}'),
                 ),
               ),
               gap,

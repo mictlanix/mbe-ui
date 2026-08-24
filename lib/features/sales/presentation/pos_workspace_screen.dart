@@ -221,6 +221,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     final leaving = ref.read(posSaleControllerProvider).valueOrNull;
     await _discardIfEmpty(leaving);
     await ref.read(posSaleControllerProvider.notifier).startNew();
+    ref.read(posStepControllerProvider.notifier).reset();
     _refreshSelector();
   }
 
@@ -591,7 +592,7 @@ class _StepHost extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).pop();
               ref.read(posSaleControllerProvider.notifier).startNew();
-              ref.read(posStepControllerProvider.notifier).jumpTo(PosStep.venta);
+              ref.read(posStepControllerProvider.notifier).reset();
             },
             child: Text(l10n.posNewSaleAction),
           ),

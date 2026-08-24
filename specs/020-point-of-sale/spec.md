@@ -452,10 +452,16 @@ without horizontal scrolling and with every control reachable.
   sale is confirmed.
 - **FR-019**: Delivery and mixed modes MUST be unavailable for a customer not
   permitted to receive deliveries, with the reason shown.
-- **FR-056**: Selecting delivery or mixed MUST require the cashier to name the
-  sale's main delivery address before capture continues, choosing one of the
-  customer's addresses or creating one inline, and that address MUST be recorded
-  on the sale.
+- **FR-056**: **Amended 2026-08-23** — selecting delivery or mixed MUST switch
+  the mode immediately (subject only to FR-019's shipping-permission check) and
+  MUST NOT require an address before capture continues. The original text
+  required naming the sale's main delivery address at this point and recording
+  it on the sale; in practice the cashier still named every actual
+  destination's own address again on the Entrega step
+  (`DestinationEditor`/FR-031), so the Venta-time address fed nothing but
+  `Sale.shipTo`, kept only as a mode-persistence fallback FR-057 no longer
+  needs now that `fulfillmentIntent` (mbe-api#171) records the mode directly.
+  Asking twice for the same address was pure friction with no data behind it.
 - **FR-057**: The fulfilment mode MUST survive leaving and reopening the screen:
   a resumed sale MUST reopen in the mode it was captured in, determined from
   what the sale itself records rather than from anything held in the screen.
@@ -508,8 +514,11 @@ without horizontal scrolling and with every control reachable.
 - **FR-033**: The step MUST show, for every line, the ordered quantity and how it
   is distributed across destinations and the counter, and MUST show a running
   count of distributed units against total units.
-- **FR-034**: The first destination MUST be pre-filled from the sale's main
-  delivery address (FR-056), and the cashier MUST be able to change it.
+- **FR-034**: **Amended 2026-08-23, moot** — FR-056 no longer records a main
+  delivery address to pre-fill from (its own text carries the reason). Every
+  destination, the first included, is composed from scratch on this step; the
+  cashier was never able to change a pre-fill that was never implemented in
+  the first place.
 - **FR-035**: In mixed mode, quantity left undistributed MUST be presented as
   staying at the counter for pickup and MUST NOT block closing the sale; in
   delivery mode, any undistributed quantity MUST block closing and the block

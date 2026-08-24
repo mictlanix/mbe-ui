@@ -1,11 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 
 part 'payment_controller.g.dart';
 
@@ -100,6 +102,14 @@ class PaymentController extends _$PaymentController {
     return subtractAmounts(state.amount, balance);
   }
 
+  /// Registers this call in [pendingWritesProvider] for the whole of
+  /// [action] — including [action]'s own state-publishing, which must
+  /// happen *before* [action] returns so the count only reaches zero once
+  /// the balance a gated step reads is already the sale's own (spec 031
+  /// FR-003, research R6). [submit] and [reverse] both route through this.
+  Future<T> _tracked<T>(Future<T> Function() action) =>
+      ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
+
   /// Records the tender and applies it to [sale], then refreshes the sale
   /// and the applied-payments panel. Returns `true` when it went through;
   /// on refusal the draft is kept (contracts/pos-screen.md §6) and the
@@ -110,32 +120,34 @@ class PaymentController extends _$PaymentController {
 
     state = draft.copyWith(submitting: true, clearError: true);
     try {
-      final repository = ref.read(customerPaymentRepositoryProvider);
-      final change = changeFor(sale.balance);
-      final applied = isZeroAmount(change) ? draft.amount : sale.balance;
+      return await _tracked(() async {
+        final repository = ref.read(customerPaymentRepositoryProvider);
+        final change = changeFor(sale.balance);
+        final applied = isZeroAmount(change) ? draft.amount : sale.balance;
 
-      final paymentId = await repository.createPayment(
-        customer: sale.customer,
-        amount: draft.amount,
-        method: draft.methodCode!,
-        currency: sale.currency,
-        paymentCharge: draft.paymentCharge,
-        reference: draft.reference,
-      );
-      await repository.applyPayment(
-        customerPaymentId: paymentId,
-        salesOrder: sale.id,
-        amount: applied,
-        amountChange: isZeroAmount(change) ? null : change,
-      );
+        final paymentId = await repository.createPayment(
+          customer: sale.customer,
+          amount: draft.amount,
+          method: draft.methodCode!,
+          currency: sale.currency,
+          paymentCharge: draft.paymentCharge,
+          reference: draft.reference,
+        );
+        await repository.applyPayment(
+          customerPaymentId: paymentId,
+          salesOrder: sale.id,
+          amount: applied,
+          amountChange: isZeroAmount(change) ? null : change,
+        );
 
-      await ref.read(posSaleControllerProvider.notifier).refresh();
-      ref.invalidate(orderPaymentsControllerProvider(sale.id));
+        await ref.read(posSaleControllerProvider.notifier).refresh();
+        ref.invalidate(orderPaymentsControllerProvider(sale.id));
 
-      // Cleared for the next tender — a partial payment leaves a balance the
-      // cashier goes straight on to collect.
-      state = const PaymentDraft();
-      return true;
+        // Cleared for the next tender — a partial payment leaves a balance
+        // the cashier goes straight on to collect.
+        state = const PaymentDraft();
+        return true;
+      });
     } on AppError catch (e) {
       state = state.copyWith(submitting: false, error: e);
       return false;
@@ -147,7 +159,7 @@ class PaymentController extends _$PaymentController {
     required int customerPaymentId,
     required int applicationId,
     required String reason,
-  }) async {
+  }) => _tracked(() async {
     await ref
         .read(customerPaymentRepositoryProvider)
         .reverseApplication(
@@ -157,5 +169,5 @@ class PaymentController extends _$PaymentController {
         );
     await ref.read(posSaleControllerProvider.notifier).refresh();
     ref.invalidate(orderPaymentsControllerProvider(saleId));
-  }
+  });
 }

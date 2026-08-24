@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 
@@ -281,6 +282,64 @@ void main() {
       // The sheet is on the root navigator, independent of the step's own
       // width-driven rebuild — the typed instructions survive it.
       expect(find.text('Dejar con el portero'), findsOneWidget);
+    });
+  });
+
+  group('editing a destination opens the same presentation as adding one '
+      '(spec 030 US3)', () {
+    Future<void> pumpWithOne(WidgetTester tester, {required Size surface}) => pumpPos(
+      tester,
+      DeliveryStep(
+        sale: testSale(lines: [testLine(id: 5, productName: 'Varilla', quantity: '6')]),
+        mode: FulfillmentMode.delivery,
+        onClose: () {},
+      ),
+      surface: surface,
+      overrides: [
+        deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+        customerRepositoryProvider.overrideWithValue(customers),
+      ],
+    );
+
+    setUp(() {
+      when(
+        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer(
+        (_) async => [
+          existing(id: 500, shipTo: 11, contact: 21, salesOrderDetail: 5, quantity: '6'),
+        ],
+      );
+    });
+
+    testWidgets('at the Large tier it is right-anchored over the rail, '
+        'titled for editing', (tester) async {
+      await pumpWithOne(tester, surface: const Size(1440, 900));
+
+      await tester.tap(find.byKey(const Key('destination_edit_500')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('destination_editor')), findsOneWidget);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(find.text(l10n.posEditDestinationSheetTitle), findsOneWidget);
+
+      final sheetLeft = tester.getTopLeft(find.byKey(const Key('destination_editor'))).dx;
+      expect(sheetLeft, greaterThan(800));
+    });
+
+    testWidgets('below the Large tier it opens as a bottom sheet, titled '
+        'for editing', (tester) async {
+      await pumpWithOne(tester, surface: const Size(390, 900));
+
+      await tester.tap(find.byKey(const Key('destination_edit_500')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('destination_editor')), findsOneWidget);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(find.text(l10n.posEditDestinationSheetTitle), findsOneWidget);
+
+      // A bottom sheet spans (most of) the width, unlike the side sheet.
+      final sheetLeft = tester.getTopLeft(find.byKey(const Key('destination_editor'))).dx;
+      expect(sheetLeft, lessThan(100));
     });
   });
 

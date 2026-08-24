@@ -1,0 +1,558 @@
+{
+  "workflow": "speckit",
+  "specName": "pos write gating",
+  "branch": "031-pos-write-gating",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-24T00:55:50.906Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-24T01:00:35.581Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:26:57.974Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:31:48.465Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:31:48.899Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-24T01:31:59.628Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:40:00.207Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:16:23.060Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:16:23.101Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:16:23.141Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:29:24.363Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:29:24.403Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:29:24.443Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:29:24.483Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:48:36.314Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:48:36.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:48:36.395Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:48:36.436Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:48:36.477Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.067Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.105Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.143Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.183Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.222Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.259Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T02:59:23.297Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T03:05:46.131Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T03:05:46.173Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T03:05:46.212Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T03:05:46.253Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Maintain one signal per sale expressing whether any change to it is outstanding"
+    },
+    "FR-002": {
+      "title": "Signal counts concurrent writes rather than holding a single yes/no"
+    },
+    "FR-003": {
+      "title": "Every sale-changing operation registers in the signal while outstanding"
+    },
+    "FR-004": {
+      "title": "A confirmed change still waiting out a coalescing window counts as outstanding or is sent first"
+    },
+    "FR-005": {
+      "title": "Unconfirmed typed text never counts as outstanding"
+    },
+    "FR-006": {
+      "title": "Signal clears when a write settles, success or failure — no permanent lockout"
+    },
+    "FR-007": {
+      "title": "Each step's primary action unavailable while the signal reports outstanding"
+    },
+    "FR-008": {
+      "title": "Unavailability is visible on the action, reusing its existing busy treatment"
+    },
+    "FR-009": {
+      "title": "Gate does not extend to the rest of the surface — lines stay editable"
+    },
+    "FR-010": {
+      "title": "Exactly one mechanism expresses write-outstanding; the unused flag is wired or removed"
+    },
+    "FR-011": {
+      "title": "Mechanism is adoptable outside POS and coexists with per-form submitting flags"
+    },
+    "FR-012": {
+      "title": "Registering a write does not change what it does or how refusals surface"
+    },
+    "FR-013": {
+      "title": "Discount field text is confirmed only by pressing Enter, both layouts"
+    },
+    "FR-014": {
+      "title": "Focus loss or teardown discards unconfirmed discount text and restores the line's value"
+    },
+    "FR-015": {
+      "title": "A discard is acknowledged with the quantity field's cross-fade and colour pulse"
+    },
+    "FR-016": {
+      "title": "Unreadable discount text is discarded with the acknowledgement and never sent"
+    },
+    "FR-017": {
+      "title": "A refused discount restores visibly instead of being rewritten silently"
+    },
+    "FR-018": {
+      "title": "Unconfirmed text loses when the line changes underneath"
+    },
+    "FR-019": {
+      "title": "A confirmed discount edit registers in the signal and keeps its current line behaviour"
+    },
+    "FR-020": {
+      "title": "The confirm-or-discard rule and its acknowledgement exist in one shared place"
+    },
+    "FR-021": {
+      "title": "Adopting the rule does not change the discount field's appearance or the band's layout"
+    },
+    "FR-022": {
+      "title": "Every editable POS sale field is either covered by the rule or recorded as excluded with a reason"
+    },
+    "FR-023": {
+      "title": "Fields holding no server value are left unchanged"
+    },
+    "FR-024": {
+      "title": "A step action pressed with unconfirmed text neither advances, discards nor commits silently — it asks"
+    },
+    "FR-025": {
+      "title": "The question offers exactly three outcomes: keep, discard, keep editing"
+    },
+    "FR-026": {
+      "title": "Keeping the value is indistinguishable from pressing Enter; the step advances only once it lands"
+    },
+    "FR-027": {
+      "title": "Discarding restores with the acknowledgement and then lets the step advance"
+    },
+    "FR-028": {
+      "title": "Returning to editing keeps the typed text and the current step"
+    },
+    "FR-029": {
+      "title": "The prompt appears only when unconfirmed text actually exists on the step"
+    },
+    "FR-030": {
+      "title": "Asked once for several unconfirmed fields; the answer applies to all of them"
+    },
+    "FR-031": {
+      "title": "Leaving a field by any other means still discards silently with the acknowledgement"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 16,
+    "projectedTasks": 26,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "issue: mictlanix/mbe-ui#164 — step continue actions pressable while a line write is in flight",
+    "area: lib/features/sales/presentation (capture, payment, delivery steps + pos_sale_controller, pos_step_controller, delivery_controller, payment_controller)",
+    "area: lib/features/sales/presentation/widgets/quantity_stepper.dart — spec 030's confirm-or-discard rule and reset animation to be generalized",
+    "constraint: spec 030 FR-004 — the quantity control stays live through its own writes; the new gate must not regress it",
+    "constraint: no mbe-api change, no codegen, no new dependency",
+    "audit: POS sale fields — discount in scope; price read-only, tax picker, payment amount (draft+explicit apply), destination editor form, reversal reason, product search, cash-session forms excluded"
+  ],
+  "intent": "No POS step may be left while a change to the sale is still outstanding, and no field may keep showing text the sale does not hold.",
+  "expectations": [
+    "Converting existing per-form submitting flags (cash-session forms, inline customer form, destination editor) to the new mechanism",
+    "Adopting the mechanism on any screen outside point of sale",
+    "Making the line price writable or returning tax to a typed field",
+    "Giving the discount field a stepper, a debounce, or any commit path other than Enter",
+    "Locally computed totals while a write is outstanding",
+    "Queueing, retrying or persisting failed writes",
+    "Changing the conditions that already gate each step's action, or how refusals are surfaced",
+    "A global busy overlay over the register"
+  ],
+  "decisions": [
+    {
+      "decision": "Step action pressed with unconfirmed text: warn and offer keep / discard / keep editing (FR-024…FR-031) — not a silent discard. Decided with requester 2026-08-23."
+    },
+    {
+      "decision": "A confirmed-but-unsent change counts as outstanding for its whole ~400ms coalescing window plus its write; the window is never cut short (FR-004)."
+    },
+    {
+      "decision": "The gating mechanism lives in the shared core as a generic mechanism, POS as first adopter (FR-011)."
+    },
+    {
+      "decision": "Guard lives at lib/core/async/critical_action_guard.dart: two keepAlive Riverpod family providers (pendingWrites count + unconfirmedEdits registry), scope-keyed; POS declares posWritesScope."
+    },
+    {
+      "decision": "Two registration modes: track(Future) for writes, begin()/end(token) holds for the debounce window; release always after the new state is published (research R6)."
+    },
+    {
+      "decision": "PosStepController.writeInFlight retired (field, copyWith param, setter, and its two test assertions) rather than wired (FR-010)."
+    },
+    {
+      "decision": "Confirm-or-discard rule + reset animation extracted to lib/core/widgets/confirmable_text_field.dart; QuantityStepperController extends it; the discount field uses the base directly with parse/commit callbacks — no subclass."
+    },
+    {
+      "decision": "Fixed a latent gap in confirmable_text_field.dart: _handleControllerChange resynced display text on focus-loss only, so a value confirmed while still focused kept showing raw keystrokes until blur. Changed the condition to !hasUnconfirmedText instead of !hasFocus — reformats the instant a value settles regardless of focus. Surfaced by the discount field's %-less-but-trailing-zero-dropping format; invisible on the quantity field since its format is usually an identity transform on typed digits."
+    },
+    {
+      "decision": "Discovered during US3 testing: showDialog() blurs the currently-focused field (verified empirically), and the existing abandon-on-blur rule discarded the very unconfirmed text the dialog was about to ask about — before the cashier could answer. Fixed with two changes: (1) UnconfirmedEdit.confirm now closes over the text snapshotted at registration time rather than reading live _typed state, so 'keep' commits the value the cashier actually saw even though the dialog's own blur already cleared _typed; (2) added a new UnconfirmedEdit.resume operation so 'keep editing' re-establishes the incidentally-discarded draft rather than leaving the field silently reverted."
+    },
+    {
+      "decision": "Found and fixed a race: a still-in-flight reset animation from the incidental blur-discard could complete AFTER resume() re-establishes a live draft, and its swap callback applied percentage formatting to raw typed text (turning a typed '15' into a stored-rate reading of '1500'). Fixed by guarding the reset animation's swap on !hasUnconfirmedText."
+    },
+    {
+      "decision": "UnconfirmedEdit gained a required resume field beyond the three (id/text/confirm/discard) in contracts/critical-action-guard.md $4 -- an implementation-time elaboration, not a contradiction of the contract's intent."
+    }
+  ],
+  "verified": [
+    {
+      "what": "Measured with a throwaway widget test: tapping a Material FilledButton does not move focus off a focused TextField — onPressed sees hasFocus==true and no focus event fires. So the step action can read unconfirmed text directly; no pointer-down snapshot needed (research R4)."
+    }
+  ],
+  "concerns": [
+    {
+      "note": "A leaked hold would disable a step action for the rest of the session (FR-006's worst case). Mitigated by paired release, whenComplete on the dispose-time flush, scope reset on startNew/load, and a debug assertion on a non-zero reset."
+    },
+    {
+      "note": "Pixel parity: pos_sale_line_* and pos_sale_totals_bar_* goldens must pass unchanged after extracting the confirmable field; a diff is a bug, not a re-baseline."
+    }
+  ],
+  "currentTask": "T046",
+  "task_summaries": {
+    "T016": {
+      "status": "DONE",
+      "did": "Wrote pos_write_gating_test.dart covering the Venta gate: disabled while outstanding, recovers from refusal, waits for concurrent writes, covers the coalescing window, and leaves the rest of the surface live",
+      "files": [
+        "test/widget/features/sales/pos_write_gating_test.dart"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "PosSaleController: updateHeader/addLine/updateLine/removeLine/confirm wrapped in a shared _tracked() helper; startNew/load reset the scope",
+      "files": [
+        "lib/features/sales/presentation/pos_sale_controller.dart"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "CaptureStep.onContinue additionally gated on pendingWritesProvider(posWritesScope) == 0",
+      "files": [
+        "lib/features/sales/presentation/capture/capture_step.dart"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Discount field replaced with ConfirmableFieldController (parse via field.parseRate, commit via new _commitDiscount which toggles _busy); syncFields updated to call discountField.sync with the raw wire value",
+      "files": [
+        "lib/features/sales/presentation/capture/sale_line_editing.dart"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "sale_line_row.dart: _rateField renders ConfirmableTextField instead of a bare TextField; both call sites pass fieldKey sale_line_discount_<id>; updateRate removed as dead",
+      "files": [
+        "lib/features/sales/presentation/capture/sale_line_row.dart"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "sale_line_card.dart discount field switched to ConfirmableTextField, same key convention",
+      "files": [
+        "lib/features/sales/presentation/capture/sale_line_card.dart"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "sale_line_discount_test.dart (13 tests, wide+compact) all green; full sales+core widget suite (645 tests) and golden suite (25) pass unchanged",
+      "files": [
+        "test/widget/features/sales/sale_line_discount_test.dart"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "unconfirmed_changes_dialog.dart: AlertDialog with keep/discard/keepEditing, barrierDismissible false, back-gesture maps to keepEditing",
+      "files": [
+        "lib/features/sales/presentation/widgets/unconfirmed_changes_dialog.dart"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "CaptureStep._onContinuePressed reads the registry, shows the dialog when non-empty, branches keep/discard/keepEditing",
+      "files": [
+        "lib/features/sales/presentation/capture/capture_step.dart"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "unconfirmed_changes_test.dart: 8 tests covering the dialog appearing, keep/discard/keepEditing outcomes, refusal handling, SC-013 (no spurious dialog), and FR-030 (one dialog for two fields)",
+      "files": [
+        "test/widget/features/sales/unconfirmed_changes_test.dart"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Folded into unconfirmed_changes_test.dart's final test, asserting the registry is still non-empty inside the continue action's own tap handler",
+      "files": [
+        "test/widget/features/sales/unconfirmed_changes_test.dart"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Full unit+widget suite (2090 tests) and golden suite (25) pass"
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "PaymentController.submit/reverse wrapped in _tracked() with the same publish-before-decrement ordering",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_controller.dart"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "PaymentSummaryPanel's FAB additionally gated on pendingWritesProvider(posWritesScope) == 0",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_summary_panel.dart"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "DeliveryController's 7 mutating methods (addDestination, updateDestination, sweepRemainderToCounter, removeDestination, assignLine, adjustLine, dropLine) wrapped in the same _tracked() helper",
+      "files": [
+        "lib/features/sales/presentation/delivery/delivery_controller.dart"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Both LineDistributionFoot.onClose render paths (wide + narrow) gated on the same pendingWrites condition",
+      "files": [
+        "lib/features/sales/presentation/delivery/delivery_step.dart"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Cobro gate tests added to pos_write_gating_test.dart: FAB unavailable during payment submit and during reversal, recovers once settled",
+      "files": [
+        "test/widget/features/sales/pos_write_gating_test.dart"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Entrega gate test added: finish action unavailable while a destination header write is outstanding",
+      "files": [
+        "test/widget/features/sales/pos_write_gating_test.dart"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "Full unit+widget suite (2093 tests) and golden suite (25) pass"
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "flutter analyze clean across the whole project"
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "Full flutter test suite: 2134 tests, 0 failures (47 pre-existing skips are unrelated live-backend tests needing env not loaded by default flutter test)"
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "Ran the automated POS live-backend integration tests (pos_counter_sale_flow_test.dart, pos_delivery_split_flow_test.dart) against the real mbe-api with user confirmation -- both pass end to end. The interactive/browser-based portion of quickstart Sec5 (network-throttled manual click-through of issue #164's exact sequence) was not run -- left for the user, noted explicitly rather than claimed done."
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "grep confirms zero remaining writeInFlight references in lib/ or test/"
+    }
+  }
+}

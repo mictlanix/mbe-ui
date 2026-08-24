@@ -315,8 +315,16 @@ ItineraryUpdate {
 - **Quantities**: `Decimal(18,4)` on delivery order lines, `Decimal(20,6)` on itinerary lines.
 - **Supports**: Fractional units (e.g., "2.5 boxes" or "1500.5000 grams").
 
+### FulfillmentType Enum (Updated: Breaking Change in mbe-api ce70bfe)
+⚠️ **BREAKING CHANGE** (commit ce70bfe, 2026-08-15):
+- `PICKUP` (0) — counter pickup (was `COUNTER_PICKUP=1` before)
+- `DELIVERY` (1) — delivery (was `DELIVERY=0` before)  
+- `MIXED` (2) — NEW: mixed sale (pickup + delivery), never used on delivery order (refused by create)
+
+The enum was renumbered to unify `sales_order.fulfillment_intent` and `delivery_order.fulfillment_type` on the same scale. PICKUP=0 because 92.5% of sales orders are counter sales.
+
 ### Immutable-After-Creation Constraints
-- **fulfillment_type** — set at creation, cannot change (DELIVERY vs COUNTER_PICKUP).
+- **fulfillment_type** — set at creation, cannot change (PICKUP or DELIVERY only; MIXED refused).
 - **warehouse** — snapshotted at delivery-order creation.
 
 ---
@@ -387,53 +395,55 @@ ItineraryUpdate {
 
 ---
 
-## 8. Spec Writing Checklist
+## 8. Research Completion Status
 
-### Research Tasks
-- [ ] Get mbe-api source code (or run `/openapi.json`) to extract:
-  - [ ] Enum friendly names for ItineraryStatus, StopOutcome, ShortfallReason.
-  - [ ] Full structure of CommitOrderRequest.
-  - [ ] Structure of PendingDeliveriesResponse (what are the 6 buckets?).
-  - [ ] ItineraryUpdate fields (what's mutable?).
-  - [ ] Field constraints (qty precision, max string lengths, required vs optional).
-  - [ ] Error codes & semantics (409 conflict for lock? 422 validation? 400 qty precision?).
+### ✅ Completed Research Tasks
+- [x] Get mbe-api source code to extract:
+  - [x] Enum friendly names for ItineraryStatus, StopOutcome, ShortfallReason
+  - [x] Full structure of CommitOrderRequest
+  - [x] Structure of PendingDeliveriesResponse (6 buckets: earlier/yesterday/today/tomorrow/day-after/later)
+  - [x] ItineraryUpdate fields (date, vehicle, vehicleOperator, comment; warehouse immutable)
+  - [x] Field constraints (Decimal precision, non-blank requirements, > 0 validation)
+  - [ ] ~~Error codes & semantics~~ (409 conflict, 422 validation) — deferred; not blocking design
 
-- [ ] Legacy system (mbe C# docs) context:
-  - [ ] How were itineraries managed in the old system?
-  - [ ] Proof of delivery — signature vs. photo? Both?
-  - [ ] Typical route size (5, 10, 50 stops per driver per day?).
-  - [ ] Multipart photo storage — where? Size limits?
+### ❌ Discarded (Not Needed for Design Phase)
+- ~~Legacy system (mbe C# docs) context~~ — Design proceeds from v2 spec (mbe-api) only; historical comparison skipped
+  - ~~How were itineraries managed in old system?~~
+  - ~~Proof of delivery approach in legacy system?~~
+  - ~~Typical route size from legacy patterns?~~
+  - ~~Legacy photo storage approach?~~
 
-- [ ] Business requirements (from stakeholders/PMO):
-  - [ ] Is this driver-mobile-only, or web also?
-  - [ ] Offline-first? Queue operations while offline?
-  - [ ] Can driver view live itinerary state (another driver just closed a stop)?
-  - [ ] Reporting/analytics — how many delivered/failed/partial per day?
-  - [ ] Handoff to accounting/invoicing — when does "delivered" trigger invoice flow?
+### 🎯 Next: Stakeholder Input on Design Scope
+Proceed with the **12 remaining design questions** (§9) — these drive MVP scope, not research:
+- POD capture (signature/photo/both?)
+- Offline queueing strategy
+- Route optimization in scope?
+- Integration with POS order status
 
-### Spec Structure (Proposal)
+### Design Spec Structure (Next Phase)
+
+Once the 12 design questions are answered:
+
 ```
-spec.md
+spec.md (to write)
 ├─ 1. Overview (feature purpose, driver workflow, warehouse workflow)
-├─ 2. User Stories (create route, assign driver, execute stops, track, dashboard)
-├─ 3. Data Model (with resolved enum names)
-├─ 4. API Contract (endpoint semantics, error cases, concurrency)
-├─ 5. UI Flows (wireframes/screens by story)
-├─ 6. Localization Inventory
-├─ 7. Accessibility & Mobile Considerations
+├─ 2. User Stories (2 personas: warehouse dispatcher, field driver)
+├─ 3. Data Model (from §2 & §5 here; enum values resolved)
+├─ 4. API Contract (14 endpoints from §3; concurrency, multipart forms)
+├─ 5. UI Flows & Wireframes (answer to 12 design questions)
+├─ 6. Localization Inventory (new labels for itinerary/stop/POD)
+├─ 7. Accessibility & Mobile Considerations (offline, battery, network)
 
-research.md (this file + findings)
-├─ Field constraints & validation rules
-├─ Enum mappings (0→"Pending", etc.)
-├─ Proof of delivery capture (signature vs. photo vs. both?)
-├─ Offline behavior & sync strategy
-├─ Concurrency conflict recovery (UX for lock failures)
+research.md (this file — reference, not for spec)
+├─ Field constraints, precision, validation
+├─ Concurrency conflict recovery (row locks, refresh UX)
+├─ Quantity invariant & double-assignment guards
 
-plan.md + tasks.md
-├─ Phase 1: Repository layer (wrapper around itinerary API)
-├─ Phase 2: Warehouse route-mgmt screens (create, list, assign, update)
-├─ Phase 3: Driver mobile screens (route detail, stop workflow, close, dashboard)
-├─ Phase 4: Polish (tests, analytics hooks, offline sync)
+plan.md + tasks.md (after spec approval)
+├─ Phase 1: Repository wrapper + integration tests
+├─ Phase 2: Warehouse screens (create, list, assign, monitor)
+├─ Phase 3: Driver mobile screens (stops, commitments, POD, dashboard)
+├─ Phase 4: Polish (offline sync, analytics hooks, error handling)
 ```
 
 ---
@@ -516,26 +526,37 @@ plan.md + tasks.md
 
 ---
 
-## Next Steps
+## Next Steps: Design Phase
 
 ✅ **Research phase complete.** All enums resolved, data structures confirmed, API contracts documented.
 
-**Ready for design phase**:
+**Immediate priorities**:
 
-1. **Answer the 12 remaining design questions** (§9) — scope decisions for MVP (POD capture, offline, split delivery, integration points).
-2. **Interview stakeholders** on workflows — warehouse dispatch process, driver handoff, integration with POS order status.
-3. **Map user stories** to the two main personas:
-   - **Warehouse dispatcher**: Create routes, assign vehicles/drivers, monitor progress
-   - **Field driver**: Execute stops, commit lines, capture POD, handle conflicts
-4. **Create wireframes** for key flows:
-   - Route creation & assignment (warehouse)
-   - Stop-by-stop execution (driver)
-   - Pending deliveries dashboard (both personas)
-   - Stop closure with multipart POD form (driver)
-5. **Draft spec.md** with:
-   - User stories (building on the 5 major user stories already in mbe-api spec)
-   - Data model (now fully documented in §2 & §5)
-   - API contract (14 endpoints documented in §3, all in mbe-api)
-   - UI flows & wireframes
-   - Localization inventory (new labels for itinerary/stop/POD concepts)
-6. **Reference mbe-api data-model.md** — database schema is already complete; just document what the UI needs to know.
+1. **Answer the 12 design questions** (§9) with stakeholders:
+   - POD capture type (signature/photo/both)?
+   - Offline queueing strategy?
+   - Route optimization in scope?
+   - Auto-creation of child orders on partial delivery?
+   - Integration with POS order status?
+   - Expected route sizes & pagination?
+   - Others in §9
+
+2. **Map personas & workflows**:
+   - **Warehouse dispatcher**: Create routes, assign vehicle/driver, monitor progress, reassign if needed
+   - **Field driver**: Navigate stops, commit lines, adjust quantities, capture POD, close stops
+
+3. **Create wireframes** (once design questions answered):
+   - Route creation & assignment
+   - Stop-by-stop execution (commit/adjust/release lines)
+   - Stop closure with multipart POD form (receiver + per-line outcomes + photo)
+   - Pending deliveries dashboard (6 date buckets, independent pagination)
+   - Error states (concurrent lock, network, partial failures)
+
+4. **Draft spec.md** (reference this document):
+   - User stories from mbe-api spec 012 + two personas
+   - Data model (§2 & §5 here; enums resolved)
+   - API contract (§3 here; all 14 endpoints in mbe-api)
+   - UI flows from wireframes + design question answers
+   - Localization inventory (new itinerary/stop/POD labels)
+
+5. **Do not write plan.md/tasks.md until spec.md approved**

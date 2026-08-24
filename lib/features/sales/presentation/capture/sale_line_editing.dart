@@ -2,12 +2,16 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Everything a sale line does, minus how it is laid out: the
@@ -26,11 +30,32 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// by the line itself.
   bool get lineEnabled;
 
-  // Fields hold display-formatted text (FR-022) — trimmed quantities,
-  // two-decimal prices, and rates as the percentages their labels claim.
-  // [syncFields] converts back whenever the server's copy changes underneath.
-  late final quantityField = TextEditingController(
-    text: ref.read(formattersProvider).field.quantity(line.quantity),
+  // Fields hold display-formatted text (FR-022) — two-decimal prices and
+  // rates as the percentages their labels claim. [syncFields] converts back
+  // whenever the server's copy changes underneath. Quantity is no longer one
+  // of these — [quantityStepper] owns it (spec 030).
+  //
+  /// The debounced quantity control (spec 030 FR-001…FR-016), shared with the
+  /// delivery destination card. Floored at one unit — a line is removed with
+  /// [removeLine], never stepped to zero — and uncapped: stock is a
+  /// non-blocking warning on this surface ([shortfall]), never a bound.
+  /// [onCommit] is [_commitQuantity], which does **not** set [_busy] (FR-004)
+  /// but does share every other field's write queue ([_enqueue], research
+  /// R6) so two writes for this line are never in flight together.
+  late final quantityStepper = QuantityStepperController(
+    value: line.quantity,
+    min: '1',
+    onCommit: _commitQuantity,
+    // spec 031 FR-004: a stepped-but-not-yet-sent quantity holds the gate
+    // for the whole of its ~400 ms coalescing window, not just the request
+    // that eventually follows it — otherwise a tap-then-continue could still
+    // advance on the pre-tap total, the bug this feature exists to remove.
+    pendingWrites: ref.read(pendingWritesProvider(posWritesScope).notifier),
+    // spec 031 FR-024, FR-030: typed-but-unconfirmed quantity text raises
+    // the same step-boundary question the discount field does — the rule
+    // lives once in the shared base, so both fields get it without either
+    // one asking for it specially.
+    unconfirmedEdits: ref.read(unconfirmedEditsProvider(posWritesScope).notifier),
   );
 
   /// Read-only (FR-038c): a line's price comes from the customer's price list
@@ -39,8 +64,20 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   late final priceField = TextEditingController(
     text: ref.read(formattersProvider).field.price(line.price),
   );
-  late final discountField = TextEditingController(
-    text: ref.read(formattersProvider).field.rate(line.discountRate),
+
+  /// The discount, typed as a percentage but stored as a `0 ≤ r ≤ 1` rate.
+  /// Spec 031 FR-013…FR-018: confirmed only by Enter, discarded — visibly,
+  /// with the same acknowledgement the quantity stepper uses — on focus
+  /// loss, on unparseable text, and on a server refusal, sharing
+  /// [ConfirmableFieldController] rather than reimplementing the rule.
+  late final discountField = ConfirmableFieldController(
+    value: line.discountRate,
+    parse: (text) => ref.read(formattersProvider).field.parseRate(text),
+    commit: _commitDiscount,
+    // spec 031 FR-024, FR-030: registers so the step's own continue action
+    // can find this field's unconfirmed text and ask about it, rather than
+    // the field silently discarding or the step silently advancing.
+    unconfirmedEdits: ref.read(unconfirmedEditsProvider(posWritesScope).notifier),
   );
 
   bool _busy = false;
@@ -55,20 +92,43 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// line again.
   int _rejections = 0;
 
-  /// True while an edit is in flight; controls stay inert until it settles.
+  /// Serializes every write this line makes — quantity included — so two
+  /// never land in flight together (spec 030 research R6). Without it,
+  /// `PosSaleController.updateLine` replacing the *whole sale* on each
+  /// response would let the later one silently revert the earlier: `_busy`
+  /// used to prevent that by inerting the whole line for every write, which
+  /// is exactly the freeze this feature removes from the quantity path.
+  Future<void> _writes = Future<void>.value();
+
+  Future<R> _enqueue<R>(Future<R> Function() action) {
+    final result = _writes.then((_) => action());
+    _writes = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  /// True while a **non-quantity** edit is in flight; those controls stay
+  /// inert until it settles, as before this feature. The quantity stepper is
+  /// deliberately not gated by this (FR-004) — its own controller stays live
+  /// through its own commits, and [_enqueue] is what keeps its writes from
+  /// racing with these.
   bool get enabled => lineEnabled && !_busy;
 
   /// Re-renders every field from the line's authoritative values.
+  ///
+  /// [discountField] takes the raw wire value, not a formatted string — it
+  /// is a [ConfirmableFieldController] now, and its own `sync` is what
+  /// decides whether an external change should discard unconfirmed typed
+  /// text (spec 031 FR-018), the same rule [quantityStepper] already has.
   void syncFields() {
     final fmt = ref.read(formattersProvider);
-    quantityField.text = fmt.field.quantity(line.quantity);
+    quantityStepper.sync(value: line.quantity);
     priceField.text = fmt.field.price(line.price);
-    discountField.text = fmt.field.rate(line.discountRate);
+    discountField.sync(value: line.discountRate);
   }
 
   @override
   void dispose() {
-    quantityField.dispose();
+    quantityStepper.dispose();
     priceField.dispose();
     discountField.dispose();
     super.dispose();
@@ -86,15 +146,17 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }) async {
     setState(() => _busy = true);
     try {
-      await ref
-          .read(posSaleControllerProvider.notifier)
-          .updateLine(
-            lineId: line.id,
-            quantity: quantity,
-            discountRate: discountRate,
-            taxRate: taxRate,
-            warehouse: warehouse,
-          );
+      await _enqueue(
+        () => ref
+            .read(posSaleControllerProvider.notifier)
+            .updateLine(
+              lineId: line.id,
+              quantity: quantity,
+              discountRate: discountRate,
+              taxRate: taxRate,
+              warehouse: warehouse,
+            ),
+      );
     } on Object {
       // Rejected — restore the controls to the last accepted values
       // (contracts/pos-screen.md §6); PosSaleController already left `state`
@@ -107,18 +169,48 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     }
   }
 
-  /// The discount is typed as a percentage but stored as a `0 ≤ r ≤ 1` rate.
-  /// A non-numeric entry is refused outright rather than sent.
-  ///
-  /// Tax no longer comes through here — it is chosen, not typed (FR-038b); see
-  /// [selectTaxRate].
-  Future<void> updateRate({required String discountRate}) async {
-    final raw = ref.read(formattersProvider).field.parseRate(discountRate);
-    if (raw == null) {
-      syncFields();
-      return;
+  /// [quantityStepper]'s `onCommit` (spec 030 research R3): performs the
+  /// write, queued behind every other pending write for this line, and
+  /// reports whether it stuck rather than throwing — a caught `AppError`
+  /// becomes `false`, which is what makes the controller restore the last
+  /// accepted quantity and animate the reset (FR-013). Deliberately does not
+  /// touch [_busy]: the quantity control stays live through its own writes
+  /// (FR-004).
+  Future<bool> _commitQuantity(String value) async {
+    try {
+      await _enqueue(
+        () => ref
+            .read(posSaleControllerProvider.notifier)
+            .updateLine(lineId: line.id, quantity: value),
+      );
+      return true;
+    } on Object {
+      return false;
     }
-    await update(discountRate: raw);
+  }
+
+  /// [discountField]'s `commit` (spec 031 FR-019, mirroring [_commitQuantity]'s
+  /// shape): performs the write, queued behind every other pending write for
+  /// this line, and reports whether it stuck rather than throwing — `false`
+  /// is what makes the controller restore the line's own discount and
+  /// animate the reset (FR-017), instead of the silent `syncFields()`
+  /// rewrite this replaces. Unlike [_commitQuantity], this **does** toggle
+  /// [_busy]: the line's other controls still go inert for the duration of a
+  /// discount write, exactly as before this feature (FR-019).
+  Future<bool> _commitDiscount(String rate) async {
+    setState(() => _busy = true);
+    try {
+      await _enqueue(
+        () => ref
+            .read(posSaleControllerProvider.notifier)
+            .updateLine(lineId: line.id, discountRate: rate),
+      );
+      return true;
+    } on Object {
+      return false;
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   /// The rates a line's tax picker offers (FR-038b): the product table's own
@@ -187,14 +279,6 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   Future<void> removeLine() =>
       ref.read(posSaleControllerProvider.notifier).removeLine(line.id);
-
-  void step(int delta) {
-    final next = Decimal.parse(quantityField.text) + Decimal.fromInt(delta);
-    if (next.sign <= 0) return;
-    final text = next.toString();
-    quantityField.text = text;
-    update(quantity: text);
-  }
 
   /// [decoration] and [style] let each tier size the picker as its own band
   /// requires; both default to Material's own, which is what the compact card

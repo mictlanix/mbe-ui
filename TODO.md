@@ -30,9 +30,9 @@
 - Estados en una sola palabra (Venta, Cobro, Entrega, Finalizada)
 - ~~Filtros de pantalla de punto de venta, alinearla con cruds (boton de filtros + drawer)~~
 - ~~Configuraciones generales del sistema~~
-  - Formatos de fecha, montos, idioma de la aplicación
+  - ~~Formatos de fecha, montos, idioma de la aplicación~~
 - ~~Configuraciones del usuario~~
   - ~~Tema de la aplicacion (light / dark)~~
 
 ## 2026-08-16
-- Falta botón para editar destinos (destination card)
+- ~~Falta botón para editar destinos (destination card)~~

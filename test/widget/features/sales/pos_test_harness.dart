@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
@@ -40,6 +41,7 @@ Sale testSale({
   String balance = '116.00',
   List<SaleLine> lines = const [],
   int? shipTo,
+  FulfillmentMode? fulfillmentIntent,
   int pointSale = 3,
 }) => Sale(
   id: id,
@@ -50,8 +52,12 @@ Sale testSale({
   customer: 7,
   customerName: 'Público en general',
   // Null by default: a counter sale, which is what most fixtures want.
-  // Pass a delivery address to make it a delivery sale (FR-057).
+  // Pass a delivery address to make it a delivery sale (FR-057) — or, for a
+  // sale recorded after mbe-api#171, pass `fulfillmentIntent` instead/as well
+  // (spec 020 FR-056, amended 2026-08-23: new sales no longer get a `shipTo`
+  // from choosing the mode, only `fulfillmentIntent`).
   shipTo: shipTo,
+  fulfillmentIntent: fulfillmentIntent,
   paymentTerms: paymentTerms,
   currency: Currency.mxn,
   exchangeRate: '1',

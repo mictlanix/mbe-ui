@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
@@ -480,6 +481,53 @@ void main() {
 
       expect(find.byKey(const Key('open_sale_3')), findsOneWidget);
       expect(find.text(l10n.posOpenSaleUndelivered), findsOneWidget);
+    });
+
+    testWidgets('a paid delivery sale recorded with fulfillmentIntent alone '
+        '(no shipTo — spec 020 FR-056, amended 2026-08-23) is still '
+        'recognized as a delivery and listed while undistributed', (
+      tester,
+    ) async {
+      stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
+      when(
+        () => salesOrders.getById(saleId: 3),
+      ).thenAnswer(
+        (_) async => testSale(
+          id: 3,
+          status: SaleStatus.paid,
+          fulfillmentIntent: FulfillmentMode.delivery,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+      when(
+        () => deliveries.listForSale(salesOrder: 3),
+      ).thenAnswer((_) async => [_destination(claimed: '4')]);
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_3')), findsOneWidget);
+      expect(find.text(l10n.posOpenSaleUndelivered), findsOneWidget);
+    });
+
+    testWidgets('a paid counter-pickup sale recorded with fulfillmentIntent '
+        'alone (no shipTo) is finished and not listed, without even a '
+        'delivery-order lookup', (tester) async {
+      stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
+      when(
+        () => salesOrders.getById(saleId: 3),
+      ).thenAnswer(
+        (_) async => testSale(
+          id: 3,
+          status: SaleStatus.paid,
+          fulfillmentIntent: FulfillmentMode.counterPickup,
+          lines: [testLine(id: 5, quantity: '10')],
+        ),
+      );
+
+      await pumpSelector(tester);
+
+      expect(find.byKey(const Key('open_sale_3')), findsNothing);
+      verifyNever(() => deliveries.listForSale(salesOrder: 3));
     });
 
     testWidgets('a fully distributed paid sale is finished and is not listed', (

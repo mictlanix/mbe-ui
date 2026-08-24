@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 
@@ -156,6 +157,107 @@ void main() {
       ).called(1);
 
       // And nothing already recorded was disturbed.
+      expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
+    });
+  });
+
+  group('editing an already-created destination (spec 030 FR-018…FR-022)', () {
+    testWidgets('opens prefilled, reads "Guardar", and saves through '
+        'updateHeader without disturbing line assignments', (tester) async {
+      when(
+        () => deliveryRepository.updateHeader(
+          destinationId: any(named: 'destinationId'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          date: any(named: 'date'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer(
+        (_) async => Destination(
+          id: 500,
+          fulfillmentType: FulfillmentType.delivery,
+          shipTo: 11,
+          addressSummary: 'Av. Reforma 100',
+          comment: 'Tocar el timbre',
+          status: DeliveryOrderStatus.draft,
+          lines: _existing().lines,
+        ),
+      );
+
+      await pumpStep(tester);
+
+      await tester.tap(find.byKey(const Key('destination_edit_500')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('destination_editor')), findsOneWidget);
+      // Prefilled from the destination already on screen.
+      expect(find.text('Av. Reforma 100'), findsWidgets);
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(find.widgetWithText(FilledButton, l10n.saveButton), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const Key('destination_comment_field')),
+        'Tocar el timbre',
+      );
+      await tester.tap(find.byKey(const Key('destination_save_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('destination_editor')), findsNothing);
+      verify(
+        () => deliveryRepository.updateHeader(
+          destinationId: 500,
+          shipTo: 11,
+          contact: null,
+          date: any(named: 'date'),
+          comment: 'Tocar el timbre',
+        ),
+      ).called(1);
+      // Never a second destination, and the existing one's line stays put.
+      verifyNever(
+        () => deliveryRepository.create(
+          salesOrder: any(named: 'salesOrder'),
+          fulfillmentType: any(named: 'fulfillmentType'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          date: any(named: 'date'),
+          comment: any(named: 'comment'),
+          lines: any(named: 'lines'),
+        ),
+      );
+      expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
+    });
+
+    testWidgets('a refused edit keeps the sheet open with the server\'s '
+        'message and leaves the destination unchanged (FR-022)', (
+      tester,
+    ) async {
+      when(
+        () => deliveryRepository.updateHeader(
+          destinationId: any(named: 'destinationId'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          date: any(named: 'date'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenThrow(
+        const AppError.server(
+          statusCode: 409,
+          message: 'La entrega ya fue confirmada',
+        ),
+      );
+
+      await pumpStep(tester);
+      await tester.tap(find.byKey(const Key('destination_edit_500')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('destination_save_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('destination_editor')), findsOneWidget);
+      expect(find.byKey(const Key('destination_editor_error')), findsOneWidget);
+      expect(find.textContaining('La entrega ya fue confirmada'), findsOneWidget);
+
+      await tester.tapAt(const Offset(10, 10)); // dismiss, leave the sheet
+      // Verify nothing about the on-screen destination moved.
       expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
     });
   });

@@ -30,9 +30,10 @@ abstract class SalesOrderRepository {
     int? contact,
     String? customerName,
     // How the cashier said the goods reach the customer (mbe-api#170/#171) —
-    // the fulfilment step's mode selection writes this in the same call it
-    // already makes to set [shipTo], so a mixed sale survives a resume
-    // instead of being reconstructed from the address alone.
+    // the fulfilment step's mode selection writes this alone (spec 020
+    // FR-056, amended 2026-08-23 to drop the address it used to write
+    // alongside it), so a mixed sale survives a resume without needing
+    // [shipTo] at all.
     FulfillmentMode? fulfillmentIntent,
   });
 

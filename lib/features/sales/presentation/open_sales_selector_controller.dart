@@ -129,21 +129,35 @@ Future<List<OpenSale>> _paidAndUndistributed(Ref ref, List<OpenSale> paid) async
     final sale = await salesOrders.getById(saleId: candidate.id);
     // A sale with no lines cannot owe a distribution.
     if (sale.lines.isEmpty) return null;
-    // No destination was ever named, so it was collected here — and this
-    // costs nothing, which is why it is asked before the facility lookup.
-    if (sale.shipTo == null) return null;
 
-    // Counter pickup can also be recorded explicitly, as the facility's own
-    // address. Distinguishing that from a real delivery needs the facility,
-    // read through the same helper the resume step uses so the selector and
-    // the step it reopens on cannot disagree about what a delivery sale is.
-    final facilityAddressId = await ref.read(
-      facilityAddressControllerProvider(sale.facility).future,
-    );
-    final isDelivery = FulfillmentModeEncoding.impliesDelivery(
-      shipTo: sale.shipTo,
-      facilityAddressId: facilityAddressId,
-    );
+    // `fulfillmentIntent` (mbe-api#171) records the mode directly and is
+    // checked first, exactly as `resumeTargetFor` does — the two must never
+    // disagree about what a delivery sale is. `shipTo` is only the pre-#171
+    // fallback, for a sale old enough to predate the field: a `null` `shipTo`
+    // is no longer proof of "collected here" now that Venta stopped asking
+    // for an address at all (spec 020 FR-056, amended 2026-08-23).
+    final bool isDelivery;
+    final recorded = sale.fulfillmentIntent;
+    if (recorded != null) {
+      isDelivery = recorded != FulfillmentMode.counterPickup;
+    } else if (sale.shipTo == null) {
+      // Cheap, and asked before the facility lookup below for the same
+      // reason it always was: nothing was ever named, so it was collected
+      // here.
+      isDelivery = false;
+    } else {
+      // Counter pickup can also be recorded explicitly, as the facility's own
+      // address. Distinguishing that from a real delivery needs the
+      // facility, read through the same helper the resume step uses so the
+      // selector and the step it reopens on cannot disagree.
+      final facilityAddressId = await ref.read(
+        facilityAddressControllerProvider(sale.facility).future,
+      );
+      isDelivery = FulfillmentModeEncoding.impliesDelivery(
+        shipTo: sale.shipTo,
+        facilityAddressId: facilityAddressId,
+      );
+    }
     if (!isDelivery) return null;
 
     final destinations = await deliveries.listForSale(salesOrder: sale.id);

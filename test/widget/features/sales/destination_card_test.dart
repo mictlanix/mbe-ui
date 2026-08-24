@@ -51,6 +51,8 @@ void main() {
     Destination d, {
     String badge = 'D1',
     VoidCallback? onRemove,
+    VoidCallback? onEdit,
+    bool enabled = true,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -69,6 +71,8 @@ void main() {
               badge: badge,
               distribution: buildDistribution([d]),
               onRemove: onRemove,
+              onEdit: onEdit,
+              enabled: enabled,
             ),
           ),
         ),
@@ -202,6 +206,68 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.delete_outline), findsNothing);
+    });
+  });
+
+  group('the edit action (spec 030 FR-017, FR-023, FR-024)', () {
+    testWidgets('is present, before the remove action, when enabled and '
+        'wired', (tester) async {
+      await pumpCard(tester, destination(), onRemove: () {}, onEdit: () {});
+
+      final editFinder = find.byKey(const Key('destination_edit_500'));
+      final removeFinder = find.byKey(const Key('destination_remove_500'));
+      expect(editFinder, findsOneWidget);
+      expect(removeFinder, findsOneWidget);
+
+      // Left-to-right in the header row, matching the mock's own order
+      // (edit, then remove, then the chevron) — FR-017.
+      expect(
+        tester.getCenter(editFinder).dx,
+        lessThan(tester.getCenter(removeFinder).dx),
+      );
+    });
+
+    testWidgets('fires onEdit when pressed', (tester) async {
+      var pressed = false;
+      await pumpCard(tester, destination(), onEdit: () => pressed = true);
+
+      await tester.tap(find.byKey(const Key('destination_edit_500')));
+      expect(pressed, isTrue);
+    });
+
+    testWidgets('is absent when no onEdit is supplied', (tester) async {
+      await pumpCard(tester, destination());
+      expect(find.byKey(const Key('destination_edit_500')), findsNothing);
+    });
+
+    testWidgets('is absent while the step is closing (enabled: false)', (
+      tester,
+    ) async {
+      await pumpCard(tester, destination(), onEdit: () {}, enabled: false);
+      expect(find.byKey(const Key('destination_edit_500')), findsNothing);
+    });
+
+    testWidgets('is absent from the counter row', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+          ],
+          child: MaterialApp(
+            locale: const Locale('es', 'MX'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: DestinationCounterRow(distribution: buildDistribution(const [])),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.edit_outlined), findsNothing);
     });
   });
 }

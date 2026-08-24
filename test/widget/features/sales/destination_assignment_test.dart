@@ -375,6 +375,25 @@ void main() {
     });
   });
 
+  group('the shared quantity stepper (spec 030)', () {
+    testWidgets('destination_quantity_<id> still resolves to a real TextField '
+        'backed by a TextEditingController after the swap onto the widget '
+        'shared with the capture surface', (tester) async {
+      when(
+        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer((_) async => [existingDestination()]);
+
+      await pumpStep(tester);
+      await expand(tester);
+
+      final field = tester.widget<TextField>(
+        find.byKey(const Key('destination_quantity_5')),
+      );
+      expect(field.controller, isA<TextEditingController>());
+      expect(field.controller!.text, '0');
+    });
+  });
+
   group('the client-side clamp sends nothing out of range (FR-021, SC-006)', () {
     testWidgets('typing more than the sale still owes sends no request',
         (tester) async {
@@ -386,6 +405,19 @@ void main() {
       await expand(tester);
       await tester.enterText(find.byKey(const Key('destination_quantity_5')), '20');
       await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+
+      // Spec 030 FR-013: the discard now animates rather than snapping back
+      // silently — still showing the typed value right after Enter, before
+      // the fade has covered it.
+      expect(
+        tester
+            .widget<TextField>(find.byKey(const Key('destination_quantity_5')))
+            .controller!
+            .text,
+        '20',
+      );
+
       await tester.pumpAndSettle();
 
       verifyNever(

@@ -2962,6 +2962,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posAddDestinationSheetTitle => 'Delivery details';
 
   @override
+  String get posEditDestinationSheetTitle => 'Edit destination';
+
+  @override
+  String get posUnconfirmedChangesTitle => 'Unconfirmed changes';
+
+  @override
+  String get posUnconfirmedChangesBody =>
+      'There are typed values that were never confirmed. What would you like to do?';
+
+  @override
+  String get posUnconfirmedChangesKeep => 'Keep';
+
+  @override
+  String get posUnconfirmedChangesDiscard => 'Discard';
+
+  @override
+  String get posUnconfirmedChangesKeepEditing => 'Keep editing';
+
+  @override
+  String get posCounterPickupLinesTitle => 'Quantity staying at the store';
+
+  @override
   String posDestinationCounterChip(String units) {
     return 'Counter $units';
   }

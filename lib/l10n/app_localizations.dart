@@ -5537,6 +5537,48 @@ abstract class AppLocalizations {
   /// **'Delivery details'**
   String get posAddDestinationSheetTitle;
 
+  /// No description provided for @posEditDestinationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit destination'**
+  String get posEditDestinationSheetTitle;
+
+  /// No description provided for @posUnconfirmedChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unconfirmed changes'**
+  String get posUnconfirmedChangesTitle;
+
+  /// No description provided for @posUnconfirmedChangesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'There are typed values that were never confirmed. What would you like to do?'**
+  String get posUnconfirmedChangesBody;
+
+  /// No description provided for @posUnconfirmedChangesKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get posUnconfirmedChangesKeep;
+
+  /// No description provided for @posUnconfirmedChangesDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get posUnconfirmedChangesDiscard;
+
+  /// No description provided for @posUnconfirmedChangesKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get posUnconfirmedChangesKeepEditing;
+
+  /// No description provided for @posCounterPickupLinesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity staying at the store'**
+  String get posCounterPickupLinesTitle;
+
   /// No description provided for @posDestinationCounterChip.
   ///
   /// In en, this message translates to:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -16,8 +17,10 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/unconfirmed_changes_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The Venta step (contracts/pos-screen.md §3): customer, fulfilment mode,
@@ -89,6 +92,49 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     }
   }
 
+  /// What "Continuar al cobro" actually calls (spec 031 FR-024…FR-030):
+  /// unconfirmed text anywhere on the step raises a decision before [_confirm]
+  /// ever runs, rather than the step silently discarding or silently
+  /// committing it. The registry is read once, at the moment of the press —
+  /// not watched — since this is a one-shot decision about what to do with
+  /// whatever is unconfirmed right now, not a live gate (that role belongs to
+  /// [pendingWritesProvider], already covered by `onContinue`'s own
+  /// condition).
+  Future<void> _onContinuePressed() async {
+    final entries = ref.read(unconfirmedEditsProvider(posWritesScope));
+    if (entries.isEmpty) {
+      await _confirm();
+      return;
+    }
+
+    final answer = await showUnconfirmedChangesDialog(context);
+    if (!mounted) return;
+
+    switch (answer) {
+      case UnconfirmedChangesAnswer.keep:
+        // Every entry commits through its own field's path (FR-026) — the
+        // same write, the same registration in the outstanding-writes
+        // signal, the same refusal handling a confirmed edit already has.
+        // The step advances only once all of them have actually landed; a
+        // refusal leaves it exactly where a line-edit refusal always has.
+        final results = await Future.wait(entries.map((e) => e.confirm()));
+        if (mounted && results.every((ok) => ok)) await _confirm();
+      case UnconfirmedChangesAnswer.discard:
+        for (final entry in entries) {
+          entry.discard();
+        }
+        await _confirm();
+      case UnconfirmedChangesAnswer.keepEditing:
+        // The sale stays on Venta. Opening the dialog itself blurred each
+        // field, discarding its draft by the ordinary rule (FR-014) before
+        // the cashier answered — resume() undoes that, so "keep editing"
+        // genuinely means the typed text is still there (FR-028).
+        for (final entry in entries) {
+          entry.resume();
+        }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -102,6 +148,10 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final defaultWarehouse = pointSale == null
         ? const AsyncValue<int>.loading()
         : ref.watch(defaultWarehouseControllerProvider(pointSale));
+    // spec 031 FR-007: additional to every condition below, not instead of
+    // any of them — a line write still outstanding must not let the cashier
+    // advance on figures the sale does not hold yet (issue #164).
+    final writesPending = ref.watch(pendingWritesProvider(posWritesScope)) > 0;
     final spacing = Theme.of(context).spacing;
     // One horizontal margin for every header item, applied once per item
     // rather than each widget also carrying its own — the doubled
@@ -240,7 +290,10 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           sale: sale,
           compact: compact,
           confirming: _confirming,
-          onContinue: (enabled && (sale?.lineCount ?? 0) > 0 && !_confirming) ? _confirm : null,
+          onContinue:
+              (enabled && (sale?.lineCount ?? 0) > 0 && !_confirming && !writesPending)
+                  ? _onContinuePressed
+                  : null,
         ),
       ],
     );
