@@ -11,33 +11,31 @@ part 'pos_step_controller.g.dart';
 /// [PosStepState.stepCount].
 enum PosStep { venta, cobro, entrega }
 
-/// UI-only state: which step is current, the fulfilment mode chosen so far,
-/// and whether a write is in flight. Never persisted — reconstructed from
-/// the resumed `Sale`'s own `status`/`shipTo` on reload
-/// (contracts/pos-screen.md §5), not from anything held here.
+/// UI-only state: which step is current, and the fulfilment mode chosen so
+/// far. Never persisted — reconstructed from the resumed `Sale`'s own
+/// `status`/`shipTo` on reload (contracts/pos-screen.md §5), not from
+/// anything held here.
+///
+/// Whether a write is in flight is no longer tracked here (spec 031 FR-010):
+/// this field existed for exactly that and nothing ever set or read it —
+/// `pendingWritesProvider(posWritesScope)`
+/// (`lib/core/async/critical_action_guard.dart`) is the one mechanism for
+/// that question now, read directly by each step's own gate rather than
+/// mirrored through this controller.
 class PosStepState {
   const PosStepState({
     this.current = PosStep.venta,
     this.mode = FulfillmentMode.counterPickup,
-    this.writeInFlight = false,
   });
 
   final PosStep current;
   final FulfillmentMode mode;
-  final bool writeInFlight;
 
   /// FR-005: two steps for counter pickup, three otherwise.
   int get stepCount => mode == FulfillmentMode.counterPickup ? 2 : 3;
 
-  PosStepState copyWith({
-    PosStep? current,
-    FulfillmentMode? mode,
-    bool? writeInFlight,
-  }) => PosStepState(
-    current: current ?? this.current,
-    mode: mode ?? this.mode,
-    writeInFlight: writeInFlight ?? this.writeInFlight,
-  );
+  PosStepState copyWith({PosStep? current, FulfillmentMode? mode}) =>
+      PosStepState(current: current ?? this.current, mode: mode ?? this.mode);
 }
 
 /// The step machine (contracts/pos-screen.md §2). Every transition is a
@@ -76,10 +74,6 @@ class PosStepController extends _$PosStepController {
   void advanceFromCobro() {
     if (state.mode == FulfillmentMode.counterPickup) return;
     state = state.copyWith(current: PosStep.entrega);
-  }
-
-  void setWriteInFlight(bool value) {
-    state = state.copyWith(writeInFlight: value);
   }
 
   /// Back to Venta, counter pickup, nothing in flight — what a genuinely new

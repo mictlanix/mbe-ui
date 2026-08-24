@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
@@ -155,8 +156,9 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
               spacing: 8,
               children: [
                 Expanded(
-                  child: TextField(
+                  child: ConfirmableTextField(
                     controller: discountField,
+                    fieldKey: Key('sale_line_discount_${line.id}'),
                     enabled: enabled,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -164,7 +166,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                     decoration: InputDecoration(
                       labelText: l10n.posLineDiscountLabel,
                     ),
-                    onSubmitted: (v) => updateRate(discountRate: v),
+                    format: (wire) => ref.read(formattersProvider).field.rate(wire),
                   ),
                 ),
                 // Chosen, not typed (FR-038b).

@@ -3008,6 +3008,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posEditDestinationSheetTitle => 'Editar destino';
 
   @override
+  String get posUnconfirmedChangesTitle => 'Cambios sin confirmar';
+
+  @override
+  String get posUnconfirmedChangesBody =>
+      'Hay valores escritos que no se han confirmado. ¿Qué deseas hacer?';
+
+  @override
+  String get posUnconfirmedChangesKeep => 'Conservar';
+
+  @override
+  String get posUnconfirmedChangesDiscard => 'Descartar';
+
+  @override
+  String get posUnconfirmedChangesKeepEditing => 'Seguir editando';
+
+  @override
   String get posCounterPickupLinesTitle => 'Cantidad que se queda en tienda';
 
   @override

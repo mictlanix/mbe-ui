@@ -1,9 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 
 part 'pos_sale_controller.g.dart';
 
@@ -55,7 +57,13 @@ class PosSaleController extends _$PosSaleController {
 
   /// Loads an existing sale instead of opening a new one — the open-sales
   /// selector's "resume" action (US3).
+  ///
+  /// Resets [pendingWritesProvider] for this scope (spec 031 FR-001, research
+  /// R2): whatever was outstanding belonged to the *previous* sale this
+  /// controller held, and none of it can still be relevant to the one about
+  /// to replace it.
   Future<void> load(int saleId) async {
+    ref.read(pendingWritesProvider(posWritesScope).notifier).reset();
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(salesOrderRepositoryProvider).getById(saleId: saleId),
@@ -76,6 +84,15 @@ class PosSaleController extends _$PosSaleController {
     state = AsyncValue.data(refreshed);
   }
 
+  /// Registers this call in [pendingWritesProvider] for the whole of [action]
+  /// — including [action]'s own `state = AsyncValue.data(...)` assignment,
+  /// which must happen *before* [action] returns so the count only reaches
+  /// zero once the totals a gated step reads are already the sale's own
+  /// (spec 031 FR-003, research R6). Every mutating method below routes
+  /// through this rather than registering by hand.
+  Future<T> _tracked<T>(Future<T> Function() action) =>
+      ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
+
   Future<void> updateHeader({
     int? customer,
     PaymentTerms? paymentTerms,
@@ -84,7 +101,7 @@ class PosSaleController extends _$PosSaleController {
     int? contact,
     String? customerName,
     FulfillmentMode? fulfillmentIntent,
-  }) async {
+  }) => _tracked(() async {
     final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.updateHeader(
@@ -98,7 +115,7 @@ class PosSaleController extends _$PosSaleController {
       fulfillmentIntent: fulfillmentIntent,
     );
     state = AsyncValue.data(updated);
-  }
+  });
 
   Future<void> addLine({
     required int product,
@@ -108,7 +125,7 @@ class PosSaleController extends _$PosSaleController {
     String? taxRate,
     int? warehouse,
     String? comment,
-  }) async {
+  }) => _tracked(() async {
     final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.addLine(
@@ -122,7 +139,7 @@ class PosSaleController extends _$PosSaleController {
       comment: comment,
     );
     state = AsyncValue.data(updated);
-  }
+  });
 
   Future<void> updateLine({
     required int lineId,
@@ -132,7 +149,7 @@ class PosSaleController extends _$PosSaleController {
     String? taxRate,
     int? warehouse,
     String? comment,
-  }) async {
+  }) => _tracked(() async {
     final current = _openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.updateLine(
@@ -146,9 +163,9 @@ class PosSaleController extends _$PosSaleController {
       comment: comment,
     );
     state = AsyncValue.data(updated);
-  }
+  });
 
-  Future<void> removeLine(int lineId) async {
+  Future<void> removeLine(int lineId) => _tracked(() async {
     final current = _openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.removeLine(
@@ -156,18 +173,18 @@ class PosSaleController extends _$PosSaleController {
       lineId: lineId,
     );
     state = AsyncValue.data(updated);
-  }
+  });
 
   /// "Continuar al cobro" — assigns the folio, commits stock, freezes the
   /// document (FR-038–FR-040). Throws the server's `AppError` on refusal
   /// (zero-priced lines, insufficient stock, no lines); the caller renders
   /// it on the capture step without leaving it.
-  Future<void> confirm() async {
+  Future<void> confirm() => _tracked(() async {
     final current = _openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.confirm(saleId: current.id);
     state = AsyncValue.data(updated);
-  }
+  });
 
   /// Starts a fresh sale, discarding the currently-held one from view (it
   /// stays open server-side and reachable from the selector) — "start a new
@@ -175,7 +192,11 @@ class PosSaleController extends _$PosSaleController {
   /// Returns the register to its empty state rather than opening a draft —
   /// a cashier who finishes a sale and walks away leaves nothing behind. The
   /// next scan opens the next sale.
+  ///
+  /// Resets [pendingWritesProvider] for this scope, for the same reason
+  /// [load] does (spec 031 research R2).
   Future<void> startNew() async {
+    ref.read(pendingWritesProvider(posWritesScope).notifier).reset();
     state = const AsyncValue.data(null);
   }
 }

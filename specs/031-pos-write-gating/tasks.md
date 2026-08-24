@@ -38,17 +38,17 @@ Single Flutter project. `lib/` for source, `test/` for tests — no `src/`/
 **Purpose**: The five l10n keys the unconfirmed-changes dialog needs, built
 and parity-checked before any widget references them.
 
-- [ ] T001 [P] Add `posUnconfirmedChangesTitle` ("Cambios sin confirmar"),
+- [X] T001 [P] Add `posUnconfirmedChangesTitle` ("Cambios sin confirmar"),
   `posUnconfirmedChangesBody` ("Hay valores escritos que no se han
   confirmado. ¿Qué deseas hacer?"), `posUnconfirmedChangesKeep` ("Conservar"),
   `posUnconfirmedChangesDiscard` ("Descartar"), and
   `posUnconfirmedChangesKeepEditing` ("Seguir editando") to
   `lib/l10n/app_es.arb`, matching the neighbouring `posLine*`/`pos*Sheet*`
   entries' style (no placeholders on any key).
-- [ ] T002 [P] Add the same five keys, English text ("Unconfirmed changes" /
+- [X] T002 [P] Add the same five keys, English text ("Unconfirmed changes" /
   "There are typed values that were never confirmed. What would you like to
   do?" / "Keep" / "Discard" / "Keep editing"), to `lib/l10n/app_en.arb`.
-- [ ] T003 Run `flutter gen-l10n` and confirm
+- [X] T003 Run `flutter gen-l10n` and confirm
   `test/unit/core/l10n_parity_test.dart` passes with all five new keys present
   in both locales (depends on T001, T002).
 
@@ -66,7 +66,7 @@ below is reachable until this phase is green.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T004 Create `lib/core/async/critical_action_guard.dart` with
+- [X] T004 Create `lib/core/async/critical_action_guard.dart` with
   `pendingWritesProvider` (`@Riverpod(keepAlive: true)`, family keyed by an
   opaque `String` scope): `int` state starting at 0, `Future<T>
   track<T>(Future<T> Function())` (increment, run, decrement in `finally`,
@@ -74,14 +74,14 @@ below is reachable until this phase is green.
   token)` (idempotent — a token released twice is a no-op, never negative —
   research R2), and `void reset()` (drops to zero; asserts in debug when the
   dropped count was non-zero — research R2, Complexity Tracking).
-- [ ] T005 Add `unconfirmedEditsProvider` (same file, same `keepAlive`
+- [X] T005 Add `unconfirmedEditsProvider` (same file, same `keepAlive`
   family pattern) holding `List<UnconfirmedEdit>` per scope, where
   `UnconfirmedEdit` is `({Object id, String text, Future<bool> Function()
   confirm, void Function() discard})`; `void put(UnconfirmedEdit edit)` (add or
   replace by `id`) and `void remove(Object id)` (depends on T004, same file).
-- [ ] T006 Run `dart run build_runner build --delete-conflicting-outputs` to
+- [X] T006 Run `dart run build_runner build --delete-conflicting-outputs` to
   generate `lib/core/async/critical_action_guard.g.dart` (depends on T005).
-- [ ] T007 [P] Unit tests in `test/unit/core/critical_action_guard_test.dart`:
+- [X] T007 [P] Unit tests in `test/unit/core/critical_action_guard_test.dart`:
   two concurrent `track` calls → count 2, first settles → 1, second → 0; a
   `track`ed action that throws → count returns to 0 and the error still
   reaches the caller; `begin`/`end`/`end`-again → 1, 0, 0; a `track`ed write's
@@ -91,7 +91,7 @@ below is reachable until this phase is green.
   (`expect(() => ..., throwsAssertionError)` or equivalent); `put`/`put`(same
   `id`)/`remove` → one entry, replaced, then none; two distinct scope strings
   count independently (depends on T006).
-- [ ] T008 Create `lib/core/widgets/confirmable_text_field.dart` with
+- [X] T008 Create `lib/core/widgets/confirmable_text_field.dart` with
   `ConfirmableFieldController extends ChangeNotifier`: constructor taking
   `{required String value, required String? Function(String) parse, required
   Future<bool> Function(String) commit}`; `_accepted`, `_typed`, `_resetTick`;
@@ -105,7 +105,7 @@ below is reachable until this phase is green.
   discard+`resetTick++` — FR-018; same value → no-op on the typed text).
   Register/deregister with `unconfirmedEditsProvider` on every transition into
   and out of "has unconfirmed text" (data-model.md §2).
-- [ ] T009 Add `ConfirmableTextField` (`ConsumerStatefulWidget`) to the same
+- [X] T009 Add `ConfirmableTextField` (`ConsumerStatefulWidget`) to the same
   file: a `TextField` wrapped in the 250 ms cross-fade-and-tint (`peak` driven
   off `resetTick`, `Color.lerp(transparent, colorScheme.errorContainer,
   peak)`, swap landing at `peak >= 0.5`), reduced-motion fallback (swap at
@@ -115,7 +115,7 @@ below is reachable until this phase is green.
   `_QuantityStepperState._animatedField` in
   `lib/features/sales/presentation/widgets/quantity_stepper.dart` (depends on
   T008).
-- [ ] T010 [P] Widget tests in `test/widget/core/confirmable_text_field_test.dart`:
+- [X] T010 [P] Widget tests in `test/widget/core/confirmable_text_field_test.dart`:
   Enter confirms (one `commit` call, no reset animation); focus loss discards
   (no `commit`, field shows accepted value, `resetTick` bumped); unparseable
   text + Enter → no `commit`, reset plays; `commit` → `false` → field
@@ -127,7 +127,7 @@ below is reachable until this phase is green.
   while dirty and none after confirm/discard/dispose; the wrapper adds no
   insets (`tester.getSize` identical with and without pending `resetTick`
   activity) (depends on T009).
-- [ ] T011 Refactor `QuantityStepperController` in
+- [X] T011 Refactor `QuantityStepperController` in
   `lib/features/sales/presentation/widgets/quantity_stepper.dart` to `extends
   ConfirmableFieldController`, passing `parse: (t) => tryParseAmount(t)` and a
   `commit` that funnels through the existing debounce (`_pending`,
@@ -141,14 +141,14 @@ below is reachable until this phase is green.
   research R2) — the controller takes the scope string as a constructor
   parameter so it stays sale-agnostic in principle even though only
   `posWritesScope` is passed today.
-- [ ] T012 Update `QuantityStepper` (same file) to compose the new
+- [X] T012 Update `QuantityStepper` (same file) to compose the new
   `ConfirmableTextField` between its −/+ buttons in both the pill skin and the
   field skin, deleting `_QuantityStepperState`'s now-duplicated
   `_animatedField`/reset-animation code (superseded by T009) while keeping
   `_pillSkin`/`_fieldSkin`/`_pillButton`/`_fieldButton` and every existing
   constructor parameter (`decoration`, `textStyle`, `dense`, tooltips)
   unchanged (depends on T011).
-- [ ] T013 Verify `test/unit/features/sales/quantity_stepper_controller_test.dart`,
+- [X] T013 Verify `test/unit/features/sales/quantity_stepper_controller_test.dart`,
   `test/widget/features/sales/quantity_stepper_widget_test.dart`,
   `test/widget/features/sales/sale_line_symmetry_test.dart`, and
   `flutter test test/golden/` (specifically
@@ -157,11 +157,11 @@ below is reachable until this phase is green.
   after T011/T012 — no edits to these files, no re-baselined goldens (research
   R8; a failure here means the extraction leaked into behaviour or pixels and
   must be fixed in T011/T012, not worked around here) (depends on T012).
-- [ ] T014 [P] Create `lib/features/sales/presentation/pos_write_scope.dart`
+- [X] T014 [P] Create `lib/features/sales/presentation/pos_write_scope.dart`
   exporting `const posWritesScope = 'pos-sale';` with a doc comment noting it
   is the only sales-specific line in this feature's core-adjacent wiring
   (FR-011).
-- [ ] T015 Remove `writeInFlight` from `PosStepState` (field, `copyWith`
+- [X] T015 Remove `writeInFlight` from `PosStepState` (field, `copyWith`
   parameter) and remove `PosStepController.setWriteInFlight` in
   `lib/features/sales/presentation/pos_step_controller.dart`; remove the two
   assertions in `test/unit/features/sales/pos_step_controller_test.dart` that
@@ -192,7 +192,7 @@ until both settle.
 
 > Written first; confirmed failing before the implementation tasks below.
 
-- [ ] T016 [P] [US1] Widget tests in
+- [X] T016 [P] [US1] Widget tests in
   `test/widget/features/sales/pos_write_gating_test.dart` (new file, built on
   `pos_test_harness.dart`'s `pumpPos`/`testSale`/`MockSalesOrderRepository`
   pattern): pump `CaptureStep` with a `MockSalesOrderRepository` whose
@@ -203,19 +203,19 @@ until both settle.
   assert the button re-enables rather than staying disabled (SC-003); resolve
   two overlapping `updateLine` calls (two lines) and assert the button stays
   disabled until the second settles (SC-004).
-- [ ] T017 [P] [US1] Widget test, same file: step a line's quantity via
+- [X] T017 [P] [US1] Widget test, same file: step a line's quantity via
   `QuantityStepper` (tap `+`) and press the continue button before the ~400 ms
   debounce fires; assert the sale does not advance and the button stays
   disabled until the coalesced write lands (FR-004, contracts/pos-step-gates.md
   §4 "Coalescing window").
-- [ ] T018 [P] [US1] Widget test, same file: during an outstanding line write,
+- [X] T018 [P] [US1] Widget test, same file: during an outstanding line write,
   assert the warehouse picker, the tax picker, and the quantity stepper on
   *other* lines remain enabled and responsive (FR-009, SC-005 — the freeze
   spec 030 removed must not come back).
 
 ### Implementation for User Story 1
 
-- [ ] T019 [US1] In `lib/features/sales/presentation/pos_sale_controller.dart`,
+- [X] T019 [US1] In `lib/features/sales/presentation/pos_sale_controller.dart`,
   wrap the bodies of `updateHeader`, `addLine`, `updateLine`, `removeLine`, and
   `confirm` in `ref.read(criticalActionGuardProvider...).track(...)` (or the
   equivalent generated accessor) keyed on `posWritesScope`, with the guard's
@@ -224,11 +224,11 @@ until both settle.
   after publish). Add `ref.read(pendingWritesProvider(posWritesScope).notifier)
   .reset()` at the top of `startNew()` and at the top of `load()` (depends on
   T004, T014).
-- [ ] T020 [US1] In `lib/features/sales/presentation/capture/capture_step.dart`,
+- [X] T020 [US1] In `lib/features/sales/presentation/capture/capture_step.dart`,
   add `ref.watch(pendingWritesProvider(posWritesScope)) == 0` to the existing
   `onContinue` condition (alongside `enabled`, `lineCount > 0`, `!_confirming`)
   so the continue action is additionally gated (depends on T019).
-- [ ] T021 [US1] Run T016–T018 and confirm they pass; run
+- [X] T021 [US1] Run T016–T018 and confirm they pass; run
   `test/widget/features/sales/sale_totals_bar_test.dart`,
   `capture_step`-covering tests, and `flutter test test/golden/` to confirm no
   regression on the surfaces touched (depends on T020).
@@ -254,7 +254,7 @@ with the acknowledgement.
 
 > Written first; confirmed failing before the implementation tasks below.
 
-- [ ] T022 [P] [US2] Widget tests in
+- [X] T022 [P] [US2] Widget tests in
   `test/widget/features/sales/sale_line_discount_test.dart` (new file):
   pump `SaleLineRow` (wide layout) with a line at 0% discount; type `15`,
   tap away to the warehouse picker (no Enter) — assert the discount field
@@ -266,10 +266,10 @@ with the acknowledgement.
   Enter — assert no call and the reset plays; stub `updateLine` to throw and
   confirm the field restores with the reset playing rather than the prior
   silent `syncFields()` rewrite (FR-017).
-- [ ] T023 [P] [US2] Widget test, same file, compact tier: repeat the
+- [X] T023 [P] [US2] Widget test, same file, compact tier: repeat the
   Enter-confirms / focus-loss-discards pair against `SaleLineCard` at a narrow
   width (FR-013's "both layouts").
-- [ ] T024 [P] [US2] Extend
+- [X] T024 [P] [US2] Extend
   `test/widget/features/sales/sale_line_symmetry_test.dart` (or confirm
   unchanged) to assert the discount field's measured height/baseline in the
   control band is identical before and after this feature — no regression to
@@ -277,7 +277,7 @@ with the acknowledgement.
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] In
+- [X] T025 [US2] In
   `lib/features/sales/presentation/capture/sale_line_editing.dart`, replace
   `discountField` (a bare `TextEditingController`) with a
   `ConfirmableFieldController` instance: `parse:
@@ -288,17 +288,17 @@ with the acknowledgement.
   `syncFields()` to call the new controller's `sync(value: ...)` instead of
   setting `.text` directly; update `dispose()` to dispose it (depends on T008,
   T014 for the scope constant used by the registry).
-- [ ] T026 [US2] In `lib/features/sales/presentation/capture/sale_line_row.dart`,
+- [X] T026 [US2] In `lib/features/sales/presentation/capture/sale_line_row.dart`,
   replace the `_rateField`-rendered discount `TextField` with
   `ConfirmableTextField(controller: discountField, decoration:
   _fieldDecoration(l10n.posLineDiscountLabel), style: _fieldStyle, enabled:
   enabled)`, keeping the surrounding `_band`/width/padding exactly as they are
   (FR-021).
-- [ ] T027 [US2] In
+- [X] T027 [US2] In
   `lib/features/sales/presentation/capture/sale_line_card.dart`, replace the
   discount `TextField` (inside the `Row` beside the tax picker) with the same
   `ConfirmableTextField` wiring, keeping its `Expanded` sizing unchanged.
-- [ ] T028 [US2] Run T022–T024 and confirm they pass; run
+- [X] T028 [US2] Run T022–T024 and confirm they pass; run
   `test/widget/features/sales/sale_line_row_test.dart` and
   `flutter test test/golden/` to confirm `pos_sale_line_*` still passes
   unchanged (depends on T027).
@@ -324,7 +324,7 @@ and press continue, and confirm no dialog appears.
 
 > Written first; confirmed failing before the implementation tasks below.
 
-- [ ] T029 [P] [US3] Widget tests in
+- [X] T029 [P] [US3] Widget tests in
   `test/widget/features/sales/unconfirmed_changes_test.dart` (new file): type
   an unconfirmed discount and press continue — assert the sale does not
   advance and a dialog with the five l10n strings from T001–T003 appears;
@@ -338,7 +338,7 @@ and press continue, and confirm no dialog appears.
   press continue — assert **no** dialog is ever pumped (SC-013); with two
   lines both carrying unconfirmed discounts, press continue — assert exactly
   one dialog and that choosing **keep** commits both (FR-030).
-- [ ] T030 [P] [US3] Widget test, same file: focused on the premise research
+- [X] T030 [P] [US3] Widget test, same file: focused on the premise research
   R4 measured — type into the discount field, press the continue button, and
   assert (inside a hook exposed by the test, e.g. by inspecting
   `FocusManager.instance.primaryFocus` or the controller's own
@@ -348,7 +348,7 @@ and press continue, and confirm no dialog appears.
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Create
+- [X] T031 [US3] Create
   `lib/features/sales/presentation/widgets/unconfirmed_changes_dialog.dart`:
   a function `Future<UnconfirmedChangesAnswer?> showUnconfirmedChangesDialog
   (BuildContext context)` returning an `enum UnconfirmedChangesAnswer { keep,
@@ -359,7 +359,7 @@ and press continue, and confirm no dialog appears.
   pops keep)])`, with the dialog's own `PopScope`/back-button handling mapping
   to `keepEditing` (research R11 — an unanswerable dismissal is the answer
   that changes nothing).
-- [ ] T032 [US3] In `lib/features/sales/presentation/capture/capture_step.dart`,
+- [X] T032 [US3] In `lib/features/sales/presentation/capture/capture_step.dart`,
   change `_confirm`'s entry (or add a wrapper the continue button calls) to:
   read `ref.read(unconfirmedEditsProvider(posWritesScope))`; if empty, proceed
   exactly as today; if non-empty, call
@@ -369,7 +369,7 @@ and press continue, and confirm no dialog appears.
   own `commit` already restored and surfaced the refusal per T025's `commit`
   shape); `discard` → call every entry's `discard()`, then proceed; `null`/
   `keepEditing` → return without proceeding (depends on T031, T020, T005).
-- [ ] T033 [US3] Run T029–T030 and confirm they pass; run T016–T018 (US1)
+- [X] T033 [US3] Run T029–T030 and confirm they pass; run T016–T018 (US1)
   again to confirm the new question does not interfere with the plain gate
   path when the registry is empty (depends on T032).
 
@@ -396,13 +396,13 @@ with the confirmed distribution.
 
 > Written first; confirmed failing before the implementation tasks below.
 
-- [ ] T034 [P] [US4] Widget tests in
+- [X] T034 [P] [US4] Widget tests in
   `test/widget/features/sales/pos_write_gating_test.dart` (same file as
   T016–T018): pump `PaymentStep` with a `MockCustomerPaymentRepository` whose
   `apply` (or equivalent submit call) returns a delayed future; assert the
   summary panel's FAB is disabled while pending and enabled with the resolved
   balance once it settles; repeat with a delayed `reverseApplication` call.
-- [ ] T035 [P] [US4] Widget tests, same file: pump `DeliveryStep` with a
+- [X] T035 [P] [US4] Widget tests, same file: pump `DeliveryStep` with a
   `MockDeliveryOrderRepository` (the pattern in
   `destination_assignment_test.dart`) whose `assignLine`/`addDestination`/
   `updateDestination`/`removeDestination`/`sweepRemainderToCounter` each
@@ -412,28 +412,28 @@ with the confirmed distribution.
 
 ### Implementation for User Story 4
 
-- [ ] T036 [P] [US4] In
+- [X] T036 [P] [US4] In
   `lib/features/sales/presentation/payment/payment_controller.dart`, wrap
   `submit` and `reverse` in `pendingWritesProvider(posWritesScope).notifier
   .track(...)`, ordered so `state = ...` (or the draft's success transition)
   happens before the tracked closure returns (research R6) (depends on T004,
   T014).
-- [ ] T037 [US4] In
+- [X] T037 [US4] In
   `lib/features/sales/presentation/payment/payment_summary_panel.dart`, add
   `ref.watch(pendingWritesProvider(posWritesScope)) == 0` to the FAB's
   `onPressed: canClose ? onClose : null` condition (depends on T036).
-- [ ] T038 [P] [US4] In
+- [X] T038 [P] [US4] In
   `lib/features/sales/presentation/delivery/delivery_controller.dart`, wrap
   `addDestination`, `updateDestination`, `removeDestination`, `assignLine`,
   `adjustLine`, `dropLine`, and `sweepRemainderToCounter` in the same
   `track(...)` call, same ordering rule (depends on T004, T014).
-- [ ] T039 [US4] In
+- [X] T039 [US4] In
   `lib/features/sales/presentation/delivery/delivery_step.dart`, add
   `ref.watch(pendingWritesProvider(posWritesScope)) == 0` to both
   `LineDistributionFoot.onClose` conditions (the wide-tier and narrow-tier
   render paths, both currently `(complete && !_closing) ? () => _close(...) :
   null`) (depends on T038).
-- [ ] T040 [US4] Run T034–T035 and confirm they pass; run
+- [X] T040 [US4] Run T034–T035 and confirm they pass; run
   `test/widget/features/sales/payment_step_gate_test.dart`,
   `test/widget/features/sales/destination_assignment_test.dart`,
   `test/widget/features/sales/line_distribution_rail_test.dart`, and
@@ -455,7 +455,7 @@ unconfirmed-edits registry against a scope and a fake async operation with no
 
 ### Tests for User Story 5
 
-- [ ] T041 [P] [US5] Add a test to
+- [X] T041 [P] [US5] Add a test to
   `test/unit/core/critical_action_guard_test.dart` (extending T007's file): a
   fixture representing an unrelated critical action — e.g. a fake "apply
   profile" operation styled after
@@ -466,7 +466,7 @@ unconfirmed-edits registry against a scope and a fake async operation with no
 
 ### Implementation for User Story 5
 
-- [ ] T042 [US5] No production code — this story is verification-only.
+- [X] T042 [US5] No production code — this story is verification-only.
   Confirm (by reading the diff, not by adding code) that
   `lib/core/async/critical_action_guard.dart` imports nothing from
   `lib/features/`, matching the existing `layering_test.dart`'s spirit; if
@@ -482,17 +482,17 @@ unconfirmed-edits registry against a scope and a fake async operation with no
 **Purpose**: The full-suite and live-backend passes the quickstart calls for,
 plus the one dead reference cleanup FR-010 requires be visible in the diff.
 
-- [ ] T043 [P] Run `flutter analyze` and fix any warning introduced by this
+- [X] T043 [P] Run `flutter analyze` and fix any warning introduced by this
   feature (no pre-existing warning is in scope to fix).
-- [ ] T044 Run the full suite — `flutter test` — and confirm it is green,
+- [X] T044 Run the full suite — `flutter test` — and confirm it is green,
   including every "must stay green unchanged" file listed in
   [quickstart.md §1](./quickstart.md).
-- [ ] T045 Follow [quickstart.md §5](./quickstart.md) against a live mbe-api
+- [X] T045 Follow [quickstart.md §5](./quickstart.md) against a live mbe-api
   (network throttled): the reported issue #164 sequence on all three steps,
   the coalescing-window race, a forced refusal on each step, and a burst on
   the capture stepper still producing one `PUT` (spec 030's guarantee,
   unshaken by the new hold).
-- [ ] T046 Grep the repository for `writeInFlight` and confirm zero
+- [X] T046 Grep the repository for `writeInFlight` and confirm zero
   remaining references outside git history (FR-010's "no two competing
   mechanisms", verified rather than assumed).
 

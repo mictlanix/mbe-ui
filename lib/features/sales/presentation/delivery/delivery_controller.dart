@@ -1,11 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 
 part 'delivery_controller.g.dart';
 
@@ -66,6 +68,15 @@ class DeliveryController extends _$DeliveryController {
     );
   }
 
+  /// Registers this call in [pendingWritesProvider] for the whole of
+  /// [action] — including [action]'s own state-publishing, which must
+  /// happen *before* [action] returns so the count only reaches zero once
+  /// the distribution a gated step reads is already the sale's own (spec
+  /// 031 FR-003, research R6). Every mutating method below routes through
+  /// this.
+  Future<T> _tracked<T>(Future<T> Function() action) =>
+      ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
+
   /// Records one addressed destination from its header alone (FR-027) — an
   /// explicit empty `lines: const []`, never omitted (mbe-api#165, research
   /// R14): omitting `lines` claims everything the sale still owes, which is
@@ -77,7 +88,7 @@ class DeliveryController extends _$DeliveryController {
     int? contact,
     DateTime? date,
     String? comment,
-  }) async {
+  }) => _tracked(() async {
     final created = await ref
         .read(deliveryOrderRepositoryProvider)
         .create(
@@ -93,7 +104,7 @@ class DeliveryController extends _$DeliveryController {
     final labelled = await _labelled(created);
     state = AsyncData([...?state.valueOrNull, labelled]);
     return labelled;
-  }
+  });
 
   /// Edits an already-created destination's header (spec 030 FR-017…FR-022)
   /// through the endpoint spec 026 already exposed on
@@ -112,7 +123,7 @@ class DeliveryController extends _$DeliveryController {
     int? contact,
     DateTime? date,
     String? comment,
-  }) async {
+  }) => _tracked(() async {
     final updated = await ref
         .read(deliveryOrderRepositoryProvider)
         .updateHeader(
@@ -123,13 +134,13 @@ class DeliveryController extends _$DeliveryController {
           comment: comment,
         );
     return _replace(updated);
-  }
+  });
 
   /// FR-036 — sweeps whatever is left into a counter-pickup destination.
   /// `lines` is deliberately omitted: that claims everything the sale still
   /// owes, which is exactly the remainder, computed server-side against the
   /// same figure it validates every other destination against.
-  Future<Destination> sweepRemainderToCounter() async {
+  Future<Destination> sweepRemainderToCounter() => _tracked(() async {
     final created = await ref
         .read(deliveryOrderRepositoryProvider)
         .create(
@@ -139,20 +150,21 @@ class DeliveryController extends _$DeliveryController {
 
     state = AsyncData([...?state.valueOrNull, created]);
     return created;
-  }
+  });
 
   /// Undoes a destination the cashier changed their mind about, releasing the
   /// quantities it held back to the pool.
-  Future<void> removeDestination(int destinationId, {required String reason}) async {
-    await ref
-        .read(deliveryOrderRepositoryProvider)
-        .cancel(destinationId: destinationId, reason: reason);
+  Future<void> removeDestination(int destinationId, {required String reason}) =>
+      _tracked(() async {
+        await ref
+            .read(deliveryOrderRepositoryProvider)
+            .cancel(destinationId: destinationId, reason: reason);
 
-    state = AsyncData([
-      for (final destination in state.valueOrNull ?? const <Destination>[])
-        if (destination.id != destinationId) destination,
-    ]);
-  }
+        state = AsyncData([
+          for (final destination in state.valueOrNull ?? const <Destination>[])
+            if (destination.id != destinationId) destination,
+        ]);
+      });
 
   /// The distribution as it stands, optionally including the destination
   /// being edited but not yet submitted (FR-033).
@@ -174,7 +186,7 @@ class DeliveryController extends _$DeliveryController {
     required int destinationId,
     required int saleLineId,
     required String quantity,
-  }) async {
+  }) => _tracked(() async {
     final updated = await ref
         .read(deliveryOrderRepositoryProvider)
         .addLine(
@@ -183,7 +195,7 @@ class DeliveryController extends _$DeliveryController {
           quantity: quantity,
         );
     return _replace(updated);
-  }
+  });
 
   /// Adjusts a line the destination already carries (`lineId` is the
   /// destination's own line id, not the sale line's).
@@ -191,12 +203,12 @@ class DeliveryController extends _$DeliveryController {
     required int destinationId,
     required int lineId,
     required String quantity,
-  }) async {
+  }) => _tracked(() async {
     final updated = await ref
         .read(deliveryOrderRepositoryProvider)
         .updateLine(destinationId: destinationId, lineId: lineId, quantity: quantity);
     return _replace(updated);
-  }
+  });
 
   /// Takes a line's quantity to zero (FR-022) — a real delete, not an update
   /// to `'0'`, since neither `addLine` nor `updateLine` accepts a
@@ -204,12 +216,12 @@ class DeliveryController extends _$DeliveryController {
   Future<Destination> dropLine({
     required int destinationId,
     required int lineId,
-  }) async {
+  }) => _tracked(() async {
     final updated = await ref
         .read(deliveryOrderRepositoryProvider)
         .removeLine(destinationId: destinationId, lineId: lineId);
     return _replace(updated);
-  }
+  });
 
   /// Re-joins the server's response (which carries no address/contact
   /// labels of its own) and replaces that one destination in [state] —
