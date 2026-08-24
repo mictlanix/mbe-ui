@@ -1,0 +1,121 @@
+{
+  "workflow": "speckit",
+  "specName": "pos write gating",
+  "branch": "031-pos-write-gating",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-24T00:55:50.906Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-24T01:00:35.581Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Maintain one signal per sale expressing whether any change to it is outstanding"
+    },
+    "FR-002": {
+      "title": "Signal counts concurrent writes rather than holding a single yes/no"
+    },
+    "FR-003": {
+      "title": "Every sale-changing operation registers in the signal while outstanding"
+    },
+    "FR-004": {
+      "title": "A confirmed change still waiting out a coalescing window counts as outstanding or is sent first"
+    },
+    "FR-005": {
+      "title": "Unconfirmed typed text never counts as outstanding"
+    },
+    "FR-006": {
+      "title": "Signal clears when a write settles, success or failure — no permanent lockout"
+    },
+    "FR-007": {
+      "title": "Each step's primary action unavailable while the signal reports outstanding"
+    },
+    "FR-008": {
+      "title": "Unavailability is visible on the action, reusing its existing busy treatment"
+    },
+    "FR-009": {
+      "title": "Gate does not extend to the rest of the surface — lines stay editable"
+    },
+    "FR-010": {
+      "title": "Exactly one mechanism expresses write-outstanding; the unused flag is wired or removed"
+    },
+    "FR-011": {
+      "title": "Mechanism is adoptable outside POS and coexists with per-form submitting flags"
+    },
+    "FR-012": {
+      "title": "Registering a write does not change what it does or how refusals surface"
+    },
+    "FR-013": {
+      "title": "Discount field text is confirmed only by pressing Enter, both layouts"
+    },
+    "FR-014": {
+      "title": "Focus loss or teardown discards unconfirmed discount text and restores the line's value"
+    },
+    "FR-015": {
+      "title": "A discard is acknowledged with the quantity field's cross-fade and colour pulse"
+    },
+    "FR-016": {
+      "title": "Unreadable discount text is discarded with the acknowledgement and never sent"
+    },
+    "FR-017": {
+      "title": "A refused discount restores visibly instead of being rewritten silently"
+    },
+    "FR-018": {
+      "title": "Unconfirmed text loses when the line changes underneath"
+    },
+    "FR-019": {
+      "title": "A confirmed discount edit registers in the signal and keeps its current line behaviour"
+    },
+    "FR-020": {
+      "title": "The confirm-or-discard rule and its acknowledgement exist in one shared place"
+    },
+    "FR-021": {
+      "title": "Adopting the rule does not change the discount field's appearance or the band's layout"
+    },
+    "FR-022": {
+      "title": "Every editable POS sale field is either covered by the rule or recorded as excluded with a reason"
+    },
+    "FR-023": {
+      "title": "Fields holding no server value are left unchanged"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 14,
+    "projectedTasks": 22,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "context": [
+    "issue: mictlanix/mbe-ui#164 — step continue actions pressable while a line write is in flight",
+    "area: lib/features/sales/presentation (capture, payment, delivery steps + pos_sale_controller, pos_step_controller, delivery_controller, payment_controller)",
+    "area: lib/features/sales/presentation/widgets/quantity_stepper.dart — spec 030's confirm-or-discard rule and reset animation to be generalized",
+    "constraint: spec 030 FR-004 — the quantity control stays live through its own writes; the new gate must not regress it",
+    "constraint: no mbe-api change, no codegen, no new dependency",
+    "audit: POS sale fields — discount in scope; price read-only, tax picker, payment amount (draft+explicit apply), destination editor form, reversal reason, product search, cash-session forms excluded"
+  ],
+  "intent": "No POS step may be left while a change to the sale is still outstanding, and no field may keep showing text the sale does not hold.",
+  "expectations": [
+    "Converting existing per-form submitting flags (cash-session forms, inline customer form, destination editor) to the new mechanism",
+    "Adopting the mechanism on any screen outside point of sale",
+    "Making the line price writable or returning tax to a typed field",
+    "Giving the discount field a stepper, a debounce, or any commit path other than Enter",
+    "Locally computed totals while a write is outstanding",
+    "Queueing, retrying or persisting failed writes",
+    "Changing the conditions that already gate each step's action, or how refusals are surfaced",
+    "A global busy overlay over the register"
+  ]
+}
