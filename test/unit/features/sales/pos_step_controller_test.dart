@@ -103,26 +103,16 @@ void main() {
     });
   });
 
-  test('setWriteInFlight toggles the flag', () {
-    final n = notifier();
-    n.setWriteInFlight(true);
-    expect(container.read(posStepControllerProvider).writeInFlight, isTrue);
-    n.setWriteInFlight(false);
-    expect(container.read(posStepControllerProvider).writeInFlight, isFalse);
-  });
-
-  test('reset returns to Venta, counter pickup, nothing in flight — what a '
-      'genuinely new sale starts from (regression: a finished delivery/mixed '
-      'sale left its mode selected on the next one)', () {
+  test('reset returns to Venta, counter pickup — what a genuinely new sale '
+      'starts from (regression: a finished delivery/mixed sale left its mode '
+      'selected on the next one)', () {
     final n = notifier();
     n.jumpTo(PosStep.entrega, mode: FulfillmentMode.mixed);
-    n.setWriteInFlight(true);
 
     n.reset();
 
     final state = container.read(posStepControllerProvider);
     expect(state.current, PosStep.venta);
     expect(state.mode, FulfillmentMode.counterPickup);
-    expect(state.writeInFlight, isFalse);
   });
 }

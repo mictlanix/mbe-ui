@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
@@ -8,6 +9,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The money block and the step's exit action, read together (spec 025
@@ -47,12 +49,18 @@ class PaymentSummaryPanel extends ConsumerWidget {
     // only on the sale's own balance and terms, not on draft state.
     ref.watch(paymentControllerProvider);
     final change = ref.read(paymentControllerProvider.notifier).changeFor(sale.balance);
-    final canClose = ref
-        .read(posStepControllerProvider.notifier)
-        .canLeavePayment(
-          balance: sale.balance,
-          isCreditTerms: sale.paymentTerms == PaymentTerms.netD,
-        );
+    // spec 031 FR-007: additional to the balance/terms gate below, not
+    // instead of it — a payment (or a reversal) still applying must not let
+    // the cashier continue on a balance that is about to change.
+    final writesPending = ref.watch(pendingWritesProvider(posWritesScope)) > 0;
+    final canClose =
+        !writesPending &&
+        ref
+            .read(posStepControllerProvider.notifier)
+            .canLeavePayment(
+              balance: sale.balance,
+              isCreditTerms: sale.paymentTerms == PaymentTerms.netD,
+            );
     final paid = subtractAmounts(sale.total, sale.balance);
     final balanceOutstanding = !isZeroAmount(sale.balance);
 

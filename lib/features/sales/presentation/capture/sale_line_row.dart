@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
@@ -266,19 +267,23 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         ),
       );
 
+  /// [ConfirmableTextField] wires its own commit/discard path from
+  /// [controller] (spec 031 FR-013…FR-018) — this only supplies the same
+  /// look every field in the band shares (FR-038a).
   Widget _rateField({
-    required TextEditingController controller,
+    required ConfirmableFieldController controller,
     required bool enabled,
     required String label,
-    required ValueChanged<String> onSubmitted,
-  }) => TextField(
+    Key? fieldKey,
+  }) => ConfirmableTextField(
     controller: controller,
+    fieldKey: fieldKey,
     enabled: enabled,
     textAlign: TextAlign.end,
     style: _fieldStyle,
     keyboardType: const TextInputType.numberWithOptions(decimal: true),
     decoration: _fieldDecoration(label),
-    onSubmitted: onSubmitted,
+    format: (wire) => ref.read(formattersProvider).field.rate(wire),
   );
 
   /// A control sized to the band: [width] wide, [saleLineFieldHeight] tall,
@@ -361,7 +366,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
               controller: discountField,
               enabled: enabled,
               label: l10n.posLineDiscountLabel,
-              onSubmitted: (v) => updateRate(discountRate: v),
+              fieldKey: Key('sale_line_discount_${line.id}'),
             ),
           ),
           gap,
@@ -423,7 +428,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                   controller: discountField,
                   enabled: enabled,
                   label: l10n.posLineDiscountLabel,
-                  onSubmitted: (v) => updateRate(discountRate: v),
+                  fieldKey: Key('sale_line_discount_${line.id}'),
                 ),
               ),
               gap,

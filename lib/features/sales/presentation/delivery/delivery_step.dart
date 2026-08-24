@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -17,6 +18,7 @@ import 'package:mbe_ui/features/sales/presentation/delivery/destination_card.dar
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_counter_row.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/line_distribution_panel.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The Entrega step (contracts/pos-screen.md §3, spec 026
@@ -250,6 +252,11 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
             .read(deliveryControllerProvider(widget.sale).notifier)
             .distribution();
         final complete = isDistributionComplete(distribution, isMixed: _isMixed);
+        // spec 031 FR-007: additional to `complete`/`_closing`, not instead
+        // of them — an assignment or a destination write still outstanding
+        // must not let the cashier finish on a distribution that is about
+        // to change.
+        final writesPending = ref.watch(pendingWritesProvider(posWritesScope)) > 0;
         final outstanding = distribution
             .where((d) => !d.isFullyDistributed)
             .toList();
@@ -384,7 +391,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                       assigned: assignedUnits,
                       total: totalUnits,
                       outstandingMessage: outstandingMessage,
-                      onClose: (complete && !_closing)
+                      onClose: (complete && !_closing && !writesPending)
                           ? () => _close(distribution)
                           : null,
                       closing: _closing,
@@ -427,7 +434,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
               assigned: assignedUnits,
               total: totalUnits,
               outstandingMessage: outstandingMessage,
-              onClose: (complete && !_closing) ? () => _close(distribution) : null,
+              onClose: (complete && !_closing && !writesPending) ? () => _close(distribution) : null,
               closing: _closing,
               onSweepAndClose: outstandingMessage == null
                   ? null
