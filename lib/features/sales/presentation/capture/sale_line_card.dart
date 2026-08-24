@@ -22,11 +22,18 @@ class SaleLineCard extends ConsumerStatefulWidget {
     required this.line,
     required this.facilityId,
     this.enabled = true,
+    this.showComment = false,
   });
 
   final SaleLine line;
   final int facilityId;
   final bool enabled;
+
+  /// Renders an editable per-line comment beneath the card (spec 029
+  /// FR-020). `false` (the default) leaves the register's layout exactly as
+  /// it was before this feature — only the back-office order screen passes
+  /// `true`.
+  final bool showComment;
 
   @override
   ConsumerState<SaleLineCard> createState() => _SaleLineCardState();
@@ -46,7 +53,16 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
   @override
   void didUpdateWidget(covariant SaleLineCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.line != widget.line) syncFields();
+    if (oldWidget.line != widget.line) {
+      syncFields();
+      if (widget.showComment) commentField.sync(value: line.comment ?? '');
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.showComment) commentField.dispose();
+    super.dispose();
   }
 
   @override
@@ -204,6 +220,13 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                       child: Text(l10n.posLineAdjustToAvailable),
                     ),
                 ],
+              ),
+            if (widget.showComment)
+              ConfirmableTextField(
+                controller: commentField,
+                enabled: enabled,
+                fieldKey: Key('sale_line_comment_${line.id}'),
+                decoration: InputDecoration(labelText: l10n.salesOrderCommentLabel),
               ),
           ],
         ),

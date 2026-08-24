@@ -2369,6 +2369,137 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posMenuTitle => 'Point of Sale';
 
   @override
+  String get salesOrdersMenuTitle => 'Sales Orders';
+
+  @override
+  String get salesOrdersScreenTitle => 'Sales Orders';
+
+  @override
+  String get salesOrderNewAction => 'New order';
+
+  @override
+  String get salesOrdersColumnReference => 'Reference';
+
+  @override
+  String get salesOrdersColumnDate => 'Date';
+
+  @override
+  String get salesOrdersColumnCustomer => 'Customer';
+
+  @override
+  String get salesOrdersColumnStatus => 'Status';
+
+  @override
+  String get salesOrdersColumnTotal => 'Total';
+
+  @override
+  String get salesOrdersColumnBalance => 'Balance';
+
+  @override
+  String get salesOrdersSearchLabel => 'Search orders';
+
+  @override
+  String get salesOrderReferenceLabel => 'Reference';
+
+  @override
+  String get salesOrderStatusLabel => 'Status';
+
+  @override
+  String get salesOrderDateLabel => 'Date';
+
+  @override
+  String get salesOrderDueDateLabel => 'Due date';
+
+  @override
+  String get salesOrderExchangeRateLabel => 'Exchange rate';
+
+  @override
+  String get salesOrderPaymentTermsLabel => 'Payment terms';
+
+  @override
+  String get salesOrderPromiseDateLabel => 'Promise date';
+
+  @override
+  String get salesOrderCurrencyLabel => 'Currency';
+
+  @override
+  String get salesOrderPriorityLabel => 'Priority';
+
+  @override
+  String get salesOrderSalespersonLabel => 'Salesperson';
+
+  @override
+  String get salesOrderContactLabel => 'Contact';
+
+  @override
+  String get salesOrderShipToLabel => 'Delivery details';
+
+  @override
+  String get salesOrderRecipientLabel => 'Tax ID';
+
+  @override
+  String get salesOrderCommentLabel => 'Comment';
+
+  @override
+  String get salesOrderPriorityLow => 'Low';
+
+  @override
+  String get salesOrderPriorityNormal => 'Normal';
+
+  @override
+  String get salesOrderPriorityHigh => 'High';
+
+  @override
+  String get salesOrderPriorityCritical => 'Critical';
+
+  @override
+  String get salesOrderNoRegisterTitle => 'No point of sale configured';
+
+  @override
+  String get salesOrderNoRegisterMessage =>
+      'Your account has no point of sale assigned, so you cannot create new orders. Ask your administrator to configure one on your user.';
+
+  @override
+  String get salesOrderNoFacilityTitle => 'No facility configured';
+
+  @override
+  String get salesOrderNoFacilityMessage =>
+      'Your account has no facility assigned, so orders cannot be listed. Ask your administrator to configure one on your user.';
+
+  @override
+  String get salesOrderConfirmAction => 'Confirm order';
+
+  @override
+  String get salesOrderNoLinesYet =>
+      'Add at least one product before confirming the order.';
+
+  @override
+  String get salesOrdersEmptyMessage => 'No orders yet in this period.';
+
+  @override
+  String get salesOrderCancelAction => 'Cancel order';
+
+  @override
+  String get salesOrderCancelDialogTitle => 'Cancel this order?';
+
+  @override
+  String get salesOrderCancelDialogMessage =>
+      'This cannot be undone. The order will be marked cancelled.';
+
+  @override
+  String get salesOrderCancelDialogKeepEditing => 'Keep editing';
+
+  @override
+  String get salesOrderCancelDialogConfirm => 'Cancel order';
+
+  @override
+  String get salesOrderSalespersonEveryone => 'Everyone';
+
+  @override
+  String get salesOrderCrossFacilityNotice =>
+      'The order will be created in your own facility, regardless of the facility you are viewing.';
+
+  @override
   String get cashSessionStatusOpen => 'Open';
 
   @override

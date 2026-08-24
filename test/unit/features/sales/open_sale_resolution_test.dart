@@ -31,6 +31,9 @@ Sale _sale({
   taxTotal: '0',
   total: '0',
   balance: '0',
+  date: DateTime(2026, 8, 5),
+  dueDate: DateTime(2026, 8, 5),
+  priority: Priority.normal,
 );
 
 void main() {

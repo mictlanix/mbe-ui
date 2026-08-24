@@ -184,6 +184,19 @@ const _posReaderUser = User(
   privileges: [Privilege(systemObject: SystemObject.pos, rawValue: 2)],
 );
 
+/// Holds read on `salesOrders` (7) alone — no `pos` — the gate for
+/// 029-back-office-sales-orders' `/sales/orders*` routes (contracts/
+/// routes.md §3). Deliberately a *different* privilege from `_posReaderUser`
+/// above, so the two guards are provably not folded into one.
+const _salesOrdersReaderUser = User(
+  userId: 'sales-orders-reader',
+  email: 'sales-orders-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.salesOrders, rawValue: 2)],
+);
+
 /// Holds read on the three renumbered branches
 /// (018-nested-facility-management contracts/routes.md §2:
 /// facilities=14, paymentMethodOptions=15, taxpayerIssuers=16).
@@ -373,6 +386,25 @@ void main() {
     when(
       () => salesOrderRepository.listSales(
         pointSale: any(named: 'pointSale'),
+        status: any(named: 'status'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
+
+    // 029-back-office-sales-orders: `SalesOrdersListScreen` watches
+    // `SalesOrdersListController`, which calls `listOrders` whenever the
+    // signed-in user has a facility configured. None of the fixture users
+    // below do (`User.settings` is unset), so this override is unexercised
+    // for now — added here for the same reason as `listSales` above.
+    when(
+      () => salesOrderRepository.listOrders(
+        mine: any(named: 'mine'),
+        facility: any(named: 'facility'),
+        salesperson: any(named: 'salesperson'),
         status: any(named: 'status'),
         dateFrom: any(named: 'dateFrom'),
         dateTo: any(named: 'dateTo'),
@@ -787,6 +819,106 @@ void main() {
         'a user without pos:read is redirected away from /sales/pos/:saleId too',
         (tester) async {
           final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/42');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+    },
+  );
+
+  group(
+    '029-back-office-sales-orders — /sales/orders gates on salesOrders/read, '
+    'not pos (contracts/routes.md §3, FR-002)',
+    () {
+      testWidgets(
+        'a user with salesOrders:read reaches /sales/orders (the list)',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesOrdersReaderUser,
+            '/sales/orders',
+          );
+          expect(handle.router.state.uri.path, '/sales/orders');
+        },
+      );
+
+      testWidgets(
+        'a user without salesOrders:read is redirected away from '
+        '/sales/orders',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/sales/orders');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'a user holding only pos:read — not salesOrders — is redirected '
+        'away from /sales/orders: the two guards are not folded into one',
+        (tester) async {
+          final handle = await pumpAt(tester, _posReaderUser, '/sales/orders');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'activates shell branch NavBranch.salesOrders (20) for '
+        '/sales/orders',
+        (tester) async {
+          await pumpAt(tester, _salesOrdersReaderUser, '/sales/orders');
+          final shell = tester.widget<AppShell>(find.byType(AppShell));
+          expect(shell.navigationShell.currentIndex, NavBranch.salesOrders);
+        },
+      );
+
+      testWidgets(
+        'a user with salesOrders:read reaches /sales/orders/new — the '
+        'order screen, a top-level route with no shell around it',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesOrdersReaderUser,
+            '/sales/orders/new',
+          );
+          expect(handle.router.state.uri.path, '/sales/orders/new');
+          await tester.pumpAndSettle();
+          expect(find.byType(AppShell), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'a user without salesOrders:read is redirected away from '
+        '/sales/orders/new',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/orders/new',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'the order route /sales/orders/:orderId parses its int param and '
+        'gates identically to /new',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesOrdersReaderUser,
+            '/sales/orders/42',
+          );
+          expect(handle.router.state.uri.path, '/sales/orders/42');
+        },
+      );
+
+      testWidgets(
+        'a user without salesOrders:read is redirected away from '
+        '/sales/orders/:orderId too',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/orders/42',
+          );
           expect(handle.router.state.uri.path, '/');
         },
       );

@@ -2407,6 +2407,137 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posMenuTitle => 'Punto de Venta';
 
   @override
+  String get salesOrdersMenuTitle => 'Pedidos';
+
+  @override
+  String get salesOrdersScreenTitle => 'Pedidos';
+
+  @override
+  String get salesOrderNewAction => 'Nuevo pedido';
+
+  @override
+  String get salesOrdersColumnReference => 'Referencia';
+
+  @override
+  String get salesOrdersColumnDate => 'Fecha';
+
+  @override
+  String get salesOrdersColumnCustomer => 'Cliente';
+
+  @override
+  String get salesOrdersColumnStatus => 'Estado';
+
+  @override
+  String get salesOrdersColumnTotal => 'Total';
+
+  @override
+  String get salesOrdersColumnBalance => 'Saldo';
+
+  @override
+  String get salesOrdersSearchLabel => 'Buscar pedidos';
+
+  @override
+  String get salesOrderReferenceLabel => 'Referencia';
+
+  @override
+  String get salesOrderStatusLabel => 'Estado';
+
+  @override
+  String get salesOrderDateLabel => 'Fecha';
+
+  @override
+  String get salesOrderDueDateLabel => 'Fecha de vencimiento';
+
+  @override
+  String get salesOrderExchangeRateLabel => 'Tipo de cambio';
+
+  @override
+  String get salesOrderPaymentTermsLabel => 'Forma de pago';
+
+  @override
+  String get salesOrderPromiseDateLabel => 'Límite para envío';
+
+  @override
+  String get salesOrderCurrencyLabel => 'Moneda';
+
+  @override
+  String get salesOrderPriorityLabel => 'Prioridad';
+
+  @override
+  String get salesOrderSalespersonLabel => 'Vendedor';
+
+  @override
+  String get salesOrderContactLabel => 'Contacto';
+
+  @override
+  String get salesOrderShipToLabel => 'Datos de entrega';
+
+  @override
+  String get salesOrderRecipientLabel => 'RFC';
+
+  @override
+  String get salesOrderCommentLabel => 'Comentario';
+
+  @override
+  String get salesOrderPriorityLow => 'Baja';
+
+  @override
+  String get salesOrderPriorityNormal => 'Normal';
+
+  @override
+  String get salesOrderPriorityHigh => 'Alta';
+
+  @override
+  String get salesOrderPriorityCritical => 'Crítica';
+
+  @override
+  String get salesOrderNoRegisterTitle => 'No hay punto de venta configurado';
+
+  @override
+  String get salesOrderNoRegisterMessage =>
+      'Tu cuenta no tiene un punto de venta asignado, así que no puedes crear pedidos nuevos. Pide a tu administrador que configure uno en tu usuario.';
+
+  @override
+  String get salesOrderNoFacilityTitle => 'No hay instalación configurada';
+
+  @override
+  String get salesOrderNoFacilityMessage =>
+      'Tu cuenta no tiene una instalación asignada, así que los pedidos no se pueden listar. Pide a tu administrador que configure una en tu usuario.';
+
+  @override
+  String get salesOrderConfirmAction => 'Confirmar pedido';
+
+  @override
+  String get salesOrderNoLinesYet =>
+      'Agrega al menos un producto para poder confirmar el pedido.';
+
+  @override
+  String get salesOrdersEmptyMessage => 'Aún no hay pedidos en este periodo.';
+
+  @override
+  String get salesOrderCancelAction => 'Cancelar pedido';
+
+  @override
+  String get salesOrderCancelDialogTitle => '¿Cancelar este pedido?';
+
+  @override
+  String get salesOrderCancelDialogMessage =>
+      'Esta acción no se puede deshacer. El pedido pasará a estado cancelado.';
+
+  @override
+  String get salesOrderCancelDialogKeepEditing => 'Seguir editando';
+
+  @override
+  String get salesOrderCancelDialogConfirm => 'Cancelar pedido';
+
+  @override
+  String get salesOrderSalespersonEveryone => 'Todos';
+
+  @override
+  String get salesOrderCrossFacilityNotice =>
+      'El pedido se creará en tu propia instalación, sin importar la instalación que estés viendo.';
+
+  @override
   String get cashSessionStatusOpen => 'Abierta';
 
   @override

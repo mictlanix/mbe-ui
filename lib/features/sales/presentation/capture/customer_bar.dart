@@ -18,7 +18,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/customer_inline_create.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Customer identity and payment terms (FR-011, FR-012, FR-016;
@@ -72,7 +72,7 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
     });
     try {
       await ref
-          .read(posSaleControllerProvider.notifier)
+          .read(saleEditorProvider)
           .updateHeader(customer: customer, paymentTerms: paymentTerms);
       // A customer was just attached — return to reporting facts for it
       // (FR-023). A terms-only change has no face to return from.

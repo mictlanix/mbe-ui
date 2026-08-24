@@ -39,7 +39,19 @@ mixin _$Sale {
   String get subtotal => throw _privateConstructorUsedError;
   String get taxTotal => throw _privateConstructorUsedError;
   String get total => throw _privateConstructorUsedError;
-  String get balance => throw _privateConstructorUsedError;
+  String get balance =>
+      throw _privateConstructorUsedError; // Back-office order screen fields (spec 029) — all already on the wire in
+  // `SalesOrderResponse`, simply never mapped until this feature needed them.
+  // POS never reads any of these; adding them is additive.
+  DateTime get date =>
+      throw _privateConstructorUsedError; // Display-only (FR-018): derived server-side from terms + customer credit
+  // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
+  DateTime get dueDate => throw _privateConstructorUsedError;
+  int? get contact => throw _privateConstructorUsedError;
+  String? get recipient => throw _privateConstructorUsedError;
+  String? get recipientName => throw _privateConstructorUsedError;
+  Priority get priority => throw _privateConstructorUsedError;
+  String? get comment => throw _privateConstructorUsedError;
 
   /// Create a copy of Sale
   /// with the given fields replaced by the non-null parameter values.
@@ -72,6 +84,13 @@ abstract class $SaleCopyWith<$Res> {
     String taxTotal,
     String total,
     String balance,
+    DateTime date,
+    DateTime dueDate,
+    int? contact,
+    String? recipient,
+    String? recipientName,
+    Priority priority,
+    String? comment,
   });
 }
 
@@ -109,6 +128,13 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
     Object? taxTotal = null,
     Object? total = null,
     Object? balance = null,
+    Object? date = null,
+    Object? dueDate = null,
+    Object? contact = freezed,
+    Object? recipient = freezed,
+    Object? recipientName = freezed,
+    Object? priority = null,
+    Object? comment = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -188,6 +214,34 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.balance
                 : balance // ignore: cast_nullable_to_non_nullable
                       as String,
+            date: null == date
+                ? _value.date
+                : date // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            dueDate: null == dueDate
+                ? _value.dueDate
+                : dueDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            contact: freezed == contact
+                ? _value.contact
+                : contact // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            recipient: freezed == recipient
+                ? _value.recipient
+                : recipient // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            recipientName: freezed == recipientName
+                ? _value.recipientName
+                : recipientName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            priority: null == priority
+                ? _value.priority
+                : priority // ignore: cast_nullable_to_non_nullable
+                      as Priority,
+            comment: freezed == comment
+                ? _value.comment
+                : comment // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -222,6 +276,13 @@ abstract class _$$SaleImplCopyWith<$Res> implements $SaleCopyWith<$Res> {
     String taxTotal,
     String total,
     String balance,
+    DateTime date,
+    DateTime dueDate,
+    int? contact,
+    String? recipient,
+    String? recipientName,
+    Priority priority,
+    String? comment,
   });
 }
 
@@ -256,6 +317,13 @@ class __$$SaleImplCopyWithImpl<$Res>
     Object? taxTotal = null,
     Object? total = null,
     Object? balance = null,
+    Object? date = null,
+    Object? dueDate = null,
+    Object? contact = freezed,
+    Object? recipient = freezed,
+    Object? recipientName = freezed,
+    Object? priority = null,
+    Object? comment = freezed,
   }) {
     return _then(
       _$SaleImpl(
@@ -335,6 +403,34 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.balance
             : balance // ignore: cast_nullable_to_non_nullable
                   as String,
+        date: null == date
+            ? _value.date
+            : date // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        dueDate: null == dueDate
+            ? _value.dueDate
+            : dueDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        contact: freezed == contact
+            ? _value.contact
+            : contact // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        recipient: freezed == recipient
+            ? _value.recipient
+            : recipient // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        recipientName: freezed == recipientName
+            ? _value.recipientName
+            : recipientName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        priority: null == priority
+            ? _value.priority
+            : priority // ignore: cast_nullable_to_non_nullable
+                  as Priority,
+        comment: freezed == comment
+            ? _value.comment
+            : comment // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -363,6 +459,13 @@ class _$SaleImpl extends _Sale {
     required this.taxTotal,
     required this.total,
     required this.balance,
+    required this.date,
+    required this.dueDate,
+    this.contact,
+    this.recipient,
+    this.recipientName,
+    required this.priority,
+    this.comment,
   }) : _lines = lines,
        super._();
 
@@ -415,10 +518,29 @@ class _$SaleImpl extends _Sale {
   final String total;
   @override
   final String balance;
+  // Back-office order screen fields (spec 029) — all already on the wire in
+  // `SalesOrderResponse`, simply never mapped until this feature needed them.
+  // POS never reads any of these; adding them is additive.
+  @override
+  final DateTime date;
+  // Display-only (FR-018): derived server-side from terms + customer credit
+  // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
+  @override
+  final DateTime dueDate;
+  @override
+  final int? contact;
+  @override
+  final String? recipient;
+  @override
+  final String? recipientName;
+  @override
+  final Priority priority;
+  @override
+  final String? comment;
 
   @override
   String toString() {
-    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance)';
+    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance, date: $date, dueDate: $dueDate, contact: $contact, recipient: $recipient, recipientName: $recipientName, priority: $priority, comment: $comment)';
   }
 
   @override
@@ -456,7 +578,17 @@ class _$SaleImpl extends _Sale {
             (identical(other.taxTotal, taxTotal) ||
                 other.taxTotal == taxTotal) &&
             (identical(other.total, total) || other.total == total) &&
-            (identical(other.balance, balance) || other.balance == balance));
+            (identical(other.balance, balance) || other.balance == balance) &&
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
+            (identical(other.contact, contact) || other.contact == contact) &&
+            (identical(other.recipient, recipient) ||
+                other.recipient == recipient) &&
+            (identical(other.recipientName, recipientName) ||
+                other.recipientName == recipientName) &&
+            (identical(other.priority, priority) ||
+                other.priority == priority) &&
+            (identical(other.comment, comment) || other.comment == comment));
   }
 
   @override
@@ -481,6 +613,13 @@ class _$SaleImpl extends _Sale {
     taxTotal,
     total,
     balance,
+    date,
+    dueDate,
+    contact,
+    recipient,
+    recipientName,
+    priority,
+    comment,
   ]);
 
   /// Create a copy of Sale
@@ -513,6 +652,13 @@ abstract class _Sale extends Sale {
     required final String taxTotal,
     required final String total,
     required final String balance,
+    required final DateTime date,
+    required final DateTime dueDate,
+    final int? contact,
+    final String? recipient,
+    final String? recipientName,
+    required final Priority priority,
+    final String? comment,
   }) = _$SaleImpl;
   const _Sale._() : super._();
 
@@ -556,7 +702,24 @@ abstract class _Sale extends Sale {
   @override
   String get total;
   @override
-  String get balance;
+  String get balance; // Back-office order screen fields (spec 029) — all already on the wire in
+  // `SalesOrderResponse`, simply never mapped until this feature needed them.
+  // POS never reads any of these; adding them is additive.
+  @override
+  DateTime get date; // Display-only (FR-018): derived server-side from terms + customer credit
+  // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
+  @override
+  DateTime get dueDate;
+  @override
+  int? get contact;
+  @override
+  String? get recipient;
+  @override
+  String? get recipientName;
+  @override
+  Priority get priority;
+  @override
+  String? get comment;
 
   /// Create a copy of Sale
   /// with the given fields replaced by the non-null parameter values.

@@ -34,11 +34,18 @@ class SaleLineRow extends ConsumerStatefulWidget {
     required this.line,
     required this.facilityId,
     this.enabled = true,
+    this.showComment = false,
   });
 
   final SaleLine line;
   final int facilityId;
   final bool enabled;
+
+  /// Renders an editable per-line comment beneath the band (spec 029
+  /// FR-020). `false` (the default) leaves the register's layout exactly as
+  /// it was before this feature — only the back-office order screen passes
+  /// `true`.
+  final bool showComment;
 
   @override
   ConsumerState<SaleLineRow> createState() => _SaleLineRowState();
@@ -58,7 +65,16 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   @override
   void didUpdateWidget(covariant SaleLineRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.line != widget.line) syncFields();
+    if (oldWidget.line != widget.line) {
+      syncFields();
+      if (widget.showComment) commentField.sync(value: line.comment ?? '');
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.showComment) commentField.dispose();
+    super.dispose();
   }
 
   @override
@@ -116,6 +132,17 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                         child: Text(l10n.posLineAdjustToAvailable),
                       ),
                   ],
+                ),
+              ),
+            if (widget.showComment)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: ConfirmableTextField(
+                  controller: commentField,
+                  enabled: enabled,
+                  fieldKey: Key('sale_line_comment_${line.id}'),
+                  style: _fieldStyle,
+                  decoration: _fieldDecoration(l10n.salesOrderCommentLabel),
                 ),
               ),
           ],

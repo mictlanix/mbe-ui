@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 
 part 'product_lookup_controller.g.dart';
 
@@ -23,7 +23,7 @@ Future<List<ProductLookupResult>> productLookupController(
   if (trimmed.isEmpty) return const [];
   // Pricing is per customer and the customer is the sale's, so a lookup is
   // one of the actions that opens the sale when none is started yet.
-  final sale = await ref.read(posSaleControllerProvider.notifier).ensureOpen();
+  final sale = await ref.read(saleEditorProvider).ensureOpen();
   return ref
       .watch(salesOrderRepositoryProvider)
       .productLookup(pattern: trimmed, customer: sale.customer, warehouse: warehouse);

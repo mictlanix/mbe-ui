@@ -4483,6 +4483,258 @@ abstract class AppLocalizations {
   /// **'Point of Sale'**
   String get posMenuTitle;
 
+  /// No description provided for @salesOrdersMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Orders'**
+  String get salesOrdersMenuTitle;
+
+  /// No description provided for @salesOrdersScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Orders'**
+  String get salesOrdersScreenTitle;
+
+  /// No description provided for @salesOrderNewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New order'**
+  String get salesOrderNewAction;
+
+  /// No description provided for @salesOrdersColumnReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get salesOrdersColumnReference;
+
+  /// No description provided for @salesOrdersColumnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get salesOrdersColumnDate;
+
+  /// No description provided for @salesOrdersColumnCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get salesOrdersColumnCustomer;
+
+  /// No description provided for @salesOrdersColumnStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get salesOrdersColumnStatus;
+
+  /// No description provided for @salesOrdersColumnTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get salesOrdersColumnTotal;
+
+  /// No description provided for @salesOrdersColumnBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get salesOrdersColumnBalance;
+
+  /// No description provided for @salesOrdersSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search orders'**
+  String get salesOrdersSearchLabel;
+
+  /// No description provided for @salesOrderReferenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get salesOrderReferenceLabel;
+
+  /// No description provided for @salesOrderStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get salesOrderStatusLabel;
+
+  /// No description provided for @salesOrderDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get salesOrderDateLabel;
+
+  /// No description provided for @salesOrderDueDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get salesOrderDueDateLabel;
+
+  /// No description provided for @salesOrderExchangeRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate'**
+  String get salesOrderExchangeRateLabel;
+
+  /// No description provided for @salesOrderPaymentTermsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment terms'**
+  String get salesOrderPaymentTermsLabel;
+
+  /// No description provided for @salesOrderPromiseDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Promise date'**
+  String get salesOrderPromiseDateLabel;
+
+  /// No description provided for @salesOrderCurrencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get salesOrderCurrencyLabel;
+
+  /// No description provided for @salesOrderPriorityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get salesOrderPriorityLabel;
+
+  /// No description provided for @salesOrderSalespersonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Salesperson'**
+  String get salesOrderSalespersonLabel;
+
+  /// No description provided for @salesOrderContactLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get salesOrderContactLabel;
+
+  /// No description provided for @salesOrderShipToLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery details'**
+  String get salesOrderShipToLabel;
+
+  /// No description provided for @salesOrderRecipientLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ID'**
+  String get salesOrderRecipientLabel;
+
+  /// No description provided for @salesOrderCommentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get salesOrderCommentLabel;
+
+  /// No description provided for @salesOrderPriorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get salesOrderPriorityLow;
+
+  /// No description provided for @salesOrderPriorityNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get salesOrderPriorityNormal;
+
+  /// No description provided for @salesOrderPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get salesOrderPriorityHigh;
+
+  /// No description provided for @salesOrderPriorityCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get salesOrderPriorityCritical;
+
+  /// No description provided for @salesOrderNoRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No point of sale configured'**
+  String get salesOrderNoRegisterTitle;
+
+  /// No description provided for @salesOrderNoRegisterMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has no point of sale assigned, so you cannot create new orders. Ask your administrator to configure one on your user.'**
+  String get salesOrderNoRegisterMessage;
+
+  /// No description provided for @salesOrderNoFacilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No facility configured'**
+  String get salesOrderNoFacilityTitle;
+
+  /// No description provided for @salesOrderNoFacilityMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has no facility assigned, so orders cannot be listed. Ask your administrator to configure one on your user.'**
+  String get salesOrderNoFacilityMessage;
+
+  /// No description provided for @salesOrderConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm order'**
+  String get salesOrderConfirmAction;
+
+  /// No description provided for @salesOrderNoLinesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one product before confirming the order.'**
+  String get salesOrderNoLinesYet;
+
+  /// No description provided for @salesOrdersEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet in this period.'**
+  String get salesOrdersEmptyMessage;
+
+  /// No description provided for @salesOrderCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get salesOrderCancelAction;
+
+  /// No description provided for @salesOrderCancelDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this order?'**
+  String get salesOrderCancelDialogTitle;
+
+  /// No description provided for @salesOrderCancelDialogMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. The order will be marked cancelled.'**
+  String get salesOrderCancelDialogMessage;
+
+  /// No description provided for @salesOrderCancelDialogKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get salesOrderCancelDialogKeepEditing;
+
+  /// No description provided for @salesOrderCancelDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get salesOrderCancelDialogConfirm;
+
+  /// No description provided for @salesOrderSalespersonEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get salesOrderSalespersonEveryone;
+
+  /// No description provided for @salesOrderCrossFacilityNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'The order will be created in your own facility, regardless of the facility you are viewing.'**
+  String get salesOrderCrossFacilityNotice;
+
   /// No description provided for @cashSessionStatusOpen.
   ///
   /// In en, this message translates to:

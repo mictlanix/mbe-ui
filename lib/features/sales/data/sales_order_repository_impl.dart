@@ -62,6 +62,11 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     int? contact,
     String? customerName,
     FulfillmentMode? fulfillmentIntent,
+    DateTime? promiseDate,
+    int? salesperson,
+    Priority? priority,
+    String? comment,
+    String? recipient,
   }) async {
     try {
       final response = await _api.updateSalesOrderApiV1SalesOrdersSalesOrderIdPut(
@@ -74,7 +79,14 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
             ..shipTo = shipTo
             ..contact = contact
             ..customerName = customerName
-            ..fulfillmentIntent = fulfillmentIntent?.toApi();
+            ..fulfillmentIntent = fulfillmentIntent?.toApi()
+            ..promiseDate = promiseDate
+            ..salesperson = salesperson
+            // Deliberately no `dueDate` here: it is derived server-side and
+            // `SalesOrderUpdate` has no such field to set.
+            ..priority = priority?.toApi()
+            ..comment = comment
+            ..recipient = recipient;
         }),
       );
       final result = response.data;
@@ -259,6 +271,41 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     try {
       final response = await _api.listSalesOrdersApiV1SalesOrdersGet(
         pointSale: pointSale,
+        status: status?.wireName,
+        dateFrom: dateFrom == null ? null : wireDate(dateFrom),
+        dateTo: dateTo == null ? null : wireDateEnd(dateTo),
+        search: search,
+        skip: skip,
+        limit: limit,
+      );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return OpenSalePage(
+        items: result.items.map(OpenSale.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<OpenSalePage> listOrders({
+    bool mine = false,
+    int? facility,
+    int? salesperson,
+    SaleStatus? status,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _api.listSalesOrdersApiV1SalesOrdersGet(
+        mine: mine,
+        facility: facility,
+        salesperson: salesperson,
         status: status?.wireName,
         dateFrom: dateFrom == null ? null : wireDate(dateFrom),
         dateTo: dateTo == null ? null : wireDateEnd(dateTo),

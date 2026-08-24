@@ -345,6 +345,9 @@ void main() {
     taxTotal: '83.86',
     total: '608.00',
     balance: '608.00',
+    date: DateTime(2026, 8, 10),
+    dueDate: DateTime(2026, 8, 10),
+    priority: Priority.normal,
   );
 
   group('the sales list (US1)', () {
