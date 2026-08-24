@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -8,6 +9,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -229,6 +231,65 @@ void main() {
         );
         expect(inkWell.onTap, isNull, reason: mode.name);
       }
+    });
+  });
+
+  group('choosing delivery or mixed (FR-056, amended 2026-08-23)', () {
+    testWidgets('asks for no address — writes fulfillmentIntent alone and '
+        'moves the selection directly', (tester) async {
+      final salesOrder = MockSalesOrderRepository();
+      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(
+        () => salesOrder.updateHeader(
+          saleId: any(named: 'saleId'),
+          customer: any(named: 'customer'),
+          paymentTerms: any(named: 'paymentTerms'),
+          currency: any(named: 'currency'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          customerName: any(named: 'customerName'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+        ),
+      ).thenAnswer((_) async => testSale());
+
+      final container = await pumpPos(
+        tester,
+        Consumer(
+          builder: (context, ref, _) {
+            ref.watch(posSaleControllerProvider);
+            return FulfillmentModeSelector(sale: testSale());
+          },
+        ),
+        overrides: [
+          customerRepositoryProvider.overrideWithValue(customers),
+          salesOrderOverride(salesOrder),
+        ],
+      );
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('pos_fulfillment_delivery')));
+      await tester.pumpAndSettle();
+
+      // No dialog — the customer's addresses are never even read for this.
+      expect(find.byType(AlertDialog), findsNothing);
+      verify(
+        () => salesOrder.updateHeader(
+          saleId: any(named: 'saleId'),
+          customer: null,
+          paymentTerms: null,
+          currency: null,
+          shipTo: null,
+          contact: null,
+          customerName: null,
+          fulfillmentIntent: FulfillmentMode.delivery,
+        ),
+      ).called(1);
+      // Delivery is now the selected segment, so it shows the check in place
+      // of its own icon (`_ModeSegmentButton`'s `showSelectedIcon` swap) —
+      // counter pickup, no longer selected, shows its own icon again.
+      expect(find.byIcon(Icons.store_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.local_shipping_outlined), findsNothing);
     });
   });
 }

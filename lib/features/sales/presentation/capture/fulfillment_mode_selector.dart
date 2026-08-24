@@ -10,7 +10,6 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
-import 'package:mbe_ui/features/sales/presentation/widgets/customer_address_picker.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One segment of [_ModeTrack].
@@ -174,16 +173,15 @@ class _ModeSegmentButton extends StatelessWidget {
 /// The three-chip Tienda/Domicilio/Mixta control (FR-017), always visible,
 /// defaulting to counter pickup.
 ///
-/// Choosing Domicilio or Mixta is guarded twice:
+/// Choosing Domicilio or Mixta is guarded on one thing: the customer must be
+/// permitted to receive deliveries, else the reason is shown and the mode is
+/// not changed (FR-019). It does **not** ask for an address — FR-056
+/// (amended 2026-08-23) dropped that ask, since the cashier still named every
+/// actual destination's own address again on the Entrega step
+/// (`DestinationEditor`), so the Venta-time address never fed anything real.
 ///
-/// - the customer must be permitted to receive deliveries, else the reason is
-///   shown and the mode is not changed (FR-019);
-/// - the sale's **main delivery address** must be named before capture
-///   continues (FR-056), picked from the customer's own addresses or created
-///   inline, then written to `Sale.shipTo`.
-///
-/// `shipTo` is what makes the mode survive a reload (FR-057, research §4):
-/// the screen holds no persisted mode of its own.
+/// `fulfillmentIntent` (mbe-api#171) is what makes the mode survive a reload
+/// (FR-057): the screen holds no persisted mode of its own.
 class FulfillmentModeSelector extends ConsumerStatefulWidget {
   const FulfillmentModeSelector({
     super.key,
@@ -196,7 +194,7 @@ class FulfillmentModeSelector extends ConsumerStatefulWidget {
   /// either way, beside the customer band, so the capture surface opens with
   /// its whole header rather than growing one once the first scan lands.
   /// Choosing a delivery mode is itself a legitimate first action:
-  /// `updateHeader` opens the sale before writing `shipTo`.
+  /// `updateHeader` opens the sale before writing `fulfillmentIntent`.
   final Sale? sale;
   final bool enabled;
 
@@ -234,10 +232,10 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     });
 
     if (mode == FulfillmentMode.counterPickup) {
-      // No address to name, so no round trip — a `null` `shipTo` already
+      // Nothing to check or record — a `null` `fulfillmentIntent` already
       // means counter pickup unambiguously (`FulfillmentModeEncoding`), and
-      // recording `fulfillmentIntent` here would only add a request with
-      // nothing at stake if it fails.
+      // recording it here would only add a request with nothing at stake if
+      // it fails.
       ref.read(posStepControllerProvider.notifier).setMode(mode);
       return;
     }
@@ -253,23 +251,15 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
       return;
     }
 
-    // FR-056 — naming the main delivery address is part of choosing the mode,
-    // not a later step.
-    final addressId = await showCustomerAddressPicker(
-      context,
-      customerId: _customerId,
-    );
-    if (addressId == null || !mounted) return;
-
     setState(() => _busy = true);
     try {
-      // `fulfillmentIntent` rides the same call as `shipTo` — one request,
-      // and the mode now survives a resume as itself rather than being
-      // reconstructed from the address, which cannot tell `delivery` and
-      // `mixed` apart (mbe-api#170/#171).
+      // FR-056 (amended 2026-08-23): no address is asked for here — the
+      // cashier names each actual destination's own address later, on the
+      // Entrega step. `fulfillmentIntent` alone is what the mode now
+      // survives a resume as (mbe-api#171).
       await ref
           .read(posSaleControllerProvider.notifier)
-          .updateHeader(shipTo: addressId, fulfillmentIntent: mode);
+          .updateHeader(fulfillmentIntent: mode);
       if (mounted) ref.read(posStepControllerProvider.notifier).setMode(mode);
     } on AppError catch (e) {
       setState(() => _error = e);
