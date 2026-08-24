@@ -269,9 +269,9 @@ facet exists and no other user's order is ever visible.
 
 #### List
 
-- **FR-005**: The list MUST show, per order: its identifier, its folio (blank
-  until confirmed), its date, the customer, its status, its total and its
-  outstanding balance.
+- **FR-005**: The list MUST show, per order: its **reference** — the folio once
+  assigned, its internal identifier before that, in one column rather than two —
+  its date, the customer, its status, its total and its outstanding balance.
 - **FR-006**: For an ordinary (non-administrator) user, the list MUST show only
   the orders that user created, last edited, or is the salesperson of, within their
   own facility, newest first. There MUST be no control — and no address, facet or
@@ -514,6 +514,11 @@ facet exists and no other user's order is ever visible.
 - **A8 (default range)**: The default date range is assumed to be the current
   month, chosen so that a back-office user's recent work is visible without an
   unbounded query. It is a facet the user can widen or narrow.
+- **A9 (reuse is a refactor, not a copy)**: The point-of-sale capture widgets
+  currently read a single, screen-scoped piece of sale state directly. Sharing them
+  is assumed to require parameterizing that state so two screens can hold two
+  independent orders — a refactor of existing code, whose success condition is that
+  the register's behaviour is observably unchanged (FR-030, FR-031, SC-007).
 - **A10 (the capture surface arrives with its own behaviour)**: The shared surface
   already carries the debounced, floored-at-one quantity stepper and the
   confirm-or-visibly-discard text-field rule that specs 030 and 031 added, plus a
@@ -521,11 +526,6 @@ facet exists and no other user's order is ever visible.
   back-office screen **inherits** all of it and MUST NOT re-implement any of it;
   what it adds is its own scope (FR-038) and its own critical-action gate
   (FR-035, FR-036).
-- **A9 (reuse is a refactor, not a copy)**: The point-of-sale capture widgets
-  currently read a single, screen-scoped piece of sale state directly. Sharing them
-  is assumed to require parameterizing that state so two screens can hold two
-  independent orders — a refactor of existing code, whose success condition is that
-  the register's behaviour is observably unchanged (FR-030, FR-031, SC-007).
 
 ## Out of Scope
 

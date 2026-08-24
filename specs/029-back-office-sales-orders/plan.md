@@ -190,12 +190,20 @@ test/
 ├── unit/features/sales/
 │   ├── sales_orders_filter_test.dart        # NEW
 │   ├── sales_orders_scoping_test.dart       # NEW  (mine / facility rule)
+│   ├── order_editor_controller_test.dart    # NEW
 │   ├── sale_mapping_test.dart               # EDIT: the new header fields
-│   └── sales_order_list_orders_test.dart    # NEW  (repository, mocked client)
+│   ├── sales_order_list_orders_test.dart    # NEW  (repository, mocked client)
+│   └── sales_order_update_header_test.dart  # NEW  (repository, mocked client)
 ├── widget/features/sales/
 │   ├── sales_orders_list_screen_test.dart   # NEW
+│   ├── sales_orders_filters_test.dart       # NEW
+│   ├── sales_orders_admin_facets_test.dart  # NEW
+│   ├── sales_orders_compact_test.dart       # NEW
 │   ├── order_screen_test.dart               # NEW
 │   ├── order_screen_readonly_test.dart      # NEW
+│   ├── order_resume_test.dart               # NEW
+│   ├── order_cancel_test.dart               # NEW
+│   ├── order_no_register_test.dart          # NEW
 │   ├── sale_editor_isolation_test.dart      # NEW  (FR-030/FR-038 — neither the sale
 │   │                                        #       nor the write gate is shared)
 │   ├── order_write_gating_test.dart         # NEW  (FR-035/FR-036)
@@ -203,6 +211,10 @@ test/
 └── integration/
     └── sales_orders_flow_test.dart          # NEW  (live golden path)
 ```
+
+**tasks.md is authoritative for the final file list.** This tree is the plan's
+view at design time; `/speckit-tasks` refines it, and where the two differ the
+task list wins.
 
 **Structure Decision**: single Flutter application, feature-first. The feature is
 an addition to the existing `features/sales` module — it introduces no new module

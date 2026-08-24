@@ -141,6 +141,13 @@ customer name → their orders. Set a date range and a status in the drawer → 
 badge counts two. Copy the URL, open it in a new tab → same view. Page forward and
 back → counts stay consistent.
 
+**SC-004 timing check.** Reload `/sales/orders` with its default filters against
+the reference tenant and time to first painted row — it must be **under 2
+seconds**. Then check the network tab across every view you just exercised
+(default, each facet, each page): **no request may carry an unbounded date
+range**. Both halves of SC-004 are manual by design; there is no automated timing
+assertion in this feature.
+
 ### US4 — read a finished order (P3)
 
 Open a paid order: everything read-only, balance and paid state visible. Sign in
