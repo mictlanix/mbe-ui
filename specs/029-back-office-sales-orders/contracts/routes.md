@@ -82,6 +82,7 @@ is a bare `/sales/orders`.
 | New order | `can(salesOrders, create)` **and** a configured point of sale | hidden without the privilege; present-but-blocked with an explanation when only the register is missing (FR-014) |
 | Edit (row) | `can(salesOrders, update)` **and** the row is a draft | hidden otherwise |
 | Add / edit / remove line, confirm | `can(salesOrders, update)` **and** `sale.isEditable` | hidden otherwise |
+| Header field edit (promise date, currency, salesperson, contact, ship-to, fiscal recipient, comment) | `can(salesOrders, update)` **and** `sale.isEditable` | the field renders as its read-only face otherwise — a header field always *shows*, so this one degrades rather than disappearing; it is never a disabled control |
 | Cancel | `can(salesOrders, update)` **and** `sale.isEditable` | on the order screen only, never on a row; requires a confirmation dialog |
 | Change priority | `can(salesOrders, update)` | the one control that survives `!isEditable` |
 | Salesperson / facility facets | `access.isAdministrator` | absent otherwise |

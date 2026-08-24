@@ -112,6 +112,12 @@ the legacy screen's left/right split.
 | Fiscal recipient (RFC) | `CatalogEntityPicker` over taxpayer recipients; shows `recipientName` beneath | draft only |
 | Comment | multiline `ConfirmableTextField` (FR-037) | draft only |
 
+The **Editable** column above states when a field is editable *by document
+state*. Privilege is a second, independent condition: every field marked editable
+also requires `can(salesOrders, update)`, and without it renders as its read-only
+face — never as a disabled control (constitution §IV, routes.md §5). "Draft only"
+therefore means "draft **and** update rights" throughout this table.
+
 Every edit is one `updateHeader` call; the returned `Sale` replaces state
 wholesale. Nothing is batched into a "Save" button — the surface is live, like the
 register's.
