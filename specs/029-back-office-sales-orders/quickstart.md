@@ -26,6 +26,51 @@ How to prove the feature works. *What* to build is in [plan.md](./plan.md),
   order and one cancelled order; **and at least one order belonging to a different
   employee**, which is the only way to see FR-006 actually working.
 
+> **Provisioned 2026-08-24 — all four accounts now exist on the local dev
+> tenant.** Credentials are in `.env` (gitignored) under `MBE_SPEC029_*`; the
+> three new ones were created through `POST /api/v1/users` + `PUT
+> /api/v1/users/{id}` with the admin account, all on **employee 2** and
+> **facility 51 (CMZU)**, `administrator: false`:
+>
+> | Account | `.env` prefix | user | `SALES_ORDERS` | point sale | proves |
+> |---|---|---|---|---|---|
+> | 1 | `MBE_SPEC029_MAIN_*` | `spec029user` | CRU | 18 | the main path |
+> | 2 | `MBE_SPEC029_NOREG_*` | `spec029noreg` | CRU | **none** | FR-014 |
+> | 3 | `MBE_SPEC029_READONLY_*` | `spec029read` | **R only** | 18 | absent-not-disabled |
+> | 4 | `MBE_POS_*` / `MBE_ADMIN_*` | `admin` | CRUD | 18 | US5 (pre-existing) |
+>
+> All three carry READ on the objects the order screen's pickers actually call —
+> products, customers, warehouses, employees, points of sale, customer payments,
+> addresses, contacts, taxpayer recipients — so a picker never 403s for a reason
+> unrelated to what is being tested.
+>
+> **Employee 2 owns no orders, and that is deliberate**: all 130 orders in
+> facility 51 belong to employee 1 (the admin's). So from account 1's seat every
+> existing order is "somebody else's", which is exactly the FR-006 fixture the
+> Data bullet above asks for — no seeding needed. Account 1's own list starts
+> empty and grows only with what it creates.
+>
+> API-level behaviour confirmed for each (still needs the UI pass for what the
+> *screen* does with it):
+>
+> | Account | Request | Result |
+> |---|---|---|
+> | 1 | `mine=true` + month (the shape the client sends) | `total: 0` — sees none of employee 1's 130 |
+> | 1 | `?facility=51` **hand-added** | `total: 130` — see the SC-009 note below |
+> | 2 | `POST /sales-orders` | **422** `No point of sale is configured for your user` |
+> | 2 | `GET /sales-orders` | **200** — listing keeps working, only creation is withheld (FR-014) |
+> | 3 | `GET /sales-orders` | **200** |
+> | 3 | `POST /sales-orders` | **403** `Insufficient privileges` |
+>
+> Account 1's default request measured **0.73 s** — the fastest of the three
+> shapes, since `mine=true` on an employee with no orders is cheap.
+>
+> Note `MBE_POS_*` maps to `admin`, so the POS live tests run as an
+> administrator — which is also why `mine=true` and `mine=false` both answer the
+> same total for it (that employee is creator, updater *and* salesperson on every
+> row), and why FR-006's three OR-branches cannot be told apart with it. Account
+> 1 is the account to use for that.
+
 ## Build and check
 
 Codegen is not optional — the filter, both controllers, the `SaleEditor`
@@ -147,6 +192,33 @@ seconds**. Then check the network tab across every view you just exercised
 (default, each facet, each page): **no request may carry an unbounded date
 range**. Both halves of SC-004 are manual by design; there is no automated timing
 assertion in this feature.
+
+> **Measured 2026-08-24** (API round-trip only, `curl` against a local backend —
+> *not* including Flutter's own paint, so treat these as the budget already
+> spent before rendering starts):
+>
+> | Request shape | Warm | Cold (first hit after idle) |
+> |---|---|---|
+> | ordinary user default — `mine=true`, month range, `limit=20` | 1.11–1.23 s | 3.1–5.1 s |
+> | administrator default — `mine=false`, `facility=<own>`, month range | 1.13–1.69 s | ~5.1 s |
+> | ambient floor — `GET /auth/me`, same token | 0.40–0.61 s | ~2.1 s |
+>
+> Warm, both real shapes clear the 2 s budget but leave only **~0.3–0.9 s** for
+> paint — tight enough that the manual check should be run on the reference
+> tenant, not a small dev dataset (this one had 128 matching orders). Cold, the
+> API alone blows the budget; the ambient `/auth/me` floor shows that is backend
+> warm-up, not this feature's query shape. Response time scaled with *rows
+> returned*, not with the filter's selectivity (`limit=1` answered in ~1.06 s
+> against `limit=20`'s ~5 s cold), which points at a per-row cost on the server
+> rather than anything the client controls.
+>
+> The second half needs no manual network-tab pass: an unbounded range is
+> **unrepresentable**, not merely avoided. `SalesOrdersFilter.from`/`.to` are
+> non-nullable `required DateTime`; `fromQuery` degrades an absent or
+> unparseable facet to the month default via `?? defaultFrom`/`?? defaultTo`;
+> and the single production call site of `listOrders`
+> (`sales_orders_list_controller.dart:156`) passes both unconditionally. Checking
+> the tab confirms a property the types already guarantee.
 
 ### US4 — read a finished order (P3)
 

@@ -44,6 +44,39 @@ by them.
 | ordering is `sales_order_id DESC` | "newest first" comes free |
 | `limit` is capped at 100 | page size 20 |
 | no filter by creating user, and no register on the response | FR-011a, spec A4 |
+| **the server does not check that the caller may see the `facility` they ask for** | the client's non-administrator drop is the *only* guard — see the note below |
+
+**Live-verified 2026-08-24 — `facility` is not authorization-checked.** Probed
+directly against a running backend with two real tokens:
+
+| Token | Request | `total` |
+|---|---|---|
+| `spec029user` — non-administrator, `SALES_ORDERS` CRU, **facility 51**, employee 2 | `mine=true`, month range | `0` |
+| the same token | `?facility=51` added by hand, month range | **`130`** |
+
+That second row is the whole problem: `spec029user` is a fully legitimate,
+correctly-configured ordinary user of *its own* facility, and it reads 130 orders
+belonging to **another employee** purely by editing the address. (The same probe
+against a non-administrator with *no* facility configured behaves identically —
+`0` without the facet, the full count with it — so the hole is not an artefact of
+how the account is set up.)
+
+So a non-administrator who hand-edits `facility=<id>` into the address reaches
+every order in a facility that is not theirs — *if the client passes the facet
+through*. It does not: `SalesOrdersFilter.fromQuery` drops `facility` and
+`salesperson` unless `isAdministrator`, and `SalesOrdersListController._fetch`
+drops them again on its own terms (`sales_orders_list_controller.dart:69-70`,
+`:164-165`), locked by `sales_orders_scoping_test.dart`. That double drop is what
+SC-009 is about, and this measurement is why it is defence-in-depth rather than
+belt-and-braces: **remove either one and the exposure is real.**
+
+`salesperson=<other employee>` from the same token answered `0`, so that facet is
+not a comparable hole on this dataset — but it is not demonstrably checked
+either, and should not be assumed safe.
+
+> **Recommended backend hardening (out of scope for this feature, client-side
+> only):** `list_orders` should reject — or silently narrow — a `facility` the
+> caller has no claim to, rather than trusting the client to omit it.
 
 ## 2. `POST /api/v1/sales-orders` — create
 
