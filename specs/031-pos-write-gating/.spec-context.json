@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "pos write gating",
   "branch": "031-pos-write-gating",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-24T01:31:59.628Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:40:00.207Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -205,5 +212,6 @@
     {
       "note": "Pixel parity: pos_sale_line_* and pos_sale_totals_bar_* goldens must pass unchanged after extracting the confirmable field; a diff is a bug, not a re-baseline."
     }
-  ]
+  ],
+  "currentTask": "T001"
 }
