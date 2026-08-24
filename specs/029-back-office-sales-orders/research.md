@@ -14,29 +14,40 @@ the *same* capture surface as the register, without the two screens sharing one
 sale and without the register's behaviour changing. `PosSaleController` is a
 singleton `@riverpod` notifier holding exactly one `Sale`.
 
-**Finding — the coupling is smaller than it looks.** Every read of the POS
-singleton inside `presentation/capture/`:
+**Finding — two seams, not one.** Re-checked against the working tree on
+2026-08-23, **after** specs 030 and 031 landed (see §R12). Every read of
+POS-specific state inside `presentation/capture/`:
 
-| File | Line | Call |
+| File | Reads | What |
 |---|---|---|
-| `capture_step.dart` | 61, 83 | `addLine`, `confirm` |
-| `capture_step.dart` | 84 | `posStepControllerProvider.advanceToCobro()` |
-| `capture_step.dart` | 101 | `registerPointSaleProvider` |
-| `customer_bar.dart` | 75 | `updateHeader` |
-| `fulfillment_mode_selector.dart` | 241, 271, 273, 284 | `posStepControllerProvider` + `updateHeader` |
-| `product_lookup_controller.dart` | 26 | `ensureOpen` |
-| `sale_line_editing.dart` | 90, 189 | `updateLine`, `removeLine` |
+| `capture_step.dart` | 2 | `posSaleController` (`addLine`, `confirm`) |
+| `capture_step.dart` | 2 | `posStepController`, `registerPointSaleProvider` |
+| `capture_step.dart` | 2 | `unconfirmedEditsProvider(posWritesScope)`, `pendingWritesProvider(posWritesScope)` |
+| `fulfillment_mode_selector.dart` | 4 | `posStepController` ×3 + `posSaleController` |
+| `customer_bar.dart` | 1 | `posSaleController.updateHeader` |
+| `product_lookup_controller.dart` | 1 | `posSaleController.ensureOpen` |
+| `sale_line_editing.dart` | 4 | `posSaleController` (`updateLine` ×3, `removeLine`) |
+| `sale_line_editing.dart` | 3 | `pendingWritesProvider(posWritesScope)` ×1, `unconfirmedEditsProvider(posWritesScope)` ×2 |
 
-Two of those files are **not shared**: `capture_step.dart` is the POS *step*
-(its confirm advances to `cobro`) and `fulfillment_mode_selector.dart` drives
-the delivery step, which is out of scope (OS-3). The back-office screen composes
-the pieces itself and offers a plain ship-to picker instead. That leaves exactly
-**four call sites in three shared files**: `customer_bar.dart` (1),
-`product_lookup_controller.dart` (1), `sale_line_editing.dart` (2).
+Two of those files are **not shared**: `capture_step.dart` is the POS *step* (its
+confirm advances to `cobro`) and `fulfillment_mode_selector.dart` drives the
+delivery step, which is out of scope (OS-3). The back-office screen composes the
+pieces itself and offers a plain ship-to picker.
 
-**Decision**: introduce a `SaleEditor` interface + a `saleEditorProvider`
-indirection whose **default resolves to the POS controller**, and swap those four
-call sites to read it.
+That leaves **three shared files** and **two distinct kinds of coupling**:
+
+1. **The sale itself** — six reads of `posSaleControllerProvider`
+   (`customer_bar` 1, `product_lookup_controller` 1, `sale_line_editing` 4).
+2. **The write scope** — three reads that hard-code `posWritesScope`
+   (`sale_line_editing`). This is the seam that did not exist when this feature
+   was first planned, and the one that matters most: left alone, the back-office
+   order would register its writes in the *register's* scope, so the cashier's
+   "Continuar al cobro" would be held shut by a back-office edit and vice versa —
+   a direct FR-030/FR-038 violation, and one that no compiler catches.
+
+**Decision**: introduce a `SaleEditor` interface plus **two** provider
+indirections — one for the sale, one for the write scope — each **defaulting to
+the register**, and swap the nine shared reads to them.
 
 ```dart
 // presentation/sale_editor.dart
@@ -49,27 +60,42 @@ abstract interface class SaleEditor {
   Future<void> confirm();
 }
 
-// default — the register. Nothing on the POS side changes.
+// Two defaults, both the register. Nothing on the POS side changes.
 @riverpod
 SaleEditor saleEditor(Ref ref) => ref.watch(posSaleControllerProvider.notifier);
+
+@riverpod
+String saleWritesScope(Ref ref) => posWritesScope;
 ```
 
+The **scope provider is the second half of the seam** and is overridden in the
+same nested `ProviderScope` as the editor. `sale_line_editing.dart`'s three
+hard-coded `posWritesScope` references become `ref.read(saleWritesScopeProvider)`.
+The back-office scope is a new constant, `salesOrderWritesScope`
+(`'back-office-sale'`) — one screen, one scope, exactly as the register's own
+comment describes its own.
+
 The back-office route wraps its screen in a nested `ProviderScope` overriding
-`saleEditorProvider` with its own controller. Providers that are *not* overridden
+**both** providers with its own controller and scope. Providers that are *not* overridden
 still resolve in the root container, so the repository, formatters, settings and
 caches stay shared; only the editor differs.
 
-**Why the default matters**: it is what keeps SC-007 honest. The POS widget tests
+**Why the defaults matter**: they are what keeps SC-007 honest. The POS widget tests
 override `salesOrderRepositoryProvider` and drive `posSaleControllerProvider`
 straight off the container (`pos_test_harness.dart:294`); with the default in
 place, not one of them needs an edit.
 
-**Shared mutation logic**: `PosSaleController` (181 lines) is a thin façade over
+**Shared mutation logic**: `PosSaleController` is a thin façade over
 `SalesOrderRepository` — every method is "call the repository, replace `state`
-with the response". Rather than copy it, extract those bodies into a
-`SaleEditing` mixin on `AsyncNotifier<Sale?>` and have both notifiers mix it in.
-`PosSaleController` keeps its own `startNew()`; the back-office controller keeps
-its own `load()` semantics and its family key.
+with the response", now wrapped in `pendingWrites.track(...)` (spec 031). Rather
+than copy it, extract those bodies into a `SaleEditing` mixin on
+`AsyncNotifier<Sale?>` with an abstract `String get writesScope`;
+`PosSaleController` returns `posWritesScope`, the back-office controller returns
+`salesOrderWritesScope`. `PosSaleController` keeps its own `startNew()`; the
+back-office controller keeps its own `load()` semantics and its family key. Both
+keep spec 031's rule that a controller **resets** its scope's counter when it
+swaps which order it holds, and spec 031's ordering rule that new state is
+published *before* `track`'s decrement runs.
 
 **Alternatives rejected**:
 
@@ -280,12 +306,84 @@ for a list screen.
   sales** — the direct expression of FR-030.
 - **Integration**: one live golden path — create, add line, confirm, find it in
   the list — following `pos_counter_sale_flow_test.dart`.
-- **The POS suite is the guard for SC-007**: it must pass unmodified. Any test
-  file under `test/*/features/sales/` that has to change is a signal the refactor
-  went further than intended.
+- **Gating**: that confirm is unavailable while a write is outstanding (including
+  a stepped quantity's coalescing window), and that the keep / discard /
+  keep-editing decision behaves as the register's does — with the back-office
+  screen's own scope, proven by a test that holds one screen's gate and asserts
+  the other's is free (FR-038).
+- **The POS suite is the guard for SC-007**: it must pass unmodified — now
+  including spec 030's and 031's own tests (`pos_write_gating_test.dart`,
+  `unconfirmed_changes_test.dart`, `sale_line_discount_test.dart`,
+  `quantity_stepper_widget_test.dart`). Any test file under
+  `test/*/features/sales/` that has to change is a signal the refactor went
+  further than intended.
 
 ## R11. What is deliberately *not* researched
 
 Payment collection, delivery planning, quotation conversion, printing, and any
 mbe-api change — all out of scope per the spec (OS-1 … OS-7). No mbe-api issue is
 filed by this feature; nothing it needs is missing.
+
+## R12. What specs 030 and 031 changed under this feature
+
+Both shipped after this feature's spec was written and are already merged into
+this branch. Neither is out of scope to *ignore* — the back-office screen reuses
+the very widgets they rewrote.
+
+**Spec 030 — sale & delivery refinements** (merged, PR #165):
+
+- The sale line's quantity is no longer a plain text field. It is
+  `QuantityStepperController` / `QuantityStepper`
+  (`presentation/widgets/quantity_stepper.dart`), shared with the delivery
+  destination card: debounced (~400 ms coalescing), floored at **one** unit, and
+  uncapped — stock is a non-blocking warning, never a bound. A line is removed
+  with `removeLine`, never stepped to zero.
+- Writes for one line are serialized through a queue, so two never fly together —
+  the reason `_busy` no longer inerts the whole line on a quantity edit.
+
+**Consequence here**: the back-office line rows inherit all of it for free.
+FR-020's wording was corrected to match (quantity is stepped, floored at one).
+
+**Spec 031 — write gating & field discard** (merged, PR #166):
+
+- `lib/core/async/critical_action_guard.dart` — a **generic, feature-agnostic**
+  mechanism: `pendingWritesProvider(scope)` counting outstanding writes
+  (including a debounce window held open via `begin`/`end` tokens before any
+  `Future` exists) and `unconfirmedEditsProvider(scope)` registering fields
+  holding typed, unconfirmed text. `keepAlive: true` on the former is load-bearing.
+- `lib/core/widgets/confirmable_text_field.dart` — `ConfirmableFieldController` /
+  `ConfirmableTextField`: Enter confirms, focus loss / unparseable text / a server
+  refusal **discards visibly** (cross-fade plus a colour pulse, with a
+  reduced-motion path).
+- `presentation/widgets/unconfirmed_changes_dialog.dart` — the keep / discard /
+  keep-editing decision, and `capture_step.dart._onContinuePressed`, which reads
+  the registry once at press time and resolves it before confirming.
+- `posWritesScope` (`presentation/pos_write_scope.dart`) is the register's opaque
+  scope string; spec 031 §FR-011 says explicitly that the mechanism must be
+  adoptable outside point of sale, with the register as its *first* adopter.
+
+**Four consequences for this feature**, all now first-class in the spec:
+
+1. **The scope seam** (§R1 above) — without it the two screens share one gate.
+2. **The order screen's confirm is a critical action** and must gate on its own
+   `pendingWrites` count (FR-035) — this feature is spec 031's second adopter,
+   which is what that spec was built for.
+3. **The unconfirmed-edits decision must be reused, not re-implemented.**
+   `_onContinuePressed` is currently private to `capture_step.dart`. Extract it as
+   a shared helper — `Future<bool> resolveUnconfirmedEdits(BuildContext, WidgetRef,
+   String scope)` — and have both the register's continue action and the
+   back-office confirm call it. This is the one edit this feature makes to a
+   POS-only file; spec 031's own tests (`pos_write_gating_test.dart`,
+   `unconfirmed_changes_test.dart`) are the guard that it stayed behaviour-neutral.
+4. **The order screen's own text fields** (discount is already handled by the
+   shared line widget; the order-level comment and any new typed field) must use
+   `ConfirmableTextField` rather than a bare `TextField`, so FR-037 holds
+   everywhere and not only on the reused parts.
+
+**The regression gate grew.** SC-007's suite now includes
+`pos_write_gating_test.dart`, `unconfirmed_changes_test.dart`,
+`sale_line_discount_test.dart` and `quantity_stepper_widget_test.dart`. All four
+must pass unmodified.
+
+**Not adopted**: spec 030's destination-card edit button and expandable
+counter row are delivery-step work (OS-3).

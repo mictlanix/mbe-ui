@@ -64,3 +64,12 @@
   read-only by design, and the legacy screenshot agrees. Building it as written
   would have forced a fork of the shared widget (breaking FR-029) or a change to
   the register (breaking FR-031). See research §R9.1.
+- **Re-checked against specs 030 and 031 on 2026-08-23.** Both POS features shipped
+  after this spec was written and are merged into this branch. Four requirements
+  were added (FR-035–FR-038), FR-020 was amended (quantity is a stepped, debounced
+  control floored at one), assumption A10 and criterion SC-011 were added, and
+  research §R12 records what the reused widgets now bring with them. The load-bearing
+  discovery: the shared line editor hard-codes the register's write scope, so without
+  a second provider seam a back-office edit would hold the cashier's continue button
+  shut — a defect no compiler or existing test would catch.
+

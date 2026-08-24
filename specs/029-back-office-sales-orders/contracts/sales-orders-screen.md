@@ -84,9 +84,11 @@ Scaffold
     └── RecordFormActions [ Cancel order ] [ Confirm ]
 ```
 
-The screen is wrapped in a nested `ProviderScope` overriding `saleEditorProvider`
-with `orderEditorController(orderId)` (data-model §6.2). That override is the
-whole isolation mechanism for FR-030.
+The screen is wrapped in a nested `ProviderScope` overriding **both**
+`saleEditorProvider` (with `orderEditorController(orderId)`) and
+`saleWritesScopeProvider` (with `salesOrderWritesScope`) — data-model §6.2. That
+pair of overrides is the whole isolation mechanism for FR-030 and FR-038; omitting
+the second one silently couples this screen's write gate to the register's.
 
 ### 2.2 Header fields (FR-016, FR-017)
 
@@ -108,7 +110,7 @@ the legacy screen's left/right split.
 | Contact | `CustomerContactPicker` (existing) | draft only |
 | Ship-to | `CustomerAddressPicker` (existing) | draft only |
 | Fiscal recipient (RFC) | `CatalogEntityPicker` over taxpayer recipients; shows `recipientName` beneath | draft only |
-| Comment | multiline text | draft only |
+| Comment | multiline `ConfirmableTextField` (FR-037) | draft only |
 
 Every edit is one `updateHeader` call; the returned `Sale` replaces state
 wholesale. Nothing is batched into a "Save" button — the surface is live, like the
@@ -116,19 +118,52 @@ register's.
 
 ### 2.3 Lines
 
-Identical behaviour to the register's capture step, plus the per-line comment:
+Identical behaviour to the register's capture step, plus the per-line comment.
+Everything here is **inherited**, not rebuilt (specs 030/031, research R12):
 
-- price is **read-only** (spec 020 FR-038c; legacy agrees — research R9.1);
-- quantity, discount, tax rate, warehouse and comment are editable while draft;
+- **quantity** is `QuantityStepper` — debounced (~400 ms coalescing), floored at
+  one, uncapped; a burst of taps is one write. A line is removed with its own
+  action, never stepped to zero;
+- **price** is read-only (spec 020 FR-038c; legacy agrees — research R9.1);
+- **discount** is a `ConfirmableTextField`: Enter confirms, and blur, unparseable
+  text or a server refusal discards it **visibly** (cross-fade + colour pulse, with
+  a reduced-motion path);
+- **comment** is new here and is a `ConfirmableTextField` too, for the same rule
+  (FR-037) — rendered only when the host passes `showComment: true`, so the
+  register's layout is unchanged;
+- tax rate and warehouse are pickers, as today;
 - per-line stock availability is shown for the chosen warehouse (FR-022);
-- a refused edit restores the last accepted values and keeps the row usable.
+- one write per line is in flight at a time (the shared serialized queue), and a
+  refused edit restores the last accepted values and keeps the row usable.
 
 ### 2.4 Confirm and cancel
 
-- **Confirm** is disabled until `lineCount > 0` (FR-023). On refusal, the server's
-  message — with every offending line named — renders in the banner and the order
-  stays a draft (FR-024). On success the folio appears and the screen flips to
-  read-only (FR-025).
+**Confirm is a critical action and gates like one** (FR-035, FR-036 — this feature
+is spec 031's second adopter). Three conditions, all of them, before it does
+anything:
+
+1. `lineCount > 0` (FR-023);
+2. `pendingWritesProvider(salesOrderWritesScope) == 0` — no write outstanding,
+   *including* a stepped quantity still inside its coalescing window. Watched, not
+   read: this is a live gate;
+3. no unconfirmed typed text — and if there is, the press raises the
+   keep / discard / keep-editing decision **before** confirming, via the same
+   `showUnconfirmedChangesDialog` and the same resolution rules the register's
+   continue action uses. "Keep" commits every entry and confirms only if all
+   landed; "discard" discards them all and confirms; "keep editing" calls
+   `resume()` on each so the typed text survives the dialog's own blur, and does
+   not confirm. The registry is read **once at press time**, not watched.
+
+On refusal, the server's message — with every offending line named — renders in
+the banner and the order stays a draft (FR-024). On success the folio appears and
+the screen flips to read-only (FR-025).
+
+> The keep/discard/keep-editing resolution currently lives private inside
+> `capture_step.dart._onContinuePressed`. It is extracted to a shared helper —
+> `resolveUnconfirmedEdits(context, ref, scope)` — and called by both, so the two
+> screens cannot answer the same question differently. Spec 031's
+> `pos_write_gating_test.dart` and `unconfirmed_changes_test.dart` are the guard
+> that the extraction changed no behaviour.
 - **Cancel** requires a confirmation dialog, lives only here (never on a row), and
   renders its refusal in the same banner (FR-026).
 

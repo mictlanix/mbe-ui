@@ -49,9 +49,13 @@ flutter test test/widget/features/sales/ test/unit/features/sales/
 ```
 
 **Every pre-existing POS test must pass with no edit to its assertions** (SC-007).
-That is the whole safety net for the `saleEditorProvider` refactor. If a POS test
-needs changing to go green, the refactor went further than R1 intended — stop and
-re-read the default-provider decision rather than editing the test.
+That is the whole safety net for the two-provider refactor **and** for extracting
+the unconfirmed-edits resolver out of `capture_step.dart`. Four of those tests
+matter most, because they cover the behaviour this feature borrows:
+`pos_write_gating_test.dart`, `unconfirmed_changes_test.dart`,
+`sale_line_discount_test.dart` and `quantity_stepper_widget_test.dart`. If any POS
+test needs changing to go green, the refactor went further than R1/R12 intended —
+stop and re-read the default-provider decision rather than editing the test.
 
 ## Unit and widget tests
 
@@ -67,6 +71,8 @@ The checks carrying the most risk:
 | Test | Proves |
 |---|---|
 | `sale_editor_isolation_test.dart` | An order open on `/sales/orders/:id` and a sale in progress at the register are **two different `Sale`s** — mutating one leaves the other untouched. The direct expression of FR-030, and the only test that would catch the refactor's worst failure mode. |
+| `order_write_gating_test.dart` | Confirm is unavailable while a write is outstanding, **including** a stepped quantity still inside its coalescing window; and the keep / discard / keep-editing decision does what it says — keep commits then confirms, discard confirms on stored values, keep-editing restores the typed text and confirms nothing (FR-035, FR-036, SC-011). |
+| `sale_editor_isolation_test.dart` (second half) | Holding the back-office screen's write gate leaves the register's free, and vice versa — the FR-038 half that the scope override exists for. |
 | `sales_orders_scoping_test.dart` | `mine` is `true` for an ordinary user and `false` for an administrator; a `salesperson`/`facility` facet **in the URL** is dropped for a non-administrator before the request is built (SC-009, the hand-edited-address edge case). |
 | `sales_orders_filter_test.dart` | Month default, `yyyy-MM-dd` round-trip, unparseable values degrading to defaults, `activeFilterCount`, and — critically — that the "today" anchor is date-truncated. An untruncated anchor makes the list spin forever, confirmed in spec 023. |
 | `sales_orders_list_screen_test.dart` | Columns, row action visible only on drafts, the four list states, and the admin-vs-ordinary drawer contents. |
@@ -113,6 +119,14 @@ flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000
    read-only — priority still changes.
 7. Add a zero-priced line to a fresh order and confirm: refused, every offender
    named, still a draft.
+8. Step a quantity and immediately press confirm: nothing happens until the
+   coalescing window closes and the write lands — confirm never acts on the
+   pre-tap total.
+9. Type a discount without pressing Enter, then click elsewhere: the field
+   visibly snaps back to the line's value. Type one again and press confirm: the
+   keep / discard / keep-editing prompt appears. Try all three answers.
+10. With the register open in another tab mid-sale, repeat step 8 here: the
+    cashier's "Continuar al cobro" must stay usable throughout (FR-038).
 
 ### US2 — resume and cancel (P2)
 

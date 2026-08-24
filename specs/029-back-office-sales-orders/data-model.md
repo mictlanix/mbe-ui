@@ -152,6 +152,10 @@ of blanking the order (FR-028).
 and each one's state should die with its route, unlike the register's long-lived
 singleton.
 
+Its `writesScope` is `salesOrderWritesScope`, and it `reset()`s that scope
+whenever it swaps which order it holds — the same rule `PosSaleController.load`
+follows (§6.2a).
+
 ---
 
 ## 6. The shared-editor seam
@@ -173,17 +177,49 @@ Both `PosSaleController` and `OrderEditorController` implement it. The interface
 is intentionally the union of what the *shared* widgets call — not the union of
 what both controllers do (`startNew`, `load`, `refresh` stay off it).
 
-### 6.2 `saleEditorProvider`
+### 6.2 `saleEditorProvider` and `saleWritesScopeProvider`
 
 ```dart
 @riverpod
 SaleEditor saleEditor(Ref ref) => ref.watch(posSaleControllerProvider.notifier);
+
+@riverpod
+String saleWritesScope(Ref ref) => posWritesScope;
 ```
 
-**The default is the register.** The back-office route overrides it inside a
-nested `ProviderScope`; every other provider still resolves in the root
-container, so repository, formatters, settings and the stock/tax caches remain
-shared. This default is the reason no POS test changes (SC-007).
+**Both defaults are the register.** The back-office route overrides the pair
+inside one nested `ProviderScope`; every other provider still resolves in the
+root container, so repository, formatters, settings and the stock/tax caches
+remain shared. These defaults are the reason no POS test changes (SC-007).
+
+The **scope** half exists because spec 031 gave the shared line editor a
+hard-coded `posWritesScope` (three references in `sale_line_editing.dart`).
+Without the override, a back-office edit would land in the register's
+outstanding-writes count and hold the cashier's continue button shut — FR-038's
+failure mode, invisible to the compiler.
+
+| Scope constant | Value | Owner |
+|---|---|---|
+| `posWritesScope` | `'pos-sale'` | the register (existing, spec 031) |
+| `salesOrderWritesScope` | `'back-office-sale'` | this feature (new) |
+
+### 6.2a The write-gating state (reused, not rebuilt)
+
+Both scopes key into the **same** shared families from
+`lib/core/async/critical_action_guard.dart`:
+
+- `pendingWritesProvider(scope)` → `int`, the outstanding-write count. Held open
+  by `begin`/`end` tokens across a debounce window before any `Future` exists, and
+  by `track()` for the whole of a request. `keepAlive: true`.
+- `unconfirmedEditsProvider(scope)` → the set of `UnconfirmedEdit` entries, each
+  carrying `confirm()`, `discard()` and `resume()`.
+
+`SaleEditing` therefore needs an abstract `String get writesScope`, and every
+mutation routes through `pendingWrites(writesScope).track(...)` — publishing new
+state *before* the tracked action returns, so the count reaches zero only once the
+figures a gate reads are the order's own (spec 031's ordering rule). A controller
+that swaps which order it holds `reset()`s its own scope, as `PosSaleController`
+already does on `load` and `startNew`.
 
 ### 6.3 Widget parameters that change
 
@@ -191,9 +227,26 @@ shared. This default is the reason no POS test changes (SC-007).
 |---|---|---|
 | `SaleLineRow` / `SaleLineCard` | `bool showComment` | `false` — the register is untouched |
 
+The comment field itself is a `ConfirmableTextField`, like the discount beside it
+— not a bare `TextField` — so spec 031's confirm-or-visibly-discard rule covers it
+(FR-037).
+
 `CustomerBar`, `ProductSearchField` and `SaleTotalsBar` need **no** new
 parameters; they already take the `Sale` (or its parts) and now route their
 mutations through `saleEditorProvider`.
+
+### 6.4 What the order screen inherits from specs 030/031
+
+Nothing below is built by this feature; it arrives with the reused widgets, and
+re-implementing any of it would be the defect:
+
+| Behaviour | Where it lives |
+|---|---|
+| debounced quantity, floored at 1, uncapped | `QuantityStepperController` / `QuantityStepper` |
+| one write in flight per line (serialized queue) | `SaleLineEditing._enqueue` |
+| Enter confirms; blur / bad input / refusal discards **visibly** | `ConfirmableFieldController` / `ConfirmableTextField` |
+| keep / discard / keep-editing decision | `showUnconfirmedChangesDialog` + the extracted resolver |
+| outstanding-write counting incl. the debounce window | `pendingWritesProvider(scope)` |
 
 ---
 
@@ -211,5 +264,7 @@ The client enforces **nothing** it would have to duplicate. It reads:
 | cancel refused when money stands against the order | server | refusal rendered on the order screen |
 | what is editable after completion | server (`update_order`: everything but `priority` is refused) | mirrored by `Sale.isEditable`, so the UI does not *offer* the refusal |
 
-The one rule the client owns outright is the scoping rule (§5.1), because there
-is no server-side equivalent to read (spec A2).
+The client owns exactly two rules outright: the scoping rule (§5.1), because there
+is no server-side equivalent to read (spec A2); and the confirm gate (FR-035,
+FR-036), because "is a write still outstanding, and is any typed text
+unconfirmed?" is a question only the client can answer.

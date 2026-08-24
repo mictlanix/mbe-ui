@@ -230,6 +230,10 @@ facet exists and no other user's order is ever visible.
 - **A line's product needs stock but no warehouse is chosen.** Confirmation is
   refused and the offending line is named; the line must be able to name its
   warehouse before confirming.
+- **A field is left mid-typing.** Typed-but-unconfirmed text is discarded and the
+  field returns, visibly, to the order's own value (FR-037). Pressing confirm with
+  such text pending raises the keep/discard/keep-editing decision instead
+  (FR-036); it never silently saves and never silently discards.
 - **Draft was confirmed or cancelled elsewhere.** Any edit is refused; the screen
   reloads the order and shows its true state rather than leaving stale controls.
 - **Search or filter yields nothing.** An explicit "no orders match" state,
@@ -327,7 +331,9 @@ facet exists and no other user's order is ever visible.
   quantity from the product's minimum order quantity (floored at one) and the tax
   rate from the product.
 - **FR-020**: Each line MUST allow editing quantity, discount, tax rate, source
-  warehouse and a per-line comment, and MUST allow removing the line. The unit
+  warehouse and a per-line comment, and MUST allow removing the line. Quantity is
+  a stepped control floored at one — a line is removed with its own action, never
+  stepped to zero — and a burst of steps MUST coalesce into a single write. The unit
   price MUST be shown but MUST NOT be editable: it comes from the customer's price
   list, the shared capture surface already makes it read-only, and legacy
   "Pedidos" shows it read-only too (corrected during planning — research §R9.1).
@@ -371,6 +377,31 @@ facet exists and no other user's order is ever visible.
   percentage MUST be rendered through the shared formatting surface.
 - **FR-034**: The screen MUST be usable at the compact width tier, degrading to
   the established card presentation instead of scrolling horizontally.
+
+#### Outstanding writes and unconfirmed edits
+
+> These four requirements exist because the capture surface this feature reuses
+> gained a write-gating mechanism and a visible field-discard rule after this
+> spec was first written (specs 030 and 031). The back-office screen inherits
+> both, and its own critical action must honour them.
+
+- **FR-035**: Confirming MUST be unavailable while any change this screen started
+  is still outstanding — including a stepped value still inside its coalescing
+  window, before any request exists. Confirming on figures the order does not yet
+  hold is the failure this prevents.
+- **FR-036**: If any field on the screen holds typed text the user never
+  confirmed when they press confirm, the screen MUST ask rather than decide:
+  keep the typed values, discard them, or go back to editing. "Keep" MUST commit
+  every one of them and confirm only once they have all landed; a refusal MUST
+  leave the order editable with the refusal shown. "Go back to editing" MUST
+  restore the typed text, not the stored value.
+- **FR-037**: Every editable text field on the order screen MUST discard typed
+  text that was never confirmed — on focus loss, on unparseable input, and on a
+  server refusal — returning to the value the order actually holds, and MUST make
+  that discard visible enough that the user registers their typing was not saved.
+- **FR-038**: The screen's outstanding-writes and unconfirmed-edits state MUST be
+  independent of the register's. Neither screen's confirm gate may be held open —
+  or held shut — by the other's edits.
 
 ### Key Entities
 
@@ -428,6 +459,10 @@ facet exists and no other user's order is ever visible.
 - **SC-010**: An administrator can narrow the list to a single salesperson's orders
   in under 15 seconds, and the resulting view is shareable as a link that reproduces
   it exactly.
+- **SC-011**: Confirming an order never acts on stale figures: with a quantity
+  stepped and a discount typed but unconfirmed, pressing confirm either commits
+  both first or discards both — the user's choice — and never confirms on the
+  pre-edit totals.
 
 ## Assumptions
 
@@ -479,6 +514,13 @@ facet exists and no other user's order is ever visible.
 - **A8 (default range)**: The default date range is assumed to be the current
   month, chosen so that a back-office user's recent work is visible without an
   unbounded query. It is a facet the user can widen or narrow.
+- **A10 (the capture surface arrives with its own behaviour)**: The shared surface
+  already carries the debounced, floored-at-one quantity stepper and the
+  confirm-or-visibly-discard text-field rule that specs 030 and 031 added, plus a
+  scoped outstanding-writes signal and an unconfirmed-edits registry. The
+  back-office screen **inherits** all of it and MUST NOT re-implement any of it;
+  what it adds is its own scope (FR-038) and its own critical-action gate
+  (FR-035, FR-036).
 - **A9 (reuse is a refactor, not a copy)**: The point-of-sale capture widgets
   currently read a single, screen-scoped piece of sale state directly. Sharing them
   is assumed to require parameterizing that state so two screens can hold two
