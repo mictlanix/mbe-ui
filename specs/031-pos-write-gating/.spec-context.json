@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "pos write gating",
   "branch": "031-pos-write-gating",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-24T01:00:35.581Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:26:57.974Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:31:48.465Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-24T01:31:48.899Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-24T01:31:59.628Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -151,6 +179,31 @@
     },
     {
       "decision": "The gating mechanism lives in the shared core as a generic mechanism, POS as first adopter (FR-011)."
+    },
+    {
+      "decision": "Guard lives at lib/core/async/critical_action_guard.dart: two keepAlive Riverpod family providers (pendingWrites count + unconfirmedEdits registry), scope-keyed; POS declares posWritesScope."
+    },
+    {
+      "decision": "Two registration modes: track(Future) for writes, begin()/end(token) holds for the debounce window; release always after the new state is published (research R6)."
+    },
+    {
+      "decision": "PosStepController.writeInFlight retired (field, copyWith param, setter, and its two test assertions) rather than wired (FR-010)."
+    },
+    {
+      "decision": "Confirm-or-discard rule + reset animation extracted to lib/core/widgets/confirmable_text_field.dart; QuantityStepperController extends it; the discount field uses the base directly with parse/commit callbacks — no subclass."
+    }
+  ],
+  "verified": [
+    {
+      "what": "Measured with a throwaway widget test: tapping a Material FilledButton does not move focus off a focused TextField — onPressed sees hasFocus==true and no focus event fires. So the step action can read unconfirmed text directly; no pointer-down snapshot needed (research R4)."
+    }
+  ],
+  "concerns": [
+    {
+      "note": "A leaked hold would disable a step action for the rest of the session (FR-006's worst case). Mitigated by paired release, whenComplete on the dispose-time flush, scope reset on startNew/load, and a debug assertion on a non-zero reset."
+    },
+    {
+      "note": "Pixel parity: pos_sale_line_* and pos_sale_totals_bar_* goldens must pass unchanged after extracting the confirmable field; a diff is a bug, not a re-baseline."
     }
   ]
 }
