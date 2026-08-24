@@ -90,12 +90,36 @@
     },
     "FR-023": {
       "title": "Fields holding no server value are left unchanged"
+    },
+    "FR-024": {
+      "title": "A step action pressed with unconfirmed text neither advances, discards nor commits silently — it asks"
+    },
+    "FR-025": {
+      "title": "The question offers exactly three outcomes: keep, discard, keep editing"
+    },
+    "FR-026": {
+      "title": "Keeping the value is indistinguishable from pressing Enter; the step advances only once it lands"
+    },
+    "FR-027": {
+      "title": "Discarding restores with the acknowledgement and then lets the step advance"
+    },
+    "FR-028": {
+      "title": "Returning to editing keeps the typed text and the current step"
+    },
+    "FR-029": {
+      "title": "The prompt appears only when unconfirmed text actually exists on the step"
+    },
+    "FR-030": {
+      "title": "Asked once for several unconfirmed fields; the answer applies to all of them"
+    },
+    "FR-031": {
+      "title": "Leaving a field by any other means still discards silently with the acknowledgement"
     }
   },
   "size": "normal",
   "classification": {
-    "projectedFiles": 14,
-    "projectedTasks": 22,
+    "projectedFiles": 16,
+    "projectedTasks": 26,
     "scopeSignal": "none",
     "verdict": "normal"
   },
@@ -117,5 +141,16 @@
     "Queueing, retrying or persisting failed writes",
     "Changing the conditions that already gate each step's action, or how refusals are surfaced",
     "A global busy overlay over the register"
+  ],
+  "decisions": [
+    {
+      "decision": "Step action pressed with unconfirmed text: warn and offer keep / discard / keep editing (FR-024…FR-031) — not a silent discard. Decided with requester 2026-08-23."
+    },
+    {
+      "decision": "A confirmed-but-unsent change counts as outstanding for its whole ~400ms coalescing window plus its write; the window is never cut short (FR-004)."
+    },
+    {
+      "decision": "The gating mechanism lives in the shared core as a generic mechanism, POS as first adopter (FR-011)."
+    }
   ]
 }

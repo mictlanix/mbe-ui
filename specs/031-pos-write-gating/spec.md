@@ -8,6 +8,24 @@
 
 **Input**: User description: "1. Fix issue #164. Let's check if this improvement can be planned as a reusable feature for critical operations that might require async operations control before submitting. 2. Setup a similar behavior of quantity stepper to other text fields: **The field must return to the value that is actually on the line, and must do it visibly enough that the cashier registers that their typing was discarded rather than saved.** Apply this to the discount field and check for other fields in the pos sale screens."
 
+## Clarifications
+
+### Session 2026-08-23
+
+- Q: A cashier types a discount, never confirms it, and presses the step's own
+  continue action. What should the press do? → A: **Ask.** Warn that there are
+  unconfirmed changes that would be discarded, and offer three ways out: keep
+  the new value, discard it, or go back to editing. Walking away from the field
+  by any other means still discards silently, as it does today.
+- Q: A stepped quantity waits out its ~400 ms coalescing window before any
+  request exists. How does the step's action treat that window? → A: The
+  pending change counts as outstanding for the whole window as well as for the
+  write that follows it, and the window is allowed to run its course — a burst
+  of taps still coalesces into one write.
+- Q: Where does the gating mechanism live, given it must be adoptable outside
+  point of sale? → A: As a **generic mechanism in the shared core**, with the
+  point of sale as its first adopter, rather than inside the sales feature.
+
 ## Overview
 
 Two gaps, one cause: the register can show a figure the server does not
@@ -50,6 +68,15 @@ rather than growing a second copy of it, and accounts for every other
 editable field on the POS sale screens — each one either brought under the
 rule or recorded as deliberately excluded, with the reason.
 
+One boundary deliberately breaks that symmetry. Clicking another control is
+walking away from a field, and the register is right to throw the typing away
+behind the cashier's back — the acknowledgement is what makes that fair.
+Pressing "Continuar al cobro" is not walking away: it is the last moment
+before money is collected, and silently dropping a discount there is the
+expensive version of the same mistake. So at a step boundary the register
+asks instead of deciding: there are unconfirmed changes, keep them, discard
+them, or go back to editing.
+
 Neither item needs a backend change, a new dependency or codegen.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -64,9 +91,9 @@ totals on screen are the sale's own. The cashier never collects against a
 figure the sale does not hold.
 
 **Why this priority**: This is issue #164, and it is a money bug — the
-figure the cashier collects against can be wrong. Everything else here is
-about not misleading the cashier; this one is about not mischarging the
-customer.
+figure the cashier collects against can be wrong. It shares its priority with
+the two stories that decide the same thing from the other direction (US2, US3):
+what the customer is charged.
 
 **Independent Test**: With a sale of several lines, change a line's discount
 and press the step's continue action before the change settles. The action
@@ -137,10 +164,57 @@ unchanged.
    **Then** the acknowledgement is still perceptible without an animated
    transition.
 7. **Given** unconfirmed text in a line's discount field, **When** the sale
-   leaves the capture step for any reason, **Then** the text is discarded and
-   never sent.
+   leaves the capture step by any means other than the step's own action —
+   the sale being closed elsewhere, the register being reset — **Then** the
+   text is discarded and never sent.
 
-### User Story 3 - The same guarantee on the other two steps (Priority: P2)
+### User Story 3 - Be asked before my typing is thrown away at the till (Priority: P1)
+
+A cashier types a discount, does not press Enter, and goes straight for
+"Continuar al cobro". Rather than advancing with the old discount or
+committing a value the cashier never confirmed, the register says there are
+unconfirmed changes and offers three ways out: keep the new value, discard it,
+or go back to editing. Whichever is chosen, what happens next is exactly what
+the cashier picked.
+
+**Why this priority**: This is the boundary where a lost discount stops being
+recoverable — the next thing that happens is collecting money. It is P1 for
+the same reason US1 is: it decides what the customer pays.
+
+**Independent Test**: Type a value into a line field without confirming it,
+press the step's continue action, and exercise each of the three answers;
+each must produce its own outcome, and none may advance the sale on a figure
+the cashier did not choose.
+
+**Acceptance Scenarios**
+
+1. **Given** unconfirmed text in a line field, **When** the cashier presses
+   the step's continue action, **Then** the sale does not advance and the
+   cashier is told there are unconfirmed changes, with the choice to keep,
+   discard, or continue editing.
+2. **Given** that prompt, **When** the cashier chooses to keep the value,
+   **Then** it is committed exactly as pressing Enter would have committed it,
+   the step's action stays unavailable until that write settles, and the sale
+   advances with the new figure.
+3. **Given** that prompt, **When** the server refuses the kept value,
+   **Then** the sale stays on its current step, the field returns to the
+   line's own value with the discard acknowledgement, and the refusal is
+   surfaced as line-edit refusals already are.
+4. **Given** that prompt, **When** the cashier chooses to discard,
+   **Then** the text is discarded, the acknowledgement plays, and the sale
+   advances with the value it actually had.
+5. **Given** that prompt, **When** the cashier chooses to continue editing,
+   **Then** the sale stays on its current step and the typed text is still
+   there to be corrected — the choice is not itself a discard.
+6. **Given** no unconfirmed text anywhere on the step, **When** the cashier
+   presses the continue action, **Then** no prompt appears and the sale
+   advances as it does today. The prompt never interrupts a cashier who
+   confirmed their edits.
+7. **Given** unconfirmed text in more than one field, **When** the cashier
+   presses the continue action, **Then** they are asked once, and the answer
+   applies to every unconfirmed field on the step.
+
+### User Story 4 - The same guarantee on the other two steps (Priority: P2)
 
 The cashier applies a payment and immediately presses "Continuar"; the
 balance on screen is still the pre-payment one. On the delivery step, they
@@ -176,7 +250,7 @@ be unavailable, then available with figures that match the sale.
    **Then** the step's action becomes available again rather than staying
    locked.
 
-### User Story 4 - One mechanism, adoptable beyond the register (Priority: P3)
+### User Story 5 - One mechanism, adoptable beyond the register (Priority: P3)
 
 A developer adding a screen whose submit must not fire while its own
 background work is outstanding finds one mechanism to reach for, with no
@@ -211,10 +285,19 @@ without any sales concept present.
   has been confirmed but has not yet left the client is a change the sale does
   not have yet. Pressing continue must not advance on the pre-step figures;
   the change is applied first and the transition waits for it.
-- **Continue pressed with unconfirmed text in a field.** Unconfirmed text is
-  not a change, so it must not hold the transition up; it is discarded, as
-  leaving the field always discards it, and the sale advances with the value it
-  actually had.
+- **Continue pressed with unconfirmed text in a field.** The cashier is asked
+  what to do with it. The mechanics deserve care: pressing a button normally
+  takes focus away from the field first, which is itself a discard — so what
+  the cashier had typed must survive long enough for the question to be asked
+  about it, rather than being thrown away by the very press that should raise
+  the question.
+- **The prompt answered with "keep" on a value the server then refuses.** The
+  sale stays where it is; the field restores visibly; the cashier is not left
+  on the payment step wondering what happened to their discount.
+- **The prompt while a write is already outstanding.** The step's action is
+  already unavailable for that reason (FR-007), so the question is not asked
+  until the action is pressable again — the cashier is never asked to decide
+  about typed text while the figures on screen are still moving.
 - **A write that never settles.** A request that fails, times out, or is
   refused must clear the signal. There is no state in which the step's action
   is permanently unavailable while the cashier still has a sale in hand.
@@ -244,7 +327,7 @@ without any sales concept present.
 
 ### Functional Requirements
 
-**One outstanding-writes signal (US1, US3)**
+**One outstanding-writes signal (US1, US4)**
 
 - **FR-001**: The system MUST maintain one signal per sale expressing whether
   any change to that sale is outstanding — begun and not yet settled.
@@ -260,13 +343,16 @@ without any sales concept present.
   and removing a destination, assigning a line to one, and sweeping the
   remainder).
 - **FR-004**: A change the cashier has confirmed that has not yet left the
-  client — one still waiting out a coalescing window — MUST count as
-  outstanding, or MUST be sent before the gated action proceeds. In no case
-  may a step transition be evaluated against figures such a change is about
-  to alter.
+  client — one still waiting out its coalescing window — MUST count as
+  outstanding for the whole of that window as well as for the write that
+  follows it. The window MUST be allowed to run its course rather than being
+  cut short by the gated action, so a burst of taps still coalesces into a
+  single write. In no case may a step transition be evaluated against figures
+  such a change is about to alter.
 - **FR-005**: Text the cashier has typed but not confirmed MUST NOT count as
-  outstanding. It is going to be discarded, not sent, and it MUST NOT hold a
-  step transition up.
+  outstanding — it is not a change to the sale, and it MUST NOT by itself make
+  a step's action unavailable. What it does instead is raise a decision when
+  that action is pressed (FR-024 … FR-031).
 - **FR-006**: The signal MUST clear when a write settles, whether it
   succeeded or failed. A refused, failed or abandoned write MUST NOT leave a
   step's action permanently unavailable.
@@ -285,10 +371,11 @@ without any sales concept present.
   outstanding" for the POS steps. The existing unused write-in-flight flag
   MUST be either wired to this mechanism or removed; two competing
   mechanisms MUST NOT remain.
-- **FR-011**: The mechanism MUST be usable by a critical action outside point
-  of sale without copying it — it MUST NOT depend on sale-specific concepts —
-  and MUST coexist with the product's existing per-form submitting flags
-  rather than requiring them to be replaced.
+- **FR-011**: The mechanism MUST live in the product's shared core, reachable
+  by any feature, rather than inside the sales feature. It MUST NOT depend on
+  sale-specific concepts, MUST be adoptable by a critical action on any screen
+  without copying it, and MUST coexist with the product's existing per-form
+  submitting flags rather than requiring them to be replaced.
 - **FR-012**: Registering a write MUST NOT change what that write does, what
   it returns, or how its refusals are surfaced.
 
@@ -329,6 +416,37 @@ without any sales concept present.
   free-text reason on a dialog, a form field committed by an explicit save —
   MUST NOT be changed by this feature.
 
+**Leaving a step with unconfirmed text (US3)**
+
+- **FR-024**: When a step's primary action is pressed while any field on that
+  step holds unconfirmed text, the system MUST NOT advance, MUST NOT discard
+  the text silently, and MUST NOT commit it silently. It MUST tell the cashier
+  there are unconfirmed changes and let them choose.
+- **FR-025**: That choice MUST offer exactly three outcomes: keep the typed
+  value, discard it, or return to editing.
+- **FR-026**: Keeping the value MUST be indistinguishable from having
+  confirmed it in the field: the same write, the same registration in the
+  outstanding-writes signal, and the same handling of a refusal. The step MUST
+  advance only once that write has settled successfully; a refusal MUST leave
+  the sale on its current step with the field restored and the refusal
+  surfaced.
+- **FR-027**: Discarding MUST restore the line's own value with the same
+  acknowledgement any other discard plays (FR-015), and MUST then let the step
+  advance.
+- **FR-028**: Returning to editing MUST leave the typed text intact and the
+  sale on its current step — that answer is not itself a discard.
+- **FR-029**: The prompt MUST appear only when unconfirmed text actually
+  exists on the step. A cashier who confirms their edits MUST never see it, and
+  it MUST NOT appear for a value that is merely still being written to the
+  server.
+- **FR-030**: With unconfirmed text in more than one field, the cashier MUST be
+  asked once, and their answer MUST apply to every unconfirmed field on that
+  step.
+- **FR-031**: Leaving a field by any means other than the step's own action —
+  clicking another control, tabbing away, the surface being torn down — MUST
+  keep discarding silently with the acknowledgement (FR-014). The prompt is a
+  step-boundary behaviour, not a replacement for that rule.
+
 ### Key Entities
 
 - **Outstanding-writes signal**: per sale, how many changes to it have begun
@@ -341,6 +459,10 @@ without any sales concept present.
 - **Editable field value**: for a field that mirrors a server value — the
   text on screen, the value the line actually carries, and the rule that
   decides which one wins when the cashier walks away.
+- **Unconfirmed-changes decision**: raised when a step's action is pressed with
+  typed text still unconfirmed anywhere on that step. It knows which fields are
+  unconfirmed and what the cashier chose — keep, discard, or keep editing — and
+  nothing else; it holds no value of its own.
 
 ## Success Criteria *(mandatory)*
 
@@ -375,7 +497,16 @@ without any sales concept present.
 - **SC-010**: The gating mechanism is exercised by an operation with no
   sale-specific concept in it, proving a screen outside point of sale can
   adopt it as-is.
-- **SC-011**: The capture, payment and delivery surfaces render without
+- **SC-011**: Pressing a step's action with unconfirmed text ends, in 100% of
+  attempts, in the outcome the cashier chose — never in a value saved that
+  they did not confirm, and never in a value lost that they meant to keep.
+- **SC-012**: Keeping a value from that prompt produces exactly the same
+  result as having pressed Enter in the field: the same write, the same
+  gating, the same handling of a refusal — verified by comparing both paths.
+- **SC-013**: A cashier who confirms every edit never sees the prompt: across
+  a scripted sale of several lines with every value confirmed, it appears zero
+  times.
+- **SC-014**: The capture, payment and delivery surfaces render without
   overflow, and the discard acknowledgement plays without shifting the sale
   line's layout, at the narrowest supported width and the largest supported
   text-size level.
@@ -386,10 +517,16 @@ without any sales concept present.
   sale with at least one line, a settled balance or credit terms, a complete
   distribution — are unchanged; this feature only adds "and nothing is
   outstanding".
-- **Pressing continue with unconfirmed text in a field discards it and
-  proceeds.** Unconfirmed text is not a change to the sale, so it does not
-  hold the transition up; the sale advances with the value it actually had.
-  This is the same rule as walking away from the field by any other means.
+- **Two different boundaries, two different behaviours, deliberately.**
+  Leaving a field discards silently with the acknowledgement; pressing a
+  step's own action asks first. The cost of a silent discard scales with what
+  happens next, and what happens next at a step boundary is collecting money.
+- **The prompt is a decision, not a warning to dismiss.** It has no default
+  answer that fires on a stray tap outside it; dismissing it without choosing
+  leaves the cashier where they were, with their text intact.
+- **The coalescing window runs its course.** A pending change is not flushed
+  early to shorten the wait; the ~400 ms window tuned in spec 026 stays as it
+  is, and the step's action is unavailable for the window plus the write.
 - **The acknowledgement is spec 030's, unchanged.** Its duration, its
   cross-fade and its colour pulse were tuned there and are reused rather than
   re-derived, reduced-motion handling included.
@@ -431,7 +568,11 @@ without any sales concept present.
 - **Spec 025's payment step and spec 026's delivery step** — the two other
   primary actions being gated, and the delivery writes that must register.
 - **Spec 028's presentation rules** — spacing, motion and formatting for
-  anything new.
+  anything new, and the dialog treatment the unconfirmed-changes question
+  inherits.
+- **The constitution's shared-core rules** — the gating mechanism lands in
+  core by decision (FR-011), so its placement, its state-management shape and
+  its independence from any feature are governed there.
 - No mbe-api change, no new endpoint, no codegen, no new dependency.
 
 ## Out of Scope
@@ -451,6 +592,10 @@ without any sales concept present.
 - Any change to the delivery step's remainder sweep, its finish gate's own
   completeness rule, or the distribution rail's layout.
 - A global "busy" overlay or blocking spinner over the register.
+- Raising the unconfirmed-changes question anywhere outside the POS steps'
+  own primary actions — no navigation guard, no browser-level warning, no
+  prompt on closing the window.
+- Flushing a pending change early to shorten the gate's wait.
 
 ## Verbatim Constraints
 

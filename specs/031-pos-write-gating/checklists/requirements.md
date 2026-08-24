@@ -14,9 +14,9 @@
 ## Requirement Completeness
 
 - [x] Any [NEEDS CLARIFICATION] markers are genuine ambiguities (≤3) deferred to clarify — not unresolved guesses
-      *(none used: the two open choices — what happens when continue is pressed with unconfirmed
-      text, and how a confirmed-but-unsent change is handled — are recorded as informed defaults
-      under Assumptions and FR-004/FR-005, and remain open to `clarify`)*
+      *(none remain: the three open choices — what a step action does with unconfirmed text, how a
+      confirmed-but-unsent change is treated, and where the gating mechanism lives — were decided
+      with the requester on 2026-08-23 and are recorded under Clarifications)*
 - [x] Each Functional Requirement is a single, testable MUST/SHOULD statement
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -41,4 +41,10 @@
   re-deciding which are in scope.
 - Two requirements deliberately pull in opposite directions and must stay that way:
   FR-004 (a confirmed-but-unsent change blocks a transition) and FR-005 (unconfirmed
-  text does not).
+  text does not — it raises the FR-024 decision instead).
+- FR-014 and FR-024 also differ on purpose: leaving a field discards silently with the
+  acknowledgement, while pressing a step's action asks. FR-031 states that boundary so
+  neither rule can be read as overriding the other.
+- The mechanics of FR-024 need design attention rather than a requirement: a button press
+  normally takes focus off the field first, which is itself a discard, so the typed text
+  has to survive the press that raises the question about it. Recorded as an edge case.
