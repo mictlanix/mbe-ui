@@ -4627,6 +4627,18 @@ abstract class AppLocalizations {
   /// **'Comment'**
   String get salesOrderCommentLabel;
 
+  /// No description provided for @salesOrderMoreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'More details'**
+  String get salesOrderMoreDetails;
+
+  /// No description provided for @salesOrderFewerDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer details'**
+  String get salesOrderFewerDetails;
+
   /// No description provided for @salesOrderPriorityLow.
   ///
   /// In en, this message translates to:

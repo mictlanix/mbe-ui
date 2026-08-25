@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
@@ -24,19 +26,31 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The order screen's own header fields (spec 029 FR-016, FR-017,
 /// contracts/sales-orders-screen.md §2.2) — everything the point-of-sale
-/// capture step does not already show via `CustomerBar`. Laid out in a
-/// [ResponsiveFormGrid], two columns wide on anything but the compact tier,
-/// matching legacy "Pedidos"' own left/right split.
+/// capture step does not already show via `CustomerBar`.
 ///
-/// Every editable field writes through a single [updateHeader] call the
-/// instant it changes — there is no batching Save button here, the same
-/// "live surface" rule the register's own header controls follow.
+/// Spec 032 reshapes it from the flat fifteen-field grid spec 029 shipped
+/// into one raised card with three bands (FR-001):
+///
+///  1. a read-only **fact strip** — reference, status, date, balance — as
+///     uppercase-label-over-value blocks, so nothing that cannot be typed
+///     into looks like a field (FR-002), with the disclosure control on its
+///     trailing edge (FR-006);
+///  2. the four fields that are always relevant — due date, promise date,
+///     payment terms, salesperson (FR-003);
+///  3. the remaining seven behind that disclosure, closed on arrival
+///     (FR-004, FR-005).
+///
+/// The disclosure changes **visibility only**. Every editable field still
+/// writes through a single [updateHeader] call the instant it changes —
+/// there is no batching Save button here, the same "live surface" rule the
+/// register's own header controls follow (FR-011).
 ///
 /// [canEdit] is `can(salesOrders, update) && sale.isEditable` — every field
 /// but priority is absent that control's editable face without it
 /// (constitution §IV, FR-003; contracts/routes.md §5's "Header field edit"
 /// row). [canEditPriority] is `can(salesOrders, update)` alone: priority is
-/// the one field that survives completion (FR-027).
+/// the one field that survives completion (029 FR-027) — it lives inside the
+/// disclosed group now, one press away rather than on screen.
 class OrderHeaderPanel extends ConsumerStatefulWidget {
   const OrderHeaderPanel({
     super.key,
@@ -62,12 +76,28 @@ class OrderHeaderPanel extends ConsumerStatefulWidget {
 class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
   AppError? _error;
 
-  late final _commentController = ConfirmableFieldController(
-    value: widget.sale.comment ?? '',
-    parse: (text) => text,
-    commit: _commitComment,
-    unconfirmedEdits: ref.read(unconfirmedEditsProvider(salesOrderWritesScope).notifier),
-  );
+  /// FR-005: closed on arrival. Per-visit only — persisting it across
+  /// navigations is a user-preference concern (spec 027), not asked for.
+  bool _expanded = false;
+
+  /// Built eagerly in [initState], not lazily on first use: the comment
+  /// field now lives inside the disclosed group (FR-004), so a panel the
+  /// user never expands would otherwise run this initializer from
+  /// [dispose] — reading `ref` after the element is gone.
+  late final ConfirmableFieldController _commentController;
+
+  @override
+  void initState() {
+    super.initState();
+    _commentController = ConfirmableFieldController(
+      value: widget.sale.comment ?? '',
+      parse: (text) => text,
+      commit: _commitComment,
+      unconfirmedEdits: ref.read(
+        unconfirmedEditsProvider(salesOrderWritesScope).notifier,
+      ),
+    );
+  }
 
   @override
   void didUpdateWidget(OrderHeaderPanel oldWidget) {
@@ -153,6 +183,8 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
     final fmt = ref.watch(formattersProvider);
     final sale = widget.sale;
     final canEdit = widget.canEdit;
@@ -168,155 +200,273 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
         .firstOrNull
         ?.label;
 
-    return ResponsiveFormGrid(
-      children: [
-        FormGridChild(_readOnly(l10n.salesOrderReferenceLabel, '${sale.serial ?? sale.id}')),
-        FormGridChild(_readOnly(l10n.salesOrderStatusLabel, posSaleStatusLabel(l10n, sale.status))),
-        FormGridChild(_readOnly(l10n.salesOrderDateLabel, fmt.display.dateTime(sale.date))),
-        FormGridChild(_readOnly(l10n.salesOrderDueDateLabel, fmt.display.dateTime(sale.dueDate))),
-        FormGridChild(
-          _readOnly(l10n.salesOrderExchangeRateLabel, sale.exchangeRate),
-        ),
-        FormGridChild(
-          _readOnly(
-            l10n.salesOrderPaymentTermsLabel,
-            sale.paymentTerms == PaymentTerms.netD
-                ? l10n.posPaymentTermsCredit
-                : l10n.posPaymentTermsImmediate,
-          ),
-        ),
-        // US4 scenario 3: outstanding balance visible without leaving the
-        // screen — paid state itself already reads off the Status field
-        // above (a paid order's own `SaleStatus.paid`).
-        FormGridChild(
-          _readOnly(l10n.salesOrdersColumnBalance, fmt.display.currency(sale.balance)),
-        ),
-        FormGridChild(
-          InkWell(
-            onTap: canEdit ? _pickPromiseDate : null,
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: l10n.salesOrderPromiseDateLabel,
-                enabled: canEdit,
-              ),
-              child: Text(fmt.display.dateTime(sale.promiseDate)),
-            ),
-          ),
-        ),
-        FormGridChild(
-          DropdownButtonFormField<Currency>(
-            key: const Key('sales_order_currency_field'),
-            initialValue: sale.currency,
-            // The Spanish label "MXN — Peso Mexicano" is wider than a
-            // three-column grid cell at common desktop widths (~1400px);
-            // without this the row overflows instead of ellipsizing.
-            isExpanded: true,
-            decoration: InputDecoration(labelText: l10n.salesOrderCurrencyLabel),
-            items: [
-              for (final currency in Currency.values)
-                DropdownMenuItem(value: currency, child: Text(_currencyLabel(l10n, currency))),
-            ],
-            onChanged: !canEdit
-                ? null
-                : (currency) {
-                    if (currency != null) _update(currency: currency);
-                  },
-          ),
-        ),
-        FormGridChild(
-          DropdownButtonFormField<Priority>(
-            key: const Key('sales_order_priority_field'),
-            initialValue: sale.priority,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: l10n.salesOrderPriorityLabel),
-            items: [
-              for (final priority in Priority.values)
-                DropdownMenuItem(value: priority, child: Text(_priorityLabel(l10n, priority))),
-            ],
-            onChanged: !widget.canEditPriority
-                ? null
-                : (priority) {
-                    if (priority != null) _update(priority: priority);
-                  },
-          ),
-        ),
-        FormGridChild(
-          CatalogEntityPicker<EmployeeListItem>(
-            key: const Key('sales_order_salesperson_field'),
-            label: l10n.salesOrderSalespersonLabel,
-            displayStringForOption: (e) => e.fullName,
-            optionsBuilder: (query) async {
-              final result = await ref
-                  .read(employeeRepositoryProvider)
-                  .list(search: query.isEmpty ? null : query, salesPerson: true);
-              return result.items;
-            },
-            onSelected: (e) => _update(salesperson: e.employeeId),
-            enabled: canEdit,
-          ),
-        ),
-        FormGridChild(
-          _PickerField(
-            label: l10n.salesOrderContactLabel,
-            value: contactLabel,
-            enabled: canEdit,
-            onTap: _pickContact,
-          ),
-        ),
-        FormGridChild(
-          _PickerField(
-            label: l10n.salesOrderShipToLabel,
-            value: shipToLabel,
-            enabled: canEdit,
-            onTap: _pickShipTo,
-          ),
-        ),
-        FormGridChild(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CatalogEntityPicker<TaxpayerRecipientListItem>(
-                key: const Key('sales_order_recipient_field'),
-                label: l10n.salesOrderRecipientLabel,
-                displayStringForOption: (r) => r.taxpayerRecipientId,
-                optionsBuilder: (query) async {
-                  final result = await ref
-                      .read(taxpayerRecipientRepositoryProvider)
-                      .list(search: query.isEmpty ? null : query);
-                  return result.items;
-                },
-                onSelected: (r) => _update(recipient: r.taxpayerRecipientId),
-                initialDisplayText: sale.recipient,
-                enabled: canEdit,
-              ),
-              if (sale.recipientName != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    sale.recipientName!,
-                    style: Theme.of(context).textTheme.bodySmall,
+    return Card(
+      // The screen already supplies the horizontal inset this card sits in,
+      // so the theme's own all-round `cardPadding` margin would double it.
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: EdgeInsets.all(spacing.cardPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _factStrip(context, l10n, fmt, sale),
+            SizedBox(height: spacing.sm),
+            // FR-003: the four fields that are always relevant.
+            ResponsiveFormGrid(
+              children: [
+                FormGridChild(
+                  _readOnly(l10n.salesOrderDueDateLabel, fmt.display.dateTime(sale.dueDate)),
+                ),
+                FormGridChild(
+                  InkWell(
+                    onTap: canEdit ? _pickPromiseDate : null,
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: l10n.salesOrderPromiseDateLabel,
+                        enabled: canEdit,
+                      ),
+                      child: Text(fmt.display.dateTime(sale.promiseDate)),
+                    ),
                   ),
                 ),
+                FormGridChild(
+                  _readOnly(
+                    l10n.salesOrderPaymentTermsLabel,
+                    sale.paymentTerms == PaymentTerms.netD
+                        ? l10n.posPaymentTermsCredit
+                        : l10n.posPaymentTermsImmediate,
+                  ),
+                ),
+                FormGridChild(
+                  CatalogEntityPicker<EmployeeListItem>(
+                    key: const Key('sales_order_salesperson_field'),
+                    label: l10n.salesOrderSalespersonLabel,
+                    displayStringForOption: (e) => e.fullName,
+                    optionsBuilder: (query) async {
+                      final result = await ref
+                          .read(employeeRepositoryProvider)
+                          .list(search: query.isEmpty ? null : query, salesPerson: true);
+                      return result.items;
+                    },
+                    onSelected: (e) => _update(salesperson: e.employeeId),
+                    enabled: canEdit,
+                  ),
+                ),
+              ],
+            ),
+            // FR-007: the disclosed group reads as a group, not as more of
+            // the same row.
+            if (_expanded) ...[
+              Divider(height: spacing.lg, color: theme.colorScheme.outlineVariant),
+              ResponsiveFormGrid(
+                children: [
+                  FormGridChild(
+                    DropdownButtonFormField<Priority>(
+                      key: const Key('sales_order_priority_field'),
+                      initialValue: sale.priority,
+                      isExpanded: true,
+                      decoration: InputDecoration(labelText: l10n.salesOrderPriorityLabel),
+                      items: [
+                        for (final priority in Priority.values)
+                          DropdownMenuItem(
+                            value: priority,
+                            child: Text(_priorityLabel(l10n, priority)),
+                          ),
+                      ],
+                      onChanged: !widget.canEditPriority
+                          ? null
+                          : (priority) {
+                              if (priority != null) _update(priority: priority);
+                            },
+                    ),
+                  ),
+                  FormGridChild(
+                    _PickerField(
+                      label: l10n.salesOrderContactLabel,
+                      value: contactLabel,
+                      enabled: canEdit,
+                      onTap: _pickContact,
+                    ),
+                  ),
+                  FormGridChild(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CatalogEntityPicker<TaxpayerRecipientListItem>(
+                          key: const Key('sales_order_recipient_field'),
+                          label: l10n.salesOrderRecipientLabel,
+                          displayStringForOption: (r) => r.taxpayerRecipientId,
+                          optionsBuilder: (query) async {
+                            final result = await ref
+                                .read(taxpayerRecipientRepositoryProvider)
+                                .list(search: query.isEmpty ? null : query);
+                            return result.items;
+                          },
+                          onSelected: (r) => _update(recipient: r.taxpayerRecipientId),
+                          initialDisplayText: sale.recipient,
+                          enabled: canEdit,
+                        ),
+                        if (sale.recipientName != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              sale.recipientName!,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  // FR-012: the artboard shows currency read-only in the
+                  // strip and an editable exchange rate here. This product
+                  // has it the other way round — currency is the editable
+                  // one, the rate is server-derived — so the pair lives here
+                  // rather than currency being duplicated into the strip.
+                  FormGridChild(
+                    DropdownButtonFormField<Currency>(
+                      key: const Key('sales_order_currency_field'),
+                      initialValue: sale.currency,
+                      // The Spanish label "MXN — Peso Mexicano" is wider than
+                      // a three-column grid cell at common desktop widths
+                      // (~1400px); without this the row overflows instead of
+                      // ellipsizing.
+                      isExpanded: true,
+                      decoration: InputDecoration(labelText: l10n.salesOrderCurrencyLabel),
+                      items: [
+                        for (final currency in Currency.values)
+                          DropdownMenuItem(
+                            value: currency,
+                            child: Text(_currencyLabel(l10n, currency)),
+                          ),
+                      ],
+                      onChanged: !canEdit
+                          ? null
+                          : (currency) {
+                              if (currency != null) _update(currency: currency);
+                            },
+                    ),
+                  ),
+                  FormGridChild(
+                    _readOnly(l10n.salesOrderExchangeRateLabel, sale.exchangeRate),
+                  ),
+                  FormGridChild(
+                    _PickerField(
+                      label: l10n.salesOrderShipToLabel,
+                      value: shipToLabel,
+                      enabled: canEdit,
+                      onTap: _pickShipTo,
+                    ),
+                  ),
+                  FormGridChild(
+                    ConfirmableTextField(
+                      controller: _commentController,
+                      enabled: canEdit,
+                      fieldKey: const Key('sales_order_comment_field'),
+                      decoration: InputDecoration(labelText: l10n.salesOrderCommentLabel),
+                    ),
+                    span: FormGridSpan.full,
+                  ),
+                ],
+              ),
+            ],
+            // FR-009: outside the disclosed group — a refusal raised by a
+            // field the user has since collapsed is still shown.
+            if (_error != null) ...[
+              SizedBox(height: spacing.sm),
+              ErrorBanner(
+                error: _error!,
+                onDismiss: () => setState(() => _error = null),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// FR-002: the four facts about the order that cannot be typed into, as
+  /// labelled blocks rather than as disabled input boxes, with the
+  /// disclosure control (FR-006) on the trailing edge.
+  ///
+  /// US4 scenario 3 (spec 029): the outstanding balance stays visible
+  /// without leaving the screen — paid state itself reads off Status.
+  Widget _factStrip(
+    BuildContext context,
+    AppLocalizations l10n,
+    AppFormatters fmt,
+    Sale sale,
+  ) {
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
+    final typeRoles = theme.typeRoles;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Wrap(
+            spacing: spacing.lg,
+            runSpacing: spacing.xs,
+            children: [
+              _fact(
+                context,
+                l10n.salesOrderReferenceLabel,
+                '${sale.serial ?? sale.id}',
+                style: typeRoles.recordId,
+              ),
+              _fact(
+                context,
+                l10n.salesOrderStatusLabel,
+                posSaleStatusLabel(l10n, sale.status),
+              ),
+              _fact(
+                context,
+                l10n.salesOrderDateLabel,
+                fmt.display.dateTime(sale.date),
+                style: typeRoles.timestamp,
+              ),
+              _fact(
+                context,
+                l10n.salesOrdersColumnBalance,
+                fmt.display.currency(sale.balance),
+                style: typeRoles.money,
+              ),
             ],
           ),
         ),
-        FormGridChild(
-          ConfirmableTextField(
-            controller: _commentController,
-            enabled: canEdit,
-            fieldKey: const Key('sales_order_comment_field'),
-            decoration: InputDecoration(labelText: l10n.salesOrderCommentLabel),
+        SizedBox(width: spacing.md),
+        TextButton.icon(
+          key: const Key('sales_order_more_details_toggle'),
+          onPressed: () => setState(() => _expanded = !_expanded),
+          // The control names where it will take you, not where you are.
+          label: Text(
+            _expanded ? l10n.salesOrderFewerDetails : l10n.salesOrderMoreDetails,
           ),
-          span: FormGridSpan.full,
+          icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+          iconAlignment: IconAlignment.end,
         ),
-        if (_error != null)
-          FormGridChild(
-            ErrorBanner(
-              error: _error!,
-              onDismiss: () => setState(() => _error = null),
-            ),
-            span: FormGridSpan.full,
+      ],
+    );
+  }
+
+  /// One fact: the smallest label role, uppercased and letter-spaced — the
+  /// same treatment `SaleTotalsBar` gives its own stat groups — over the
+  /// value in [style] (the body default unless the value is an id, a
+  /// timestamp or money).
+  Widget _fact(BuildContext context, String label, String value, {TextStyle? style}) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: theme.typeRoles.metricLabel.copyWith(
+            letterSpacing: 0.8,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
+        ),
+        Text(value, style: style ?? theme.typeRoles.fieldInput),
       ],
     );
   }

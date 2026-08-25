@@ -135,6 +135,10 @@ void main() {
       // breakpoint — already covered generically by
       // `responsive_form_grid_test.dart`; this only confirms the panel
       // still renders every field without overflowing at this width.
+      // Currency and priority moved behind the disclosure in spec 032
+      // FR-004, so the compact check has to open it first.
+      await tester.tap(find.byKey(const Key('sales_order_more_details_toggle')));
+      await tester.pumpAndSettle();
       expect(find.byKey(const Key('sales_order_currency_field')), findsOneWidget);
       expect(find.byKey(const Key('sales_order_priority_field')), findsOneWidget);
 

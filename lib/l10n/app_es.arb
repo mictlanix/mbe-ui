@@ -813,6 +813,8 @@
   "salesOrderShipToLabel": "Datos de entrega",
   "salesOrderRecipientLabel": "RFC",
   "salesOrderCommentLabel": "Comentario",
+  "salesOrderMoreDetails": "Más detalles",
+  "salesOrderFewerDetails": "Menos detalles",
   "salesOrderPriorityLow": "Baja",
   "salesOrderPriorityNormal": "Normal",
   "salesOrderPriorityHigh": "Alta",

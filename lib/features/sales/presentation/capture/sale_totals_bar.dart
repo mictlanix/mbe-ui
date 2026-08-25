@@ -36,6 +36,7 @@ class SaleTotalsBar extends ConsumerWidget {
     this.actionLabel,
     this.actionKey = const Key('pos_continue_to_payment'),
     this.showAction = true,
+    this.secondaryAction,
   });
 
   /// `null` on an untouched register (spec 020 — only Venta can render that).
@@ -75,6 +76,13 @@ class SaleTotalsBar extends ConsumerWidget {
   /// the register never renders a state this bar exists for that isn't
   /// still on the Venta step, so its button is always meaningful there.
   final bool showAction;
+
+  /// A low-emphasis action rendered immediately before the primary one
+  /// (spec 032 FR-013) — the back-office order screen's "Cancel order",
+  /// which used to sit in a band of its own beneath this bar. `null` (the
+  /// default) renders the bar exactly as it was, so every register screen
+  /// is untouched (FR-019).
+  final Widget? secondaryAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -155,6 +163,10 @@ class SaleTotalsBar extends ConsumerWidget {
                 stats,
                 SizedBox(height: spacing.xs),
                 total,
+                if (secondaryAction != null) ...[
+                  SizedBox(height: spacing.xs),
+                  secondaryAction!,
+                ],
                 if (showAction) ...[
                   SizedBox(height: spacing.xs),
                   button,
@@ -169,8 +181,12 @@ class SaleTotalsBar extends ConsumerWidget {
                 Expanded(child: stats),
                 SizedBox(width: spacing.lg),
                 total,
-                if (showAction) ...[
+                if (secondaryAction != null) ...[
                   SizedBox(width: spacing.lg),
+                  secondaryAction!,
+                ],
+                if (showAction) ...[
+                  SizedBox(width: secondaryAction == null ? spacing.lg : spacing.xs),
                   button,
                 ],
               ],

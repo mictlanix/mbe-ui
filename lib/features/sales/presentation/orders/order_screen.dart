@@ -11,7 +11,6 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
@@ -297,25 +296,35 @@ class _OrderScreenBodyState extends ConsumerState<_OrderScreenBody> {
                   !writesPending)
               ? _onConfirmPressed
               : null,
+          // Spec 032 FR-013/FR-014: cancel rides in the totals bar beside
+          // confirm rather than in a band of its own beneath it. Absent —
+          // never disabled — without update rights or on an order that is no
+          // longer editable (FR-016, 029 FR-026).
+          secondaryAction: sale != null && canUpdate && editable
+              ? _cancelAction(l10n, sale.id)
+              : null,
         ),
-        if (sale != null)
-          Padding(
-            padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.xs)),
-            child: RecordFormActions(
-              mode: editable ? RecordFormMode.edit : RecordFormMode.view,
-              saveLabel: '',
-              editLabel: '',
-              deleteLabel: l10n.salesOrderCancelAction,
-              onDelete: canUpdate && editable
-                  ? () => _confirmCancel(l10n, sale.id)
-                  : null,
-              isSubmitting: _cancelling,
-              deleteKey: const Key('sales_order_cancel_button'),
-            ),
-          ),
       ],
     );
   }
+
+  /// The destructive twin of the primary action: low emphasis, error role,
+  /// same confirmation dialog and same widget key as the band it replaces
+  /// (FR-015, FR-017, FR-018).
+  Widget _cancelAction(AppLocalizations l10n, int orderId) => TextButton(
+    key: const Key('sales_order_cancel_button'),
+    style: TextButton.styleFrom(
+      foregroundColor: Theme.of(context).colorScheme.error,
+    ),
+    onPressed: _cancelling ? null : () => _confirmCancel(l10n, orderId),
+    child: _cancelling
+        ? const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : Text(l10n.salesOrderCancelAction),
+  );
 
   List<Widget> _lines(
     Sale sale,

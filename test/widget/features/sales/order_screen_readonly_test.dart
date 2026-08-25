@@ -68,6 +68,14 @@ const _readerUser = User(
   privileges: [Privilege(systemObject: SystemObject.salesOrders, rawValue: 2)],
 );
 
+/// Spec 032 FR-004/FR-005: currency, priority and comment now live behind a
+/// disclosure that is closed on arrival. Their *gating* is what these tests
+/// are about, so they open it and then assert exactly as before.
+Future<void> _expandDetails(WidgetTester tester) async {
+  await tester.tap(find.byKey(const Key('sales_order_more_details_toggle')));
+  await tester.pumpAndSettle();
+}
+
 Override _authOverride(User user) => authNotifierProvider.overrideWith(
   () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
 );
@@ -132,6 +140,8 @@ void main() {
         expect(find.byKey(const Key('sales_order_confirm_button')), findsNothing);
         expect(find.byKey(const Key('sales_order_cancel_button')), findsNothing);
 
+        await _expandDetails(tester);
+
         final currency = tester.widget<DropdownButtonFormField<Currency>>(
           find.byKey(const Key('sales_order_currency_field')),
         );
@@ -156,6 +166,7 @@ void main() {
         (tester) async {
           await pumpOrderScreen(tester, user: _updaterUser);
           await tester.pumpAndSettle();
+          await _expandDetails(tester);
 
           final priority = tester.widget<DropdownButtonFormField<Priority>>(
             find.byKey(const Key('sales_order_priority_field')),
@@ -173,6 +184,8 @@ void main() {
 
           expect(find.byKey(const Key('sales_order_confirm_button')), findsNothing);
           expect(find.byKey(const Key('sales_order_cancel_button')), findsNothing);
+
+          await _expandDetails(tester);
 
           final priority = tester.widget<DropdownButtonFormField<Priority>>(
             find.byKey(const Key('sales_order_priority_field')),

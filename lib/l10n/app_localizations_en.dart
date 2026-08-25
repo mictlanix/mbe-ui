@@ -2441,6 +2441,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesOrderCommentLabel => 'Comment';
 
   @override
+  String get salesOrderMoreDetails => 'More details';
+
+  @override
+  String get salesOrderFewerDetails => 'Fewer details';
+
+  @override
   String get salesOrderPriorityLow => 'Low';
 
   @override
