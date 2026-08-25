@@ -26,6 +26,9 @@ import 'package:flutter_test/flutter_test.dart';
 /// - `lib/features/sales/presentation/pos_sales_list_controller.dart` —
 ///   `_dateFacetFormat` encodes a `yyyy-MM-dd` **URL query facet**, not a
 ///   display path, and must stay locale-independent.
+/// - `lib/features/sales/presentation/orders/sales_orders_list_controller.dart`
+///   (spec 029) — the same `yyyy-MM-dd` URL-facet encoding, for the same
+///   reason, on the back-office order list's date-range facet.
 ///
 /// If you are adding a new exemption, you are almost certainly adding a
 /// display path that belongs in the surface instead.
@@ -33,6 +36,7 @@ void main() {
   const allowedIntlImporters = {
     'lib/main.dart',
     'lib/features/sales/presentation/pos_sales_list_controller.dart',
+    'lib/features/sales/presentation/orders/sales_orders_list_controller.dart',
   };
 
   bool isAllowed(String path) {

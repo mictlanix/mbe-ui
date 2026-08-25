@@ -33,6 +33,9 @@ class SaleTotalsBar extends ConsumerWidget {
     required this.onContinue,
     required this.confirming,
     this.compact = false,
+    this.actionLabel,
+    this.actionKey = const Key('pos_continue_to_payment'),
+    this.showAction = true,
   });
 
   /// `null` on an untouched register (spec 020 — only Venta can render that).
@@ -52,6 +55,26 @@ class SaleTotalsBar extends ConsumerWidget {
   /// takes the full band width there and the stats wrap above it, rather
   /// than sharing one row (spec 020 FR-053).
   final bool compact;
+
+  /// Overrides the primary action's label and drops the arrow icon — the
+  /// back-office order screen's own "Confirm" rather than the register's
+  /// "step being moved to" wording (spec 029 FR-025). `null` (the default)
+  /// keeps the register's own label and arrow exactly as before this
+  /// feature.
+  final String? actionLabel;
+
+  /// The primary action button's widget key. A second screen reusing this
+  /// bar needs its own key for widget tests to find its button; defaults to
+  /// the register's existing key so POS tests are unaffected.
+  final Key actionKey;
+
+  /// `false` omits the primary action entirely — not merely disabled
+  /// (spec 029 FR-027, contracts/sales-orders-screen.md §2.5): a confirmed,
+  /// paid or cancelled back-office order offers no confirm affordance at
+  /// all. `true` (the default) keeps every POS sale's behaviour unchanged —
+  /// the register never renders a state this bar exists for that isn't
+  /// still on the Venta step, so its button is always meaningful there.
+  final bool showAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -84,18 +107,23 @@ class SaleTotalsBar extends ConsumerWidget {
       figureStyle: Theme.of(context).typeRoles.metricValue,
     );
 
+    final label = actionLabel;
     final button = FloatingActionButton.extended(
-      key: const Key('pos_continue_to_payment'),
+      key: actionKey,
       onPressed: onContinue,
       // The step being moved to, named plainly, with the arrow after it — the
       // mock's own `Entrega →`. `FloatingActionButton.extended`'s `icon` slot
-      // would put it in front, so the whole thing is the label.
+      // would put it in front, so the whole thing is the label. A caller
+      // that supplies [actionLabel] gets that text with no arrow instead —
+      // there is no "next step" for it to point at.
       label: confirming
           ? const SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
+          : label != null
+          ? Text(label)
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -127,8 +155,10 @@ class SaleTotalsBar extends ConsumerWidget {
                 stats,
                 SizedBox(height: spacing.xs),
                 total,
-                SizedBox(height: spacing.xs),
-                button,
+                if (showAction) ...[
+                  SizedBox(height: spacing.xs),
+                  button,
+                ],
               ],
             )
           // Centred, so the labelled stat blocks, the total and the action all
@@ -139,8 +169,10 @@ class SaleTotalsBar extends ConsumerWidget {
                 Expanded(child: stats),
                 SizedBox(width: spacing.lg),
                 total,
-                SizedBox(width: spacing.lg),
-                button,
+                if (showAction) ...[
+                  SizedBox(width: spacing.lg),
+                  button,
+                ],
               ],
             ),
     );

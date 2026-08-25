@@ -9,8 +9,7 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -29,6 +28,14 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// False once `Sale.isEditable` is (FR-041) — decided by the caller, never
   /// by the line itself.
   bool get lineEnabled;
+
+  /// The scope this line's writes and unconfirmed edits register against —
+  /// `posWritesScope` for the register, `salesOrderWritesScope` for the
+  /// back-office order screen (spec 029 FR-038). Read once here rather than
+  /// inline at each call site below, since [quantityStepper] and
+  /// [discountField] are both `late final` and would otherwise each read it
+  /// twice.
+  late final String _writesScope = ref.read(saleWritesScopeProvider);
 
   // Fields hold display-formatted text (FR-022) — two-decimal prices and
   // rates as the percentages their labels claim. [syncFields] converts back
@@ -50,12 +57,12 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     // for the whole of its ~400 ms coalescing window, not just the request
     // that eventually follows it — otherwise a tap-then-continue could still
     // advance on the pre-tap total, the bug this feature exists to remove.
-    pendingWrites: ref.read(pendingWritesProvider(posWritesScope).notifier),
+    pendingWrites: ref.read(pendingWritesProvider(_writesScope).notifier),
     // spec 031 FR-024, FR-030: typed-but-unconfirmed quantity text raises
     // the same step-boundary question the discount field does — the rule
     // lives once in the shared base, so both fields get it without either
     // one asking for it specially.
-    unconfirmedEdits: ref.read(unconfirmedEditsProvider(posWritesScope).notifier),
+    unconfirmedEdits: ref.read(unconfirmedEditsProvider(_writesScope).notifier),
   );
 
   /// Read-only (FR-038c): a line's price comes from the customer's price list
@@ -77,7 +84,19 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     // spec 031 FR-024, FR-030: registers so the step's own continue action
     // can find this field's unconfirmed text and ask about it, rather than
     // the field silently discarding or the step silently advancing.
-    unconfirmedEdits: ref.read(unconfirmedEditsProvider(posWritesScope).notifier),
+    unconfirmedEdits: ref.read(unconfirmedEditsProvider(_writesScope).notifier),
+  );
+
+  /// The per-line comment (spec 029 FR-020, `showComment` on the host
+  /// widget) — same confirm-or-visibly-discard rule as [discountField],
+  /// shared rather than reimplemented. Rendered only when the host opts in;
+  /// the register never builds this controller's field, so it never
+  /// registers with the write-gating scope either.
+  late final commentField = ConfirmableFieldController(
+    value: line.comment ?? '',
+    parse: (text) => text,
+    commit: _commitComment,
+    unconfirmedEdits: ref.read(unconfirmedEditsProvider(_writesScope).notifier),
   );
 
   bool _busy = false;
@@ -119,6 +138,12 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// is a [ConfirmableFieldController] now, and its own `sync` is what
   /// decides whether an external change should discard unconfirmed typed
   /// text (spec 031 FR-018), the same rule [quantityStepper] already has.
+  ///
+  /// [commentField] is deliberately **not** synced here: it is a `late
+  /// final` that only initializes if a host widget with `showComment: true`
+  /// actually reads it, and syncing it unconditionally would initialize it
+  /// on every POS line too, registering a comment field the register never
+  /// renders. A host that opts in syncs (and disposes) it itself.
   void syncFields() {
     final fmt = ref.read(formattersProvider);
     quantityStepper.sync(value: line.quantity);
@@ -148,7 +173,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     try {
       await _enqueue(
         () => ref
-            .read(posSaleControllerProvider.notifier)
+            .read(saleEditorProvider)
             .updateLine(
               lineId: line.id,
               quantity: quantity,
@@ -180,7 +205,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     try {
       await _enqueue(
         () => ref
-            .read(posSaleControllerProvider.notifier)
+            .read(saleEditorProvider)
             .updateLine(lineId: line.id, quantity: value),
       );
       return true;
@@ -202,8 +227,27 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     try {
       await _enqueue(
         () => ref
-            .read(posSaleControllerProvider.notifier)
+            .read(saleEditorProvider)
             .updateLine(lineId: line.id, discountRate: rate),
+      );
+      return true;
+    } on Object {
+      return false;
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// [commentField]'s `commit` (spec 029 FR-020) — same shape as
+  /// [_commitDiscount]. Only ever called from a host that opted into
+  /// `showComment: true`.
+  Future<bool> _commitComment(String value) async {
+    setState(() => _busy = true);
+    try {
+      await _enqueue(
+        () => ref
+            .read(saleEditorProvider)
+            .updateLine(lineId: line.id, comment: value.isEmpty ? null : value),
       );
       return true;
     } on Object {
@@ -278,7 +322,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 
   Future<void> removeLine() =>
-      ref.read(posSaleControllerProvider.notifier).removeLine(line.id);
+      ref.read(saleEditorProvider).removeLine(line.id);
 
   /// [decoration] and [style] let each tier size the picker as its own band
   /// requires; both default to Material's own, which is what the compact card

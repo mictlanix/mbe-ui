@@ -23,3 +23,14 @@ int? registerPointSale(Ref ref) {
   final state = ref.watch(authNotifierProvider).valueOrNull;
   return state is AuthAuthenticated ? state.user.settings?.pointSaleId : null;
 }
+
+/// `user_settings.facility` — the signed-in user's own facility (spec 029
+/// FR-006). `null` for an account with none configured, which the Sales
+/// Orders list treats as its own blocked state: there is nothing to scope a
+/// listing to, so no request is issued at all (distinct from
+/// [registerPointSale]'s `null`, which only blocks *creating* an order).
+@riverpod
+int? userFacilityId(Ref ref) {
+  final state = ref.watch(authNotifierProvider).valueOrNull;
+  return state is AuthAuthenticated ? state.user.settings?.facilityId : null;
+}

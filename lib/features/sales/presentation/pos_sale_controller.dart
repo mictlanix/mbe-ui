@@ -1,17 +1,24 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
-import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
-import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editing.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 
 part 'pos_sale_controller.g.dart';
 
 /// The single owner of the current [Sale] (research.md §1). Every mutation
 /// calls its repository endpoint and replaces `state` wholesale with the
 /// response — the screen never recomputes totals locally (FR-007, FR-008).
+/// The mutation bodies themselves live in [SaleEditing] (spec 029 research
+/// §R1) — this class is the register's own registration of that shared
+/// behaviour under its own [writesScope], plus the three methods no shared
+/// widget calls and that stay this controller's alone: [ensureOpen] and the
+/// mutations are inherited; [load], [refresh] and [startNew] are not shared
+/// because the back-office order controller has its own versions of the
+/// first two and no need at all for the third.
 ///
 /// A rejected mutation leaves `state` at its last accepted value: callers
 /// catch the thrown `AppError` themselves and render it inline (FR-009)
@@ -26,34 +33,12 @@ part 'pos_sale_controller.g.dart';
 /// first action that needs one, so a register nobody has touched writes
 /// nothing.
 @riverpod
-class PosSaleController extends _$PosSaleController {
+class PosSaleController extends _$PosSaleController with SaleEditing implements SaleEditor {
   @override
   Future<Sale?> build() async => null;
 
-  /// The sale in hand, opening one if the cashier has not started yet.
-  ///
-  /// Every action that can legitimately be the *first* goes through this:
-  /// adding a line, editing the header, and the product lookup — which prices
-  /// against a customer, and the customer is the sale's. The rest
-  /// ([updateLine], [removeLine], [confirm]) are impossible before a sale
-  /// exists and assert one instead.
-  Future<Sale> ensureOpen() async {
-    final current = state.valueOrNull;
-    if (current != null) return current;
-    final opened = await ref.read(salesOrderRepositoryProvider).open();
-    state = AsyncValue.data(opened);
-    return opened;
-  }
-
-  /// For the mutations that cannot be a first action — there is nothing to
-  /// update, remove or confirm before a sale exists.
-  Sale get _openSale {
-    final current = state.valueOrNull;
-    if (current == null) {
-      throw StateError('This action needs an open sale; none is started.');
-    }
-    return current;
-  }
+  @override
+  String get writesScope => posWritesScope;
 
   /// Loads an existing sale instead of opening a new one — the open-sales
   /// selector's "resume" action (US3).
@@ -83,108 +68,6 @@ class PosSaleController extends _$PosSaleController {
     final refreshed = await repository.getById(saleId: current.id);
     state = AsyncValue.data(refreshed);
   }
-
-  /// Registers this call in [pendingWritesProvider] for the whole of [action]
-  /// — including [action]'s own `state = AsyncValue.data(...)` assignment,
-  /// which must happen *before* [action] returns so the count only reaches
-  /// zero once the totals a gated step reads are already the sale's own
-  /// (spec 031 FR-003, research R6). Every mutating method below routes
-  /// through this rather than registering by hand.
-  Future<T> _tracked<T>(Future<T> Function() action) =>
-      ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
-
-  Future<void> updateHeader({
-    int? customer,
-    PaymentTerms? paymentTerms,
-    Currency? currency,
-    int? shipTo,
-    int? contact,
-    String? customerName,
-    FulfillmentMode? fulfillmentIntent,
-  }) => _tracked(() async {
-    final current = await ensureOpen();
-    final repository = ref.read(salesOrderRepositoryProvider);
-    final updated = await repository.updateHeader(
-      saleId: current.id,
-      customer: customer,
-      paymentTerms: paymentTerms,
-      currency: currency,
-      shipTo: shipTo,
-      contact: contact,
-      customerName: customerName,
-      fulfillmentIntent: fulfillmentIntent,
-    );
-    state = AsyncValue.data(updated);
-  });
-
-  Future<void> addLine({
-    required int product,
-    String? quantity,
-    String? price,
-    String? discountRate,
-    String? taxRate,
-    int? warehouse,
-    String? comment,
-  }) => _tracked(() async {
-    final current = await ensureOpen();
-    final repository = ref.read(salesOrderRepositoryProvider);
-    final updated = await repository.addLine(
-      saleId: current.id,
-      product: product,
-      quantity: quantity,
-      price: price,
-      discountRate: discountRate,
-      taxRate: taxRate,
-      warehouse: warehouse,
-      comment: comment,
-    );
-    state = AsyncValue.data(updated);
-  });
-
-  Future<void> updateLine({
-    required int lineId,
-    String? quantity,
-    String? price,
-    String? discountRate,
-    String? taxRate,
-    int? warehouse,
-    String? comment,
-  }) => _tracked(() async {
-    final current = _openSale;
-    final repository = ref.read(salesOrderRepositoryProvider);
-    final updated = await repository.updateLine(
-      saleId: current.id,
-      lineId: lineId,
-      quantity: quantity,
-      price: price,
-      discountRate: discountRate,
-      taxRate: taxRate,
-      warehouse: warehouse,
-      comment: comment,
-    );
-    state = AsyncValue.data(updated);
-  });
-
-  Future<void> removeLine(int lineId) => _tracked(() async {
-    final current = _openSale;
-    final repository = ref.read(salesOrderRepositoryProvider);
-    final updated = await repository.removeLine(
-      saleId: current.id,
-      lineId: lineId,
-    );
-    state = AsyncValue.data(updated);
-  });
-
-  /// "Continuar al cobro" — assigns the folio, commits stock, freezes the
-  /// document (FR-038–FR-040). Throws the server's `AppError` on refusal
-  /// (zero-priced lines, insufficient stock, no lines); the caller renders
-  /// it on the capture step without leaving it.
-  Future<void> confirm() => _tracked(() async {
-    final current = _openSale;
-    final repository = ref.read(salesOrderRepositoryProvider);
-    final updated = await repository.confirm(saleId: current.id);
-    state = AsyncValue.data(updated);
-  });
 
   /// Starts a fresh sale, discarding the currently-held one from view (it
   /// stays open server-side and reachable from the selector) — "start a new

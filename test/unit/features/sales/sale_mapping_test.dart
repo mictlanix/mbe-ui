@@ -15,6 +15,11 @@ api.SalesOrderResponse _saleResponse({
   String status = 'draft',
   int currency = 0,
   int paymentTerms = 0,
+  int priority = 1,
+  int? contact,
+  String? recipient,
+  String? recipientName,
+  String? comment,
   List<Map<String, Object?>> lines = const [],
 }) {
   final json = <String, Object?>{
@@ -27,8 +32,12 @@ api.SalesOrderResponse _saleResponse({
     'customer_name': 'Público en general',
     'payment_terms': paymentTerms,
     'date': '2026-08-05T00:00:00.000Z',
-    'due_date': '2026-08-05T00:00:00.000Z',
-    'priority': 1,
+    'due_date': '2026-08-12T00:00:00.000Z',
+    'contact': contact,
+    'recipient': recipient,
+    'recipient_name': recipientName,
+    'priority': priority,
+    'comment': comment,
     'currency': currency,
     'exchange_rate': '1',
     'ship_to': null,
@@ -155,6 +164,58 @@ void main() {
           Sale.fromResponse(_saleResponse(paymentTerms: 1)).paymentTerms,
           PaymentTerms.netD,
         );
+      });
+    });
+
+    group('back-office header fields (spec 029 data-model.md §1)', () {
+      test('date, dueDate, contact, recipient, recipientName and comment all map', () {
+        final sale = Sale.fromResponse(
+          _saleResponse(
+            contact: 12,
+            recipient: 'XAXX010101000',
+            recipientName: 'Pública en General',
+            comment: 'Entregar en bodega 2',
+          ),
+        );
+        expect(sale.date, DateTime.parse('2026-08-05T00:00:00.000Z'));
+        expect(sale.dueDate, DateTime.parse('2026-08-12T00:00:00.000Z'));
+        expect(sale.contact, 12);
+        expect(sale.recipient, 'XAXX010101000');
+        expect(sale.recipientName, 'Pública en General');
+        expect(sale.comment, 'Entregar en bodega 2');
+      });
+
+      test('contact, recipient, recipientName and comment are null when absent', () {
+        final sale = Sale.fromResponse(_saleResponse());
+        expect(sale.contact, isNull);
+        expect(sale.recipient, isNull);
+        expect(sale.recipientName, isNull);
+        expect(sale.comment, isNull);
+      });
+
+      test('dueDate is mapped but this entity never sends it back (FR-018)', () {
+        // There is no `toApi`/request-building path on `Sale` at all — it is
+        // a read-only DTO-to-entity mapping. Asserting the getter exists and
+        // is distinct from `date` is what "mapped but never sent" means here;
+        // the "never sent" half is enforced by `SalesOrderUpdate` not
+        // accepting the field at all (contracts/mbe-api-sales-orders.md §3).
+        final sale = Sale.fromResponse(_saleResponse());
+        expect(sale.dueDate, isNot(sale.date));
+      });
+    });
+
+    group('Priority — the generated enum with no preserved member names', () {
+      test('0/1/2/3 map to low/normal/high/critical', () {
+        expect(Sale.fromResponse(_saleResponse(priority: 0)).priority, Priority.low);
+        expect(Sale.fromResponse(_saleResponse(priority: 1)).priority, Priority.normal);
+        expect(Sale.fromResponse(_saleResponse(priority: 2)).priority, Priority.high);
+        expect(Sale.fromResponse(_saleResponse(priority: 3)).priority, Priority.critical);
+      });
+
+      test('toApi round-trips every member', () {
+        for (final p in Priority.values) {
+          expect(Priority.fromApi(p.toApi()), p);
+        }
       });
     });
 

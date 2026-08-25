@@ -49,6 +49,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree`
   // (this destination sits right after `users` there), not from this index.
   static const int userProfiles = 19;
+
+  // 029-back-office-sales-orders: appended last, same rationale as
+  // `cashSessions` above — display order comes from position within
+  // `kNavigationTree` (this destination sits right before `pos` there).
+  static const int salesOrders = 20;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -252,6 +257,19 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.cashSessions,
         gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
       ),
+      // 029-back-office-sales-orders: placed before Point of Sale — the
+      // back-office order screen is the more general entry point, and it is
+      // gated on `salesOrders`, not `pos`, so a back-office salesperson with
+      // no register privilege reaches it (contracts/routes.md §1, FR-002).
+      NavDestination(
+        id: 'sales-orders',
+        label: _salesOrdersLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/sales/orders',
+        branchIndex: NavBranch.salesOrders,
+        gate: PrivilegeGate(SystemObject.salesOrders, AccessRight.read),
+      ),
       NavDestination(
         id: 'pos',
         label: _posLabel,
@@ -293,6 +311,7 @@ String _taxpayerIssuersLabel(AppLocalizations l10n) =>
     l10n.taxpayerIssuersMenuTitle;
 String _cashSessionsLabel(AppLocalizations l10n) => l10n.cashSessionsMenuTitle;
 String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
+String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

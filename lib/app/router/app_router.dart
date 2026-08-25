@@ -53,6 +53,8 @@ import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dar
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
 import 'package:mbe_ui/features/settings/presentation/user_settings_screen.dart';
@@ -290,6 +292,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/user-profiles',
                 builder: (context, state) =>
                     UserProfilesListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
+          // 029-back-office-sales-orders: appended last (index 20), same
+          // rationale as `cashSessions` above. The order itself lives at the
+          // top-level `/sales/orders/new` / `/sales/orders/:orderId` routes
+          // below, alongside every other record's detail route, mirroring
+          // spec 023's own split for `/sales/pos` (contracts/routes.md §2).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/orders',
+                builder: (context, state) =>
+                    SalesOrdersListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -576,6 +592,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           saleId: int.parse(state.pathParameters['saleId']!),
         ),
       ),
+      // 029-back-office-sales-orders: same top-level-sibling shape as the
+      // point-of-sale workspace above, and the same `int.parse` convention
+      // every other detail route in this router uses — a non-numeric id
+      // reaches go_router's own error builder rather than a bespoke
+      // not-found screen, consistent with `/products/:productId` and every
+      // sibling route here.
+      GoRoute(
+        path: '/sales/orders/new',
+        builder: (context, state) => const OrderScreen(),
+      ),
+      GoRoute(
+        path: '/sales/orders/:orderId',
+        builder: (context, state) => OrderScreen(
+          orderId: int.parse(state.pathParameters['orderId']!),
+        ),
+      ),
     ],
   );
 });
@@ -725,6 +757,14 @@ NavGate? _routeGate(String location) {
   // (contracts/pos-screen.md §2), not at the route level.
   if (location.startsWith('/sales/pos')) {
     return PrivilegeGate(SystemObject.pos, AccessRight.read);
+  }
+  // 029-back-office-sales-orders: deliberately `salesOrders`, not `pos` —
+  // a back-office salesperson with no register privilege must reach this
+  // screen, and a cashier without sales-order rights must not
+  // (contracts/routes.md §3, FR-002). Its own clause, not folded into the
+  // `/sales/pos` one above.
+  if (location.startsWith('/sales/orders')) {
+    return PrivilegeGate(SystemObject.salesOrders, AccessRight.read);
   }
   return null;
 }

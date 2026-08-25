@@ -68,6 +68,9 @@ Sale testSale({
   taxTotal: '16.00',
   total: total,
   balance: balance,
+  date: DateTime(2026, 8, 5),
+  dueDate: DateTime(2026, 8, 5),
+  priority: Priority.normal,
 );
 
 SaleLine testLine({

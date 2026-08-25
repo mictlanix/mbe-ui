@@ -21,6 +21,15 @@ abstract class SalesOrderRepository {
   /// from the sale's current one triggers a server-side reprice of every
   /// existing line (FR-015, resolved) — nothing extra to do here, the
   /// returned [Sale] already carries it.
+  ///
+  /// [promiseDate], [salesperson], [priority] and [comment] are the
+  /// back-office order screen's own additions (spec 029 FR-016, FR-017) —
+  /// existing POS callers never pass them. [priority] is the one field the
+  /// server still accepts once the order is completed or cancelled
+  /// (mbe-api FR-011); every other parameter here is refused past that
+  /// point. There is deliberately no `dueDate` parameter: it is derived
+  /// server-side from terms and the customer's credit days and
+  /// `SalesOrderUpdate` does not accept it (spec 029 contracts §3).
   Future<Sale> updateHeader({
     required int saleId,
     int? customer,
@@ -35,6 +44,11 @@ abstract class SalesOrderRepository {
     // alongside it), so a mixed sale survives a resume without needing
     // [shipTo] at all.
     FulfillmentMode? fulfillmentIntent,
+    DateTime? promiseDate,
+    int? salesperson,
+    Priority? priority,
+    String? comment,
+    String? recipient,
   });
 
   /// `POST /sales-orders/{id}/lines`. Omit [price] to take the customer's
@@ -111,6 +125,31 @@ abstract class SalesOrderRepository {
   /// match must still narrow the returned page itself.
   Future<OpenSalePage> listSales({
     required int pointSale,
+    SaleStatus? status,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  });
+
+  /// `GET /sales-orders?mine=&facility=&salesperson=&status=&date_from=
+  /// &date_to=&search=&skip=&limit=` — the back-office Sales Orders list's
+  /// data source (spec 029 FR-006–FR-011), scoped by *who the order belongs
+  /// to* and *which facility*, never by register.
+  ///
+  /// Three server behaviours this method's callers must respect
+  /// (contracts/mbe-api-sales-orders.md §1):
+  ///
+  /// - [facility] defaults to the caller's own and the predicate is
+  ///   unconditional — a call is always exactly one facility, never merged.
+  /// - [mine], when true, matches an order whose creator, last updater **or**
+  ///   salesperson is the caller — not creator alone.
+  /// - [status], like [listSales]'s, is not guaranteed exclusive server-side.
+  Future<OpenSalePage> listOrders({
+    bool mine = false,
+    int? facility,
+    int? salesperson,
     SaleStatus? status,
     DateTime? dateFrom,
     DateTime? dateTo,

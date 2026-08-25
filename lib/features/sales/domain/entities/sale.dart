@@ -39,6 +39,18 @@ class Sale with _$Sale {
     required String taxTotal,
     required String total,
     required String balance,
+    // Back-office order screen fields (spec 029) — all already on the wire in
+    // `SalesOrderResponse`, simply never mapped until this feature needed them.
+    // POS never reads any of these; adding them is additive.
+    required DateTime date,
+    // Display-only (FR-018): derived server-side from terms + customer credit
+    // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
+    required DateTime dueDate,
+    int? contact,
+    String? recipient,
+    String? recipientName,
+    required Priority priority,
+    String? comment,
   }) = _Sale;
 
   factory Sale.fromResponse(api.SalesOrderResponse r) => Sale(
@@ -63,6 +75,13 @@ class Sale with _$Sale {
     taxTotal: r.taxTotal,
     total: r.total,
     balance: r.balance,
+    date: r.date,
+    dueDate: r.dueDate,
+    contact: r.contact,
+    recipient: r.recipient,
+    recipientName: r.recipientName,
+    priority: Priority.fromApi(r.priority),
+    comment: r.comment,
   );
 
   /// The provisional reference before confirmation (FR-040) — callers
@@ -144,3 +163,35 @@ api.CurrencyCode currencyToApi(Currency value) => switch (value) {
   Currency.usd => api.CurrencyCode.number1,
   Currency.eur => api.CurrencyCode.number2,
 };
+
+/// `sales_order.priority` (mbe-api `Priority(IntEnum)`: `LOW=0, NORMAL=1,
+/// HIGH=2, CRITICAL=3`) — same generator gap as [PaymentTerms]/[CurrencyCode]
+/// above. Four members, not the three legacy's form offers (Baja/Media/Alta):
+/// `critical` is an mbe-api addition with no legacy label, decoded here
+/// because a value that exists on the wire must decode (data-model.md §1.1).
+/// `normal` is the safe fallback for an unrecognized value, matching
+/// `SalesOrderCreate.priority`'s own default.
+enum Priority {
+  low(0),
+  normal(1),
+  high(2),
+  critical(3);
+
+  const Priority(this.value);
+
+  final int value;
+
+  static Priority fromApi(api.Priority value) => switch (value.name) {
+    'number0' => Priority.low,
+    'number2' => Priority.high,
+    'number3' => Priority.critical,
+    _ => Priority.normal,
+  };
+
+  api.Priority toApi() => switch (this) {
+    Priority.low => api.Priority.number0,
+    Priority.normal => api.Priority.number1,
+    Priority.high => api.Priority.number2,
+    Priority.critical => api.Priority.number3,
+  };
+}
