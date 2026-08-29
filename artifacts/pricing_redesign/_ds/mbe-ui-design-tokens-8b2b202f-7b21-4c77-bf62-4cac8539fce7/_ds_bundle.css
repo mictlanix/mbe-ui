@@ -1,0 +1,467 @@
+/*
+ * MBE-UI design tokens (spec 022, mictlanix/mbe-ui). Tokens-only -- the
+ * source app is Flutter/Dart, so there are no components to ship here,
+ * only the values: colors, spacing, shape, elevation, and type. Values are
+ * transcribed verbatim from lib/core/branding/{xbe_palette,brand_ink}.dart
+ * and lib/core/design/{spacing,shapes,elevations,type_roles}.dart, plus
+ * Flutter's own M3 englishLike2021 type-scale table (never restated by the
+ * app itself -- see typography.dart in the Flutter SDK).
+ *
+ * Two brand-owner-unconfirmed values, carried over honestly from source:
+ *  - --mbe-color-light-surface-container-low is interpolated (no approved
+ *    value exists in the brand guide's light-mode section).
+ *  - Archivo tracking corrections for display*/headlineLarge at w700 were
+ *    never measured against brand mockups (DESIGN-SYSTEM.md open question);
+ *    this file uses M3's own tracking values unmodified, same as the app.
+ */
+
+/* ---------------------------------------------------------------------- */
+/* Fonts -- Archivo (display/headline/title/label) and RobotoMono (record
+   IDs, timestamps). Roboto (body text) is NOT bundled by the app itself --
+   it renders on Flutter's platform default and has no shipped font file to
+   carry here; body text below falls back to a system sans-serif stack. */
+/* ---------------------------------------------------------------------- */
+
+/* @ds-font-face-dropped: unresolvable src */
+
+/* @ds-font-face-dropped: unresolvable src */
+
+:root {
+  --mbe-font-brand: 'Archivo', system-ui, sans-serif;
+  --mbe-font-body: 'Roboto', system-ui, sans-serif; /* not bundled -- see note above */
+  --mbe-font-mono: 'RobotoMono', ui-monospace, monospace;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Color -- full ColorScheme, resolved for the default XBE brand via
+   ColorScheme.fromSeed(seedColor: 0xFFECAB03, variant: fidelity) with the
+   pinned-role overrides in xbe_palette.dart. A deployment overriding the
+   seed color gets none of these XBE-specific values (spec 019 FR-007) --
+   this file documents the DEFAULT brand only, not the brandable mechanism.
+   Toggle dark mode by setting data-mbe-theme="dark" on an ancestor. */
+/* ---------------------------------------------------------------------- */
+
+:root,
+[data-mbe-theme='light'] {
+  --mbe-color-primary: #ecab03;
+  --mbe-color-on-primary: #241900;
+  --mbe-color-primary-container: #ffe7a8;
+  --mbe-color-on-primary-container: #5c4000;
+  --mbe-color-secondary: #5a5349;
+  --mbe-color-on-secondary: #ffffff;
+  --mbe-color-secondary-container: #fed794;
+  --mbe-color-on-secondary-container: #785c26;
+  --mbe-color-tertiary: #ec672a;
+  --mbe-color-on-tertiary: #ffffff;
+  --mbe-color-tertiary-container: #4ec1ff;
+  --mbe-color-on-tertiary-container: #004d6d;
+  --mbe-color-error: #c4262e;
+  --mbe-color-on-error: #ffffff;
+  --mbe-color-error-container: #fbdedf;
+  --mbe-color-on-error-container: #a31219;
+  --mbe-color-surface: #fbf8f3;
+  --mbe-color-on-surface: #1c1a16;
+  --mbe-color-on-surface-variant: #5a5349;
+  --mbe-color-surface-container-lowest: #ffffff;
+  --mbe-color-surface-container-low: #f9f6f1; /* interpolated -- see header note */
+  --mbe-color-surface-container: #f3ede3;
+  --mbe-color-surface-container-high: #f3e6d7;
+  --mbe-color-surface-container-highest: #ede1d1;
+  --mbe-color-outline: #c4bbac;
+  --mbe-color-outline-variant: #e3dacc;
+  --mbe-color-inverse-surface: #362f25;
+  --mbe-color-on-inverse-surface: #fcefdf;
+  --mbe-color-inverse-primary: #febb21;
+  --mbe-color-scrim: #000000;
+  --mbe-color-shadow: #000000;
+
+  /* BrandInk -- contrast-safe foreground for brand-colored text/icons on a
+     surface (never use --mbe-color-primary itself as a text color; raw
+     gold fails contrast on light surfaces -- see brand_ink.dart). */
+  --mbe-color-brand-ink: #7a5600;
+}
+
+[data-mbe-theme='dark'] {
+  --mbe-color-primary: #ecab03;
+  --mbe-color-on-primary: #241900;
+  --mbe-color-primary-container: #4b3703;
+  --mbe-color-on-primary-container: #ffd466;
+  --mbe-color-secondary: #c7c7c8;
+  --mbe-color-on-secondary: #232323;
+  --mbe-color-secondary-container: #5c420d;
+  --mbe-color-on-secondary-container: #d4b071;
+  --mbe-color-tertiary: #ec672a;
+  --mbe-color-on-tertiary: #2b0f00;
+  --mbe-color-tertiary-container: #4ec1ff;
+  --mbe-color-on-tertiary-container: #004d6d;
+  --mbe-color-error: #d8262e;
+  --mbe-color-on-error: #ffffff;
+  --mbe-color-error-container: #3a1416;
+  --mbe-color-on-error-container: #ff8f93;
+  --mbe-color-surface: #14120f;
+  --mbe-color-on-surface: #efe9df;
+  --mbe-color-on-surface-variant: #b4aca0;
+  --mbe-color-surface-container-lowest: #0f0d0b;
+  --mbe-color-surface-container-low: #1b1814;
+  --mbe-color-surface-container: #221e19;
+  --mbe-color-surface-container-high: #2f291f;
+  --mbe-color-surface-container-highest: #3b3429;
+  --mbe-color-outline: #4e473d;
+  --mbe-color-outline-variant: #332e27;
+  --mbe-color-inverse-surface: #ede1d1;
+  --mbe-color-on-inverse-surface: #362f25;
+  --mbe-color-inverse-primary: #7c5800;
+  --mbe-color-scrim: #000000;
+  --mbe-color-shadow: #000000;
+
+  --mbe-color-brand-ink: #ecab03;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mbe-theme='light']) {
+    --mbe-color-primary: #ecab03;
+    --mbe-color-on-primary: #241900;
+    --mbe-color-primary-container: #4b3703;
+    --mbe-color-on-primary-container: #ffd466;
+    --mbe-color-secondary: #c7c7c8;
+    --mbe-color-on-secondary: #232323;
+    --mbe-color-secondary-container: #5c420d;
+    --mbe-color-on-secondary-container: #d4b071;
+    --mbe-color-tertiary: #ec672a;
+    --mbe-color-on-tertiary: #2b0f00;
+    --mbe-color-tertiary-container: #4ec1ff;
+    --mbe-color-on-tertiary-container: #004d6d;
+    --mbe-color-error: #d8262e;
+    --mbe-color-on-error: #ffffff;
+    --mbe-color-error-container: #3a1416;
+    --mbe-color-on-error-container: #ff8f93;
+    --mbe-color-surface: #14120f;
+    --mbe-color-on-surface: #efe9df;
+    --mbe-color-on-surface-variant: #b4aca0;
+    --mbe-color-surface-container-lowest: #0f0d0b;
+    --mbe-color-surface-container-low: #1b1814;
+    --mbe-color-surface-container: #221e19;
+    --mbe-color-surface-container-high: #2f291f;
+    --mbe-color-surface-container-highest: #3b3429;
+    --mbe-color-outline: #4e473d;
+    --mbe-color-outline-variant: #332e27;
+    --mbe-color-inverse-surface: #ede1d1;
+    --mbe-color-on-inverse-surface: #362f25;
+    --mbe-color-inverse-primary: #7c5800;
+    --mbe-color-brand-ink: #ecab03;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Elevation -- surface color carries depth (M3's preferred idiom); shadow
+   is reserved for transient overlays only (floating, modal). No level
+   mixes both. */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  --mbe-elevation-flat: var(--mbe-color-surface);
+  --mbe-elevation-sunken: var(--mbe-color-surface-container-lowest);
+  --mbe-elevation-raised: var(--mbe-color-surface-container-low);
+  --mbe-elevation-engaged: var(--mbe-color-surface-container);
+  --mbe-elevation-floating: var(--mbe-color-surface-container-high);
+  --mbe-elevation-floating-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  --mbe-elevation-modal: var(--mbe-color-surface-container-highest);
+  --mbe-elevation-modal-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Shape -- corner radius scale (spacing.dart/shapes.dart). Tier-invariant. */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  --mbe-radius-none: 0px; /* table cells, dividers, full-bleed surfaces */
+  --mbe-radius-xs: 4px; /* filled text field, snackbar */
+  --mbe-radius-sm: 8px; /* chips, badges, menu items */
+  --mbe-radius-md: 12px; /* inner containers */
+  --mbe-radius-lg: 16px; /* cards and panels -- brand guide's dominant radius */
+  --mbe-radius-xl: 28px; /* dialogs, side sheets, bottom sheets */
+  --mbe-radius-full: 9999px; /* buttons, nav indicators, filter pills (pill shape) */
+}
+
+/* ---------------------------------------------------------------------- */
+/* Spacing -- fixed 8-step scale (tier-invariant) plus per-tier layout
+   metrics. Breakpoints match LayoutBreakpoints exactly: compact <600,
+   medium 600-839, expanded 840-1199, large >=1200. */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  --mbe-spacing-none: 0px;
+  --mbe-spacing-xxs: 4px;
+  --mbe-spacing-xs: 8px;
+  --mbe-spacing-sm: 12px;
+  --mbe-spacing-md: 16px;
+  --mbe-spacing-lg: 24px;
+  --mbe-spacing-xl: 32px;
+  --mbe-spacing-xxl: 48px;
+  --mbe-spacing-xxxl: 64px;
+
+  /* compact tier (<600px) -- default */
+  --mbe-layout-screen-margin: 16px;
+  --mbe-layout-pane-gutter: 0px;
+  --mbe-layout-card-padding: 16px;
+  --mbe-layout-field-gap-vertical: 16px;
+  --mbe-layout-field-gap-horizontal: 0px;
+  --mbe-layout-section-gap: 24px;
+  --mbe-layout-content-max-width: none;
+}
+
+@media (min-width: 600px) {
+  /* medium tier (600-839px) */
+  :root {
+    --mbe-layout-screen-margin: 24px;
+    --mbe-layout-pane-gutter: 24px;
+    --mbe-layout-card-padding: 16px;
+    --mbe-layout-field-gap-vertical: 16px;
+    --mbe-layout-field-gap-horizontal: 16px;
+    --mbe-layout-section-gap: 32px;
+  }
+}
+
+@media (min-width: 840px) {
+  /* expanded tier (840-1199px) */
+  :root {
+    --mbe-layout-card-padding: 24px;
+    --mbe-layout-field-gap-horizontal: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  /* large tier (>=1200px) -- only content-max-width changes from expanded */
+  :root {
+    --mbe-layout-content-max-width: 1440px;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Density -- keyed on input modality (pointer vs touch), never on viewport
+   width: a wide touch tablet still gets touch metrics, a narrow desktop
+   window still gets pointer metrics. `pointer` is the CSS analogue of
+   Flutter's non-touch platforms; `coarse` is the analogue of touch. */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  /* pointer (mouse/trackpad) -- default */
+  --mbe-density-min-target-size: 40px;
+  --mbe-density-table-heading-row-height: 48px;
+  --mbe-density-table-data-row-height: 44px;
+  --mbe-density-list-row-min-height: 48px;
+  --mbe-density-icon-button-size: 40px;
+}
+
+@media (pointer: coarse) {
+  /* touch */
+  :root {
+    --mbe-density-min-target-size: 48px;
+    --mbe-density-table-heading-row-height: none; /* tables become card lists on touch -- out of scope, spec 022 FR-025 */
+    --mbe-density-table-data-row-height: none;
+    --mbe-density-list-row-min-height: 56px;
+    --mbe-density-icon-button-size: 48px;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Type -- 21 semantic slots (type_roles.dart), each a family/size/weight/
+   tracking/line-height bundle. Base values are the compact-tier mapping;
+   medium/expanded breakpoints override only the slots that actually change
+   (data-model.md §5). Sizes/line-heights/tracking are Flutter's own M3
+   englishLike2021 table, restated here verbatim, never invented. Weights
+   on display/headline/title/label slots are the brand's Archivo
+   substitution (_brandTextTheme); body-role slots keep M3's own weight
+   because the brand override never touches body roles. */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  /* screenTitle -- titleLarge, all tiers */
+  --mbe-type-screen-title-family: var(--mbe-font-brand);
+  --mbe-type-screen-title-weight: 600;
+  --mbe-type-screen-title-size: 22px;
+  --mbe-type-screen-title-tracking: 0px;
+  --mbe-type-screen-title-leading: 1.27;
+
+  /* heroHeading -- compact: headlineMedium */
+  --mbe-type-hero-heading-family: var(--mbe-font-brand);
+  --mbe-type-hero-heading-weight: 600;
+  --mbe-type-hero-heading-size: 28px;
+  --mbe-type-hero-heading-tracking: 0px;
+  --mbe-type-hero-heading-leading: 1.29;
+
+  /* heroSubhead -- bodyLarge, all tiers (never brand-overridden) */
+  --mbe-type-hero-subhead-family: var(--mbe-font-body);
+  --mbe-type-hero-subhead-weight: 400;
+  --mbe-type-hero-subhead-size: 16px;
+  --mbe-type-hero-subhead-tracking: 0.5px;
+  --mbe-type-hero-subhead-leading: 1.5;
+
+  /* pageHeading -- compact: emphasize(headlineSmall) => w700 override */
+  --mbe-type-page-heading-family: var(--mbe-font-brand);
+  --mbe-type-page-heading-weight: 700;
+  --mbe-type-page-heading-size: 24px;
+  --mbe-type-page-heading-tracking: 0px;
+  --mbe-type-page-heading-leading: 1.33;
+
+  /* sectionHeading -- compact/medium: titleMedium */
+  --mbe-type-section-heading-family: var(--mbe-font-brand);
+  --mbe-type-section-heading-weight: 600;
+  --mbe-type-section-heading-size: 16px;
+  --mbe-type-section-heading-tracking: 0.15px;
+  --mbe-type-section-heading-leading: 1.5;
+
+  /* cardTitle -- titleMedium, all tiers */
+  --mbe-type-card-title-family: var(--mbe-font-brand);
+  --mbe-type-card-title-weight: 600;
+  --mbe-type-card-title-size: 16px;
+  --mbe-type-card-title-tracking: 0.15px;
+  --mbe-type-card-title-leading: 1.5;
+
+  /* metricValue -- compact: emphasize(headlineSmall) => w700 override */
+  --mbe-type-metric-value-family: var(--mbe-font-brand);
+  --mbe-type-metric-value-weight: 700;
+  --mbe-type-metric-value-size: 24px;
+  --mbe-type-metric-value-tracking: 0px;
+  --mbe-type-metric-value-leading: 1.33;
+
+  /* metricLabel -- bodySmall, all tiers */
+  --mbe-type-metric-label-family: var(--mbe-font-body);
+  --mbe-type-metric-label-weight: 400;
+  --mbe-type-metric-label-size: 12px;
+  --mbe-type-metric-label-tracking: 0.4px;
+  --mbe-type-metric-label-leading: 1.33;
+
+  /* navLabel -- labelLarge, all tiers */
+  --mbe-type-nav-label-family: var(--mbe-font-brand);
+  --mbe-type-nav-label-weight: 600;
+  --mbe-type-nav-label-size: 14px;
+  --mbe-type-nav-label-tracking: 0.1px;
+  --mbe-type-nav-label-leading: 1.43;
+
+  /* navHeader -- titleSmall, all tiers */
+  --mbe-type-nav-header-family: var(--mbe-font-brand);
+  --mbe-type-nav-header-weight: 600;
+  --mbe-type-nav-header-size: 14px;
+  --mbe-type-nav-header-tracking: 0.1px;
+  --mbe-type-nav-header-leading: 1.43;
+
+  /* tableHeader -- labelLarge, all tiers */
+  --mbe-type-table-header-family: var(--mbe-font-brand);
+  --mbe-type-table-header-weight: 600;
+  --mbe-type-table-header-size: 14px;
+  --mbe-type-table-header-tracking: 0.1px;
+  --mbe-type-table-header-leading: 1.43;
+
+  /* tableCell -- bodyMedium, all tiers */
+  --mbe-type-table-cell-family: var(--mbe-font-body);
+  --mbe-type-table-cell-weight: 400;
+  --mbe-type-table-cell-size: 14px;
+  --mbe-type-table-cell-tracking: 0.25px;
+  --mbe-type-table-cell-leading: 1.43;
+
+  /* fieldInput -- compact/medium: bodyLarge */
+  --mbe-type-field-input-family: var(--mbe-font-body);
+  --mbe-type-field-input-weight: 400;
+  --mbe-type-field-input-size: 16px;
+  --mbe-type-field-input-tracking: 0.5px;
+  --mbe-type-field-input-leading: 1.5;
+
+  /* fieldLabel -- bodySmall, all tiers */
+  --mbe-type-field-label-family: var(--mbe-font-body);
+  --mbe-type-field-label-weight: 400;
+  --mbe-type-field-label-size: 12px;
+  --mbe-type-field-label-tracking: 0.4px;
+  --mbe-type-field-label-leading: 1.33;
+
+  /* chipLabel -- compact/medium: labelLarge */
+  --mbe-type-chip-label-family: var(--mbe-font-brand);
+  --mbe-type-chip-label-weight: 600;
+  --mbe-type-chip-label-size: 14px;
+  --mbe-type-chip-label-tracking: 0.1px;
+  --mbe-type-chip-label-leading: 1.43;
+
+  /* buttonLabel -- labelLarge, all tiers */
+  --mbe-type-button-label-family: var(--mbe-font-brand);
+  --mbe-type-button-label-weight: 600;
+  --mbe-type-button-label-size: 14px;
+  --mbe-type-button-label-tracking: 0.1px;
+  --mbe-type-button-label-leading: 1.43;
+
+  /* money -- bodyMedium + tabular figures, all tiers */
+  --mbe-type-money-family: var(--mbe-font-body);
+  --mbe-type-money-weight: 400;
+  --mbe-type-money-size: 14px;
+  --mbe-type-money-tracking: 0.25px;
+  --mbe-type-money-leading: 1.43;
+  --mbe-type-money-variant: tabular-nums;
+
+  /* recordId -- bodyMedium metrics, RobotoMono family (FR-028) */
+  --mbe-type-record-id-family: var(--mbe-font-mono);
+  --mbe-type-record-id-weight: 400;
+  --mbe-type-record-id-size: 14px;
+  --mbe-type-record-id-tracking: 0.25px;
+  --mbe-type-record-id-leading: 1.43;
+
+  /* timestamp -- bodySmall metrics, RobotoMono family */
+  --mbe-type-timestamp-family: var(--mbe-font-mono);
+  --mbe-type-timestamp-weight: 400;
+  --mbe-type-timestamp-size: 12px;
+  --mbe-type-timestamp-tracking: 0.4px;
+  --mbe-type-timestamp-leading: 1.33;
+
+  /* productCode -- bodyMedium, deliberately NOT mono (FR-028) */
+  --mbe-type-product-code-family: var(--mbe-font-body);
+  --mbe-type-product-code-weight: 400;
+  --mbe-type-product-code-size: 14px;
+  --mbe-type-product-code-tracking: 0.25px;
+  --mbe-type-product-code-leading: 1.43;
+
+  /* overlayText -- compact/medium: bodyMedium */
+  --mbe-type-overlay-text-family: var(--mbe-font-body);
+  --mbe-type-overlay-text-weight: 400;
+  --mbe-type-overlay-text-size: 14px;
+  --mbe-type-overlay-text-tracking: 0.25px;
+  --mbe-type-overlay-text-leading: 1.43;
+}
+
+@media (min-width: 600px) {
+  /* medium tier: heroHeading and pageHeading/metricValue's base role step up
+     to display/headline-medium; sectionHeading/chipLabel/overlayText/
+     fieldInput do NOT change yet -- they wait for the 840px boundary. */
+  :root {
+    --mbe-type-hero-heading-size: 36px;
+    --mbe-type-hero-heading-weight: 700;
+    --mbe-type-hero-heading-tracking: 0px;
+    --mbe-type-hero-heading-leading: 1.22;
+
+    --mbe-type-page-heading-size: 28px;
+    --mbe-type-page-heading-leading: 1.29;
+
+    --mbe-type-metric-value-size: 28px;
+    --mbe-type-metric-value-leading: 1.29;
+  }
+}
+
+@media (min-width: 840px) {
+  /* expanded tier (and large, which matches expanded for every type role) */
+  :root {
+    --mbe-type-section-heading-size: 22px;
+    --mbe-type-section-heading-tracking: 0px;
+    --mbe-type-section-heading-leading: 1.27;
+
+    --mbe-type-field-input-family: var(--mbe-font-body);
+    --mbe-type-field-input-size: 14px;
+    --mbe-type-field-input-tracking: 0.25px;
+    --mbe-type-field-input-leading: 1.43;
+
+    --mbe-type-chip-label-weight: 600;
+    --mbe-type-chip-label-size: 12px;
+    --mbe-type-chip-label-tracking: 0.5px;
+    --mbe-type-chip-label-leading: 1.33;
+
+    --mbe-type-overlay-text-size: 12px;
+    --mbe-type-overlay-text-tracking: 0.4px;
+    --mbe-type-overlay-text-leading: 1.33;
+  }
+}

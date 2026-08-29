@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#14120f">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#14120f"/>
+    <rect x="120" y="150" width="960" height="500" rx="40" fill="#1b1814"/>
+    <rect x="120" y="150" width="960" height="90" rx="40" fill="#221e19"/>
+    <rect x="120" y="200" width="960" height="40" fill="#221e19"/>
+    <rect x="700" y="150" width="380" height="500" fill="rgba(236,171,3,0.07)"/>
+    <g fill="#3b3429">
+      <rect x="170" y="290" width="70" height="70" rx="10"/>
+      <rect x="170" y="400" width="70" height="70" rx="10"/>
+      <rect x="170" y="510" width="70" height="70" rx="10"/>
+    </g>
+    <g fill="#4e473d">
+      <rect x="280" y="315" width="340" height="20" rx="10"/>
+      <rect x="280" y="425" width="300" height="20" rx="10"/>
+      <rect x="280" y="535" width="360" height="20" rx="10"/>
+    </g>
+    <g fill="#ecab03">
+      <rect x="730" y="315" width="110" height="20" rx="10"/>
+      <rect x="900" y="315" width="130" height="20" rx="10"/>
+      <rect x="730" y="425" width="130" height="20" rx="10"/>
+      <rect x="900" y="425" width="110" height="20" rx="10"/>
+      <rect x="730" y="535" width="120" height="20" rx="10"/>
+      <rect x="900" y="535" width="125" height="20" rx="10"/>
+    </g>
+    <rect x="716" y="405" width="160" height="60" rx="8" fill="none" stroke="#ecab03" stroke-width="5"/>
+  </svg>
+</template>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/mbe-ui-design-tokens-8b2b202f-7b21-4c77-bf62-4cac8539fce7/fonts/fonts.css">
+<link rel="stylesheet" href="_ds/mbe-ui-design-tokens-8b2b202f-7b21-4c77-bf62-4cac8539fce7/_ds_bundle.css">
+<link rel="stylesheet" href="_ds/mbe-ui-design-tokens-8b2b202f-7b21-4c77-bf62-4cac8539fce7/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0&display=swap">
+<style>
+html,body{margin:0;padding:0}
+body{background:#14120f}
+a{color:var(--mbe-color-brand-ink)}
+a:hover{color:var(--mbe-color-primary)}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;user-select:none}
+.msf{font-variation-settings:'FILL' 1}
+.pg-row:hover{background:rgba(255,255,255,.035)}
+.pg-cell input{width:100%;box-sizing:border-box;background:#221e19;color:#efe9df;border:1px solid #4e473d;border-radius:4px;padding:5px 8px;font:400 14px/1.2 'Roboto',system-ui,sans-serif;font-variant-numeric:tabular-nums;text-align:right;outline:none}
+.pg-cell input:focus{border-color:#ecab03;border-width:2px;padding:4px 7px}
+.pg-icon:hover{background:rgba(255,255,255,.08)}
+.pg-cell,.pg-hcell{align-self:stretch;display:flex;align-items:center;justify-content:flex-end;background:rgba(236,171,3,.05);padding:0 8px;margin:0 -8px}
+.pg-hcell{background:rgba(236,171,3,.09);gap:6px;position:relative}
+.pg-cost{background:rgba(255,255,255,.028)}
+.pg-hcell.pg-cost{background:rgba(255,255,255,.05)}
+.pg-val{border:1px solid transparent}
+.pg-canedit .pg-val{border-bottom:1px dashed #6b6153}
+.pg-canedit .pg-cell .pg-val:hover{border:1px solid #ecab03;background:rgba(236,171,3,.10)}
+.pg-btn:hover{filter:brightness(1.08)}
+.pg-menu-item:hover{background:rgba(255,255,255,.06)}
+</style>
+</helmet>
+<div data-mbe-theme="dark" class="{{ editClass }}" style="display:flex;flex-direction:column;width:100%;min-height:100vh;background:#14120f;color:#efe9df;font-family:'Roboto',system-ui,-apple-system,sans-serif">
+
+  <div style="display:flex;align-items:center;height:64px;flex:none;background:#14120f">
+    <div style="width:240px;flex:none;display:flex;align-items:center;gap:12px;padding:14px 16px;box-sizing:border-box">
+      <img src="assets/brand/nav_lockup.png" alt="XBE" style="height:34px;width:auto;flex:none;object-fit:contain">
+      <div style="flex:1;min-width:0;font:600 14px/1.3 'Archivo',system-ui,sans-serif;color:#efe9df;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Business Essentials</div>
+    </div>
+    <div style="flex:1;min-width:0;padding-left:24px;font:600 22px/1.2 'Archivo',system-ui,sans-serif;color:#efe9df">Pricing</div>
+    <div style="display:flex;align-items:center;padding-right:12px">
+      <div class="ms pg-icon" style="font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer">account_circle</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex:1;min-height:0;align-items:stretch">
+
+    <nav style="width:240px;flex:none;background:#14120f;overflow:hidden;padding-bottom:16px">
+      <sc-for list="{{ nav }}" as="item" hint-placeholder-count="12">
+        <sc-if value="{{ item.isGroup }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 16px 8px 24px;font:600 12px/1.33 'Archivo',system-ui,sans-serif;letter-spacing:.5px;color:#b4aca0">{{ item.label }}</div>
+        </sc-if>
+        <sc-if value="{{ item.isDest }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:2px 8px">
+            <div class="pg-icon" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:999px;cursor:pointer;color:#b4aca0">
+              <span class="ms" style="font-size:24px">{{ item.icon }}</span>
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:400 14px/1.43 'Archivo',system-ui,sans-serif">{{ item.label }}</span>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ item.isActive }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:2px 8px">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:999px;background:#5c420d;color:#d4b071">
+              <span class="ms msf" style="font-size:24px">{{ item.icon }}</span>
+              <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 14px/1.43 'Archivo',system-ui,sans-serif">{{ item.label }}</span>
+            </div>
+          </div>
+        </sc-if>
+      </sc-for>
+    </nav>
+
+    <div style="width:1px;flex:none;background:#332e27"></div>
+
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+      <div style="display:flex;align-items:center;gap:8px;padding:8px">
+        <div style="flex:2;min-width:0;display:flex;align-items:center;gap:8px;height:48px;padding:0 4px 0 12px;box-sizing:border-box;background:#221e19;border:1px solid #4e473d;border-radius:4px">
+          <span class="ms" style="font-size:24px;color:#b4aca0">search</span>
+          <span style="flex:1;min-width:0;font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#b4aca0">Search by code, name, brand, or model</span>
+          <div class="ms pg-icon" style="font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer">search</div>
+        </div>
+        <div style="position:relative;margin-right:8px">
+          <div class="pg-icon" onClick="{{ toggleFilters }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid #4e473d;border-radius:999px;color:#b4aca0;cursor:pointer">
+            <span class="ms" style="font-size:22px">tune</span>
+          </div>
+          <sc-if value="{{ filterCount }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#d8262e;color:#fff;font:600 10px/16px 'Archivo',system-ui,sans-serif;text-align:center">{{ filterCount }}</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;padding:0 8px 8px 8px;flex-wrap:wrap">
+        <span style="font:400 12px/1.33 'Roboto',system-ui,sans-serif;color:#b4aca0;padding-right:4px">Show</span>
+        <sc-for list="{{ worklistChips }}" as="chip" hint-placeholder-count="4">
+          <div onClick="{{ chip.onClick }}" style="padding:6px 12px;border-radius:8px;border:1px solid #332e27;background:{{ chip.bg }};color:{{ chip.fg }};font:500 12px/1.33 'Archivo',system-ui,sans-serif;cursor:pointer">{{ chip.label }}</div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hasChanges }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;margin:0 24px 8px;padding:10px 12px 10px 16px;background:#221e19;border:1px solid #4e473d;border-radius:8px">
+          <span class="ms" style="font-size:20px;color:#ecab03">history</span>
+          <span style="flex:1;min-width:0;font:400 13px/1.4 'Roboto',system-ui,sans-serif;color:#efe9df">{{ changeSummary }}</span>
+          <div class="pg-btn" onClick="{{ undoLast }}" style="padding:8px 16px;border-radius:999px;border:1px solid #4e473d;color:#d4b071;font:600 13px/1.2 'Archivo',system-ui,sans-serif;cursor:pointer">Undo last</div>
+          <div class="pg-btn" onClick="{{ undoAll }}" style="padding:8px 16px;border-radius:999px;color:#b4aca0;font:600 13px/1.2 'Archivo',system-ui,sans-serif;cursor:pointer">Revert all</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ menuOpenAny }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeMenu }}" style="position:fixed;inset:0;z-index:15"></div>
+      </sc-if>
+
+      <div style="flex:1;min-height:0;padding:0 24px 24px">
+        <div style="background:#1b1814;border-radius:16px;overflow-x:auto;overflow-y:visible">
+
+          <div style="display:grid;grid-template-columns:96px 190px minmax(240px,1fr) 176px 176px 176px;min-width:1020px;align-items:center;height:48px;background:#221e19;padding:0 12px;column-gap:16px">
+            <div></div>
+            <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Code</div>
+            <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Name</div>
+            <sc-for list="{{ columns }}" as="col" hint-placeholder-count="3">
+              <div class="pg-hcell {{ col.kindClass }}">
+                <span class="ms" style="font-size:15px;color:{{ col.glyphColor }}">{{ col.glyph }}</span>
+                <span style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">{{ col.name }}</span>
+                <sc-if value="{{ canUpdate }}" hint-placeholder-val="{{ true }}">
+                  <div class="ms pg-icon" onClick="{{ col.onMenu }}" style="font-size:18px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer" title="Column actions">more_vert</div>
+                </sc-if>
+                <sc-if value="{{ col.menuOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;top:44px;right:0;z-index:20;width:268px;padding:8px;background:#2f291f;border:1px solid #4e473d;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.5);text-align:left">
+                    <div class="pg-menu-item" onClick="{{ col.onFillDown }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:6px;cursor:pointer">
+                      <span class="ms" style="font-size:18px;color:#d4b071">arrow_downward</span>
+                      <span style="font:400 13px/1.3 'Roboto',system-ui,sans-serif;color:#efe9df">Fill down from first row</span>
+                    </div>
+                    <div class="pg-menu-item" onClick="{{ col.onCopyFromCost }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:6px;cursor:pointer">
+                      <span class="ms" style="font-size:18px;color:#d4b071">content_copy</span>
+                      <span style="font:400 13px/1.3 'Roboto',system-ui,sans-serif;color:#efe9df">Copy from Costo</span>
+                    </div>
+                    <div style="height:1px;margin:6px 4px;background:#4e473d"></div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 4px 2px 10px">
+                      <span style="flex:1;font:400 12px/1.33 'Roboto',system-ui,sans-serif;color:#b4aca0">Adjust every shown row by</span>
+                      <div class="ms pg-icon" onClick="{{ closeMenu }}" style="font-size:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer" title="Close">close</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 10px 8px">
+                      <input type="text" inputmode="decimal" value="{{ adjustPct }}" onChange="{{ onAdjustInput }}" style="width:76px;box-sizing:border-box;background:#221e19;color:#efe9df;border:1px solid #4e473d;border-radius:4px;padding:6px 8px;font:400 13px/1.2 'Roboto',system-ui,sans-serif;text-align:right;outline:none">
+                      <span style="font:400 13px/1.2 'Roboto',system-ui,sans-serif;color:#b4aca0">%</span>
+                      <div class="pg-btn" onClick="{{ col.onAdjust }}" style="margin-left:auto;padding:7px 16px;border-radius:999px;background:#ecab03;color:#241900;font:600 13px/1.2 'Archivo',system-ui,sans-serif;cursor:pointer">Apply</div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-for list="{{ rows }}" as="row" hint-placeholder-count="9">
+            <div class="pg-row" style="display:grid;grid-template-columns:96px 190px minmax(240px,1fr) 176px 176px 176px;min-width:1020px;align-items:center;min-height:64px;padding:0 12px;column-gap:16px;border-top:1px solid #332e27">
+
+              <div style="display:flex;align-items:center">
+                <div style="width:56px;height:56px;border-radius:4px;background:#3b3429;display:flex;align-items:center;justify-content:center">
+                  <span class="ms" style="font-size:32px;color:#b4aca0">inventory_2</span>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:2px;min-width:0">
+                <span style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#efe9df">{{ row.code }}</span>
+                <div class="ms pg-icon" style="font-size:16px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer">content_copy</div>
+              </div>
+
+              <div style="min-width:0;display:flex;align-items:center;gap:8px">
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#efe9df">{{ row.name }}</span>
+                <sc-if value="{{ row.inactive }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex:none;padding:2px 8px;border-radius:8px;background:#3a1416;color:#ff8f93;font:600 11px/1.4 'Archivo',system-ui,sans-serif">Inactive</span>
+                </sc-if>
+              </div>
+
+              <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="3">
+                <div class="pg-cell {{ cell.kindClass }}">
+                  <sc-if value="{{ cell.reading }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;width:100%">
+                      <sc-if value="{{ cell.badge }}" hint-placeholder-val="{{ false }}">
+                        <span class="ms" title="{{ cell.badgeTitle }}" style="font-size:15px;color:{{ cell.badgeColor }}">{{ cell.badge }}</span>
+                      </sc-if>
+                      <div class="pg-val" onClick="{{ onCellOpen }}" data-r="{{ cell.rowId }}" data-c="{{ cell.listId }}" title="{{ cell.title }}" style="padding:5px 8px;border-radius:4px;cursor:{{ cell.cursor }};font:400 14px/1.2 'Roboto',system-ui,sans-serif;font-variant-numeric:tabular-nums;color:{{ cell.color }}">{{ cell.display }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ cell.editing }}" hint-placeholder-val="{{ false }}">
+                    <input type="text" inputmode="decimal" value="{{ cell.value }}" data-r="{{ cell.rowId }}" data-c="{{ cell.listId }}" onChange="{{ onCellInput }}" onKeyDown="{{ onCellKey }}" onBlur="{{ onCellBlur }}">
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;height:56px;padding:0 16px;border-top:1px solid #332e27;min-width:1020px;box-sizing:border-box">
+            <span style="font:400 12px/1.33 'Roboto',system-ui,sans-serif;color:#b4aca0">{{ countLabel }}</span>
+            <div class="ms pg-icon" style="font-size:22px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#4e473d">chevron_left</div>
+            <div class="ms pg-icon" style="font-size:22px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer">chevron_right</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 4px 0;font:400 12px/1.5 'Roboto',system-ui,sans-serif;color:#b4aca0">
+          <span>{{ hint }}</span>
+        </div>
+      </div>
+    </main>
+
+    <sc-if value="{{ filtersOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="width:360px;flex:none;background:#14120f;border-left:1px solid #332e27;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 8px 0 16px">
+          <div style="flex:1;font:600 22px/1.27 'Archivo',system-ui,sans-serif;color:#efe9df">Filters</div>
+          <div class="ms pg-icon" onClick="{{ toggleFilters }}" style="font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:#b4aca0;cursor:pointer">close</div>
+        </div>
+        <div style="flex:1;min-height:0;overflow:auto;padding:8px 16px">
+          <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Price lists shown</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px">
+            <sc-for list="{{ columns }}" as="col" hint-placeholder-count="3">
+              <div style="padding:6px 12px;border-radius:8px;border:1px solid #332e27;background:#5c420d;color:#d4b071;font:500 12px/1.33 'Archivo',system-ui,sans-serif;cursor:pointer">{{ col.name }}</div>
+            </sc-for>
+          </div>
+          <div style="height:16px"></div>
+          <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Product status</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px">
+            <sc-for list="{{ statusChips }}" as="chip" hint-placeholder-count="4">
+              <div style="padding:6px 12px;border-radius:8px;border:1px solid #332e27;background:{{ chip.bg }};color:{{ chip.fg }};font:500 12px/1.33 'Archivo',system-ui,sans-serif;cursor:pointer">{{ chip.label }}</div>
+            </sc-for>
+          </div>
+          <div style="height:16px"></div>
+          <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Product attributes</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px">
+            <sc-for list="{{ attrChips }}" as="chip" hint-placeholder-count="6">
+              <div style="padding:6px 12px;border-radius:8px;border:1px solid #332e27;background:{{ chip.bg }};color:{{ chip.fg }};font:500 12px/1.33 'Archivo',system-ui,sans-serif;cursor:pointer">{{ chip.label }}</div>
+            </sc-for>
+          </div>
+          <div style="height:16px"></div>
+          <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Supplier</div>
+          <div style="display:flex;align-items:center;gap:8px;height:48px;margin-top:8px;padding:0 12px;box-sizing:border-box;background:#221e19;border:1px solid #4e473d;border-radius:4px">
+            <span style="flex:1;font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#b4aca0">Search suppliers…</span>
+            <span class="ms" style="font-size:20px;color:#b4aca0">expand_more</span>
+          </div>
+          <div style="height:16px"></div>
+          <div style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">Labels</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px">
+            <sc-for list="{{ labelChips }}" as="chip" hint-placeholder-count="5">
+              <div style="padding:6px 12px;border-radius:8px;border:1px solid #332e27;background:{{ chip.bg }};color:{{ chip.fg }};font:500 12px/1.33 'Archivo',system-ui,sans-serif;cursor:pointer">{{ chip.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 16px 8px 8px">
+          <div style="padding:10px 16px;border-radius:999px;color:#d4b071;font:600 14px/1.43 'Archivo',system-ui,sans-serif;cursor:pointer">Clear all</div>
+          <div onClick="{{ toggleFilters }}" style="padding:10px 24px;border-radius:999px;background:#ecab03;color:#241900;font:600 14px/1.43 'Archivo',system-ui,sans-serif;cursor:pointer">Apply</div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;canUpdate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Access&quot;}}">
+const NAV = [
+  ['d','home','Home','home'],
+  ['g','catalogs','Catalogs',''],
+  ['d','users','Users','people'],
+  ['d','user-profiles','User Profiles','badge'],
+  ['d','products','Products','inventory_2'],
+  ['d','price-lists','Price Lists','sell'],
+  ['d','exchange-rates','Exchange Rates','currency_exchange'],
+  ['d','suppliers','Suppliers','local_shipping'],
+  ['d','labels','Labels','label'],
+  ['d','employees','Employees','badge'],
+  ['d','customers','Customers','people_alt'],
+  ['d','taxpayer-recipients','Taxpayer Recipients','receipt_long'],
+  ['d','expenses','Expenses','payments'],
+  ['d','vehicles','Vehicles','airport_shuttle'],
+  ['d','vehicle-operators','Vehicle Operators','assignment_ind'],
+  ['d','facilities','Facilities','business'],
+  ['d','payment-method-options','Payment Method Opti…','payment'],
+  ['g','sales','Sales',''],
+  ['a','pricing','Pricing','price_change'],
+  ['d','taxpayer-issuers','Taxpayer Issuers','corporate_fare'],
+  ['d','cash-sessions','Cash Sessions','point_of_sale'],
+  ['d','sales-orders','Sales Orders','receipt_long'],
+  ['d','pos','Point of Sale','shopping_cart'],
+];
+
+// `kind` separates the cost basis from the sale lists: editing cost is a
+// different act with different downstream consequences, so it never shares
+// the sale columns' editable-gold band.
+const PRICE_LISTS = [
+  { id: 'costo', name: 'Costo', kind: 'cost' },
+  { id: 'mostrador', name: 'Mostrador', kind: 'sale' },
+  { id: 'mayoreo', name: 'Mayoreo', kind: 'sale' },
+];
+
+const PRODUCTS = [
+  ['44467', 'ALAMBRE GALVANIZADO ROLLO DE 1KG FIERO', { costo: '72.00', mostrador: '94.00', mayoreo: '87.00' }],
+  ['103724', 'ESCALERA RECTA TIPO III 8 PELDAÑOS TRUPER', { costo: '1400.00', mostrador: '1525.00', mayoreo: '1525.00' }],
+  ['124835', 'CONTACTO DUPLEX ATERRIZADO CON PLACA PLATA AKSI', { costo: '31.00', mostrador: '41.00', mayoreo: '38.00' }],
+  ['124834', 'CONTACTO TRIPLE ATERRIZADO CON PLACA PLATA AKSI', { costo: '46.00', mostrador: '60.00', mayoreo: null }],
+  ['124832', 'CONTACTO ATERRIZADO CON PLACA PLASTICA PLATA AKSI', { costo: '25.00', mostrador: '33.00', mayoreo: '30.00' }],
+  ['MR042072014TDC1', 'CONCRETO PAVIMENTO 42 KG/CM2 GARANTÍA 7D TMA 20MM REVENIMIENTO 14CM BOC1', { costo: '0.00', mostrador: '3128.00', mayoreo: '3128.00' }],
+  ['124824', 'CONTACTO TRIPLE ATERRIZADO CON PLACA BLANCO AKSI', { costo: '44.00', mostrador: '58.00', mayoreo: null }],
+  ['124822', 'CONTACTO ATERRIZADO CON PLACA BLANCO AKSI', { costo: '23.00', mostrador: null, mayoreo: '28.00' }],
+  ['30733', 'CLAVO ESTANDAR SIN CABEZA 2 1/2', { costo: '30.06', mostrador: '67.00', mayoreo: '67.00' }],
+];
+
+const key = (r, c) => r + ':' + c;
+
+class Component extends DCLogic {
+  state = {
+    data: PRODUCTS.map(([code, name, prices], i) => ({
+      id: 'p' + i, code, name, inactive: i === 5, prices: { ...prices },
+    })),
+    baseline: Object.fromEntries(PRODUCTS.map(([, , prices], i) =>
+      PRICE_LISTS.map(pl => [key('p' + i, pl.id), prices[pl.id] ?? null])).flat()),
+    active: null,
+    draft: '',
+    history: [],
+    errors: {},
+    pending: {},
+    worklist: 'all',
+    menuCol: null,
+    adjustPct: '5',
+    filtersOpen: false,
+  };
+
+  componentDidMount() {
+    this._onKey = (e) => {
+      if (e.key === 'Escape' && this.state.menuCol) {
+        e.preventDefault();
+        this.setState({ menuCol: null });
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+        if (this.state.history.length === 0) return;
+        e.preventDefault();
+        this.undoLast();
+      }
+    };
+    document.addEventListener('keydown', this._onKey);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this._onKey);
+  }
+
+  money(v) {
+    if (v === null || v === undefined || v === '') return '—';
+    const n = Number(v);
+    if (Number.isNaN(n)) return '—';
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  focusCell(rowId, listId) {
+    requestAnimationFrame(() => {
+      const el = document.querySelector('input[data-r="' + rowId + '"][data-c="' + listId + '"]');
+      if (el) { el.focus(); el.select(); }
+    });
+  }
+
+  /// Applies a set of {rowId, listId, value} writes as ONE undoable batch —
+  /// the same unit the summary bar counts and `Undo last` reverses, so a
+  /// fill-down of 9 rows is one undo, not nine.
+  applyBatch(label, writes) {
+    if (writes.length === 0) return;
+    const before = writes.map(w => ({ ...w, prev: this.state.data.find(r => r.id === w.rowId).prices[w.listId] ?? null }));
+    const byRow = {};
+    writes.forEach(w => { (byRow[w.rowId] = byRow[w.rowId] || {})[w.listId] = w.value; });
+    const data = this.state.data.map(r => byRow[r.id] ? { ...r, prices: { ...r.prices, ...byRow[r.id] } } : r);
+    const errors = { ...this.state.errors };
+    writes.forEach(w => { delete errors[key(w.rowId, w.listId)]; });
+    const pending = { ...this.state.pending };
+    writes.forEach(w => { pending[key(w.rowId, w.listId)] = true; });
+    this.setState({ data, errors, pending, history: [...this.state.history, { label, before }] });
+    // One PUT per row, not per cell — the write settles a moment later, which
+    // is what the pending dot represents.
+    setTimeout(() => {
+      const cleared = { ...this.state.pending };
+      writes.forEach(w => { delete cleared[key(w.rowId, w.listId)]; });
+      this.setState({ pending: cleared });
+    }, 450);
+  }
+
+  open = (rowId, listId) => {
+    if (!(this.props.canUpdate ?? true)) return;
+    const row = this.state.data.find(r => r.id === rowId);
+    const err = this.state.errors[key(rowId, listId)];
+    const v = err !== undefined ? err : row.prices[listId];
+    this.setState({ active: { rowId, listId }, draft: v === null || v === undefined ? '' : v, menuCol: null });
+    this.focusCell(rowId, listId);
+  };
+
+  cancel = () => this.setState({ active: null, draft: '' });
+
+  commit = () => {
+    const a = this.state.active;
+    if (!a) return;
+    const raw = this.state.draft.trim();
+    const k = key(a.rowId, a.listId);
+    const current = this.state.data.find(r => r.id === a.rowId).prices[a.listId] ?? null;
+
+    if (raw !== '' && (Number.isNaN(Number(raw)) || Number(raw) < 0)) {
+      // Rejected: the stored price is left untouched and the cell keeps the
+      // typed text, flagged, so nothing is silently lost.
+      this.setState({ active: null, draft: '', errors: { ...this.state.errors, [k]: raw } });
+      return;
+    }
+    const value = raw === '' ? null : Number(raw).toFixed(2);
+    this.setState({ active: null, draft: '' });
+    if (value === current) {
+      if (this.state.errors[k] !== undefined) {
+        const errors = { ...this.state.errors }; delete errors[k];
+        this.setState({ errors });
+      }
+      return;
+    }
+    setTimeout(() => this.applyBatch('edit', [{ rowId: a.rowId, listId: a.listId, value }]), 0);
+  };
+
+  move(delta) {
+    const a = this.state.active;
+    if (!a) return;
+    const rowIds = this.visibleRows().map(r => r.id);
+    const listIds = PRICE_LISTS.map(p => p.id);
+    let ri = rowIds.indexOf(a.rowId) + delta.row;
+    let ci = listIds.indexOf(a.listId) + delta.col;
+    if (ci >= listIds.length) { ci = 0; ri += 1; }
+    if (ci < 0) { ci = listIds.length - 1; ri -= 1; }
+    this.commit();
+    if (ri < 0 || ri >= rowIds.length) return;
+    setTimeout(() => this.open(rowIds[ri], listIds[ci]), 0);
+  }
+
+  undoLast = () => {
+    const history = [...this.state.history];
+    const last = history.pop();
+    if (!last) return;
+    const byRow = {};
+    last.before.forEach(w => { (byRow[w.rowId] = byRow[w.rowId] || {})[w.listId] = w.prev; });
+    const data = this.state.data.map(r => byRow[r.id] ? { ...r, prices: { ...r.prices, ...byRow[r.id] } } : r);
+    this.setState({ data, history, active: null, draft: '' });
+  };
+
+  undoAll = () => {
+    const data = this.state.data.map(r => ({
+      ...r,
+      prices: Object.fromEntries(PRICE_LISTS.map(pl => [pl.id, this.state.baseline[key(r.id, pl.id)]])),
+    }));
+    this.setState({ data, history: [], errors: {}, active: null, draft: '' });
+  };
+
+  visibleRows() {
+    const w = this.state.worklist;
+    if (w === 'all') return this.state.data;
+    return this.state.data.filter(r => (r.prices[w] ?? null) === null);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const canUpdate = this.props.canUpdate ?? true;
+    const a = s.active;
+    const visible = this.visibleRows();
+
+    const changedKeys = [];
+    s.data.forEach(r => PRICE_LISTS.forEach(pl => {
+      if ((r.prices[pl.id] ?? null) !== s.baseline[key(r.id, pl.id)]) changedKeys.push(key(r.id, pl.id));
+    }));
+    const errorCount = Object.keys(s.errors).length;
+
+    const rows = visible.map(r => ({
+      id: r.id,
+      code: r.code,
+      name: r.name,
+      inactive: r.inactive,
+      cells: PRICE_LISTS.map(pl => {
+        const k = key(r.id, pl.id);
+        const editing = !!a && a.rowId === r.id && a.listId === pl.id;
+        const val = r.prices[pl.id] ?? null;
+        const was = s.baseline[k];
+        const changed = val !== was;
+        const err = s.errors[k];
+        const pending = !!s.pending[k];
+        let badge = '', badgeColor = '#ecab03', badgeTitle = '';
+        if (err !== undefined) { badge = 'error'; badgeColor = '#ff8f93'; badgeTitle = '"' + err + '" is not a valid amount — the stored price is unchanged'; }
+        else if (pending) { badge = 'sync'; badgeColor = '#b4aca0'; badgeTitle = 'Saving…'; }
+        else if (changed) { badge = 'check_circle'; badgeColor = '#ecab03'; badgeTitle = 'Saved'; }
+        return {
+          rowId: r.id, listId: pl.id,
+          kindClass: pl.kind === 'cost' ? 'pg-cost' : '',
+          reading: !editing, editing,
+          value: editing ? s.draft : (val === null ? '' : val),
+          display: err !== undefined ? err : this.money(val),
+          badge, badgeColor, badgeTitle,
+          title: err !== undefined
+            ? badgeTitle
+            : (changed ? 'Was ' + this.money(was) + ' · ⌘Z to undo' : (canUpdate ? 'Click to edit' : '')),
+          cursor: canUpdate ? 'text' : 'default',
+          color: err !== undefined ? '#ff8f93' : (val === null ? '#b4aca0' : (changed ? '#ecab03' : '#efe9df')),
+        };
+      }),
+    }));
+
+    const chip = (label, on) => ({ label, bg: on ? '#5c420d' : 'transparent', fg: on ? '#d4b071' : '#efe9df' });
+    const missing = (id) => s.data.filter(r => (r.prices[id] ?? null) === null).length;
+
+    const worklistChips = [{ id: 'all', label: 'All products' }].concat(
+      PRICE_LISTS.map(pl => ({ id: pl.id, label: 'Missing ' + pl.name + ' (' + missing(pl.id) + ')' }))
+    ).map(w => ({
+      ...chip(w.label, s.worklist === w.id),
+      onClick: () => this.setState({ worklist: w.id, active: null, menuCol: null }),
+    }));
+
+    const columns = PRICE_LISTS.map(pl => ({
+      id: pl.id,
+      name: pl.name,
+      kindClass: pl.kind === 'cost' ? 'pg-cost' : '',
+      glyph: pl.kind === 'cost' ? 'lock_open' : 'edit',
+      glyphColor: pl.kind === 'cost' ? '#b4aca0' : '#d4b071',
+      menuOpen: s.menuCol === pl.id,
+      onMenu: () => this.setState({ menuCol: s.menuCol === pl.id ? null : pl.id, active: null }),
+      onFillDown: () => {
+        const src = visible[0] && visible[0].prices[pl.id];
+        if (src === null || src === undefined) return this.setState({ menuCol: null });
+        this.setState({ menuCol: null });
+        this.applyBatch('fill down ' + pl.name, visible.slice(1).map(r => ({ rowId: r.id, listId: pl.id, value: src })));
+      },
+      onCopyFromCost: () => {
+        this.setState({ menuCol: null });
+        this.applyBatch('copy cost to ' + pl.name, visible
+          .filter(r => (r.prices.costo ?? null) !== null)
+          .map(r => ({ rowId: r.id, listId: pl.id, value: r.prices.costo })));
+      },
+      onAdjust: () => {
+        const pct = Number(s.adjustPct);
+        this.setState({ menuCol: null });
+        if (Number.isNaN(pct)) return;
+        this.applyBatch('adjust ' + pl.name + ' by ' + pct + '%', visible
+          .filter(r => (r.prices[pl.id] ?? null) !== null)
+          .map(r => ({ rowId: r.id, listId: pl.id, value: (Number(r.prices[pl.id]) * (1 + pct / 100)).toFixed(2) })));
+      },
+    }));
+
+    return {
+      nav: NAV.map(([kind, id, label, icon]) => ({
+        id, label, icon,
+        isGroup: kind === 'g', isDest: kind === 'd', isActive: kind === 'a',
+      })),
+      columns,
+      rows,
+      canUpdate,
+      editClass: canUpdate ? 'pg-canedit' : '',
+      worklistChips,
+      adjustPct: s.adjustPct,
+      menuOpenAny: !!s.menuCol,
+      closeMenu: () => this.setState({ menuCol: null }),
+      onAdjustInput: (e) => this.setState({ adjustPct: e.currentTarget.value }),
+      hasChanges: changedKeys.length > 0 || errorCount > 0,
+      changeSummary: [
+        changedKeys.length + (changedKeys.length === 1 ? ' price changed' : ' prices changed'),
+        errorCount > 0 ? errorCount + ' rejected' : null,
+      ].filter(Boolean).join(' · '),
+      undoLast: this.undoLast,
+      undoAll: this.undoAll,
+      countLabel: s.worklist === 'all'
+        ? '1–20 of 21,635'
+        : rows.length + ' of 21,635 missing a price on this list',
+      filtersOpen: s.filtersOpen,
+      filterCount: 1,
+      hint: canUpdate
+        ? 'Click any price to edit · Enter saves and drops down · Tab moves right · ⌘Z undoes the last change · column ⋮ fills down or shifts a whole list'
+        : 'Read-only — your profile has no update right on Pricing.',
+      statusChips: [chip('All', true), chip('Active', false), chip('Inactive', false), chip('Archived', false)],
+      attrChips: [
+        chip('Stockable', false), chip('Perishable', false), chip('Seriable', false),
+        chip('Purchasable', false), chip('Salable', true), chip('Invoiceable', false),
+      ],
+      labelChips: [chip('Ferretería', false), chip('Eléctrico', true), chip('Concreto', false), chip('Truper', false)],
+      toggleFilters: () => this.setState({ filtersOpen: !s.filtersOpen, menuCol: null }),
+      onCellOpen: (e) => this.open(e.currentTarget.dataset.r, e.currentTarget.dataset.c),
+      onCellInput: (e) => this.setState({ draft: e.currentTarget.value }),
+      onCellBlur: () => this.commit(),
+      onCellKey: (e) => {
+        const k = e.key;
+        if (k === 'Enter') { e.preventDefault(); this.move({ row: 1, col: 0 }); }
+        else if (k === 'Escape') { e.preventDefault(); this.cancel(); }
+        else if (k === 'Tab') { e.preventDefault(); this.move({ row: 0, col: e.shiftKey ? -1 : 1 }); }
+        else if (k === 'ArrowDown') { e.preventDefault(); this.move({ row: 1, col: 0 }); }
+        else if (k === 'ArrowUp') { e.preventDefault(); this.move({ row: -1, col: 0 }); }
+        else if (k === 'ArrowRight' && e.currentTarget.selectionStart === e.currentTarget.value.length) { e.preventDefault(); this.move({ row: 0, col: 1 }); }
+        else if (k === 'ArrowLeft' && e.currentTarget.selectionStart === 0) { e.preventDefault(); this.move({ row: 0, col: -1 }); }
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
