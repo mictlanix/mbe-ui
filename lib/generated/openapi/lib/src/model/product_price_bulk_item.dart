@@ -3,78 +3,71 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price_list_response.dart';
+import 'package:mbe_api_client/src/model/price.dart';
+import 'package:mbe_api_client/src/model/low_profit.dart';
+import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'product_price_response.g.dart';
+part 'product_price_bulk_item.g.dart';
 
-/// ProductPriceResponse
+/// One cell of the pricing grid, keyed on `(product, price_list)` rather than on a row id.  That key is the `UNIQUE (product, list)` the table already carries, which is what lets one body express both halves of an upsert. A client editing a cell no longer has to pick `POST` against `PUT /{id}` from what its last read said, and no longer loses the race — and a 409 — when someone else priced that product in between (#183).
 ///
 /// Properties:
-/// * [productPriceId]
 /// * [product]
 /// * [priceList]
 /// * [price]
 /// * [lowProfit]
 /// * [highProfit]
 @BuiltValue()
-abstract class ProductPriceResponse
-    implements Built<ProductPriceResponse, ProductPriceResponseBuilder> {
-  @BuiltValueField(wireName: r'product_price_id')
-  int get productPriceId;
-
+abstract class ProductPriceBulkItem
+    implements Built<ProductPriceBulkItem, ProductPriceBulkItemBuilder> {
   @BuiltValueField(wireName: r'product')
   int get product;
 
   @BuiltValueField(wireName: r'price_list')
-  PriceListResponse get priceList;
+  int get priceList;
 
   @BuiltValueField(wireName: r'price')
-  String get price;
+  Price get price;
 
   @Deprecated('lowProfit has been deprecated')
   @BuiltValueField(wireName: r'low_profit')
-  String get lowProfit;
+  LowProfit? get lowProfit;
 
   @Deprecated('highProfit has been deprecated')
   @BuiltValueField(wireName: r'high_profit')
-  String get highProfit;
+  HighProfit? get highProfit;
 
-  ProductPriceResponse._();
+  ProductPriceBulkItem._();
 
-  factory ProductPriceResponse([void updates(ProductPriceResponseBuilder b)]) =
-      _$ProductPriceResponse;
+  factory ProductPriceBulkItem([void updates(ProductPriceBulkItemBuilder b)]) =
+      _$ProductPriceBulkItem;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(ProductPriceResponseBuilder b) => b;
+  static void _defaults(ProductPriceBulkItemBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ProductPriceResponse> get serializer =>
-      _$ProductPriceResponseSerializer();
+  static Serializer<ProductPriceBulkItem> get serializer =>
+      _$ProductPriceBulkItemSerializer();
 }
 
-class _$ProductPriceResponseSerializer
-    implements PrimitiveSerializer<ProductPriceResponse> {
+class _$ProductPriceBulkItemSerializer
+    implements PrimitiveSerializer<ProductPriceBulkItem> {
   @override
   final Iterable<Type> types = const [
-    ProductPriceResponse,
-    _$ProductPriceResponse,
+    ProductPriceBulkItem,
+    _$ProductPriceBulkItem,
   ];
 
   @override
-  final String wireName = r'ProductPriceResponse';
+  final String wireName = r'ProductPriceBulkItem';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    ProductPriceResponse object, {
+    ProductPriceBulkItem object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'product_price_id';
-    yield serializers.serialize(
-      object.productPriceId,
-      specifiedType: const FullType(int),
-    );
     yield r'product';
     yield serializers.serialize(
       object.product,
@@ -83,29 +76,33 @@ class _$ProductPriceResponseSerializer
     yield r'price_list';
     yield serializers.serialize(
       object.priceList,
-      specifiedType: const FullType(PriceListResponse),
+      specifiedType: const FullType(int),
     );
     yield r'price';
     yield serializers.serialize(
       object.price,
-      specifiedType: const FullType(String),
+      specifiedType: const FullType(Price),
     );
-    yield r'low_profit';
-    yield serializers.serialize(
-      object.lowProfit,
-      specifiedType: const FullType(String),
-    );
-    yield r'high_profit';
-    yield serializers.serialize(
-      object.highProfit,
-      specifiedType: const FullType(String),
-    );
+    if (object.lowProfit != null) {
+      yield r'low_profit';
+      yield serializers.serialize(
+        object.lowProfit,
+        specifiedType: const FullType.nullable(LowProfit),
+      );
+    }
+    if (object.highProfit != null) {
+      yield r'high_profit';
+      yield serializers.serialize(
+        object.highProfit,
+        specifiedType: const FullType.nullable(HighProfit),
+      );
+    }
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    ProductPriceResponse object, {
+    ProductPriceBulkItem object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(
@@ -120,19 +117,13 @@ class _$ProductPriceResponseSerializer
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required ProductPriceResponseBuilder result,
+    required ProductPriceBulkItemBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'product_price_id':
-          final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
-          result.productPriceId = valueDes;
-          break;
         case r'product':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
@@ -141,39 +132,38 @@ class _$ProductPriceResponseSerializer
           break;
         case r'price_list':
           final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(PriceListResponse),
-                  )
-                  as PriceListResponse;
-          result.priceList.replace(valueDes);
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.priceList = valueDes;
           break;
         case r'price':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType(Price),
                   )
-                  as String;
-          result.price = valueDes;
+                  as Price;
+          result.price.replace(valueDes);
           break;
         case r'low_profit':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(LowProfit),
                   )
-                  as String;
-          result.lowProfit = valueDes;
+                  as LowProfit?;
+          if (valueDes == null) continue;
+          result.lowProfit.replace(valueDes);
           break;
         case r'high_profit':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(HighProfit),
                   )
-                  as String;
-          result.highProfit = valueDes;
+                  as HighProfit?;
+          if (valueDes == null) continue;
+          result.highProfit.replace(valueDes);
           break;
         default:
           unhandled.add(key);
@@ -184,12 +174,12 @@ class _$ProductPriceResponseSerializer
   }
 
   @override
-  ProductPriceResponse deserialize(
+  ProductPriceBulkItem deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = ProductPriceResponseBuilder();
+    final result = ProductPriceBulkItemBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

@@ -22,9 +22,11 @@ abstract class PriceListUpdate
   @BuiltValueField(wireName: r'name')
   String? get name;
 
+  @Deprecated('highProfitMargin has been deprecated')
   @BuiltValueField(wireName: r'high_profit_margin')
   HighProfitMargin1? get highProfitMargin;
 
+  @Deprecated('lowProfitMargin has been deprecated')
   @BuiltValueField(wireName: r'low_profit_margin')
   LowProfitMargin1? get lowProfitMargin;
 

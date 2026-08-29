@@ -93,7 +93,6 @@ import 'package:mbe_api_client/src/model/fiscal_certification_provider.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
-import 'package:mbe_api_client/src/model/high_profit1.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/itinerary_create.dart';
@@ -139,7 +138,6 @@ import 'package:mbe_api_client/src/model/list_response_vehicle_response.dart';
 import 'package:mbe_api_client/src/model/list_response_warehouse_response.dart';
 import 'package:mbe_api_client/src/model/location_inner.dart';
 import 'package:mbe_api_client/src/model/low_profit.dart';
-import 'package:mbe_api_client/src/model/low_profit1.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/method_total.dart';
@@ -163,6 +161,8 @@ import 'package:mbe_api_client/src/model/price1.dart';
 import 'package:mbe_api_client/src/model/price_adjustment.dart';
 import 'package:mbe_api_client/src/model/price_adjustment1.dart';
 import 'package:mbe_api_client/src/model/price_list_create.dart';
+import 'package:mbe_api_client/src/model/price_list_delete_preview_item.dart';
+import 'package:mbe_api_client/src/model/price_list_delete_preview_response.dart';
 import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:mbe_api_client/src/model/price_list_update.dart';
 import 'package:mbe_api_client/src/model/priority.dart';
@@ -175,6 +175,8 @@ import 'package:mbe_api_client/src/model/product_lookup_response.dart';
 import 'package:mbe_api_client/src/model/product_merge_preview_item.dart';
 import 'package:mbe_api_client/src/model/product_merge_preview_response.dart';
 import 'package:mbe_api_client/src/model/product_merge_request.dart';
+import 'package:mbe_api_client/src/model/product_missing_price_facet.dart';
+import 'package:mbe_api_client/src/model/product_price_bulk_item.dart';
 import 'package:mbe_api_client/src/model/product_price_create.dart';
 import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:mbe_api_client/src/model/product_price_update.dart';
@@ -333,7 +335,6 @@ part 'serializers.g.dart';
   FulfillmentType,
   HTTPValidationError,
   HighProfit,
-  HighProfit1,
   HighProfitMargin,
   HighProfitMargin1,
   ItineraryCreate,
@@ -379,7 +380,6 @@ part 'serializers.g.dart';
   ListResponseWarehouseResponse,
   LocationInner,
   LowProfit,
-  LowProfit1,
   LowProfitMargin,
   LowProfitMargin1,
   MethodTotal,
@@ -403,6 +403,8 @@ part 'serializers.g.dart';
   PriceAdjustment,
   PriceAdjustment1,
   PriceListCreate,
+  PriceListDeletePreviewItem,
+  PriceListDeletePreviewResponse,
   PriceListResponse,
   PriceListUpdate,
   Priority,
@@ -415,6 +417,8 @@ part 'serializers.g.dart';
   ProductMergePreviewItem,
   ProductMergePreviewResponse,
   ProductMergeRequest,
+  ProductMissingPriceFacet,
+  ProductPriceBulkItem,
   ProductPriceCreate,
   ProductPriceResponse,
   ProductPriceUpdate,
@@ -506,6 +510,10 @@ Serializers serializers =
             () => MapBuilder<String, String>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductPriceBulkItem)]),
+            () => ListBuilder<ProductPriceBulkItem>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductLabelFacet)]),
             () => ListBuilder<ProductLabelFacet>(),
           )
@@ -514,8 +522,16 @@ Serializers serializers =
             () => ListBuilder<ProductLookupResponse>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductPriceResponse)]),
+            () => ListBuilder<ProductPriceResponse>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(int)]),
             () => ListBuilder<int>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductMissingPriceFacet)]),
+            () => ListBuilder<ProductMissingPriceFacet>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ApplicationResponse)]),

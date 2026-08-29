@@ -11,6 +11,7 @@ import 'package:one_of/any_of.dart';
 part 'high_profit.g.dart';
 
 /// HighProfit
+@Deprecated('HighProfit has been deprecated')
 @BuiltValue()
 abstract class HighProfit implements Built<HighProfit, HighProfitBuilder> {
   /// Any Of [String], [num]

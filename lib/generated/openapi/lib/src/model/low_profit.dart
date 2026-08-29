@@ -11,6 +11,7 @@ import 'package:one_of/any_of.dart';
 part 'low_profit.g.dart';
 
 /// LowProfit
+@Deprecated('LowProfit has been deprecated')
 @BuiltValue()
 abstract class LowProfit implements Built<LowProfit, LowProfitBuilder> {
   /// Any Of [String], [num]
