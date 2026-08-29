@@ -13,6 +13,7 @@ lib/generated/openapi/test/
 *.swp
 .buildlog/
 .history
+.DS_Store
 
 # IDE
 .idea/
