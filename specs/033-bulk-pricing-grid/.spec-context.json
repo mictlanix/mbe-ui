@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Bulk Pricing Grid",
+  "branch": "033-bulk-pricing-grid",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-29T21:18:07.639Z"
+    }
+  ]
+}
