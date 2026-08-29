@@ -40,6 +40,22 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
   }
 
   @override
+  Future<List<ProductPrice>> listForProducts({
+    required List<int> productIds,
+    required List<int> priceListIds,
+  }) async {
+    if (productIds.isEmpty) return const [];
+    final priceListIdSet = priceListIds.toSet();
+    final perProduct = await Future.wait(
+      productIds.map((id) => listByProduct(productId: id, limit: 100)),
+    );
+    return perProduct
+        .expand((prices) => prices)
+        .where((p) => priceListIdSet.contains(p.priceList.priceListId))
+        .toList();
+  }
+
+  @override
   Future<ProductPrice> create({
     required int productId,
     required int priceListId,

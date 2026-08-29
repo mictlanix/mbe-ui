@@ -68,6 +68,90 @@ void main() {
     });
   });
 
+
+  group(
+    'ProductPriceRepositoryImpl.listForProducts (spec 033 research.md §R5)',
+    () {
+      test('issues one request per product id and returns the union', () async {
+        final requested = <int?>[];
+        final repository = _repositoryWith((options) async {
+          requested.add(options.queryParameters['product'] as int?);
+          final productId = options.queryParameters['product'];
+          return ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                {..._productPriceJson(), 'product_price_id': productId, 'product': productId},
+              ],
+              'total': 1,
+            }),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final prices = await repository.listForProducts(
+          productIds: [1, 2, 3],
+          priceListIds: [5],
+        );
+
+        expect(requested, [1, 2, 3]);
+        expect(prices, hasLength(3));
+      });
+
+      test('filters to the given price-list ids', () async {
+        var call = 0;
+        final repository = _repositoryWith((options) async {
+          call++;
+          return ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                _productPriceJson(),
+                {
+                  ..._productPriceJson(),
+                  'product_price_id': 2,
+                  'price_list': {
+                    'price_list_id': 9,
+                    'name': 'Wholesale',
+                    'high_profit_margin': '0.40',
+                    'low_profit_margin': '0.10',
+                  },
+                },
+              ],
+              'total': 2,
+            }),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final prices = await repository.listForProducts(
+          productIds: [1],
+          priceListIds: [5],
+        );
+
+        expect(call, 1);
+        expect(prices, hasLength(1));
+        expect(prices.single.priceList.priceListId, 5);
+      });
+
+      test('issues no request for an empty product list', () async {
+        var calls = 0;
+        final repository = _repositoryWith((options) async {
+          calls++;
+          return ResponseBody.fromString('', 500);
+        });
+
+        final prices = await repository.listForProducts(
+          productIds: const [],
+          priceListIds: const [5],
+        );
+
+        expect(prices, isEmpty);
+        expect(calls, 0);
+      });
+    },
+  );
+
   group(
     'ProductPriceRepositoryImpl.create — AnyOf write path (research.md §4)',
     () {

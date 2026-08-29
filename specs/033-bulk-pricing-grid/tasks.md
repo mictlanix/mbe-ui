@@ -25,7 +25,7 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 **Purpose**: Nothing to initialize — this feature adds files to an already-configured project and introduces no dependency, script or tool.
 
-- [ ] T001 Confirm `flutter analyze` is clean and `flutter test` is fully green on a clean checkout of `033-bulk-pricing-grid` **before any change**, and record the pass/fail counts — every later regression is attributable to this feature from that baseline
+- [X] T001 Confirm `flutter analyze` is clean and `flutter test` is fully green on a clean checkout of `033-bulk-pricing-grid` **before any change**, and record the pass/fail counts — every later regression is attributable to this feature from that baseline
 
 **Checkpoint**: Baseline recorded. No other setup exists.
 
@@ -39,24 +39,24 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 ### Repository
 
-- [ ] T002 [P] Declare `listForProducts({required List<int> productIds, required List<int> priceListIds})` returning `Future<List<ProductPrice>>` in `lib/features/pricing/domain/repositories/product_price_repository.dart`, documenting that it batches today via fan-out and will collapse to one request when mbe-api#182 lands (contracts/mbe-api-pricing.md §3)
-- [ ] T003 [P] Extend `create`/`update` doc comments in `lib/features/pricing/domain/repositories/product_price_repository.dart` to note the profit-band rule new callers must follow (research.md §R6; no signature change)
-- [ ] T004 Implement `listForProducts` in `lib/features/pricing/data/product_price_repository_impl.dart` as `Future.wait` over the existing `listByProduct`, filtering each result to `priceListIds`, deduplicating nothing (empty `productIds` returns `[]` without a request) (depends on T002)
-- [ ] T005 [P] Unit-test `listForProducts` in `test/unit/features/pricing/product_price_repository_impl_test.dart` — issues one request per product id, filters by the given price-list ids, and issues zero requests for an empty product list (depends on T004)
+- [X] T002 [P] Declare `listForProducts({required List<int> productIds, required List<int> priceListIds})` returning `Future<List<ProductPrice>>` in `lib/features/pricing/domain/repositories/product_price_repository.dart`, documenting that it batches today via fan-out and will collapse to one request when mbe-api#182 lands (contracts/mbe-api-pricing.md §3)
+- [X] T003 [P] Extend `create`/`update` doc comments in `lib/features/pricing/domain/repositories/product_price_repository.dart` to note the profit-band rule new callers must follow (research.md §R6; no signature change)
+- [X] T004 Implement `listForProducts` in `lib/features/pricing/data/product_price_repository_impl.dart` as `Future.wait` over the existing `listByProduct`, filtering each result to `priceListIds`, deduplicating nothing (empty `productIds` returns `[]` without a request) (depends on T002)
+- [X] T005 [P] Unit-test `listForProducts` in `test/unit/features/pricing/product_price_repository_impl_test.dart` — issues one request per product id, filters by the given price-list ids, and issues zero requests for an empty product list (depends on T004)
 
 ### Shared table width
 
-- [ ] T006 [P] Add an optional `minWidth` parameter to `DataTableView` in `lib/core/widgets/data_table_view.dart`, threading it into both the `PaginatedDataTable2` and `DataTable2` constructors so a wide column set scrolls within the table's own region rather than the page (research.md §R2, constitution §VI)
-- [ ] T007 [P] Widget-test the new parameter in `test/widget/core/widgets/data_table_view_test.dart` — a `minWidth` wider than the viewport produces a horizontally scrollable table with the page itself unaffected (depends on T006)
+- [X] T006 [P] Add an optional `minWidth` parameter to `DataTableView` in `lib/core/widgets/data_table_view.dart`, threading it into both the `PaginatedDataTable2` and `DataTable2` constructors so a wide column set scrolls within the table's own region rather than the page (research.md §R2, constitution §VI)
+- [X] T007 [P] Widget-test the new parameter in `test/widget/core/widgets/data_table_view_test.dart` — a `minWidth` wider than the viewport produces a horizontally scrollable table with the page itself unaffected (depends on T006)
 
 ### Grid state shapes
 
-- [ ] T008 [P] Create `lib/features/pricing/presentation/pricing_grid_row.dart` with the `PricingGridRow` freezed class (`product: ProductListItem`, `prices: Map<int, ProductPrice>`) and `buildPricingGridRows({products, prices})`, mirroring `product_price_row.dart`'s join helper (data-model.md §2)
-- [ ] T009 [P] Create `lib/features/pricing/domain/entities/price_cell_key.dart` with the `PriceCellKey` freezed class (`productId`, `priceListId`) (data-model.md §3)
-- [ ] T010 Create `lib/features/pricing/presentation/pricing_grid_controller.dart` with `PricingGridFilter` (built from `ListQuery` exactly as `ProductFilter.fromQuery` is, plus `missingPriceList` always `null` until US2 — data-model.md §7), `RejectedEdit`, `PriceChangeKind`, `PriceWrite`, `PriceChange`, and `PricingGridState` (data-model.md §4–§6), with no controller logic yet (depends on T008, T009)
-- [ ] T011 Run `dart run build_runner build --delete-conflicting-outputs` and confirm every new freezed file regenerates cleanly (depends on T010)
-- [ ] T012 [P] Unit-test `buildPricingGridRows` in `test/unit/features/pricing/pricing_grid_row_test.dart` — a product with no matching price is absent from its `prices` map (not present with a null value), proving "not set" is representable (FR-005; depends on T008)
-- [ ] T013 [P] Unit-test `PricingGridFilter.fromQuery` in `test/unit/features/pricing/pricing_grid_controller_test.dart` — round-trips every facet the products filter drawer already covers, and `missingPriceList` is always `null` (depends on T010, T011)
+- [X] T008 [P] Create `lib/features/pricing/presentation/pricing_grid_row.dart` with the `PricingGridRow` freezed class (`product: ProductListItem`, `prices: Map<int, ProductPrice>`) and `buildPricingGridRows({products, prices})`, mirroring `product_price_row.dart`'s join helper (data-model.md §2)
+- [X] T009 [P] Create `lib/features/pricing/domain/entities/price_cell_key.dart` with the `PriceCellKey` freezed class (`productId`, `priceListId`) (data-model.md §3)
+- [X] T010 Create `lib/features/pricing/presentation/pricing_grid_controller.dart` with `PricingGridFilter` (built from `ListQuery` exactly as `ProductFilter.fromQuery` is, plus `missingPriceList` always `null` until US2 — data-model.md §7), `RejectedEdit`, `PriceChangeKind`, `PriceWrite`, `PriceChange`, and `PricingGridState` (data-model.md §4–§6), with no controller logic yet (depends on T008, T009)
+- [X] T011 Run `dart run build_runner build --delete-conflicting-outputs` and confirm every new freezed file regenerates cleanly (depends on T010)
+- [X] T012 [P] Unit-test `buildPricingGridRows` in `test/unit/features/pricing/pricing_grid_row_test.dart` — a product with no matching price is absent from its `prices` map (not present with a null value), proving "not set" is representable (FR-005; depends on T008)
+- [X] T013 [P] Unit-test `PricingGridFilter.fromQuery` in `test/unit/features/pricing/pricing_grid_controller_test.dart` — round-trips every facet the products filter drawer already covers, and `missingPriceList` is always `null` (depends on T010, T011)
 
 **Checkpoint**: The batched read exists and is tested, the shared table can be told to scroll internally, and the grid's state types compile. No screen exists yet.
 
@@ -70,31 +70,31 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 ### The controller
 
-- [ ] T014 [US1] Implement `PricingGridController` (`@riverpod` family keyed by `PricingGridFilter`) in `lib/features/pricing/presentation/pricing_grid_controller.dart` — loads a page of `ProductListItem` via the existing `ProductRepository.list`, the full price-list set via `PriceListRepository.list(limit: 100)`, and prices for that page via `listForProducts` scoped to the **shown** columns only (research.md §R5's cap note), joining with `buildPricingGridRows` (depends on T004, T010, T011)
-- [ ] T015 [US1] Add `commitCell({productId, priceListId, typed})` to `PricingGridController` — parses via `fmt.input.parsePrice`/`PricingValidators.isNonNegativeDecimal`; on parse failure sets `rejected[key]` and issues no request (FR-009); on a value equal to the stored price, issues no request (FR-010); otherwise routes to `create` (with the research.md §R6 profit-band rule: copy the target price list's margins, or `[0, 1]` when they are `0/0`) or `update` (echoing existing `lowProfit`/`highProfit` unchanged), marking the cell `inFlight` for the duration and appending one single-write `PriceChange` to `history` on success (depends on T014; contracts/mbe-api-pricing.md §4)
-- [ ] T016 [US1] Add `retry()` to `PricingGridController` re-issuing the current page's load unchanged, mirroring `PricingController.retry` (depends on T014)
-- [ ] T017 [P] [US1] Unit-test `commitCell`'s three outcomes (rejected, no-op on unchanged value, accepted) in `test/unit/features/pricing/pricing_grid_controller_test.dart` (depends on T015)
-- [ ] T018 [P] [US1] Unit-test the create-vs-update routing and the profit-band rule (list margins copied; `[0,1]` fallback when the list's margins are `0/0`; update echoes the existing band unchanged) in `test/unit/features/pricing/pricing_grid_controller_test.dart` (depends on T015; research.md §R6)
+- [X] T014 [US1] Implement `PricingGridController` (`@riverpod` family keyed by `PricingGridFilter`) in `lib/features/pricing/presentation/pricing_grid_controller.dart` — loads a page of `ProductListItem` via the existing `ProductRepository.list`, the full price-list set via `PriceListRepository.list(limit: 100)`, and prices for that page via `listForProducts` scoped to the **shown** columns only (research.md §R5's cap note), joining with `buildPricingGridRows` (depends on T004, T010, T011)
+- [X] T015 [US1] Add `commitCell({productId, priceListId, typed})` to `PricingGridController` — parses via `fmt.input.parsePrice`/`PricingValidators.isNonNegativeDecimal`; on parse failure sets `rejected[key]` and issues no request (FR-009); on a value equal to the stored price, issues no request (FR-010); otherwise routes to `create` (with the research.md §R6 profit-band rule: copy the target price list's margins, or `[0, 1]` when they are `0/0`) or `update` (echoing existing `lowProfit`/`highProfit` unchanged), marking the cell `inFlight` for the duration and appending one single-write `PriceChange` to `history` on success (depends on T014; contracts/mbe-api-pricing.md §4)
+- [X] T016 [US1] Add `retry()` to `PricingGridController` re-issuing the current page's load unchanged, mirroring `PricingController.retry` (depends on T014)
+- [X] T017 [P] [US1] Unit-test `commitCell`'s three outcomes (rejected, no-op on unchanged value, accepted) in `test/unit/features/pricing/pricing_grid_controller_test.dart` (depends on T015)
+- [X] T018 [P] [US1] Unit-test the create-vs-update routing and the profit-band rule (list margins copied; `[0,1]` fallback when the list's margins are `0/0`; update echoes the existing band unchanged) in `test/unit/features/pricing/pricing_grid_controller_test.dart` (depends on T015; research.md §R6)
 
 ### The cell widget
 
-- [ ] T019 [US1] Create `lib/features/pricing/presentation/price_cell.dart` — a `StatefulWidget` holding one `ConfirmableFieldController` (created/disposed in `State`, never in Riverpod, per research.md §R3), rendering the reading state (`fmt.display.currency`, or the existing "not set" treatment for FR-005) and, when active, a `ConfirmableTextField` with `parse: fmt.input.parsePrice` and `commit` calling `PricingGridController.commitCell` (contracts/pricing-grid-screen.md §1–§3)
-- [ ] T020 [US1] Wire keyboard traversal on `PriceCell`'s `Focus` — Enter (commit, open same column next row), Tab/Shift+Tab (commit, open next/previous column, wrapping at row ends), ArrowUp/Down (commit, open same column adjacent row), ArrowRight/Left only at caret end/start (commit, move one column), Escape (discard, no commit) — every handler returns `KeyEventResult.handled` (research.md §R4; contracts/pricing-grid-screen.md §2; depends on T019)
-- [ ] T021 [P] [US1] Widget-test `PriceCell` in `test/widget/features/pricing/price_cell_test.dart` against contracts/pricing-grid-screen.md §2's full input table (depends on T020)
+- [X] T019 [US1] Create `lib/features/pricing/presentation/price_cell.dart` — a `StatefulWidget` holding a plain `TextEditingController`/`FocusNode` (created/disposed in `State`, never in Riverpod, per research.md §R3), rendering the reading state (`fmt.display.currency`, or the existing "not set" treatment for FR-005) and, when active, an editable `TextField` whose commit calls `PricingGridController.commitCell` — **not** `ConfirmableFieldController`/`ConfirmableTextField` as originally planned; corrected during implementation because that controller discards a rejected value instead of keeping it flagged (research.md §R3) (contracts/pricing-grid-screen.md §1–§3)
+- [X] T020 [US1] Wire keyboard traversal on `PriceCell`'s `Focus` — Enter (commit, open same column next row), Tab/Shift+Tab (commit, open next/previous column, wrapping at row ends), ArrowUp/Down (commit, open same column adjacent row), ArrowRight/Left only at caret end/start (commit, move one column), Escape (discard, no commit) — every handler returns `KeyEventResult.handled` (research.md §R4; contracts/pricing-grid-screen.md §2; depends on T019). Movement resolution (which cell is "next") lives in the grid screen, which owns the row/column order — `PriceCell` only reports the direction via `onMove`.
+- [X] T021 [P] [US1] Widget-test `PriceCell` in `test/widget/features/pricing/price_cell_test.dart` against contracts/pricing-grid-screen.md §2's full input table (depends on T020)
 
 ### The screen
 
-- [ ] T022 [US1] Create `lib/features/pricing/presentation/pricing_grid_screen.dart` — `CatalogFilterBar` (search + badged filter button) → `DataTableView<PricingGridRow>(minWidth: …)` with photo/code+copy/name columns plus one `PriceCell`-backed column per shown price list → `CatalogPagination` → hint line, following `products_list_screen.dart`'s structure (depends on T006, T019, T022 n/a — self)
-- [ ] T023 [US1] Wire the empty/error/filtered-empty states via the existing `CatalogListStateView`/`ListFailedView`/`ListEmptyView` (no price lists → reuse `pricingNoPriceListsEmptyState`) (contracts/pricing-grid-screen.md §4; depends on T022)
-- [ ] T024 [US1] Ellipsize the name column with a hover tooltip fallback, matching `products_list_screen.dart`'s pattern (constitution §VI; depends on T022)
-- [ ] T025 [P] [US1] Add `l10n` keys for the grid (screen hint, "not set" reuse, any new labels) to `lib/l10n/app_es.arb` first, then `lib/l10n/app_en.arb`
-- [ ] T026 [P] [US1] Widget-test `PricingGridScreen` in `test/widget/features/pricing/pricing_grid_screen_test.dart` — renders with no product selected (FR-001), a page of rows with one column per shown list, and the "not set" vs `$0.00` distinction (FR-005) (depends on T022, T023, T025)
+- [X] T022 [US1] Create `lib/features/pricing/presentation/pricing_grid_screen.dart` — `CatalogFilterBar` (search + badged filter button) → `DataTableView<PricingGridRow>(minWidth: …)` with photo/code+copy/name columns plus one `PriceCell`-backed column per shown price list → `CatalogPagination` → hint line, following `products_list_screen.dart`'s structure (depends on T006, T019, T022 n/a — self)
+- [X] T023 [US1] Wire the empty/error/filtered-empty states via the existing `CatalogListStateView`/`ListFailedView`/`ListEmptyView` (no price lists → reuse `pricingNoPriceListsEmptyState`) (contracts/pricing-grid-screen.md §4; depends on T022)
+- [X] T024 [US1] Ellipsize the name column with a hover tooltip fallback, matching `products_list_screen.dart`'s pattern (constitution §VI; depends on T022)
+- [X] T025 [P] [US1] Add `l10n` keys for the grid (screen hint, "not set" reuse, any new labels) to `lib/l10n/app_es.arb` first, then `lib/l10n/app_en.arb`
+- [X] T026 [P] [US1] Widget-test `PricingGridScreen` in `test/widget/features/pricing/pricing_grid_screen_test.dart` — renders with no product selected (FR-001), a page of rows with one column per shown list, and the "not set" vs `$0.00` distinction (FR-005) (depends on T022, T023, T025)
 
 ### Routing
 
-- [ ] T027 [US1] Replace `PricingScreen(standalone: false)` at `/pricing` with `PricingGridScreen` in `lib/app/router/app_router.dart`, keeping the existing `PrivilegeGate(SystemObject.pricing, AccessRight.read)` clause unchanged (contracts/routes.md §2; depends on T022)
-- [ ] T028 [US1] Remove the `!standalone` picker branch and the `standalone` parameter from `PricingScreen` in `lib/features/pricing/presentation/pricing_screen.dart`, making `initialProductId`/`initialProductDisplayText` required, and update its call site at `/products/:productId/pricing` in `lib/app/router/app_router.dart` accordingly (research.md §R1; depends on T027)
-- [ ] T029 [P] [US1] Update `test/widget/features/pricing/pricing_screen_test.dart` to drop the picker-mode assertions, keeping only the standalone-mode ones (depends on T028)
+- [X] T027 [US1] Replace `PricingScreen(standalone: false)` at `/pricing` with `PricingGridScreen` in `lib/app/router/app_router.dart`, keeping the existing `PrivilegeGate(SystemObject.pricing, AccessRight.read)` clause unchanged (contracts/routes.md §2; depends on T022)
+- [X] T028 [US1] Remove the `!standalone` picker branch and the `standalone` parameter from `PricingScreen` in `lib/features/pricing/presentation/pricing_screen.dart`, making `initialProductId`/`initialProductDisplayText` required, and update its call site at `/products/:productId/pricing` in `lib/app/router/app_router.dart` accordingly (research.md §R1; depends on T027)
+- [X] T029 [P] [US1] Update `test/widget/features/pricing/pricing_screen_test.dart` to drop the picker-mode assertions, keeping only the standalone-mode ones (depends on T028)
 
 **Checkpoint**: `/pricing` is the grid. A user with update rights can read and edit any price; `/products/:productId/pricing` still works unchanged.
 

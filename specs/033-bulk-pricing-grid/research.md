@@ -48,30 +48,44 @@ grid transposed; sharing would mean a column-per-list *and* row-per-list widget.
 it from the grid. Per §VI ("implemented once, shared"), table sizing stays the
 shared widget's business — the grid must not reach for `DataTable2` directly.
 
-## R3. The focus hazard, and why spec 030/031 already solved it
+## R3. The focus hazard — and a corrected plan for it
 
 A `TextField` built inside a `DataTableSource` row is rebuilt whenever the
 controller's state changes. Holding the draft text in Riverpod state means a
-rebuild per keystroke, and the field loses focus mid-typing.
+rebuild per keystroke, and the field loses focus mid-typing. That much of the
+original plan held.
 
-`ConfirmableFieldController` / `ConfirmableTextField`
-(`lib/core/widgets/confirmable_text_field.dart`, specs 030/031) is built for
-exactly this: a plain `ChangeNotifier` holding typed text, a `parse` that rejects
-unusable input before `commit` ever sees it, a `commit` that reports whether the
-write stuck, and an acknowledged discard when text is abandoned. It also
-registers in `UnconfirmedEdits` so a critical action can ask about outstanding
-typed text.
+**Correction (found during implementation, spec 033 Phase 3): `ConfirmableFieldController`
+/ `ConfirmableTextField` (specs 030/031) is the wrong fit for the edit loop
+itself.** Its `submit`/`flush` treat an unparseable or server-refused value as
+a *discard*: the typed text is thrown away and a brief "reset" animation plays,
+returning the field to the last accepted value. That is exactly backwards for
+FR-009, which requires a rejected value to **stay on screen, flagged, with its
+reason**, until the user corrects it — a persistent per-cell state, not a
+field-local animation. Forcing the cell through that controller would mean
+either fighting its `parse`-returns-`null` contract (which always discards) or
+never actually calling it in the one path (invalid input) it exists to handle.
 
-**Decision**: the grid holds **one** active cell at a time (as the canvas does),
-and that cell is a `ConfirmableTextField` whose controller lives in the cell
-widget's `State`. Draft text never enters Riverpod. This gives FR-009
-(rejected value keeps its text, stored price untouched) and FR-025 (warn before
-discarding) from machinery that already ships and is already tested.
+**Decision, corrected**: `PriceCell` (`lib/features/pricing/presentation/price_cell.dart`)
+holds a plain `TextEditingController` + `FocusNode` in its own `State`,
+disposed with the widget — draft text still never enters Riverpod, so the
+focus problem above is still solved. What changes is where **rejection**
+lives: `RejectedEdit` is real state on `PricingGridController` (data-model.md
+§6), keyed by `PriceCellKey`, set on a failed commit and cleared only by a
+later successful one — a value FR-023's summary bar can count and FR-009's
+tooltip can read, not an animation tick.
 
-**Consequence**: FR-022's three cell states map to
-`ConfirmableFieldController`'s own lifecycle plus a per-cell write-status map in
-the grid controller — the map is keyed by `(productId, priceListId)` and holds
-only cells that have been touched, so it stays small.
+One piece of the original idea survives: disposing a `FocusNode` that still
+holds focus can itself fire a final "focus lost" notification, which would
+double-commit a cell that just moved away on its own key handler. `PriceCell`
+avoids it by unregistering its listener *before* disposing the node, rather
+than relying on `ConfirmableFieldController`'s machinery to absorb it.
+
+**Consequence**: FR-022's three cell states are plain fields on
+`PricingGridState` — `inFlight: Set<PriceCellKey>` (saving),
+`rejected: Map<PriceCellKey, RejectedEdit>` (rejected), and "saved" as the
+derived comparison against `baseline` — rather than a per-field controller's
+internal lifecycle.
 
 ## R4. Keyboard traversal must intercept Tab
 

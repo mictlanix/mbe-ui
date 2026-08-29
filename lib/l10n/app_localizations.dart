@@ -590,6 +590,12 @@ abstract class AppLocalizations {
   /// **'Purchasable'**
   String get productsPurchasableFilter;
 
+  /// No description provided for @productsAttributesFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Product attributes'**
+  String get productsAttributesFilterLabel;
+
   /// No description provided for @productsSupplierFilter.
   ///
   /// In en, this message translates to:
@@ -1458,6 +1464,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pricing'**
   String get pricingMenuTitle;
+
+  /// No description provided for @pricingGridHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Click any price to edit · Enter saves and drops down · Tab moves right · Escape cancels'**
+  String get pricingGridHint;
+
+  /// No description provided for @pricingGridReadOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only — your profile has no update right on Pricing.'**
+  String get pricingGridReadOnlyHint;
+
+  /// No description provided for @pricingGridColumnsFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price lists shown'**
+  String get pricingGridColumnsFilterLabel;
 
   /// No description provided for @exchangeRatesMenuTitle.
   ///

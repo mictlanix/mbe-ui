@@ -97,6 +97,7 @@
   "productsStockableFilter": "Almacenable",
   "productsSalableFilter": "Vendible",
   "productsPurchasableFilter": "Comprable",
+  "productsAttributesFilterLabel": "Atributos del producto",
   "productsSupplierFilter": "Proveedor",
   "productsLabelFilter": "Etiquetas",
   "labelUnavailableTooltip": "Sin productos que coincidan",
@@ -253,6 +254,9 @@
 
   "priceListsMenuTitle": "Listas de Precios",
   "pricingMenuTitle": "Precios",
+  "pricingGridHint": "Haz clic en un precio para editarlo · Enter guarda y baja una fila · Tab mueve a la derecha · Esc cancela",
+  "pricingGridReadOnlyHint": "Solo lectura: tu perfil no tiene privilegio de actualización sobre Precios.",
+  "pricingGridColumnsFilterLabel": "Listas de precios mostradas",
   "exchangeRatesMenuTitle": "Tipos de Cambio",
 
   "priceListsSearchLabel": "Buscar por nombre",

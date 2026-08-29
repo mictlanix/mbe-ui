@@ -5,40 +5,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
-import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_controller.dart';
 import 'package:mbe_ui/features/pricing/presentation/product_price_row.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// The pricing tool (US2, FR-007..FR-013): pick a product, see and edit its
-/// price on every price list. Gated by `can(SystemObject.pricing,
-/// AccessRight.read)` in the router; row editing further requires `update`
-/// (FR-012). Not a record catalog — rows are inline-editable prices, not
-/// navigable records, so §VI's row-click/Edit-icon contract does not apply
-/// here (spec FR-020a, contracts/routes.md).
-///
-/// [standalone] renders this as a pushed, full-screen route (its own
-/// `Scaffold`/`AppBar`/back button) with the product picker hidden and
-/// [initialProductId] locked in, instead of the `/pricing` shell-branch
-/// content — used by the product detail screen's "view pricing" shortcut
+/// The standalone per-product pricing screen (spec 011 US2, FR-007..FR-013):
+/// see and edit one product's price on every price list. Reached only from
+/// the product detail screen's "view pricing" shortcut
 /// (`/products/:productId/pricing`), which arrives already scoped to one
-/// product and has no reason to let it be changed from here.
+/// product. Gated by `can(SystemObject.pricing, AccessRight.read)` in the
+/// router; row editing further requires `update` (FR-012). Not a record
+/// catalog — rows are inline-editable prices, not navigable records, so
+/// §VI's row-click/Edit-icon contract does not apply here (spec FR-020a,
+/// contracts/routes.md).
+///
+/// **This is no longer `/pricing` itself.** Spec 033 replaced the
+/// product-picker flow this screen used to *also* serve at `/pricing` with
+/// `PricingGridScreen`; this screen kept only its pushed, single-product
+/// mode (spec 033 research.md §R1, FR-028a).
 class PricingScreen extends ConsumerStatefulWidget {
   const PricingScreen({
     super.key,
-    this.initialProductId,
+    required this.initialProductId,
     this.initialProductDisplayText,
-    this.standalone = false,
   });
 
-  final int? initialProductId;
+  final int initialProductId;
   final String? initialProductDisplayText;
-  final bool standalone;
 
   @override
   ConsumerState<PricingScreen> createState() => _PricingScreenState();
@@ -48,17 +44,14 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
   @override
   void initState() {
     super.initState();
-    final productId = widget.initialProductId;
-    if (productId != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
-            .read(pricingControllerProvider.notifier)
-            .selectProduct(
-              productId: productId,
-              displayText: widget.initialProductDisplayText ?? '',
-            );
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(pricingControllerProvider.notifier)
+          .selectProduct(
+            productId: widget.initialProductId,
+            displayText: widget.initialProductDisplayText ?? '',
+          );
+    });
   }
 
   @override
@@ -67,7 +60,6 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
     final controller = ref.read(pricingControllerProvider.notifier);
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.pricing, AccessRight.update);
-    final productRepo = ref.read(productRepositoryProvider);
     final l10n = AppLocalizations.of(context)!;
 
     final body = Padding(
@@ -75,26 +67,6 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!widget.standalone)
-            SizedBox(
-              width: 400,
-              child: CatalogEntityPicker<ProductListItem>(
-                key: const Key('pricing_product_picker'),
-                label: l10n.pricingProductPickerLabel,
-                displayStringForOption: (item) => '${item.code} — ${item.name}',
-                optionsBuilder: (query) async {
-                  if (query.isEmpty) return const [];
-                  final result = await productRepo.list(search: query);
-                  return result.items;
-                },
-                onSelected: (item) => controller.selectProduct(
-                  productId: item.productId,
-                  displayText: '${item.code} — ${item.name}',
-                ),
-                initialDisplayText: state.productDisplayText,
-              ),
-            ),
-          if (!widget.standalone) const SizedBox(height: 16),
           Expanded(
             child: state.productId == null
                 ? Center(child: Text(l10n.pricingSelectProductPrompt))
@@ -113,8 +85,6 @@ class _PricingScreenState extends ConsumerState<PricingScreen> {
         ],
       ),
     );
-
-    if (!widget.standalone) return body;
 
     return Scaffold(
       appBar: AppBar(

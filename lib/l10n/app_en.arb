@@ -229,6 +229,9 @@
   "productsPurchasableFilter": "Purchasable",
   "@productsPurchasableFilter": {},
 
+  "productsAttributesFilterLabel": "Product attributes",
+  "@productsAttributesFilterLabel": {},
+
   "productsSupplierFilter": "Supplier",
   "@productsSupplierFilter": {},
 
@@ -691,6 +694,12 @@
   "@priceListsMenuTitle": {},
   "pricingMenuTitle": "Pricing",
   "@pricingMenuTitle": {},
+  "pricingGridHint": "Click any price to edit · Enter saves and drops down · Tab moves right · Escape cancels",
+  "@pricingGridHint": {},
+  "pricingGridReadOnlyHint": "Read-only — your profile has no update right on Pricing.",
+  "@pricingGridReadOnlyHint": {},
+  "pricingGridColumnsFilterLabel": "Price lists shown",
+  "@pricingGridColumnsFilterLabel": {},
   "exchangeRatesMenuTitle": "Exchange Rates",
   "@exchangeRatesMenuTitle": {},
 

@@ -269,6 +269,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productsPurchasableFilter => 'Purchasable';
 
   @override
+  String get productsAttributesFilterLabel => 'Product attributes';
+
+  @override
   String get productsSupplierFilter => 'Supplier';
 
   @override
@@ -730,6 +733,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pricingMenuTitle => 'Pricing';
+
+  @override
+  String get pricingGridHint =>
+      'Click any price to edit · Enter saves and drops down · Tab moves right · Escape cancels';
+
+  @override
+  String get pricingGridReadOnlyHint =>
+      'Read-only — your profile has no update right on Pricing.';
+
+  @override
+  String get pricingGridColumnsFilterLabel => 'Price lists shown';
 
   @override
   String get exchangeRatesMenuTitle => 'Exchange Rates';

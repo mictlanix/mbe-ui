@@ -1,0 +1,249 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_cell_key.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
+import 'package:mbe_ui/features/pricing/presentation/pricing_grid_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
+
+/// Which direction a committed edit moves next (contracts/pricing-grid-
+/// screen.md §2). The grid screen resolves this into an actual
+/// [PriceCellKey] against its own row/column order and calls
+/// [PricingGridController.openCell] — a [PriceCell] only knows its own
+/// coordinate, not the shape of the whole grid.
+enum PriceCellMove { down, up, left, right }
+
+/// One editable price in the pricing grid (spec 033 US1) — reading state
+/// shows the stored price (or the shared "not set" treatment, FR-005) and,
+/// when [isActive], an editable field.
+///
+/// **Deliberately does not reuse `ConfirmableFieldController`/
+/// `ConfirmableTextField`** (specs 030/031), despite both editing a
+/// server-backed value: that controller's `submit`/`flush` discard-and-reset
+/// an unparseable or refused value back to the last accepted one (a "peak"
+/// animation, not a persistent state) — exactly wrong for FR-009, which
+/// requires a rejected value to **stay on screen, flagged, with its reason**
+/// until the user corrects it. This widget holds a plain
+/// `TextEditingController`/`FocusNode` instead and represents "rejected" as
+/// [PricingGridState.rejected] — real per-cell state the controller keeps,
+/// not a field-local animation.
+class PriceCell extends ConsumerStatefulWidget {
+  const PriceCell({
+    super.key,
+    required this.filter,
+    required this.productId,
+    required this.priceListId,
+    required this.price,
+    required this.rejected,
+    required this.inFlight,
+    required this.isActive,
+    required this.canUpdate,
+    required this.onMove,
+  });
+
+  final PricingGridFilter filter;
+  final int productId;
+  final int priceListId;
+
+  /// The stored price row, or `null` when the product has no price on this
+  /// list yet (FR-005).
+  final ProductPrice? price;
+  final RejectedEdit? rejected;
+  final bool inFlight;
+  final bool isActive;
+  final bool canUpdate;
+
+  /// Called after a commit is issued (regardless of its outcome) by a key
+  /// that moves — Enter, Tab/Shift+Tab, or an arrow key at the edge of the
+  /// text. The screen resolves the next cell and opens it, or does nothing
+  /// at a grid edge (contracts/pricing-grid-screen.md §2).
+  final ValueChanged<PriceCellMove> onMove;
+
+  @override
+  ConsumerState<PriceCell> createState() => _PriceCellState();
+}
+
+class _PriceCellState extends ConsumerState<PriceCell> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+
+  PriceCellKey get _key =>
+      PriceCellKey(productId: widget.productId, priceListId: widget.priceListId);
+
+  @override
+  void initState() {
+    super.initState();
+    final rejected = widget.rejected;
+    _controller = TextEditingController(
+      text: rejected != null ? rejected.typed : (widget.price?.price ?? ''),
+    );
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _controller.text.length,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    // Detached *before* disposing the node: disposing a still-focused
+    // `FocusNode` can itself fire a final "lost focus" notification, and
+    // this cell may be unmounting precisely *because* a key handler below
+    // already committed and moved away — a second commit from that
+    // notification would be redundant (and, if the server reformats the
+    // value between the two, would even record a spurious second
+    // `PriceChange`). Removing the listener first makes that impossible
+    // rather than relying on the order of Flutter's own teardown.
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) _commit();
+  }
+
+  void _commit() {
+    ref
+        .read(pricingGridControllerProvider(widget.filter).notifier)
+        .commitCell(
+          productId: widget.productId,
+          priceListId: widget.priceListId,
+          typed: _controller.text,
+        );
+  }
+
+  void _commitAndMove(PriceCellMove move) {
+    _commit();
+    widget.onMove(move);
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.escape) {
+      ref.read(pricingGridControllerProvider(widget.filter).notifier).closeCell();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.tab) {
+      final shiftHeld = HardwareKeyboard.instance.isShiftPressed;
+      _commitAndMove(shiftHeld ? PriceCellMove.left : PriceCellMove.right);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowDown) {
+      _commitAndMove(PriceCellMove.down);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowUp) {
+      _commitAndMove(PriceCellMove.up);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowRight &&
+        _controller.selection.baseOffset == _controller.text.length) {
+      _commitAndMove(PriceCellMove.right);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowLeft &&
+        _controller.selection.baseOffset == 0) {
+      _commitAndMove(PriceCellMove.left);
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.isActive) return _buildEditing(context);
+    return _buildReading(context);
+  }
+
+  Widget _buildReading(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
+    final rejected = widget.rejected;
+    final colors = Theme.of(context).colorScheme;
+
+    final String display;
+    Color? color;
+    String? tooltip;
+    if (rejected != null) {
+      display = rejected.typed;
+      color = colors.error;
+      tooltip = switch (rejected.reason) {
+        'invalidAmount' => l10n.pricingInvalidAmountError,
+        'saveFailed' => l10n.pricingSaveFailedError,
+        final serverMessage => serverMessage,
+      };
+    } else if (widget.price == null) {
+      display = l10n.pricingPriceNotSet;
+      color = colors.outline;
+      tooltip = widget.canUpdate ? l10n.editPriceTooltip : null;
+    } else {
+      display = fmt.display.currency(widget.price!.price);
+      tooltip = widget.canUpdate ? l10n.editPriceTooltip : null;
+    }
+
+    final text = Text(
+      display,
+      textAlign: TextAlign.right,
+      style: TextStyle(color: color),
+    );
+
+    return Tooltip(
+      message: tooltip ?? '',
+      child: InkWell(
+        key: Key('price_cell_${widget.productId}_${widget.priceListId}'),
+        onTap: widget.canUpdate
+            ? () => ref
+                  .read(pricingGridControllerProvider(widget.filter).notifier)
+                  .openCell(_key)
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          child: widget.inFlight
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 6),
+                    text,
+                  ],
+                )
+              : text,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditing(BuildContext context) {
+    return Focus(
+      onKeyEvent: _handleKey,
+      child: TextField(
+        key: Key('price_cell_field_${widget.productId}_${widget.priceListId}'),
+        controller: _controller,
+        focusNode: _focusNode,
+        autofocus: true,
+        textAlign: TextAlign.right,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onSubmitted: (_) => _commitAndMove(PriceCellMove.down),
+        // Suppresses `EditableText`'s default "done" behavior, which
+        // unfocuses the field — that unfocus would fire `_onFocusChange`
+        // and commit a second time on top of the explicit one `onSubmitted`
+        // already issued above.
+        onEditingComplete: () {},
+      ),
+    );
+  }
+}

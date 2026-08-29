@@ -29,11 +29,14 @@ which contradict a straight reading of the spec:
    with `[0, 0]` would make each product unsellable at any profit. Creates copy
    the target price list's own margins, falling back to `[0, 1]` when those are
    the shipped `0/0` default — the widest band the schema allows.
-4. **The focus problem is already solved.** A `TextField` inside a
-   `DataTableSource` row loses focus on every state-driven rebuild.
-   `ConfirmableFieldController` (specs 030/031) exists precisely to hold typed
-   text outside the state tree, reject unusable input before commit, and
-   acknowledge a discard — which is FR-009 and FR-025 for free (R3).
+4. **The focus problem is solved by keeping draft text local — not by reusing
+   specs 030/031's field controller, as first planned.** A `TextField` inside a
+   `DataTableSource` row loses focus on every state-driven rebuild, so draft
+   text stays in the cell's own `State`, never in Riverpod. But
+   `ConfirmableFieldController` turned out to be the wrong vehicle for FR-009:
+   it *discards* an invalid or refused value back to the last accepted one,
+   the opposite of "keep it on screen, flagged, with a reason" (R3, corrected
+   during implementation). Rejection is real state on the controller instead.
 5. **Retiring the profit fields is presentation-only** (R11). The entities keep
    the fields, because the create/update path in finding 3 reads them; only 2 form
    fields, 4 table columns, 1 dialog, 6 l10n keys and one validator go. That is
