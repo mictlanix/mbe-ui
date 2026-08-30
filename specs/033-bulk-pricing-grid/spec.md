@@ -366,6 +366,11 @@ each record still works.
   selecting a chip MUST narrow the grid to those products.
 - **FR-018**: Worklist counts MUST reflect the filters currently applied,
   not the whole catalog.
+- **FR-018a**: They MUST also reflect the work done since the view loaded: a
+  cell going from unpriced to priced MUST re-read them. Revaluing a price
+  that already existed MUST NOT — a missing-count cannot move, and this is a
+  bulk-editing screen where a refresh per keystroke-ended edit would be its
+  own defect.
 - **FR-019**: When the backend cannot answer the worklist query, the chips
   MUST be omitted rather than displayed with unreliable counts. *(The query
   exists as of mbe-api#184, so this now governs only the interval before the
@@ -391,6 +396,12 @@ each record still works.
 - **FR-022**: Each cell MUST indicate whether its value is in flight,
   written, or rejected, with the reason for a rejection available without
   navigating away.
+- **FR-022a**: "Written" includes a cell that had **no** price before. The
+  summary bar counts it, so the cell must show it — otherwise the user is
+  told six prices changed with no way to see which six, which is precisely
+  the case a "Missing «list»" worklist produces. The tooltip says what it
+  can: the previous value when there was one, "newly priced" when there was
+  not.
 - **FR-023**: A summary bar MUST appear whenever the session holds changes,
   counting changed and rejected prices, and offering undo-last and
   revert-all.
