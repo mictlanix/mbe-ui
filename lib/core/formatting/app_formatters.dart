@@ -49,13 +49,15 @@ class DisplayFormatters {
         decimalDigits: settings.percentDecimalDigits,
       ),
       _date = DateFormat(settings.datePattern, locale.toString()),
-      _dateTime = DateFormat(settings.dateTimePattern, locale.toString());
+      _dateTime = DateFormat(settings.dateTimePattern, locale.toString()),
+      _count = NumberFormat.decimalPattern(locale.toString());
 
   final FormattingSettings _settings;
   final NumberFormat _currency;
   final NumberFormat _percent;
   final DateFormat _date;
   final DateFormat _dateTime;
+  final NumberFormat _count;
 
   /// A monetary amount, e.g. `"120.5"` → `"$120.50"` (defaults). `null` or
   /// unparseable → [emptyValuePlaceholder].
@@ -106,6 +108,15 @@ class DisplayFormatters {
   /// that many decimals (still with trailing zeros dropped within the cap),
   /// for a deployment whose quantities carry unreasonably long precision.
   String quantity(String? value) => _formatQuantity(value, _settings.quantityDecimalDigits);
+
+  /// A whole-number count with locale grouping, e.g. `4312` → `"4,312"`
+  /// (en) / `"4.312"` (es-MX). Not [quantity]: that one takes a decimal
+  /// string and drops trailing zeros without grouping, and applies no
+  /// grouping at all — this is the only formatter here for a plain
+  /// integer (specs/034-price-list-retirement-ui research.md R3). A count
+  /// is always present or its row isn't rendered, so there is no `null`
+  /// case and no [emptyValuePlaceholder].
+  String count(int value) => _count.format(value);
 
   /// Shared by [quantity] and [FieldFormatters.quantity] — identical
   /// rendering rule in both groups (data-model.md §2.1/§2.2).

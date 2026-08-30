@@ -130,4 +130,30 @@ void main() {
       expect(display().quantity('nope'), emptyValuePlaceholder);
     });
   });
+
+  group('display.count (specs/034-price-list-retirement-ui research.md R3)', () {
+    test('groups a whole number for both app locales', () {
+      // es-MX groups thousands exactly like en-US (comma, not the
+      // period-grouping Spain's es-ES uses) — the two app languages read
+      // identically here, which is the correct Mexican convention, not a
+      // bug.
+      expect(display().count(4312), '4,312');
+      expect(display(locale: const Locale('en')).count(4312), '4,312');
+    });
+
+    test('a locale is actually honored, not hardcoded', () {
+      // de-DE groups with a period and would misread as a decimal if this
+      // formatter ignored locale, proving `count` really delegates to
+      // NumberFormat.decimalPattern(locale) rather than a fixed pattern.
+      expect(display(locale: const Locale('de')).count(4312), '4.312');
+    });
+
+    test('a large count stays grouped, not truncated or abbreviated', () {
+      expect(display().count(1234567), '1,234,567');
+    });
+
+    test('zero is rendered plainly', () {
+      expect(display().count(0), '0');
+    });
+  });
 }

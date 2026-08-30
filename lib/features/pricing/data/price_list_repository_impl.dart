@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_list_delete_preview.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 
 final priceListRepositoryProvider = Provider<PriceListRepository>((ref) {
@@ -119,11 +120,29 @@ class PriceListRepositoryImpl implements PriceListRepository {
   }
 
   @override
-  Future<void> delete({required int priceListId}) async {
+  Future<void> delete({required int priceListId, int? replacement}) async {
     try {
       await _api.deletePriceListApiV1PriceListsPriceListIdDelete(
         priceListId: priceListId,
+        replacement: replacement,
       );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<PriceListDeletePreview> deletePreview({
+    required int priceListId,
+  }) async {
+    try {
+      final response = await _api
+          .previewPriceListDeleteApiV1PriceListsPriceListIdDeletePreviewGet(
+            priceListId: priceListId,
+          );
+      final preview = response.data;
+      if (preview == null) throw const AppError.server();
+      return PriceListDeletePreview.fromResponse(preview);
     } on DioException catch (e) {
       throw _toAppError(e);
     }

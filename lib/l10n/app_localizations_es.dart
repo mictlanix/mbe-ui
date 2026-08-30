@@ -883,9 +883,132 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deletePriceListConfirmTitle => '¿Eliminar lista de precios?';
 
   @override
-  String deletePriceListConfirmMessage(String name) {
-    return 'Esto eliminará permanentemente \"$name\". Esta acción no se puede deshacer.';
+  String priceListDeleteLead(String name, int id) {
+    return '$name #$id se eliminará de forma permanente. Esta acción no se puede deshacer.';
   }
+
+  @override
+  String get priceListDeleteRelatedTitle =>
+      'Registros asociados a esta lista de precios';
+
+  @override
+  String get priceListDeleteTotalLabel => 'Total';
+
+  @override
+  String get priceListDeleteTotalCaption =>
+      'Registros que esta eliminación afecta; no todos se eliminan.';
+
+  @override
+  String get priceListDeleteFateDestroyed => 'se elimina de forma permanente';
+
+  @override
+  String get priceListDeleteFateMoved => 'se traslada al reemplazo';
+
+  @override
+  String get priceListDeleteFateBlocking =>
+      'bloquea la eliminación: primero hay que resolverlo';
+
+  @override
+  String get priceListDeleteCategoryProductPrice => 'Precios de productos';
+
+  @override
+  String get priceListDeleteCategoryCustomer => 'Clientes';
+
+  @override
+  String get priceListDeleteViewCustomers => 'Ver clientes';
+
+  @override
+  String get priceListDeleteCleanNote =>
+      'Ningún precio ni cliente depende de esta lista.';
+
+  @override
+  String get priceListDeleteConfirm => 'Eliminar lista';
+
+  @override
+  String priceListDeleteConfirmPrices(int count, String formatted) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Eliminar lista y $formatted precios',
+      one: 'Eliminar lista y 1 precio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get priceListDeletedMessage => 'Lista de precios eliminada.';
+
+  @override
+  String get priceListDeleteReplacementLabel => 'Lista de precios de reemplazo';
+
+  @override
+  String get priceListDeleteReplacementLabelOptional =>
+      'Lista de precios de reemplazo (opcional)';
+
+  @override
+  String get priceListDeleteReplacementRequiredHelper =>
+      'Obligatorio: todos los clientes de esta lista se trasladan aquí.';
+
+  @override
+  String get priceListDeleteReplacementOptionalHelper =>
+      'Opcional: solo se usa si resulta que hay clientes asignados.';
+
+  @override
+  String priceListDeleteReplacementChosenHelper(
+    int count,
+    String formatted,
+    String name,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$formatted clientes se trasladan a $name.',
+      one: '1 cliente se traslada a $name.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String priceListDeleteConfirmCustomers(int count, String formatted) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Eliminar lista y trasladar $formatted clientes',
+      one: 'Eliminar lista y trasladar 1 cliente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String priceListDeletedWithMoveMessage(
+    int count,
+    String formatted,
+    String name,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Lista de precios eliminada. $formatted clientes trasladados a $name.',
+      one: 'Lista de precios eliminada. 1 cliente trasladado a $name.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get priceListDeleteAcknowledge =>
+      'Entiendo que esta acción no se puede deshacer y que los precios de esta lista se eliminan junto con ella.';
+
+  @override
+  String get priceListDeleteBlockedBanner =>
+      'Esta lista todavía está en uso por registros que la eliminación no puede resolver. Primero hay que resolverlos y después eliminar la lista.';
+
+  @override
+  String get priceListDeletePreviewFailedNote =>
+      'No se pudo cargar lo que depende de esta lista. Aún puedes eliminarla; si hay clientes asignados, la eliminación será rechazada.';
+
+  @override
+  String get priceListDeleteClose => 'Cerrar';
 
   @override
   String get priceListNameRequiredError => 'El nombre es obligatorio.';

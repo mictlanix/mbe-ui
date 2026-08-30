@@ -8,7 +8,10 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
+import 'package:mbe_ui/features/pricing/presentation/price_list_delete_dialog.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_list_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -69,7 +72,7 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
       );
     }
 
-    if (formState.saved || formState.deleted) {
+    if (formState.saved) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.pop();
       });
@@ -93,7 +96,11 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
         child: ResponsiveFormGrid(
           maxColumns: 2,
           children: [
-            if (formState.error != null)
+            // Delete refusals are shown *inside* the review dialog instead
+            // (FR-019, `PriceListDeleteDialog`'s own `ErrorBanner`) — showing
+            // them here too would render the server's refusal twice, once
+            // behind the modal and once inside it.
+            if (formState.error != null && !_isDeleteError(formState.error!))
               FormGridChild(
                 span: FormGridSpan.full,
                 ErrorBanner(
@@ -148,14 +155,14 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
                           ? controller.submitUpdate
                           : controller.submitCreate)
                     : null,
-                onDelete: canDelete ? controller.delete : null,
-                deleteConfirmation: RecordDeleteConfirmation(
-                  title: l10n.deletePriceListConfirmTitle,
-                  message: l10n.deletePriceListConfirmMessage(formState.name),
-                  confirmLabel: l10n.deleteButton,
-                  cancelLabel: l10n.cancelButton,
-                  confirmKey: const Key('confirm_delete_price_list_button'),
-                ),
+                onDelete: canDelete
+                    ? () => _reviewAndDelete(context, formState, l10n)
+                    : null,
+                // The review dialog replaces this shared component's own
+                // confirmation (specs/034-price-list-retirement-ui
+                // research.md R7) — `RecordFormActions` already invokes
+                // `onDelete` directly whenever `deleteConfirmation` is null.
+                deleteConfirmation: null,
               ),
             ),
           ],
@@ -163,7 +170,49 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
       ),
     );
   }
+
+  /// Opens the delete review dialog and, on a successful deletion, shows the
+  /// confirmation snackbar *before* popping the screen (FR-017) —
+  /// `ScaffoldMessenger` sits above the popped route, the same ordering
+  /// `merge_products_screen.dart` uses. Replaces the old
+  /// `formState.deleted`-driven post-frame pop (research.md R9): with the
+  /// dialog on the navigation stack, that flag flipping would have popped
+  /// the dialog instead of the screen.
+  Future<void> _reviewAndDelete(
+    BuildContext context,
+    PriceListFormState formState,
+    AppLocalizations l10n,
+  ) async {
+    final outcome = await showPriceListDeleteDialog(
+      context,
+      priceList: PriceList(
+        priceListId: widget.priceListId!,
+        name: formState.name,
+      ),
+    );
+    if (outcome == null || !context.mounted) return;
+
+    final fmt = ref.read(formattersProvider);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          outcome.replacementName != null && outcome.movedCount > 0
+              ? l10n.priceListDeletedWithMoveMessage(
+                  outcome.movedCount,
+                  fmt.display.count(outcome.movedCount),
+                  outcome.replacementName!,
+                )
+              : l10n.priceListDeletedMessage,
+        ),
+      ),
+    );
+    if (mounted) context.pop();
+  }
 }
+
+bool _isDeleteError(String code) =>
+    code == PriceListFormErrorCode.deleteFailed ||
+    code == PriceListFormErrorCode.deletePermissionDenied;
 
 String _localizeFormError(AppLocalizations l10n, String code) {
   switch (code) {

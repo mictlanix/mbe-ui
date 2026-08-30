@@ -295,6 +295,120 @@ void main() {
         throwsA(const AppError.notFound('Price list not found')),
       );
     });
+
+    test(
+      'omits `replacement` from the request when null (FR-013)',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString('', 204);
+        });
+
+        await repository.delete(priceListId: 1);
+
+        expect(captured!.queryParameters.containsKey('replacement'), isFalse);
+      },
+    );
+
+    test('sends `replacement` when named (FR-012)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('', 204);
+      });
+
+      await repository.delete(priceListId: 1, replacement: 3);
+
+      expect(captured!.queryParameters['replacement'], 3);
+    });
+
+    test(
+      'a 409 conflict maps to ServerError(409, detail) with the server\'s '
+      'sentence intact (research.md R10)',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail':
+                  'Still referenced by customer.price_list (12) — remove '
+                  'those records first',
+            }),
+            409,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        await expectLater(
+          () => repository.delete(priceListId: 1),
+          throwsA(
+            const AppError.server(
+              statusCode: 409,
+              message:
+                  'Still referenced by customer.price_list (12) — remove '
+                  'those records first',
+            ),
+          ),
+        );
+      },
+    );
+  });
+
+  group('PriceListRepositoryImpl.deletePreview', () {
+    test('200 maps items and total, preserving server order', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'items': [
+              {'category': 'product_price.list', 'count': 4312},
+              {'category': 'customer.price_list', 'count': 12},
+            ],
+            'total': 4324,
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final preview = await repository.deletePreview(priceListId: 1);
+
+      expect(preview.categories.map((c) => c.key), [
+        'product_price.list',
+        'customer.price_list',
+      ]);
+      expect(preview.categories.map((c) => c.count), [4312, 12]);
+      expect(preview.total, 4324);
+    });
+
+    test('an empty preview maps to no categories and total 0', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'items': [], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final preview = await repository.deletePreview(priceListId: 1);
+
+      expect(preview.categories, isEmpty);
+      expect(preview.total, 0);
+    });
+
+    test('404 maps to AppError.notFound', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Price list not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.deletePreview(priceListId: 999),
+        throwsA(const AppError.notFound('Price list not found')),
+      );
+    });
   });
 }
 

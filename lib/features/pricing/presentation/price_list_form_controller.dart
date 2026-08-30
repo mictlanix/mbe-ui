@@ -35,7 +35,6 @@ class PriceListFormState with _$PriceListFormState {
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
-    @Default(false) bool deleted,
     String? error,
     String? errorDetail,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
@@ -194,13 +193,20 @@ class PriceListFormController extends _$PriceListFormController {
     }
   }
 
-  /// Deletes the loaded price list (FR-004). No-ops if no price list has
-  /// been loaded. A server rejection (e.g. still assigned to a customer,
-  /// US1 §6) is surfaced via `error`/`errorDetail`, leaving the list in
-  /// place.
-  Future<void> delete() async {
+  /// Deletes the loaded price list (specs/034-price-list-retirement-ui
+  /// FR-012, research.md R9), optionally moving its customers to
+  /// [replacement]. Returns `true` on success, `false` on any refusal —
+  /// the caller (the delete review dialog) awaits this rather than
+  /// watching a `deleted` flag, since a flag flipping mid-dialog would
+  /// trigger the *screen's* old post-frame pop while the dialog is still
+  /// the topmost route, popping the dialog instead of the screen.
+  ///
+  /// No-ops (returns `false`) if no price list has been loaded. A server
+  /// refusal (blocked, or a race the preview couldn't see, US1 §6) is
+  /// surfaced via `error`/`errorDetail`, leaving the list in place.
+  Future<bool> delete({int? replacement}) async {
     final priceListId = state.priceListId;
-    if (priceListId == null) return;
+    if (priceListId == null) return false;
 
     if (!ref
         .read(accessControlProvider)
@@ -209,22 +215,24 @@ class PriceListFormController extends _$PriceListFormController {
         error: PriceListFormErrorCode.deletePermissionDenied,
         errorDetail: null,
       );
-      return;
+      return false;
     }
 
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
       await ref
           .read(priceListRepositoryProvider)
-          .delete(priceListId: priceListId);
+          .delete(priceListId: priceListId, replacement: replacement);
       ref.invalidate(priceListsListControllerProvider);
-      state = state.copyWith(submitting: false, deleted: true);
+      state = state.copyWith(submitting: false);
+      return true;
     } on AppError catch (e) {
       state = state.copyWith(
         submitting: false,
         error: PriceListFormErrorCode.deleteFailed,
         errorDetail: e.serverMessage,
       );
+      return false;
     }
   }
 }

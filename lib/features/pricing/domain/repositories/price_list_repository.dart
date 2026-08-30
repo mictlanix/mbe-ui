@@ -1,4 +1,5 @@
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_list_delete_preview.dart';
 
 /// Price-list catalog calls to mbe-api (contracts/mbe-api-pricing.md §1).
 /// Access is gated by `AccessControlService.can(SystemObject.priceLists,
@@ -25,12 +26,20 @@ abstract class PriceListRepository {
     String? name,
   });
 
-  /// `DELETE /api/v1/price-lists/{price_list_id}` (FR-004). Throws
-  /// `NotFoundError` on `404`, and whatever `AppError` mbe-api maps a
-  /// still-in-use rejection to (e.g. assigned to a customer — US1 §6,
-  /// contracts/mbe-api-pricing.md G3) so the caller can surface it and leave
-  /// the list in place.
-  Future<void> delete({required int priceListId});
+  /// `DELETE /api/v1/price-lists/{price_list_id}[?replacement={id}]`
+  /// (specs/034-price-list-retirement-ui FR-012). `replacement` is omitted
+  /// from the request when `null`, preserving the exact behaviour of a
+  /// caller that names none (FR-013). Throws `NotFoundError` on `404`
+  /// (the list, or the named replacement), `ServerError(400, …)` when
+  /// `replacement` names the list itself, `ServerError(409, …)` when
+  /// something other than the list's prices and its customers still
+  /// references it (contracts/mbe-api-price-list-retirement.md §2).
+  Future<void> delete({required int priceListId, int? replacement});
+
+  /// `GET /api/v1/price-lists/{price_list_id}/delete/preview`
+  /// (specs/034-price-list-retirement-ui FR-001, FR-007). Read-only —
+  /// changes nothing by being asked. Throws `NotFoundError` on `404`.
+  Future<PriceListDeletePreview> deletePreview({required int priceListId});
 }
 
 /// `ListResponse[PriceListResponse]` (`items`, `total`).
