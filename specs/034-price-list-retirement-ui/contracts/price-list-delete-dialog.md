@@ -61,7 +61,7 @@ stack it would have popped the dialog instead of the screen.
 | 4 | Blocked banner | `preview.isBlocked` |
 | 5 | Degraded note | preview errored |
 | 6 | `PriceListDeleteSummary` / skeleton / clean note | see §3 |
-| 7 | Replacement picker | `movedCount > 0` (required) or preview errored (optional) |
+| 7 | Replacement picker | `movedCount > 0` **and not blocked** (required), or preview errored (optional) |
 | 8 | Acknowledgment checkbox | preview resolved non-empty and not blocked, or preview errored |
 | 9 | Actions — Cancel/Close, then the destructive button | always |
 
@@ -138,6 +138,11 @@ Cancel are disabled (FR-016) — the dialog is `barrierDismissible: false` and i
 `CatalogEntityPicker<PriceList>` over `PriceListRepository.list(search:)`, the
 same construction the customers filter uses. Its options exclude the list being
 deleted (FR-010) by filtering the result client-side on `priceListId`.
+
+The picker is **not rendered at all in the blocked state**, even when customers
+are assigned: a blocked list offers only Close (FR-018), so a replacement it can
+never use would be an input with no outcome. data-model.md §4.1's `blocked` row
+is authoritative wherever this reads ambiguously.
 
 Helper text, in priority order:
 

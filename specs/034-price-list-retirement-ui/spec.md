@@ -159,6 +159,7 @@ server's refusal if the deletion is then rejected.
 1. **Given** the report request fails, **When** the dialog opens, **Then** it says the dependencies could not be loaded and that the deletion may be refused as a result, rather than showing an empty or zeroed breakdown.
 2. **Given** that state, **When** the operator reads the dialog, **Then** a replacement may be named optionally, described as being used only if customers turn out to be assigned.
 3. **Given** that state, **When** the operator confirms and the server refuses, **Then** the server's explanation is shown in the dialog and the list is left in place.
+4. **Given** that state, **When** the dialog renders, **Then** the acknowledgment is still demanded before the destructive action becomes available — the report's absence is not evidence that there is nothing to acknowledge.
 
 ### Edge Cases
 
@@ -196,7 +197,7 @@ server's refusal if the deletion is then rejected.
 
 #### The acknowledgment and the commit
 
-- **FR-014**: When anything at all is attached to the list, the dialog MUST require an explicit, initially-unticked acknowledgment that the deletion is irreversible and destroys the list's prices, before the destructive action becomes available.
+- **FR-014**: When anything at all is attached to the list, the dialog MUST require an explicit, initially-unticked acknowledgment that the deletion is irreversible and destroys the list's prices, before the destructive action becomes available. When the report could not be loaded, the acknowledgment MUST still be required: whether anything is attached is then unknown, and the safe reading of an unknown is that something is.
 - **FR-015**: The destructive action's label MUST name what the deletion does — the number of prices destroyed, or the number of customers moved when there are no prices — rather than reading only "Delete".
 - **FR-016**: While the deletion is in flight, the dialog MUST indicate progress and MUST make both confirming and cancelling unavailable.
 - **FR-017**: On success, the dialog MUST close, the operator MUST be returned to the price lists list, that list MUST reflect the deletion, and a confirmation message MUST be shown naming the replacement and the number of customers moved when a replacement was used.
