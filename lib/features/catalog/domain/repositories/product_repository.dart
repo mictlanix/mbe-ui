@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:mbe_ui/features/catalog/domain/entities/merge_preview.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_missing_price_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 
 /// Product catalog calls to mbe-api (contracts/mbe-api-products.md). Access
@@ -206,6 +207,29 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    List<int> labels = const [],
+  });
+
+  /// `GET /api/v1/products/prices/missing-facets` (mbe-api#184) — one row per
+  /// price list with the number of matching products that have **no** price on
+  /// it. The whole worklist chip row of spec 033's pricing grid in one call
+  /// (US2, FR-017/FR-018).
+  ///
+  /// Takes the same product filters as [list] and deliberately **no**
+  /// `missingPriceList` of its own: the counts describe the current filter
+  /// set, so selecting one chip must not move the numbers on the chips beside
+  /// it.
+  ///
+  /// A list nobody has priced at all still gets a row (the server counts
+  /// *matching minus priced* rather than joining), so the chip row never
+  /// silently drops a list.
+  Future<List<ProductMissingPriceFacet>> productMissingPriceFacets({
+    String? search,
+    EntityStatus? status,
+    bool? stockable,
+    bool? salable,
+    bool? purchasable,
+    int? supplier,
     List<int> labels = const [],
   });
 }

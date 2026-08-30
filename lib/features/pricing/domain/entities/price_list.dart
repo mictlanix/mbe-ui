@@ -11,22 +11,15 @@ class PriceList with _$PriceList {
   const factory PriceList({
     required int priceListId,
     required String name,
-    required String highProfitMargin,
-    required String lowProfitMargin,
   }) = _PriceList;
 
   factory PriceList.fromResponse(PriceListResponse response) {
     return PriceList(
       priceListId: response.priceListId,
       name: response.name,
-      // Deprecated on the wire since mbe-api#185 — still mapped because the
-      // price-list form still edits them, until spec 033 US7 removes that.
-      // Reading a field that is deprecated *for callers* is exactly what
-      // this mapping is for, so the lint is silenced rather than obeyed.
-      // ignore: deprecated_member_use
-      highProfitMargin: response.highProfitMargin,
-      // ignore: deprecated_member_use
-      lowProfitMargin: response.lowProfitMargin,
+      // `high_profit_margin`/`low_profit_margin` are deliberately not mapped:
+      // deprecated on the wire (mbe-api#185) and read by nothing since spec
+      // 033 US7 took them off the form.
     );
   }
 }

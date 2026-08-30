@@ -37,6 +37,7 @@ class PriceCell extends ConsumerStatefulWidget {
     required this.priceListId,
     required this.price,
     required this.rejected,
+    this.changedFrom,
     required this.inFlight,
     required this.isActive,
     required this.canUpdate,
@@ -51,6 +52,12 @@ class PriceCell extends ConsumerStatefulWidget {
   /// list yet (FR-005).
   final ProductPrice? price;
   final RejectedEdit? rejected;
+
+  /// The value this cell held when the view loaded, when that differs from
+  /// what it holds now — the "saved · was X" badge and tooltip (FR-022).
+  /// `null` means unchanged since load, which shows no badge at all.
+  final String? changedFrom;
+
   final bool inFlight;
   final bool isActive;
   final bool canUpdate;
@@ -196,6 +203,49 @@ class _PriceCellState extends ConsumerState<PriceCell> {
       style: TextStyle(color: color),
     );
 
+    // FR-022's three states, in the order they can be true: in flight beats
+    // "changed" (the write may yet be refused), and a rejection beats both —
+    // its own colour and text are already applied above.
+    final badgeKey = Key(
+      'price_cell_badge_${widget.productId}_${widget.priceListId}',
+    );
+    final Widget? badge;
+    if (rejected != null) {
+      badge = Icon(Icons.error_outline, key: badgeKey, size: 14, color: colors.error);
+    } else if (widget.inFlight) {
+      badge = SizedBox(
+        key: badgeKey,
+        width: 12,
+        height: 12,
+        child: const CircularProgressIndicator(strokeWidth: 2),
+      );
+      tooltip = l10n.pricingGridCellSaving;
+    } else if (widget.changedFrom != null) {
+      badge = Icon(
+        Icons.check_circle_outline,
+        key: badgeKey,
+        size: 14,
+        color: colors.primary,
+      );
+      tooltip = l10n.pricingGridCellSaved(
+        fmt.display.currency(widget.changedFrom),
+      );
+    } else {
+      badge = null;
+    }
+
+    // A plain `Row`, with the price left as an untruncatable `Text`: §VI
+    // forbids ellipsizing a monetary amount to make room for an adornment, so
+    // the price columns carry the badge's width in `kPriceColumnWidth`
+    // instead of the badge stealing it from the figure.
+    final content = badge == null
+        ? text
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [badge, const SizedBox(width: 4), text],
+          );
+
     return Tooltip(
       message: tooltip ?? '',
       child: InkWell(
@@ -207,21 +257,7 @@ class _PriceCellState extends ConsumerState<PriceCell> {
             : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-          child: widget.inFlight
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const SizedBox(
-                      width: 12,
-                      height: 12,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                    const SizedBox(width: 6),
-                    text,
-                  ],
-                )
-              : text,
+          child: content,
         ),
       ),
     );

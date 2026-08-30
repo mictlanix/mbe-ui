@@ -51,8 +51,6 @@ void main() {
           'IntegrationTest-${DateTime.now().millisecondsSinceEpoch}';
       final priceList = await priceListRepository.create(
         name: listName,
-        highProfitMargin: '0.40',
-        lowProfitMargin: '0.10',
       );
       expect(priceList.name, listName);
 
@@ -68,8 +66,6 @@ void main() {
         productId: product.productId,
         priceListId: priceList.priceListId,
         price: '120.00',
-        lowProfit: '90.00',
-        highProfit: '150.00',
       );
       expect(productPrice.price, '120.00');
 

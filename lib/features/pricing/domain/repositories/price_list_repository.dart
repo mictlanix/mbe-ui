@@ -15,8 +15,6 @@ abstract class PriceListRepository {
   /// (e.g. duplicate name).
   Future<PriceList> create({
     required String name,
-    String? highProfitMargin,
-    String? lowProfitMargin,
   });
 
   /// `PUT /api/v1/price-lists/{price_list_id}` (FR-003). All fields
@@ -25,8 +23,6 @@ abstract class PriceListRepository {
   Future<PriceList> update({
     required int priceListId,
     String? name,
-    String? highProfitMargin,
-    String? lowProfitMargin,
   });
 
   /// `DELETE /api/v1/price-lists/{price_list_id}` (FR-004). Throws

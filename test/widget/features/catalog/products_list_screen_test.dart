@@ -115,6 +115,9 @@ void main() {
     // exercising the facet-driven enable/disable pass an explicit list.
     List<ProductLabelFacet>? labelFacets,
     ListQuery query = const ListQuery(),
+    /// Pins the app's locale, for a test asserting a string is *localized*
+    /// rather than hardcoded English.
+    Locale? locale,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
     when(
@@ -189,6 +192,7 @@ void main() {
         ],
         child: MaterialApp.router(
           routerConfig: router,
+          locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
@@ -1336,5 +1340,79 @@ void main() {
         '/products?supplier=5',
       );
     });
+  });
+
+  group('filter drawer structure (spec 033 US6)', () {
+    testWidgets(
+      'the tri-state attribute chips carry a section heading, like every '
+      'other group in the drawer (FR-030)',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        await openFilterSheet(tester);
+
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        expect(find.text(l10n.productsAttributesFilterLabel), findsOneWidget);
+      },
+    );
+
+    testWidgets('the heading is localized, not a hardcoded English string', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser, locale: const Locale('es'));
+      await openFilterSheet(tester);
+
+      final es = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(find.text(es.productsAttributesFilterLabel), findsOneWidget);
+      expect(es.productsAttributesFilterLabel, isNot('Product attributes'));
+    });
+
+    testWidgets(
+      'the sections read status → attributes → supplier → labels (FR-031)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          labels: const [LabelItem(labelId: 1, name: 'Clearance')],
+        );
+        await openFilterSheet(tester);
+
+        double topOf(Finder finder) => tester.getTopLeft(finder).dy;
+
+        // Anchored on keys, not on heading text: "Status" is also a column
+        // header in the table behind the sheet, so the text finder is
+        // ambiguous while the drawer is open.
+        final status = topOf(find.byKey(const Key('products_filter_status_all')));
+        final attributes = topOf(
+          find.byKey(const Key('products_filter_stockable')),
+        );
+        final supplier = topOf(
+          find.byKey(const Key('products_filter_supplier')),
+        );
+        final labels = topOf(find.byKey(const Key('products_filter_label')));
+
+        expect(status, lessThan(attributes));
+        expect(attributes, lessThan(supplier));
+        expect(
+          supplier,
+          lessThan(labels),
+          reason: 'supplier must precede labels (spec 033 FR-031)',
+        );
+      },
+    );
+
+    testWidgets(
+      'a deployment with no labels still shows supplier — the labels section '
+      'is the conditional one, and it no longer sits between',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser, labels: const []);
+        await openFilterSheet(tester);
+
+        expect(
+          find.byKey(const Key('products_filter_supplier')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('products_filter_label')), findsNothing);
+      },
+    );
   });
 }

@@ -77,26 +77,10 @@ void main() {
       verifyNever(
         () => repository.create(
           name: any(named: 'name'),
-          highProfitMargin: any(named: 'highProfitMargin'),
-          lowProfitMargin: any(named: 'lowProfitMargin'),
         ),
       );
     });
 
-    test('a negative margin is rejected before submit', () async {
-      final notifier = container.read(priceListFormControllerProvider.notifier);
-      notifier
-        ..nameChanged('Retail')
-        ..highProfitMarginChanged('-0.1');
-
-      await notifier.submitCreate();
-
-      final state = container.read(priceListFormControllerProvider);
-      expect(
-        state.fieldErrors['highProfitMargin'],
-        PriceListFormErrorCode.marginInvalid,
-      );
-    });
 
     test(
       'a valid submission creates the price list and invalidates the list',
@@ -104,25 +88,18 @@ void main() {
         when(
           () => repository.create(
             name: 'Retail',
-            highProfitMargin: '0.40',
-            lowProfitMargin: '0.10',
           ),
         ).thenAnswer(
           (_) async => const PriceList(
             priceListId: 1,
             name: 'Retail',
-            highProfitMargin: '0.40',
-            lowProfitMargin: '0.10',
           ),
         );
 
         final notifier = container.read(
           priceListFormControllerProvider.notifier,
         );
-        notifier
-          ..nameChanged('Retail')
-          ..highProfitMarginChanged('0.40')
-          ..lowProfitMarginChanged('0.10');
+        notifier.nameChanged('Retail');
 
         await notifier.submitCreate();
 
@@ -134,8 +111,6 @@ void main() {
       when(
         () => repository.create(
           name: 'Retail',
-          highProfitMargin: any(named: 'highProfitMargin'),
-          lowProfitMargin: any(named: 'lowProfitMargin'),
         ),
       ).thenThrow(
         const AppError.validation([
@@ -173,8 +148,6 @@ void main() {
       verifyNever(
         () => repository.create(
           name: any(named: 'name'),
-          highProfitMargin: any(named: 'highProfitMargin'),
-          lowProfitMargin: any(named: 'lowProfitMargin'),
         ),
       );
     });
@@ -188,23 +161,17 @@ void main() {
           (_) async => const PriceList(
             priceListId: 1,
             name: 'Retail',
-            highProfitMargin: '0.40',
-            lowProfitMargin: '0.10',
           ),
         );
         when(
           () => repository.update(
             priceListId: 1,
             name: 'Retail',
-            highProfitMargin: '0.50',
-            lowProfitMargin: '0.10',
           ),
         ).thenAnswer(
           (_) async => const PriceList(
             priceListId: 1,
             name: 'Retail',
-            highProfitMargin: '0.50',
-            lowProfitMargin: '0.10',
           ),
         );
 
@@ -212,7 +179,7 @@ void main() {
           priceListFormControllerProvider.notifier,
         );
         await notifier.loadForEdit(1);
-        notifier.highProfitMarginChanged('0.50');
+        notifier.nameChanged('Retail');
 
         await notifier.submitUpdate();
 
@@ -229,8 +196,6 @@ void main() {
           (_) async => const PriceList(
             priceListId: 1,
             name: 'Retail',
-            highProfitMargin: '0.40',
-            lowProfitMargin: '0.10',
           ),
         );
         when(() => repository.delete(priceListId: 1)).thenThrow(

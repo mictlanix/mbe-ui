@@ -128,23 +128,6 @@ class _PricingTable extends ConsumerWidget {
                 )
               : Text(fmt.display.currency(row.price!.price)),
         ),
-        DataTableColumn(
-          label: l10n.columnLowProfit,
-          numeric: true,
-          fixedWidth: 140,
-          // fmt.display.percent renders '—' for a null value itself
-          // (spec 028 FR-008), so the ternary this cell used to need is gone.
-          cellBuilder: (context, row) =>
-              Text(fmt.display.percent(row.price?.lowProfit)),
-        ),
-        DataTableColumn(
-          label: l10n.columnHighProfit,
-          numeric: true,
-          fixedWidth: 140,
-          // Same em-dash simplification as lowProfit above.
-          cellBuilder: (context, row) =>
-              Text(fmt.display.percent(row.price?.highProfit)),
-        ),
         if (canUpdate)
           DataTableColumn(
             label: '',
@@ -169,12 +152,6 @@ class _PricingTable extends ConsumerWidget {
   ) async {
     final l10n = AppLocalizations.of(context)!;
     final priceController = TextEditingController(text: row.price?.price ?? '');
-    final lowController = TextEditingController(
-      text: row.price?.lowProfit ?? '',
-    );
-    final highController = TextEditingController(
-      text: row.price?.highProfit ?? '',
-    );
     Map<String, String> fieldErrors = const {};
 
     await showDialog<void>(
@@ -198,32 +175,6 @@ class _PricingTable extends ConsumerWidget {
                   decimal: true,
                 ),
               ),
-              TextField(
-                key: const Key('price_edit_low_profit_field'),
-                controller: lowController,
-                decoration: InputDecoration(
-                  labelText: l10n.columnLowProfit,
-                  errorText: fieldErrors['lowProfit'] != null
-                      ? l10n.pricingInvalidAmountError
-                      : null,
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-              ),
-              TextField(
-                key: const Key('price_edit_high_profit_field'),
-                controller: highController,
-                decoration: InputDecoration(
-                  labelText: l10n.columnHighProfit,
-                  errorText: fieldErrors['highProfit'] != null
-                      ? l10n.pricingInvalidAmountError
-                      : null,
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-              ),
             ],
           ),
           actions: [
@@ -238,11 +189,7 @@ class _PricingTable extends ConsumerWidget {
                     .read(pricingControllerProvider.notifier)
                     .saveRow(
                       priceListId: row.priceList.priceListId,
-                      edit: PricingRowEditState(
-                        price: priceController.text,
-                        lowProfit: lowController.text,
-                        highProfit: highController.text,
-                      ),
+                      edit: PricingRowEditState(price: priceController.text),
                     );
                 if (errors.isEmpty) {
                   if (dialogContext.mounted) Navigator.of(dialogContext).pop();

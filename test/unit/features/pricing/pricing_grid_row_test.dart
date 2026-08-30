@@ -17,7 +17,7 @@ ProductListItem _product(int id) => ProductListItem(
 );
 
 PriceList _priceList(int id, String name) =>
-    PriceList(priceListId: id, name: name, highProfitMargin: '0', lowProfitMargin: '0');
+    PriceList(priceListId: id, name: name);
 
 ProductPrice _price({
   required int productId,
@@ -28,8 +28,6 @@ ProductPrice _price({
   productId: productId,
   priceList: _priceList(priceListId, 'List $priceListId'),
   price: price,
-  lowProfit: '0',
-  highProfit: '1',
 );
 
 void main() {

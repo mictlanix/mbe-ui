@@ -44,14 +44,10 @@ const _testLists = [
   PriceList(
     priceListId: 1,
     name: 'Retail',
-    highProfitMargin: '0.40',
-    lowProfitMargin: '0.10',
   ),
   PriceList(
     priceListId: 2,
     name: 'Wholesale',
-    highProfitMargin: '0.20',
-    lowProfitMargin: '0.05',
   ),
 ];
 
@@ -113,19 +109,18 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows name and margins as percentages for every list', (
-    tester,
-  ) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser);
+  testWidgets(
+    'shows every list by name, and no margin columns — those were retired '
+    'with the validation that read them (spec 033 US7/FR-034, mbe-api#185)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-    expect(find.text('Retail'), findsOneWidget);
-    expect(find.text('Wholesale'), findsOneWidget);
-    // spec 028: display.percent renders '40.00 %', not the old bare '40%'
-    // (research.md R4 — the two percent paths this feature unifies never
-    // agreed, so unifying them changes this rendering deliberately).
-    expect(find.text('40.00 %'), findsOneWidget);
-    expect(find.text('10.00 %'), findsOneWidget);
-  });
+      expect(find.text('Retail'), findsOneWidget);
+      expect(find.text('Wholesale'), findsOneWidget);
+      expect(find.text('40.00 %'), findsNothing);
+      expect(find.text('10.00 %'), findsNothing);
+    },
+  );
 
   testWidgets('search box and pagination are present', (tester) async {
     await pumpScreen(tester, signedInAs: _fullAccessUser);

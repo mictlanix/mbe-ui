@@ -16,8 +16,6 @@ class ProductPrice with _$ProductPrice {
     required int productId,
     required PriceList priceList,
     required String price,
-    required String lowProfit,
-    required String highProfit,
   }) = _ProductPrice;
 
   factory ProductPrice.fromResponse(ProductPriceResponse response) {
@@ -26,13 +24,10 @@ class ProductPrice with _$ProductPrice {
       productId: response.product,
       priceList: PriceList.fromResponse(response.priceList),
       price: response.price,
-      // Deprecated on the wire since mbe-api#185 — still mapped because the
-      // standalone per-product screen still displays them, until spec 033
-      // US7 removes that.
-      // ignore: deprecated_member_use
-      lowProfit: response.lowProfit,
-      // ignore: deprecated_member_use
-      highProfit: response.highProfit,
+      // `low_profit`/`high_profit` are deliberately not mapped: deprecated on
+      // the wire (mbe-api#185, which retired the sales-order validation that
+      // read them) and shown by no screen since spec 033 US7. The columns
+      // still exist server-side; nothing here needs them.
     );
   }
 }

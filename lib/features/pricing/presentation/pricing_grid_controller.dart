@@ -1,3 +1,5 @@
+import 'package:decimal/decimal.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -6,11 +8,14 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_missing_price_facet.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/data/product_price_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_cell_key.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
+import 'package:mbe_ui/features/pricing/domain/pricing_defaults.dart';
+import 'package:mbe_ui/features/pricing/domain/repositories/product_price_repository.dart';
 import 'package:mbe_ui/features/pricing/domain/pricing_validators.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_grid_columns.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_grid_row.dart';
@@ -47,9 +52,13 @@ abstract final class PricingGridErrorCode {
 /// The pricing grid's addressable view state (data-model.md §7), translated
 /// from [ListQuery] exactly as `ProductFilter.fromQuery` is — the grid
 /// narrows the same way the products list does, because it lists the same
-/// records. [missingPriceList] is US2's worklist facet; it stays
-/// permanently `null` until mbe-api#184 exists (FR-019, spec 033
-/// research.md §R8) — nothing sets it yet.
+/// records. [missingPriceList] is US2's worklist facet, read from the
+/// `missing` query key (mbe-api#184): set, the grid shows only products with
+/// no price on that list (FR-017).
+///
+/// ⚠️ Parsed with `int.tryParse` and tested for `null`, never for falsiness —
+/// `0` is a real price list id (`Costo` in the deployment), so a truthiness
+/// check would silently ignore that chip (FR-019a).
 ///
 /// **Shown price-list columns are deliberately not here.** They change
 /// which *attributes* of these rows are shown, not which records — a view
@@ -72,6 +81,7 @@ class PricingGridFilter with _$PricingGridFilter {
   factory PricingGridFilter.fromQuery(ListQuery query) {
     final statusRaw = query.facet('status');
     final supplierRaw = query.facet('supplier');
+    final missingRaw = query.facet('missing');
     return PricingGridFilter(
       search: query.search,
       pageIndex: query.pageIndex,
@@ -87,8 +97,7 @@ class PricingGridFilter with _$PricingGridFilter {
           .map(int.tryParse)
           .whereType<int>()
           .toList(),
-      // missingPriceList intentionally not read from the query yet — no
-      // facet key exists for it until mbe-api#184 lands (US2).
+      missingPriceList: missingRaw != null ? int.tryParse(missingRaw) : null,
     );
   }
 }
@@ -215,6 +224,38 @@ List<PricingGridRow> _withPrice(
   ];
 }
 
+/// Per-price-list counts of products still missing a price, over the current
+/// filter set — the numbers on the grid's worklist chips (US2, FR-017/FR-018).
+///
+/// `autoDispose`, so it runs only while the grid is watching it, and re-runs
+/// on every filter change. Keyed by the filter **with `missingPriceList`
+/// cleared**: the counts describe the whole filtered set, so selecting one
+/// chip must not move the numbers on the chips beside it — and clearing the
+/// field here means selecting a chip does not even invalidate the provider.
+///
+/// Consumers read `.valueOrNull` and treat `null` (loading or failed) as
+/// "counts unknown", which renders **no chips at all** rather than chips
+/// reading zero (FR-019) — the same fail-quiet shape `productLabelFacets`
+/// uses, with the opposite default, because a wrong count here is a lie about
+/// how much work is left.
+@riverpod
+Future<List<ProductMissingPriceFacet>> pricingGridMissingFacets(
+  Ref ref,
+  PricingGridFilter filter,
+) {
+  return ref
+      .read(productRepositoryProvider)
+      .productMissingPriceFacets(
+        search: filter.search.isEmpty ? null : filter.search,
+        status: filter.status,
+        stockable: filter.stockable,
+        salable: filter.salable,
+        purchasable: filter.purchasable,
+        supplier: filter.supplier,
+        labels: filter.labels,
+      );
+}
+
 /// Loads and edits one page of the pricing grid, keyed by [PricingGridFilter]
 /// (spec 033 US1). Mirrors `ProductsListController`'s
 /// fetch-and-hold-a-`CatalogPage` shape, extended with the per-session
@@ -277,6 +318,7 @@ class PricingGridController extends _$PricingGridController {
           purchasable: filter.purchasable,
           supplier: filter.supplier,
           labels: filter.labels,
+          missingPriceList: filter.missingPriceList,
           skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
         );
@@ -315,6 +357,317 @@ class PricingGridController extends _$PricingGridController {
     final current = state.value;
     if (current == null) return;
     state = AsyncData(current.copyWith(active: null));
+  }
+
+  /// Reverses the newest change — a single cell edit or a whole column
+  /// action alike, because a [PriceChange] carries every write it made
+  /// (FR-016, FR-024, SC-004).
+  ///
+  /// Undo is a **forward write**, not a local rollback: it re-sends the
+  /// previous values and can itself fail, at which point nothing has changed
+  /// and the entry stays on the history for another try (spec Assumptions,
+  /// constitution §VII).
+  ///
+  /// A cell whose `previous` is `null` had no price row before the change.
+  /// There is no delete in the bulk write, so those cells are **skipped** and
+  /// keep their value — reported honestly by the return count rather than
+  /// papered over.
+  Future<int> undoLast() async {
+    final current = state.value;
+    if (current == null || current.history.isEmpty) return 0;
+    final last = current.history.last;
+    final restorable = [
+      for (final write in last.writes)
+        if (write.previous != null)
+          PriceWrite(
+            cell: write.cell,
+            previous: write.next,
+            next: write.previous!,
+          ),
+    ];
+
+    if (restorable.isEmpty) {
+      state = AsyncData(
+        current.copyWith(history: current.history.sublist(0, current.history.length - 1)),
+      );
+      return 0;
+    }
+
+    final restored = await _writeCells(restorable);
+    final latest = state.value;
+    if (latest == null) return restored;
+    state = AsyncData(
+      latest.copyWith(
+        history: latest.history.sublist(0, latest.history.length - 1),
+      ),
+    );
+    return restored;
+  }
+
+  /// Restores every cell to the value it held when this view loaded
+  /// (FR-024), clearing the history and every rejected edit with it.
+  ///
+  /// Same forward-write caveat as [undoLast], and the same skip: a cell that
+  /// had no price row at load time cannot be un-created.
+  Future<int> revertAll() async {
+    final current = state.value;
+    if (current == null) return 0;
+    final writes = <PriceWrite>[];
+    for (final entry in current.baseline.entries) {
+      final was = entry.value;
+      final now = current.valueOf(entry.key);
+      if (was == null || was == now) continue;
+      writes.add(PriceWrite(cell: entry.key, previous: now, next: was));
+    }
+
+    final restored = writes.isEmpty ? 0 : await _writeCells(writes);
+    final latest = state.value;
+    if (latest == null) return restored;
+    state = AsyncData(
+      latest.copyWith(
+        history: const [],
+        rejected: const {},
+        active: null,
+      ),
+    );
+    return restored;
+  }
+
+  /// Sends [writes] as one bulk upsert and folds the results into `rows`,
+  /// **without** recording a history entry — shared by [undoLast] and
+  /// [revertAll], which manage the history themselves (undoing an undo is
+  /// not a thing this screen offers).
+  Future<int> _writeCells(List<PriceWrite> writes) async {
+    final byCell = <PriceCellKey, PriceWrite>{
+      for (final write in writes) write.cell: write,
+    };
+    final deduped = byCell.values.toList();
+    final current = state.value;
+    if (current == null) return 0;
+
+    state = AsyncData(
+      current.copyWith(inFlight: {...current.inFlight, ...byCell.keys}),
+    );
+    try {
+      final saved = await ref
+          .read(productPriceRepositoryProvider)
+          .applyPriceChanges([
+            for (final write in deduped)
+              PriceCellWrite(
+                productId: write.cell.productId,
+                priceListId: write.cell.priceListId,
+                price: write.next,
+              ),
+          ]);
+      final latest = state.value;
+      if (latest == null) return deduped.length;
+      var rows = latest.rows;
+      for (final price in saved) {
+        rows = _withPrice(
+          rows,
+          productId: price.productId,
+          priceListId: price.priceList.priceListId,
+          price: price,
+        );
+      }
+      state = AsyncData(
+        latest.copyWith(
+          rows: rows,
+          inFlight: {...latest.inFlight}..removeAll(byCell.keys),
+        ),
+      );
+      return deduped.length;
+    } on AppError {
+      final latest = state.value;
+      if (latest != null) {
+        state = AsyncData(
+          latest.copyWith(
+            inFlight: {...latest.inFlight}..removeAll(byCell.keys),
+          ),
+        );
+      }
+      rethrow;
+    }
+  }
+
+  /// The price list "copy from the cost list" reads, or `null` when the
+  /// deployment's configured cost list is not among the lists that exist —
+  /// in which case the action is offered at all (FR-013).
+  ///
+  /// Compares ids rather than testing [costPriceListId] for truthiness: `0`
+  /// is both the default and a real list (FR-019a).
+  PriceList? costListOf(PricingGridState state) {
+    for (final list in state.allLists) {
+      if (list.priceListId == costPriceListId) return list;
+    }
+    return null;
+  }
+
+  /// Applies [writes] as **one** transaction and **one** undoable change
+  /// (FR-015, FR-016). Returns the number of rows changed, for FR-014's
+  /// "it changed N rows" report; `0` means the action found nothing to do and
+  /// no request was issued.
+  ///
+  /// De-duplicates by cell before sending: a repeated `(product, priceList)`
+  /// is a 400 from mbe-api, deliberately, and resolving it silently would
+  /// hide a client bug (contracts/mbe-api-pricing.md §6). A duplicate can
+  /// only arise here from a bug, so the last value wins and the shape is
+  /// simply made un-sendable-wrong.
+  Future<int> _applyColumnAction({
+    required PriceChangeKind kind,
+    required List<PriceWrite> writes,
+  }) async {
+    final current = state.value;
+    if (current == null || writes.isEmpty) return 0;
+
+    final byCell = <PriceCellKey, PriceWrite>{
+      for (final write in writes) write.cell: write,
+    };
+    final deduped = byCell.values.toList();
+
+    state = AsyncData(
+      current.copyWith(active: null, inFlight: {...current.inFlight, ...byCell.keys}),
+    );
+
+    try {
+      final saved = await ref
+          .read(productPriceRepositoryProvider)
+          .applyPriceChanges([
+            for (final write in deduped)
+              PriceCellWrite(
+                productId: write.cell.productId,
+                priceListId: write.cell.priceListId,
+                price: write.next,
+              ),
+          ]);
+
+      final latest = state.value;
+      if (latest == null) return deduped.length;
+      var rows = latest.rows;
+      for (final price in saved) {
+        rows = _withPrice(
+          rows,
+          productId: price.productId,
+          priceListId: price.priceList.priceListId,
+          price: price,
+        );
+      }
+      state = AsyncData(
+        latest.copyWith(
+          rows: rows,
+          inFlight: {...latest.inFlight}..removeAll(byCell.keys),
+          history: [
+            ...latest.history,
+            PriceChange(kind: kind, writes: deduped),
+          ],
+        ),
+      );
+      return deduped.length;
+    } on AppError {
+      // All-or-nothing on the server, so nothing local changes either: the
+      // cells simply stop being in flight (FR-015).
+      final latest = state.value;
+      if (latest != null) {
+        state = AsyncData(
+          latest.copyWith(
+            inFlight: {...latest.inFlight}..removeAll(byCell.keys),
+          ),
+        );
+      }
+      rethrow;
+    }
+  }
+
+  /// Copies the first shown row's price on [priceListId] down every other
+  /// shown row (FR-013). A no-op when that first row has no price there —
+  /// there is nothing to copy, and creating rows at "nothing" is not it.
+  Future<int> fillDown({required int priceListId}) async {
+    final current = state.value;
+    if (current == null || current.rows.isEmpty) return 0;
+    final source = current.rows.first.prices[priceListId]?.price;
+    if (source == null) return 0;
+    return _applyColumnAction(
+      kind: PriceChangeKind.fillDown,
+      writes: [
+        for (final row in current.rows.skip(1))
+          PriceWrite(
+            cell: PriceCellKey(
+              productId: row.product.productId,
+              priceListId: priceListId,
+            ),
+            previous: row.prices[priceListId]?.price,
+            next: source,
+          ),
+      ],
+    );
+  }
+
+  /// Copies each shown row's cost price into [priceListId] (FR-013). Rows
+  /// with no cost price are **skipped**, not created at zero.
+  Future<int> copyFromCostList({required int priceListId}) async {
+    final current = state.value;
+    if (current == null) return 0;
+    final costList = costListOf(current);
+    if (costList == null || costList.priceListId == priceListId) return 0;
+    return _applyColumnAction(
+      kind: PriceChangeKind.copyFromCost,
+      writes: [
+        for (final row in current.rows)
+          if (row.prices[costList.priceListId] != null)
+            PriceWrite(
+              cell: PriceCellKey(
+                productId: row.product.productId,
+                priceListId: priceListId,
+              ),
+              previous: row.prices[priceListId]?.price,
+              next: row.prices[costList.priceListId]!.price,
+            ),
+      ],
+    );
+  }
+
+  /// Moves every shown row that **has** a price on [priceListId] by [percent]
+  /// (FR-013). A cell with no price has nothing to adjust and is skipped —
+  /// never created at `0` (spec Edge Cases).
+  Future<int> adjustByPercent({
+    required int priceListId,
+    required Decimal percent,
+  }) async {
+    final current = state.value;
+    if (current == null) return 0;
+    final factor =
+        (Decimal.one + (percent / Decimal.fromInt(100)).toDecimal(
+          scaleOnInfinitePrecision: 6,
+        ));
+    final writes = <PriceWrite>[];
+    for (final row in current.rows) {
+      final existing = row.prices[priceListId];
+      if (existing == null) continue;
+      final currentPrice = Decimal.tryParse(existing.price);
+      if (currentPrice == null) continue;
+      // Rounded to two places and rendered with `toString()` — the canonical
+      // decimal string, which is what goes on the wire and what the API
+      // stores. Fixed-precision rendering belongs to the display surface
+      // (spec 028), which formats this value again on the way back out; a
+      // presentation file building one by hand is what that spec's guard
+      // test exists to catch.
+      final next = (currentPrice * factor).round(scale: 2);
+      if (next < Decimal.zero) continue;
+      writes.add(
+        PriceWrite(
+          cell: PriceCellKey(
+            productId: row.product.productId,
+            priceListId: priceListId,
+          ),
+          previous: existing.price,
+          next: next.toString(),
+        ),
+      );
+    }
+    return _applyColumnAction(
+      kind: PriceChangeKind.adjustPercent,
+      writes: writes,
+    );
   }
 
   /// Commits [typed] to the cell at ([productId], [priceListId]) — FR-007

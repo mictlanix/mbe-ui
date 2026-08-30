@@ -116,8 +116,6 @@ void main() {
           PriceList(
             priceListId: 2,
             name: 'Mayoreo',
-            highProfitMargin: '0.30',
-            lowProfitMargin: '0.10',
           ),
         ],
         total: 1,

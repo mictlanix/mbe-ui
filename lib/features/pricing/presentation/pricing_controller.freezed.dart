@@ -278,8 +278,6 @@ abstract class _PricingState implements PricingState {
 /// @nodoc
 mixin _$PricingRowEditState {
   String get price => throw _privateConstructorUsedError;
-  String get lowProfit => throw _privateConstructorUsedError;
-  String get highProfit => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   Map<String, String>? get fieldErrors => throw _privateConstructorUsedError;
@@ -300,8 +298,6 @@ abstract class $PricingRowEditStateCopyWith<$Res> {
   @useResult
   $Res call({
     String price,
-    String lowProfit,
-    String highProfit,
     bool submitting,
     String? error,
     Map<String, String>? fieldErrors,
@@ -324,8 +320,6 @@ class _$PricingRowEditStateCopyWithImpl<$Res, $Val extends PricingRowEditState>
   @override
   $Res call({
     Object? price = null,
-    Object? lowProfit = null,
-    Object? highProfit = null,
     Object? submitting = null,
     Object? error = freezed,
     Object? fieldErrors = freezed,
@@ -335,14 +329,6 @@ class _$PricingRowEditStateCopyWithImpl<$Res, $Val extends PricingRowEditState>
             price: null == price
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lowProfit: null == lowProfit
-                ? _value.lowProfit
-                : lowProfit // ignore: cast_nullable_to_non_nullable
-                      as String,
-            highProfit: null == highProfit
-                ? _value.highProfit
-                : highProfit // ignore: cast_nullable_to_non_nullable
                       as String,
             submitting: null == submitting
                 ? _value.submitting
@@ -373,8 +359,6 @@ abstract class _$$PricingRowEditStateImplCopyWith<$Res>
   @useResult
   $Res call({
     String price,
-    String lowProfit,
-    String highProfit,
     bool submitting,
     String? error,
     Map<String, String>? fieldErrors,
@@ -396,8 +380,6 @@ class __$$PricingRowEditStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? price = null,
-    Object? lowProfit = null,
-    Object? highProfit = null,
     Object? submitting = null,
     Object? error = freezed,
     Object? fieldErrors = freezed,
@@ -407,14 +389,6 @@ class __$$PricingRowEditStateImplCopyWithImpl<$Res>
         price: null == price
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lowProfit: null == lowProfit
-            ? _value.lowProfit
-            : lowProfit // ignore: cast_nullable_to_non_nullable
-                  as String,
-        highProfit: null == highProfit
-            ? _value.highProfit
-            : highProfit // ignore: cast_nullable_to_non_nullable
                   as String,
         submitting: null == submitting
             ? _value.submitting
@@ -438,8 +412,6 @@ class __$$PricingRowEditStateImplCopyWithImpl<$Res>
 class _$PricingRowEditStateImpl implements _PricingRowEditState {
   const _$PricingRowEditStateImpl({
     this.price = '',
-    this.lowProfit = '',
-    this.highProfit = '',
     this.submitting = false,
     this.error,
     final Map<String, String>? fieldErrors,
@@ -448,12 +420,6 @@ class _$PricingRowEditStateImpl implements _PricingRowEditState {
   @override
   @JsonKey()
   final String price;
-  @override
-  @JsonKey()
-  final String lowProfit;
-  @override
-  @JsonKey()
-  final String highProfit;
   @override
   @JsonKey()
   final bool submitting;
@@ -471,7 +437,7 @@ class _$PricingRowEditStateImpl implements _PricingRowEditState {
 
   @override
   String toString() {
-    return 'PricingRowEditState(price: $price, lowProfit: $lowProfit, highProfit: $highProfit, submitting: $submitting, error: $error, fieldErrors: $fieldErrors)';
+    return 'PricingRowEditState(price: $price, submitting: $submitting, error: $error, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -480,10 +446,6 @@ class _$PricingRowEditStateImpl implements _PricingRowEditState {
         (other.runtimeType == runtimeType &&
             other is _$PricingRowEditStateImpl &&
             (identical(other.price, price) || other.price == price) &&
-            (identical(other.lowProfit, lowProfit) ||
-                other.lowProfit == lowProfit) &&
-            (identical(other.highProfit, highProfit) ||
-                other.highProfit == highProfit) &&
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
             (identical(other.error, error) || other.error == error) &&
@@ -497,8 +459,6 @@ class _$PricingRowEditStateImpl implements _PricingRowEditState {
   int get hashCode => Object.hash(
     runtimeType,
     price,
-    lowProfit,
-    highProfit,
     submitting,
     error,
     const DeepCollectionEquality().hash(_fieldErrors),
@@ -519,8 +479,6 @@ class _$PricingRowEditStateImpl implements _PricingRowEditState {
 abstract class _PricingRowEditState implements PricingRowEditState {
   const factory _PricingRowEditState({
     final String price,
-    final String lowProfit,
-    final String highProfit,
     final bool submitting,
     final String? error,
     final Map<String, String>? fieldErrors,
@@ -528,10 +486,6 @@ abstract class _PricingRowEditState implements PricingRowEditState {
 
   @override
   String get price;
-  @override
-  String get lowProfit;
-  @override
-  String get highProfit;
   @override
   bool get submitting;
   @override

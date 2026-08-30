@@ -31,8 +31,8 @@ void main() {
       expect(result.items, hasLength(1));
       expect(result.items.single.priceListId, 1);
       expect(result.items.single.name, 'Retail');
-      expect(result.items.single.highProfitMargin, '0.40');
-      expect(result.items.single.lowProfitMargin, '0.10');
+      // The deprecated margins are no longer mapped onto the entity
+      // (spec 033 US7, mbe-api#185) — the wire may still carry them.
     });
 
     test('forwards search/skip/limit as query params', () async {
@@ -124,30 +124,30 @@ void main() {
       expect(priceList.name, 'Retail');
     });
 
-    test('sends high_profit_margin and low_profit_margin as JSON strings, '
-        'not numbers (research.md §4 — the AnyOf write path)', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_priceListJson()),
-          201,
-          headers: _jsonHeaders,
-        );
-      });
+    test(
+      'never sends the deprecated profit margins — the repository no longer '
+      'accepts them, so a create carries the name alone (spec 033 US7, '
+      'mbe-api#185; the server defaults both to 0)',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_priceListJson()),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
 
-      await repository.create(
-        name: 'Retail',
-        highProfitMargin: '0.40',
-        lowProfitMargin: '0.10',
-      );
+        await repository.create(name: 'Retail');
 
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody['high_profit_margin'], '0.40');
-      expect(sentBody['high_profit_margin'], isA<String>());
-      expect(sentBody['low_profit_margin'], '0.10');
-      expect(sentBody['low_profit_margin'], isA<String>());
-    });
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['name'], 'Retail');
+        // Never a value: the server defaults both to 0 on a create.
+        expect(sentBody['high_profit_margin'], isNull);
+        expect(sentBody['low_profit_margin'], isNull);
+      },
+    );
 
     test('omits margins from the request body when not provided', () async {
       RequestOptions? captured;
@@ -209,26 +209,29 @@ void main() {
       expect(priceList.name, 'Retail Updated');
     });
 
-    test('sends an updated margin as a JSON string via the update-side '
-        'wrapper class (Price1-style, research.md §4)', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_priceListJson()),
-          200,
-          headers: _jsonHeaders,
-        );
-      });
+    test(
+      'sends the name and never a profit margin — the repository no longer '
+      'accepts them, and mbe-api#185 reads an absent margin as "leave the '
+      'stored one alone" (spec 033 US7)',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_priceListJson()),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
 
-      await repository.update(priceListId: 1, highProfitMargin: '0.50');
+        await repository.update(priceListId: 1, name: 'Retail');
 
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody['high_profit_margin'], '0.50');
-      expect(sentBody['high_profit_margin'], isA<String>());
-      expect(sentBody.containsKey('low_profit_margin'), isFalse);
-      expect(sentBody.containsKey('name'), isFalse);
-    });
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['name'], 'Retail');
+        expect(sentBody['high_profit_margin'], isNull);
+        expect(sentBody['low_profit_margin'], isNull);
+      },
+    );
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(

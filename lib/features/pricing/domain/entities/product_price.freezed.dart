@@ -21,8 +21,6 @@ mixin _$ProductPrice {
   int get productId => throw _privateConstructorUsedError;
   PriceList get priceList => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
-  String get lowProfit => throw _privateConstructorUsedError;
-  String get highProfit => throw _privateConstructorUsedError;
 
   /// Create a copy of ProductPrice
   /// with the given fields replaced by the non-null parameter values.
@@ -43,8 +41,6 @@ abstract class $ProductPriceCopyWith<$Res> {
     int productId,
     PriceList priceList,
     String price,
-    String lowProfit,
-    String highProfit,
   });
 
   $PriceListCopyWith<$Res> get priceList;
@@ -69,8 +65,6 @@ class _$ProductPriceCopyWithImpl<$Res, $Val extends ProductPrice>
     Object? productId = null,
     Object? priceList = null,
     Object? price = null,
-    Object? lowProfit = null,
-    Object? highProfit = null,
   }) {
     return _then(
       _value.copyWith(
@@ -89,14 +83,6 @@ class _$ProductPriceCopyWithImpl<$Res, $Val extends ProductPrice>
             price: null == price
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lowProfit: null == lowProfit
-                ? _value.lowProfit
-                : lowProfit // ignore: cast_nullable_to_non_nullable
-                      as String,
-            highProfit: null == highProfit
-                ? _value.highProfit
-                : highProfit // ignore: cast_nullable_to_non_nullable
                       as String,
           )
           as $Val,
@@ -128,8 +114,6 @@ abstract class _$$ProductPriceImplCopyWith<$Res>
     int productId,
     PriceList priceList,
     String price,
-    String lowProfit,
-    String highProfit,
   });
 
   @override
@@ -154,8 +138,6 @@ class __$$ProductPriceImplCopyWithImpl<$Res>
     Object? productId = null,
     Object? priceList = null,
     Object? price = null,
-    Object? lowProfit = null,
-    Object? highProfit = null,
   }) {
     return _then(
       _$ProductPriceImpl(
@@ -175,14 +157,6 @@ class __$$ProductPriceImplCopyWithImpl<$Res>
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
                   as String,
-        lowProfit: null == lowProfit
-            ? _value.lowProfit
-            : lowProfit // ignore: cast_nullable_to_non_nullable
-                  as String,
-        highProfit: null == highProfit
-            ? _value.highProfit
-            : highProfit // ignore: cast_nullable_to_non_nullable
-                  as String,
       ),
     );
   }
@@ -196,8 +170,6 @@ class _$ProductPriceImpl implements _ProductPrice {
     required this.productId,
     required this.priceList,
     required this.price,
-    required this.lowProfit,
-    required this.highProfit,
   });
 
   @override
@@ -208,14 +180,10 @@ class _$ProductPriceImpl implements _ProductPrice {
   final PriceList priceList;
   @override
   final String price;
-  @override
-  final String lowProfit;
-  @override
-  final String highProfit;
 
   @override
   String toString() {
-    return 'ProductPrice(productPriceId: $productPriceId, productId: $productId, priceList: $priceList, price: $price, lowProfit: $lowProfit, highProfit: $highProfit)';
+    return 'ProductPrice(productPriceId: $productPriceId, productId: $productId, priceList: $priceList, price: $price)';
   }
 
   @override
@@ -229,23 +197,12 @@ class _$ProductPriceImpl implements _ProductPrice {
                 other.productId == productId) &&
             (identical(other.priceList, priceList) ||
                 other.priceList == priceList) &&
-            (identical(other.price, price) || other.price == price) &&
-            (identical(other.lowProfit, lowProfit) ||
-                other.lowProfit == lowProfit) &&
-            (identical(other.highProfit, highProfit) ||
-                other.highProfit == highProfit));
+            (identical(other.price, price) || other.price == price));
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    productPriceId,
-    productId,
-    priceList,
-    price,
-    lowProfit,
-    highProfit,
-  );
+  int get hashCode =>
+      Object.hash(runtimeType, productPriceId, productId, priceList, price);
 
   /// Create a copy of ProductPrice
   /// with the given fields replaced by the non-null parameter values.
@@ -262,8 +219,6 @@ abstract class _ProductPrice implements ProductPrice {
     required final int productId,
     required final PriceList priceList,
     required final String price,
-    required final String lowProfit,
-    required final String highProfit,
   }) = _$ProductPriceImpl;
 
   @override
@@ -274,10 +229,6 @@ abstract class _ProductPrice implements ProductPrice {
   PriceList get priceList;
   @override
   String get price;
-  @override
-  String get lowProfit;
-  @override
-  String get highProfit;
 
   /// Create a copy of ProductPrice
   /// with the given fields replaced by the non-null parameter values.

@@ -72,8 +72,6 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
     required int productId,
     required int priceListId,
     required String price,
-    String? lowProfit,
-    String? highProfit,
   }) async {
     try {
       final response = await _api.createProductPriceApiV1ProductPricesPost(
@@ -81,12 +79,9 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
           b
             ..product = productId
             ..priceList = priceListId;
+          // Price only: since mbe-api#185 the server fills a created row's
+          // band from the price list's own margins, and nothing reads it.
           _setPrice(b.price, price);
-          // Omitted unless a caller explicitly names them: since mbe-api#185
-          // the server fills a created row's band from the price list's own
-          // margins, and nothing reads it afterwards.
-          if (lowProfit != null) _setLowProfit(b.lowProfit, lowProfit);
-          if (highProfit != null) _setHighProfit(b.highProfit, highProfit);
         }),
       );
       final productPrice = response.data;
@@ -101,26 +96,49 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
   Future<ProductPrice> update({
     required int productPriceId,
     required String price,
-    String? lowProfit,
-    String? highProfit,
   }) async {
     try {
       final response = await _api
           .updateProductPriceApiV1ProductPricesProductPriceIdPut(
             productPriceId: productPriceId,
             productPriceUpdate: ProductPriceUpdate((b) {
-              // `price` still has its own update-side wrapper (`Price1`), but
-              // the profit pair's collapsed onto the create-side `LowProfit`/
-              // `HighProfit` when mbe-api#185 made both schemas nullable —
-              // the `LowProfit1`/`HighProfit1` classes no longer exist.
+              // `price` keeps its own update-side wrapper (`Price1`); an
+              // omitted profit band leaves the stored one alone (mbe-api#185).
               _setPrice1(b.price, price);
-              if (lowProfit != null) _setLowProfit(b.lowProfit, lowProfit);
-              if (highProfit != null) _setHighProfit(b.highProfit, highProfit);
             }),
           );
       final productPrice = response.data;
       if (productPrice == null) throw const AppError.server();
       return ProductPrice.fromResponse(productPrice);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<List<ProductPrice>> applyPriceChanges(
+    List<PriceCellWrite> writes,
+  ) async {
+    if (writes.isEmpty) return const [];
+    try {
+      final response = await _api
+          .bulkUpsertProductPricesApiV1ProductPricesPut(
+            productPriceBulkItem: BuiltList<ProductPriceBulkItem>(
+              writes.map(
+                (w) => ProductPriceBulkItem((b) {
+                  b
+                    ..product = w.productId
+                    ..priceList = w.priceListId;
+                  _setPrice(b.price, w.price);
+                  // No profit band: defaulted from the price list on a created
+                  // row, left alone on an updated one (mbe-api#185).
+                }),
+              ),
+            ),
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return result.map(ProductPrice.fromResponse).toList();
     } on DioException catch (e) {
       throw _toAppError(e);
     }
@@ -132,28 +150,21 @@ AppError _toAppError(DioException error) {
   return mapped is AppError ? mapped : mapDioException(error);
 }
 
-/// `price`/`low_profit`/`high_profit` are each `anyOf: [number, string]` in
-/// mbe-api's schema; this project always sends the String arm via
+/// `price` is `anyOf: [number, string]` in mbe-api's schema; this project
+/// always sends the String arm via
 /// `AnyOf2<String, num>(values: {0: value})` — String as the *first* type
 /// parameter, key `0` (research.md §4 — corrected after the codebase's
 /// first `AnyOf` construction attempt, in US1's price-list margins, threw a
 /// `RangeError` with the naive `AnyOf2<num, String>`/key-`1` reading of the
 /// wrapper's generated `targetType` order). Create and Update DTOs use
 /// separately-generated wrapper classes for `price` (`Price` against
-/// `Price1`), hence the near-identical helpers below rather than one shared
-/// one. The profit pair collapsed onto a single wrapper each when
-/// mbe-api#185 made both schemas nullable.
+/// `Price1`), hence the two near-identical helpers below rather than one
+/// shared one. The deprecated profit pair's helpers went with spec 033 US7 —
+/// nothing sends those fields any more.
 void _setPrice(PriceBuilder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }
 
-void _setLowProfit(LowProfitBuilder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setHighProfit(HighProfitBuilder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
 
 void _setPrice1(Price1Builder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});

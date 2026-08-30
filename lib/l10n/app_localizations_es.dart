@@ -754,6 +754,96 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pricingGridColumnsFilterLabel => 'Listas de precios mostradas';
 
   @override
+  String get pricingGridWorklistAll => 'Todos los productos';
+
+  @override
+  String pricingGridWorklistMissing(String priceListName, int count) {
+    return 'Falta $priceListName ($count)';
+  }
+
+  @override
+  String get pricingGridColumnActionsTooltip => 'Acciones de columna';
+
+  @override
+  String get pricingGridFillDown => 'Rellenar desde la primera fila';
+
+  @override
+  String pricingGridCopyFromCost(String costListName) {
+    return 'Copiar desde $costListName';
+  }
+
+  @override
+  String get pricingGridAdjustLabel => 'Ajustar cada fila mostrada en';
+
+  @override
+  String get pricingGridAdjustApply => 'Aplicar';
+
+  @override
+  String pricingGridRowsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count precios cambiados',
+      one: '1 precio cambiado',
+      zero: 'Ningún precio cambió',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pricingGridColumnActionFailed =>
+      'No se pudo aplicar la acción. Ningún precio cambió.';
+
+  @override
+  String get pricingGridCellSaving => 'Guardando…';
+
+  @override
+  String pricingGridCellSaved(String previous) {
+    return 'Guardado · antes $previous';
+  }
+
+  @override
+  String pricingGridSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count precios cambiados',
+      one: '1 precio cambiado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pricingGridSummaryRejected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rechazados',
+      one: '1 rechazado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pricingGridUndoLast => 'Deshacer último';
+
+  @override
+  String get pricingGridRevertAll => 'Revertir todo';
+
+  @override
+  String get pricingGridDiscardTitle => '¿Descartar los cambios pendientes?';
+
+  @override
+  String get pricingGridDiscardBody =>
+      'Se perderá el historial para deshacer y el texto rechazado. Los precios ya guardados no cambian.';
+
+  @override
+  String get pricingGridDiscardConfirm => 'Salir de todos modos';
+
+  @override
+  String get pricingGridDiscardCancel => 'Quedarse';
+
+  @override
   String get exchangeRatesMenuTitle => 'Tipos de Cambio';
 
   @override
@@ -766,19 +856,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noPriceListsFound => 'No se encontraron listas de precios.';
 
   @override
-  String get columnHighProfitMargin => 'Margen alto';
-
-  @override
-  String get columnLowProfitMargin => 'Margen bajo';
-
-  @override
   String get priceListNameLabel => 'Nombre';
-
-  @override
-  String get priceListHighProfitMarginLabel => 'Margen de utilidad alto';
-
-  @override
-  String get priceListLowProfitMarginLabel => 'Margen de utilidad bajo';
 
   @override
   String get newPriceListTitle => 'Nueva lista de precios';
@@ -802,10 +880,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get priceListNameRequiredError => 'El nombre es obligatorio.';
-
-  @override
-  String get priceListMarginInvalidError =>
-      'Ingresa un porcentaje válido no negativo.';
 
   @override
   String get priceListLoadFailedError =>
@@ -865,12 +939,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get columnPrice => 'Precio';
-
-  @override
-  String get columnLowProfit => 'Utilidad baja';
-
-  @override
-  String get columnHighProfit => 'Utilidad alta';
 
   @override
   String get editPriceTooltip => 'Editar precio';

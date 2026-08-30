@@ -38,8 +38,7 @@ ProductListItem _product(int id) => ProductListItem(
   status: EntityStatus.active,
 );
 
-PriceList _priceList(int id) =>
-    PriceList(priceListId: id, name: 'List $id', highProfitMargin: '0.40', lowProfitMargin: '0.10');
+PriceList _priceList(int id) => PriceList(priceListId: id, name: 'List $id');
 
 ProductPrice _price({required int productId, required int priceListId, required String price}) =>
     ProductPrice(
@@ -47,8 +46,6 @@ ProductPrice _price({required int productId, required int priceListId, required 
       productId: productId,
       priceList: _priceList(priceListId),
       price: price,
-      lowProfit: '0.10',
-      highProfit: '0.40',
     );
 
 void main() {

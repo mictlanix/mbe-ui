@@ -51,14 +51,10 @@ const _fullAccessUser = User(
 const _retail = PriceList(
   priceListId: 1,
   name: 'Retail',
-  highProfitMargin: '0.40',
-  lowProfitMargin: '0.10',
 );
 const _wholesale = PriceList(
   priceListId: 2,
   name: 'Wholesale',
-  highProfitMargin: '0.20',
-  lowProfitMargin: '0.05',
 );
 
 AccessControlService _accessFor(User user) =>
@@ -165,8 +161,6 @@ void main() {
             productId: 1,
             priceList: _retail,
             price: '120.00',
-            lowProfit: '0.10',
-            highProfit: '0.40',
           ),
         ],
       );
@@ -177,14 +171,11 @@ void main() {
       expect(find.text('Wholesale'), findsOneWidget);
       expect(find.byKey(const Key('price_not_set_2')), findsOneWidget);
       expect(find.text(r'$120.00'), findsOneWidget);
-      // Low/high profit are percentage thresholds, not currency (corrected
-      // 2026-07-18 — live verification showed values like 0.00/1.00 across
-      // every list, matching the legacy "profit threshold" semantics
-      // PriceList's own margins already use, FR-006/FR-011).
-      // spec 028: display.percent renders '10.00 %'/'40.00 %', not the old
-      // bare '10%'/'40%' (research.md R4).
-      expect(find.text('10.00 %'), findsOneWidget);
-      expect(find.text('40.00 %'), findsOneWidget);
+      // No profit columns: the per-price thresholds this screen used to show
+      // were retired with the sales-order validation that read them
+      // (spec 033 US7/FR-034, mbe-api#185).
+      expect(find.text('10.00 %'), findsNothing);
+      expect(find.text('40.00 %'), findsNothing);
     },
   );
 

@@ -1483,6 +1483,120 @@ abstract class AppLocalizations {
   /// **'Price lists shown'**
   String get pricingGridColumnsFilterLabel;
 
+  /// No description provided for @pricingGridWorklistAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All products'**
+  String get pricingGridWorklistAll;
+
+  /// Pricing grid worklist chip: products with no price on this list (spec 033 US2)
+  ///
+  /// In en, this message translates to:
+  /// **'Missing {priceListName} ({count})'**
+  String pricingGridWorklistMissing(String priceListName, int count);
+
+  /// No description provided for @pricingGridColumnActionsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Column actions'**
+  String get pricingGridColumnActionsTooltip;
+
+  /// No description provided for @pricingGridFillDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill down from first row'**
+  String get pricingGridFillDown;
+
+  /// Pricing grid column action: copy the deployment's cost list into this column (spec 033 FR-013)
+  ///
+  /// In en, this message translates to:
+  /// **'Copy from {costListName}'**
+  String pricingGridCopyFromCost(String costListName);
+
+  /// No description provided for @pricingGridAdjustLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust every shown row by'**
+  String get pricingGridAdjustLabel;
+
+  /// No description provided for @pricingGridAdjustApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get pricingGridAdjustApply;
+
+  /// Pricing grid: how many rows a column action changed (spec 033 FR-014)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No prices changed} =1{1 price changed} other{{count} prices changed}}'**
+  String pricingGridRowsChanged(int count);
+
+  /// No description provided for @pricingGridColumnActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not apply the action. No prices changed.'**
+  String get pricingGridColumnActionFailed;
+
+  /// No description provided for @pricingGridCellSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get pricingGridCellSaving;
+
+  /// Pricing grid cell tooltip after a stored change (spec 033 FR-022)
+  ///
+  /// In en, this message translates to:
+  /// **'Saved · was {previous}'**
+  String pricingGridCellSaved(String previous);
+
+  /// Pricing grid change-summary bar count (spec 033 FR-023)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 price changed} other{{count} prices changed}}'**
+  String pricingGridSummary(int count);
+
+  /// Pricing grid change-summary bar rejected count (spec 033 FR-023)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 rejected} other{{count} rejected}}'**
+  String pricingGridSummaryRejected(int count);
+
+  /// No description provided for @pricingGridUndoLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo last'**
+  String get pricingGridUndoLast;
+
+  /// No description provided for @pricingGridRevertAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Revert all'**
+  String get pricingGridRevertAll;
+
+  /// No description provided for @pricingGridDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard outstanding changes?'**
+  String get pricingGridDiscardTitle;
+
+  /// No description provided for @pricingGridDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The undo history and any rejected text will be lost. Prices already saved are unaffected.'**
+  String get pricingGridDiscardBody;
+
+  /// No description provided for @pricingGridDiscardConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave anyway'**
+  String get pricingGridDiscardConfirm;
+
+  /// No description provided for @pricingGridDiscardCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get pricingGridDiscardCancel;
+
   /// No description provided for @exchangeRatesMenuTitle.
   ///
   /// In en, this message translates to:
@@ -1507,35 +1621,11 @@ abstract class AppLocalizations {
   /// **'No price lists found.'**
   String get noPriceListsFound;
 
-  /// No description provided for @columnHighProfitMargin.
-  ///
-  /// In en, this message translates to:
-  /// **'High margin'**
-  String get columnHighProfitMargin;
-
-  /// No description provided for @columnLowProfitMargin.
-  ///
-  /// In en, this message translates to:
-  /// **'Low margin'**
-  String get columnLowProfitMargin;
-
   /// No description provided for @priceListNameLabel.
   ///
   /// In en, this message translates to:
   /// **'Name'**
   String get priceListNameLabel;
-
-  /// No description provided for @priceListHighProfitMarginLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'High profit margin'**
-  String get priceListHighProfitMarginLabel;
-
-  /// No description provided for @priceListLowProfitMarginLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Low profit margin'**
-  String get priceListLowProfitMarginLabel;
 
   /// No description provided for @newPriceListTitle.
   ///
@@ -1578,12 +1668,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name is required.'**
   String get priceListNameRequiredError;
-
-  /// No description provided for @priceListMarginInvalidError.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter a valid non-negative percentage.'**
-  String get priceListMarginInvalidError;
 
   /// No description provided for @priceListLoadFailedError.
   ///
@@ -1680,18 +1764,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Price'**
   String get columnPrice;
-
-  /// No description provided for @columnLowProfit.
-  ///
-  /// In en, this message translates to:
-  /// **'Low profit'**
-  String get columnLowProfit;
-
-  /// No description provided for @columnHighProfit.
-  ///
-  /// In en, this message translates to:
-  /// **'High profit'**
-  String get columnHighProfit;
 
   /// No description provided for @editPriceTooltip.
   ///

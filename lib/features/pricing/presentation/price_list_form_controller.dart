@@ -16,7 +16,6 @@ part 'price_list_form_controller.g.dart';
 /// the UI layer (mirrors `ProductFormErrorCode`).
 abstract final class PriceListFormErrorCode {
   static const nameRequired = 'nameRequired';
-  static const marginInvalid = 'marginInvalid';
   static const loadFailed = 'loadFailed';
   static const createFailed = 'createFailed';
   static const updateFailed = 'updateFailed';
@@ -33,8 +32,6 @@ class PriceListFormState with _$PriceListFormState {
   const factory PriceListFormState({
     int? priceListId,
     @Default('') String name,
-    @Default('') String highProfitMargin,
-    @Default('') String lowProfitMargin,
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
@@ -58,20 +55,6 @@ class PriceListFormController extends _$PriceListFormController {
     fieldErrors: const {},
   );
 
-  void highProfitMarginChanged(String v) => state = state.copyWith(
-    highProfitMargin: v,
-    error: null,
-    errorDetail: null,
-    fieldErrors: const {},
-  );
-
-  void lowProfitMarginChanged(String v) => state = state.copyWith(
-    lowProfitMargin: v,
-    error: null,
-    errorDetail: null,
-    fieldErrors: const {},
-  );
-
   /// Loads an existing price list into the form for viewing/editing.
   Future<void> loadForEdit(int priceListId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
@@ -82,8 +65,6 @@ class PriceListFormController extends _$PriceListFormController {
       state = PriceListFormState(
         priceListId: priceList.priceListId,
         name: priceList.name,
-        highProfitMargin: priceList.highProfitMargin,
-        lowProfitMargin: priceList.lowProfitMargin,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -99,16 +80,6 @@ class PriceListFormController extends _$PriceListFormController {
     final errors = <String, String>{};
     if (!PricingValidators.isRequiredNonEmpty(state.name)) {
       errors['name'] = PriceListFormErrorCode.nameRequired;
-    }
-    if (!PricingValidators.isOptionalNonNegativeDecimal(
-      state.highProfitMargin,
-    )) {
-      errors['highProfitMargin'] = PriceListFormErrorCode.marginInvalid;
-    }
-    if (!PricingValidators.isOptionalNonNegativeDecimal(
-      state.lowProfitMargin,
-    )) {
-      errors['lowProfitMargin'] = PriceListFormErrorCode.marginInvalid;
     }
     return errors;
   }
@@ -146,11 +117,9 @@ class PriceListFormController extends _$PriceListFormController {
     try {
       await ref
           .read(priceListRepositoryProvider)
-          .create(
-            name: state.name,
-            highProfitMargin: _orNull(state.highProfitMargin),
-            lowProfitMargin: _orNull(state.lowProfitMargin),
-          );
+          // Margins omitted: deprecated since mbe-api#185, and defaulted to
+          // `0` server-side (spec 033 FR-035).
+          .create(name: state.name);
       ref.invalidate(priceListsListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
@@ -204,12 +173,9 @@ class PriceListFormController extends _$PriceListFormController {
     try {
       await ref
           .read(priceListRepositoryProvider)
-          .update(
-            priceListId: priceListId,
-            name: state.name,
-            highProfitMargin: _orNull(state.highProfitMargin),
-            lowProfitMargin: _orNull(state.lowProfitMargin),
-          );
+          // Margins omitted: deprecated since mbe-api#185, and an omitted
+          // value leaves the stored one alone (spec 033 FR-035).
+          .update(priceListId: priceListId, name: state.name);
       ref.invalidate(priceListsListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
@@ -263,7 +229,6 @@ class PriceListFormController extends _$PriceListFormController {
   }
 }
 
-String? _orNull(String value) => value.isEmpty ? null : value;
 
 Map<String, String> _fieldErrorsFromServer(ValidationError error) {
   final result = <String, String>{};

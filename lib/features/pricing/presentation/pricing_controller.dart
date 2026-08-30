@@ -36,12 +36,15 @@ class PricingState with _$PricingState {
 
 /// Per-row inline-edit state, keyed by price-list id, so each row can be
 /// edited/saved independently.
+///
+/// Carries the price alone since spec 033 US7: the low/high profit
+/// thresholds this screen used to edit are deprecated (mbe-api#185, which
+/// retired the sales-order validation that read them), and a created row
+/// takes its band from the price list's own margins server-side.
 @freezed
 class PricingRowEditState with _$PricingRowEditState {
   const factory PricingRowEditState({
     @Default('') String price,
-    @Default('') String lowProfit,
-    @Default('') String highProfit,
     @Default(false) bool submitting,
     String? error,
     Map<String, String>? fieldErrors,
@@ -115,18 +118,11 @@ class PricingController extends _$PricingController {
     await _load(productId);
   }
 
-  /// Client-side validation (FR-011) for a row's price/low-profit/
-  /// high-profit inputs.
+  /// Client-side validation (FR-011) for a row's price.
   Map<String, String> _validateRow(PricingRowEditState edit) {
     final errors = <String, String>{};
     if (!PricingValidators.isNonNegativeDecimal(edit.price)) {
       errors['price'] = PricingErrorCode.invalidAmount;
-    }
-    if (!PricingValidators.isNonNegativeDecimal(edit.lowProfit)) {
-      errors['lowProfit'] = PricingErrorCode.invalidAmount;
-    }
-    if (!PricingValidators.isNonNegativeDecimal(edit.highProfit)) {
-      errors['highProfit'] = PricingErrorCode.invalidAmount;
     }
     return errors;
   }
@@ -165,16 +161,12 @@ class PricingController extends _$PricingController {
                   productId: productId,
                   priceListId: priceListId,
                   price: edit.price,
-                  lowProfit: edit.lowProfit,
-                  highProfit: edit.highProfit,
                 )
           : await ref
                 .read(productPriceRepositoryProvider)
                 .update(
                   productPriceId: existing.productPriceId,
                   price: edit.price,
-                  lowProfit: edit.lowProfit,
-                  highProfit: edit.highProfit,
                 );
 
       final updatedRows = [...state.rows];

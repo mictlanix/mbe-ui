@@ -13,8 +13,6 @@ class MockPriceListRepository extends Mock implements PriceListRepository {}
 PriceList _priceList(int id) => PriceList(
   priceListId: id,
   name: 'List $id',
-  highProfitMargin: '0.40',
-  lowProfitMargin: '0.10',
 );
 
 void main() {

@@ -744,6 +744,125 @@ void main() {
     });
   });
 
+  group('ProductRepositoryImpl.productMissingPriceFacets (spec 033 US2, '
+      'mbe-api#184)', () {
+    test('200 maps rows to ProductMissingPriceFacet entities', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode([
+            {'price_list': 2, 'missing_count': 14},
+            {'price_list': 3, 'missing_count': 37},
+          ]),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final facets = await repository.productMissingPriceFacets();
+
+      expect(facets, hasLength(2));
+      expect(facets[0].priceListId, 2);
+      expect(facets[0].missingCount, 14);
+      expect(facets[1].priceListId, 3);
+      expect(facets[1].missingCount, 37);
+    });
+
+    test(
+      'a price list id of 0 survives the mapping — `Costo` sits at id 0 in '
+      'the deployment, so anything treating the id as falsy silently drops '
+      'its chip (FR-019a)',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode([
+              {'price_list': 0, 'missing_count': 5},
+            ]),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        final facets = await repository.productMissingPriceFacets();
+
+        expect(facets, hasLength(1));
+        expect(facets.single.priceListId, 0);
+        expect(facets.single.missingCount, 5);
+      },
+    );
+
+    test(
+      'a missing_count of 0 is kept, not dropped — a fully priced list still '
+      'gets a chip reading zero rather than vanishing from the row',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode([
+              {'price_list': 2, 'missing_count': 0},
+            ]),
+            200,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        final facets = await repository.productMissingPriceFacets();
+
+        expect(facets.single.missingCount, 0);
+      },
+    );
+
+    test('forwards every product filter, and no missing_price_list of its '
+        'own — clicking one chip must not move the others', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('[]', 200, headers: _jsonHeaders);
+      });
+
+      await repository.productMissingPriceFacets(
+        search: 'clavo',
+        status: EntityStatus.active,
+        stockable: true,
+        salable: false,
+        supplier: 12,
+        labels: [1, 2],
+      );
+
+      expect(captured!.path, '/api/v1/products/prices/missing-facets');
+      expect(captured!.queryParameters['search'], 'clavo');
+      expect(captured!.queryParameters['status'], 0);
+      expect(captured!.queryParameters['stockable'], true);
+      expect(captured!.queryParameters['salable'], false);
+      expect(captured!.queryParameters['supplier'], 12);
+      final label = captured!.queryParameters['label'] as ListParam;
+      expect(label.value, [1, 2]);
+      expect(label.format, ListFormat.multi);
+      expect(
+        captured!.queryParameters.containsKey('missing_price_list'),
+        isFalse,
+      );
+    });
+
+    test('200 with an empty array returns an empty list', () async {
+      final repository = _repositoryWith(
+        (options) async =>
+            ResponseBody.fromString('[]', 200, headers: _jsonHeaders),
+      );
+
+      expect(await repository.productMissingPriceFacets(), isEmpty);
+    });
+
+    test('5xx maps to AppError.server', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('', 503),
+      );
+
+      await expectLater(
+        () => repository.productMissingPriceFacets(),
+        throwsA(const AppError.server(statusCode: 503)),
+      );
+    });
+  });
+
   group('ProductRepositoryImpl.mergeProducts', () {
     test('204 completes with no error', () async {
       final repository = _repositoryWith(

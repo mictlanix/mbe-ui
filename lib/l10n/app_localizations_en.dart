@@ -746,6 +746,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pricingGridColumnsFilterLabel => 'Price lists shown';
 
   @override
+  String get pricingGridWorklistAll => 'All products';
+
+  @override
+  String pricingGridWorklistMissing(String priceListName, int count) {
+    return 'Missing $priceListName ($count)';
+  }
+
+  @override
+  String get pricingGridColumnActionsTooltip => 'Column actions';
+
+  @override
+  String get pricingGridFillDown => 'Fill down from first row';
+
+  @override
+  String pricingGridCopyFromCost(String costListName) {
+    return 'Copy from $costListName';
+  }
+
+  @override
+  String get pricingGridAdjustLabel => 'Adjust every shown row by';
+
+  @override
+  String get pricingGridAdjustApply => 'Apply';
+
+  @override
+  String pricingGridRowsChanged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count prices changed',
+      one: '1 price changed',
+      zero: 'No prices changed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pricingGridColumnActionFailed =>
+      'Could not apply the action. No prices changed.';
+
+  @override
+  String get pricingGridCellSaving => 'Saving…';
+
+  @override
+  String pricingGridCellSaved(String previous) {
+    return 'Saved · was $previous';
+  }
+
+  @override
+  String pricingGridSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count prices changed',
+      one: '1 price changed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pricingGridSummaryRejected(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rejected',
+      one: '1 rejected',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pricingGridUndoLast => 'Undo last';
+
+  @override
+  String get pricingGridRevertAll => 'Revert all';
+
+  @override
+  String get pricingGridDiscardTitle => 'Discard outstanding changes?';
+
+  @override
+  String get pricingGridDiscardBody =>
+      'The undo history and any rejected text will be lost. Prices already saved are unaffected.';
+
+  @override
+  String get pricingGridDiscardConfirm => 'Leave anyway';
+
+  @override
+  String get pricingGridDiscardCancel => 'Stay';
+
+  @override
   String get exchangeRatesMenuTitle => 'Exchange Rates';
 
   @override
@@ -758,19 +848,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPriceListsFound => 'No price lists found.';
 
   @override
-  String get columnHighProfitMargin => 'High margin';
-
-  @override
-  String get columnLowProfitMargin => 'Low margin';
-
-  @override
   String get priceListNameLabel => 'Name';
-
-  @override
-  String get priceListHighProfitMarginLabel => 'High profit margin';
-
-  @override
-  String get priceListLowProfitMarginLabel => 'Low profit margin';
 
   @override
   String get newPriceListTitle => 'New price list';
@@ -794,10 +872,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceListNameRequiredError => 'Name is required.';
-
-  @override
-  String get priceListMarginInvalidError =>
-      'Enter a valid non-negative percentage.';
 
   @override
   String get priceListLoadFailedError => 'Failed to load price list.';
@@ -852,12 +926,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get columnPrice => 'Price';
-
-  @override
-  String get columnLowProfit => 'Low profit';
-
-  @override
-  String get columnHighProfit => 'High profit';
 
   @override
   String get editPriceTooltip => 'Edit price';
