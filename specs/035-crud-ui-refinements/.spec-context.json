@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "crud ui refinements",
   "branch": "035-crud-ui-refinements",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T21:03:33.597Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T21:26:10.617Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T21:31:10.263Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T21:31:10.318Z"
     }
   ],
   "telemetryInstanceId": "86d79834-1b93-490b-95c6-bf859215583e",
@@ -154,7 +175,7 @@
       "title": "Facility children open in a panel without leaving the Facilities screen"
     },
     "FR-035": {
-      "title": "Inline nested creation inside a converted form keeps working from the panel"
+      "title": "Every field a converted form already offers, including Customers' entity-picker autocompletes, keeps working unchanged from the panel"
     },
     "FR-036": {
       "title": "Entities outside the named list keep their full-screen record presentation"

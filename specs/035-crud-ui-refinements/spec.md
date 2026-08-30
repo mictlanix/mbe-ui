@@ -185,8 +185,10 @@ position are unchanged afterward.
    the user lands on that entity's list rather than an error.
 9. **Given** a facility's warehouse, point of sale or cash drawer, **When** the user opens it
    from the facility card, **Then** it opens in a panel without leaving the Facilities screen.
-10. **Given** a customer record open in a panel, **When** the user adds an address or contact
-    inline, **Then** that inline creation still works and returns them to the customer form.
+10. **Given** any of the 14 entities' converted forms, **When** the user opens it, **Then** every
+    field it already offers — including the entity pickers Customers uses for taxpayer recipient,
+    employee and price list (autocomplete, not inline creation) — renders and behaves exactly as
+    it does today.
 
 ---
 
@@ -204,8 +206,8 @@ position are unchanged afterward.
   saves.
 - A form long enough to exceed the panel's height, on a compact width where the panel is a
   bottom sheet and the on-screen keyboard is open.
-- Inline address or contact creation inside the customer panel — a panel opened from within
-  a panel.
+- An entity-picker autocomplete (e.g. Customers' taxpayer recipient/employee/price list pickers)
+  opened from within a panel that is itself already a panel.
 - The largest supported text-scaling level, where the new outline and radius must not collide
   with grown row heights.
 - A list surface rendered with zero rows.
@@ -304,8 +306,9 @@ position are unchanged afterward.
   multi-column form layout to still produce more than one column where a form warrants it.
 - **FR-034**: A facility's warehouse, point of sale and cash drawer MUST open in a panel from the
   facility card without leaving the Facilities screen.
-- **FR-035**: Inline creation nested inside a converted form (a customer's address and contact)
-  MUST continue to work from within the panel.
+- **FR-035**: Every field a converted form already offers — including an entity-picker
+  autocomplete (e.g. Customers' taxpayer recipient, employee and price list pickers) — MUST
+  continue to work unchanged from within the panel.
 - **FR-036**: Entities not named in Verbatim Constraints — including products, facilities,
   taxpayer issuers, users and user profiles — MUST keep their existing full-screen record
   presentation; this feature MUST NOT convert them.

@@ -104,8 +104,8 @@ exchange rates, payment method options:
 8. Press **New**, fill it, save. Panel closes, list updated.
 9. Warehouses / points of sale / cash drawers: open from the **facility card** — the panel opens
    without leaving the Facilities screen.
-10. Customers: inside the panel, add an address and a contact inline. Both work and return you to
-    the customer form.
+10. Customers: inside the panel, use the taxpayer recipient, employee and price list pickers.
+    All three still autocomplete and select correctly from within the panel.
 
 ### Removed routes
 

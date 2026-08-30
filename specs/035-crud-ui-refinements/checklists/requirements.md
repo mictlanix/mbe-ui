@@ -31,6 +31,17 @@
 
 ## Notes
 
+- **Correction made during `tasks` prep**: US5 scenario 10, FR-035 and one Edge Case originally
+  claimed the Customers form has inline address/contact creation nested inside it. Checking the
+  actual file (`customer_detail_screen.dart`) before writing tasks showed this is false — that
+  screen uses plain entity-picker autocompletes (taxpayer recipient, employee, price list); the
+  inline-creation dialogs (`showAddressInlineCreateDialog`, `showContactInlineCreateDialog`) live
+  in `facility_detail_screen.dart` and `customer_contact_picker.dart` (a POS/sales widget), neither
+  of which this feature touches. All three references were rewritten to the accurate claim (the
+  entity pickers must keep working from the panel) rather than left describing behavior that does
+  not exist.
+
+
 - **No `[NEEDS CLARIFICATION]` markers remain.** The one open question — what the default
   status means on the transactional lists — was resolved with the requester during this
   step. Their answer (all-but-cancelled for sales, open+stale for cash sessions) turned out
