@@ -59,3 +59,4 @@
   - Esquinas redondeadas de DataTableView?
   - Hairline borders en tablas?
   - Hairline borders en cards de FacilityCard WarehouseChildRow PointSaleChildRow CashDrawerChildRow
+  - Que CRUD actualice DataTableView al realizar busqueda, aun cuando el filtro no haya cambiado
