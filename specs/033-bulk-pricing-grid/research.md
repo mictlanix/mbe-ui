@@ -1,9 +1,16 @@
 # Phase 0 Research: Bulk Pricing Grid
 
 **Feature**: `033-bulk-pricing-grid` | **Date**: 2026-08-29
+**Revised**: 2026-08-29, after mbe-api#182–#185 landed (`98d3254`)
 
 Everything below was verified against the working tree and the sibling
 `mbe-api` / `mbe` checkouts on 2026-08-29. Line references are to that state.
+
+> **Four findings were overtaken by the API landing** — §R5, §R6, §R7 and §R8
+> each turned on a gap mbe-api has since closed. Each is kept with its
+> original reasoning and a **Landed** block recording what replaced it: the
+> reasoning is why the endpoints have the shape they do, and deleting it would
+> leave the design looking arbitrary.
 
 ---
 
@@ -126,6 +133,25 @@ rows, so a 20-row page against 6 lists is 120 — over the cap. Recorded on #182
 until it is answered the grid requests prices **per shown column set**, so the
 row count stays under the cap for any realistic page.
 
+### Landed (#182)
+
+`product` now repeats, and the seam paid off exactly as designed: the body of
+`listForProducts` became one call, its signature and its single call site
+untouched. A 20-row page is **1** price request, not 20.
+
+The cap moved with it, which the note above asked for and did not assume:
+`BULK_LIMIT = 500` replaces the 100, and is one constant shared by this read's
+`limit` and the bulk write's body cap — a read cap the write could not match
+would make a full page unwritable. Mirrored client-side as
+`kProductPriceBulkLimit`; `productIds.length * priceListIds.length` must stay
+under it.
+
+One client-side wrinkle worth recording: dio sends a repeated query parameter as
+a `ListParam`, so a test asserting on `queryParameters['product']` gets that
+wrapper rather than a plain list, and `ListFormat.multi` is what produces
+`?product=1&product=2` rather than a CSV the server would not parse. Both are
+now pinned by `product_price_repository_impl_test.dart`.
+
 ## R6. The write path has a landmine: the profit band
 
 `ProductPriceCreate` requires `low_profit` and `high_profit`
@@ -159,6 +185,40 @@ should own. It is written up on mbe-api#185 as the reason the deprecation needs 
 decision on the validation, not just a schema edit. If #183 lands first with
 server-side defaulting, rules 2 and 3 are deleted, not reworked.
 
+### Landed (#185) — the landmine is defused, and rules 2 and 3 are deleted
+
+The server took the decision this finding said it should, and took it the
+whole way:
+
+- **The validation is retired**, not relocated — `assert_margin_in_range`,
+  both call sites in `add_line`/`update_line`, the
+  `EXCLUDE_PRICE_RANGE_VALIDATION` bypass and the
+  `price_validation_in_range_required` setting are gone. Nothing reads the
+  band. A wrong default can no longer make a product unsellable, because
+  there is nothing left to refuse a line.
+- **All four fields are deprecated** but still accepted and returned — a
+  client still sending them is obeyed, and a generated client keeps fields it
+  compiles against. The columns stay until the legacy monolith is retired.
+- **The one surviving use is server-side and is the useful half**: a created
+  row with no margins named takes the price list's own
+  `low_profit_margin`/`high_profit_margin`. That is rule 2, moved to where it
+  belonged. On an *update*, omitted margins leave the stored band alone.
+
+So the client sends `price` and nothing else, on create and update alike.
+`_bandFor` and its `('0','1')` fallback are **deleted** — rule 3 existed only
+because a wrong band was dangerous, and it is not any more.
+
+**The order-of-operations trap the issue named was honoured**: the validation
+and the UI stop depending on these fields in the same release, so no stored
+band is left refusing lines nobody can adjust.
+
+**Consequence for the entities**: the generated Dart fields now carry
+`@Deprecated`, and `PriceList.fromResponse`/`ProductPrice.fromResponse` still
+map them for the standalone screen that still shows them (until US7). Each
+read carries an explicit `// ignore: deprecated_member_use` with the reason —
+reading a field deprecated *for callers* is precisely what a mapping layer is
+for, and leaving the analyzer noisy would train the next reader to skim it.
+
 ## R7. Atomic column actions cannot be faked
 
 FR-015 requires a column action to be all-or-nothing. With only per-row
@@ -169,6 +229,26 @@ moved, and "undo the ones that worked" is itself a fan-out that can fail.
 single-cell editing (US1), which needs no atomicity. This is the one place the
 plan refuses to approximate the spec.
 
+### Landed (#183) — US3 is unblocked
+
+`PUT /product-prices` upserts a page in one transaction, keyed on the existing
+`UNIQUE (product, list)`. Either every cell lands or none does, so FR-015 is
+reachable and the client needs no rollback path. Three details shape the US3
+implementation:
+
+- **Ids are checked up front**, so one bad id refuses the whole body rather
+  than applying the good rows first.
+- **A repeated `(product, price_list)` in one body is a 400.** A column action
+  must therefore de-duplicate by cell before sending — two cells for one cell
+  is a client bug the server refuses to paper over.
+- **Body capped at `BULK_LIMIT` (500)**, the same constant as the read cap, so
+  a page that can be read can always be written back.
+
+It also removes the POST-vs-PUT branch from the single-cell path: the upsert
+has no such fork, so the stale-read race — a 409 on what the user experienced
+as a plain edit — is gone. US1 still uses the per-row endpoints, which are
+untouched; moving it onto the upsert is optional and not required by any FR.
+
 ## R8. The worklist has no query
 
 "Products with no price on list N" is not expressible: `GET /products` has no
@@ -178,6 +258,29 @@ wrong at 21k products.
 **Decision**: **US2 ships with mbe-api#184**, and FR-019 (omit the chips
 entirely) is the behaviour until then — not zeroed chips, not a client-side
 approximation.
+
+### Landed (#184) — US2 is unblocked
+
+Both halves exist, and the facet endpoint is the nicety this finding said it
+would be rather than the part that was needed:
+
+- **`GET /products?missing_price_list=N`** — a correlated `NOT EXISTS`
+  composing with `search`/`label`/`status`/`salable`, so "unpriced *and*
+  salable" is one query and `ListResponse.total` is the count. Now wired
+  through `ProductRepository.list` as `missingPriceList`.
+- **`GET /products/prices/missing-facets`** — `(price_list, missing_count)`
+  for every list over the current filter set, in one call. Counted as
+  *matching minus priced*, so a list nobody has priced at all still gets a
+  row. It takes no `missing_price_list` of its own, so clicking one chip does
+  not move the numbers on the chips beside it.
+
+⚠️ **`0` is a real price list id** in the deployment (`Costo`). The server
+tests `is not None` rather than truthiness, and the client must do the same —
+a falsy-check would silently drop the cost list's own worklist chip.
+
+The audit test `repository_list_params_audit_test.dart` caught the new
+parameter arriving upstream and failed until it was wired through, which is
+exactly what it exists for.
 
 ## R9. Column choice is a view preference, not a filter
 
@@ -209,8 +312,8 @@ The four fields appear in three layers. Only one of them changes:
 
 | Layer | Holds | Change |
 |---|---|---|
-| Generated client (`lib/generated/openapi/`) | required on `ProductPriceCreate`, present on responses | **none** — regenerating is #185's business |
-| Domain entities (`PriceList`, `ProductPrice`) | `highProfitMargin`/`lowProfitMargin`, `lowProfit`/`highProfit` | **none** — R6 rules 1–2 read them |
+| Generated client (`lib/generated/openapi/`) | ~~required on `ProductPriceCreate`~~ → **optional and `@Deprecated`** since #185, present on responses | **none** — regenerated already |
+| Domain entities (`PriceList`, `ProductPrice`) | `highProfitMargin`/`lowProfitMargin`, `lowProfit`/`highProfit` | **none yet** — the standalone screen still displays them; each mapping now carries an `// ignore: deprecated_member_use` and a reason |
 | Presentation | 2 form fields, 4 table columns, 1 edit dialog, 6 l10n keys, margin validation in `price_list_form_controller` | **removed** (FR-034, FR-036) |
 
 Concretely: `price_list_detail_screen.dart:134-166` (two fields),
@@ -225,6 +328,20 @@ Concretely: `price_list_detail_screen.dart:134-166` (two fields),
 server-side (`app/schemas/product.py:29`), so a create that omits them succeeds;
 `PriceListUpdate` has them optional. The repository's `create`/`update` already
 pass them only `if (… != null)`.
+
+### Landed (#185) — the US7 gate is answered, outcome (a)
+
+The task list gated the price-list form/list half of US7 (T050–T054) on which
+way #185 went, because one plausible answer — relocating the margin band to
+the price list's own margins — would have made those two fields load-bearing
+and un-deprecated them. **It went the other way**: the validation is retired
+outright and all four fields are deprecated, `price_list` margins included.
+T049's confirmation gate is satisfied and T050–T054 may proceed.
+
+Once they do, the entity fields become genuinely unread and can be dropped
+from `PriceList`/`ProductPrice` along with the `// ignore` comments above —
+worth doing in the same change, since an entity field nothing maps to a screen
+is exactly the dead weight #185 is retiring.
 
 **Test impact**: 94 references across 12 test files. Most are *fixture builders*
 constructing `PriceList`/`ProductPrice` entities, which keep compiling untouched

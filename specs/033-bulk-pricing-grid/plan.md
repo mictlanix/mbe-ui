@@ -1,6 +1,7 @@
 # Implementation Plan: Bulk Pricing Grid
 
 **Branch**: `033-bulk-pricing-grid` | **Date**: 2026-08-29 | **Spec**: [spec.md](./spec.md)
+**Revised**: 2026-08-29, after mbe-api#182–#185 landed (`98d3254`)
 
 **Input**: Feature specification from `/specs/033-bulk-pricing-grid/spec.md`
 
@@ -13,22 +14,24 @@ from the UI, and correct two things in the products filter drawer.
 The shape of the work is set by six findings ([research.md](./research.md)), two of
 which contradict a straight reading of the spec:
 
-1. **Two of the three headline capabilities cannot be built yet, and are not
-   approximated.** Column actions (US3) require an atomic multi-row write that no
-   endpoint offers (R7); the worklist chips (US2) require a "products missing a
-   price on list N" query that does not exist (R8). Both wait for
-   mbe-api#183/#184. Faking atomicity client-side would ship a feature that
-   half-moves a column and calls it done.
+1. ~~**Two of the three headline capabilities cannot be built yet.**~~
+   **Superseded — all four API gaps landed** (#182–#185, `98d3254`). Column
+   actions (US3) now have the atomic bulk upsert FR-015 needs, and the worklist
+   chips (US2) have both the filter and a facet endpoint. The original
+   reasoning stands as *why those endpoints have the shape they do* (R7, R8),
+   and the refusal to fake atomicity client-side is why US3 waited rather than
+   shipping something that half-moves a column.
 2. **The screen being replaced serves two routes, and only one of them goes.**
    `PricingScreen` is `/pricing` *and* `/products/:productId/pricing` (R1). The
    grid is a new screen; the old widget survives as the standalone per-product
    view CL-002 keeps, minus its picker branch.
-3. **The write path has a landmine** (R6). `ProductPriceCreate` requires the two
-   profit fields the grid stops collecting, and those fields are not decoration:
-   `assert_margin_in_range` enforces them on every sales-order line. Creating rows
-   with `[0, 0]` would make each product unsellable at any profit. Creates copy
-   the target price list's own margins, falling back to `[0, 1]` when those are
-   the shipped `0/0` default — the widest band the schema allows.
+3. ~~**The write path has a landmine**~~ — **defused by #185** (R6). The
+   sales-order margin validation that made a wrong profit band dangerous is
+   retired outright, and a created row now takes its band from the price
+   list's margins *server-side*. The grid sends `price` and nothing else on
+   both create and update; the client-side `_bandFor` helper and its `[0, 1]`
+   fallback are deleted. This was the finding that most shaped the API's
+   final shape, and it is the one with least left to do.
 4. **The focus problem is solved by keeping draft text local — not by reusing
    specs 030/031's field controller, as first planned.** A `TextField` inside a
    `DataTableSource` row loses focus on every state-driven rebuild, so draft
@@ -47,9 +50,9 @@ which contradict a straight reading of the spec:
    the page does not".
 
 Net: one new screen with its controller and cell widget, one new repository method
-(batched today by fan-out, by one request when #182 lands), one `minWidth`
-parameter on a shared widget, deletions across five presentation files, two `.arb`
-files, and two edits to one filter panel.
+(one request, since #182 landed), one `minWidth` parameter on a shared widget,
+deletions across five presentation files, two `.arb` files, and two edits to one
+filter panel.
 
 ## Technical Context
 
@@ -69,14 +72,16 @@ mbe-api
 
 **Project Type**: Single Flutter application, feature-first layering
 
-**Performance Goals**: 3 requests per grid page once mbe-api#182 lands (products,
-prices, price lists); `2 + pageSize` until then, reads only (R5). One write per
-edited cell; one write per column action once #183 lands.
+**Performance Goals**: 3 requests per grid page (products, prices, price
+lists) — achieved, since #182 landed and `listForProducts` collapsed to one
+call (R5). One write per edited cell; one write per column action, via #183's
+bulk upsert.
 
-**Constraints**: mbe-api caps list requests at 100 rows, and a batched price fetch
-returns products × lists rows (R5); `ProductPriceCreate` requires a profit band
-that gates sales-order validation (R6); no mbe-api edit may be made from this repo
-(§III).
+**Constraints**: a batched price fetch returns products × lists rows against
+mbe-api's `BULK_LIMIT` of 500, shared by the read's `limit` and the bulk
+write's body cap (R5); `0` is a real price list id, so every price-list filter
+tests null rather than truthiness (R8); no mbe-api edit may be made from this
+repo (§III).
 
 **Scale/Scope**: 1 new screen replacing 1 existing screen mode, 1 new controller,
 1 new cell widget, 1 new repository method, 1 shared-widget parameter, 5
@@ -166,12 +171,17 @@ files beside the screen it replaces rather than a rewrite of it, because
 Four slices, in dependency order. Each is independently shippable and testable;
 only the first two can be built today.
 
-| Slice | Stories | Depends on | Notes |
+**Every API dependency is now satisfied** (#182–#185, `98d3254`), so the
+ordering below is about what depends on what in *this* repo, not about waiting
+on anything.
+
+| Slice | Stories | Status | Notes |
 |---|---|---|---|
-| **A. Retire the profit fields + drawer corrections** | US7, US6 | nothing | Pure deletion plus two lines of layout (R11, R12). Shrinks what slice B has to carry. |
-| **B. The grid** | US1, US4, US5 | nothing to build; mbe-api#182 to meet SC-006 | Batched read behind `listForProducts` (fan-out today, one request later). Single-cell editing, badges, undo, read-only mode. Replaces `/pricing`. |
-| **C. Column actions** | US3 | **mbe-api#183** | Not started before the bulk upsert exists — FR-015 is unreachable without it (R7). The upsert also deletes the R6 fallback. |
-| **D. Worklist chips** | US2 | **mbe-api#184** | FR-019 (no chips at all) is the shipped behaviour until then (R8). |
+| **A1. Drawer corrections** | US6 | in progress | Two lines of layout plus a localized heading (R12). No dependency on anything. |
+| **A2. Retire the profit fields** | US7 | unblocked (was gated on #185) | #185 retired the validation and deprecated all four fields, so T049's gate resolves to outcome (a) and the price-list form/list half may proceed (R11). |
+| **B. The grid** | US1, US4, US5 | US1 done | `listForProducts` is one request. Single-cell editing, badges, undo, read-only mode. Replaces `/pricing`. US4/US5 still to build. |
+| **C. Column actions** | US3 | unblocked (was gated on #183) | The bulk upsert exists; FR-015 is reachable. Mind the 400 on a repeated `(product, price_list)` and the 500-item body cap (R7). |
+| **D. Worklist chips** | US2 | unblocked (was gated on #184) | Filter + facet endpoint both exist; `missingPriceList` is already wired through `ProductRepository.list`. FR-019's no-chips behaviour is what ships until the UI is built (R8). |
 
 ## Complexity Tracking
 

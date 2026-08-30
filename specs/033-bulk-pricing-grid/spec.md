@@ -4,7 +4,7 @@
 
 **Created**: 2026-08-29
 
-**Status**: Draft
+**Status**: Draft — API dependencies satisfied 2026-08-29 (mbe-api#182–#185)
 
 **Input**: User description: "Bulk pricing grid, replacing the
 one-product-at-a-time pricing screen, plus two small products-list filter
@@ -28,10 +28,11 @@ from the real app shell, the shared catalog chrome, and the current pricing
 screen's own price cells.
 
 Two of the grid's three headline capabilities — bulk column actions and the
-"what is unpriced" worklist — have **no query or write behind them in
-mbe-api today**. Three issues are filed (see *External Dependencies*); this
-spec treats them as prerequisites and states what the screen does while they
-are outstanding, so the parts that do not depend on them can ship first.
+"what is unpriced" worklist — had **no query or write behind them in mbe-api**
+when this spec was written. Four issues were filed, and **all four have since
+landed** (see *External Dependencies*): nothing in this spec is blocked on the
+backend any more. The staging that follows from them survives as delivery
+order, not as a constraint.
 
 The feature also retires the **low/high profit fields** from every screen
 that shows them, and carries two unrelated one-line corrections to the
@@ -336,9 +337,10 @@ each record still works.
   entering 0, and the spec's chosen meaning of "cleared" MUST survive a
   reload.
 - **FR-012**: Creating a price where none existed MUST NOT ask the user for
-  any profit threshold. Whatever the backend still requires MUST be
-  supplied by the client without being surfaced, until mbe-api#185 removes
-  the requirement.
+  any profit threshold, and MUST NOT invent one either: the client sends the
+  price alone and the backend fills the row's band from the price list's own
+  margins (mbe-api#185). Updating a price MUST leave the stored band
+  untouched.
 - **FR-012a**: The grid MUST NOT expose a price row's own low-profit and
   high-profit thresholds — neither as columns nor behind a per-cell
   affordance. A price cell holds one number: the price (see CL-003).
@@ -365,7 +367,12 @@ each record still works.
 - **FR-018**: Worklist counts MUST reflect the filters currently applied,
   not the whole catalog.
 - **FR-019**: When the backend cannot answer the worklist query, the chips
-  MUST be omitted rather than displayed with unreliable counts.
+  MUST be omitted rather than displayed with unreliable counts. *(The query
+  exists as of mbe-api#184, so this now governs only the interval before the
+  US2 UI is built, and any later failure of that call.)*
+- **FR-019a**: A price list id of `0` is real (`Costo` in the deployment).
+  Every worklist filter and count MUST test for absence, never for
+  falsiness, or the cost list's own chip silently disappears.
 
 #### Columns and filters
 
@@ -487,30 +494,38 @@ each record still works.
 
 ## External Dependencies
 
-Per Principle III, the needed backend changes are filed as mbe-api issues
-and are **not** made from this repo. Each is a prerequisite for the story
-noted; the rest of the feature ships without it.
+Per Principle III, the needed backend changes were filed as mbe-api issues
+and **not** made from this repo. **All four landed on 2026-08-29** (`98d3254`),
+so no story here is blocked on the backend.
 
-- **mictlanix/mbe-api#182** — a repeatable `product` filter on the
-  product-prices list, so one page of the grid costs a constant number of
-  requests rather than one per row. **Blocks US1 at acceptable cost**;
-  until it lands the grid would need one request per row (SC-006 fails).
-  Also raises a cap question: a page returns products × lists rows against
-  a per-request maximum of 100.
-- **mictlanix/mbe-api#183** — a bulk upsert for product prices (one
-  transaction, keyed on product + list), and optional low/high profit
-  defaulting from the price list's margins. **Blocks US3** (FR-015's
-  all-or-nothing guarantee is unreachable without it) and **FR-012**.
-- **mictlanix/mbe-api#184** — a "products missing a price on list N"
-  filter, with a total that feeds the chip counts. **Blocks US2**; FR-019
-  is the behaviour until it lands.
-- **mictlanix/mbe-api#185** — deprecation of the four profit fields. Does
-  **not** block US7: this UI can stop showing them today, supplying
-  whatever the request schemas still require (FR-012). The issue records
-  the part mbe-ui cannot decide — `product_price.low_profit` /
-  `high_profit` are what `assert_margin_in_range` enforces on sales-order
-  lines, so retiring them retires or relocates that validation, while the
-  price-list margins turn out to be read by nothing at all.
+- **mictlanix/mbe-api#182 — landed.** `product` repeats on the
+  product-prices list, so a grid page is one price request rather than one
+  per row (SC-006 met). The cap moved with it: `BULK_LIMIT` is 500 and is
+  shared by this read and the bulk write, so a page that can be read can
+  always be written back.
+- **mictlanix/mbe-api#183 — landed.** `PUT /product-prices` upserts a page
+  in one transaction, keyed on `(product, price_list)`. FR-015's
+  all-or-nothing guarantee is now reachable, which is what **US3** was
+  waiting for. Two client obligations come with it: a repeated
+  `(product, price_list)` in one body is a 400, and the body is capped at
+  500 items.
+- **mictlanix/mbe-api#184 — landed.** `GET /products?missing_price_list=`
+  plus `GET /products/prices/missing-facets` for the whole chip row in one
+  call. **US2** is unblocked; the filter is already wired through
+  `ProductRepository.list`.
+- **mictlanix/mbe-api#185 — landed, and it went further than asked.** The
+  sales-order margin validation is **retired outright** rather than
+  relocated, and all four low/high profit fields are deprecated (still
+  accepted and returned). A created row takes its band from the price
+  list's margins server-side; an update leaves the stored band alone. This
+  resolves the CL-002/CL-003 overlap in favour of removal (see
+  *Clarifications*) and defuses FR-012's landmine entirely.
+
+**Adjacent, not consumed here**: the investigation behind this spec also
+filed **#181**, which landed as
+`DELETE /price-lists/{id}?replacement={other_id}` plus a delete-preview
+endpoint. Spec 033 does not touch the price-lists delete flow; the
+capability exists and wants its own spec.
 
 ## Assumptions
 
@@ -570,3 +585,10 @@ noted; the rest of the feature ships without it.
   FR-034..FR-037). Spec 011's FR-010/FR-011 (per-price threshold editing)
   and FR-006 (price-list margins displayed as percentages) are superseded
   for those fields.
+
+  **Confirmed by mbe-api#185 (2026-08-29)**: the decision this rested on
+  went the way US7 assumed. The margin validation is retired rather than
+  relocated, and all four fields — the price list's two included — are
+  deprecated. The task list's T049 gate, which would have stopped the
+  price-list form work had the band been relocated onto those margins,
+  resolves to outcome (a): proceed.

@@ -5,9 +5,11 @@
 
 **Tests**: Included. The constitution mandates unit/widget/integration coverage, and three success criteria (SC-006 constant request count, SC-004 any change including a bulk action reverses in one step, SC-007 a read-only user reaches no editing affordance) are only verifiable with tests.
 
-**Organization**: Phase 2 is a genuine blocker — every story reads the batched price fetch and the grid's shared state shape. After that, **US1 → US4 → US5 → US6 → US7 are buildable now** and proceed in that order (US6/US7 have no dependency on the others and can run in parallel with them). **US2 and US3 cannot be implemented** — they depend on mbe-api endpoints that do not exist yet (#184, #183 respectively). Their phases contain a single blocking task each, per [plan.md](plan.md)'s delivery-order table, and no further work until the dependency lands.
+**Organization**: Phase 2 is a genuine blocker — every story reads the batched price fetch and the grid's shared state shape. After that, every remaining story is buildable.
 
-**Note on US7**: two of its removals (the standalone pricing screen's profit columns/dialog, T0xx below) are safe under every outcome of mbe-api#185. The price-list form/list removal is **not** — #185 asks mbe-api to decide whether the per-price margin band is retired or relocated to the price list's own margins, and the second answer would un-deprecate the exact fields this phase removes. That subset is marked accordingly and gated on an explicit confirmation task.
+> **Revised 2026-08-29 — mbe-api#182–#185 all landed** (`98d3254`). **US2 and US3 are unblocked**; their phases below were single blocking tasks and are now real task lists. **US7's gate (T049) resolves to outcome (a)** — the margin validation was retired outright and all four profit fields deprecated, so the price-list form/list removal may proceed. Tasks whose wording assumed a missing endpoint are corrected in place, with the original intent noted where it explains a choice.
+
+**Note on US7**: two of its removals (the standalone pricing screen's profit columns/dialog) were always safe. The price-list form/list removal was gated on #185's direction, because relocating the band onto the price list's own margins would have un-deprecated the exact fields that phase removes. **That gate is now answered — proceed.**
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -35,14 +37,14 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 **Purpose**: The batched price read, the grid's shared state shapes, and the shared table's width escape hatch. Nothing in any grid-facing story (US1–US5) can be built until this phase is done.
 
-**⚠️ CRITICAL**: T004's read path is deliberately a fan-out today (research.md §R5) — it must NOT be written as a single request pretending mbe-api#182 already exists, and its call site must be the only place that changes when #182 lands.
+**⚠️ CRITICAL** *(historical — resolved)*: T004's read path shipped as a deliberate fan-out, so that the only thing #182 changed was the body of one method. #182 has since landed and that collapse has happened: `listForProducts` is one request, its signature and call site untouched. The seam did its job; leave it in place.
 
 ### Repository
 
-- [X] T002 [P] Declare `listForProducts({required List<int> productIds, required List<int> priceListIds})` returning `Future<List<ProductPrice>>` in `lib/features/pricing/domain/repositories/product_price_repository.dart`, documenting that it batches today via fan-out and will collapse to one request when mbe-api#182 lands (contracts/mbe-api-pricing.md §3)
-- [X] T003 [P] Extend `create`/`update` doc comments in `lib/features/pricing/domain/repositories/product_price_repository.dart` to note the profit-band rule new callers must follow (research.md §R6; no signature change)
-- [X] T004 Implement `listForProducts` in `lib/features/pricing/data/product_price_repository_impl.dart` as `Future.wait` over the existing `listByProduct`, filtering each result to `priceListIds`, deduplicating nothing (empty `productIds` returns `[]` without a request) (depends on T002)
-- [X] T005 [P] Unit-test `listForProducts` in `test/unit/features/pricing/product_price_repository_impl_test.dart` — issues one request per product id, filters by the given price-list ids, and issues zero requests for an empty product list (depends on T004)
+- [X] T002 [P] Declare `listForProducts({required List<int> productIds, required List<int> priceListIds})` returning `Future<List<ProductPrice>>` in `lib/features/pricing/domain/repositories/product_price_repository.dart`, documenting the batching (it shipped as a fan-out and collapsed to one request when mbe-api#182 landed) and the `kProductPriceBulkLimit` bound (contracts/mbe-api-pricing.md §4)
+- [X] T003 [P] Extend `create`/`update` doc comments in `lib/features/pricing/domain/repositories/product_price_repository.dart` to note the profit-band rule new callers must follow (research.md §R6). **Since #185 both margins are optional and deprecated** — the signature now takes `String?` and omits them by default, so a caller sends the price alone
+- [X] T004 Implement `listForProducts` in `lib/features/pricing/data/product_price_repository_impl.dart` (empty `productIds` returns `[]` without a request) (depends on T002). **Shipped as a `Future.wait` fan-out; collapsed to one request with a repeated `product` param when mbe-api#182 landed** — signature and call site unchanged, as designed
+- [X] T005 [P] Unit-test `listForProducts` in `test/unit/features/pricing/product_price_repository_impl_test.dart` — **one** request repeating `product` (asserting dio's `ListParam` value *and* `ListFormat.multi`, since CSV would not parse server-side), a `limit` of `kProductPriceBulkLimit`, filtering by the given price-list ids, and zero requests for an empty product list (depends on T004)
 
 ### Shared table width
 
@@ -53,10 +55,10 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 - [X] T008 [P] Create `lib/features/pricing/presentation/pricing_grid_row.dart` with the `PricingGridRow` freezed class (`product: ProductListItem`, `prices: Map<int, ProductPrice>`) and `buildPricingGridRows({products, prices})`, mirroring `product_price_row.dart`'s join helper (data-model.md §2)
 - [X] T009 [P] Create `lib/features/pricing/domain/entities/price_cell_key.dart` with the `PriceCellKey` freezed class (`productId`, `priceListId`) (data-model.md §3)
-- [X] T010 Create `lib/features/pricing/presentation/pricing_grid_controller.dart` with `PricingGridFilter` (built from `ListQuery` exactly as `ProductFilter.fromQuery` is, plus `missingPriceList` always `null` until US2 — data-model.md §7), `RejectedEdit`, `PriceChangeKind`, `PriceWrite`, `PriceChange`, and `PricingGridState` (data-model.md §4–§6), with no controller logic yet (depends on T008, T009)
+- [X] T010 Create `lib/features/pricing/presentation/pricing_grid_controller.dart` with `PricingGridFilter` (built from `ListQuery` exactly as `ProductFilter.fromQuery` is, plus `missingPriceList`, which stayed `null` until US2's Phase 4 wired it — data-model.md §7), `RejectedEdit`, `PriceChangeKind`, `PriceWrite`, `PriceChange`, and `PricingGridState` (data-model.md §4–§6), with no controller logic yet (depends on T008, T009)
 - [X] T011 Run `dart run build_runner build --delete-conflicting-outputs` and confirm every new freezed file regenerates cleanly (depends on T010)
 - [X] T012 [P] Unit-test `buildPricingGridRows` in `test/unit/features/pricing/pricing_grid_row_test.dart` — a product with no matching price is absent from its `prices` map (not present with a null value), proving "not set" is representable (FR-005; depends on T008)
-- [X] T013 [P] Unit-test `PricingGridFilter.fromQuery` in `test/unit/features/pricing/pricing_grid_controller_test.dart` — round-trips every facet the products filter drawer already covers, and `missingPriceList` is always `null` (depends on T010, T011)
+- [X] T013 [P] Unit-test `PricingGridFilter.fromQuery` in `test/unit/features/pricing/pricing_grid_controller_test.dart` — round-trips every facet the products filter drawer already covers, and `missingPriceList` is `null` while unwired (superseded by T030e, which reads it from the `missing` facet) (depends on T010, T011)
 
 **Checkpoint**: The batched read exists and is tested, the shared table can be told to scroll internally, and the grid's state types compile. No screen exists yet.
 
@@ -71,10 +73,10 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 ### The controller
 
 - [X] T014 [US1] Implement `PricingGridController` (`@riverpod` family keyed by `PricingGridFilter`) in `lib/features/pricing/presentation/pricing_grid_controller.dart` — loads a page of `ProductListItem` via the existing `ProductRepository.list`, the full price-list set via `PriceListRepository.list(limit: 100)`, and prices for that page via `listForProducts` scoped to the **shown** columns only (research.md §R5's cap note), joining with `buildPricingGridRows` (depends on T004, T010, T011)
-- [X] T015 [US1] Add `commitCell({productId, priceListId, typed})` to `PricingGridController` — parses via `fmt.input.parsePrice`/`PricingValidators.isNonNegativeDecimal`; on parse failure sets `rejected[key]` and issues no request (FR-009); on a value equal to the stored price, issues no request (FR-010); otherwise routes to `create` (with the research.md §R6 profit-band rule: copy the target price list's margins, or `[0, 1]` when they are `0/0`) or `update` (echoing existing `lowProfit`/`highProfit` unchanged), marking the cell `inFlight` for the duration and appending one single-write `PriceChange` to `history` on success (depends on T014; contracts/mbe-api-pricing.md §4)
+- [X] T015 [US1] Add `commitCell({productId, priceListId, typed})` to `PricingGridController` — parses via `fmt.input.parsePrice`/`PricingValidators.isNonNegativeDecimal`; on parse failure sets `rejected[key]` and issues no request (FR-009); on a value equal to the stored price, issues no request (FR-010); otherwise routes to `create` or `update` sending **the price alone**, marking the cell `inFlight` for the duration and appending one single-write `PriceChange` to `history` on success (depends on T014; contracts/mbe-api-pricing.md §5). *(Originally carried research.md §R6's client-side profit-band rule; #185 moved that default server-side and `_bandFor` was deleted.)*
 - [X] T016 [US1] Add `retry()` to `PricingGridController` re-issuing the current page's load unchanged, mirroring `PricingController.retry` (depends on T014)
 - [X] T017 [P] [US1] Unit-test `commitCell`'s three outcomes (rejected, no-op on unchanged value, accepted) in `test/unit/features/pricing/pricing_grid_controller_test.dart` (depends on T015)
-- [X] T018 [P] [US1] Unit-test the create-vs-update routing and the profit-band rule (list margins copied; `[0,1]` fallback when the list's margins are `0/0`; update echoes the existing band unchanged) in `test/unit/features/pricing/pricing_grid_controller_test.dart` (depends on T015; research.md §R6)
+- [X] T018 [P] [US1] Unit-test the create-vs-update routing in `test/unit/features/pricing/pricing_grid_controller_test.dart` — both paths send the price and **name no profit band at all**, since #185 defaults it server-side on create and leaves it alone on update (depends on T015; research.md §R6)
 
 ### The cell widget
 
@@ -104,13 +106,23 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 **Goal**: worklist chips ("All products" + one "Missing «list» (count)" per shown list) narrow the grid to unpriced products.
 
-**Independent Test**: N/A — see below.
+**Independent Test**: with at least one product unpriced on a list, that list's chip shows a non-zero count and selecting it shows only unpriced rows.
 
-⚠️ **BLOCKED — mbe-api#184 not yet implemented.** `GET /products` has no price-related filter and no facet endpoint to source the chip counts (research.md §R8). Per FR-019, the chips MUST be omitted entirely rather than shown with wrong or zero counts.
+✅ **Unblocked — mbe-api#184 landed.** `GET /products?missing_price_list=` and `GET /products/prices/missing-facets` both exist, and `missingPriceList` is already wired through `ProductRepository.list` (done while reconciling the API change; pinned by `repository_list_params_audit_test.dart`).
 
-- [ ] T030 [US2] Confirm `PricingGridScreen` renders **no** worklist chip row at all while `PricingGridFilter.missingPriceList` stays permanently `null` (T010) — add a widget-test assertion of absence, not a placeholder chip row, to `test/widget/features/pricing/pricing_grid_screen_test.dart` (FR-019)
+⚠️ **`0` is a real price list id** (`Costo`). Every check on a price-list id in this phase MUST test for null, never for falsiness, or the cost list's chip silently vanishes (FR-019a).
 
-**No further tasks until mbe-api#184 lands.** When it does: add the filter param and its repository plumbing (mirroring T002–T005's pattern), the chip row UI, and the count-badge wiring — re-run `/speckit-tasks` for this phase at that point rather than guessing the endpoint's shape now.
+- [X] T030 [US2] Confirm `PricingGridScreen` renders **no** worklist chip row while the UI is unbuilt — a widget-test assertion of absence, not a placeholder chip row, in `test/widget/features/pricing/pricing_grid_screen_test.dart` (FR-019)
+- [ ] T030a [P] [US2] Declare `productMissingPriceFacets({search, status, stockable, salable, purchasable, supplier, labels})` returning `Future<List<ProductMissingPriceFacet>>` in `lib/features/catalog/domain/repositories/product_repository.dart`, mirroring the existing `productLabelFacets` declaration (contracts/mbe-api-pricing.md §2)
+- [ ] T030b [US2] Add a `ProductMissingPriceFacet` domain entity (`priceListId`, `missingCount`) in `lib/features/catalog/domain/entities/`, mapped from the generated `ProductMissingPriceFacet`, mirroring `product_label_facet.dart` (depends on T030a)
+- [ ] T030c [US2] Implement `productMissingPriceFacets` in `lib/features/catalog/data/product_repository_impl.dart` over `getProductMissingPriceFacetsApiV1ProductsPricesMissingFacetsGet` (depends on T030a, T030b)
+- [ ] T030d [P] [US2] Unit-test the facet call in `test/unit/features/catalog/product_repository_impl_test.dart` — filter pass-through and mapping, including a list whose `missing_count` is `0` and a `price_list` of `0` (depends on T030c)
+- [ ] T030e [US2] Read `missingPriceList` from the URL in `PricingGridFilter.fromQuery` (facet key `missing`), pass it to `ProductRepository.list` in `PricingGridController._fetchPage`, and drop the "always null" comment (FR-017, FR-019a; depends on T030c)
+- [ ] T030f [US2] Add a `pricingGridMissingFacets` provider keyed by the filter, `autoDispose`, reading `productMissingPriceFacets` — `valueOrNull == null` (loading/error) means "counts unknown", which renders no chips rather than zeroed ones (FR-019; depends on T030c)
+- [ ] T030g [US2] Render the chip row in `lib/features/pricing/presentation/pricing_grid_screen.dart` above the grid — an "All products" chip plus one per **shown** price list with its count, keys `pricing_grid_worklist_all` / `pricing_grid_worklist_<priceListId>`, each navigating via `context.go` so it participates in back/forward and clear-all (FR-017, FR-018; depends on T030e, T030f)
+- [ ] T030h [P] [US2] Widget-test the chips in `test/widget/features/pricing/pricing_grid_screen_test.dart` — counts render, selecting one narrows the grid and marks that chip selected, the count falls after pricing a row, a facet failure renders no chips at all, and a price list with id `0` still gets its chip (FR-017–FR-019a; depends on T030g). **Replaces T030's absence assertion** — delete that assertion in the same change rather than leaving both
+
+**Checkpoint**: "what still needs pricing?" is answerable from the screen in one click, with the count visible before clicking (SC-005).
 
 ---
 
@@ -118,13 +130,24 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 
 **Goal**: a column ⋮ menu offers fill-down, copy-from-cost, and adjust-by-percent, each atomic and one undo.
 
-**Independent Test**: N/A — see below.
+**Independent Test**: with a filtered set of rows on screen, apply a percentage adjustment to one column — every shown row in that column moved, and no row outside the shown set did.
 
-⚠️ **BLOCKED — mbe-api#183 not yet implemented.** FR-015 requires a column action to be all-or-nothing; only per-row `POST`/`PUT` exist today, which cannot give that guarantee (research.md §R7). Faking atomicity client-side (issue N requests, roll back on partial failure) is explicitly rejected — a rollback fan-out can itself fail.
+✅ **Unblocked — mbe-api#183 landed.** `PUT /product-prices` upserts a page in one transaction keyed on `(product, price_list)`, so FR-015's all-or-nothing guarantee is reachable without any client-side rollback.
 
-- [ ] T031 [US3] Confirm `PricingGridScreen` renders **no** column ⋮ menu on any price-list header — add a widget-test assertion of absence to `test/widget/features/pricing/pricing_grid_screen_test.dart`
+⚠️ **Three server rules this phase must respect** (contracts/mbe-api-pricing.md §6): a repeated `(product, price_list)` in one body is a **400**, so a column action must de-duplicate by cell before sending; the body is capped at **500** items; and every id is validated up front, so one bad id refuses the whole body.
 
-**No further tasks until mbe-api#183 lands.** When it does: add `applyPriceChanges` to the repository (contracts/mbe-api-pricing.md §5), the column menu UI, and the three actions — re-run `/speckit-tasks` for this phase at that point. Landing #183 also deletes the research.md §R6 profit-band fallback in T015/T018, since the bulk upsert defaults the band server-side.
+- [X] T031 [US3] Confirm `PricingGridScreen` renders **no** column ⋮ menu while the UI is unbuilt — a widget-test assertion of absence in `test/widget/features/pricing/pricing_grid_screen_test.dart`
+- [ ] T031a [P] [US3] Declare `applyPriceChanges(List<PriceWrite> writes)` returning `Future<List<ProductPrice>>` in `lib/features/pricing/domain/repositories/product_price_repository.dart`, documenting the duplicate-pair 400 and the 500-item cap (contracts/mbe-api-pricing.md §6)
+- [ ] T031b [US3] Implement it in `lib/features/pricing/data/product_price_repository_impl.dart` over `bulkUpsertProductPricesApiV1ProductPricesPut`, sending `price` alone per item (the profit band defaults server-side, research.md §R6) (depends on T031a)
+- [ ] T031c [P] [US3] Unit-test the bulk write in `test/unit/features/pricing/product_price_repository_impl_test.dart` — body shape and decimal-string encoding, no profit fields sent, a 400 on a duplicate pair mapping to a domain error, and the whole-body-or-nothing response mapping (depends on T031b)
+- [ ] T031d [US3] Add `fillDown`, `copyFromCostList` and `adjustByPercent` to `PricingGridController`, each computing its writes over the **currently shown rows only**, de-duplicating by `PriceCellKey`, skipping cells the action cannot act on (an unpriced cell has nothing to adjust — never created at `0`), issuing one `applyPriceChanges`, and appending **one** `PriceChange` carrying every write (FR-013–FR-016; depends on T031b)
+- [ ] T031e [US3] Resolve the cost list from the deployment's configured cost price list; when that setting names no existing list, the copy-from-cost action MUST be absent rather than broken (FR-013; depends on T031d)
+- [ ] T031f [US3] Render the column ⋮ menu in `lib/features/pricing/presentation/pricing_grid_screen.dart` — key `pricing_grid_column_menu_<priceListId>`, shown only with update rights (FR-013, FR-026), with the percent input and Apply for the adjust action (depends on T031d)
+- [ ] T031g [US3] Report how many rows each action changed, through the shared feedback mechanism (FR-014; depends on T031f)
+- [ ] T031h [P] [US3] Unit-test each action in `test/unit/features/pricing/pricing_grid_controller_test.dart` — shown rows only, skipped cells, one `PriceChange` per action regardless of row count, and a failure leaving no row changed (FR-014–FR-016, SC-004; depends on T031d)
+- [ ] T031i [P] [US3] Widget-test the menu in `test/widget/features/pricing/pricing_grid_screen_test.dart` — present with update rights, absent without, and each action reachable (depends on T031f). **Replaces T031's absence assertion**
+
+**Checkpoint**: repricing a filtered set on one list is one action, one undo, and all-or-nothing (SC-002).
 
 ---
 
@@ -187,13 +210,14 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 - [ ] T047 [P] [US7] Remove the two profit-related `PricingRowEditState` fields' UI bindings in `pricing_screen.dart` accordingly; keep the state fields themselves only if `saveRow` still needs to pass them through unchanged (depends on T046)
 - [ ] T048 [P] [US7] Update `test/widget/features/pricing/pricing_screen_test.dart` — no profit input rendered; editing price alone still saves successfully (depends on T046, T047)
 
-### ⚠️ Gated on mbe-api#185's decision — do not start until answered
+### ✅ Gate resolved — mbe-api#185 landed with outcome (a)
 
-- [ ] T049 [US7] **Confirmation gate**: verify mbe-api#185 has been answered and record which outcome applies — (a) validation retired with the fields (proceed with T050–T054 as written), or (b) the band relocated to the price list's own margins (STOP — `price_list.low_profit_margin`/`high_profit_margin` become load-bearing again and T050–T054 must not run; re-scope this sub-phase instead)
+- [X] T049 [US7] **Confirmation gate**: mbe-api#185 landed 2026-08-29 (`98d3254`) with **outcome (a)** — the sales-order margin validation is retired outright (`assert_margin_in_range`, both call sites, the `EXCLUDE_PRICE_RANGE_VALIDATION` bypass and the `price_validation_in_range_required` setting all gone) and **all four** profit fields are deprecated, the price list's two included. Nothing was relocated onto them, so T050–T054 proceed as written
 - [ ] T050 [US7] Remove the two `columnHighProfitMargin`/`columnLowProfitMargin` columns from `lib/features/pricing/presentation/price_lists_list_screen.dart:92-103` (FR-034; depends on T049 outcome a)
 - [ ] T051 [US7] Remove the two profit-margin `TextFormField`s from `lib/features/pricing/presentation/price_list_detail_screen.dart:134-166` (FR-034; depends on T049 outcome a)
 - [ ] T052 [US7] Remove `highProfitMargin`/`lowProfitMargin` state, their change handlers, and the `marginInvalid` validation from `lib/features/pricing/presentation/price_list_form_controller.dart`, leaving `create`/`update` to omit both fields entirely — verified safe by `PriceListCreate` defaulting both to `0` server-side and `PriceListUpdate` treating both as optional (FR-035; research.md §R11; depends on T049 outcome a)
 - [ ] T053 [P] [US7] Remove `priceListHighProfitMarginLabel`, `priceListLowProfitMarginLabel`, `columnHighProfitMargin`, `columnLowProfitMargin`, `columnHighProfit`, `columnLowProfit` from `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb` (FR-036; depends on T046, T050, T051)
+- [ ] T053a [US7] Once no screen reads them, drop `lowProfit`/`highProfit` from `ProductPrice` and `lowProfitMargin`/`highProfitMargin` from `PriceList`, together with the `// ignore: deprecated_member_use` comments their mappings now carry — an entity field no screen maps is exactly the dead weight #185 is retiring, and the ignores exist only to keep the analyzer honest until then (research.md §R11; depends on T046, T050, T051, T052)
 - [ ] T054 [P] [US7] Update `test/widget/features/pricing/price_lists_list_screen_test.dart`, `test/widget/features/pricing/price_list_detail_screen_test.dart` and `test/unit/features/pricing/price_list_form_controller_test.dart` — no profit field/column anywhere; create and update still succeed with only a name (FR-035; depends on T050, T051, T052)
 - [ ] T055 [US7] Rewrite `test/integration/pricing_flow_test.dart` against the grid and the profit-free price-list form (depends on T027, T052)
 
@@ -219,12 +243,12 @@ Flutter application, single project. `lib/` for source, `test/` for tests, both 
 - **Setup (Phase 1)**: no dependencies
 - **Foundational (Phase 2)**: depends on Setup — BLOCKS US1, US4, US5 (all read the grid's state shapes and the batched fetch)
 - **US1 (Phase 3)**: depends on Foundational
-- **US2 (Phase 4)**: blocked on mbe-api#184 — only the absence-assertion task (T030) is actionable
-- **US3 (Phase 5)**: blocked on mbe-api#183 — only the absence-assertion task (T031) is actionable
+- **US2 (Phase 4)**: unblocked (mbe-api#184 landed). Depends on Foundational; `missingPriceList` is already wired through the repository
+- **US3 (Phase 5)**: unblocked (mbe-api#183 landed). Depends on US1's controller and cell (T014, T015, T019)
 - **US4 (Phase 6)**: depends on US1 (T014, T015, T019)
 - **US5 (Phase 7)**: depends on US1 (T019, T022)
 - **US6 (Phase 8)**: no dependency on any other phase — can run any time, including in parallel with Phases 2–7
-- **US7 (Phase 9)**: `T046`–`T048` have no dependency on any other phase; `T049`–`T055` are gated on mbe-api#185's answer (see Phase 9 header) and `T055` additionally depends on US1's routing (T027)
+- **US7 (Phase 9)**: `T046`–`T048` have no dependency on any other phase; `T049`'s gate is resolved so `T050`–`T055` may proceed, with `T053a` last (it needs every screen off the fields) and `T055` additionally depending on US1's routing (T027)
 - **Polish (Phase 10)**: depends on every phase attempted in this iteration (US1, US4, US5, US6, and US7's unconditional half)
 
 ### Parallel Opportunities
@@ -268,8 +292,8 @@ Task: "Create PriceCellKey in lib/features/pricing/domain/entities/price_cell_ke
 3. US4 → validate (undo/badges) → deploy
 4. US5 → validate (read-only) → deploy
 5. US6, US7 (unconditional half) → validate → deploy, any time, in parallel with the above
-6. US7's gated half → only once mbe-api#185 is answered
-7. US2, US3 → re-run `/speckit-tasks` for their phases once mbe-api#184/#183 land, then implement
+6. US7's second half → now ungated (mbe-api#185 outcome (a)), ending with T053a's entity cleanup
+7. US2, US3 → both unblocked; implement from the task lists in Phases 4 and 5
 
 ### Parallel Team Strategy
 
@@ -279,7 +303,7 @@ With multiple developers:
 2. Once Foundational is done:
    - Developer A: US1 → US4 → US5 (the grid, in order — each depends on the previous)
    - Developer B: US6 (drawer) and US7's unconditional half, in parallel with Developer A
-3. Nobody is staffed on US2/US3 until their mbe-api dependency lands
+3. US2 and US3 are now staffable too — US2 is independent of US4/US5, while US3 builds on US1's controller and cell
 
 ---
 
@@ -287,7 +311,8 @@ With multiple developers:
 
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
-- US2 and US3 are intentionally left as single blocking-assertion tasks — do not write speculative implementation against an endpoint that does not exist
-- US7's price-list form/list removal (T050–T052) MUST NOT proceed without T049's confirmation — a wrong guess there deletes fields mbe-api#185 might reinstate
+- US2 and US3 were single blocking-assertion tasks until their endpoints landed; each phase now carries real tasks, and each phase's absence assertion (T030, T031) is deleted by the widget test that replaces it rather than left contradicting it
+- US7's price-list form/list removal is no longer gated: T049 records mbe-api#185's outcome (a)
+- `0` is a real price list id (`Costo`). Anywhere this feature tests a price-list id, test for null — never for falsiness (FR-019a)
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
