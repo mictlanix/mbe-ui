@@ -283,6 +283,41 @@ void main() {
     });
 
     testWidgets(
+      'the confirm button carries the destructive colour scheme, and its '
+      'disabled state still defers to the muted default rather than '
+      'reading as a live destructive action',
+      (tester) async {
+        await pump(tester);
+
+        final scheme = Theme.of(
+          tester.element(find.byKey(const Key('price_list_delete_confirm'))),
+        ).colorScheme;
+        final style = tester
+            .widget<FilledButton>(
+              find.byKey(const Key('price_list_delete_confirm')),
+            )
+            .style!;
+
+        expect(
+          style.backgroundColor!.resolve(const <WidgetState>{}),
+          scheme.error,
+          reason: 'matches RecordFormActions/merge_products_screen',
+        );
+        expect(
+          style.foregroundColor!.resolve(const <WidgetState>{}),
+          scheme.onError,
+        );
+        // `styleFrom` leaves the disabled colours unset, so they resolve to
+        // null here and fall through to Material's own muted treatment —
+        // the acknowledgment gate still looks unavailable, not armed.
+        expect(
+          style.backgroundColor!.resolve(const {WidgetState.disabled}),
+          isNull,
+        );
+      },
+    );
+
+    testWidgets(
       'confirming sends the deletion with replacement omitted '
       '(FR-013 second clause)',
       (tester) async {

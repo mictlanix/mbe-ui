@@ -223,12 +223,28 @@ class _PriceListDeleteDialogState
           if (!isBlocked)
             FilledButton(
               key: const Key('price_list_delete_confirm'),
+              // Destructive styling, matching every other irreversible
+              // confirmation in the app (`RecordFormActions`'s own delete
+              // dialog and `merge_products_screen.dart`'s merge confirm).
+              // Only the enabled background is overridden — the disabled
+              // state keeps Material's own muted treatment, so a button
+              // gated on the acknowledgment still reads as unavailable
+              // rather than as a live destructive action.
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
+              ),
               onPressed: canConfirm ? onConfirm : null,
               child: submitting
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        // The default indicator is `primary`, which would
+                        // clash on the error-coloured background.
+                        color: Theme.of(context).colorScheme.onError,
+                      ),
                     )
                   : Text(confirmLabel),
             ),
