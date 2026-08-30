@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Roboto:wght@400;500&family=Roboto+Mono:wght@400&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+  <style>
+    html,body{margin:0;padding:0}
+    body{background:#090807}
+    a{color:#ecab03}
+    a:hover{color:#ffd466}
+    .ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;user-select:none}
+    .pl-num{font-variant-numeric:tabular-nums}
+  </style>
+</helmet>
+
+<div style="width:608px;min-height:596px;box-sizing:border-box;padding:24px;background:#090807;color:#efe9df;font-family:'Roboto',system-ui,-apple-system,sans-serif;display:flex;align-items:flex-start;justify-content:center">
+  <div style="width:560px;background:#3b3429;border-radius:28px;box-shadow:0 8px 24px rgba(0,0,0,.55);display:flex;flex-direction:column">
+
+    <div style="padding:24px 24px 0 24px">
+      <div style="font:600 22px/1.27 'Archivo',system-ui,sans-serif;color:#efe9df">Delete price list?</div>
+    </div>
+
+    <div style="padding:16px 24px 0 24px;display:flex;flex-direction:column;gap:16px">
+
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:8px;background:#3a1416">
+        <span class="ms" style="font-size:24px;color:#ff8f93">error_outline</span>
+        <div style="flex:1;min-width:0;font:400 14px/1.43 'Roboto',system-ui,sans-serif;letter-spacing:.25px;color:#ff8f93">
+          <span style="font-weight:500">Retail 2026</span> cannot be deleted yet. Records other than its prices and its customers still point at it.
+        </div>
+      </div>
+
+      <div>
+        <div style="border:1px solid #4e473d;border-radius:12px;overflow:hidden">
+          <div style="padding:10px 12px;background:#2f291f;font:600 14px/1.43 'Archivo',system-ui,sans-serif;letter-spacing:.1px;color:#efe9df">Records attached to this price list</div>
+
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #4e473d">
+            <div style="flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+              <span style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;letter-spacing:.25px;color:#efe9df">Product prices</span>
+              <span style="font:600 11px/1.45 'Archivo',system-ui,sans-serif;letter-spacing:.5px;color:#ff8f93">(deleted permanently)</span>
+            </div>
+            <div class="pl-num" style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#b4aca0">4,312</div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #4e473d">
+            <div style="flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+              <span style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;letter-spacing:.25px;color:#efe9df">Customers</span>
+              <span style="font:600 11px/1.45 'Archivo',system-ui,sans-serif;letter-spacing:.5px;color:#b4aca0">(moved to the replacement)</span>
+            </div>
+            <div class="pl-num" style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#b4aca0">12</div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px">
+            <div style="flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+              <span style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;letter-spacing:.25px;color:#efe9df">Sales orders</span>
+              <span style="font:600 11px/1.45 'Archivo',system-ui,sans-serif;letter-spacing:.5px;color:#ff8f93">(blocks deletion — clear these first)</span>
+            </div>
+            <div class="pl-num" style="font:400 14px/1.43 'Roboto',system-ui,sans-serif;color:#b4aca0">38</div>
+          </div>
+
+          <div style="display:flex;align-items:center;padding:10px 12px;border-top:1px solid #4e473d">
+            <div style="flex:1;font:600 14px/1.43 'Archivo',system-ui,sans-serif;letter-spacing:.1px;color:#efe9df">Total</div>
+            <div class="pl-num" style="font:600 14px/1.43 'Archivo',system-ui,sans-serif;color:#efe9df">4,362</div>
+          </div>
+        </div>
+        <div style="padding:6px 4px 0 4px;font:400 12px/1.33 'Roboto',system-ui,sans-serif;letter-spacing:.4px;color:#b4aca0">Records this deletion touches — not all of them are deleted.</div>
+      </div>
+
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:24px">
+      <div style="display:flex;align-items:center;height:32px;padding:0 16px;box-sizing:border-box;border-radius:999px;color:#ecab03;font:600 14px/1 'Archivo',system-ui,sans-serif;letter-spacing:.1px">Close</div>
+      <div style="display:flex;align-items:center;justify-content:center;height:32px;padding:0 16px;box-sizing:border-box;border-radius:999px;background:rgba(239,233,223,.12);color:rgba(239,233,223,.38);font:600 14px/1 'Archivo',system-ui,sans-serif;letter-spacing:.1px">Delete list</div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":608,"height":596}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
