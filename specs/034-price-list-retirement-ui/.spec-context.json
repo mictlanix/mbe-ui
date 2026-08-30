@@ -1,0 +1,16 @@
+{
+  "workflow": "speckit",
+  "specName": "Price List Retirement UI",
+  "branch": "034-price-list-retirement-ui",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T18:33:38.371Z"
+    }
+  ]
+}
