@@ -5,7 +5,11 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart'
-    hide EntityStatus, ProductLabelFacet, ProductListItem;
+    hide
+        EntityStatus,
+        ProductLabelFacet,
+        ProductListItem,
+        ProductMissingPriceFacet;
 import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
@@ -15,6 +19,7 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/merge_preview.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_missing_price_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 
@@ -41,6 +46,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? purchasable,
     int? supplier,
     List<int> labels = const [],
+    int? missingPriceList,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -53,6 +59,7 @@ class ProductRepositoryImpl implements ProductRepository {
         purchasable: purchasable,
         supplier: supplier,
         label: labels.isEmpty ? null : BuiltList<int>(labels),
+        missingPriceList: missingPriceList,
         skip: skip,
         limit: limit,
       );
@@ -300,6 +307,35 @@ class ProductRepositoryImpl implements ProductRepository {
       final result = response.data;
       if (result == null) return const [];
       return result.map(ProductLabelFacet.fromResponse).toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<List<ProductMissingPriceFacet>> productMissingPriceFacets({
+    String? search,
+    EntityStatus? status,
+    bool? stockable,
+    bool? salable,
+    bool? purchasable,
+    int? supplier,
+    List<int> labels = const [],
+  }) async {
+    try {
+      final response = await _api
+          .getProductMissingPriceFacetsApiV1ProductsPricesMissingFacetsGet(
+            search: search,
+            status: status?.toApi(),
+            stockable: stockable,
+            salable: salable,
+            purchasable: purchasable,
+            supplier: supplier,
+            label: labels.isEmpty ? null : BuiltList<int>(labels),
+          );
+      final result = response.data;
+      if (result == null) return const [];
+      return result.map(ProductMissingPriceFacet.fromResponse).toList();
     } on DioException catch (e) {
       throw _toAppError(e);
     }

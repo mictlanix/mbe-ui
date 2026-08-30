@@ -89,6 +89,7 @@ class DataTableView<T> extends StatefulWidget {
     this.onRowTap,
     this.pagination,
     this.onPageChanged,
+    this.minWidth,
   }) : assert(
          pagination == null || onPageChanged != null,
          'onPageChanged is required when pagination is supplied',
@@ -109,6 +110,17 @@ class DataTableView<T> extends StatefulWidget {
   /// Required when [pagination] is supplied. Called with the new 0-based
   /// page index when the user navigates pages.
   final ValueChanged<int>? onPageChanged;
+
+  /// `data_table_2`'s own horizontal-scroll floor: when the table's natural
+  /// column width is narrower than [minWidth], the table scrolls within its
+  /// own region instead of shrinking columns to fit. For a screen whose
+  /// column count is not fixed (e.g. spec 033's pricing grid, one column per
+  /// price list) this confines the scroll to the table rather than the page,
+  /// per constitution §VI ("avoid horizontal scrolling on data tables
+  /// wherever possible" — this is the "wherever possible" exception, not a
+  /// reimplementation of table sizing by the caller). Left `null`, table
+  /// width behaves exactly as it does today.
+  final double? minWidth;
 
   @override
   State<DataTableView<T>> createState() => _DataTableViewState<T>();
@@ -208,6 +220,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         headingRowHeight: headingRowHeight,
         dataRowHeight: dataRowHeight,
         dividerThickness: 1,
+        minWidth: widget.minWidth,
         source: _source!,
         showCheckboxColumn: false,
         rowsPerPage: pagination.pageSize,
@@ -252,6 +265,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         headingRowHeight: headingRowHeight,
         dataRowHeight: dataRowHeight,
         dividerThickness: 1,
+        minWidth: widget.minWidth,
         rows: [for (final item in rows) _buildRow(item)],
       ),
     );

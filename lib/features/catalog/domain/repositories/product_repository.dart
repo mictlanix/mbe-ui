@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:mbe_ui/features/catalog/domain/entities/merge_preview.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_label_facet.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product_missing_price_facet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 
 /// Product catalog calls to mbe-api (contracts/mbe-api-products.md). Access
@@ -24,6 +25,13 @@ abstract class ProductRepository {
   /// 2026-07-05, `list_products`). Passing multiple labels therefore narrows
   /// the result set; see [productLabelFacets] for the drawer's availability
   /// lookup that builds on this (spec 009 FR-001).
+  ///
+  /// [missingPriceList] narrows to products with **no** price on that price
+  /// list (mbe-api#184) — the query behind the pricing grid's worklist
+  /// chips (spec 033 US2). It composes with every filter above, so
+  /// "unpriced *and* salable" is one request, and `total` supplies the chip
+  /// count. Note `0` is a real price list id in the deployment (`Costo`), so
+  /// this is tested for null, never for truthiness.
   Future<ProductListResult> list({
     String? search,
     EntityStatus? status,
@@ -32,6 +40,7 @@ abstract class ProductRepository {
     bool? purchasable,
     int? supplier,
     List<int> labels = const [],
+    int? missingPriceList,
     int skip = 0,
     int limit = 20,
   });
@@ -198,6 +207,29 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    List<int> labels = const [],
+  });
+
+  /// `GET /api/v1/products/prices/missing-facets` (mbe-api#184) — one row per
+  /// price list with the number of matching products that have **no** price on
+  /// it. The whole worklist chip row of spec 033's pricing grid in one call
+  /// (US2, FR-017/FR-018).
+  ///
+  /// Takes the same product filters as [list] and deliberately **no**
+  /// `missingPriceList` of its own: the counts describe the current filter
+  /// set, so selecting one chip must not move the numbers on the chips beside
+  /// it.
+  ///
+  /// A list nobody has priced at all still gets a row (the server counts
+  /// *matching minus priced* rather than joining), so the chip row never
+  /// silently drops a list.
+  Future<List<ProductMissingPriceFacet>> productMissingPriceFacets({
+    String? search,
+    EntityStatus? status,
+    bool? stockable,
+    bool? salable,
+    bool? purchasable,
+    int? supplier,
     List<int> labels = const [],
   });
 }

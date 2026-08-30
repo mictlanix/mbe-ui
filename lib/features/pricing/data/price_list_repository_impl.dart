@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
-import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
@@ -81,19 +80,11 @@ class PriceListRepositoryImpl implements PriceListRepository {
   @override
   Future<PriceList> create({
     required String name,
-    String? highProfitMargin,
-    String? lowProfitMargin,
   }) async {
     try {
       final response = await _api.createPriceListApiV1PriceListsPost(
         priceListCreate: PriceListCreate((b) {
           b.name = name;
-          if (highProfitMargin != null) {
-            _setHighProfitMargin(b.highProfitMargin, highProfitMargin);
-          }
-          if (lowProfitMargin != null) {
-            _setLowProfitMargin(b.lowProfitMargin, lowProfitMargin);
-          }
         }),
       );
       final priceList = response.data;
@@ -108,8 +99,6 @@ class PriceListRepositoryImpl implements PriceListRepository {
   Future<PriceList> update({
     required int priceListId,
     String? name,
-    String? highProfitMargin,
-    String? lowProfitMargin,
   }) async {
     try {
       final response = await _api.updatePriceListApiV1PriceListsPriceListIdPut(
@@ -119,12 +108,6 @@ class PriceListRepositoryImpl implements PriceListRepository {
           // Update-side wrapper classes are distinct from create-side ones
           // for the same field (research.md §4) — HighProfitMargin1/
           // LowProfitMargin1, not HighProfitMargin/LowProfitMargin.
-          if (highProfitMargin != null) {
-            _setHighProfitMargin1(b.highProfitMargin, highProfitMargin);
-          }
-          if (lowProfitMargin != null) {
-            _setLowProfitMargin1(b.lowProfitMargin, lowProfitMargin);
-          }
         }),
       );
       final priceList = response.data;
@@ -150,36 +133,4 @@ class PriceListRepositoryImpl implements PriceListRepository {
 AppError _toAppError(DioException error) {
   final mapped = error.error;
   return mapped is AppError ? mapped : mapDioException(error);
-}
-
-/// `high_profit_margin`/`low_profit_margin` are each `anyOf: [number,
-/// string]` in mbe-api's schema; this project always sends the String arm.
-/// **`AnyOf2<String, num>(values: {0: value})`** — String as the *first*
-/// type parameter, key `0` — mirroring the existing `_setTaxRate` precedent
-/// in `product_repository_impl.dart` exactly. This is NOT the naive reading
-/// of the wrapper's generated `targetType` order (`[num, String]`, which
-/// governs *deserialization* only): `AnyOfSerializer.serialize` re-indexes
-/// into `object.values` using the *set* of populated value keys, not the
-/// full declared type list, so `{1: value}` throws a `RangeError` and
-/// `AnyOf2<num, String>(values: {0: value})` throws a type-mismatch in
-/// `NumSerializer`. Verified against a live serialization round-trip before
-/// landing (research.md §4 — corrected after the codebase's first
-/// `AnyOf` construction attempt failed both plausible-looking forms).
-/// Create and Update DTOs use separately-generated wrapper classes for the
-/// same field, hence the four near-identical helpers below rather than one
-/// shared one.
-void _setHighProfitMargin(HighProfitMarginBuilder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setLowProfitMargin(LowProfitMarginBuilder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setHighProfitMargin1(HighProfitMargin1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setLowProfitMargin1(LowProfitMargin1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }

@@ -33,9 +33,11 @@ abstract class ProductPriceResponse
   @BuiltValueField(wireName: r'price')
   String get price;
 
+  @Deprecated('lowProfit has been deprecated')
   @BuiltValueField(wireName: r'low_profit')
   String get lowProfit;
 
+  @Deprecated('highProfit has been deprecated')
   @BuiltValueField(wireName: r'high_profit')
   String get highProfit;
 

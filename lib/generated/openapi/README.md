@@ -186,7 +186,9 @@ Class | Method | HTTP request | Description
 [*PriceListsApi*](doc/PriceListsApi.md) | [**deletePriceListApiV1PriceListsPriceListIdDelete**](doc/PriceListsApi.md#deletepricelistapiv1pricelistspricelistiddelete) | **DELETE** /api/v1/price-lists/{price_list_id} | Delete Price List
 [*PriceListsApi*](doc/PriceListsApi.md) | [**getPriceListApiV1PriceListsPriceListIdGet**](doc/PriceListsApi.md#getpricelistapiv1pricelistspricelistidget) | **GET** /api/v1/price-lists/{price_list_id} | Get Price List
 [*PriceListsApi*](doc/PriceListsApi.md) | [**listPriceListsApiV1PriceListsGet**](doc/PriceListsApi.md#listpricelistsapiv1pricelistsget) | **GET** /api/v1/price-lists | List Price Lists
+[*PriceListsApi*](doc/PriceListsApi.md) | [**previewPriceListDeleteApiV1PriceListsPriceListIdDeletePreviewGet**](doc/PriceListsApi.md#previewpricelistdeleteapiv1pricelistspricelistiddeletepreviewget) | **GET** /api/v1/price-lists/{price_list_id}/delete/preview | Preview Price List Delete
 [*PriceListsApi*](doc/PriceListsApi.md) | [**updatePriceListApiV1PriceListsPriceListIdPut**](doc/PriceListsApi.md#updatepricelistapiv1pricelistspricelistidput) | **PUT** /api/v1/price-lists/{price_list_id} | Update Price List
+[*ProductPricesApi*](doc/ProductPricesApi.md) | [**bulkUpsertProductPricesApiV1ProductPricesPut**](doc/ProductPricesApi.md#bulkupsertproductpricesapiv1productpricesput) | **PUT** /api/v1/product-prices | Bulk Upsert Product Prices
 [*ProductPricesApi*](doc/ProductPricesApi.md) | [**createProductPriceApiV1ProductPricesPost**](doc/ProductPricesApi.md#createproductpriceapiv1productpricespost) | **POST** /api/v1/product-prices | Create Product Price
 [*ProductPricesApi*](doc/ProductPricesApi.md) | [**deleteProductPriceApiV1ProductPricesProductPriceIdDelete**](doc/ProductPricesApi.md#deleteproductpriceapiv1productpricesproductpriceiddelete) | **DELETE** /api/v1/product-prices/{product_price_id} | Delete Product Price
 [*ProductPricesApi*](doc/ProductPricesApi.md) | [**getProductPriceApiV1ProductPricesProductPriceIdGet**](doc/ProductPricesApi.md#getproductpriceapiv1productpricesproductpriceidget) | **GET** /api/v1/product-prices/{product_price_id} | Get Product Price
@@ -196,6 +198,7 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**deleteProductApiV1ProductsProductIdDelete**](doc/ProductsApi.md#deleteproductapiv1productsproductiddelete) | **DELETE** /api/v1/products/{product_id} | Delete Product
 [*ProductsApi*](doc/ProductsApi.md) | [**getProductApiV1ProductsProductIdGet**](doc/ProductsApi.md#getproductapiv1productsproductidget) | **GET** /api/v1/products/{product_id} | Get Product
 [*ProductsApi*](doc/ProductsApi.md) | [**getProductLabelFacetsApiV1ProductsLabelsFacetsGet**](doc/ProductsApi.md#getproductlabelfacetsapiv1productslabelsfacetsget) | **GET** /api/v1/products/labels/facets | Get Product Label Facets
+[*ProductsApi*](doc/ProductsApi.md) | [**getProductMissingPriceFacetsApiV1ProductsPricesMissingFacetsGet**](doc/ProductsApi.md#getproductmissingpricefacetsapiv1productspricesmissingfacetsget) | **GET** /api/v1/products/prices/missing-facets | Get Product Missing Price Facets
 [*ProductsApi*](doc/ProductsApi.md) | [**listProductsApiV1ProductsGet**](doc/ProductsApi.md#listproductsapiv1productsget) | **GET** /api/v1/products | List Products
 [*ProductsApi*](doc/ProductsApi.md) | [**mergeProductsApiV1ProductsMergePost**](doc/ProductsApi.md#mergeproductsapiv1productsmergepost) | **POST** /api/v1/products/merge | Merge Products
 [*ProductsApi*](doc/ProductsApi.md) | [**previewProductMergeApiV1ProductsMergePreviewGet**](doc/ProductsApi.md#previewproductmergeapiv1productsmergepreviewget) | **GET** /api/v1/products/merge/preview | Preview Product Merge
@@ -383,7 +386,6 @@ Class | Method | HTTP request | Description
  - [FulfillmentType](doc/FulfillmentType.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
- - [HighProfit1](doc/HighProfit1.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
  - [HighProfitMargin1](doc/HighProfitMargin1.md)
  - [ItineraryCreate](doc/ItineraryCreate.md)
@@ -429,7 +431,6 @@ Class | Method | HTTP request | Description
  - [ListResponseWarehouseResponse](doc/ListResponseWarehouseResponse.md)
  - [LocationInner](doc/LocationInner.md)
  - [LowProfit](doc/LowProfit.md)
- - [LowProfit1](doc/LowProfit1.md)
  - [LowProfitMargin](doc/LowProfitMargin.md)
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
  - [MethodTotal](doc/MethodTotal.md)
@@ -453,6 +454,8 @@ Class | Method | HTTP request | Description
  - [PriceAdjustment](doc/PriceAdjustment.md)
  - [PriceAdjustment1](doc/PriceAdjustment1.md)
  - [PriceListCreate](doc/PriceListCreate.md)
+ - [PriceListDeletePreviewItem](doc/PriceListDeletePreviewItem.md)
+ - [PriceListDeletePreviewResponse](doc/PriceListDeletePreviewResponse.md)
  - [PriceListResponse](doc/PriceListResponse.md)
  - [PriceListUpdate](doc/PriceListUpdate.md)
  - [Priority](doc/Priority.md)
@@ -465,6 +468,8 @@ Class | Method | HTTP request | Description
  - [ProductMergePreviewItem](doc/ProductMergePreviewItem.md)
  - [ProductMergePreviewResponse](doc/ProductMergePreviewResponse.md)
  - [ProductMergeRequest](doc/ProductMergeRequest.md)
+ - [ProductMissingPriceFacet](doc/ProductMissingPriceFacet.md)
+ - [ProductPriceBulkItem](doc/ProductPriceBulkItem.md)
  - [ProductPriceCreate](doc/ProductPriceCreate.md)
  - [ProductPriceResponse](doc/ProductPriceResponse.md)
  - [ProductPriceUpdate](doc/ProductPriceUpdate.md)

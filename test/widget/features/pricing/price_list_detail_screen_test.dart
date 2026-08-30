@@ -39,8 +39,6 @@ const _fullAccessUser = User(
 const _existing = PriceList(
   priceListId: 1,
   name: 'Retail',
-  highProfitMargin: '0.40',
-  lowProfitMargin: '0.10',
 );
 
 AccessControlService _accessFor(User user) =>
@@ -122,25 +120,30 @@ void main() {
       },
     );
 
-    testWidgets('margins display as percentages, not raw decimals', (
-      tester,
-    ) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        priceListId: 1,
-        forceReadOnly: true,
-      );
+    testWidgets(
+      'the form carries no profit-margin fields — retired with the '
+      'sales-order validation that read them (spec 033 US7/FR-034, '
+      'mbe-api#185)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          priceListId: 1,
+          forceReadOnly: true,
+        );
 
-      expect(
-        find.text('40%'),
-        findsNothing,
-      ); // margins are editable fields, not text
-      final highField = tester.widget<TextFormField>(
-        find.byKey(const Key('price_list_high_margin_field')),
-      );
-      expect(highField.initialValue, '0.40');
-    });
+        expect(
+          find.byKey(const Key('price_list_high_margin_field')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('price_list_low_margin_field')),
+          findsNothing,
+        );
+        // The name field is untouched — the record is still editable.
+        expect(find.byKey(const Key('price_list_name_field')), findsOneWidget);
+      },
+    );
   });
 
   group('edit mode', () {

@@ -141,4 +141,72 @@ void main() {
       expect(find.text('ID-3'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'passes minWidth through to the unpaginated table, so a wide column set '
+    'scrolls within its own region rather than the page (spec 033 research.md '
+    '§R2, constitution §VI)',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DataTableView<int>(
+              columns: columns(),
+              rows: const [1, 2, 3],
+              minWidth: 2000,
+            ),
+          ),
+        ),
+      );
+
+      final table = tester.widget<DataTable2>(find.byType(DataTable2));
+      expect(table.minWidth, 2000);
+    },
+  );
+
+  testWidgets(
+    'passes minWidth through to the paginated table',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DataTableView<int>(
+              columns: columns(),
+              rows: const [1, 2, 3],
+              pagination: const CatalogPage(
+                items: [1, 2, 3],
+                total: 3,
+                pageIndex: 0,
+                pageSize: 20,
+              ),
+              onPageChanged: (_) {},
+              minWidth: 2000,
+            ),
+          ),
+        ),
+      );
+
+      final table = tester.widget<PaginatedDataTable2>(
+        find.byType(PaginatedDataTable2),
+      );
+      expect(table.minWidth, 2000);
+    },
+  );
+
+  testWidgets(
+    'omitting minWidth leaves both tables at their default (null) — no '
+    'behaviour change for every existing caller',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DataTableView<int>(columns: columns(), rows: const [1, 2, 3]),
+          ),
+        ),
+      );
+
+      final table = tester.widget<DataTable2>(find.byType(DataTable2));
+      expect(table.minWidth, isNull);
+    },
+  );
 }

@@ -129,44 +129,6 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
               ),
             ),
             FormGridChild(
-              TextFormField(
-                key: const Key('price_list_high_margin_field'),
-                initialValue: formState.highProfitMargin,
-                decoration: InputDecoration(
-                  labelText: l10n.priceListHighProfitMarginLabel,
-                  errorText: _localizeFieldError(
-                    l10n,
-                    formState.fieldErrors['highProfitMargin'] ??
-                        formState.fieldErrors['high_profit_margin'],
-                  ),
-                ),
-                enabled: fieldsEnabled,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                onChanged: controller.highProfitMarginChanged,
-              ),
-            ),
-            FormGridChild(
-              TextFormField(
-                key: const Key('price_list_low_margin_field'),
-                initialValue: formState.lowProfitMargin,
-                decoration: InputDecoration(
-                  labelText: l10n.priceListLowProfitMarginLabel,
-                  errorText: _localizeFieldError(
-                    l10n,
-                    formState.fieldErrors['lowProfitMargin'] ??
-                        formState.fieldErrors['low_profit_margin'],
-                  ),
-                ),
-                enabled: fieldsEnabled,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                onChanged: controller.lowProfitMarginChanged,
-              ),
-            ),
-            FormGridChild(
               span: FormGridSpan.full,
               RecordFormActions(
                 mode: mode,
@@ -229,8 +191,6 @@ String? _localizeFieldError(AppLocalizations l10n, String? code) {
   switch (code) {
     case PriceListFormErrorCode.nameRequired:
       return l10n.priceListNameRequiredError;
-    case PriceListFormErrorCode.marginInvalid:
-      return l10n.priceListMarginInvalidError;
     default:
       return code;
   }

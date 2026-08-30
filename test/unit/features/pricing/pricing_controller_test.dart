@@ -25,14 +25,10 @@ class MockProductPriceRepository extends Mock
 const _retail = PriceList(
   priceListId: 1,
   name: 'Retail',
-  highProfitMargin: '0.40',
-  lowProfitMargin: '0.10',
 );
 const _wholesale = PriceList(
   priceListId: 2,
   name: 'Wholesale',
-  highProfitMargin: '0.20',
-  lowProfitMargin: '0.05',
 );
 
 const _fullAccessUser = User(
@@ -99,8 +95,6 @@ void main() {
             productId: 1,
             priceList: _retail,
             price: '0.00',
-            lowProfit: '0.00',
-            highProfit: '0.00',
           ),
         ],
       );
@@ -140,8 +134,6 @@ void main() {
           productId: 1,
           priceListId: 1,
           price: '120.00',
-          lowProfit: '90.00',
-          highProfit: '150.00',
         ),
       ).thenAnswer(
         (_) async => ProductPrice(
@@ -149,8 +141,6 @@ void main() {
           productId: 1,
           priceList: _retail,
           price: '120.00',
-          lowProfit: '90.00',
-          highProfit: '150.00',
         ),
       );
 
@@ -159,11 +149,7 @@ void main() {
 
       final errors = await notifier.saveRow(
         priceListId: 1,
-        edit: const PricingRowEditState(
-          price: '120.00',
-          lowProfit: '90.00',
-          highProfit: '150.00',
-        ),
+        edit: const PricingRowEditState(price: '120.00'),
       );
 
       expect(errors, isEmpty);
@@ -172,8 +158,6 @@ void main() {
           productId: 1,
           priceListId: 1,
           price: '120.00',
-          lowProfit: '90.00',
-          highProfit: '150.00',
         ),
       ).called(1);
     });
@@ -194,8 +178,6 @@ void main() {
             productId: 1,
             priceList: _retail,
             price: '100.00',
-            lowProfit: '80.00',
-            highProfit: '130.00',
           ),
         ],
       );
@@ -203,8 +185,6 @@ void main() {
         () => productPriceRepository.update(
           productPriceId: 10,
           price: '110.00',
-          lowProfit: '80.00',
-          highProfit: '130.00',
         ),
       ).thenAnswer(
         (_) async => ProductPrice(
@@ -212,8 +192,6 @@ void main() {
           productId: 1,
           priceList: _retail,
           price: '110.00',
-          lowProfit: '80.00',
-          highProfit: '130.00',
         ),
       );
 
@@ -222,11 +200,7 @@ void main() {
 
       final errors = await notifier.saveRow(
         priceListId: 1,
-        edit: const PricingRowEditState(
-          price: '110.00',
-          lowProfit: '80.00',
-          highProfit: '130.00',
-        ),
+        edit: const PricingRowEditState(price: '110.00'),
       );
 
       expect(errors, isEmpty);
@@ -235,8 +209,6 @@ void main() {
           productId: any(named: 'productId'),
           priceListId: any(named: 'priceListId'),
           price: any(named: 'price'),
-          lowProfit: any(named: 'lowProfit'),
-          highProfit: any(named: 'highProfit'),
         ),
       );
     });
@@ -257,11 +229,7 @@ void main() {
 
       final errors = await notifier.saveRow(
         priceListId: 1,
-        edit: const PricingRowEditState(
-          price: '-10',
-          lowProfit: '0',
-          highProfit: '0',
-        ),
+        edit: const PricingRowEditState(price: '-10'),
       );
 
       expect(errors['price'], PricingErrorCode.invalidAmount);
@@ -270,8 +238,6 @@ void main() {
           productId: any(named: 'productId'),
           priceListId: any(named: 'priceListId'),
           price: any(named: 'price'),
-          lowProfit: any(named: 'lowProfit'),
-          highProfit: any(named: 'highProfit'),
         ),
       );
     });
@@ -293,11 +259,7 @@ void main() {
 
       final errors = await notifier.saveRow(
         priceListId: 1,
-        edit: const PricingRowEditState(
-          price: '10',
-          lowProfit: '5',
-          highProfit: '15',
-        ),
+        edit: const PricingRowEditState(price: '10'),
       );
 
       expect(errors['error'], PricingErrorCode.updatePermissionDenied);

@@ -11,7 +11,6 @@ import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
-import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_controller.dart';
@@ -38,7 +37,6 @@ class PriceListsListScreen extends ConsumerWidget {
     final canCreate = access.can(SystemObject.priceLists, AccessRight.create);
     final canUpdate = access.can(SystemObject.priceLists, AccessRight.update);
     final l10n = AppLocalizations.of(context)!;
-    final fmt = ref.watch(formattersProvider);
 
     return Column(
       children: [
@@ -87,20 +85,6 @@ class PriceListsListScreen extends ConsumerWidget {
                   label: l10n.priceListNameLabel,
                   text: (p) => p.name,
                   size: ColumnSize.L,
-                ),
-                DataTableColumn(
-                  label: l10n.columnHighProfitMargin,
-                  numeric: true,
-                  fixedWidth: 140,
-                  cellBuilder: (context, p) =>
-                      Text(fmt.display.percent(p.highProfitMargin)),
-                ),
-                DataTableColumn(
-                  label: l10n.columnLowProfitMargin,
-                  numeric: true,
-                  fixedWidth: 140,
-                  cellBuilder: (context, p) =>
-                      Text(fmt.display.percent(p.lowProfitMargin)),
                 ),
               ],
               rows: page.items,

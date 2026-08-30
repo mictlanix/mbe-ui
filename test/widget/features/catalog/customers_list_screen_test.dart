@@ -313,8 +313,6 @@ void main() {
           (_) async => const PriceList(
             priceListId: 1,
             name: 'Retail',
-            highProfitMargin: '0.4',
-            lowProfitMargin: '0.1',
           ),
         );
 

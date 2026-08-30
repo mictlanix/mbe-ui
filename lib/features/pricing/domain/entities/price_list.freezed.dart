@@ -19,8 +19,6 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$PriceList {
   int get priceListId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get highProfitMargin => throw _privateConstructorUsedError;
-  String get lowProfitMargin => throw _privateConstructorUsedError;
 
   /// Create a copy of PriceList
   /// with the given fields replaced by the non-null parameter values.
@@ -34,12 +32,7 @@ abstract class $PriceListCopyWith<$Res> {
   factory $PriceListCopyWith(PriceList value, $Res Function(PriceList) then) =
       _$PriceListCopyWithImpl<$Res, PriceList>;
   @useResult
-  $Res call({
-    int priceListId,
-    String name,
-    String highProfitMargin,
-    String lowProfitMargin,
-  });
+  $Res call({int priceListId, String name});
 }
 
 /// @nodoc
@@ -56,12 +49,7 @@ class _$PriceListCopyWithImpl<$Res, $Val extends PriceList>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? priceListId = null,
-    Object? name = null,
-    Object? highProfitMargin = null,
-    Object? lowProfitMargin = null,
-  }) {
+  $Res call({Object? priceListId = null, Object? name = null}) {
     return _then(
       _value.copyWith(
             priceListId: null == priceListId
@@ -71,14 +59,6 @@ class _$PriceListCopyWithImpl<$Res, $Val extends PriceList>
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            highProfitMargin: null == highProfitMargin
-                ? _value.highProfitMargin
-                : highProfitMargin // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lowProfitMargin: null == lowProfitMargin
-                ? _value.lowProfitMargin
-                : lowProfitMargin // ignore: cast_nullable_to_non_nullable
                       as String,
           )
           as $Val,
@@ -95,12 +75,7 @@ abstract class _$$PriceListImplCopyWith<$Res>
   ) = __$$PriceListImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    int priceListId,
-    String name,
-    String highProfitMargin,
-    String lowProfitMargin,
-  });
+  $Res call({int priceListId, String name});
 }
 
 /// @nodoc
@@ -116,12 +91,7 @@ class __$$PriceListImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? priceListId = null,
-    Object? name = null,
-    Object? highProfitMargin = null,
-    Object? lowProfitMargin = null,
-  }) {
+  $Res call({Object? priceListId = null, Object? name = null}) {
     return _then(
       _$PriceListImpl(
         priceListId: null == priceListId
@@ -132,14 +102,6 @@ class __$$PriceListImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
-        highProfitMargin: null == highProfitMargin
-            ? _value.highProfitMargin
-            : highProfitMargin // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lowProfitMargin: null == lowProfitMargin
-            ? _value.lowProfitMargin
-            : lowProfitMargin // ignore: cast_nullable_to_non_nullable
-                  as String,
       ),
     );
   }
@@ -148,25 +110,16 @@ class __$$PriceListImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$PriceListImpl implements _PriceList {
-  const _$PriceListImpl({
-    required this.priceListId,
-    required this.name,
-    required this.highProfitMargin,
-    required this.lowProfitMargin,
-  });
+  const _$PriceListImpl({required this.priceListId, required this.name});
 
   @override
   final int priceListId;
   @override
   final String name;
-  @override
-  final String highProfitMargin;
-  @override
-  final String lowProfitMargin;
 
   @override
   String toString() {
-    return 'PriceList(priceListId: $priceListId, name: $name, highProfitMargin: $highProfitMargin, lowProfitMargin: $lowProfitMargin)';
+    return 'PriceList(priceListId: $priceListId, name: $name)';
   }
 
   @override
@@ -176,21 +129,11 @@ class _$PriceListImpl implements _PriceList {
             other is _$PriceListImpl &&
             (identical(other.priceListId, priceListId) ||
                 other.priceListId == priceListId) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.highProfitMargin, highProfitMargin) ||
-                other.highProfitMargin == highProfitMargin) &&
-            (identical(other.lowProfitMargin, lowProfitMargin) ||
-                other.lowProfitMargin == lowProfitMargin));
+            (identical(other.name, name) || other.name == name));
   }
 
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    priceListId,
-    name,
-    highProfitMargin,
-    lowProfitMargin,
-  );
+  int get hashCode => Object.hash(runtimeType, priceListId, name);
 
   /// Create a copy of PriceList
   /// with the given fields replaced by the non-null parameter values.
@@ -205,18 +148,12 @@ abstract class _PriceList implements PriceList {
   const factory _PriceList({
     required final int priceListId,
     required final String name,
-    required final String highProfitMargin,
-    required final String lowProfitMargin,
   }) = _$PriceListImpl;
 
   @override
   int get priceListId;
   @override
   String get name;
-  @override
-  String get highProfitMargin;
-  @override
-  String get lowProfitMargin;
 
   /// Create a copy of PriceList
   /// with the given fields replaced by the non-null parameter values.

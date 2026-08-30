@@ -11,6 +11,7 @@ import 'package:one_of/any_of.dart';
 part 'low_profit_margin1.g.dart';
 
 /// LowProfitMargin1
+@Deprecated('LowProfitMargin1 has been deprecated')
 @BuiltValue()
 abstract class LowProfitMargin1
     implements Built<LowProfitMargin1, LowProfitMargin1Builder> {

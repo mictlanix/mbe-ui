@@ -19,8 +19,6 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$PriceListFormState {
   int? get priceListId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get highProfitMargin => throw _privateConstructorUsedError;
-  String get lowProfitMargin => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
@@ -46,8 +44,6 @@ abstract class $PriceListFormStateCopyWith<$Res> {
   $Res call({
     int? priceListId,
     String name,
-    String highProfitMargin,
-    String lowProfitMargin,
     bool loading,
     bool submitting,
     bool saved,
@@ -75,8 +71,6 @@ class _$PriceListFormStateCopyWithImpl<$Res, $Val extends PriceListFormState>
   $Res call({
     Object? priceListId = freezed,
     Object? name = null,
-    Object? highProfitMargin = null,
-    Object? lowProfitMargin = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
@@ -94,14 +88,6 @@ class _$PriceListFormStateCopyWithImpl<$Res, $Val extends PriceListFormState>
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            highProfitMargin: null == highProfitMargin
-                ? _value.highProfitMargin
-                : highProfitMargin // ignore: cast_nullable_to_non_nullable
-                      as String,
-            lowProfitMargin: null == lowProfitMargin
-                ? _value.lowProfitMargin
-                : lowProfitMargin // ignore: cast_nullable_to_non_nullable
                       as String,
             loading: null == loading
                 ? _value.loading
@@ -149,8 +135,6 @@ abstract class _$$PriceListFormStateImplCopyWith<$Res>
   $Res call({
     int? priceListId,
     String name,
-    String highProfitMargin,
-    String lowProfitMargin,
     bool loading,
     bool submitting,
     bool saved,
@@ -177,8 +161,6 @@ class __$$PriceListFormStateImplCopyWithImpl<$Res>
   $Res call({
     Object? priceListId = freezed,
     Object? name = null,
-    Object? highProfitMargin = null,
-    Object? lowProfitMargin = null,
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
@@ -196,14 +178,6 @@ class __$$PriceListFormStateImplCopyWithImpl<$Res>
         name: null == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        highProfitMargin: null == highProfitMargin
-            ? _value.highProfitMargin
-            : highProfitMargin // ignore: cast_nullable_to_non_nullable
-                  as String,
-        lowProfitMargin: null == lowProfitMargin
-            ? _value.lowProfitMargin
-            : lowProfitMargin // ignore: cast_nullable_to_non_nullable
                   as String,
         loading: null == loading
             ? _value.loading
@@ -244,8 +218,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
   const _$PriceListFormStateImpl({
     this.priceListId,
     this.name = '',
-    this.highProfitMargin = '',
-    this.lowProfitMargin = '',
     this.loading = false,
     this.submitting = false,
     this.saved = false,
@@ -260,12 +232,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
   @override
   @JsonKey()
   final String name;
-  @override
-  @JsonKey()
-  final String highProfitMargin;
-  @override
-  @JsonKey()
-  final String lowProfitMargin;
   @override
   @JsonKey()
   final bool loading;
@@ -293,7 +259,7 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
 
   @override
   String toString() {
-    return 'PriceListFormState(priceListId: $priceListId, name: $name, highProfitMargin: $highProfitMargin, lowProfitMargin: $lowProfitMargin, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'PriceListFormState(priceListId: $priceListId, name: $name, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -304,10 +270,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
             (identical(other.priceListId, priceListId) ||
                 other.priceListId == priceListId) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.highProfitMargin, highProfitMargin) ||
-                other.highProfitMargin == highProfitMargin) &&
-            (identical(other.lowProfitMargin, lowProfitMargin) ||
-                other.lowProfitMargin == lowProfitMargin) &&
             (identical(other.loading, loading) || other.loading == loading) &&
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
@@ -327,8 +289,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
     runtimeType,
     priceListId,
     name,
-    highProfitMargin,
-    lowProfitMargin,
     loading,
     submitting,
     saved,
@@ -354,8 +314,6 @@ abstract class _PriceListFormState implements PriceListFormState {
   const factory _PriceListFormState({
     final int? priceListId,
     final String name,
-    final String highProfitMargin,
-    final String lowProfitMargin,
     final bool loading,
     final bool submitting,
     final bool saved,
@@ -369,10 +327,6 @@ abstract class _PriceListFormState implements PriceListFormState {
   int? get priceListId;
   @override
   String get name;
-  @override
-  String get highProfitMargin;
-  @override
-  String get lowProfitMargin;
   @override
   bool get loading;
   @override

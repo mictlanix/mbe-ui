@@ -97,7 +97,6 @@ doc/FulfillmentType.md
 doc/HTTPValidationError.md
 doc/HealthApi.md
 doc/HighProfit.md
-doc/HighProfit1.md
 doc/HighProfitMargin.md
 doc/HighProfitMargin1.md
 doc/ItineraryCreate.md
@@ -144,7 +143,6 @@ doc/ListResponseVehicleResponse.md
 doc/ListResponseWarehouseResponse.md
 doc/LocationInner.md
 doc/LowProfit.md
-doc/LowProfit1.md
 doc/LowProfitMargin.md
 doc/LowProfitMargin1.md
 doc/MethodTotal.md
@@ -170,6 +168,8 @@ doc/Price1.md
 doc/PriceAdjustment.md
 doc/PriceAdjustment1.md
 doc/PriceListCreate.md
+doc/PriceListDeletePreviewItem.md
+doc/PriceListDeletePreviewResponse.md
 doc/PriceListResponse.md
 doc/PriceListUpdate.md
 doc/PriceListsApi.md
@@ -183,6 +183,8 @@ doc/ProductLookupResponse.md
 doc/ProductMergePreviewItem.md
 doc/ProductMergePreviewResponse.md
 doc/ProductMergeRequest.md
+doc/ProductMissingPriceFacet.md
+doc/ProductPriceBulkItem.md
 doc/ProductPriceCreate.md
 doc/ProductPriceResponse.md
 doc/ProductPriceUpdate.md
@@ -394,7 +396,6 @@ lib/src/model/facility_update.dart
 lib/src/model/fiscal_certification_provider.dart
 lib/src/model/fulfillment_type.dart
 lib/src/model/high_profit.dart
-lib/src/model/high_profit1.dart
 lib/src/model/high_profit_margin.dart
 lib/src/model/high_profit_margin1.dart
 lib/src/model/http_validation_error.dart
@@ -441,7 +442,6 @@ lib/src/model/list_response_vehicle_response.dart
 lib/src/model/list_response_warehouse_response.dart
 lib/src/model/location_inner.dart
 lib/src/model/low_profit.dart
-lib/src/model/low_profit1.dart
 lib/src/model/low_profit_margin.dart
 lib/src/model/low_profit_margin1.dart
 lib/src/model/method_total.dart
@@ -465,6 +465,8 @@ lib/src/model/price1.dart
 lib/src/model/price_adjustment.dart
 lib/src/model/price_adjustment1.dart
 lib/src/model/price_list_create.dart
+lib/src/model/price_list_delete_preview_item.dart
+lib/src/model/price_list_delete_preview_response.dart
 lib/src/model/price_list_response.dart
 lib/src/model/price_list_update.dart
 lib/src/model/priority.dart
@@ -477,6 +479,8 @@ lib/src/model/product_lookup_response.dart
 lib/src/model/product_merge_preview_item.dart
 lib/src/model/product_merge_preview_response.dart
 lib/src/model/product_merge_request.dart
+lib/src/model/product_missing_price_facet.dart
+lib/src/model/product_price_bulk_item.dart
 lib/src/model/product_price_create.dart
 lib/src/model/product_price_response.dart
 lib/src/model/product_price_update.dart

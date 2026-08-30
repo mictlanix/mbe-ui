@@ -11,16 +11,15 @@ class PriceList with _$PriceList {
   const factory PriceList({
     required int priceListId,
     required String name,
-    required String highProfitMargin,
-    required String lowProfitMargin,
   }) = _PriceList;
 
   factory PriceList.fromResponse(PriceListResponse response) {
     return PriceList(
       priceListId: response.priceListId,
       name: response.name,
-      highProfitMargin: response.highProfitMargin,
-      lowProfitMargin: response.lowProfitMargin,
+      // `high_profit_margin`/`low_profit_margin` are deliberately not mapped:
+      // deprecated on the wire (mbe-api#185) and read by nothing since spec
+      // 033 US7 took them off the form.
     );
   }
 }

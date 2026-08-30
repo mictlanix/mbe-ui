@@ -19,7 +19,6 @@ import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/product_price_repository.dart';
-import 'package:mbe_ui/features/pricing/presentation/pricing_controller.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -52,19 +51,20 @@ const _fullAccessUser = User(
 const _retail = PriceList(
   priceListId: 1,
   name: 'Retail',
-  highProfitMargin: '0.40',
-  lowProfitMargin: '0.10',
 );
 const _wholesale = PriceList(
   priceListId: 2,
   name: 'Wholesale',
-  highProfitMargin: '0.20',
-  lowProfitMargin: '0.05',
 );
 
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
+/// spec 033 replaced `/pricing`'s product-picker mode with the grid
+/// (`PricingGridScreen`); this screen kept only its pushed, single-product
+/// mode, reached from the product detail screen's "view pricing" shortcut
+/// (research.md §R1, FR-028a) — so every test here supplies
+/// `initialProductId` and there is no longer a picker to drive.
 void main() {
   late MockProductRepository productRepository;
   late MockPriceListRepository priceListRepository;
@@ -79,14 +79,12 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
-    int? initialProductId,
+    required int initialProductId,
     String? initialProductDisplayText,
-    bool standalone = false,
   }) async {
     final screen = PricingScreen(
       initialProductId: initialProductId,
       initialProductDisplayText: initialProductDisplayText,
-      standalone: standalone,
     );
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -102,31 +100,50 @@ void main() {
           ),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
+        // The screen supplies its own Scaffold/AppBar (it's pushed as a
+        // full route) — no host Scaffold needed here.
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          // A standalone PricingScreen supplies its own Scaffold (it's
-          // pushed as a full route, not embedded in the shell's AppBar) —
-          // wrapping it in another one here would just nest Scaffolds.
-          home: standalone ? screen : Scaffold(body: screen),
+          home: screen,
         ),
       ),
     );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows an empty state when no product is selected (US2 §8)', (
-    tester,
-  ) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser);
+  testWidgets(
+    'preselects the product from the constructor and renders its own app '
+    'bar with the given display text (product detail "view pricing" '
+    'shortcut)',
+    (tester) async {
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productPriceRepository.listByProduct(
+          productId: 1,
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer((_) async => []);
 
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    expect(find.text(l10n.pricingSelectProductPrompt), findsOneWidget);
-  });
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+        initialProductDisplayText: 'SKU-1 — Widget',
+      );
+
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.text('SKU-1 — Widget'), findsOneWidget);
+      expect(find.text('Retail'), findsOneWidget);
+      expect(find.byKey(const Key('price_not_set_1')), findsOneWidget);
+    },
+  );
 
   testWidgets(
-    'selecting a product shows one row per price list, with an unpriced '
-    'list rendering "not set" distinct from a zero price (FR-008)',
+    'shows one row per price list, with an unpriced list rendering "not '
+    'set" distinct from a zero price (FR-008)',
     (tester) async {
       when(() => priceListRepository.list(limit: 100)).thenAnswer(
         (_) async =>
@@ -144,44 +161,21 @@ void main() {
             productId: 1,
             priceList: _retail,
             price: '120.00',
-            lowProfit: '0.10',
-            highProfit: '0.40',
           ),
         ],
       );
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser);
-
-      await tester.tap(find.byKey(const Key('pricing_product_picker')));
-      await tester.enterText(
-        find.byKey(const Key('pricing_product_picker')),
-        'Widget',
-      );
-      await tester.pump(const Duration(milliseconds: 400));
-
-      // Directly drive the controller since Autocomplete's overlay is
-      // awkward to interact with in a widget test — the picker's own
-      // behavior is covered by its dedicated core/widgets test.
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(PricingScreen)),
-      );
-      await container
-          .read(pricingControllerProvider.notifier)
-          .selectProduct(productId: 1, displayText: 'SKU-1 — Widget');
-      await tester.pumpAndSettle();
+      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
 
       expect(find.text('Retail'), findsOneWidget);
       expect(find.text('Wholesale'), findsOneWidget);
       expect(find.byKey(const Key('price_not_set_2')), findsOneWidget);
       expect(find.text(r'$120.00'), findsOneWidget);
-      // Low/high profit are percentage thresholds, not currency (corrected
-      // 2026-07-18 — live verification showed values like 0.00/1.00 across
-      // every list, matching the legacy "profit threshold" semantics
-      // PriceList's own margins already use, FR-006/FR-011).
-      // spec 028: display.percent renders '10.00 %'/'40.00 %', not the old
-      // bare '10%'/'40%' (research.md R4).
-      expect(find.text('10.00 %'), findsOneWidget);
-      expect(find.text('40.00 %'), findsOneWidget);
+      // No profit columns: the per-price thresholds this screen used to show
+      // were retired with the sales-order validation that read them
+      // (spec 033 US7/FR-034, mbe-api#185).
+      expect(find.text('10.00 %'), findsNothing);
+      expect(find.text('40.00 %'), findsNothing);
     },
   );
 
@@ -199,15 +193,7 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
 
-      await pumpScreen(tester, signedInAs: _readOnlyUser);
-
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(PricingScreen)),
-      );
-      await container
-          .read(pricingControllerProvider.notifier)
-          .selectProduct(productId: 1, displayText: 'SKU-1');
-      await tester.pumpAndSettle();
+      await pumpScreen(tester, signedInAs: _readOnlyUser, initialProductId: 1);
 
       expect(find.byKey(const Key('edit_price_button_1')), findsNothing);
     },
@@ -226,15 +212,7 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser);
-
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(PricingScreen)),
-      );
-      await container
-          .read(pricingControllerProvider.notifier)
-          .selectProduct(productId: 1, displayText: 'SKU-1');
-      await tester.pumpAndSettle();
+      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
 
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       expect(find.text(l10n.pricingNoPriceListsEmptyState), findsOneWidget);
@@ -250,15 +228,7 @@ void main() {
         () => priceListRepository.list(limit: 100),
       ).thenThrow(const AppError.server());
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser);
-
-      final container = ProviderScope.containerOf(
-        tester.element(find.byType(PricingScreen)),
-      );
-      await container
-          .read(pricingControllerProvider.notifier)
-          .selectProduct(productId: 1, displayText: 'SKU-1');
-      await tester.pumpAndSettle();
+      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
 
       expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
       expect(find.textContaining('Failed to load prices'), findsNothing);
@@ -280,72 +250,4 @@ void main() {
       expect(find.text('Retail'), findsOneWidget);
     },
   );
-
-  testWidgets(
-    'preselects the product and loads its prices when arriving from the '
-    'product detail screen\'s "view pricing" shortcut',
-    (tester) async {
-      when(() => priceListRepository.list(limit: 100)).thenAnswer(
-        (_) async => const PriceListResult(items: [_retail], total: 1),
-      );
-      when(
-        () => productPriceRepository.listByProduct(
-          productId: 1,
-          limit: any(named: 'limit'),
-        ),
-      ).thenAnswer((_) async => []);
-
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        initialProductId: 1,
-        initialProductDisplayText: 'SKU-1 — Widget',
-      );
-
-      // No manual selection via the picker — the product is preloaded from
-      // the constructor params alone.
-      expect(find.text('Retail'), findsOneWidget);
-      expect(find.byKey(const Key('price_not_set_1')), findsOneWidget);
-    },
-  );
-
-  group('standalone mode (product detail "view pricing" shortcut)', () {
-    testWidgets(
-      'hides the product picker and renders its own app bar with a back '
-      'button',
-      (tester) async {
-        when(() => priceListRepository.list(limit: 100)).thenAnswer(
-          (_) async => const PriceListResult(items: [_retail], total: 1),
-        );
-        when(
-          () => productPriceRepository.listByProduct(
-            productId: 1,
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer((_) async => []);
-
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          initialProductId: 1,
-          initialProductDisplayText: 'SKU-1 — Widget',
-          standalone: true,
-        );
-
-        expect(find.byKey(const Key('pricing_product_picker')), findsNothing);
-        expect(find.byType(AppBar), findsOneWidget);
-        expect(find.text('SKU-1 — Widget'), findsOneWidget);
-        expect(find.text('Retail'), findsOneWidget);
-      },
-    );
-
-    testWidgets(
-      'still shows the product picker in non-standalone (shell branch) mode',
-      (tester) async {
-        await pumpScreen(tester, signedInAs: _fullAccessUser);
-
-        expect(find.byKey(const Key('pricing_product_picker')), findsOneWidget);
-      },
-    );
-  });
 }

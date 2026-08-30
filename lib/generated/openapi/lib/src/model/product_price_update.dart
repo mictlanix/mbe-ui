@@ -4,8 +4,8 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/price1.dart';
-import 'package:mbe_api_client/src/model/high_profit1.dart';
-import 'package:mbe_api_client/src/model/low_profit1.dart';
+import 'package:mbe_api_client/src/model/low_profit.dart';
+import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -23,11 +23,13 @@ abstract class ProductPriceUpdate
   @BuiltValueField(wireName: r'price')
   Price1? get price;
 
+  @Deprecated('lowProfit has been deprecated')
   @BuiltValueField(wireName: r'low_profit')
-  LowProfit1? get lowProfit;
+  LowProfit? get lowProfit;
 
+  @Deprecated('highProfit has been deprecated')
   @BuiltValueField(wireName: r'high_profit')
-  HighProfit1? get highProfit;
+  HighProfit? get highProfit;
 
   ProductPriceUpdate._();
 
@@ -66,14 +68,14 @@ class _$ProductPriceUpdateSerializer
       yield r'low_profit';
       yield serializers.serialize(
         object.lowProfit,
-        specifiedType: const FullType.nullable(LowProfit1),
+        specifiedType: const FullType.nullable(LowProfit),
       );
     }
     if (object.highProfit != null) {
       yield r'high_profit';
       yield serializers.serialize(
         object.highProfit,
-        specifiedType: const FullType.nullable(HighProfit1),
+        specifiedType: const FullType.nullable(HighProfit),
       );
     }
   }
@@ -117,9 +119,9 @@ class _$ProductPriceUpdateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(LowProfit1),
+                    specifiedType: const FullType.nullable(LowProfit),
                   )
-                  as LowProfit1?;
+                  as LowProfit?;
           if (valueDes == null) continue;
           result.lowProfit.replace(valueDes);
           break;
@@ -127,9 +129,9 @@ class _$ProductPriceUpdateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(HighProfit1),
+                    specifiedType: const FullType.nullable(HighProfit),
                   )
-                  as HighProfit1?;
+                  as HighProfit?;
           if (valueDes == null) continue;
           result.highProfit.replace(valueDes);
           break;

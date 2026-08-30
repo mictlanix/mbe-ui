@@ -50,6 +50,7 @@ import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_list_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/pricing_grid_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
@@ -118,7 +119,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/pricing',
-                builder: (context, state) => const PricingScreen(),
+                builder: (context, state) =>
+                    PricingGridScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -370,7 +372,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           initialProductId: int.parse(state.pathParameters['productId']!),
           initialProductDisplayText:
               state.uri.queryParameters['productDisplayText'],
-          standalone: true,
         ),
       ),
       GoRoute(

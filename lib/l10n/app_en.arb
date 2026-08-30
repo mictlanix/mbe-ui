@@ -229,8 +229,15 @@
   "productsPurchasableFilter": "Purchasable",
   "@productsPurchasableFilter": {},
 
+  "productsAttributesFilterLabel": "Product attributes",
+  "@productsAttributesFilterLabel": {},
+
   "productsSupplierFilter": "Supplier",
   "@productsSupplierFilter": {},
+  "productsSupplierSearchHint": "Search suppliers…",
+  "@productsSupplierSearchHint": {
+    "description": "Field label inside the filter drawer's Supplier section — the section already carries the noun as its heading, so the field says what to do (spec 033 US6)"
+  },
 
   "productsLabelFilter": "Labels",
   "@productsLabelFilter": {},
@@ -691,6 +698,79 @@
   "@priceListsMenuTitle": {},
   "pricingMenuTitle": "Pricing",
   "@pricingMenuTitle": {},
+  "pricingGridHint": "Click any price to edit · Enter saves and drops down · Tab moves right · Escape cancels",
+  "@pricingGridHint": {},
+  "pricingGridReadOnlyHint": "Read-only — your profile has no update right on Pricing.",
+  "@pricingGridReadOnlyHint": {},
+  "pricingGridColumnsFilterLabel": "Price lists shown",
+  "@pricingGridColumnsFilterLabel": {},
+  "pricingGridWorklistAll": "All products",
+  "@pricingGridWorklistAll": {},
+  "pricingGridWorklistMissing": "Missing {priceListName} ({count})",
+  "@pricingGridWorklistMissing": {
+    "description": "Pricing grid worklist chip: products with no price on this list (spec 033 US2)",
+    "placeholders": {
+      "priceListName": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "pricingGridColumnActionsTooltip": "Column actions",
+  "@pricingGridColumnActionsTooltip": {},
+  "pricingGridFillDown": "Fill down from first row",
+  "@pricingGridFillDown": {},
+  "pricingGridCopyFromCost": "Copy from {costListName}",
+  "@pricingGridCopyFromCost": {
+    "description": "Pricing grid column action: copy the deployment's cost list into this column (spec 033 FR-013)",
+    "placeholders": {"costListName": {"type": "String"}}
+  },
+  "pricingGridAdjustLabel": "Adjust every shown row by",
+  "@pricingGridAdjustLabel": {},
+  "pricingGridAdjustApply": "Apply",
+  "@pricingGridAdjustApply": {},
+  "pricingGridRowsChanged": "{count, plural, =0{No prices changed} =1{1 price changed} other{{count} prices changed}}",
+  "@pricingGridRowsChanged": {
+    "description": "Pricing grid: how many rows a column action changed (spec 033 FR-014)",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "pricingGridColumnActionFailed": "Could not apply the action. No prices changed.",
+  "@pricingGridColumnActionFailed": {},
+  "pricingGridCellSaving": "Saving…",
+  "@pricingGridCellSaving": {},
+  "pricingGridCellSaved": "Saved · was {previous}",
+  "@pricingGridCellSaved": {
+    "description": "Pricing grid cell tooltip after a stored change (spec 033 FR-022)",
+    "placeholders": {"previous": {"type": "String"}}
+  },
+  "pricingGridCellSavedNew": "Saved · newly priced",
+  "@pricingGridCellSavedNew": {
+    "description": "Pricing grid cell tooltip for a cell that had no price before this session (spec 033 FR-022)"
+  },
+  "pricingGridSummary": "{count, plural, =1{1 price changed} other{{count} prices changed}}",
+  "@pricingGridSummary": {
+    "description": "Pricing grid change-summary bar count (spec 033 FR-023)",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "pricingGridSummaryRejected": "{count, plural, =1{1 rejected} other{{count} rejected}}",
+  "@pricingGridSummaryRejected": {
+    "description": "Pricing grid change-summary bar rejected count (spec 033 FR-023)",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "pricingGridUndoLast": "Undo last",
+  "@pricingGridUndoLast": {},
+  "pricingGridRevertAll": "Revert all",
+  "@pricingGridRevertAll": {},
+  "pricingGridDismissRejected": "Dismiss rejected",
+  "@pricingGridDismissRejected": {
+    "description": "Pricing grid summary bar: clears the refused edits without touching the accepted ones (spec 033 FR-023a)"
+  },
+  "pricingGridDiscardTitle": "Discard outstanding changes?",
+  "@pricingGridDiscardTitle": {},
+  "pricingGridDiscardBody": "The undo history and any rejected text will be lost. Prices already saved are unaffected.",
+  "@pricingGridDiscardBody": {},
+  "pricingGridDiscardConfirm": "Leave anyway",
+  "@pricingGridDiscardConfirm": {},
+  "pricingGridDiscardCancel": "Stay",
+  "@pricingGridDiscardCancel": {},
   "exchangeRatesMenuTitle": "Exchange Rates",
   "@exchangeRatesMenuTitle": {},
 
@@ -700,16 +780,8 @@
   "@newPriceListTooltip": {},
   "noPriceListsFound": "No price lists found.",
   "@noPriceListsFound": {},
-  "columnHighProfitMargin": "High margin",
-  "@columnHighProfitMargin": {},
-  "columnLowProfitMargin": "Low margin",
-  "@columnLowProfitMargin": {},
   "priceListNameLabel": "Name",
   "@priceListNameLabel": {},
-  "priceListHighProfitMarginLabel": "High profit margin",
-  "@priceListHighProfitMarginLabel": {},
-  "priceListLowProfitMarginLabel": "Low profit margin",
-  "@priceListLowProfitMarginLabel": {},
   "newPriceListTitle": "New price list",
   "@newPriceListTitle": {},
   "editPriceListTitle": "Edit price list",
@@ -726,8 +798,6 @@
   },
   "priceListNameRequiredError": "Name is required.",
   "@priceListNameRequiredError": {},
-  "priceListMarginInvalidError": "Enter a valid non-negative percentage.",
-  "@priceListMarginInvalidError": {},
   "priceListLoadFailedError": "Failed to load price list.",
   "@priceListLoadFailedError": {},
   "priceListCreateFailedError": "Failed to create price list.",
@@ -761,10 +831,6 @@
   "@columnPriceList": {},
   "columnPrice": "Price",
   "@columnPrice": {},
-  "columnLowProfit": "Low profit",
-  "@columnLowProfit": {},
-  "columnHighProfit": "High profit",
-  "@columnHighProfit": {},
   "editPriceTooltip": "Edit price",
   "@editPriceTooltip": {},
   "savePriceTooltip": "Save",

@@ -276,6 +276,11 @@ class _ProductFiltersPanel extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
+        Text(
+          l10n.productsAttributesFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -312,6 +317,31 @@ class _ProductFiltersPanel extends ConsumerWidget {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        Text(
+          l10n.productsSupplierFilter,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        CatalogEntityPicker<SupplierListItem>(
+          key: const Key('products_filter_supplier'),
+          // The section heading already says "Supplier"; the field says what
+          // to do with it, rather than repeating the noun.
+          label: l10n.productsSupplierSearchHint,
+          displayStringForOption: (s) => '${s.code} — ${s.name}',
+          optionsBuilder: (search) async {
+            final result = await supplierRepo.list(
+              search: search.isEmpty ? null : search,
+            );
+            return result.items;
+          },
+          onSelected: (s) => goTo(
+            query
+                .withFacet('supplier', '${s.supplierId}')
+                .copyWith(pageIndex: 0),
+          ),
+          initialDisplayText: supplierDisplayText,
+        ),
         if (allLabels.isNotEmpty) ...[
           const SizedBox(height: 12),
           Text(
@@ -334,24 +364,6 @@ class _ProductFiltersPanel extends ConsumerWidget {
             ),
           ),
         ],
-        const SizedBox(height: 12),
-        CatalogEntityPicker<SupplierListItem>(
-          key: const Key('products_filter_supplier'),
-          label: l10n.productsSupplierFilter,
-          displayStringForOption: (s) => '${s.code} — ${s.name}',
-          optionsBuilder: (search) async {
-            final result = await supplierRepo.list(
-              search: search.isEmpty ? null : search,
-            );
-            return result.items;
-          },
-          onSelected: (s) => goTo(
-            query
-                .withFacet('supplier', '${s.supplierId}')
-                .copyWith(pageIndex: 0),
-          ),
-          initialDisplayText: supplierDisplayText,
-        ),
       ],
     );
   }

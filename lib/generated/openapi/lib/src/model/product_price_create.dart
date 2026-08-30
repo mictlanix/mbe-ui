@@ -31,11 +31,13 @@ abstract class ProductPriceCreate
   @BuiltValueField(wireName: r'price')
   Price get price;
 
+  @Deprecated('lowProfit has been deprecated')
   @BuiltValueField(wireName: r'low_profit')
-  LowProfit get lowProfit;
+  LowProfit? get lowProfit;
 
+  @Deprecated('highProfit has been deprecated')
   @BuiltValueField(wireName: r'high_profit')
-  HighProfit get highProfit;
+  HighProfit? get highProfit;
 
   ProductPriceCreate._();
 
@@ -78,16 +80,20 @@ class _$ProductPriceCreateSerializer
       object.price,
       specifiedType: const FullType(Price),
     );
-    yield r'low_profit';
-    yield serializers.serialize(
-      object.lowProfit,
-      specifiedType: const FullType(LowProfit),
-    );
-    yield r'high_profit';
-    yield serializers.serialize(
-      object.highProfit,
-      specifiedType: const FullType(HighProfit),
-    );
+    if (object.lowProfit != null) {
+      yield r'low_profit';
+      yield serializers.serialize(
+        object.lowProfit,
+        specifiedType: const FullType.nullable(LowProfit),
+      );
+    }
+    if (object.highProfit != null) {
+      yield r'high_profit';
+      yield serializers.serialize(
+        object.highProfit,
+        specifiedType: const FullType.nullable(HighProfit),
+      );
+    }
   }
 
   @override
@@ -140,18 +146,20 @@ class _$ProductPriceCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(LowProfit),
+                    specifiedType: const FullType.nullable(LowProfit),
                   )
-                  as LowProfit;
+                  as LowProfit?;
+          if (valueDes == null) continue;
           result.lowProfit.replace(valueDes);
           break;
         case r'high_profit':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(HighProfit),
+                    specifiedType: const FullType.nullable(HighProfit),
                   )
-                  as HighProfit;
+                  as HighProfit?;
+          if (valueDes == null) continue;
           result.highProfit.replace(valueDes);
           break;
         default:
