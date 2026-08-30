@@ -112,6 +112,9 @@ final _entities = [
       // is itself a `BuiltList<int>` under the hood (plural facet, singular
       // name upstream).
       'labels': 'label',
+      // mbe-api#184 — products with no price on this list; the query behind
+      // spec 033's pricing-grid worklist chips.
+      'missingPriceList': 'missingPriceList',
     },
   ),
   const _Entity(

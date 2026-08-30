@@ -1,5 +1,11 @@
 import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
 
+/// mbe-api's `BULK_LIMIT` — the largest page `GET /product-prices` returns
+/// and the largest body `PUT /product-prices` accepts (one number for both,
+/// so a page that can be read can always be written back). Mirrored here
+/// because the grid sizes its own reads against it.
+const kProductPriceBulkLimit = 500;
+
 /// Product-price calls to mbe-api (contracts/mbe-api-pricing.md §2). Access
 /// is gated by `AccessControlService.can(SystemObject.pricing, ...)` at the
 /// screen level.
@@ -14,11 +20,14 @@ abstract class ProductPriceRepository {
   });
 
   /// Every price on [priceListIds] for [productIds] (spec 033
-  /// contracts/mbe-api-pricing.md §3, data-model.md §2). Batches today as one
-  /// `listByProduct` call per product id — `GET /product-prices` only
-  /// accepts a single `product` — and collapses to one request the day
-  /// mbe-api#182 (a repeatable `product` filter) lands; only this method's
-  /// body changes, not its signature or any call site.
+  /// contracts/mbe-api-pricing.md §3, data-model.md §2) — **one** request
+  /// since mbe-api#182 made `product` repeatable. It shipped as a fan-out
+  /// over [listByProduct] behind this same signature, so the change landed
+  /// in the implementation alone (research.md §R5).
+  ///
+  /// Bounded by [kProductPriceBulkLimit]: `productIds.length *
+  /// priceListIds.length` must stay under it or the page comes back
+  /// truncated, which reads as "these products have no price".
   Future<List<ProductPrice>> listForProducts({
     required List<int> productIds,
     required List<int> priceListIds,
@@ -28,32 +37,30 @@ abstract class ProductPriceRepository {
   /// price list the product has none on yet. Throws `ValidationError` on
   /// `422`.
   ///
-  /// [lowProfit]/[highProfit] gate `assert_margin_in_range` on every
-  /// sales-order line for this product (spec 033 research.md §R6) — never
-  /// pass `'0'`/`'0'` as a stand-in default, that is the *narrowest* band the
-  /// schema allows and refuses every sale at any profit. Callers creating a
-  /// row without asking the user for a band (spec 033 FR-012) MUST copy it
-  /// from the target `PriceList`'s own `lowProfitMargin`/`highProfitMargin`,
-  /// substituting `('0', '1')` when those are the shipped `0/0` default.
+  /// [lowProfit]/[highProfit] are **deprecated** (mbe-api#185) and should be
+  /// omitted: the sales-order margin validation that read them is retired,
+  /// and a created row takes its band from the price list's own margins
+  /// server-side. Passing them is still honoured, for the one screen that
+  /// still edits them until spec 033 US7 removes it.
   Future<ProductPrice> create({
     required int productId,
     required int priceListId,
     required String price,
-    required String lowProfit,
-    required String highProfit,
+    String? lowProfit,
+    String? highProfit,
   });
 
   /// `PUT /api/v1/product-prices/{product_price_id}` (FR-010) — revalues an
   /// existing price row. Cannot move a row between products/lists (data-model.md
   /// §2). Throws `NotFoundError` on `404`, `ValidationError` on `422`.
   ///
-  /// A caller that only changes [price] (spec 033 FR-034 — the grid no
-  /// longer edits profit thresholds) MUST echo the row's existing
-  /// [lowProfit]/[highProfit] back unchanged rather than inventing a value.
+  /// [lowProfit]/[highProfit] are **deprecated** (mbe-api#185); omitted, the
+  /// stored band is left untouched, which is what a caller changing only
+  /// [price] wants.
   Future<ProductPrice> update({
     required int productPriceId,
     required String price,
-    required String lowProfit,
-    required String highProfit,
+    String? lowProfit,
+    String? highProfit,
   });
 }

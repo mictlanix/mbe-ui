@@ -41,6 +41,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? purchasable,
     int? supplier,
     List<int> labels = const [],
+    int? missingPriceList,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -53,6 +54,7 @@ class ProductRepositoryImpl implements ProductRepository {
         purchasable: purchasable,
         supplier: supplier,
         label: labels.isEmpty ? null : BuiltList<int>(labels),
+        missingPriceList: missingPriceList,
         skip: skip,
         limit: limit,
       );

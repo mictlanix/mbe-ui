@@ -24,6 +24,13 @@ abstract class ProductRepository {
   /// 2026-07-05, `list_products`). Passing multiple labels therefore narrows
   /// the result set; see [productLabelFacets] for the drawer's availability
   /// lookup that builds on this (spec 009 FR-001).
+  ///
+  /// [missingPriceList] narrows to products with **no** price on that price
+  /// list (mbe-api#184) — the query behind the pricing grid's worklist
+  /// chips (spec 033 US2). It composes with every filter above, so
+  /// "unpriced *and* salable" is one request, and `total` supplies the chip
+  /// count. Note `0` is a real price list id in the deployment (`Costo`), so
+  /// this is tested for null, never for truthiness.
   Future<ProductListResult> list({
     String? search,
     EntityStatus? status,
@@ -32,6 +39,7 @@ abstract class ProductRepository {
     bool? purchasable,
     int? supplier,
     List<int> labels = const [],
+    int? missingPriceList,
     int skip = 0,
     int limit = 20,
   });

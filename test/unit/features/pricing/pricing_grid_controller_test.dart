@@ -254,8 +254,9 @@ void main() {
     );
 
     test(
-      'creating a price on a list with real margins copies them, never '
-      "sending ('0','0') as a stand-in default (research.md §R6)",
+      'creating a price sends the price and nothing else — since mbe-api#185 '
+      'the server fills the created row\'s band from the price list\'s own '
+      'margins, and nothing reads it afterwards (FR-012)',
       () async {
         await primeWith(
           priceLists: [_priceList(5, lowProfitMargin: '0.10', highProfitMargin: '0.40')],
@@ -267,77 +268,31 @@ void main() {
             productId: 1,
             priceListId: 5,
             price: '25.00',
-            lowProfit: '0.10',
-            highProfit: '0.40',
           ),
         ).thenAnswer(
-          (_) async => _price(
-            productId: 1,
-            priceListId: 5,
-            price: '25.00',
-            lowProfit: '0.10',
-            highProfit: '0.40',
-          ),
+          (_) async => _price(productId: 1, priceListId: 5, price: '25.00'),
         );
 
         await container
             .read(pricingGridControllerProvider(filter).notifier)
             .commitCell(productId: 1, priceListId: 5, typed: '25.00');
 
+        // Named arguments omitted entirely, not passed as null: the grid
+        // edits one number and has no business naming a profit band.
         verify(
           () => productPriceRepository.create(
             productId: 1,
             priceListId: 5,
             price: '25.00',
-            lowProfit: '0.10',
-            highProfit: '0.40',
           ),
         ).called(1);
       },
     );
 
     test(
-      "creating a price on a list whose margins are the shipped 0/0 default "
-      "falls back to the widest band the schema allows, ('0','1') — never "
-      "('0','0'), which would refuse every sale at any profit (research.md §R6)",
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5, lowProfitMargin: '0', highProfitMargin: '0')],
-          products: [_product(1)],
-          prices: const [],
-        );
-        when(
-          () => productPriceRepository.create(
-            productId: 1,
-            priceListId: 5,
-            price: '25.00',
-            lowProfit: '0',
-            highProfit: '1',
-          ),
-        ).thenAnswer(
-          (_) async =>
-              _price(productId: 1, priceListId: 5, price: '25.00', lowProfit: '0', highProfit: '1'),
-        );
-
-        await container
-            .read(pricingGridControllerProvider(filter).notifier)
-            .commitCell(productId: 1, priceListId: 5, typed: '25.00');
-
-        verify(
-          () => productPriceRepository.create(
-            productId: 1,
-            priceListId: 5,
-            price: '25.00',
-            lowProfit: '0',
-            highProfit: '1',
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
-      'updating an existing price echoes its own profit band back '
-      'unchanged — this cell edits price and nothing else (FR-034)',
+      'updating an existing price sends only the price, leaving the stored '
+      'profit band untouched — this cell edits price and nothing else '
+      '(FR-034)',
       () async {
         await primeWith(
           priceLists: [_priceList(5)],
@@ -356,8 +311,6 @@ void main() {
           () => productPriceRepository.update(
             productPriceId: 105,
             price: '12.00',
-            lowProfit: '0.15',
-            highProfit: '0.45',
           ),
         ).thenAnswer(
           (_) async => _price(
@@ -373,12 +326,12 @@ void main() {
             .read(pricingGridControllerProvider(filter).notifier)
             .commitCell(productId: 1, priceListId: 5, typed: '12.00');
 
+        // The band is omitted, which mbe-api#185 defines as "leave the
+        // stored one alone" — the grid never overwrites what it did not edit.
         verify(
           () => productPriceRepository.update(
             productPriceId: 105,
             price: '12.00',
-            lowProfit: '0.15',
-            highProfit: '0.45',
           ),
         ).called(1);
         final state = container
@@ -400,8 +353,6 @@ void main() {
           productId: 1,
           priceListId: 5,
           price: '25.00',
-          lowProfit: '0',
-          highProfit: '1',
         ),
       ).thenThrow(
         const AppError.validation([

@@ -26,7 +26,12 @@ class ProductPrice with _$ProductPrice {
       productId: response.product,
       priceList: PriceList.fromResponse(response.priceList),
       price: response.price,
+      // Deprecated on the wire since mbe-api#185 — still mapped because the
+      // standalone per-product screen still displays them, until spec 033
+      // US7 removes that.
+      // ignore: deprecated_member_use
       lowProfit: response.lowProfit,
+      // ignore: deprecated_member_use
       highProfit: response.highProfit,
     );
   }

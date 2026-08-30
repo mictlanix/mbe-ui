@@ -19,7 +19,13 @@ class PriceList with _$PriceList {
     return PriceList(
       priceListId: response.priceListId,
       name: response.name,
+      // Deprecated on the wire since mbe-api#185 — still mapped because the
+      // price-list form still edits them, until spec 033 US7 removes that.
+      // Reading a field that is deprecated *for callers* is exactly what
+      // this mapping is for, so the lint is silenced rather than obeyed.
+      // ignore: deprecated_member_use
       highProfitMargin: response.highProfitMargin,
+      // ignore: deprecated_member_use
       lowProfitMargin: response.lowProfitMargin,
     );
   }

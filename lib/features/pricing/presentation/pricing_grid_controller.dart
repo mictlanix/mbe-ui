@@ -215,20 +215,6 @@ List<PricingGridRow> _withPrice(
   ];
 }
 
-bool _isZeroDecimal(String value) => (num.tryParse(value) ?? 1) == 0;
-
-/// Research.md §R6's create-time profit band: copy the target price list's
-/// own margins, or the widest band the schema allows (`0` to `1`) when
-/// those margins are the shipped `0`/`0` default — never `('0', '0')`
-/// as a stand-in, which would be the *narrowest* possible band and refuse
-/// every sale of the product at any profit.
-(String, String) _bandFor(PriceList priceList) {
-  final low = priceList.lowProfitMargin;
-  final high = priceList.highProfitMargin;
-  if (_isZeroDecimal(low) && _isZeroDecimal(high)) return ('0', '1');
-  return (low, high);
-}
-
 /// Loads and edits one page of the pricing grid, keyed by [PricingGridFilter]
 /// (spec 033 US1). Mirrors `ProductsListController`'s
 /// fetch-and-hold-a-`CatalogPage` shape, extended with the per-session
@@ -378,33 +364,24 @@ class PricingGridController extends _$PricingGridController {
     );
 
     try {
-      final ProductPrice saved;
-      if (existing == null) {
-        final priceList = current.allLists.firstWhere(
-          (l) => l.priceListId == priceListId,
-        );
-        final (low, high) = _bandFor(priceList);
-        saved = await ref
-            .read(productPriceRepositoryProvider)
-            .create(
-              productId: productId,
-              priceListId: priceListId,
-              price: trimmed,
-              lowProfit: low,
-              highProfit: high,
-            );
-      } else {
-        saved = await ref
-            .read(productPriceRepositoryProvider)
-            .update(
-              productPriceId: existing.productPriceId,
-              price: trimmed,
-              // FR-034: this cell edits price and nothing else — echo the
-              // row's existing profit band back unchanged.
-              lowProfit: existing.lowProfit,
-              highProfit: existing.highProfit,
-            );
-      }
+      // The grid edits one number, and since mbe-api#185 that is all it has
+      // to send: a created row takes its profit band from the price list's
+      // own margins server-side, and an update leaves the stored band alone
+      // when the fields are omitted (FR-012, FR-034).
+      final saved = existing == null
+          ? await ref
+                .read(productPriceRepositoryProvider)
+                .create(
+                  productId: productId,
+                  priceListId: priceListId,
+                  price: trimmed,
+                )
+          : await ref
+                .read(productPriceRepositoryProvider)
+                .update(
+                  productPriceId: existing.productPriceId,
+                  price: trimmed,
+                );
       final latest = state.value;
       if (latest == null) return; // filter/columns changed mid-write
       state = AsyncData(

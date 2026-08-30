@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
@@ -28,7 +29,8 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
   }) async {
     try {
       final response = await _api.listProductPricesApiV1ProductPricesGet(
-        product: productId,
+        // `product` repeats since mbe-api#182; one id is a one-element list.
+        product: BuiltList<int>([productId]),
         limit: limit,
       );
       final result = response.data;
@@ -45,14 +47,24 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
     required List<int> priceListIds,
   }) async {
     if (productIds.isEmpty) return const [];
-    final priceListIdSet = priceListIds.toSet();
-    final perProduct = await Future.wait(
-      productIds.map((id) => listByProduct(productId: id, limit: 100)),
-    );
-    return perProduct
-        .expand((prices) => prices)
-        .where((p) => priceListIdSet.contains(p.priceList.priceListId))
-        .toList();
+    try {
+      // One request since mbe-api#182 landed — this method shipped as a
+      // `Future.wait` fan-out over `listByProduct` precisely so the change
+      // would land here and nowhere else (spec 033 research.md §R5).
+      final response = await _api.listProductPricesApiV1ProductPricesGet(
+        product: BuiltList<int>(productIds),
+        limit: kProductPriceBulkLimit,
+      );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      final priceListIdSet = priceListIds.toSet();
+      return result.items
+          .map(ProductPrice.fromResponse)
+          .where((p) => priceListIdSet.contains(p.priceList.priceListId))
+          .toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
   }
 
   @override
@@ -60,8 +72,8 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
     required int productId,
     required int priceListId,
     required String price,
-    required String lowProfit,
-    required String highProfit,
+    String? lowProfit,
+    String? highProfit,
   }) async {
     try {
       final response = await _api.createProductPriceApiV1ProductPricesPost(
@@ -70,8 +82,11 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
             ..product = productId
             ..priceList = priceListId;
           _setPrice(b.price, price);
-          _setLowProfit(b.lowProfit, lowProfit);
-          _setHighProfit(b.highProfit, highProfit);
+          // Omitted unless a caller explicitly names them: since mbe-api#185
+          // the server fills a created row's band from the price list's own
+          // margins, and nothing reads it afterwards.
+          if (lowProfit != null) _setLowProfit(b.lowProfit, lowProfit);
+          if (highProfit != null) _setHighProfit(b.highProfit, highProfit);
         }),
       );
       final productPrice = response.data;
@@ -86,20 +101,21 @@ class ProductPriceRepositoryImpl implements ProductPriceRepository {
   Future<ProductPrice> update({
     required int productPriceId,
     required String price,
-    required String lowProfit,
-    required String highProfit,
+    String? lowProfit,
+    String? highProfit,
   }) async {
     try {
       final response = await _api
           .updateProductPriceApiV1ProductPricesProductPriceIdPut(
             productPriceId: productPriceId,
             productPriceUpdate: ProductPriceUpdate((b) {
-              // Update-side wrapper classes are distinct from create-side ones
-              // for the same field (research.md §4) — Price1/LowProfit1/
-              // HighProfit1, not Price/LowProfit/HighProfit.
+              // `price` still has its own update-side wrapper (`Price1`), but
+              // the profit pair's collapsed onto the create-side `LowProfit`/
+              // `HighProfit` when mbe-api#185 made both schemas nullable —
+              // the `LowProfit1`/`HighProfit1` classes no longer exist.
               _setPrice1(b.price, price);
-              _setLowProfit1(b.lowProfit, lowProfit);
-              _setHighProfit1(b.highProfit, highProfit);
+              if (lowProfit != null) _setLowProfit(b.lowProfit, lowProfit);
+              if (highProfit != null) _setHighProfit(b.highProfit, highProfit);
             }),
           );
       final productPrice = response.data;
@@ -123,8 +139,10 @@ AppError _toAppError(DioException error) {
 /// first `AnyOf` construction attempt, in US1's price-list margins, threw a
 /// `RangeError` with the naive `AnyOf2<num, String>`/key-`1` reading of the
 /// wrapper's generated `targetType` order). Create and Update DTOs use
-/// separately-generated wrapper classes for the same field, hence the six
-/// near-identical helpers below rather than one shared one.
+/// separately-generated wrapper classes for `price` (`Price` against
+/// `Price1`), hence the near-identical helpers below rather than one shared
+/// one. The profit pair collapsed onto a single wrapper each when
+/// mbe-api#185 made both schemas nullable.
 void _setPrice(PriceBuilder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }
@@ -138,13 +156,5 @@ void _setHighProfit(HighProfitBuilder builder, String value) {
 }
 
 void _setPrice1(Price1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setLowProfit1(LowProfit1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setHighProfit1(HighProfit1Builder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }

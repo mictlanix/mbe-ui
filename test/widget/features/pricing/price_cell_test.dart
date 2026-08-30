@@ -189,8 +189,6 @@ void main() {
         productId: 1,
         priceListId: 5,
         price: '30.00',
-        lowProfit: '0.10',
-        highProfit: '0.40',
       ),
     ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
     final moves = <PriceCellMove>[];
@@ -201,13 +199,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(moves, [PriceCellMove.down]);
+    // No profit band named — mbe-api#185 defaults it from the price list.
     verify(
       () => productPriceRepository.create(
         productId: 1,
         priceListId: 5,
         price: '30.00',
-        lowProfit: '0.10',
-        highProfit: '0.40',
       ),
     ).called(1);
   });
@@ -218,8 +215,6 @@ void main() {
         productId: any(named: 'productId'),
         priceListId: any(named: 'priceListId'),
         price: any(named: 'price'),
-        lowProfit: any(named: 'lowProfit'),
-        highProfit: any(named: 'highProfit'),
       ),
     ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
     final moves = <PriceCellMove>[];
@@ -248,8 +243,6 @@ void main() {
         productId: any(named: 'productId'),
         priceListId: any(named: 'priceListId'),
         price: any(named: 'price'),
-        lowProfit: any(named: 'lowProfit'),
-        highProfit: any(named: 'highProfit'),
       ),
     );
     final state = container.read(pricingGridControllerProvider(_filter)).requireValue;

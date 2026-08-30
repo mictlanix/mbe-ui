@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/pricing/data/product_price_repository_impl.dart';
+import 'package:mbe_ui/features/pricing/domain/repositories/product_price_repository.dart';
 
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -53,7 +54,11 @@ void main() {
       await repository.listByProduct(productId: 1, limit: 50);
 
       expect(captured!.queryParameters['limit'], 50);
-      expect(captured!.queryParameters['product'], 1);
+      // `product` repeats since mbe-api#182, so one id goes over the wire as
+      // a one-element list rather than a bare int.
+      final param = captured!.queryParameters['product'] as ListParam;
+      expect(param.value, [1]);
+      expect(param.format, ListFormat.multi);
     });
 
     test('5xx maps to AppError.server', () async {
@@ -72,31 +77,63 @@ void main() {
   group(
     'ProductPriceRepositoryImpl.listForProducts (spec 033 research.md §R5)',
     () {
-      test('issues one request per product id and returns the union', () async {
-        final requested = <int?>[];
-        final repository = _repositoryWith((options) async {
-          requested.add(options.queryParameters['product'] as int?);
-          final productId = options.queryParameters['product'];
-          return ResponseBody.fromString(
-            jsonEncode({
-              'items': [
-                {..._productPriceJson(), 'product_price_id': productId, 'product': productId},
-              ],
-              'total': 1,
-            }),
-            200,
-            headers: _jsonHeaders,
+      test(
+        'asks for every product in ONE request, repeating `product` '
+        '(mbe-api#182 — this method shipped as a fan-out and collapsed here)',
+        () async {
+          var calls = 0;
+          RequestOptions? captured;
+          final repository = _repositoryWith((options) async {
+            calls++;
+            captured = options;
+            return ResponseBody.fromString(
+              jsonEncode({
+                'items': [
+                  {..._productPriceJson(), 'product_price_id': 1, 'product': 1},
+                  {..._productPriceJson(), 'product_price_id': 2, 'product': 2},
+                  {..._productPriceJson(), 'product_price_id': 3, 'product': 3},
+                ],
+                'total': 3,
+              }),
+              200,
+              headers: _jsonHeaders,
+            );
+          });
+
+          final prices = await repository.listForProducts(
+            productIds: [1, 2, 3],
+            priceListIds: [5],
           );
-        });
 
-        final prices = await repository.listForProducts(
-          productIds: [1, 2, 3],
-          priceListIds: [5],
-        );
+          expect(calls, 1);
+          // `multi`, not CSV: the server reads `?product=1&product=2&product=3`.
+          final param = captured!.queryParameters['product'] as ListParam;
+          expect(param.value, [1, 2, 3]);
+          expect(param.format, ListFormat.multi);
+          expect(prices, hasLength(3));
+        },
+      );
 
-        expect(requested, [1, 2, 3]);
-        expect(prices, hasLength(3));
-      });
+      test(
+        'asks for a page big enough to hold products x lists — the API caps '
+        'both the read and the bulk write at BULK_LIMIT, and a truncated '
+        'page reads as "these products have no price"',
+        () async {
+          RequestOptions? captured;
+          final repository = _repositoryWith((options) async {
+            captured = options;
+            return ResponseBody.fromString(
+              jsonEncode({'items': [], 'total': 0}),
+              200,
+              headers: _jsonHeaders,
+            );
+          });
+
+          await repository.listForProducts(productIds: [1], priceListIds: [5]);
+
+          expect(captured!.queryParameters['limit'], kProductPriceBulkLimit);
+        },
+      );
 
       test('filters to the given price-list ids', () async {
         var call = 0;
