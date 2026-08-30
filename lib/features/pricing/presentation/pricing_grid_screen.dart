@@ -504,7 +504,12 @@ class _PricingGridState extends ConsumerState<_PricingGrid> {
                     priceListId: priceList.priceListId,
                     price: row.prices[priceList.priceListId],
                     rejected: state.rejected[key],
-                    changedFrom: was != null && was != now ? was : null,
+                    // Same amount, not same string: the server returns
+                    // prices at `Numeric(18,4)` scale, so `120.00` and
+                    // `120.0000` are one price and must not read as a change.
+                    changedFrom: was != null && !sameAmount(was, now)
+                        ? was
+                        : null,
                     inFlight: state.inFlight.contains(key),
                     isActive: state.active == key,
                     canUpdate: canUpdate,

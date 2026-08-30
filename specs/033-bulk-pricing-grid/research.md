@@ -306,6 +306,35 @@ non-negative check FR-009 needs.
 **Decision**: no new formatting or validation code. FR-005's "no price ≠ zero" is
 the existing `pricingPriceNotSet` treatment, reused.
 
+## R10a. Prices come back at a different scale than they go out
+
+**Found 2026-08-29, by the live integration test on its first real run** —
+`test/integration/pricing_flow_test.dart` had been skipped for want of
+credentials, so its assertions had never met a real server.
+
+`product_price.price` is `Numeric(18,4)`, and mbe-api returns it at full
+scale. A price sent as `'120.00'` reads back as `'120.0000'`. Two places in
+the grid compared those strings:
+
+- **FR-010's "an unchanged value issues no write"** — `'120.00' != '120.0000'`,
+  so re-submitting a cell without editing it always wrote. The requirement was
+  effectively dead in production while passing every unit test, because the
+  fixtures spelled prices the way the client sends them.
+- **FR-022's changed badge and FR-023's count** — a cell would read as
+  *changed* the moment the server echoed its own scale back, inventing work
+  that had not happened.
+
+**Decision**: one shared `sameAmount(String?, String?)` in
+`pricing_grid_controller.dart`, comparing parsed `Decimal`s and falling back
+to string equality only for values that will not parse. Used by `commitCell`,
+`changedCount`, `revertAll` and the screen's `changedFrom`. Pinned by two unit
+tests that spell the stored value at four decimals, which is what the fixtures
+should have done all along.
+
+**The general lesson**, worth more than the fix: a wire format assumption is
+not tested by a fixture the client wrote. Only the live test could see this,
+and only once it actually ran.
+
 ## R11. Retiring the profit fields is a presentation-layer edit
 
 The four fields appear in three layers. Only one of them changes:

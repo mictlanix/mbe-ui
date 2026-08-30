@@ -242,6 +242,48 @@ void main() {
     );
 
     test(
+      'submitting the same amount at a different scale issues no write — '
+      'mbe-api returns `Numeric(18,4)`, so a stored `120.0000` and a typed '
+      '`120.00` are one price (FR-010; found by the live integration test)',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1)],
+          prices: [_price(productId: 1, priceListId: 5, price: '120.0000')],
+        );
+
+        await container
+            .read(pricingGridControllerProvider(filter).notifier)
+            .commitCell(productId: 1, priceListId: 5, typed: '120.00');
+
+        verifyNever(
+          () => productPriceRepository.update(
+            productPriceId: any(named: 'productPriceId'),
+            price: any(named: 'price'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'a cell whose stored value only differs in scale is not counted as '
+      'changed, so the summary bar cannot invent work (FR-023)',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1)],
+          prices: [_price(productId: 1, priceListId: 5, price: '120.0000')],
+        );
+
+        final state = container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue;
+        expect(state.changedCount, 0);
+        expect(state.hasChanges, isFalse);
+      },
+    );
+
+    test(
       'submitting the stored value unchanged issues no write (FR-010)',
       () async {
         await primeWith(

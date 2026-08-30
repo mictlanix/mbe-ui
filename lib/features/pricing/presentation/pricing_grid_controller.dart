@@ -199,7 +199,7 @@ extension PricingGridSummary on PricingGridState {
   int get changedCount {
     var count = 0;
     for (final entry in baseline.entries) {
-      if (entry.value != valueOf(entry.key)) count++;
+      if (!sameAmount(entry.value, valueOf(entry.key))) count++;
     }
     return count;
   }
@@ -207,6 +207,22 @@ extension PricingGridSummary on PricingGridState {
   int get rejectedCount => rejected.length;
 
   bool get hasChanges => changedCount > 0 || rejectedCount > 0;
+}
+
+/// Whether two wire values are the **same amount**, not the same string.
+///
+/// mbe-api stores prices as `Numeric(18,4)` and returns them at full scale, so
+/// a stored `120.0000` and a typed `120.00` are the same price spelled two
+/// ways. Comparing the strings makes FR-010's "an unchanged value issues no
+/// write" fire almost never, and would flag an untouched cell as changed the
+/// moment the server echoed its own scale back — found by the live
+/// integration test, which is the only place the real scale shows up.
+bool sameAmount(String? a, String? b) {
+  if (a == null || b == null) return a == b;
+  final left = Decimal.tryParse(a);
+  final right = Decimal.tryParse(b);
+  if (left == null || right == null) return a == b;
+  return left == right;
 }
 
 List<PricingGridRow> _withPrice(
@@ -416,7 +432,7 @@ class PricingGridController extends _$PricingGridController {
     for (final entry in current.baseline.entries) {
       final was = entry.value;
       final now = current.valueOf(entry.key);
-      if (was == null || was == now) continue;
+      if (was == null || sameAmount(was, now)) continue;
       writes.add(PriceWrite(cell: entry.key, previous: now, next: was));
     }
 
@@ -702,7 +718,7 @@ class PricingGridController extends _$PricingGridController {
     }
 
     final existing = current.priceAt(key);
-    if (existing != null && existing.price == trimmed) {
+    if (existing != null && sameAmount(existing.price, trimmed)) {
       final rejected = {...current.rejected}..remove(key);
       state = AsyncData(current.copyWith(active: null, rejected: rejected));
       return;
