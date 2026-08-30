@@ -1,0 +1,167 @@
+{
+  "workflow": "speckit",
+  "specName": "crud ui refinements",
+  "branch": "035-crud-ui-refinements",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T20:33:30.064Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T20:37:47.473Z"
+    }
+  ],
+  "telemetryInstanceId": "86d79834-1b93-490b-95c6-bf859215583e",
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Every catalog list with an entity-lifecycle status facet applies a default on arrival instead of listing every record"
+    },
+    "FR-002": {
+      "title": "Entity-lifecycle lists default to Active"
+    },
+    "FR-003": {
+      "title": "The applied default is shown as the selected value in the filter UI"
+    },
+    "FR-004": {
+      "title": "The unfiltered set is reachable in one interaction and that choice persists like any user-chosen filter"
+    },
+    "FR-005": {
+      "title": "An explicit status in a shared link takes precedence over the default"
+    },
+    "FR-006": {
+      "title": "The filters-applied indicator counts the default-applied status"
+    },
+    "FR-007": {
+      "title": "POS sales, sales orders and cash sessions keep their current filtering, unchanged — this feature must not alter it"
+    },
+    "FR-008": {
+      "title": "Submitting search re-requests the current page even when nothing changed"
+    },
+    "FR-009": {
+      "title": "A changed term produces exactly one request, not two"
+    },
+    "FR-010": {
+      "title": "Typing issues no request; the shared search control keeps no per-keystroke callback"
+    },
+    "FR-011": {
+      "title": "A search refresh preserves page index, sort and every active facet"
+    },
+    "FR-012": {
+      "title": "An in-flight refresh uses the existing loading affordance without blanking the rows"
+    },
+    "FR-013": {
+      "title": "Filter row content edges align with the list surface content edges at every width"
+    },
+    "FR-014": {
+      "title": "Filter row internal spacing is symmetric left and right"
+    },
+    "FR-015": {
+      "title": "All new spacing comes from shared spacing tokens, no literals"
+    },
+    "FR-016": {
+      "title": "Alignment is asserted by tests measuring real insets"
+    },
+    "FR-017": {
+      "title": "All four list-surface corners carry the same radius from the shared shape scale"
+    },
+    "FR-018": {
+      "title": "The column-header band does not paint over the surface top corners"
+    },
+    "FR-019": {
+      "title": "The list surface carries a one-logical-pixel hairline outline in the variant outline colour"
+    },
+    "FR-020": {
+      "title": "Shape and outline rules hold for both paginated and non-paginated list surfaces"
+    },
+    "FR-021": {
+      "title": "Shape and outline are expressed once in the design system; no screen passes its own"
+    },
+    "FR-022": {
+      "title": "Shape and outline hold in both themes and at every text-scaling level"
+    },
+    "FR-023": {
+      "title": "Facility card and warehouse/point-of-sale/cash-drawer rows carry the same hairline outline"
+    },
+    "FR-024": {
+      "title": "Those surfaces take their radii from the shared shape scale"
+    },
+    "FR-025": {
+      "title": "Hover and selected states stay distinguishable once the outline is present"
+    },
+    "FR-026": {
+      "title": "The 14 named entities open in the shared responsive panel from both create and row click"
+    },
+    "FR-027": {
+      "title": "Row click opens read-only; create opens editable"
+    },
+    "FR-028": {
+      "title": "A read-only panel offers an edit control only to a user holding the update privilege"
+    },
+    "FR-029": {
+      "title": "Delete is available inside the panel with the existing confirmation, gated on the delete privilege"
+    },
+    "FR-030": {
+      "title": "Per-record addresses and screens for the 14 entities are removed; an old address lands on the list"
+    },
+    "FR-031": {
+      "title": "Saving or deleting closes the panel and updates the list without losing page, filters or sort"
+    },
+    "FR-032": {
+      "title": "Dismissing a panel with unsaved changes warns before discarding them"
+    },
+    "FR-033": {
+      "title": "The panel is wide enough for the shared multi-column form layout to still produce more than one column"
+    },
+    "FR-034": {
+      "title": "Facility children open in a panel without leaving the Facilities screen"
+    },
+    "FR-035": {
+      "title": "Inline nested creation inside a converted form keeps working from the panel"
+    },
+    "FR-036": {
+      "title": "Entities outside the named list keep their full-screen record presentation"
+    },
+    "FR-037": {
+      "title": "Governing design rules are amended to speak of a record's surface rather than a route"
+    },
+    "FR-038": {
+      "title": "Styling rules are enforced so a new list screen inherits them with no styling code of its own"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 62,
+    "projectedTasks": 48,
+    "scopeSignal": "larger",
+    "verdict": "oversized"
+  },
+  "context": [
+    "area: lib/core/widgets (catalog_filter_bar, data_table_view, catalog_search_bar, app_side_sheet, responsive_form_grid, record_form_actions)",
+    "area: lib/core/design (component_themes, shapes, spacing) — the single enforcement point for FR-013..FR-024",
+    "area: lib/features/catalog/presentation (14 *_detail_screen.dart + *_list_screen.dart), lib/features/pricing, lib/features/sales list screens",
+    "constraint: constitution v1.12.0 §VI — row click opens a read-only detail SCREEN and delete lives on that screen; FR-026..FR-030 require amending this to speak of a record surface",
+    "constraint: constitution §VI already permits a form in a dialog/sheet launched from the filter row, so only the row-click/delete/edit-toggle clauses actually conflict",
+    "constraint: showAppSideSheet is a fixed 360dp panel and ResponsiveFormGrid derives columns from inner width — converted forms collapse to one column unless the panel widens (FR-033)",
+    "constraint: root cause of the square top corners is dataTableTheme.headingRowColor painting over an unclipped Card, not a missing radius"
+  ],
+  "intent": "Close seven cross-cutting CRUD UI gaps — default-Active filtering, filter-row alignment, always-refetching search, fully rounded hairline-outlined tables and facility cards, and side-panel record forms for 14 simple entities — enforcing every durable styling rule in the design system so future screens inherit it.",
+  "expectations": [
+    "Products, Facilities, Taxpayer Issuers, Users and User Profiles keep their full-screen record presentation — not converted to panels",
+    "No per-record deep link is preserved for the 14 converted entities; old addresses resolve to the list",
+    "No change to what the server stores or exposes, beyond the default status filter and the search refresh",
+    "No per-keystroke search; submission stays the only query trigger",
+    "No compact/phone-tier redesign of data tables (card-list transformation remains out of scope)",
+    "Default status filtering on POS sales, sales orders and cash sessions — deferred: the server accepts only a single scalar status, so the intended multi-state defaults are unimplementable",
+    "No mbe-api change is requested and no external dependency is carried; the transactional lists are left as-is by decision"
+  ]
+}
