@@ -99,6 +99,7 @@
   "productsPurchasableFilter": "Comprable",
   "productsAttributesFilterLabel": "Atributos del producto",
   "productsSupplierFilter": "Proveedor",
+  "productsSupplierSearchHint": "Buscar proveedores…",
   "productsLabelFilter": "Etiquetas",
   "labelUnavailableTooltip": "Sin productos que coincidan",
   "labelWithCount": "{name} ({count})",

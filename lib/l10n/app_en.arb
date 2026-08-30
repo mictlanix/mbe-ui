@@ -234,6 +234,10 @@
 
   "productsSupplierFilter": "Supplier",
   "@productsSupplierFilter": {},
+  "productsSupplierSearchHint": "Search suppliers…",
+  "@productsSupplierSearchHint": {
+    "description": "Field label inside the filter drawer's Supplier section — the section already carries the noun as its heading, so the field says what to do (spec 033 US6)"
+  },
 
   "productsLabelFilter": "Labels",
   "@productsLabelFilter": {},

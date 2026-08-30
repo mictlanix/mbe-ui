@@ -602,6 +602,12 @@ abstract class AppLocalizations {
   /// **'Supplier'**
   String get productsSupplierFilter;
 
+  /// Field label inside the filter drawer's Supplier section — the section already carries the noun as its heading, so the field says what to do (spec 033 US6)
+  ///
+  /// In en, this message translates to:
+  /// **'Search suppliers…'**
+  String get productsSupplierSearchHint;
+
   /// No description provided for @productsLabelFilter.
   ///
   /// In en, this message translates to:

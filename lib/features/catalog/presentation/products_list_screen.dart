@@ -318,9 +318,16 @@ class _ProductFiltersPanel extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 12),
+        Text(
+          l10n.productsSupplierFilter,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
         CatalogEntityPicker<SupplierListItem>(
           key: const Key('products_filter_supplier'),
-          label: l10n.productsSupplierFilter,
+          // The section heading already says "Supplier"; the field says what
+          // to do with it, rather than repeating the noun.
+          label: l10n.productsSupplierSearchHint,
           displayStringForOption: (s) => '${s.code} — ${s.name}',
           optionsBuilder: (search) async {
             final result = await supplierRepo.list(

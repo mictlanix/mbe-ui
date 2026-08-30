@@ -1355,6 +1355,45 @@ void main() {
       },
     );
 
+    testWidgets(
+      'every section carries a heading — status, attributes, supplier and '
+      'labels alike; the supplier one was the last missing (FR-030)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          labels: const [LabelItem(labelId: 1, name: 'Clearance')],
+        );
+        await openFilterSheet(tester);
+
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        for (final heading in [
+          l10n.statusFilterLabel,
+          l10n.productsAttributesFilterLabel,
+          l10n.productsSupplierFilter,
+          l10n.productsLabelFilter,
+        ]) {
+          expect(
+            find.text(heading),
+            findsWidgets,
+            reason: 'the "$heading" section must be titled like the others',
+          );
+        }
+      },
+    );
+
+    testWidgets(
+      'the supplier field says what to do rather than repeating the section '
+      'heading above it',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        await openFilterSheet(tester);
+
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        expect(find.text(l10n.productsSupplierSearchHint), findsOneWidget);
+      },
+    );
+
     testWidgets('the heading is localized, not a hardcoded English string', (
       tester,
     ) async {

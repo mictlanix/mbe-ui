@@ -275,6 +275,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productsSupplierFilter => 'Supplier';
 
   @override
+  String get productsSupplierSearchHint => 'Search suppliers…';
+
+  @override
   String get productsLabelFilter => 'Labels';
 
   @override

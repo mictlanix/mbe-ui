@@ -838,7 +838,7 @@ class _PricingGridFiltersPanel extends ConsumerWidget {
         const SizedBox(height: 8),
         CatalogEntityPicker<SupplierListItem>(
           key: const Key('pricing_grid_filter_supplier'),
-          label: l10n.productsSupplierFilter,
+          label: l10n.productsSupplierSearchHint,
           displayStringForOption: (s) => '${s.code} — ${s.name}',
           optionsBuilder: (search) async {
             final result = await supplierRepo.list(

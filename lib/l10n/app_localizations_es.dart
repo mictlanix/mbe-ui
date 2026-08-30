@@ -275,6 +275,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsSupplierFilter => 'Proveedor';
 
   @override
+  String get productsSupplierSearchHint => 'Buscar proveedores…';
+
+  @override
   String get productsLabelFilter => 'Etiquetas';
 
   @override

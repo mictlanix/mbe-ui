@@ -425,6 +425,14 @@ each record still works.
 - **FR-030**: The products filter drawer's tri-state attribute chips MUST
   carry a localized section heading styled like the drawer's other section
   headings.
+- **FR-030a**: **Every** section of that drawer MUST carry such a heading —
+  status, attributes, supplier and labels alike. Supplier had none either
+  (found 2026-08-29 during review); its picker now sits under a "Supplier"
+  heading and its own field label says what to do rather than repeating the
+  noun, matching the canvas.
+- **FR-030b**: The pricing grid's filter drawer MUST stay identical to the
+  products drawer in headings and order, since FR-021 makes it a mirror —
+  the two disagreeing is itself the defect.
 - **FR-031**: The drawer's sections MUST appear in the order: status,
   attributes, supplier, labels.
 - **FR-032**: FR-030 and FR-031 MUST NOT change any filter's behaviour,
@@ -520,6 +528,13 @@ so no story here is blocked on the backend.
   list's margins server-side; an update leaves the stored band alone. This
   resolves the CL-002/CL-003 overlap in favour of removal (see
   *Clarifications*) and defuses FR-012's landmine entirely.
+
+- **mictlanix/mbe-api#188 — filed, not built.** Three of the six product
+  boolean flags (`perishable`, `seriable`, `invoiceable`) are editable on the
+  product form but not filterable on `GET /products`, so the attribute
+  section of both drawers can only ever offer half of them. **Blocks nothing
+  here** — the three that do filter are shipped; the other three arrive as
+  three more chips in both drawers when the query exists.
 
 **Adjacent, not consumed here**: the investigation behind this spec also
 filed **#181**, which landed as
