@@ -1,0 +1,18 @@
+{
+  "workflow": "companion",
+  "specName": "032-back-office-order-header",
+  "branch": "032-back-office-order-header",
+  "selectedAt": "2026-08-30T20:00:00.290Z",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T20:00:17.784Z"
+    }
+  ],
+  "telemetryInstanceId": "ea755cef-9214-4c15-9542-9414e639eb02"
+}

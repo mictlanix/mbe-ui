@@ -3,7 +3,7 @@
   "specName": "Price List Retirement UI",
   "branch": "034-price-list-retirement-ui",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -400,7 +400,15 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-30T19:42:13.714Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T19:58:21.878Z"
     }
   ],
-  "currentTask": "T047"
+  "currentTask": "T047",
+  "telemetryInstanceId": "3b9c394f-b298-45bd-97da-9adaa9a45baa"
 }

@@ -3,7 +3,7 @@
   "specName": "Back-Office Sales Orders (\"Pedidos\")",
   "branch": "029-back-office-sales-orders",
   "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,14 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-08-20T03:20:39.750Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-08-30T19:59:56.532Z"
     }
-  ]
+  ],
+  "telemetryInstanceId": "150ede22-8019-4e03-aa98-0263faa8c2aa"
 }
