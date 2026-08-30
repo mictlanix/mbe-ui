@@ -1,0 +1,45 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "Blocked.dc.html", "x": 1560, "y": 0, "w": 608, "h": 596 },
+    { "file": "Simple.dc.html", "x": 1560, "y": 716, "w": 608, "h": 300 }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": 0,
+      "y": -250,
+      "w": 620,
+      "text": "Deleting a price list - the review step.\n\nDecision: a modal dialog, not a screen. Everything the API can tell us is two counts and one choice, and the app already opens a confirm dialog from the record form's Delete button - so this stays that dialog, made informative.\n\nMain is clickable: pick a replacement, then confirm. The chips above the frame switch state - loading, prices only, clean list, preview failed, blocked, refused."
+    },
+    {
+      "id": "ack-tradeoff",
+      "x": 700,
+      "y": -250,
+      "w": 620,
+      "text": "One deliberate departure from the product-merge flow: no acknowledgment checkbox. The merge puts its review on a screen and its confirmation in a dialog, so a checkbox has somewhere to sit. Here the dialog IS the review, and the destructive button carries the number - 'Delete list and 4,312 prices' - so the click is the acknowledgment.\n\nWorth deciding in the spec; a checkbox is one line to add back."
+    },
+    {
+      "id": "api-mapping",
+      "x": 0,
+      "y": 980,
+      "w": 700,
+      "text": "Maps to mbe-api spec 015-price-list-retirement (issue #181).\n\nGET /price-lists/{id}/delete/preview -> {items:[{category,count}], total} fills the panel. product_price.list is deleted; customer.price_list is moved; any other category blocks.\n\nDELETE /price-lists/{id}?replacement={id} -> 204. The picker supplies replacement, and it is required only when customer.price_list appears in the preview.\n\nThe footer says Total, with the caption 'records this deletion touches' - the contract warns that a client labelling it 'will be deleted' overstates it."
+    },
+    {
+      "id": "open-questions",
+      "x": 760,
+      "y": 980,
+      "w": 680,
+      "text": "Open for the spec:\n\n- The preview returns counts only; there is no endpoint that lists the 12 customers. Should the Customers row link to /customers filtered by this list?\n\n- The picker is CatalogEntityPicker over price lists, minus the one being deleted (the API refuses that as its own replacement).\n\n- Delete lives on the price list edit screen today. Does the list screen get a row action too?\n\n- Copy here is English only; app_es.arb needs the matching strings."
+    },
+    {
+      "id": "blocked-note",
+      "x": 1560,
+      "y": 1080,
+      "w": 608,
+      "text": "Blocked is derived from the preview, not from a failed DELETE: any category that is not product_price.list or customer.price_list blocks the retirement, and the client knows that before submitting.\n\nThe 409 is still handled - Main's 'refused' state renders it in the standard ErrorBanner - for the race where something starts referencing the list between the preview and the delete."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}
