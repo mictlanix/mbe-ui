@@ -22,7 +22,6 @@ mixin _$PriceListFormState {
   bool get loading => throw _privateConstructorUsedError;
   bool get submitting => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
-  bool get deleted => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
   String? get errorDetail => throw _privateConstructorUsedError;
   Map<String, String> get fieldErrors => throw _privateConstructorUsedError;
@@ -47,7 +46,6 @@ abstract class $PriceListFormStateCopyWith<$Res> {
     bool loading,
     bool submitting,
     bool saved,
-    bool deleted,
     String? error,
     String? errorDetail,
     Map<String, String> fieldErrors,
@@ -74,7 +72,6 @@ class _$PriceListFormStateCopyWithImpl<$Res, $Val extends PriceListFormState>
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
-    Object? deleted = null,
     Object? error = freezed,
     Object? errorDetail = freezed,
     Object? fieldErrors = null,
@@ -100,10 +97,6 @@ class _$PriceListFormStateCopyWithImpl<$Res, $Val extends PriceListFormState>
             saved: null == saved
                 ? _value.saved
                 : saved // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            deleted: null == deleted
-                ? _value.deleted
-                : deleted // ignore: cast_nullable_to_non_nullable
                       as bool,
             error: freezed == error
                 ? _value.error
@@ -138,7 +131,6 @@ abstract class _$$PriceListFormStateImplCopyWith<$Res>
     bool loading,
     bool submitting,
     bool saved,
-    bool deleted,
     String? error,
     String? errorDetail,
     Map<String, String> fieldErrors,
@@ -164,7 +156,6 @@ class __$$PriceListFormStateImplCopyWithImpl<$Res>
     Object? loading = null,
     Object? submitting = null,
     Object? saved = null,
-    Object? deleted = null,
     Object? error = freezed,
     Object? errorDetail = freezed,
     Object? fieldErrors = null,
@@ -190,10 +181,6 @@ class __$$PriceListFormStateImplCopyWithImpl<$Res>
         saved: null == saved
             ? _value.saved
             : saved // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        deleted: null == deleted
-            ? _value.deleted
-            : deleted // ignore: cast_nullable_to_non_nullable
                   as bool,
         error: freezed == error
             ? _value.error
@@ -221,7 +208,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
     this.loading = false,
     this.submitting = false,
     this.saved = false,
-    this.deleted = false,
     this.error,
     this.errorDetail,
     final Map<String, String> fieldErrors = const <String, String>{},
@@ -242,9 +228,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
   @JsonKey()
   final bool saved;
   @override
-  @JsonKey()
-  final bool deleted;
-  @override
   final String? error;
   @override
   final String? errorDetail;
@@ -259,7 +242,7 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
 
   @override
   String toString() {
-    return 'PriceListFormState(priceListId: $priceListId, name: $name, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'PriceListFormState(priceListId: $priceListId, name: $name, loading: $loading, submitting: $submitting, saved: $saved, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -274,7 +257,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
             (identical(other.submitting, submitting) ||
                 other.submitting == submitting) &&
             (identical(other.saved, saved) || other.saved == saved) &&
-            (identical(other.deleted, deleted) || other.deleted == deleted) &&
             (identical(other.error, error) || other.error == error) &&
             (identical(other.errorDetail, errorDetail) ||
                 other.errorDetail == errorDetail) &&
@@ -292,7 +274,6 @@ class _$PriceListFormStateImpl implements _PriceListFormState {
     loading,
     submitting,
     saved,
-    deleted,
     error,
     errorDetail,
     const DeepCollectionEquality().hash(_fieldErrors),
@@ -317,7 +298,6 @@ abstract class _PriceListFormState implements PriceListFormState {
     final bool loading,
     final bool submitting,
     final bool saved,
-    final bool deleted,
     final String? error,
     final String? errorDetail,
     final Map<String, String> fieldErrors,
@@ -333,8 +313,6 @@ abstract class _PriceListFormState implements PriceListFormState {
   bool get submitting;
   @override
   bool get saved;
-  @override
-  bool get deleted;
   @override
   String? get error;
   @override

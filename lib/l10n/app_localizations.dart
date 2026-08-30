@@ -1675,11 +1675,163 @@ abstract class AppLocalizations {
   /// **'Delete price list?'**
   String get deletePriceListConfirmTitle;
 
-  /// No description provided for @deletePriceListConfirmMessage.
+  /// No description provided for @priceListDeleteLead.
   ///
   /// In en, this message translates to:
-  /// **'This will permanently delete \"{name}\". This cannot be undone.'**
-  String deletePriceListConfirmMessage(String name);
+  /// **'{name} #{id} will be permanently deleted. This cannot be undone.'**
+  String priceListDeleteLead(String name, int id);
+
+  /// No description provided for @priceListDeleteRelatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Records attached to this price list'**
+  String get priceListDeleteRelatedTitle;
+
+  /// No description provided for @priceListDeleteTotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get priceListDeleteTotalLabel;
+
+  /// No description provided for @priceListDeleteTotalCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Records this deletion touches — not all of them are deleted.'**
+  String get priceListDeleteTotalCaption;
+
+  /// No description provided for @priceListDeleteFateDestroyed.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted permanently'**
+  String get priceListDeleteFateDestroyed;
+
+  /// No description provided for @priceListDeleteFateMoved.
+  ///
+  /// In en, this message translates to:
+  /// **'moved to the replacement'**
+  String get priceListDeleteFateMoved;
+
+  /// No description provided for @priceListDeleteFateBlocking.
+  ///
+  /// In en, this message translates to:
+  /// **'blocks deletion — clear these first'**
+  String get priceListDeleteFateBlocking;
+
+  /// No description provided for @priceListDeleteCategoryProductPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Product prices'**
+  String get priceListDeleteCategoryProductPrice;
+
+  /// No description provided for @priceListDeleteCategoryCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get priceListDeleteCategoryCustomer;
+
+  /// No description provided for @priceListDeleteViewCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'View customers'**
+  String get priceListDeleteViewCustomers;
+
+  /// No description provided for @priceListDeleteCleanNote.
+  ///
+  /// In en, this message translates to:
+  /// **'No prices and no customers depend on this list.'**
+  String get priceListDeleteCleanNote;
+
+  /// No description provided for @priceListDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete list'**
+  String get priceListDeleteConfirm;
+
+  /// No description provided for @priceListDeleteConfirmPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Delete list and 1 price} other{Delete list and {formatted} prices}}'**
+  String priceListDeleteConfirmPrices(int count, String formatted);
+
+  /// No description provided for @priceListDeletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Price list deleted.'**
+  String get priceListDeletedMessage;
+
+  /// No description provided for @priceListDeleteReplacementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Replacement price list'**
+  String get priceListDeleteReplacementLabel;
+
+  /// No description provided for @priceListDeleteReplacementLabelOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Replacement price list (optional)'**
+  String get priceListDeleteReplacementLabelOptional;
+
+  /// No description provided for @priceListDeleteReplacementRequiredHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Required — every customer on this list moves here.'**
+  String get priceListDeleteReplacementRequiredHelper;
+
+  /// No description provided for @priceListDeleteReplacementOptionalHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — used only if customers turn out to be assigned.'**
+  String get priceListDeleteReplacementOptionalHelper;
+
+  /// No description provided for @priceListDeleteReplacementChosenHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{All 1 customer moves to {name}.} other{All {formatted} customers move to {name}.}}'**
+  String priceListDeleteReplacementChosenHelper(
+    int count,
+    String formatted,
+    String name,
+  );
+
+  /// No description provided for @priceListDeleteConfirmCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Delete list and move 1 customer} other{Delete list and move {formatted} customers}}'**
+  String priceListDeleteConfirmCustomers(int count, String formatted);
+
+  /// No description provided for @priceListDeletedWithMoveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Price list deleted. 1 customer moved to {name}.} other{Price list deleted. {formatted} customers moved to {name}.}}'**
+  String priceListDeletedWithMoveMessage(
+    int count,
+    String formatted,
+    String name,
+  );
+
+  /// No description provided for @priceListDeleteAcknowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand this cannot be undone and that this list\'s prices are deleted with it.'**
+  String get priceListDeleteAcknowledge;
+
+  /// No description provided for @priceListDeleteBlockedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This list is still in use by records the deletion cannot touch. Clear them first, then delete the list.'**
+  String get priceListDeleteBlockedBanner;
+
+  /// No description provided for @priceListDeletePreviewFailedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load what depends on this list. You can still delete it — if customers are assigned, the deletion will be refused.'**
+  String get priceListDeletePreviewFailedNote;
+
+  /// No description provided for @priceListDeleteClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get priceListDeleteClose;
 
   /// No description provided for @priceListNameRequiredError.
   ///

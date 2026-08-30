@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -9,9 +10,11 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_list_delete_preview.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_list_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -63,9 +66,15 @@ void main() {
       ).thenAnswer((_) async => _existing);
     }
 
+    // The delete review dialog's formattersProvider (spec 028) reads through
+    // resolvedLocaleProvider, which needs a real SharedPreferences instance.
+    SharedPreferences.setMockInitialValues({});
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           priceListRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
@@ -160,13 +169,18 @@ void main() {
     });
 
     testWidgets(
-      'a user with delete privilege sees the Delete button, and confirming '
-      'a server rejection leaves the form in place (US1 §6)',
+      'a user with delete privilege sees the Delete button, and it opens '
+      'the review dialog (specs/034-price-list-retirement-ui, replacing '
+      'the old plain confirmation)',
       (tester) async {
-        when(() => repository.delete(priceListId: 1)).thenThrow(
-          const AppError.server(
-            statusCode: 400,
-            message: 'Price list is assigned to a customer',
+        when(
+          () => repository.deletePreview(priceListId: 1),
+        ).thenAnswer(
+          (_) async => const PriceListDeletePreview(
+            categories: [
+              PriceListDeleteCategory(key: 'product_price.list', count: 4312),
+            ],
+            total: 4312,
           ),
         );
 
@@ -178,13 +192,57 @@ void main() {
         );
         await tester.tap(find.byKey(const Key('delete_price_list_button')));
         await tester.pumpAndSettle();
-        await tester.tap(
-          find.byKey(const Key('confirm_delete_price_list_button')),
+
+        expect(find.byKey(const Key('price_list_delete_dialog')), findsOneWidget);
+        expect(find.byKey(const Key('price_list_delete_summary')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'confirming a server rejection leaves the dialog open and the form '
+      'in place (US1 §6)',
+      (tester) async {
+        when(
+          () => repository.deletePreview(priceListId: 1),
+        ).thenAnswer(
+          (_) async => const PriceListDeletePreview(
+            categories: [
+              PriceListDeleteCategory(key: 'product_price.list', count: 4312),
+            ],
+            total: 4312,
+          ),
         );
+        when(
+          () => repository.delete(
+            priceListId: 1,
+            replacement: any(named: 'replacement'),
+          ),
+        ).thenThrow(
+          const AppError.server(
+            statusCode: 400,
+            message: 'Price list is assigned to a customer',
+          ),
+        );
+
+        await pumpScreen(tester, signedInAs: _fullAccessUser, priceListId: 1);
+        await tester.tap(find.byKey(const Key('delete_price_list_button')));
         await tester.pumpAndSettle();
 
-        // Still on the detail screen — the form did not pop.
+        await tester.tap(
+          find.byKey(const Key('price_list_delete_acknowledge')),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('price_list_delete_confirm')));
+        await tester.pumpAndSettle();
+
+        // Still on the detail screen, and the dialog is still open with the
+        // refusal shown — the deletion did not go through.
         expect(find.byKey(const Key('price_list_name_field')), findsOneWidget);
+        expect(find.byKey(const Key('price_list_delete_dialog')), findsOneWidget);
+        expect(
+          find.textContaining('Price list is assigned to a customer'),
+          findsOneWidget,
+        );
       },
     );
   });

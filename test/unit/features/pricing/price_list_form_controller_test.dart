@@ -210,12 +210,66 @@ void main() {
         );
         await notifier.loadForEdit(1);
 
-        await notifier.delete();
+        final success = await notifier.delete();
 
+        expect(success, isFalse);
         final state = container.read(priceListFormControllerProvider);
-        expect(state.deleted, isFalse);
         expect(state.error, PriceListFormErrorCode.deleteFailed);
         expect(state.errorDetail, 'Price list is assigned to a customer');
+      },
+    );
+
+    test(
+      'returns true on success and forwards a chosen replacement '
+      '(specs/034-price-list-retirement-ui FR-012)',
+      () async {
+        when(() => repository.get(priceListId: 1)).thenAnswer(
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
+        );
+        when(
+          () => repository.delete(priceListId: 1, replacement: 3),
+        ).thenAnswer((_) async {});
+
+        final notifier = container.read(
+          priceListFormControllerProvider.notifier,
+        );
+        await notifier.loadForEdit(1);
+
+        final success = await notifier.delete(replacement: 3);
+
+        expect(success, isTrue);
+        verify(
+          () => repository.delete(priceListId: 1, replacement: 3),
+        ).called(1);
+      },
+    );
+
+    test(
+      'is denied for a read-only user, sets the error, and issues no '
+      'request',
+      () async {
+        when(() => repository.get(priceListId: 1)).thenAnswer(
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
+        );
+
+        final readOnlyContainer = _containerFor(_readOnlyUser, repository);
+        addTearDown(readOnlyContainer.dispose);
+        final notifier = readOnlyContainer.read(
+          priceListFormControllerProvider.notifier,
+        );
+        await notifier.loadForEdit(1);
+
+        final success = await notifier.delete();
+
+        expect(success, isFalse);
+        final state = readOnlyContainer.read(priceListFormControllerProvider);
+        expect(state.error, PriceListFormErrorCode.deletePermissionDenied);
+        verifyNever(
+          () => repository.delete(
+            priceListId: any(named: 'priceListId'),
+            replacement: any(named: 'replacement'),
+          ),
+        );
       },
     );
   });

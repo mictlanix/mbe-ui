@@ -792,10 +792,83 @@
   "@deletePriceListButton": {},
   "deletePriceListConfirmTitle": "Delete price list?",
   "@deletePriceListConfirmTitle": {},
-  "deletePriceListConfirmMessage": "This will permanently delete \"{name}\". This cannot be undone.",
-  "@deletePriceListConfirmMessage": {
-    "placeholders": {"name": {"type": "String"}}
+  "priceListDeleteLead": "{name} #{id} will be permanently deleted. This cannot be undone.",
+  "@priceListDeleteLead": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "id": {"type": "int"}
+    }
   },
+  "priceListDeleteRelatedTitle": "Records attached to this price list",
+  "@priceListDeleteRelatedTitle": {},
+  "priceListDeleteTotalLabel": "Total",
+  "@priceListDeleteTotalLabel": {},
+  "priceListDeleteTotalCaption": "Records this deletion touches — not all of them are deleted.",
+  "@priceListDeleteTotalCaption": {},
+  "priceListDeleteFateDestroyed": "deleted permanently",
+  "@priceListDeleteFateDestroyed": {},
+  "priceListDeleteFateMoved": "moved to the replacement",
+  "@priceListDeleteFateMoved": {},
+  "priceListDeleteFateBlocking": "blocks deletion — clear these first",
+  "@priceListDeleteFateBlocking": {},
+  "priceListDeleteCategoryProductPrice": "Product prices",
+  "@priceListDeleteCategoryProductPrice": {},
+  "priceListDeleteCategoryCustomer": "Customers",
+  "@priceListDeleteCategoryCustomer": {},
+  "priceListDeleteViewCustomers": "View customers",
+  "@priceListDeleteViewCustomers": {},
+  "priceListDeleteCleanNote": "No prices and no customers depend on this list.",
+  "@priceListDeleteCleanNote": {},
+  "priceListDeleteConfirm": "Delete list",
+  "@priceListDeleteConfirm": {},
+  "priceListDeleteConfirmPrices": "{count, plural, =1{Delete list and 1 price} other{Delete list and {formatted} prices}}",
+  "@priceListDeleteConfirmPrices": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "formatted": {"type": "String"}
+    }
+  },
+  "priceListDeletedMessage": "Price list deleted.",
+  "@priceListDeletedMessage": {},
+  "priceListDeleteReplacementLabel": "Replacement price list",
+  "@priceListDeleteReplacementLabel": {},
+  "priceListDeleteReplacementLabelOptional": "Replacement price list (optional)",
+  "@priceListDeleteReplacementLabelOptional": {},
+  "priceListDeleteReplacementRequiredHelper": "Required — every customer on this list moves here.",
+  "@priceListDeleteReplacementRequiredHelper": {},
+  "priceListDeleteReplacementOptionalHelper": "Optional — used only if customers turn out to be assigned.",
+  "@priceListDeleteReplacementOptionalHelper": {},
+  "priceListDeleteReplacementChosenHelper": "{count, plural, =1{All 1 customer moves to {name}.} other{All {formatted} customers move to {name}.}}",
+  "@priceListDeleteReplacementChosenHelper": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "formatted": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "priceListDeleteConfirmCustomers": "{count, plural, =1{Delete list and move 1 customer} other{Delete list and move {formatted} customers}}",
+  "@priceListDeleteConfirmCustomers": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "formatted": {"type": "String"}
+    }
+  },
+  "priceListDeletedWithMoveMessage": "{count, plural, =1{Price list deleted. 1 customer moved to {name}.} other{Price list deleted. {formatted} customers moved to {name}.}}",
+  "@priceListDeletedWithMoveMessage": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "formatted": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "priceListDeleteAcknowledge": "I understand this cannot be undone and that this list's prices are deleted with it.",
+  "@priceListDeleteAcknowledge": {},
+  "priceListDeleteBlockedBanner": "This list is still in use by records the deletion cannot touch. Clear them first, then delete the list.",
+  "@priceListDeleteBlockedBanner": {},
+  "priceListDeletePreviewFailedNote": "Could not load what depends on this list. You can still delete it — if customers are assigned, the deletion will be refused.",
+  "@priceListDeletePreviewFailedNote": {},
+  "priceListDeleteClose": "Close",
+  "@priceListDeleteClose": {},
   "priceListNameRequiredError": "Name is required.",
   "@priceListNameRequiredError": {},
   "priceListLoadFailedError": "Failed to load price list.",

@@ -875,9 +875,131 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deletePriceListConfirmTitle => 'Delete price list?';
 
   @override
-  String deletePriceListConfirmMessage(String name) {
-    return 'This will permanently delete \"$name\". This cannot be undone.';
+  String priceListDeleteLead(String name, int id) {
+    return '$name #$id will be permanently deleted. This cannot be undone.';
   }
+
+  @override
+  String get priceListDeleteRelatedTitle =>
+      'Records attached to this price list';
+
+  @override
+  String get priceListDeleteTotalLabel => 'Total';
+
+  @override
+  String get priceListDeleteTotalCaption =>
+      'Records this deletion touches — not all of them are deleted.';
+
+  @override
+  String get priceListDeleteFateDestroyed => 'deleted permanently';
+
+  @override
+  String get priceListDeleteFateMoved => 'moved to the replacement';
+
+  @override
+  String get priceListDeleteFateBlocking =>
+      'blocks deletion — clear these first';
+
+  @override
+  String get priceListDeleteCategoryProductPrice => 'Product prices';
+
+  @override
+  String get priceListDeleteCategoryCustomer => 'Customers';
+
+  @override
+  String get priceListDeleteViewCustomers => 'View customers';
+
+  @override
+  String get priceListDeleteCleanNote =>
+      'No prices and no customers depend on this list.';
+
+  @override
+  String get priceListDeleteConfirm => 'Delete list';
+
+  @override
+  String priceListDeleteConfirmPrices(int count, String formatted) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Delete list and $formatted prices',
+      one: 'Delete list and 1 price',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get priceListDeletedMessage => 'Price list deleted.';
+
+  @override
+  String get priceListDeleteReplacementLabel => 'Replacement price list';
+
+  @override
+  String get priceListDeleteReplacementLabelOptional =>
+      'Replacement price list (optional)';
+
+  @override
+  String get priceListDeleteReplacementRequiredHelper =>
+      'Required — every customer on this list moves here.';
+
+  @override
+  String get priceListDeleteReplacementOptionalHelper =>
+      'Optional — used only if customers turn out to be assigned.';
+
+  @override
+  String priceListDeleteReplacementChosenHelper(
+    int count,
+    String formatted,
+    String name,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'All $formatted customers move to $name.',
+      one: 'All 1 customer moves to $name.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String priceListDeleteConfirmCustomers(int count, String formatted) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Delete list and move $formatted customers',
+      one: 'Delete list and move 1 customer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String priceListDeletedWithMoveMessage(
+    int count,
+    String formatted,
+    String name,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Price list deleted. $formatted customers moved to $name.',
+      one: 'Price list deleted. 1 customer moved to $name.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get priceListDeleteAcknowledge =>
+      'I understand this cannot be undone and that this list\'s prices are deleted with it.';
+
+  @override
+  String get priceListDeleteBlockedBanner =>
+      'This list is still in use by records the deletion cannot touch. Clear them first, then delete the list.';
+
+  @override
+  String get priceListDeletePreviewFailedNote =>
+      'Could not load what depends on this list. You can still delete it — if customers are assigned, the deletion will be refused.';
+
+  @override
+  String get priceListDeleteClose => 'Close';
 
   @override
   String get priceListNameRequiredError => 'Name is required.';
