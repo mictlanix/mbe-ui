@@ -837,6 +837,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pricingGridRevertAll => 'Revertir todo';
 
   @override
+  String get pricingGridDismissRejected => 'Descartar rechazados';
+
+  @override
   String get pricingGridDiscardTitle => '¿Descartar los cambios pendientes?';
 
   @override

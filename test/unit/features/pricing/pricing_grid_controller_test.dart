@@ -222,6 +222,82 @@ void main() {
     );
 
     test(
+      'dismissRejected clears every refusal and touches nothing else — a '
+      'rejection never reached the server, so discarding it must not cost '
+      'the accepted edits beside it (FR-023a)',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1), _product(2)],
+          prices: [
+            _price(productId: 1, priceListId: 5, price: '10.0000'),
+            _price(productId: 2, priceListId: 5, price: '20.0000'),
+          ],
+        );
+        when(
+          () => productPriceRepository.update(productPriceId: 105, price: '11'),
+        ).thenAnswer(
+          (_) async => _price(productId: 1, priceListId: 5, price: '11.0000'),
+        );
+        final notifier = container.read(
+          pricingGridControllerProvider(filter).notifier,
+        );
+
+        await notifier.commitCell(productId: 1, priceListId: 5, typed: '11');
+        await notifier.commitCell(productId: 2, priceListId: 5, typed: 'abc');
+        expect(
+          container.read(pricingGridControllerProvider(filter)).requireValue
+              .rejectedCount,
+          1,
+        );
+
+        notifier.dismissRejected();
+
+        final state = container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue;
+        expect(state.rejected, isEmpty);
+        // The accepted edit survives, history and all.
+        expect(state.changedCount, 1);
+        expect(state.history, hasLength(1));
+        expect(
+          state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
+          '11.0000',
+        );
+      },
+    );
+
+    test(
+      'Escape on a rejected cell drops that cell\'s refusal, and only that '
+      'one — cancelling an edit cancels its warning too',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1), _product(2)],
+          prices: [
+            _price(productId: 1, priceListId: 5, price: '10.0000'),
+            _price(productId: 2, priceListId: 5, price: '20.0000'),
+          ],
+        );
+        final notifier = container.read(
+          pricingGridControllerProvider(filter).notifier,
+        );
+        await notifier.commitCell(productId: 1, priceListId: 5, typed: 'abc');
+        await notifier.commitCell(productId: 2, priceListId: 5, typed: 'xyz');
+
+        // Reopen the first and Escape out of it.
+        notifier.openCell(const PriceCellKey(productId: 1, priceListId: 5));
+        notifier.closeCell();
+
+        final state = container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue;
+        expect(state.active, isNull);
+        expect(state.rejected.keys.single.productId, 2);
+      },
+    );
+
+    test(
       'rejects a negative value the same way as unparseable text (FR-009)',
       () async {
         await primeWith(

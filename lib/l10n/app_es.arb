@@ -274,6 +274,7 @@
   "pricingGridSummaryRejected": "{count, plural, =1{1 rechazado} other{{count} rechazados}}",
   "pricingGridUndoLast": "Deshacer último",
   "pricingGridRevertAll": "Revertir todo",
+  "pricingGridDismissRejected": "Descartar rechazados",
   "pricingGridDiscardTitle": "¿Descartar los cambios pendientes?",
   "pricingGridDiscardBody": "Se perderá el historial para deshacer y el texto rechazado. Los precios ya guardados no cambian.",
   "pricingGridDiscardConfirm": "Salir de todos modos",

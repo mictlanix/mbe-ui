@@ -405,6 +405,12 @@ each record still works.
 - **FR-023**: A summary bar MUST appear whenever the session holds changes,
   counting changed and rejected prices, and offering undo-last and
   revert-all.
+- **FR-023a**: Rejected edits MUST be dismissible on their own, without
+  discarding the accepted changes beside them. A rejection never reached the
+  server, so clearing one is local and instant — unlike revert-all, which
+  issues writes. Two routes: a summary-bar action clearing all of them, and
+  Escape on a cell clearing that cell's, since Escape already means "cancel
+  this edit" and a rejection is an edit that was never accepted.
 - **FR-024**: Undo MUST operate on whole changes — a column action reverses
   as one — and revert-all MUST restore every price to its value when the
   current view loaded.

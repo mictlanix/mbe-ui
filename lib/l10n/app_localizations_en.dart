@@ -829,6 +829,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pricingGridRevertAll => 'Revert all';
 
   @override
+  String get pricingGridDismissRejected => 'Dismiss rejected';
+
+  @override
   String get pricingGridDiscardTitle => 'Discard outstanding changes?';
 
   @override

@@ -1585,6 +1585,12 @@ abstract class AppLocalizations {
   /// **'Revert all'**
   String get pricingGridRevertAll;
 
+  /// Pricing grid summary bar: clears the refused edits without touching the accepted ones (spec 033 FR-023a)
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss rejected'**
+  String get pricingGridDismissRejected;
+
   /// No description provided for @pricingGridDiscardTitle.
   ///
   /// In en, this message translates to:

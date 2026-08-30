@@ -368,11 +368,40 @@ class PricingGridController extends _$PricingGridController {
     state = AsyncData(current.copyWith(active: key));
   }
 
-  /// Closes the active cell without committing anything (Escape).
+  /// Closes the active cell without committing anything (Escape), and drops
+  /// any rejection it was carrying.
+  ///
+  /// Escape means "cancel this edit", and a rejection **is** an edit that was
+  /// never accepted — the typed text is kept on screen precisely so the user
+  /// can come back and fix it (FR-009). Leaving it flagged after they have
+  /// explicitly cancelled would strand a warning about a value nobody is
+  /// still trying to save, and nothing was ever written, so there is nothing
+  /// to undo.
   void closeCell() {
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(current.copyWith(active: null));
+    final active = current.active;
+    state = AsyncData(
+      current.copyWith(
+        active: null,
+        rejected: active == null
+            ? current.rejected
+            : ({...current.rejected}..remove(active)),
+      ),
+    );
+  }
+
+  /// Drops every rejection, restoring those cells to the values actually
+  /// stored (FR-023a).
+  ///
+  /// Distinct from [revertAll], which is about *written* prices and issues
+  /// writes to undo them. A rejection was refused — nothing reached the
+  /// server — so discarding one is local, instant and safe, and must not
+  /// cost the user the accepted edits sitting beside it.
+  void dismissRejected() {
+    final current = state.value;
+    if (current == null || current.rejected.isEmpty) return;
+    state = AsyncData(current.copyWith(rejected: const {}));
   }
 
   /// Re-reads the worklist counts, but **only** when a write changed whether

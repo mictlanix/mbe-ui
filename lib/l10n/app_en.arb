@@ -759,6 +759,10 @@
   "@pricingGridUndoLast": {},
   "pricingGridRevertAll": "Revert all",
   "@pricingGridRevertAll": {},
+  "pricingGridDismissRejected": "Dismiss rejected",
+  "@pricingGridDismissRejected": {
+    "description": "Pricing grid summary bar: clears the refused edits without touching the accepted ones (spec 033 FR-023a)"
+  },
   "pricingGridDiscardTitle": "Discard outstanding changes?",
   "@pricingGridDiscardTitle": {},
   "pricingGridDiscardBody": "The undo history and any rejected text will be lost. Prices already saved are unaffected.",

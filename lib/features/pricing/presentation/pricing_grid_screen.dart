@@ -253,6 +253,16 @@ class _ChangeSummaryBar extends ConsumerWidget {
               Icon(Icons.history, size: 20, color: theme.colorScheme.primary),
               const SizedBox(width: 12),
               Expanded(child: Text(summary)),
+              // Only offered when there is something to dismiss, and placed
+              // before the undo actions: it is the cheapest, safest of the
+              // three (nothing was ever written) and the one a user with a
+              // flagged cell is looking for.
+              if (rejected > 0)
+                TextButton(
+                  key: const Key('pricing_grid_dismiss_rejected'),
+                  onPressed: notifier.dismissRejected,
+                  child: Text(l10n.pricingGridDismissRejected),
+                ),
               TextButton(
                 key: const Key('pricing_grid_undo_last'),
                 onPressed: state.history.isEmpty

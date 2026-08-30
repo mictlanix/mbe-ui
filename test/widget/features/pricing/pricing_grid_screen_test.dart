@@ -1381,4 +1381,92 @@ void main() {
       },
     );
   });
+
+  group('dismissing rejected edits (US4, FR-023a)', () {
+    Future<void> primeAndReject(WidgetTester tester) async {
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productRepository.list(
+          search: null,
+          status: null,
+          stockable: null,
+          salable: null,
+          purchasable: null,
+          supplier: null,
+          labels: const [],
+          missingPriceList: null,
+          skip: 0,
+          limit: 20,
+        ),
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
+      when(
+        () => productPriceRepository.listForProducts(
+          productIds: [1],
+          priceListIds: [5],
+        ),
+      ).thenAnswer(
+        (_) async => [
+          ProductPrice(
+            productPriceId: 100,
+            productId: 1,
+            priceList: _retail,
+            price: '10.0000',
+          ),
+        ],
+      );
+
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+      await tester.tap(find.byKey(const Key('price_cell_1_5')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('price_cell_field_1_5')),
+        'abc',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('the action appears only once something has been rejected', (
+      tester,
+    ) async {
+      await primeAndReject(tester);
+
+      expect(
+        find.byKey(const Key('pricing_grid_dismiss_rejected')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'dismissing clears the flag and puts the stored price back on screen, '
+      'without writing anything',
+      (tester) async {
+        await primeAndReject(tester);
+        expect(find.text('abc'), findsOneWidget);
+
+        await tester.tap(
+          find.byKey(const Key('pricing_grid_dismiss_rejected')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('abc'), findsNothing);
+        expect(find.text(r'$10.00'), findsOneWidget);
+        expect(find.byKey(const Key('price_cell_badge_1_5')), findsNothing);
+        // Nothing was ever sent, so nothing is sent to undo it either.
+        verifyNever(
+          () => productPriceRepository.update(
+            productPriceId: any(named: 'productPriceId'),
+            price: any(named: 'price'),
+          ),
+        );
+        verifyNever(() => productPriceRepository.applyPriceChanges(any()));
+        // Nothing left to report.
+        expect(find.byKey(const Key('pricing_grid_summary_bar')), findsNothing);
+      },
+    );
+  });
 }
