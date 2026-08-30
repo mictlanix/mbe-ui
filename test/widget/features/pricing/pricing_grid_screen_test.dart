@@ -25,6 +25,9 @@ import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/product_price_repository.dart';
+import 'package:decimal/decimal.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_cell_key.dart';
+import 'package:mbe_ui/features/pricing/presentation/pricing_grid_controller.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_grid_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -1013,5 +1016,369 @@ void main() {
         contains('page=2'),
       );
     });
+  });
+
+  group('opening a cell takes the caret (US1, contracts §2)', () {
+    void primeTwoRows() {
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productRepository.list(
+          search: null,
+          status: null,
+          stockable: null,
+          salable: null,
+          purchasable: null,
+          supplier: null,
+          labels: const [],
+          missingPriceList: null,
+          skip: 0,
+          limit: 20,
+        ),
+      ).thenAnswer(
+        (_) async =>
+            ProductListResult(items: [_product(1), _product(2)], total: 2),
+      );
+      when(
+        () => productPriceRepository.listForProducts(
+          productIds: [1, 2],
+          priceListIds: [5],
+        ),
+      ).thenAnswer(
+        (_) async => [
+          ProductPrice(
+            productPriceId: 100,
+            productId: 1,
+            priceList: _retail,
+            price: '10.0000',
+          ),
+          ProductPrice(
+            productPriceId: 200,
+            productId: 2,
+            priceList: _retail,
+            price: '20.0000',
+          ),
+        ],
+      );
+    }
+
+    /// Opens a cell the way traversal does — through the controller. The key
+    /// handler itself lives on the cell's `Focus` and is covered by
+    /// `price_cell_test.dart`; what matters here is what happens to a cell
+    /// that was already mounted in reading mode when it becomes the active
+    /// one, which is every arrow/Tab move after the first.
+    PricingGridController notifierOf(WidgetTester tester) =>
+        ProviderScope.containerOf(
+          tester.element(find.byType(PricingGridScreen)),
+        ).read(pricingGridControllerProvider(const PricingGridFilter()).notifier);
+
+    testWidgets(
+      'a cell that BECOMES active holds the caret — the arrowed-to field '
+      'used to render unfocused, swallowing the next keystroke',
+      (tester) async {
+        primeTwoRows();
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+        // Row 1 first, so row 2 is mounted in reading mode before it opens —
+        // the state the bug needed.
+        await tester.tap(find.byKey(const Key('price_cell_1_5')));
+        await tester.pumpAndSettle();
+        notifierOf(tester).openCell(
+          const PriceCellKey(productId: 2, priceListId: 5),
+        );
+        await tester.pumpAndSettle();
+
+        final field = tester.widget<TextField>(
+          find.byKey(const Key('price_cell_field_2_5')),
+        );
+        expect(field.focusNode?.hasFocus, isTrue);
+      },
+    );
+
+    testWidgets('and opens seeded with that cell\'s own value, selected so '
+        'typing replaces it', (tester) async {
+      primeTwoRows();
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      await tester.tap(find.byKey(const Key('price_cell_1_5')));
+      await tester.pumpAndSettle();
+      notifierOf(tester).openCell(
+        const PriceCellKey(productId: 2, priceListId: 5),
+      );
+      await tester.pumpAndSettle();
+
+      final field = tester.widget<TextField>(
+        find.byKey(const Key('price_cell_field_2_5')),
+      );
+      expect(field.controller!.text, '20.0000');
+      expect(field.controller!.selection.baseOffset, 0);
+      expect(
+        field.controller!.selection.extentOffset,
+        '20.0000'.length,
+      );
+    });
+
+    testWidgets(
+      'a cell opened after its price changed underneath it seeds from the '
+      'current value, not the one it was first built with',
+      (tester) async {
+        primeTwoRows();
+        when(() => productPriceRepository.applyPriceChanges(any())).thenAnswer((
+          invocation,
+        ) async {
+          final writes =
+              invocation.positionalArguments.first as List<PriceCellWrite>;
+          return [
+            for (final w in writes)
+              ProductPrice(
+                productPriceId: w.productId * 100,
+                productId: w.productId,
+                priceList: _retail,
+                price: w.price,
+              ),
+          ];
+        });
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+        // A column action moves row 2 while every cell sits in reading mode.
+        await notifierOf(tester).adjustByPercent(
+          priceListId: 5,
+          percent: Decimal.fromInt(10),
+        );
+        await tester.pumpAndSettle();
+
+        notifierOf(tester).openCell(
+          const PriceCellKey(productId: 2, priceListId: 5),
+        );
+        await tester.pumpAndSettle();
+
+        final field = tester.widget<TextField>(
+          find.byKey(const Key('price_cell_field_2_5')),
+        );
+        expect(field.controller!.text, '22');
+      },
+    );
+  });
+
+  group('a newly priced cell is visibly changed (US4, FR-022)', () {
+    testWidgets(
+      'a cell that had NO price shows the saved badge once priced — the '
+      'summary bar counts it, so the cell must show it, or the user cannot '
+      'tell which cells the count refers to',
+      (tester) async {
+        when(() => priceListRepository.list(limit: 100)).thenAnswer(
+          (_) async => const PriceListResult(items: [_retail], total: 1),
+        );
+        when(
+          () => productRepository.list(
+            search: null,
+            status: null,
+            stockable: null,
+            salable: null,
+            purchasable: null,
+            supplier: null,
+            labels: const [],
+            missingPriceList: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => ProductListResult(items: [_product(1)], total: 1),
+        );
+        // Unpriced on load — the state a "Missing «list»" worklist is full of.
+        when(
+          () => productPriceRepository.listForProducts(
+            productIds: [1],
+            priceListIds: [5],
+          ),
+        ).thenAnswer((_) async => const []);
+        when(
+          () => productPriceRepository.create(
+            productId: 1,
+            priceListId: 5,
+            price: '20',
+          ),
+        ).thenAnswer(
+          (_) async => ProductPrice(
+            productPriceId: 100,
+            productId: 1,
+            priceList: _retail,
+            price: '20.0000',
+          ),
+        );
+
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        await tester.tap(find.byKey(const Key('price_cell_1_5')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('price_cell_field_1_5')),
+          '20',
+        );
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('price_cell_badge_1_5')), findsOneWidget);
+        expect(find.text('1 price changed'), findsOneWidget);
+      },
+    );
+  });
+
+  group('worklist counts follow the work (US2, FR-017)', () {
+    testWidgets(
+      'pricing a previously unpriced cell re-reads the chip counts — they '
+      'used to sit at their load-time numbers while the user worked the '
+      'list down',
+      (tester) async {
+        when(() => priceListRepository.list(limit: 100)).thenAnswer(
+          (_) async => const PriceListResult(items: [_retail], total: 1),
+        );
+        when(
+          () => productRepository.list(
+            search: null,
+            status: null,
+            stockable: null,
+            salable: null,
+            purchasable: null,
+            supplier: null,
+            labels: const [],
+            missingPriceList: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => ProductListResult(items: [_product(1)], total: 1),
+        );
+        when(
+          () => productPriceRepository.listForProducts(
+            productIds: [1],
+            priceListIds: [5],
+          ),
+        ).thenAnswer((_) async => const []);
+        when(
+          () => productPriceRepository.create(
+            productId: 1,
+            priceListId: 5,
+            price: '20',
+          ),
+        ).thenAnswer(
+          (_) async => ProductPrice(
+            productPriceId: 100,
+            productId: 1,
+            priceList: _retail,
+            price: '20.0000',
+          ),
+        );
+
+        var facetCalls = 0;
+        when(
+          () => productRepository.productMissingPriceFacets(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+          ),
+        ).thenAnswer((_) async {
+          facetCalls++;
+          return [
+            ProductMissingPriceFacet(
+              priceListId: 5,
+              missingCount: facetCalls == 1 ? 65 : 64,
+            ),
+          ];
+        });
+
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        expect(find.text('Missing Retail (65)'), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('price_cell_1_5')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('price_cell_field_1_5')),
+          '20',
+        );
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Missing Retail (64)'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'revaluing a price that already existed does NOT re-read the counts — '
+      'a missing-count cannot move, and this screen is built for bulk edits',
+      (tester) async {
+        when(() => priceListRepository.list(limit: 100)).thenAnswer(
+          (_) async => const PriceListResult(items: [_retail], total: 1),
+        );
+        when(
+          () => productRepository.list(
+            search: null,
+            status: null,
+            stockable: null,
+            salable: null,
+            purchasable: null,
+            supplier: null,
+            labels: const [],
+            missingPriceList: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => ProductListResult(items: [_product(1)], total: 1),
+        );
+        when(
+          () => productPriceRepository.listForProducts(
+            productIds: [1],
+            priceListIds: [5],
+          ),
+        ).thenAnswer(
+          (_) async => [
+            ProductPrice(
+              productPriceId: 100,
+              productId: 1,
+              priceList: _retail,
+              price: '10.0000',
+            ),
+          ],
+        );
+        when(
+          () => productPriceRepository.update(productPriceId: 100, price: '20'),
+        ).thenAnswer(
+          (_) async => ProductPrice(
+            productPriceId: 100,
+            productId: 1,
+            priceList: _retail,
+            price: '20.0000',
+          ),
+        );
+
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        await tester.tap(find.byKey(const Key('price_cell_1_5')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('price_cell_field_1_5')),
+          '20',
+        );
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+
+        // Once, on load — not again.
+        verify(
+          () => productRepository.productMissingPriceFacets(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+          ),
+        ).called(1);
+      },
+    );
   });
 }

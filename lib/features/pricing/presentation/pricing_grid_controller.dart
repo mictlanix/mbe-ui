@@ -375,6 +375,20 @@ class PricingGridController extends _$PricingGridController {
     state = AsyncData(current.copyWith(active: null));
   }
 
+  /// Re-reads the worklist counts, but **only** when a write changed whether
+  /// some cell has a price at all.
+  ///
+  /// The chips count *products with no price on a list*, so revaluing an
+  /// existing price cannot move them — only creating one can (or, later,
+  /// clearing one). Invalidating on every commit would put an extra request
+  /// behind every keystroke-ended edit on a screen built for bulk editing;
+  /// invalidating on none left the chips reading their load-time numbers
+  /// while the user worked the list down, which is what the recording showed.
+  void _refreshWorklistCountsIfNeeded({required bool createdOrCleared}) {
+    if (!createdOrCleared) return;
+    ref.invalidate(pricingGridMissingFacetsProvider);
+  }
+
   /// Reverses the newest change — a single cell edit or a whole column
   /// action alike, because a [PriceChange] carries every write it made
   /// (FR-016, FR-024, SC-004).
@@ -578,6 +592,9 @@ class PricingGridController extends _$PricingGridController {
           ],
         ),
       );
+      _refreshWorklistCountsIfNeeded(
+        createdOrCleared: deduped.any((w) => w.previous == null),
+      );
       return deduped.length;
     } on AppError {
       // All-or-nothing on the server, so nothing local changes either: the
@@ -773,6 +790,7 @@ class PricingGridController extends _$PricingGridController {
           ],
         ),
       );
+      _refreshWorklistCountsIfNeeded(createdOrCleared: existing == null);
     } on AppError catch (e) {
       final latest = state.value;
       if (latest == null) return;

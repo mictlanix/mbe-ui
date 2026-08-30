@@ -69,6 +69,15 @@ void main() {
       final listName =
           'IntegrationTest-${DateTime.now().millisecondsSinceEpoch}';
       final priceList = await priceListRepository.create(name: listName);
+      // Registered the moment the record exists, not at the end of the body:
+      // an assertion that fails midway used to skip the cleanup entirely and
+      // strand a real price list in the deployment — which is exactly what
+      // happened on this file's first live run, leaving a stray column and
+      // worklist chip on everyone's pricing grid. `addTearDown` runs whether
+      // the test passes, fails or throws.
+      addTearDown(
+        () => priceListRepository.delete(priceListId: priceList.priceListId),
+      );
       expect(priceList.name, listName);
 
       // 2. US1 — price a known product on that list. The grid never sends a
@@ -142,16 +151,17 @@ void main() {
         base: 1, // usd
         target: 0, // mxn
       );
+      addTearDown(
+        () => exchangeRateRepository.delete(
+          exchangeRateId: exchangeRate.exchangeRateId,
+        ),
+      );
       expect(exchangeRate.rate, _amount('17.50'));
 
-      // Cleanup: leave no test data behind. Deleting the price list now
-      // sweeps its `product_price` rows with it (mbe-api#181) — before that
-      // landed, this line failed on any list that had ever been priced,
-      // which is what #181 was filed about.
-      await exchangeRateRepository.delete(
-        exchangeRateId: exchangeRate.exchangeRateId,
-      );
-      await priceListRepository.delete(priceListId: priceList.priceListId);
+      // Cleanup is registered per-resource above, so nothing is left behind
+      // on a failure. Deleting the price list sweeps its `product_price`
+      // rows with it (mbe-api#181) — before that landed, the delete failed on
+      // any list that had ever been priced, which is what #181 was about.
     },
     skip: !_canRun,
   );

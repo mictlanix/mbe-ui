@@ -741,6 +741,10 @@
     "description": "Pricing grid cell tooltip after a stored change (spec 033 FR-022)",
     "placeholders": {"previous": {"type": "String"}}
   },
+  "pricingGridCellSavedNew": "Saved · newly priced",
+  "@pricingGridCellSavedNew": {
+    "description": "Pricing grid cell tooltip for a cell that had no price before this session (spec 033 FR-022)"
+  },
   "pricingGridSummary": "{count, plural, =1{1 price changed} other{{count} prices changed}}",
   "@pricingGridSummary": {
     "description": "Pricing grid change-summary bar count (spec 033 FR-023)",

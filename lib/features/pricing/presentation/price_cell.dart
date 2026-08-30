@@ -37,6 +37,7 @@ class PriceCell extends ConsumerStatefulWidget {
     required this.priceListId,
     required this.price,
     required this.rejected,
+    this.hasChanged = false,
     this.changedFrom,
     required this.inFlight,
     required this.isActive,
@@ -53,9 +54,17 @@ class PriceCell extends ConsumerStatefulWidget {
   final ProductPrice? price;
   final RejectedEdit? rejected;
 
-  /// The value this cell held when the view loaded, when that differs from
-  /// what it holds now — the "saved · was X" badge and tooltip (FR-022).
-  /// `null` means unchanged since load, which shows no badge at all.
+  /// Whether this cell differs from the value it held when the view loaded —
+  /// the "saved" badge (FR-022).
+  ///
+  /// Separate from [changedFrom] because a cell that had **no** price before
+  /// is still a change, and the badge is how the user finds the cells the
+  /// summary bar is counting. Conflating the two hid the badge on exactly
+  /// the cells a "Missing «list»" worklist exists to fill.
+  final bool hasChanged;
+
+  /// The value this cell held when the view loaded, when there was one —
+  /// the "was X" half of the tooltip. `null` on a cell that was unpriced.
   final String? changedFrom;
 
   final bool inFlight;
@@ -82,14 +91,41 @@ class _PriceCellState extends ConsumerState<PriceCell> {
   @override
   void initState() {
     super.initState();
-    final rejected = widget.rejected;
-    _controller = TextEditingController(
-      text: rejected != null ? rejected.typed : (widget.price?.price ?? ''),
-    );
+    _controller = TextEditingController();
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
+    if (widget.isActive) _activate();
+  }
+
+  @override
+  void didUpdateWidget(PriceCell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A cell is opened far more often by *becoming* active than by being
+    // built active: keyboard traversal moves the selection between cells
+    // that are already mounted in reading mode. Everything below used to run
+    // in `initState` alone, so an arrowed-to cell showed a field it had never
+    // seeded, never selected and — the reported symptom — never focused,
+    // leaving a caret-less box that swallowed the next keystroke.
+    if (widget.isActive && !oldWidget.isActive) _activate();
+  }
+
+  /// Seeds this cell's field from the value it is opening on, then takes the
+  /// caret and selects the text so typing replaces rather than appends.
+  ///
+  /// Seeding here rather than at mount also fixes a staler bug: a cell whose
+  /// price changed while it sat in reading mode (a column action, an undo)
+  /// would otherwise open showing whatever it held when the row was first
+  /// built.
+  void _activate() {
+    final rejected = widget.rejected;
+    _controller.text = rejected != null
+        ? rejected.typed
+        : (widget.price?.price ?? '');
+    // Post-frame: on the false→true edge this runs during a build, and the
+    // field being focused is only in the tree once that build lands.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted || !widget.isActive) return;
+      _focusNode.requestFocus();
       _controller.selection = TextSelection(
         baseOffset: 0,
         extentOffset: _controller.text.length,
@@ -220,16 +256,16 @@ class _PriceCellState extends ConsumerState<PriceCell> {
         child: const CircularProgressIndicator(strokeWidth: 2),
       );
       tooltip = l10n.pricingGridCellSaving;
-    } else if (widget.changedFrom != null) {
+    } else if (widget.hasChanged) {
       badge = Icon(
         Icons.check_circle_outline,
         key: badgeKey,
         size: 14,
         color: colors.primary,
       );
-      tooltip = l10n.pricingGridCellSaved(
-        fmt.display.currency(widget.changedFrom),
-      );
+      tooltip = widget.changedFrom != null
+          ? l10n.pricingGridCellSaved(fmt.display.currency(widget.changedFrom))
+          : l10n.pricingGridCellSavedNew;
     } else {
       badge = null;
     }
@@ -270,7 +306,8 @@ class _PriceCellState extends ConsumerState<PriceCell> {
         key: Key('price_cell_field_${widget.productId}_${widget.priceListId}'),
         controller: _controller,
         focusNode: _focusNode,
-        autofocus: true,
+        // Focus is requested by `_activate()`, which fires on *becoming*
+        // active too — `autofocus` only ever covered the mount case.
         textAlign: TextAlign.right,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         onSubmitted: (_) => _commitAndMove(PriceCellMove.down),

@@ -269,6 +269,7 @@
   "pricingGridColumnActionFailed": "No se pudo aplicar la acción. Ningún precio cambió.",
   "pricingGridCellSaving": "Guardando…",
   "pricingGridCellSaved": "Guardado · antes {previous}",
+  "pricingGridCellSavedNew": "Guardado · precio nuevo",
   "pricingGridSummary": "{count, plural, =1{1 precio cambiado} other{{count} precios cambiados}}",
   "pricingGridSummaryRejected": "{count, plural, =1{1 rechazado} other{{count} rechazados}}",
   "pricingGridUndoLast": "Deshacer último",

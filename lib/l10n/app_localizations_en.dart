@@ -798,6 +798,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get pricingGridCellSavedNew => 'Saved · newly priced';
+
+  @override
   String pricingGridSummary(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

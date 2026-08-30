@@ -1555,6 +1555,12 @@ abstract class AppLocalizations {
   /// **'Saved · was {previous}'**
   String pricingGridCellSaved(String previous);
 
+  /// Pricing grid cell tooltip for a cell that had no price before this session (spec 033 FR-022)
+  ///
+  /// In en, this message translates to:
+  /// **'Saved · newly priced'**
+  String get pricingGridCellSavedNew;
+
   /// Pricing grid change-summary bar count (spec 033 FR-023)
   ///
   /// In en, this message translates to:

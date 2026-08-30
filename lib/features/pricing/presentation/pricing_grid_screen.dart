@@ -507,9 +507,15 @@ class _PricingGridState extends ConsumerState<_PricingGrid> {
                     // Same amount, not same string: the server returns
                     // prices at `Numeric(18,4)` scale, so `120.00` and
                     // `120.0000` are one price and must not read as a change.
-                    changedFrom: was != null && !sameAmount(was, now)
-                        ? was
-                        : null,
+                    //
+                    // `baseline` holds an entry for every visible cell, with a
+                    // null *value* for one that had no price — so membership
+                    // is what says "this cell was loaded", and the value is
+                    // only the "was X" half of the tooltip.
+                    hasChanged:
+                        state.baseline.containsKey(key) &&
+                        !sameAmount(was, now),
+                    changedFrom: was,
                     inFlight: state.inFlight.contains(key),
                     isActive: state.active == key,
                     canUpdate: canUpdate,
