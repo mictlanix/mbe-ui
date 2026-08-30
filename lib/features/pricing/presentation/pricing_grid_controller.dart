@@ -746,6 +746,26 @@ class PricingGridController extends _$PricingGridController {
     if (current == null) return;
     final key = PriceCellKey(productId: productId, priceListId: priceListId);
     final trimmed = typed.trim();
+    final existingBefore = current.priceAt(key);
+
+    // Nothing typed into a cell that has no price is not an error — it is
+    // the *unchanged* case (FR-010), spelled the only way an unpriced cell
+    // can spell it. This has to be tested before validation, because an
+    // empty string is not a valid amount and would otherwise be flagged.
+    //
+    // It matters far more than it looks: traversing a "Missing «list»"
+    // worklist means arrowing through cells that are unpriced by definition,
+    // and every one passed over without typing was being marked as a
+    // rejected edit the user never made.
+    if (trimmed.isEmpty && existingBefore == null) {
+      state = AsyncData(
+        current.copyWith(
+          active: null,
+          rejected: {...current.rejected}..remove(key),
+        ),
+      );
+      return;
+    }
 
     if (!PricingValidators.isNonNegativeDecimal(trimmed)) {
       state = AsyncData(
@@ -763,7 +783,7 @@ class PricingGridController extends _$PricingGridController {
       return;
     }
 
-    final existing = current.priceAt(key);
+    final existing = existingBefore;
     if (existing != null && sameAmount(existing.price, trimmed)) {
       final rejected = {...current.rejected}..remove(key);
       state = AsyncData(current.copyWith(active: null, rejected: rejected));

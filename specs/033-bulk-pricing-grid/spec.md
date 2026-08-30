@@ -333,6 +333,13 @@ each record still works.
   keep the typed text visible and flagged, and state why.
 - **FR-010**: Submitting a value equal to the stored price MUST NOT issue a
   write.
+- **FR-010a**: An **empty** submit on a cell that has no price is the same
+  no-op — it is what "unchanged" looks like on an unpriced cell, not an
+  invalid amount. Traversing a "Missing «list»" worklist means arrowing
+  through cells that are unpriced by definition, so treating this as a
+  rejection flagged every cell the user passed over with an edit they never
+  made. An empty submit on a cell that *does* have a price stays refused
+  until FR-011's clearing is actually built.
 - **FR-011**: Clearing a cell MUST be a distinct, deliberate outcome from
   entering 0, and the spec's chosen meaning of "cleared" MUST survive a
   reload.

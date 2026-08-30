@@ -191,6 +191,84 @@ void main() {
     }
 
     test(
+      'arrowing through an unpriced cell without typing is a no-op, not a '
+      'rejection — a "Missing «list»" worklist is unpriced cells by '
+      'definition, and traversing one used to flag every cell passed over',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1)],
+          prices: const [],
+        );
+
+        await container
+            .read(pricingGridControllerProvider(filter).notifier)
+            .commitCell(productId: 1, priceListId: 5, typed: '');
+
+        final state = container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue;
+        expect(state.rejected, isEmpty);
+        expect(state.hasChanges, isFalse);
+        verifyNever(
+          () => productPriceRepository.create(
+            productId: any(named: 'productId'),
+            priceListId: any(named: 'priceListId'),
+            price: any(named: 'price'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'whitespace alone is the same no-op — the field can be spaced without '
+      'becoming an error',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1)],
+          prices: const [],
+        );
+
+        await container
+            .read(pricingGridControllerProvider(filter).notifier)
+            .commitCell(productId: 1, priceListId: 5, typed: '   ');
+
+        expect(
+          container.read(pricingGridControllerProvider(filter)).requireValue
+              .rejected,
+          isEmpty,
+        );
+      },
+    );
+
+    test(
+      'emptying a cell that DOES have a price is still refused — the grid '
+      'has no delete path, so silently doing nothing would look like it '
+      'worked (FR-011 remains unimplemented)',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1)],
+          prices: [_price(productId: 1, priceListId: 5, price: '10.0000')],
+        );
+
+        await container
+            .read(pricingGridControllerProvider(filter).notifier)
+            .commitCell(productId: 1, priceListId: 5, typed: '');
+
+        final state = container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue;
+        expect(state.rejectedCount, 1);
+        expect(
+          state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
+          '10.0000',
+        );
+      },
+    );
+
+    test(
       'rejects a non-numeric value without issuing any write (FR-009)',
       () async {
         await primeWith(
