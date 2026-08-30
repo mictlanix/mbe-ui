@@ -16,7 +16,7 @@
 
 ## 2026-08-02
 - Quitar restricción de plantas de producción
-- Filtrar Activo por defecto
+- ~~Filtrar Activo por defecto~~
 - Operadores -> Agregar foto de licencia
 - Vehiculos -> Agregar Foto de tarjeta de circulación
 - Renombrar Sitio de producción => Planta de producción
@@ -36,3 +36,26 @@
 
 ## 2026-08-16
 - ~~Falta botón para editar destinos (destination card)~~
+
+## 2026-08-30
+- Ajustes a ui de cruds:
+  - Habilitar filtro status=activo por defecto
+  - Corrección de márgenes/paddings horizontales de CatalogFilterBar
+  - Cambiar formularios sencillos a drawers:
+    - PriceLists
+    - Suppliers
+    - Labels
+    - Employees
+    - Customers
+    - Taxpayer recipients
+    - Expenses
+    - Vehicles
+    - Operators
+    - Warehouse
+    - Point of Sale
+    - Cash Drawer
+    - Payment Method?
+
+  - Esquinas redondeadas de DataTableView?
+  - Hairline borders en tablas?
+  - Hairline borders en cards de FacilityCard WarehouseChildRow PointSaleChildRow CashDrawerChildRow
