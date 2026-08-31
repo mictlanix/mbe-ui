@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -44,58 +45,58 @@ class EmployeesListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('employees_search_field'),
-              label: l10n.employeesSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) => context.go(
-                query
-                    .copyWith(search: value, pageIndex: 0)
-                    .toUri(_employeesPath)
-                    .toString(),
-              ),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('employees_search_field'),
+            label: l10n.employeesSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _employeesPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () =>
+                  ref.invalidate(employeesListControllerProvider(filter)),
             ),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_employee_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newEmployeeTooltip),
-                  onPressed: () => context.push('/employees/new'),
-                ),
-            ],
-            filters: [
-              Badge.count(
-                count: filter.activeFilterCount,
-                isLabelVisible: filter.hasActiveFilters,
-                child: IconButton.outlined(
-                  key: const Key('employees_filter_button'),
-                  icon: const Icon(Icons.tune),
-                  tooltip: l10n.filtersTooltip,
-                  onPressed: () => showCatalogFilterSheet(
-                    context,
-                    title: l10n.filtersButton,
-                    clearAllLabel: l10n.clearAllFilters,
-                    applyLabel: l10n.applyFilters,
-                    onClearAll: () => context.go(_employeesPath),
-                    builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, query) =>
-                          _EmployeeFiltersPanel(query: query),
-                    ),
+          ),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_employee_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newEmployeeTooltip),
+                onPressed: () => context.push('/employees/new'),
+              ),
+          ],
+          filters: [
+            Badge.count(
+              count: filter.activeFilterCount,
+              isLabelVisible: filter.hasActiveFilters,
+              child: IconButton.outlined(
+                key: const Key('employees_filter_button'),
+                icon: const Icon(Icons.tune),
+                tooltip: l10n.filtersTooltip,
+                onPressed: () => showCatalogFilterSheet(
+                  context,
+                  title: l10n.filtersButton,
+                  clearAllLabel: l10n.clearAllFilters,
+                  applyLabel: l10n.applyFilters,
+                  onClearAll: () => context.go(_employeesPath),
+                  builder: (_) => CurrentListQueryBuilder(
+                    builder: (context, query) =>
+                        _EmployeeFiltersPanel(query: query),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<EmployeeListItem>(
             state: pageAsync,
-            isFiltered: query.isFiltered,
+            isFiltered: isFilteredBeyondStatusDefault(query, filter.status),
             emptyMessage: l10n.noEmployeesFound,
             createLabel: canCreate ? l10n.newEmployeeTooltip : null,
             onCreate: canCreate ? () => context.push('/employees/new') : null,
@@ -186,9 +187,8 @@ class _EmployeeFiltersPanel extends ConsumerWidget {
         EntityStatusFilterChips(
           filterKey: 'employees_filter_status',
           value: filter.status,
-          onChanged: (status) => goTo(
-            query.withFacet('status', status?.name).copyWith(pageIndex: 0),
-          ),
+          onChanged: (status) =>
+              goTo(encodeStatusFacet(query, status).copyWith(pageIndex: 0)),
         ),
         const SizedBox(height: 12),
         _TriStateFilterChip(

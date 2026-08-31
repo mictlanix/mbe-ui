@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
@@ -69,7 +70,10 @@ class SalesOrdersListScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(l10n.salesOrderNoFacilityMessage, textAlign: TextAlign.center),
+              Text(
+                l10n.salesOrderNoFacilityMessage,
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -89,97 +93,109 @@ class SalesOrdersListScreen extends ConsumerWidget {
     final hasRegister = ref.watch(registerPointSaleProvider) != null;
     final fmt = ref.watch(formattersProvider);
 
-    void goTo(ListQuery updated) => context.go(updated.toUri(_ordersPath).toString());
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_ordersPath).toString());
 
     Future<void> openOrder(int orderId) async {
       await context.push('$_ordersPath/$orderId');
       if (!context.mounted) return;
-      ref.invalidate(salesOrdersListControllerProvider(filter, isAdministrator));
+      ref.invalidate(
+        salesOrdersListControllerProvider(filter, isAdministrator),
+      );
     }
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('sales_orders_search_field'),
-              label: l10n.salesOrdersSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) =>
-                  goTo(query.copyWith(search: value, pageIndex: 0)),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('sales_orders_search_field'),
+            label: l10n.salesOrdersSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _ordersPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () => ref.invalidate(
+                salesOrdersListControllerProvider(filter, isAdministrator),
+              ),
             ),
-            actions: [
-              // FR-003: absent without create rights, no notice either — a
-              // read-only user gets nothing to explain. FR-014: with create
-              // rights but no register, the button is replaced by the
-              // notice naming the missing setting, told before the user
-              // types anything.
-              if (canCreate && hasRegister) ...[
-                // US5 scenario 4: an administrator viewing another
-                // facility's orders still creates in their own — said
-                // before they begin, not after a surprising result.
-                if (isAdministrator && filter.facility != null && filter.facility != facilityId)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Tooltip(
-                      message: l10n.salesOrderCrossFacilityNotice,
-                      child: Icon(
-                        Icons.info_outline,
-                        key: const Key('sales_orders_cross_facility_notice'),
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+          ),
+          actions: [
+            // FR-003: absent without create rights, no notice either — a
+            // read-only user gets nothing to explain. FR-014: with create
+            // rights but no register, the button is replaced by the
+            // notice naming the missing setting, told before the user
+            // types anything.
+            if (canCreate && hasRegister) ...[
+              // US5 scenario 4: an administrator viewing another
+              // facility's orders still creates in their own — said
+              // before they begin, not after a surprising result.
+              if (isAdministrator &&
+                  filter.facility != null &&
+                  filter.facility != facilityId)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Tooltip(
+                    message: l10n.salesOrderCrossFacilityNotice,
+                    child: Icon(
+                      Icons.info_outline,
+                      key: const Key('sales_orders_cross_facility_notice'),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                FilledButton.icon(
-                  key: const Key('sales_orders_new_order_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.salesOrderNewAction),
-                  onPressed: () => context.push('$_ordersPath/new'),
                 ),
-              ] else if (canCreate)
-                const OrderNoRegisterNotice(),
-            ],
-            filters: [
-              Badge.count(
-                count: filter.activeFilterCount(today),
-                isLabelVisible: filter.hasActiveFilters(today),
-                child: IconButton.outlined(
-                  key: const Key('sales_orders_filter_button'),
-                  icon: const Icon(Icons.tune),
-                  tooltip: l10n.filtersTooltip,
-                  onPressed: () => showCatalogFilterSheet(
-                    context,
-                    title: l10n.filtersButton,
-                    clearAllLabel: l10n.clearAllFilters,
-                    applyLabel: l10n.applyFilters,
-                    onClearAll: () => goTo(
-                      query
-                          .withFacet('date-from', null)
-                          .withFacet('date-to', null)
-                          .withFacet('status', null)
-                          .withFacet('salesperson', null)
-                          .withFacet('facility', null)
-                          .copyWith(pageIndex: 0),
-                    ),
-                    builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, currentQuery) => _SalesOrdersFiltersPanel(
-                        query: currentQuery,
-                        today: today,
-                        isAdministrator: isAdministrator,
-                      ),
-                    ),
+              FilledButton.icon(
+                key: const Key('sales_orders_new_order_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.salesOrderNewAction),
+                onPressed: () => context.push('$_ordersPath/new'),
+              ),
+            ] else if (canCreate)
+              const OrderNoRegisterNotice(),
+          ],
+          filters: [
+            Badge.count(
+              count: filter.activeFilterCount(today),
+              isLabelVisible: filter.hasActiveFilters(today),
+              child: IconButton.outlined(
+                key: const Key('sales_orders_filter_button'),
+                icon: const Icon(Icons.tune),
+                tooltip: l10n.filtersTooltip,
+                onPressed: () => showCatalogFilterSheet(
+                  context,
+                  title: l10n.filtersButton,
+                  clearAllLabel: l10n.clearAllFilters,
+                  applyLabel: l10n.applyFilters,
+                  onClearAll: () => goTo(
+                    query
+                        .withFacet('date-from', null)
+                        .withFacet('date-to', null)
+                        .withFacet('status', null)
+                        .withFacet('salesperson', null)
+                        .withFacet('facility', null)
+                        .copyWith(pageIndex: 0),
+                  ),
+                  builder: (_) => CurrentListQueryBuilder(
+                    builder: (context, currentQuery) =>
+                        _SalesOrdersFiltersPanel(
+                          query: currentQuery,
+                          today: today,
+                          isAdministrator: isAdministrator,
+                        ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<OpenSale>(
             state: pageAsync,
-            isFiltered: filter.hasActiveFilters(today) || filter.search.isNotEmpty,
+            isFiltered:
+                filter.hasActiveFilters(today) || filter.search.isNotEmpty,
             emptyMessage: l10n.salesOrdersEmptyMessage,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_ordersPath),
@@ -193,12 +209,14 @@ class SalesOrdersListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.salesOrdersColumnReference,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) => Text('${sale.serial ?? sale.id}'),
+                  cellBuilder: (context, sale) =>
+                      Text('${sale.serial ?? sale.id}'),
                 ),
                 DataTableColumn(
                   label: l10n.salesOrdersColumnDate,
                   size: ColumnSize.M,
-                  cellBuilder: (context, sale) => Text(fmt.display.dateTime(sale.date)),
+                  cellBuilder: (context, sale) =>
+                      Text(fmt.display.dateTime(sale.date)),
                 ),
                 DataTableColumn.text(
                   label: l10n.salesOrdersColumnCustomer,
@@ -208,31 +226,43 @@ class SalesOrdersListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.salesOrdersColumnStatus,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) => PosSaleStatusChip(status: sale.status),
+                  cellBuilder: (context, sale) =>
+                      PosSaleStatusChip(status: sale.status),
                 ),
                 DataTableColumn(
                   label: l10n.salesOrdersColumnTotal,
                   numeric: true,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) => Text(fmt.display.currency(sale.total)),
+                  cellBuilder: (context, sale) =>
+                      Text(fmt.display.currency(sale.total)),
                 ),
                 DataTableColumn(
                   label: l10n.salesOrdersColumnBalance,
                   numeric: true,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) => Text(fmt.display.currency(sale.balance)),
+                  cellBuilder: (context, sale) =>
+                      Text(fmt.display.currency(sale.balance)),
                 ),
               ],
               rows: page.items,
               pagination: page,
-              onPageChanged: (pageIndex) => context
-                  .go(query.copyWith(pageIndex: pageIndex).toUri(_ordersPath).toString()),
+              onPageChanged: (pageIndex) => context.go(
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_ordersPath)
+                    .toString(),
+              ),
               rowActionsBuilder: (context, sale) {
-                final canUpdate = access.can(SystemObject.salesOrders, AccessRight.update);
+                final canUpdate = access.can(
+                  SystemObject.salesOrders,
+                  AccessRight.update,
+                );
                 final editable = sale.status == SaleStatus.draft;
                 return buildCatalogRowActions(
                   editTooltip: l10n.editActionTooltip,
-                  onEdit: canUpdate && editable ? () => openOrder(sale.id) : null,
+                  onEdit: canUpdate && editable
+                      ? () => openOrder(sale.id)
+                      : null,
                 );
               },
               onRowTap: (sale) => openOrder(sale.id),
@@ -270,13 +300,17 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
     );
     final l10n = AppLocalizations.of(context)!;
 
-    void goTo(ListQuery updated) => context.go(updated.toUri(_ordersPath).toString());
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_ordersPath).toString());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.dateRangeFilterLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.dateRangeFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         DateRangeFilterChip(
           from: filter.from,
@@ -296,7 +330,10 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Text(l10n.posSalesStatusFilterLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.posSalesStatusFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -314,8 +351,9 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
                 key: Key('sales_orders_filter_status_${status.name}'),
                 label: Text(posSaleStatusLabel(l10n, status)),
                 selected: filter.status == status,
-                onSelected: (_) =>
-                    goTo(query.withFacet('status', status.name).copyWith(pageIndex: 0)),
+                onSelected: (_) => goTo(
+                  query.withFacet('status', status.name).copyWith(pageIndex: 0),
+                ),
               ),
           ],
         ),
@@ -328,15 +366,24 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
             optionsBuilder: (search) async {
               final result = await ref
                   .read(employeeRepositoryProvider)
-                  .list(search: search.isEmpty ? null : search, salesPerson: true);
+                  .list(
+                    search: search.isEmpty ? null : search,
+                    salesPerson: true,
+                  );
               return result.items;
             },
             onSelected: (e) => goTo(
-              query.withFacet('salesperson', '${e.employeeId}').copyWith(pageIndex: 0),
+              query
+                  .withFacet('salesperson', '${e.employeeId}')
+                  .copyWith(pageIndex: 0),
             ),
             // Scenario 2: unset shows "everyone", not a blank field.
             initialDisplayText: filter.salesperson != null
-                ? ref.watch(employeeDisplayNameProvider(filter.salesperson!)).valueOrNull ??
+                ? ref
+                          .watch(
+                            employeeDisplayNameProvider(filter.salesperson!),
+                          )
+                          .valueOrNull ??
                       '${filter.salesperson}'
                 : l10n.salesOrderSalespersonEveryone,
           ),
@@ -346,9 +393,12 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
               // Scenario 2: unset resolves to the caller's own facility —
               // the one `SalesOrdersListController` requests when this
               // facet is absent — rather than a blank field.
-              final effectiveFacilityId = filter.facility ?? ref.watch(userFacilityIdProvider);
+              final effectiveFacilityId =
+                  filter.facility ?? ref.watch(userFacilityIdProvider);
               final resolvedName = effectiveFacilityId != null
-                  ? ref.watch(facilityDisplayNameProvider(effectiveFacilityId)).valueOrNull
+                  ? ref
+                        .watch(facilityDisplayNameProvider(effectiveFacilityId))
+                        .valueOrNull
                   : null;
               return CatalogEntityPicker<FacilityListItem>(
                 key: const Key('sales_orders_filter_facility'),
@@ -361,9 +411,12 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
                   return result.items;
                 },
                 onSelected: (f) => goTo(
-                  query.withFacet('facility', '${f.facilityId}').copyWith(pageIndex: 0),
+                  query
+                      .withFacet('facility', '${f.facilityId}')
+                      .copyWith(pageIndex: 0),
                 ),
-                initialDisplayText: resolvedName ?? effectiveFacilityId?.toString(),
+                initialDisplayText:
+                    resolvedName ?? effectiveFacilityId?.toString(),
               );
             },
           ),

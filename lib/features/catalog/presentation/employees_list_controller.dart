@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 
@@ -16,15 +17,6 @@ bool? _parseTriState(String? raw) {
   if (raw == 'true') return true;
   if (raw == 'false') return false;
   return null;
-}
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
 }
 
 /// The Employees list screen's addressable view state
@@ -42,12 +34,9 @@ class EmployeeFilter with _$EmployeeFilter {
   }) = _EmployeeFilter;
 
   factory EmployeeFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     return EmployeeFilter(
       search: query.search,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       salesPerson: _parseTriState(query.facet('salesPerson')),
       pageIndex: query.pageIndex,
     );

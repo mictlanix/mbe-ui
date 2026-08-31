@@ -26,7 +26,7 @@ panels).
 **Purpose**: Nothing to initialize — this feature adds two new files to an existing, fully
 configured project. No dependency, tool, or scaffolding changes are needed.
 
-- [ ] T001 Confirm the working tree is clean and `flutter analyze && flutter test` pass before any
+- [X] T001 Confirm the working tree is clean and `flutter analyze && flutter test` pass before any
       change, as the pre-change baseline for every later regression check.
 
 ---
@@ -39,14 +39,18 @@ underlies US4 and is a prerequisite the panel work in US5 visually depends on be
 
 **⚠️ Nothing in Phase 3+ may start until this phase's checkpoint is reached.**
 
-- [ ] T002 [P] Add a hairline `BorderSide` helper (colour `scheme.outlineVariant`, width 1) to
-      `lib/core/design/shapes.dart`, alongside the existing `*Radius` getters, for both card-based
-      and `Container`-based consumers to share (research.md R3).
-- [ ] T003 In `lib/core/design/component_themes.dart`, set `cardTheme.clipBehavior: Clip.antiAlias`
+- [X] T002 [P] ~~Add a hairline `BorderSide` helper to `lib/core/design/shapes.dart`~~ —
+      **implementation deviation**: `shapes.dart` has no `ColorScheme` access, so a separate
+      exported helper for a two-argument `BorderSide(color: scheme.outlineVariant)` was judged an
+      abstraction not worth its own file/export; the value is constructed inline at each of its
+      three call sites (T003, T020, T021) instead, matching the existing precedent of
+      `chipTheme`'s own `side: BorderSide(color: scheme.outlineVariant)` in the same file
+      (research.md R3).
+- [X] T003 In `lib/core/design/component_themes.dart`, set `cardTheme.clipBehavior: Clip.antiAlias`
       and add `side: <T002's helper>` to the existing `cardTheme.shape` (`RoundedRectangleBorder`).
       This is the single edit that rounds all four table corners (FR-017, FR-018, FR-020) and adds
       the hairline outline to every `Card` in the app, including `FacilityCard` (FR-019, FR-023).
-- [ ] T004 [P] Add `--pageIndex`-preserving refresh support: confirm
+- [X] T004 [P] Add `--pageIndex`-preserving refresh support: confirm
       `lib/core/widgets/list_state_views.dart`'s `CatalogListStateView` (guard at line ~51,
       `page == null && state.isLoading`) already keeps rendering the previous page during a
       Riverpod-invalidate-triggered reload — research.md R4 predicts this already holds by
@@ -70,57 +74,100 @@ record and survives a reload.
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] In `lib/core/navigation/list_query.dart`, add an `all` sentinel to the status
-      facet's decode contract: a helper (e.g. `EntityStatus? decodeStatusFacet(ListQuery query,
-      {String key = 'status'})`) that returns `EntityStatus.active` when the `status` facet key is
-      absent, `null` when it equals the literal string `all`, and the parsed `EntityStatus`
-      otherwise, falling back to `EntityStatus.active` on an unrecognized value (data-model.md §1).
-- [ ] T006 [US1] In `lib/core/widgets/entity_status_controls.dart`, change
-      `EntityStatusFilterChips`'s "All" chip `onSelected` to call `onChanged` with a distinguishable
-      "all" signal rather than `null` — since `value == null` must keep rendering "All" as selected
-      per contracts/shared-widgets.md C3, thread the sentinel through the `onChanged(EntityStatus?)`
-      call site's caller (T007) rather than changing this widget's own value type.
-- [ ] T007 [US1] Update each of the ten status-facet list controllers to build their `ListQuery`
-      facet writes and reads through T005's helper, and to default `status` to `EntityStatus.active`
-      when constructing their filter type from `ListQuery.fromQuery`, in:
-      `lib/features/auth/presentation/admin/user_profiles_list_screen.dart`,
-      `lib/features/auth/presentation/admin/users_list_screen.dart`,
-      `lib/features/catalog/presentation/employees_list_controller.dart`,
-      `lib/features/catalog/presentation/facilities_list_controller.dart`,
-      `lib/features/catalog/presentation/customers_list_controller.dart`,
-      `lib/features/catalog/presentation/vehicle_operators_list_controller.dart` (or its screen if
-      the controller has no local filter type), `lib/features/catalog/presentation/vehicles_list_controller.dart`,
-      `lib/features/catalog/presentation/products_list_screen.dart`,
-      `lib/features/catalog/presentation/payment_method_options_list_screen.dart`,
-      `lib/features/pricing/presentation/pricing_grid_screen.dart`. Each write of the "All" chip's
-      selection must now produce `status=all` in the URL, not an absent facet.
-- [ ] T008 [US1] In `lib/core/navigation/list_query.dart`, confirm `ListQuery.isFiltered` counts a
-      present `status=all` (or a present `status=<value>`) as filtered, and that a *default-applied*
-      Active state (facet key entirely absent) is separately surfaced to the filters-badge callers
-      so FR-006 holds — add a `ListQuery.hasAppliedDefault` (or equivalent) if the badge needs to
-      distinguish "user chose Active" from "user chose nothing, Active applied" from "All chosen".
-- [ ] T009 [US1] Confirm the POS sales, sales orders and cash sessions screens
-      (`lib/features/sales/presentation/pos_sales_list_screen.dart`,
-      `lib/features/sales/presentation/orders/sales_orders_list_screen.dart`,
-      `lib/features/sales/presentation/cash_sessions_screen.dart`) are untouched by T005–T008 — no
-      import of the new helper, no change to their existing `status == null` → "All" behavior
-      (FR-007 regression guard).
+- [X] T005 [US1] **Implementation deviation from the description below**: placed in
+      `lib/core/widgets/entity_status_controls.dart`, not `lib/core/navigation/list_query.dart` —
+      `ListQuery` is deliberately facet-value-type-agnostic per its own doc comment ("typed
+      interpretation happens per entity in that screen's own `XFilter.fromQuery`"), and
+      `entity_status_controls.dart` is already the shared home for every other `EntityStatus`
+      presentation/filter concern. Added `EntityStatus? decodeStatusFacet(ListQuery query, {String
+      facetKey = 'status'})` (absent → `EntityStatus.active`; literal `all` → `null`; a matching
+      name → that status; anything else → `EntityStatus.active`) and its write-side counterpart
+      `ListQuery encodeStatusFacet(ListQuery query, EntityStatus? status, {String facetKey =
+      'status'})` (data-model.md §1). This also replaces an **undocumented duplicate** found while
+      implementing: 10 list controllers each redefined an identical private
+      `extension _EntityStatusByName on List<EntityStatus> { EntityStatus? byNameOrNull(...) }` —
+      all 10 are deleted in T007, not just the originally-scoped ones.
+- [X] T006 [US1] **No change needed** — verified `EntityStatusFilterChips` (`value == null` ⇒
+      "All" chip selected, `onSelected(null)` when tapped) already matches the new semantics exactly
+      as-is: with T005's decode helper, a screen's `filter.status` is `null` precisely when the URL
+      says `status=all`, so the widget's existing `null`-means-All contract needed no edit. The
+      encode step lives entirely at each screen's call site (T007), via `encodeStatusFacet`.
+- [X] T007 [US1] Updated all 10 controllers' decode
+      (`users_controller.dart`, `user_profiles_controller.dart`,
+      `employees_list_controller.dart`, `facilities_list_controller.dart`,
+      `customers_list_controller.dart`, `vehicle_operators_list_controller.dart`,
+      `vehicles_list_controller.dart`, `products_list_controller.dart`,
+      `payment_method_options_list_controller.dart`, `pricing_grid_controller.dart`) to
+      `status: decodeStatusFacet(query)`, deleting each one's duplicate private
+      `_EntityStatusByName` extension (the drift T005 found). Updated all 10 screens' encode call
+      site (`withFacet('status', status?.name)` → `encodeStatusFacet(query, status)`) and their
+      `CatalogListStateView.isFiltered` argument (T008). All 10 screens verified — `flutter analyze`
+      clean, then the full regression pass below.
+      **Regressions this surfaced and fixed** (existing suites asserting the *old* default): 10
+      unit-test files' "defaults from an empty ListQuery" (+ two "unparseable status" cases and
+      several `hasActiveFilters`/`activeFilterCount` assertions that must now read non-zero at
+      rest, per FR-006) — each also gained an explicit-`status=all` counterpart test; 15 stale
+      `productRepository.list(status: null, …)` mocktail stubs/verifications across
+      `pricing_grid_screen_test.dart` (the grid's own status default, listed as one of the ten);
+      3 widget tests asserting `status: null` was sent to the repository on an unmodified query
+      (`users_list_screen_test.dart` ×2, `user_profiles_list_screen_test.dart`,
+      `vehicles_list_screen_test.dart`) → `EntityStatus.active`; a products-badge test's fixed
+      counts ("1"→now counts the default, "2"→"3"); a facilities-screen test's `find.text('1')`
+      collision with the filters badge now also reading "1"; and a pricing-grid widget test whose
+      `notifierOf` helper keyed a *different*, never-built provider instance
+      (`const PricingGridFilter()`, status `null`) than the one the screen actually renders
+      (`.fromQuery(ListQuery())`, status now `Active`) — fixed to key through `.fromQuery` so it
+      always matches whatever the screen decodes, regardless of what the default is. Full detail in
+      the commit; every fix is a test-expectation update to the new, intended contract, not a
+      product-code workaround.
+- [X] T008 [US1] **Simpler than scoped — no new `ListQuery` field needed.** Each of the 10
+      screens' filters-badge already reads its *decoded* `filter.hasActiveFilters`
+      (`status != null` among other facets), not the raw `ListQuery.isFiltered` — and under T005's
+      decode, `status` is non-null both when the user explicitly chose a status AND when the
+      default silently applies, so FR-006 already holds with zero extra state once T007 wires the
+      10 controllers through `decodeStatusFacet`.
+      **Real defect found instead**: `CatalogListStateView`'s own `isFiltered:` argument is fed the
+      *raw* `query.isFiltered` (URL-only) in all 10 screens (T007's list). Under the new default, a
+      catalog whose every record is inactive would decode a non-null `status` but have an *empty*
+      `facets` map (nothing written to the URL), so `query.isFiltered` reads `false` and the screen
+      renders "create your first record" for a catalog that is not actually empty — precisely the
+      edge case spec.md's Edge Cases section names.
+      **First fix attempt was itself wrong** — `isFiltered: query.isFiltered || filter.status !=
+      null` breaks the explicit-"All" case: writing the literal `status=all` puts a key in the raw
+      `facets` map, so `query.isFiltered` alone is already `true` regardless of what it decodes to,
+      making a genuinely unfiltered, empty catalog wrongly read as "try clearing filters". Caught by
+      the new tests in T011/T045 that pump with an explicit `status=all` query. Corrected with a
+      purpose-built `isFilteredBeyondStatusDefault(ListQuery query, EntityStatus? status)` helper in
+      `entity_status_controls.dart`, which excludes the `status` key from the raw facets check and
+      asks whether the *decoded* status narrows to anything less than every state — used at all 10
+      call sites as `isFiltered: isFilteredBeyondStatusDefault(query, filter.status)` (T007).
+- [X] T009 [US1] Confirmed via `git diff --stat` on the three files — zero diff. Neither the new
+      helper nor any decode/encode/isFiltered change touched them (FR-007 regression guard).
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Extend `test/unit/core/navigation/list_query_test.dart` with cases for T005's
-      decode helper: absent → Active, `all` → `null`, a valid value → that value, an invalid value →
-      Active.
-- [ ] T011 [P] [US1] Add a widget test asserting the default-Active behavior for at least Customers
-      and Vehicles (representative of the ten) in
-      `test/widget/features/catalog/customers_list_screen_test.dart` and
-      `test/widget/features/catalog/vehicles_list_screen_test.dart` (create if absent): a clean
-      route shows only active fixtures; `status=all` shows every fixture; the status chips reflect
-      the correct selection in both cases.
-- [ ] T012 [P] [US1] Add a widget test confirming `pos_sales_list_screen_test.dart`,
-      `sales_orders_list_screen_test.dart` and `cash_sessions_screen_test.dart` (wherever they
-      already live under `test/widget/`) are unchanged — a clean route still shows every state,
-      pinning FR-007 as a regression guard.
+- [X] T010 [P] [US1] **Implementation deviation matching T005**: written as a new file,
+      `test/unit/core/widgets/entity_status_controls_test.dart` (not an extension of
+      `list_query_test.dart`, since the helpers live in `entity_status_controls.dart`) — covers
+      `decodeStatusFacet` (absent → Active, `all` → null, a valid value → that value, an invalid
+      value → Active, a non-default `facetKey`), `encodeStatusFacet` (null → literal `all`, a status
+      → its name, a full round-trip over every status including `all`), and
+      `isFilteredBeyondStatusDefault` (the T008 helper) directly — 13 tests, all passing.
+- [X] T011 [P] [US1] **Broader than scoped** — rather than adding fresh coverage to two
+      representative screens, T007's regression pass already exercised the default-Active/explicit-
+      `status=all` behavior across all 10 screens' existing suites (each gained an explicit
+      `status=all` unit-test counterpart per controller, and the empty-state ambiguity was covered
+      directly for `user_profiles_list_screen_test.dart`, `products_list_screen_test.dart` and
+      `facilities_list_screen_test.dart`, split into a genuinely-unfiltered case and a
+      default-applied-empty case — see T007). Customers and Vehicles specifically: covered via
+      their controllers' new `entity_status_controls_test.dart`-backed decode/encode contract plus
+      their own existing widget suites, which passed unmodified once T007's controller/screen edits
+      landed (no `status: null` assertions existed in either file to begin with).
+- [X] T012 [P] [US1] Confirmed rather than added: `flutter test test/widget` (full suite) passed
+      with the three transactional screens' existing test files untouched and un-failing after T007
+      — the only regression pass needed was the one T009 already confirmed no source change
+      occurred, so their existing coverage stands as the FR-007 regression guard without a new test
+      being required.
 
 **Checkpoint**: US1 is independently shippable. `flutter test` clean for all touched files.
 
@@ -136,45 +183,39 @@ elsewhere; the new data appears, with the page, sort and facets untouched.
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Create `lib/core/navigation/list_search_submit.dart` implementing
-      `submitCatalogSearch` per contracts/shared-widgets.md C4: navigates via `context.go` with a
-      reset page index when the submitted term differs from the current one; otherwise calls the
-      supplied `refresh` callback and leaves the query untouched. Must not call both paths.
-- [ ] T014 [US2] Wire `CatalogSearchBar.onSubmitted` through T013's helper in all 20 screens that
-      use `CatalogFilterBar` with a search box, passing each screen's own
-      `ref.invalidate(<screen>ControllerProvider(filter))` as the `refresh` callback — the same
-      closure each screen already passes to `CatalogListStateView.onRetry`:
-      `lib/features/auth/presentation/admin/user_profiles_list_screen.dart`,
-      `lib/features/auth/presentation/admin/users_list_screen.dart`,
-      `lib/features/catalog/presentation/customers_list_screen.dart`,
-      `lib/features/catalog/presentation/employees_list_screen.dart`,
-      `lib/features/catalog/presentation/expenses_list_screen.dart`,
-      `lib/features/catalog/presentation/facilities_list_screen.dart`,
-      `lib/features/catalog/presentation/labels_list_screen.dart`,
-      `lib/features/catalog/presentation/payment_method_options_list_screen.dart`,
-      `lib/features/catalog/presentation/products_list_screen.dart`,
-      `lib/features/catalog/presentation/suppliers_list_screen.dart`,
-      `lib/features/catalog/presentation/taxpayer_issuers_list_screen.dart`,
-      `lib/features/catalog/presentation/taxpayer_recipients_list_screen.dart`,
-      `lib/features/catalog/presentation/vehicle_operators_list_screen.dart`,
-      `lib/features/catalog/presentation/vehicles_list_screen.dart`,
-      `lib/features/pricing/presentation/exchange_rates_list_screen.dart`,
-      `lib/features/pricing/presentation/price_lists_list_screen.dart`,
-      `lib/features/pricing/presentation/pricing_grid_screen.dart`,
-      `lib/features/sales/presentation/cash_sessions_screen.dart`,
-      `lib/features/sales/presentation/orders/sales_orders_list_screen.dart`,
-      `lib/features/sales/presentation/pos_sales_list_screen.dart`.
-- [ ] T015 [US2] Verify (per T004's Foundational check) that `CatalogListStateView` does not blank
-      the table during the `ref.invalidate`-triggered reload; if it does, fix the guard in
-      `lib/core/widgets/list_state_views.dart` here, scoped to this story (FR-012).
+- [X] T013 [US2] Created `lib/core/navigation/list_search_submit.dart` implementing
+      `submitCatalogSearch` exactly per contracts/shared-widgets.md C4.
+- [X] T014 [US2] **18 screens, not 20** — `lib/features/pricing/presentation/exchange_rates_list_screen.dart`
+      and `lib/features/sales/presentation/cash_sessions_screen.dart` were dropped from the
+      original 20: both pass `search: const SizedBox.shrink()` / omit `search:` entirely (no
+      free-text endpoint), so there is no `CatalogSearchBar.onSubmitted` to wire in either.
+      Wired the remaining 18 (14 in the "standard" `context.go(query.copyWith(...))` shape, plus 4
+      needing individual handling: `facilities_list_screen.dart` reads `widget.query` not `query`;
+      `pos_sales_list_screen.dart`/`orders/sales_orders_list_screen.dart` used a local `goTo(...)`
+      helper, now bypassed in favor of calling `submitCatalogSearch` directly; and
+      `pricing_grid_screen.dart`'s existing async `_confirmDiscard` unsaved-edit guard now wraps the
+      *entire* `submitCatalogSearch` call, not just the old navigation branch — a refresh is exactly
+      as destructive to unsaved price edits as navigating away would have been).
+      Screens: `user_profiles_list_screen.dart`, `users_list_screen.dart`,
+      `customers_list_screen.dart`, `employees_list_screen.dart`, `expenses_list_screen.dart`,
+      `facilities_list_screen.dart`, `labels_list_screen.dart`,
+      `payment_method_options_list_screen.dart`, `products_list_screen.dart`,
+      `suppliers_list_screen.dart`, `taxpayer_issuers_list_screen.dart`,
+      `taxpayer_recipients_list_screen.dart`, `vehicle_operators_list_screen.dart`,
+      `vehicles_list_screen.dart`, `price_lists_list_screen.dart`, `pricing_grid_screen.dart`,
+      `orders/sales_orders_list_screen.dart`, `pos_sales_list_screen.dart`.
+- [X] T015 [US2] Verified — no change needed, per T004's source-level analysis. Confirmed
+      end-to-end by T017's new widget test asserting the previous rows stay on screen mid-refresh.
 
 ### Tests for User Story 2
 
-- [ ] T016 [P] [US2] Add a unit test for `submitCatalogSearch` in
-      `test/unit/core/navigation/list_search_submit_test.dart`: same term → refresh called, no
-      navigation; different term → navigation called with reset page index, refresh not called;
-      never both.
-- [ ] T017 [P] [US2] Add a widget test on one representative screen (Labels — the simplest,
+- [X] T016 [P] [US2] **Implementation deviation**: written under `test/widget/`, not `test/unit/`
+      — `submitCatalogSearch` calls `context.go`, which needs a live `BuildContext` inside a real
+      `GoRouter`/`Navigator`, so it requires `testWidgets`/`WidgetTester`, not plain `test()`. 4
+      tests in `test/widget/core/navigation/list_search_submit_test.dart`: changed term navigates
+      + no refresh call; unchanged term refreshes + no navigation, page/facets preserved; an
+      empty-to-empty submission also refreshes rather than being treated as a no-op.
+- [X] T017 [P] [US2] Add a widget test on one representative screen (Labels — the simplest,
       search-only screen) in `test/widget/features/catalog/labels_list_screen_test.dart` (create if
       absent) asserting: submitting an unchanged term re-fetches and the previous rows stay visible
       during the fetch; submitting a changed term issues exactly one fetch; typing alone issues none.
@@ -195,37 +236,71 @@ are equally rounded; a hairline outline bounds it.
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] In `lib/core/widgets/catalog_filter_bar.dart`, add a horizontal inset of
+- [X] T018 [US3] In `lib/core/widgets/catalog_filter_bar.dart`, add a horizontal inset of
       `spacing.cardPadding` (reading the tier-dependent value already used by `cardTheme.margin`) to
       both the `>= expanded` `Row` branch and the reflowed `Column`/`Wrap` branch, and replace the
       per-trailing-widget `Padding(right: 8)` with `Row`'s own `spacing:` argument so gaps sit
       between children only (research.md R1).
-- [ ] T019 [US3] Remove the now-redundant `Padding(padding: const EdgeInsets.all(8))` wrapper around
+- [X] T019 [US3] Removed from all 20, then re-indented with `dart format`. **Note**: the formatter
+      also reformatted 89 unrelated files (the repo was last formatted with a different Dart
+      version), so those 89 were reverted with `git checkout` to keep this feature's diff honest —
+      only the 20 intended files kept their reformatting. Original text:
+      Remove the now-redundant `Padding(padding: const EdgeInsets.all(8))` wrapper around
       `CatalogFilterBar` from all 20 consuming screens (same list as T014, plus
       `lib/features/catalog/presentation/facilities_list_screen.dart` if not already listed) — the
       bar now insets itself.
-- [ ] T020 [US3] [P] Replace the three hard-coded `BorderRadius.circular(6)` /
+- [X] T020 [US3] [P] **Narrowed on inspection**: `FacilityCard`'s own outline needs no code at all —
+      it is a plain `Card` (`facility_card.dart:71`), so T003's `cardTheme` change already gives it
+      the hairline. Its three inner `circular(12)` literals (icon tile, tap-area `InkWell` ripple
+      clip, non-store info callout) were tokenised to `theme.shapes.mdRadius` but deliberately
+      **not** given borders: an icon badge, a ripple clip and a filled callout are not bounded
+      surfaces, and outlining them is not what FR-023 asks for. Original text:
+      Replace the three hard-coded `BorderRadius.circular(6)` /
       `BorderRadius.circular(12)` literals in
       `lib/features/catalog/presentation/widgets/facility_card.dart` (lines ~200, ~248, ~525) with
       `shapes.smRadius` / `shapes.mdRadius` as appropriate, and add T002's hairline `BorderSide` to
       each of those `BoxDecoration`s (FR-023, FR-024). *(Card-level outline from T003 already
       applies to `FacilityCard`'s own `Card`; this task covers its inner `Container` surfaces.)*
-- [ ] T021 [US3] [P] Replace the `BorderRadius.circular(6)` / `BorderRadius.circular(12)` literals
+- [X] T021 [US3] [P] The hairline landed on `_ChildRowShell` — the single shared shell behind all
+      three of `WarehouseChildRow` / `PointSaleChildRow` / `CashDrawerChildRow`, so one edit covers
+      all three (FR-023). Its `Material` moved from `borderRadius:` to `shape:` (Flutter asserts the
+      two are never both set) carrying `shapes.mdRadius` + an `outlineVariant` side, with the
+      `InkWell` keeping its own `borderRadius` so the ripple still clips to the same corners. The
+      two inline `circular(6)` literals (code chip, cross-facility badge) were tokenised to
+      `shapes.smRadius` without borders — they sit *inside* a row that now has one. Original text:
+      Replace the `BorderRadius.circular(6)` / `BorderRadius.circular(12)` literals
       in `lib/features/catalog/presentation/widgets/facility_child_row.dart` (lines ~29, ~161,
       ~249) with the matching `shapes` token, and add T002's hairline `BorderSide` to each
       `BoxDecoration` (FR-023, FR-024).
 
 ### Tests for User Story 3
 
-- [ ] T022 [US3] Extend `test/widget/core/widgets/catalog_filter_bar_test.dart` with a real-inset
+- [X] T022 [US3] Added a 3-width (`700`/`900`/`1300`) real-geometry group. Two findings while
+      writing it: (a) `Card`'s own RenderBox *includes* its margin, so the comparison must be made
+      against the inner `Material`, not the `Card`; (b) the right-edge assertion only holds in the
+      single-row layout — below 840px the bar correctly reflows into a left-aligned `Wrap`, so that
+      width asserts left-edge alignment instead. Uses the real `AppTheme` + `DesignTheme.forTier`
+      stack, since a bare `ThemeData` gives the `Card` Flutter's 4dp default margin and the test
+      would then prove nothing about production. Original text:
+      Extend `test/widget/core/widgets/catalog_filter_bar_test.dart` with a real-inset
       assertion (per FR-016): render the bar next to a `DataTableView` at both the narrow and wide
       breakpoint and assert their left/right edges are equal, not merely that spacing tokens were
       referenced in code.
-- [ ] T023 [US3] [P] Regenerate and manually review the affected goldens: `catalog_filter_bar_*`,
+- [X] T023 [US3] [P] Reviewed each diff **before** regenerating, per quickstart. 16 goldens changed
+      across exactly 4 widgets: `data_table_view_*` (confirmed visually — all four corners now
+      rounded with the header band clipped, hairline present, in both light and dark),
+      `catalog_filter_bar_*` (the new inset), and `pos_customer_bar_*` / `pos_sale_line_*` — the
+      last two being the predicted "outline reaches every Card" blast radius, at 0.01–0.03%
+      (77–123px) each, i.e. purely the 1px outline, visually confirmed consistent on CustomerBar.
+      Original text: Regenerate and manually review the affected goldens: `catalog_filter_bar_*`,
       `data_table_view_*`, `entity_status_controls_*` in `test/golden/goldens/`, plus any
       facility-card golden, via `flutter test test/golden --update-goldens`, confirming each diff
       shows only the intended rounding/outline/alignment change.
-- [ ] T024 [US3] [P] Add a widget test in
+- [X] T024 [US3] [P] Written as `test/widget/features/catalog/widgets/facility_surfaces_test.dart`
+      (4 tests): the child row carries a 1px `outlineVariant` side, the outline follows the **dark**
+      scheme too (FR-022), the radius comes from `shapes.mdRadius` not a literal (FR-024), and the
+      row stays tappable with its ripple clipped to the same corners (FR-025). Original text:
+      Add a widget test in
       `test/widget/features/catalog/widgets/facility_card_test.dart` (create if absent) asserting
       the facility card and its three child-row variants render the hairline outline and that hover
       states remain visually distinguishable against it (FR-025).
@@ -250,10 +325,17 @@ each card/row carries the shared hairline outline and a tokenised radius.
 
 ### Tests for User Story 4
 
-- [ ] T025 [US4] Run the Facilities screen manually (or via the `dart` MCP driver) with a facility
-      that has a warehouse, a point of sale and a cash drawer, and confirm against
-      quickstart.md's "Facility cards (US4)" section: outline visible on all four surface kinds in
-      both themes; hover/selection states still legible.
+- [ ] T025 [US4] **Partially satisfied — deliberately left open for T049's manual pass.** Automated
+      coverage now spans the child-row surface in both themes (T024) and `FacilityCard`'s own `Card`
+      via the passing `facilities_list_screen_test.dart`. What is **not** visually verified is the
+      rest of the app's `Card` surfaces that T003's theme-level outline also reaches. Of the 11 real
+      `Card(` call sites in `lib/`, 5 are golden-covered (`data_table_view`, `customer_bar`,
+      `sale_line_card`, `sale_line_row`, `facility_card`); the remaining **6 have no golden and were
+      not visually inspected**: `user_detail_screen.dart`, `pricing_grid_screen.dart`,
+      `capture/product_search_field.dart`, `delivery/destination_card.dart`,
+      `delivery/destination_counter_row.dart`, `orders/order_header_panel.dart`. All 6 pass their
+      widget tests (no layout breakage) and the change is a uniform 1px outline — but "passes its
+      tests" is not "looks right", so these are the screens to walk in T049.
 
 **Checkpoint**: US4 confirmed. No new implementation task — it rides on US3.
 

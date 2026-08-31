@@ -171,7 +171,45 @@ void main() {
   );
 
   testWidgets(
-    'an empty, unfiltered catalog reads as "none yet", not an error',
+    'an empty, genuinely unfiltered catalog (status=all) reads as "none '
+    'yet", not an error',
+    (tester) async {
+      when(
+        () => userProfileRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer((_) async => const UserProfileListResult(items: [], total: 0));
+
+      // spec 035 FR-001/FR-002/FR-004: an empty query no longer means
+      // "unfiltered" — it now carries the default-applied Active status.
+      // Reaching the genuinely unfiltered state (every status) is the
+      // explicit `status=all` case, tested next below for the empty-result
+      // ambiguity that default introduces.
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        query: const ListQuery(
+          facets: {
+            'status': ['all'],
+          },
+        ),
+      );
+
+      expect(
+        find.text('No user profiles yet — create the first one.'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'an empty result under the default-applied Active status shows the '
+    'shared "no matches" view, not "none yet" — the default filter could '
+    'be hiding inactive/archived records the client cannot see (spec 035 '
+    'FR-003/FR-006, Edge Cases)',
     (tester) async {
       when(
         () => userProfileRepository.list(
@@ -184,9 +222,10 @@ void main() {
 
       await pumpScreen(tester, signedInAs: _adminUser);
 
+      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
       expect(
         find.text('No user profiles yet — create the first one.'),
-        findsOneWidget,
+        findsNothing,
       );
     },
   );
@@ -291,7 +330,9 @@ void main() {
       verify(
         () => userProfileRepository.list(
           search: 'cash',
-          status: null,
+          // spec 035 FR-001/FR-002: an unmodified status facet now defaults
+          // to Active, not "no filter".
+          status: EntityStatus.active,
           skip: 0,
           limit: 20,
         ),

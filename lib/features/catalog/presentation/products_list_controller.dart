@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 
@@ -17,15 +18,6 @@ bool? _parseTriState(String? raw) {
   if (raw == 'true') return true;
   if (raw == 'false') return false;
   return null;
-}
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
 }
 
 /// The products list screen's addressable view state
@@ -47,13 +39,10 @@ class ProductFilter with _$ProductFilter {
   }) = _ProductFilter;
 
   factory ProductFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     final supplierRaw = query.facet('supplier');
     return ProductFilter(
       search: query.search,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       stockable: _parseTriState(query.facet('stockable')),
       salable: _parseTriState(query.facet('salable')),
       purchasable: _parseTriState(query.facet('purchasable')),

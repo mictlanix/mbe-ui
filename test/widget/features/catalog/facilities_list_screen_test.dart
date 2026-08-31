@@ -271,7 +271,17 @@ void main() {
       expect(find.text('FAC-1'), findsOneWidget);
       expect(find.text('Store'), findsOneWidget);
       expect(find.text('2'), findsOneWidget); // warehouse count
-      expect(find.text('1'), findsOneWidget); // point-of-sale count
+      // spec 035 FR-006: the filters badge now also reads "1" (the
+      // default-applied Active status counts as an active filter), so a
+      // bare `find.text('1')` would match two widgets — scope to inside
+      // the facility card to isolate the point-of-sale count specifically.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('facility_card_1')),
+          matching: find.text('1'),
+        ),
+        findsOneWidget,
+      ); // point-of-sale count
       expect(find.text('0'), findsOneWidget); // cash-drawer count
       // Expanded body not yet built.
       expect(
@@ -646,16 +656,42 @@ void main() {
       expect(find.byKey(const Key('facilities_filter_button')), findsOneWidget);
     });
 
-    testWidgets('an empty result shows the empty state', (tester) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        facilities: const [],
-      );
+    testWidgets(
+      'an empty result, genuinely unfiltered (status=all), shows the empty '
+      'state',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: const [],
+          query: const ListQuery(
+            facets: {
+              'status': ['all'],
+            },
+          ),
+        );
 
-      expect(find.byKey(const Key('facilities_card_list')), findsNothing);
-      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
-    });
+        expect(find.byKey(const Key('facilities_card_list')), findsNothing);
+        expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'an empty result under the default-applied Active status shows the '
+      'filtered-empty state, not the plain empty state — the default '
+      'could be hiding inactive/archived facilities the client cannot see '
+      '(spec 035 FR-003/FR-006, Edge Cases)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: const [],
+        );
+
+        expect(find.byKey(const Key('facilities_card_list')), findsNothing);
+        expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      },
+    );
 
     testWidgets('a status facet in the URL is passed to the repository', (
       tester,

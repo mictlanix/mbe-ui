@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
 
@@ -30,13 +31,10 @@ class PaymentMethodOptionFilter with _$PaymentMethodOptionFilter {
 
   factory PaymentMethodOptionFilter.fromQuery(ListQuery query) {
     final facilityRaw = query.facet('facility');
-    final statusRaw = query.facet('status');
     return PaymentMethodOptionFilter(
       search: query.search,
       facilityId: facilityRaw != null ? int.tryParse(facilityRaw) : null,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       pageIndex: query.pageIndex,
     );
   }
@@ -54,15 +52,6 @@ extension PaymentMethodOptionFilterBadge on PaymentMethodOptionFilter {
   }
 
   bool get hasActiveFilters => activeFilterCount > 0;
-}
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
 }
 
 /// Fetches and holds the Payment Method Options list (FR-001, FR-002) for

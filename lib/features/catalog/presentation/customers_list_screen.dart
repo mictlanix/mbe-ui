@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
@@ -49,58 +50,58 @@ class CustomersListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('customers_search_field'),
-              label: l10n.customersSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) => context.go(
-                query
-                    .copyWith(search: value, pageIndex: 0)
-                    .toUri(_customersPath)
-                    .toString(),
-              ),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('customers_search_field'),
+            label: l10n.customersSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _customersPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () =>
+                  ref.invalidate(customersListControllerProvider(filter)),
             ),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_customer_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newCustomerTooltip),
-                  onPressed: () => context.push('/customers/new'),
-                ),
-            ],
-            filters: [
-              Badge.count(
-                count: filter.activeFilterCount,
-                isLabelVisible: filter.hasActiveFilters,
-                child: IconButton.outlined(
-                  key: const Key('customers_filter_button'),
-                  icon: const Icon(Icons.tune),
-                  tooltip: l10n.filtersTooltip,
-                  onPressed: () => showCatalogFilterSheet(
-                    context,
-                    title: l10n.filtersButton,
-                    clearAllLabel: l10n.clearAllFilters,
-                    applyLabel: l10n.applyFilters,
-                    onClearAll: () => context.go(_customersPath),
-                    builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, query) =>
-                          _CustomerFiltersPanel(query: query),
-                    ),
+          ),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_customer_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newCustomerTooltip),
+                onPressed: () => context.push('/customers/new'),
+              ),
+          ],
+          filters: [
+            Badge.count(
+              count: filter.activeFilterCount,
+              isLabelVisible: filter.hasActiveFilters,
+              child: IconButton.outlined(
+                key: const Key('customers_filter_button'),
+                icon: const Icon(Icons.tune),
+                tooltip: l10n.filtersTooltip,
+                onPressed: () => showCatalogFilterSheet(
+                  context,
+                  title: l10n.filtersButton,
+                  clearAllLabel: l10n.clearAllFilters,
+                  applyLabel: l10n.applyFilters,
+                  onClearAll: () => context.go(_customersPath),
+                  builder: (_) => CurrentListQueryBuilder(
+                    builder: (context, query) =>
+                        _CustomerFiltersPanel(query: query),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<CustomerListItem>(
             state: pageAsync,
-            isFiltered: query.isFiltered,
+            isFiltered: isFilteredBeyondStatusDefault(query, filter.status),
             emptyMessage: l10n.noCustomersFound,
             createLabel: canCreate ? l10n.newCustomerTooltip : null,
             onCreate: canCreate ? () => context.push('/customers/new') : null,
@@ -211,9 +212,8 @@ class _CustomerFiltersPanel extends ConsumerWidget {
         EntityStatusFilterChips(
           filterKey: 'customers_filter_status',
           value: filter.status,
-          onChanged: (status) => goTo(
-            query.withFacet('status', status?.name).copyWith(pageIndex: 0),
-          ),
+          onChanged: (status) =>
+              goTo(encodeStatusFacet(query, status).copyWith(pageIndex: 0)),
         ),
         const SizedBox(height: 12),
         CatalogEntityPicker<PriceList>(

@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -64,7 +65,9 @@ class PosSalesListScreen extends ConsumerWidget {
     // filtered?" question below must be judged against the same instant.
     final today = DateTime.now();
     final filter = PosSalesFilter.fromQuery(query, today: today);
-    final pageAsync = ref.watch(posSalesListControllerProvider(pointSale, filter));
+    final pageAsync = ref.watch(
+      posSalesListControllerProvider(pointSale, filter),
+    );
 
     // The register's open-sales set — already computed for today by the
     // header selector's own provider — is exactly what `saleIsWorkable`
@@ -74,7 +77,8 @@ class PosSalesListScreen extends ConsumerWidget {
     // workability check: a draft or a completed sale with a balance is
     // workable independent of this set, and must not be held hostage by it
     // still loading.
-    final resumableIds = ref
+    final resumableIds =
+        ref
             .watch(openSalesSelectorControllerProvider(pointSale))
             .valueOrNull
             ?.map((sale) => sale.id)
@@ -89,7 +93,8 @@ class PosSalesListScreen extends ConsumerWidget {
         SessionState.none;
     final fmt = ref.watch(formattersProvider);
 
-    void goTo(ListQuery updated) => context.go(updated.toUri(_posPath).toString());
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_posPath).toString());
 
     Future<void> openSale(int saleId) async {
       await context.push('$_posPath/$saleId');
@@ -102,55 +107,60 @@ class PosSalesListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('pos_sales_search_field'),
-              label: l10n.posSalesSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) =>
-                  goTo(query.copyWith(search: value, pageIndex: 0)),
-            ),
-            actions: [
-              _NewSaleAction(
-                canCreate: canCreate,
-                sessionOpen: sessionOpen,
-                onPressed: () => context.push('$_posPath/new'),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('pos_sales_search_field'),
+            label: l10n.posSalesSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _posPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () => ref.invalidate(
+                posSalesListControllerProvider(pointSale, filter),
               ),
-            ],
-            filters: [
-              Badge.count(
-                count: filter.activeFilterCount(today),
-                isLabelVisible: filter.hasActiveFilters(today),
-                child: IconButton.outlined(
-                  key: const Key('pos_sales_filter_button'),
-                  icon: const Icon(Icons.tune),
-                  tooltip: l10n.filtersTooltip,
-                  onPressed: () => showCatalogFilterSheet(
-                    context,
-                    title: l10n.filtersButton,
-                    clearAllLabel: l10n.clearAllFilters,
-                    applyLabel: l10n.applyFilters,
-                    onClearAll: () => goTo(
-                      query
-                          .withFacet('date-from', null)
-                          .withFacet('date-to', null)
-                          .withFacet('status', null)
-                          .copyWith(pageIndex: 0),
-                    ),
-                    builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, currentQuery) => _PosSalesFiltersPanel(
-                        query: currentQuery,
-                        today: today,
-                      ),
+            ),
+          ),
+          actions: [
+            _NewSaleAction(
+              canCreate: canCreate,
+              sessionOpen: sessionOpen,
+              onPressed: () => context.push('$_posPath/new'),
+            ),
+          ],
+          filters: [
+            Badge.count(
+              count: filter.activeFilterCount(today),
+              isLabelVisible: filter.hasActiveFilters(today),
+              child: IconButton.outlined(
+                key: const Key('pos_sales_filter_button'),
+                icon: const Icon(Icons.tune),
+                tooltip: l10n.filtersTooltip,
+                onPressed: () => showCatalogFilterSheet(
+                  context,
+                  title: l10n.filtersButton,
+                  clearAllLabel: l10n.clearAllFilters,
+                  applyLabel: l10n.applyFilters,
+                  onClearAll: () => goTo(
+                    query
+                        .withFacet('date-from', null)
+                        .withFacet('date-to', null)
+                        .withFacet('status', null)
+                        .copyWith(pageIndex: 0),
+                  ),
+                  builder: (_) => CurrentListQueryBuilder(
+                    builder: (context, currentQuery) => _PosSalesFiltersPanel(
+                      query: currentQuery,
+                      today: today,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<OpenSale>(
@@ -159,13 +169,17 @@ class PosSalesListScreen extends ConsumerWidget {
             // state — a filtered-empty result gets the shared generic
             // message every other catalog uses, driven by `isFiltered`
             // alone (list_state_views.dart), not a second custom string.
-            isFiltered: !filter.isToday(today) || filter.status != null || filter.search.isNotEmpty,
+            isFiltered:
+                !filter.isToday(today) ||
+                filter.status != null ||
+                filter.search.isNotEmpty,
             emptyMessage: l10n.posSalesEmptyToday,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_posPath),
             retryLabel: l10n.retryButton,
-            onRetry: () =>
-                ref.invalidate(posSalesListControllerProvider(pointSale, filter)),
+            onRetry: () => ref.invalidate(
+              posSalesListControllerProvider(pointSale, filter),
+            ),
             onData: (page) => DataTableView<OpenSale>(
               key: const Key('pos_sales_list_table'),
               columns: [
@@ -189,7 +203,8 @@ class PosSalesListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.posSalesColumnStatus,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) => PosSaleStatusChip(status: sale.status),
+                  cellBuilder: (context, sale) =>
+                      PosSaleStatusChip(status: sale.status),
                 ),
                 DataTableColumn(
                   label: l10n.posSalesColumnTotal,
@@ -208,8 +223,9 @@ class PosSalesListScreen extends ConsumerWidget {
               ],
               rows: page.items,
               pagination: page,
-              onPageChanged: (pageIndex) =>
-                  context.go(query.copyWith(pageIndex: pageIndex).toUri(_posPath).toString()),
+              onPageChanged: (pageIndex) => context.go(
+                query.copyWith(pageIndex: pageIndex).toUri(_posPath).toString(),
+              ),
               rowActionsBuilder: (context, sale) {
                 // A draft or a completed sale with a balance is workable
                 // independent of `resumableIds` — only a zero-balance paid
@@ -217,7 +233,10 @@ class PosSalesListScreen extends ConsumerWidget {
                 // reads as provisionally not workable (data-model §3)
                 // rather than offering an Edit that would land on a
                 // refusal.
-                final workable = saleIsWorkable(sale, resumableIds: resumableIds);
+                final workable = saleIsWorkable(
+                  sale,
+                  resumableIds: resumableIds,
+                );
                 // Absent uniformly whether the reason is the RBAC privilege
                 // or the sale's own state (constitution §VI: a row action a
                 // user cannot use is hidden, never shown disabled) — the
@@ -225,7 +244,9 @@ class PosSalesListScreen extends ConsumerWidget {
                 // cancelled sale has no Edit icon, so nothing here repeats it.
                 return buildCatalogRowActions(
                   editTooltip: l10n.editActionTooltip,
-                  onEdit: canUpdate && workable ? () => openSale(sale.id) : null,
+                  onEdit: canUpdate && workable
+                      ? () => openSale(sale.id)
+                      : null,
                 );
               },
               // FR-006a: a stray click always opens the sale, read-only for
@@ -267,7 +288,10 @@ class _NewSaleAction extends StatelessWidget {
       onPressed: sessionOpen ? onPressed : null,
     );
     if (sessionOpen) return button;
-    return Tooltip(message: l10n.posSalesNewSaleBlockedNoSession, child: button);
+    return Tooltip(
+      message: l10n.posSalesNewSaleBlockedNoSession,
+      child: button,
+    );
   }
 }
 
@@ -287,13 +311,17 @@ class _PosSalesFiltersPanel extends StatelessWidget {
     final filter = PosSalesFilter.fromQuery(query, today: today);
     final l10n = AppLocalizations.of(context)!;
 
-    void goTo(ListQuery updated) => context.go(updated.toUri(_posPath).toString());
+    void goTo(ListQuery updated) =>
+        context.go(updated.toUri(_posPath).toString());
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.dateRangeFilterLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.dateRangeFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         DateRangeFilterChip(
           from: filter.from,
@@ -313,7 +341,10 @@ class _PosSalesFiltersPanel extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Text(l10n.posSalesStatusFilterLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.posSalesStatusFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -331,8 +362,9 @@ class _PosSalesFiltersPanel extends StatelessWidget {
                 key: Key('pos_sales_filter_status_${status.name}'),
                 label: Text(posSaleStatusLabel(l10n, status)),
                 selected: filter.status == status,
-                onSelected: (_) =>
-                    goTo(query.withFacet('status', status.name).copyWith(pageIndex: 0)),
+                onSelected: (_) => goTo(
+                  query.withFacet('status', status.name).copyWith(pageIndex: 0),
+                ),
               ),
           ],
         ),

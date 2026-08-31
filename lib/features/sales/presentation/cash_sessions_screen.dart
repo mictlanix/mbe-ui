@@ -85,7 +85,10 @@ class _ShiftToolbarAction extends ConsumerWidget {
       ),
       error: (error, _) => IconButton.outlined(
         key: const Key('cash_sessions_shift_button'),
-        icon: Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
+        icon: Icon(
+          Icons.error_outline,
+          color: Theme.of(context).colorScheme.error,
+        ),
         tooltip: l10n.cashSessionShiftButtonTooltip,
         onPressed: openSheet,
       ),
@@ -136,8 +139,14 @@ class _ShiftSheetContent extends ConsumerWidget {
       error: (error, _) => ErrorBanner(error: toAppError(error)),
       data: (current) => switch (current.state) {
         SessionState.none => const _OpenForm(),
-        SessionState.open => _OpenShiftCard(session: current.session!, stale: false),
-        SessionState.stale => _OpenShiftCard(session: current.session!, stale: true),
+        SessionState.open => _OpenShiftCard(
+          session: current.session!,
+          stale: false,
+        ),
+        SessionState.stale => _OpenShiftCard(
+          session: current.session!,
+          stale: true,
+        ),
       },
     );
   }
@@ -151,12 +160,17 @@ class _OpenForm extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final access = ref.watch(accessControlProvider);
     final authState = ref.watch(authNotifierProvider).valueOrNull;
-    final settings = authState is AuthAuthenticated ? authState.user.settings : null;
+    final settings = authState is AuthAuthenticated
+        ? authState.user.settings
+        : null;
     final formState = ref.watch(openSessionFormControllerProvider);
     final controller = ref.read(openSessionFormControllerProvider.notifier);
 
     final canOpen = access.can(SystemObject.pos, AccessRight.create);
-    final canBrowseDrawers = access.can(SystemObject.cashDrawers, AccessRight.read);
+    final canBrowseDrawers = access.can(
+      SystemObject.cashDrawers,
+      AccessRight.read,
+    );
     final hasAssignedDrawer = settings?.cashDrawerId != null;
 
     // Dismiss the sheet the moment a submit succeeds (FR-028b) — the form's
@@ -179,7 +193,10 @@ class _OpenForm extends ConsumerWidget {
     // seeded or once the cashier has made their own pick.
     if (formState.cashDrawerId == null && settings?.cashDrawerId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.seedAssignedDrawer(settings?.cashDrawerId, settings?.cashDrawerName);
+        controller.seedAssignedDrawer(
+          settings?.cashDrawerId,
+          settings?.cashDrawerName,
+        );
       });
     }
 
@@ -212,7 +229,8 @@ class _OpenForm extends ConsumerWidget {
                   .list(search: query.isEmpty ? null : query);
               return result.items;
             },
-            onSelected: (d) => controller.drawerSelected(d.cashDrawerId, d.name),
+            onSelected: (d) =>
+                controller.drawerSelected(d.cashDrawerId, d.name),
             initialDisplayText: formState.cashDrawerDisplayText,
             enabled: !formState.submitting,
           )
@@ -226,9 +244,13 @@ class _OpenForm extends ConsumerWidget {
             // displayed forces a remount, and therefore a re-seed, the
             // moment it arrives.
             child: TextFormField(
-              key: ValueKey('cash_session_drawer_static_label-${formState.cashDrawerDisplayText}'),
+              key: ValueKey(
+                'cash_session_drawer_static_label-${formState.cashDrawerDisplayText}',
+              ),
               initialValue: formState.cashDrawerDisplayText,
-              decoration: InputDecoration(labelText: l10n.cashSessionDrawerFieldLabel),
+              decoration: InputDecoration(
+                labelText: l10n.cashSessionDrawerFieldLabel,
+              ),
               enabled: false,
             ),
           );
@@ -241,9 +263,17 @@ class _OpenForm extends ConsumerWidget {
         if (formState.error != null) ...[
           ErrorBanner(
             error: AppError.validation([
-              FieldError(loc: const [], msg: _localizeOpenFormError(l10n, formState.error!), type: 'error'),
+              FieldError(
+                loc: const [],
+                msg: _localizeOpenFormError(l10n, formState.error!),
+                type: 'error',
+              ),
               if (formState.errorDetail != null)
-                FieldError(loc: const [], msg: formState.errorDetail!, type: 'error'),
+                FieldError(
+                  loc: const [],
+                  msg: formState.errorDetail!,
+                  type: 'error',
+                ),
             ]),
           ),
           if (formState.blockingSessionId != null)
@@ -254,7 +284,9 @@ class _OpenForm extends ConsumerWidget {
                 // the shift sheet") — never leave it stranded over the
                 // pushed route.
                 Navigator.of(context).pop();
-                context.push('$_cashSessionsPath/${formState.blockingSessionId}');
+                context.push(
+                  '$_cashSessionsPath/${formState.blockingSessionId}',
+                );
               },
               child: Text(l10n.cashSessionCloseButtonLabel),
             ),
@@ -294,7 +326,8 @@ class _OpenShiftCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final fmt = ref.watch(formattersProvider);
-    final hasOtherOpenSessions = ref.watch(hasOtherOpenSessionsProvider).valueOrNull ?? false;
+    final hasOtherOpenSessions =
+        ref.watch(hasOtherOpenSessionsProvider).valueOrNull ?? false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,8 +335,13 @@ class _OpenShiftCard extends ConsumerWidget {
         Row(
           spacing: 8,
           children: [
-            Text(session.cashDrawerName, style: Theme.of(context).textTheme.titleMedium),
-            CashSessionStatusChip(status: stale ? CashSessionStatus.stale : CashSessionStatus.open),
+            Text(
+              session.cashDrawerName,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            CashSessionStatusChip(
+              status: stale ? CashSessionStatus.stale : CashSessionStatus.open,
+            ),
           ],
         ),
         if (stale) ...[
@@ -311,13 +349,18 @@ class _OpenShiftCard extends ConsumerWidget {
           Text(l10n.cashSessionStaleWarningMessage),
         ],
         const SizedBox(height: 8),
-        Text('${l10n.cashSessionStartFieldLabel}: ${fmt.display.dateTime(session.start)}'),
+        Text(
+          '${l10n.cashSessionStartFieldLabel}: ${fmt.display.dateTime(session.start)}',
+        ),
         Text(
           '${l10n.cashSessionOpeningAmountFieldLabel}: '
           '${fmt.display.currency(session.openingAmount)}',
         ),
         const SizedBox(height: 8),
-        Text(l10n.cashSessionPaymentsByMethodLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.cashSessionPaymentsByMethodLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         for (final total in session.paymentsByMethod)
           Text(
             '${paymentMethodLabel(l10n, total.method)}: '
@@ -371,36 +414,33 @@ class _HistoryListSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            // No `search:` capability exists for this endpoint (research.md
-            // §12) — omitted entirely (spec 027 FR-029) rather than a dead
-            // search box wired to nothing.
-            actions: const [_ShiftToolbarAction()],
-            filters: [
-              Badge.count(
-                count: filter.activeFilterCount,
-                isLabelVisible: filter.hasActiveFilters,
-                child: IconButton.outlined(
-                  key: const Key('cash_sessions_filter_button'),
-                  icon: const Icon(Icons.tune),
-                  tooltip: l10n.filtersTooltip,
-                  onPressed: () => showCatalogFilterSheet(
-                    context,
-                    title: l10n.filtersButton,
-                    clearAllLabel: l10n.clearAllFilters,
-                    applyLabel: l10n.applyFilters,
-                    onClearAll: () => context.go(_cashSessionsPath),
-                    builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, query) =>
-                          _CashSessionFiltersPanel(query: query),
-                    ),
+        CatalogFilterBar(
+          // No `search:` capability exists for this endpoint (research.md
+          // §12) — omitted entirely (spec 027 FR-029) rather than a dead
+          // search box wired to nothing.
+          actions: const [_ShiftToolbarAction()],
+          filters: [
+            Badge.count(
+              count: filter.activeFilterCount,
+              isLabelVisible: filter.hasActiveFilters,
+              child: IconButton.outlined(
+                key: const Key('cash_sessions_filter_button'),
+                icon: const Icon(Icons.tune),
+                tooltip: l10n.filtersTooltip,
+                onPressed: () => showCatalogFilterSheet(
+                  context,
+                  title: l10n.filtersButton,
+                  clearAllLabel: l10n.clearAllFilters,
+                  applyLabel: l10n.applyFilters,
+                  onClearAll: () => context.go(_cashSessionsPath),
+                  builder: (_) => CurrentListQueryBuilder(
+                    builder: (context, query) =>
+                        _CashSessionFiltersPanel(query: query),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         // `Expanded`, not a fixed height (spec 027 FR-027): a bounded
         // `SizedBox` made sense while this section sat inside a whole-page
@@ -417,7 +457,8 @@ class _HistoryListSection extends ConsumerWidget {
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_cashSessionsPath),
             retryLabel: l10n.retryButton,
-            onRetry: () => ref.invalidate(cashSessionsListControllerProvider(filter)),
+            onRetry: () =>
+                ref.invalidate(cashSessionsListControllerProvider(filter)),
             onData: (page) => DataTableView<CashSession>(
               key: const Key('cash_sessions_table'),
               columns: [
@@ -434,7 +475,8 @@ class _HistoryListSection extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.cashSessionColumnStart,
                   size: ColumnSize.M,
-                  cellBuilder: (context, s) => Text(fmt.display.dateTime(s.start)),
+                  cellBuilder: (context, s) =>
+                      Text(fmt.display.dateTime(s.start)),
                 ),
                 DataTableColumn(
                   label: l10n.cashSessionColumnEnd,
@@ -443,7 +485,8 @@ class _HistoryListSection extends ConsumerWidget {
                   // itself (spec 028 FR-008), so this cell's own hand-written
                   // em-dash — one of the three behaviors this feature
                   // unifies — is gone.
-                  cellBuilder: (context, s) => Text(fmt.display.dateTime(s.end)),
+                  cellBuilder: (context, s) =>
+                      Text(fmt.display.dateTime(s.end)),
                 ),
                 DataTableColumn(
                   label: l10n.cashSessionColumnStatus,
@@ -456,11 +499,15 @@ class _HistoryListSection extends ConsumerWidget {
               rows: page.items,
               pagination: page,
               onPageChanged: (pageIndex) => context.go(
-                query.copyWith(pageIndex: pageIndex).toUri(_cashSessionsPath).toString(),
+                query
+                    .copyWith(pageIndex: pageIndex)
+                    .toUri(_cashSessionsPath)
+                    .toString(),
               ),
               // No row action icons — a session is never edited or deleted;
               // the row itself is the only affordance (FR-030).
-              onRowTap: (s) => context.push('$_cashSessionsPath/${s.cashSessionId}'),
+              onRowTap: (s) =>
+                  context.push('$_cashSessionsPath/${s.cashSessionId}'),
             ),
           ),
         ),
@@ -485,7 +532,9 @@ class _CashSessionFiltersPanel extends ConsumerWidget {
     final employeeRepo = ref.read(employeeRepositoryProvider);
 
     final resolvedDrawerName = filter.cashDrawerId != null
-        ? ref.watch(cashDrawerDisplayNameProvider(filter.cashDrawerId!)).valueOrNull
+        ? ref
+              .watch(cashDrawerDisplayNameProvider(filter.cashDrawerId!))
+              .valueOrNull
         : null;
     final resolvedCashierName = filter.cashierId != null
         ? ref.watch(employeeDisplayNameProvider(filter.cashierId!)).valueOrNull
@@ -509,9 +558,12 @@ class _CashSessionFiltersPanel extends ConsumerWidget {
             return result.items;
           },
           onSelected: (d) => goTo(
-            query.withFacet('cash-drawer', '${d.cashDrawerId}').copyWith(pageIndex: 0),
+            query
+                .withFacet('cash-drawer', '${d.cashDrawerId}')
+                .copyWith(pageIndex: 0),
           ),
-          initialDisplayText: resolvedDrawerName ?? filter.cashDrawerId?.toString(),
+          initialDisplayText:
+              resolvedDrawerName ?? filter.cashDrawerId?.toString(),
         ),
         const SizedBox(height: 12),
         CatalogEntityPicker<EmployeeListItem>(
@@ -525,12 +577,18 @@ class _CashSessionFiltersPanel extends ConsumerWidget {
             return result.items;
           },
           onSelected: (e) => goTo(
-            query.withFacet('cashier', '${e.employeeId}').copyWith(pageIndex: 0),
+            query
+                .withFacet('cashier', '${e.employeeId}')
+                .copyWith(pageIndex: 0),
           ),
-          initialDisplayText: resolvedCashierName ?? filter.cashierId?.toString(),
+          initialDisplayText:
+              resolvedCashierName ?? filter.cashierId?.toString(),
         ),
         const SizedBox(height: 12),
-        Text(l10n.cashSessionsFilterStatusLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.cashSessionsFilterStatusLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -540,15 +598,17 @@ class _CashSessionFiltersPanel extends ConsumerWidget {
               key: const Key('cash_sessions_filter_status_all'),
               label: Text(l10n.statusFilterAll),
               selected: filter.status == null,
-              onSelected: (_) => goTo(query.withFacet('status', null).copyWith(pageIndex: 0)),
+              onSelected: (_) =>
+                  goTo(query.withFacet('status', null).copyWith(pageIndex: 0)),
             ),
             for (final status in CashSessionStatus.values)
               ChoiceChip(
                 key: Key('cash_sessions_filter_status_${status.name}'),
                 label: Text(cashSessionStatusLabel(l10n, status)),
                 selected: filter.status == status,
-                onSelected: (_) =>
-                    goTo(query.withFacet('status', status.name).copyWith(pageIndex: 0)),
+                onSelected: (_) => goTo(
+                  query.withFacet('status', status.name).copyWith(pageIndex: 0),
+                ),
               ),
           ],
         ),

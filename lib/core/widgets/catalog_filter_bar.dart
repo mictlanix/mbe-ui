@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 
 /// Lays out a catalog's search box and facet filter widgets on a single
@@ -7,6 +8,14 @@ import 'package:mbe_ui/core/layout/breakpoints.dart';
 /// `Wrap` below that width (constitution §VI; FR-009). Implemented once
 /// here so every catalog gets the same single-row-when-possible behavior
 /// (research.md §4).
+///
+/// Applies its own horizontal inset of `spacing.cardPadding` — the same
+/// tier-dependent metric `cardTheme.margin` gives the list surface below it
+/// — so the row's content edges line up with the table's at every
+/// breakpoint by construction rather than by two numbers happening to agree
+/// (spec 035 FR-013/FR-015). A caller MUST NOT wrap this in a `Padding` of
+/// its own; the 20 screens that used to add `EdgeInsets.all(8)` (which is
+/// neither 16 nor 24, hence the visible misalignment) no longer do.
 class CatalogFilterBar extends StatelessWidget {
   const CatalogFilterBar({
     super.key,
@@ -36,33 +45,45 @@ class CatalogFilterBar extends StatelessWidget {
     // Entity actions first, then facet filters — actions sit closer to the
     // search box, filters last, in both the single-row and reflowed layouts.
     final trailing = [...actions, ...filters];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth >= LayoutBreakpoints.expanded) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+    final spacing = Theme.of(context).spacing;
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.cardPadding,
+        vertical: spacing.xs,
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth >= LayoutBreakpoints.expanded) {
+            // `Row.spacing` puts the gaps *between* children only. The old
+            // `Padding(right: 8)` on each trailing widget also padded the
+            // last one, so the row stopped 8dp short of its right edge while
+            // the search box started flush at 0 — asymmetric before the
+            // outer inset was even considered (spec 035 FR-014).
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: spacing.xs,
+              children: [
+                if (search != null) Expanded(flex: 2, child: search!),
+                ...trailing,
+              ],
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (search != null) Expanded(flex: 2, child: search!),
-              if (search != null && trailing.isNotEmpty) const SizedBox(width: 8),
-              ...trailing.map(
-                (widget) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: widget,
+              ?search,
+              if (search != null && trailing.isNotEmpty)
+                SizedBox(height: spacing.xs),
+              if (trailing.isNotEmpty)
+                Wrap(
+                  spacing: spacing.xs,
+                  runSpacing: spacing.xs,
+                  children: trailing,
                 ),
-              ),
             ],
           );
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ?search,
-            if (search != null && trailing.isNotEmpty) const SizedBox(height: 8),
-            if (trailing.isNotEmpty)
-              Wrap(spacing: 8, runSpacing: 8, children: trailing),
-          ],
-        );
-      },
+        },
+      ),
     );
   }
 }

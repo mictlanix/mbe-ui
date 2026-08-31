@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
 
@@ -11,15 +12,6 @@ part 'vehicles_list_controller.freezed.dart';
 part 'vehicles_list_controller.g.dart';
 
 const _pageSize = 20;
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
-}
 
 /// The Vehicles list screen's addressable view state (017-ui-consistency-filters
 /// FR-009, FR-017), derived from the route's [ListQuery] — the URL, not a
@@ -33,12 +25,9 @@ class VehicleFilter with _$VehicleFilter {
   }) = _VehicleFilter;
 
   factory VehicleFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     return VehicleFilter(
       search: query.search,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       pageIndex: query.pageIndex,
     );
   }

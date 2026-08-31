@@ -84,13 +84,28 @@ void main() {
 
       expect(filter.search, '');
       expect(filter.pageIndex, 0);
-      expect(filter.status, isNull);
+      // spec 035 FR-001/FR-002: an absent status facet now defaults to
+      // Active, not "no filter" — the "All" choice is the explicit
+      // `status=all` case, covered separately below.
+      expect(filter.status, EntityStatus.active);
       expect(filter.stockable, isNull);
       expect(filter.salable, isNull);
       expect(filter.purchasable, isNull);
       expect(filter.supplier, isNull);
       expect(filter.labels, isEmpty);
       expect(filter.missingPriceList, isNull);
+    });
+
+    test('an explicit "all" status clears the default (FR-004)', () {
+      final filter = PricingGridFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'status': ['all'],
+          },
+        ),
+      );
+
+      expect(filter.status, isNull);
     });
 
     test('reads the worklist selection from the `missing` facet (US2, '

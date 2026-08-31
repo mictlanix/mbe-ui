@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -78,48 +79,52 @@ class PricingGridScreen extends ConsumerWidget {
         autofocus: true,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: CatalogFilterBar(
-                search: CatalogSearchBar(
-                  key: const Key('pricing_grid_search_field'),
-                  label: l10n.productsSearchLabel,
-                  searchTooltip: l10n.searchButtonTooltip,
-                  initialValue: filter.search,
-                  onSubmitted: (value) async {
-                    if (!await _confirmDiscard(context, loadedState)) return;
-                    if (!context.mounted) return;
-                    context.go(
-                      query
-                          .copyWith(search: value, pageIndex: 0)
-                          .toUri(_pricingPath)
-                          .toString(),
-                    );
-                  },
-                ),
-                filters: [
-                  Badge.count(
-                    count: query.facets.length,
-                    isLabelVisible: query.isFiltered,
-                    child: IconButton.outlined(
-                      key: const Key('pricing_grid_filter_button'),
-                      icon: const Icon(Icons.tune),
-                      tooltip: l10n.filtersTooltip,
-                      onPressed: () => showCatalogFilterSheet(
-                        context,
-                        title: l10n.filtersButton,
-                        clearAllLabel: l10n.clearAllFilters,
-                        applyLabel: l10n.applyFilters,
-                        onClearAll: () => context.go(_pricingPath),
-                        builder: (_) => CurrentListQueryBuilder(
-                          builder: (context, query) =>
-                              _PricingGridFiltersPanel(query: query),
-                        ),
+            CatalogFilterBar(
+              search: CatalogSearchBar(
+                key: const Key('pricing_grid_search_field'),
+                label: l10n.productsSearchLabel,
+                searchTooltip: l10n.searchButtonTooltip,
+                initialValue: filter.search,
+                onSubmitted: (value) async {
+                  // Guards both branches submitCatalogSearch can take — an
+                  // unchanged term still re-fetches (spec 035 FR-008), and
+                  // a refetch is exactly as destructive to unsaved edits as
+                  // navigating away would be.
+                  if (!await _confirmDiscard(context, loadedState)) return;
+                  if (!context.mounted) return;
+                  submitCatalogSearch(
+                    context: context,
+                    query: query,
+                    path: _pricingPath,
+                    submitted: value,
+                    current: filter.search,
+                    refresh: () =>
+                        ref.invalidate(pricingGridControllerProvider(filter)),
+                  );
+                },
+              ),
+              filters: [
+                Badge.count(
+                  count: query.facets.length,
+                  isLabelVisible: query.isFiltered,
+                  child: IconButton.outlined(
+                    key: const Key('pricing_grid_filter_button'),
+                    icon: const Icon(Icons.tune),
+                    tooltip: l10n.filtersTooltip,
+                    onPressed: () => showCatalogFilterSheet(
+                      context,
+                      title: l10n.filtersButton,
+                      clearAllLabel: l10n.clearAllFilters,
+                      applyLabel: l10n.applyFilters,
+                      onClearAll: () => context.go(_pricingPath),
+                      builder: (_) => CurrentListQueryBuilder(
+                        builder: (context, query) =>
+                            _PricingGridFiltersPanel(query: query),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             if (!noPriceLists)
               _WorklistChips(query: query, filter: filter, state: loadedState),
@@ -130,7 +135,10 @@ class PricingGridScreen extends ConsumerWidget {
                   ? ListEmptyView(message: l10n.pricingNoPriceListsEmptyState)
                   : CatalogListStateView<PricingGridRow>(
                       state: gridAsync.whenData((s) => s.page!),
-                      isFiltered: query.isFiltered,
+                      isFiltered: isFilteredBeyondStatusDefault(
+                        query,
+                        filter.status,
+                      ),
                       emptyMessage: l10n.noProductsFound,
                       clearFiltersLabel: l10n.clearFiltersButton,
                       onClearFilters: () => context.go(_pricingPath),
@@ -800,9 +808,8 @@ class _PricingGridFiltersPanel extends ConsumerWidget {
         EntityStatusFilterChips(
           filterKey: 'pricing_grid_filter_status',
           value: filter.status,
-          onChanged: (status) => goTo(
-            query.withFacet('status', status?.name).copyWith(pageIndex: 0),
-          ),
+          onChanged: (status) =>
+              goTo(encodeStatusFacet(query, status).copyWith(pageIndex: 0)),
         ),
         const SizedBox(height: 12),
         Text(

@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
@@ -49,31 +50,31 @@ class TaxpayerIssuersListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('taxpayer_issuers_search_field'),
-              label: l10n.taxpayerIssuersSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) => context.go(
-                query
-                    .copyWith(search: value, pageIndex: 0)
-                    .toUri(_taxpayerIssuersPath)
-                    .toString(),
-              ),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('taxpayer_issuers_search_field'),
+            label: l10n.taxpayerIssuersSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _taxpayerIssuersPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () =>
+                  ref.invalidate(taxpayerIssuersListControllerProvider(filter)),
             ),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_taxpayer_issuer_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newTaxpayerIssuerTooltip),
-                  onPressed: () => context.push('/taxpayer-issuers/new'),
-                ),
-            ],
           ),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_taxpayer_issuer_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newTaxpayerIssuerTooltip),
+                onPressed: () => context.push('/taxpayer-issuers/new'),
+              ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<TaxpayerIssuer>(

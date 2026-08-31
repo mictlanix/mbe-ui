@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart';
 
@@ -26,12 +27,9 @@ class FacilityFilter with _$FacilityFilter {
   }) = _FacilityFilter;
 
   factory FacilityFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     return FacilityFilter(
       search: query.search,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       pageIndex: query.pageIndex,
     );
   }
@@ -43,15 +41,6 @@ extension FacilityFilterBadge on FacilityFilter {
   int get activeFilterCount => status != null ? 1 : 0;
 
   bool get hasActiveFilters => activeFilterCount > 0;
-}
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
 }
 
 /// Fetches and holds the Facilities list (FR-001, FR-028) for the given

@@ -56,11 +56,26 @@ void main() {
       final filter = UserProfileFilter.fromQuery(const ListQuery());
 
       expect(filter.search, '');
-      expect(filter.status, isNull);
+      // spec 035 FR-001/FR-002: an absent status facet now defaults to
+      // Active, not "no filter" — the "All" choice is the explicit
+      // `status=all` case, covered separately below.
+      expect(filter.status, EntityStatus.active);
       expect(filter.pageIndex, 0);
     });
 
-    test('an unparseable status degrades to null, not a throw', () {
+    test('an explicit "all" status clears the default (FR-004)', () {
+      final filter = UserProfileFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'status': ['all'],
+          },
+        ),
+      );
+
+      expect(filter.status, isNull);
+    });
+
+    test('an unparseable status degrades to the Active default, not a throw', () {
       final filter = UserProfileFilter.fromQuery(
         const ListQuery(
           facets: {
@@ -69,7 +84,7 @@ void main() {
         ),
       );
 
-      expect(filter.status, isNull);
+      expect(filter.status, EntityStatus.active);
     });
   });
 

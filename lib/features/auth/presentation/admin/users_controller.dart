@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
@@ -18,15 +19,6 @@ part 'users_controller.freezed.dart';
 part 'users_controller.g.dart';
 
 const _pageSize = 20;
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
-}
 
 /// The Users list screen's addressable view state
 /// (017-ui-consistency-filters FR-011, FR-017, data-model.md "UserFilter"):
@@ -48,13 +40,10 @@ class UserFilter with _$UserFilter {
   }) = _UserFilter;
 
   factory UserFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     final profileRaw = query.facet('profile');
     return UserFilter(
       search: query.search,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       profileId: profileRaw != null ? int.tryParse(profileRaw) : null,
       pageIndex: query.pageIndex,
     );
@@ -375,10 +364,7 @@ class UserFormController extends _$UserFormController {
         // `state.privileges` is never non-empty in that case in practice —
         // this check is the defense against it anyway.
         if (state.profileId == null && state.privileges.isNotEmpty) {
-          await repo.update(
-            userId: state.userId,
-            privileges: state.privileges,
-          );
+          await repo.update(userId: state.userId, privileges: state.privileges);
         }
       }
       _invalidateCaches();

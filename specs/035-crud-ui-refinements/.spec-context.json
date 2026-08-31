@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "crud ui refinements",
   "branch": "035-crud-ui-refinements",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -67,6 +67,205 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-30T21:31:10.318Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-08-30T21:37:09.575Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:08.983Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.028Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.069Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.110Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.151Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.192Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.232Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.274Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.314Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.355Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.395Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:05:09.435Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:12:54.114Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:12:54.159Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:12:54.202Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:12:54.248Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-30T22:12:54.292Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.237Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.284Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.328Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.374Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.420Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.465Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-08-31T03:32:32.510Z"
     }
   ],
   "telemetryInstanceId": "86d79834-1b93-490b-95c6-bf859215583e",
@@ -212,5 +411,180 @@
     "No compact/phone-tier redesign of data tables (card-list transformation remains out of scope)",
     "Default status filtering on POS sales, sales orders and cash sessions — deferred: the server accepts only a single scalar status, so the intended multi-state defaults are unimplementable",
     "No mbe-api change is requested and no external dependency is carried; the transactional lists are left as-is by decision"
-  ]
+  ],
+  "currentTask": "T024",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Confirmed clean baseline: flutter analyze and flutter test both pass before any change (2363 tests)",
+      "files": [
+        "none"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Folded into T003 — inlined the hairline BorderSide at its 3 call sites instead of a separate shapes.dart helper (no ColorScheme access there)",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "cardTheme gained clipBehavior: Clip.antiAlias (fixes square top corners on every table) and a hairline outlineVariant side on its shape (every Card, incl. FacilityCard)",
+      "files": [
+        "lib/core/design/component_themes.dart"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Verified from riverpod 2.6.1 source (asyncTransition/copyWithPrevious) that a seamless ref.invalidate keeps the previous AsyncData visible with isLoading:true, so CatalogListStateView's existing guard already satisfies FR-012 with no code change",
+      "files": [
+        "none"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "Added decodeStatusFacet/encodeStatusFacet to entity_status_controls.dart (not list_query.dart, which is deliberately facet-type-agnostic); also replaces a duplicate byNameOrNull extension found in 10 controllers",
+      "files": [
+        "lib/core/widgets/entity_status_controls.dart"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "No change needed — EntityStatusFilterChips' existing null=All contract already matches the new decode semantics exactly",
+      "files": [
+        "none"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Wired all 10 controllers/screens through decodeStatusFacet/encodeStatusFacet, deleted 10 duplicate byNameOrNull extensions; fixed 15+ pre-existing tests asserting the old null default across unit and widget suites",
+      "files": [
+        "10 controllers",
+        "10 screens",
+        "15 test files"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Added isFilteredBeyondStatusDefault helper after discovering query.isFiltered||status!=null was itself wrong for the explicit status=all case; wired at all 10 CatalogListStateView call sites",
+      "files": [
+        "lib/core/widgets/entity_status_controls.dart",
+        "10 screens"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "Confirmed via git diff --stat: zero changes to the 3 transactional screens",
+      "files": [
+        "none"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "New test/unit/core/widgets/entity_status_controls_test.dart: 13 tests directly covering decodeStatusFacet/encodeStatusFacet/isFilteredBeyondStatusDefault",
+      "files": [
+        "test/unit/core/widgets/entity_status_controls_test.dart"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Superseded by T007's broader regression pass across all 10 screens rather than 2 representative ones",
+      "files": [
+        "none"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Confirmed via full flutter test test/widget pass with the 3 transactional screens' existing suites untouched",
+      "files": [
+        "none"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Created submitCatalogSearch in list_search_submit.dart per contract C4",
+      "files": [
+        "lib/core/navigation/list_search_submit.dart"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Wired 18 screens (not 20 — exchange_rates and cash_sessions have no search box) through submitCatalogSearch, handling 4 special-shaped call sites individually",
+      "files": [
+        "18 screen files"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Verified via T004's source analysis, confirmed end-to-end by T017's new test",
+      "files": [
+        "none"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "4 tests in test/widget/core/navigation/list_search_submit_test.dart (moved from test/unit since context.go needs a live router)",
+      "files": [
+        "test/widget/core/navigation/list_search_submit_test.dart"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "3 new tests in labels_list_screen_test.dart: unchanged-term refetch with rows staying visible, changed-term single fetch, typing-alone no fetch",
+      "files": [
+        "test/widget/features/catalog/labels_list_screen_test.dart"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "CatalogFilterBar applies its own spacing.cardPadding horizontal inset and uses Row.spacing so gaps sit between children only",
+      "files": [
+        "lib/core/widgets/catalog_filter_bar.dart"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Removed the EdgeInsets.all(8) wrapper from all 20 screens; reverted 89 files of unrelated dart format churn",
+      "files": [
+        "20 screen files"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "FacilityCard needed no outline code (plain Card inherits it); tokenised its 3 inner circular(12) literals to shapes.mdRadius without adding borders to non-surface elements",
+      "files": [
+        "lib/features/catalog/presentation/widgets/facility_card.dart"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Hairline + shapes.mdRadius on the shared _ChildRowShell (covers all 3 child row types); Material moved borderRadius->shape; 2 inline chips tokenised to smRadius",
+      "files": [
+        "lib/features/catalog/presentation/widgets/facility_child_row.dart"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "3-width real-geometry alignment group; found Card RenderBox includes margin (measure inner Material) and that the right-edge assertion only applies above 840px",
+      "files": [
+        "test/widget/core/widgets/catalog_filter_bar_test.dart"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Reviewed all 16 golden diffs visually before regenerating; also regenerated 8 POS documentation screenshots which confirmed the fix on a real screen",
+      "files": [
+        "test/golden/goldens (16)",
+        "test/screenshots/shots (8)"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "New facility_surfaces_test.dart: 4 tests covering outline colour/width, dark scheme, tokenised radius, and ripple clipping",
+      "files": [
+        "test/widget/features/catalog/widgets/facility_surfaces_test.dart"
+      ]
+    }
+  }
 }

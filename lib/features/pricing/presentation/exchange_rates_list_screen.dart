@@ -52,89 +52,86 @@ class ExchangeRatesListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: const SizedBox.shrink(),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_exchange_rate_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newExchangeRateTooltip),
-                  onPressed: () => context.push('/exchange-rates/new'),
-                ),
-            ],
-            filters: [
-              OutlinedButton.icon(
-                key: const Key('exchange_rate_date_range_filter'),
-                icon: const Icon(Icons.date_range),
-                label: Text(
-                  filter.dateFrom == null
-                      ? l10n.dateRangeFilterLabel
-                      : '${fmt.display.date(filter.dateFrom!)} – '
-                            '${fmt.display.date(filter.dateTo ?? filter.dateFrom!)}',
-                ),
-                onPressed: () async {
-                  final range = await showDateRangePicker(
-                    context: context,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                    initialDateRange:
-                        filter.dateFrom != null && filter.dateTo != null
-                        ? DateTimeRange(
-                            start: filter.dateFrom!,
-                            end: filter.dateTo!,
-                          )
-                        : null,
-                  );
-                  if (range != null) {
-                    goTo(
-                      query
-                          .withFacet('dateFrom', toIsoDateFacet(range.start))
-                          .withFacet('dateTo', toIsoDateFacet(range.end))
-                          .copyWith(pageIndex: 0),
-                    );
-                  }
-                },
+        CatalogFilterBar(
+          search: const SizedBox.shrink(),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_exchange_rate_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newExchangeRateTooltip),
+                onPressed: () => context.push('/exchange-rates/new'),
               ),
-              if (filter.dateFrom != null)
-                IconButton(
-                  key: const Key('clear_date_range_button'),
-                  icon: const Icon(Icons.clear),
-                  tooltip: l10n.clearDateRangeTooltip,
-                  onPressed: () => goTo(
+          ],
+          filters: [
+            OutlinedButton.icon(
+              key: const Key('exchange_rate_date_range_filter'),
+              icon: const Icon(Icons.date_range),
+              label: Text(
+                filter.dateFrom == null
+                    ? l10n.dateRangeFilterLabel
+                    : '${fmt.display.date(filter.dateFrom!)} – '
+                          '${fmt.display.date(filter.dateTo ?? filter.dateFrom!)}',
+              ),
+              onPressed: () async {
+                final range = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                  initialDateRange:
+                      filter.dateFrom != null && filter.dateTo != null
+                      ? DateTimeRange(
+                          start: filter.dateFrom!,
+                          end: filter.dateTo!,
+                        )
+                      : null,
+                );
+                if (range != null) {
+                  goTo(
                     query
-                        .withFacet('dateFrom', null)
-                        .withFacet('dateTo', null)
+                        .withFacet('dateFrom', toIsoDateFacet(range.start))
+                        .withFacet('dateTo', toIsoDateFacet(range.end))
                         .copyWith(pageIndex: 0),
-                  ),
-                ),
-              DropdownButton<Currency?>(
-                key: const Key('exchange_rate_base_filter'),
-                value: filter.base != null
-                    ? Currency.fromValue(filter.base!)
-                    : null,
-                hint: Text(l10n.currencyFilterLabel),
-                items: [
-                  DropdownMenuItem(
-                    value: null,
-                    child: Text(l10n.currencyFilterLabel),
-                  ),
-                  for (final currency in Currency.values)
-                    DropdownMenuItem(
-                      value: currency,
-                      child: Text(_currencyLabel(l10n, currency)),
-                    ),
-                ],
-                onChanged: (currency) => goTo(
+                  );
+                }
+              },
+            ),
+            if (filter.dateFrom != null)
+              IconButton(
+                key: const Key('clear_date_range_button'),
+                icon: const Icon(Icons.clear),
+                tooltip: l10n.clearDateRangeTooltip,
+                onPressed: () => goTo(
                   query
-                      .withFacet('base', currency?.value.toString())
+                      .withFacet('dateFrom', null)
+                      .withFacet('dateTo', null)
                       .copyWith(pageIndex: 0),
                 ),
               ),
-            ],
-          ),
+            DropdownButton<Currency?>(
+              key: const Key('exchange_rate_base_filter'),
+              value: filter.base != null
+                  ? Currency.fromValue(filter.base!)
+                  : null,
+              hint: Text(l10n.currencyFilterLabel),
+              items: [
+                DropdownMenuItem(
+                  value: null,
+                  child: Text(l10n.currencyFilterLabel),
+                ),
+                for (final currency in Currency.values)
+                  DropdownMenuItem(
+                    value: currency,
+                    child: Text(_currencyLabel(l10n, currency)),
+                  ),
+              ],
+              onChanged: (currency) => goTo(
+                query
+                    .withFacet('base', currency?.value.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<ExchangeRate>(

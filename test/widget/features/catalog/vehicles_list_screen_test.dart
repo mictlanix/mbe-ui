@@ -444,8 +444,14 @@ void main() {
         await tester.pumpAndSettle();
 
         verify(
-          () =>
-              repository.list(search: null, status: null, skip: 20, limit: 20),
+          // spec 035 FR-001/FR-002: an unmodified status facet now defaults
+          // to Active, not "no filter".
+          () => repository.list(
+            search: null,
+            status: EntityStatus.active,
+            skip: 20,
+            limit: 20,
+          ),
         ).called(greaterThanOrEqualTo(1));
       },
     );

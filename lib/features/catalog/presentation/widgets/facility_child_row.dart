@@ -26,7 +26,7 @@ class FacilityCodeChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: Theme.of(context).shapes.smRadius,
       ),
       child: Text(
         code,
@@ -158,7 +158,7 @@ class PointSaleChildRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: scheme.tertiaryContainer,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: theme.shapes.smRadius,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -246,9 +246,19 @@ class _ChildRowShell extends StatelessWidget {
 
     return Material(
       color: theme.colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(12),
+      // The hairline outline every warehouse / point-of-sale / cash-drawer
+      // row shares with the list surfaces and the facility card that
+      // contains them (spec 035 FR-023) — same colour and width as
+      // `cardTheme`'s own side, defined against the scheme rather than
+      // copied as a literal. `shape:` rather than `borderRadius:` because
+      // `Material` asserts the two are never both set; the `InkWell` below
+      // keeps its own `borderRadius` to clip the ripple to the same corners.
+      shape: RoundedRectangleBorder(
+        borderRadius: theme.shapes.mdRadius,
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: theme.shapes.mdRadius,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

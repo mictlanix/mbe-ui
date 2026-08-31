@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_missing_price_facet.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
@@ -29,15 +30,6 @@ bool? _parseTriState(String? raw) {
   if (raw == 'true') return true;
   if (raw == 'false') return false;
   return null;
-}
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
 }
 
 /// Error codes for a cell's [RejectedEdit.reason], localized in the UI layer
@@ -79,15 +71,12 @@ class PricingGridFilter with _$PricingGridFilter {
   }) = _PricingGridFilter;
 
   factory PricingGridFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     final supplierRaw = query.facet('supplier');
     final missingRaw = query.facet('missing');
     return PricingGridFilter(
       search: query.search,
       pageIndex: query.pageIndex,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       stockable: _parseTriState(query.facet('stockable')),
       salable: _parseTriState(query.facet('salable')),
       purchasable: _parseTriState(query.facet('purchasable')),
@@ -306,9 +295,10 @@ class PricingGridController extends _$PricingGridController {
     for (final row in page.items) {
       for (final listId in visibleIds) {
         baseline[PriceCellKey(
-          productId: row.product.productId,
-          priceListId: listId,
-        )] = row.prices[listId]?.price;
+              productId: row.product.productId,
+              priceListId: listId,
+            )] =
+            row.prices[listId]?.price;
       }
     }
 
@@ -447,7 +437,9 @@ class PricingGridController extends _$PricingGridController {
 
     if (restorable.isEmpty) {
       state = AsyncData(
-        current.copyWith(history: current.history.sublist(0, current.history.length - 1)),
+        current.copyWith(
+          history: current.history.sublist(0, current.history.length - 1),
+        ),
       );
       return 0;
     }
@@ -483,11 +475,7 @@ class PricingGridController extends _$PricingGridController {
     final latest = state.value;
     if (latest == null) return restored;
     state = AsyncData(
-      latest.copyWith(
-        history: const [],
-        rejected: const {},
-        active: null,
-      ),
+      latest.copyWith(history: const [], rejected: const {}, active: null),
     );
     return restored;
   }
@@ -585,7 +573,10 @@ class PricingGridController extends _$PricingGridController {
     final deduped = byCell.values.toList();
 
     state = AsyncData(
-      current.copyWith(active: null, inFlight: {...current.inFlight, ...byCell.keys}),
+      current.copyWith(
+        active: null,
+        inFlight: {...current.inFlight, ...byCell.keys},
+      ),
     );
 
     try {
@@ -698,7 +689,8 @@ class PricingGridController extends _$PricingGridController {
     final current = state.value;
     if (current == null) return 0;
     final factor =
-        (Decimal.one + (percent / Decimal.fromInt(100)).toDecimal(
+        (Decimal.one +
+        (percent / Decimal.fromInt(100)).toDecimal(
           scaleOnInfinitePrecision: 6,
         ));
     final writes = <PriceWrite>[];
@@ -833,7 +825,11 @@ class PricingGridController extends _$PricingGridController {
             PriceChange(
               kind: PriceChangeKind.cell,
               writes: [
-                PriceWrite(cell: key, previous: existing?.price, next: saved.price),
+                PriceWrite(
+                  cell: key,
+                  previous: existing?.price,
+                  next: saved.price,
+                ),
               ],
             ),
           ],
@@ -851,7 +847,10 @@ class PricingGridController extends _$PricingGridController {
       state = AsyncData(
         latest.copyWith(
           inFlight: {...latest.inFlight}..remove(key),
-          rejected: {...latest.rejected, key: RejectedEdit(typed: typed, reason: reason)},
+          rejected: {
+            ...latest.rejected,
+            key: RejectedEdit(typed: typed, reason: reason),
+          },
         ),
       );
     }

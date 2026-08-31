@@ -186,4 +186,75 @@ void main() {
 
     expect(find.byKey(const Key('labels_table')), findsNothing);
   });
+
+  group('search always refetches (spec 035 FR-008/FR-009/FR-010/FR-011)', () {
+    testWidgets(
+      'submitting an UNCHANGED term still re-fetches, and the previous rows '
+      'stay visible while it does',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        clearInteractions(repository);
+
+        // Confirm a change without editing the term — the exact user
+        // action this feature fixes.
+        await tester.tap(find.byTooltip('Search'));
+        await tester.pump();
+
+        // Rows from the prior fetch are still on screen mid-refresh — the
+        // list must not blank out (FR-012).
+        expect(find.text('Clearance'), findsOneWidget);
+
+        await tester.pumpAndSettle();
+
+        verify(
+          () => repository.listDetailed(
+            search: null,
+            skip: 0,
+            limit: 20,
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'submitting a CHANGED term issues exactly one fetch, not a refresh '
+      'plus a navigation fetch',
+      (tester) async {
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+        clearInteractions(repository);
+
+        await tester.enterText(
+          find.byKey(const Key('labels_search_field')),
+          'clear',
+        );
+        await tester.testTextInput.receiveAction(TextInputAction.search);
+        await tester.pumpAndSettle();
+
+        verify(
+          () => repository.listDetailed(search: 'clear', skip: 0, limit: 20),
+        ).called(1);
+      },
+    );
+
+    testWidgets('typing alone, without submitting, issues no request', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+      clearInteractions(repository);
+
+      await tester.enterText(
+        find.byKey(const Key('labels_search_field')),
+        'clear',
+      );
+      await tester.pump();
+
+      verifyNever(
+        () => repository.listDetailed(
+          search: any(named: 'search'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      );
+    });
+  });
 }

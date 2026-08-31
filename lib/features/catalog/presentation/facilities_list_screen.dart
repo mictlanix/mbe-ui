@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
@@ -91,66 +92,69 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
           : null,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: CatalogFilterBar(
-              search: CatalogSearchBar(
-                key: const Key('facilities_search_field'),
-                label: l10n.facilitiesSearchLabel,
-                searchTooltip: l10n.searchButtonTooltip,
-                initialValue: filter.search,
-                onSubmitted: (value) => context.go(
-                  widget.query
-                      .copyWith(search: value, pageIndex: 0)
-                      .toUri(_facilitiesPath)
-                      .toString(),
-                ),
+          CatalogFilterBar(
+            search: CatalogSearchBar(
+              key: const Key('facilities_search_field'),
+              label: l10n.facilitiesSearchLabel,
+              searchTooltip: l10n.searchButtonTooltip,
+              initialValue: filter.search,
+              onSubmitted: (value) => submitCatalogSearch(
+                context: context,
+                query: widget.query,
+                path: _facilitiesPath,
+                submitted: value,
+                current: filter.search,
+                refresh: () =>
+                    ref.invalidate(facilitiesListControllerProvider(filter)),
               ),
-              actions: [
-                _ExpandAllButton(
-                  facilities: pageAsync.valueOrNull?.items ?? const [],
-                  allExpanded: _allExpanded(
-                    pageAsync.valueOrNull?.items ?? const [],
-                  ),
-                  onPressed: () =>
-                      _toggleAll(pageAsync.valueOrNull?.items ?? const []),
+            ),
+            actions: [
+              _ExpandAllButton(
+                facilities: pageAsync.valueOrNull?.items ?? const [],
+                allExpanded: _allExpanded(
+                  pageAsync.valueOrNull?.items ?? const [],
                 ),
-                if (!isCompact && canCreateFacility)
-                  FilledButton.icon(
-                    key: const Key('new_facility_button'),
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.newFacilityTooltip),
-                    onPressed: () => context.push('/facilities/new'),
-                  ),
-              ],
-              filters: [
-                Badge.count(
-                  count: filter.activeFilterCount,
-                  isLabelVisible: filter.hasActiveFilters,
-                  child: IconButton.outlined(
-                    key: const Key('facilities_filter_button'),
-                    icon: const Icon(Icons.tune),
-                    tooltip: l10n.filtersTooltip,
-                    onPressed: () => showCatalogFilterSheet(
-                      context,
-                      title: l10n.filtersButton,
-                      clearAllLabel: l10n.clearAllFilters,
-                      applyLabel: l10n.applyFilters,
-                      onClearAll: () => context.go(_facilitiesPath),
-                      builder: (_) => CurrentListQueryBuilder(
-                        builder: (context, query) =>
-                            _FacilityFiltersPanel(query: query),
-                      ),
+                onPressed: () =>
+                    _toggleAll(pageAsync.valueOrNull?.items ?? const []),
+              ),
+              if (!isCompact && canCreateFacility)
+                FilledButton.icon(
+                  key: const Key('new_facility_button'),
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.newFacilityTooltip),
+                  onPressed: () => context.push('/facilities/new'),
+                ),
+            ],
+            filters: [
+              Badge.count(
+                count: filter.activeFilterCount,
+                isLabelVisible: filter.hasActiveFilters,
+                child: IconButton.outlined(
+                  key: const Key('facilities_filter_button'),
+                  icon: const Icon(Icons.tune),
+                  tooltip: l10n.filtersTooltip,
+                  onPressed: () => showCatalogFilterSheet(
+                    context,
+                    title: l10n.filtersButton,
+                    clearAllLabel: l10n.clearAllFilters,
+                    applyLabel: l10n.applyFilters,
+                    onClearAll: () => context.go(_facilitiesPath),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, query) =>
+                          _FacilityFiltersPanel(query: query),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Expanded(
             child: CatalogListStateView<FacilityListItem>(
               state: pageAsync,
-              isFiltered: widget.query.isFiltered,
+              isFiltered: isFilteredBeyondStatusDefault(
+                widget.query,
+                filter.status,
+              ),
               emptyMessage: l10n.noFacilitiesFound,
               createLabel: canCreateFacility ? l10n.newFacilityTooltip : null,
               onCreate: canCreateFacility
@@ -365,11 +369,10 @@ class _FacilityFiltersPanel extends ConsumerWidget {
           filterKey: 'facilities_filter_status',
           value: filter.status,
           onChanged: (status) => context.go(
-            query
-                .withFacet('status', status?.name)
-                .copyWith(pageIndex: 0)
-                .toUri(_facilitiesPath)
-                .toString(),
+            encodeStatusFacet(
+              query,
+              status,
+            ).copyWith(pageIndex: 0).toUri(_facilitiesPath).toString(),
           ),
         ),
       ],
