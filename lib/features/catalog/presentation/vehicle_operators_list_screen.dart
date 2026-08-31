@@ -18,11 +18,32 @@ import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _vehicleOperatorsPath = '/vehicle-operators';
+
+void _openVehicleOperatorSheet(
+  BuildContext context, {
+  required String title,
+  int? vehicleOperatorId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<VehicleOperatorFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => VehicleOperatorForm(
+      key: formKey,
+      vehicleOperatorId: vehicleOperatorId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Vehicle Operators catalog list screen (FR-001, FR-002, FR-010, FR-018,
 /// US2, US3). Gated by `can(SystemObject.vehicleOperators, AccessRight.read)`
@@ -77,7 +98,10 @@ class VehicleOperatorsListScreen extends ConsumerWidget {
                 key: const Key('new_vehicle_operator_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newVehicleOperatorTooltip),
-                onPressed: () => context.push('/vehicle-operators/new'),
+                onPressed: () => _openVehicleOperatorSheet(
+                  context,
+                  title: l10n.newVehicleOperatorTitle,
+                ),
               ),
           ],
           filters: [
@@ -110,7 +134,10 @@ class VehicleOperatorsListScreen extends ConsumerWidget {
             emptyMessage: l10n.noVehicleOperatorsFound,
             createLabel: canCreate ? l10n.newVehicleOperatorTooltip : null,
             onCreate: canCreate
-                ? () => context.push('/vehicle-operators/new')
+                ? () => _openVehicleOperatorSheet(
+                    context,
+                    title: l10n.newVehicleOperatorTitle,
+                  )
                 : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_vehicleOperatorsPath),
@@ -156,14 +183,19 @@ class VehicleOperatorsListScreen extends ConsumerWidget {
                     .toUri(_vehicleOperatorsPath)
                     .toString(),
               ),
-              onRowTap: (op) => context.push(
-                '/vehicle-operators/${op.vehicleOperatorId}?view=true',
+              onRowTap: (op) => _openVehicleOperatorSheet(
+                context,
+                title: l10n.viewVehicleOperatorTitle,
+                vehicleOperatorId: op.vehicleOperatorId,
+                forceReadOnly: true,
               ),
               rowActionsBuilder: (context, op) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push(
-                        '/vehicle-operators/${op.vehicleOperatorId}',
+                    ? () => _openVehicleOperatorSheet(
+                        context,
+                        title: l10n.editVehicleOperatorTitle,
+                        vehicleOperatorId: op.vehicleOperatorId,
                       )
                     : null,
               ),

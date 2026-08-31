@@ -15,7 +15,7 @@ import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_form.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockTaxpayerRecipientRepository extends Mock
@@ -86,7 +86,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: TaxpayerRecipientDetailScreen(
+            body: TaxpayerRecipientForm(
               taxpayerRecipientId: taxpayerRecipientId,
               forceReadOnly: forceReadOnly,
             ),
@@ -119,8 +119,9 @@ void main() {
 
   group('view mode (forceReadOnly)', () {
     testWidgets(
-      'renders the id read-only, with no Save/Delete, and the edit '
-      'toggle in the record action area, not the AppBar (constitution v1.10.0)',
+      'renders the id read-only, with no Save/Delete, and the edit toggle '
+      'in the record action area — this form has no AppBar of its own at '
+      'all now (spec 035)',
       (tester) async {
         await pumpScreen(
           tester,
@@ -144,8 +145,7 @@ void main() {
           findsOneWidget,
         );
 
-        final appBar = tester.widget<AppBar>(find.byType(AppBar));
-        expect(appBar.actions, anyOf(isNull, isEmpty));
+        expect(find.byType(AppBar), findsNothing);
       },
     );
   });
@@ -221,5 +221,113 @@ void main() {
         );
       },
     );
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          taxpayerRecipientId: 'XAXX010101000',
+          forceReadOnly: true,
+        );
+
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.byKey(const Key('taxpayer_recipient_name_field')),
+              )
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(
+          find.byKey(const Key('edit_taxpayer_recipient_button')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.byKey(const Key('taxpayer_recipient_name_field')),
+              )
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
+    );
+  });
+
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      final key = GlobalKey<TaxpayerRecipientFormPanelState>();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
+            satCatalogRepositoryProvider.overrideWithValue(satRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: TaxpayerRecipientForm(key: key)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+    });
+
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      final key = GlobalKey<TaxpayerRecipientFormPanelState>();
+      when(
+        () => repository.get(taxpayerRecipientId: 'XAXX010101000'),
+      ).thenAnswer((_) async => _existing);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
+            satCatalogRepositoryProvider.overrideWithValue(satRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: TaxpayerRecipientForm(
+                key: key,
+                taxpayerRecipientId: 'XAXX010101000',
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+
+      await tester.enterText(
+        find.byKey(const Key('taxpayer_recipient_name_field')),
+        'Acme Corp Renamed',
+      );
+      await tester.pump();
+
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }

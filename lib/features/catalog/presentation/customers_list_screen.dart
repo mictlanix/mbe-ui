@@ -16,15 +16,36 @@ import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_controller.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _customersPath = '/customers';
+
+void _openCustomerSheet(
+  BuildContext context, {
+  required String title,
+  int? customerId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<CustomerFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => CustomerForm(
+      key: formKey,
+      customerId: customerId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Customers catalog list screen (FR-001, FR-002, FR-022, US4). Gated by
 /// `can(SystemObject.customers, AccessRight.read)` in the router. Ships a
@@ -72,7 +93,8 @@ class CustomersListScreen extends ConsumerWidget {
                 key: const Key('new_customer_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newCustomerTooltip),
-                onPressed: () => context.push('/customers/new'),
+                onPressed: () =>
+                    _openCustomerSheet(context, title: l10n.newCustomerTitle),
               ),
           ],
           filters: [
@@ -104,7 +126,10 @@ class CustomersListScreen extends ConsumerWidget {
             isFiltered: isFilteredBeyondStatusDefault(query, filter.status),
             emptyMessage: l10n.noCustomersFound,
             createLabel: canCreate ? l10n.newCustomerTooltip : null,
-            onCreate: canCreate ? () => context.push('/customers/new') : null,
+            onCreate: canCreate
+                ? () =>
+                      _openCustomerSheet(context, title: l10n.newCustomerTitle)
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_customersPath),
             retryLabel: l10n.retryButton,
@@ -148,12 +173,20 @@ class CustomersListScreen extends ConsumerWidget {
                     .toUri(_customersPath)
                     .toString(),
               ),
-              onRowTap: (c) =>
-                  context.push('/customers/${c.customerId}?view=true'),
+              onRowTap: (c) => _openCustomerSheet(
+                context,
+                title: l10n.viewCustomerTitle,
+                customerId: c.customerId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, c) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/customers/${c.customerId}')
+                    ? () => _openCustomerSheet(
+                        context,
+                        title: l10n.editCustomerTitle,
+                        customerId: c.customerId,
+                      )
                     : null,
               ),
             ),

@@ -13,11 +13,32 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/expense.dart';
+import 'package:mbe_ui/features/catalog/presentation/expense_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/expenses_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _expensesPath = '/expenses';
+
+void _openExpenseSheet(
+  BuildContext context, {
+  required String title,
+  int? expenseId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<ExpenseFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => ExpenseForm(
+      key: formKey,
+      expenseId: expenseId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Expenses catalog list screen (FR-001, FR-002, US1). Gated by
 /// `can(SystemObject.expenses, AccessRight.read)` in the router. Search-only
@@ -65,7 +86,8 @@ class ExpensesListScreen extends ConsumerWidget {
                 key: const Key('new_expense_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newExpenseTooltip),
-                onPressed: () => context.push('/expenses/new'),
+                onPressed: () =>
+                    _openExpenseSheet(context, title: l10n.newExpenseTitle),
               ),
           ],
         ),
@@ -75,7 +97,9 @@ class ExpensesListScreen extends ConsumerWidget {
             isFiltered: query.isFiltered,
             emptyMessage: l10n.noExpensesFound,
             createLabel: canCreate ? l10n.newExpenseTooltip : null,
-            onCreate: canCreate ? () => context.push('/expenses/new') : null,
+            onCreate: canCreate
+                ? () => _openExpenseSheet(context, title: l10n.newExpenseTitle)
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_expensesPath),
             retryLabel: l10n.retryButton,
@@ -103,12 +127,20 @@ class ExpensesListScreen extends ConsumerWidget {
                     .toUri(_expensesPath)
                     .toString(),
               ),
-              onRowTap: (ex) =>
-                  context.push('/expenses/${ex.expenseId}?view=true'),
+              onRowTap: (ex) => _openExpenseSheet(
+                context,
+                title: l10n.viewExpenseTitle,
+                expenseId: ex.expenseId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, ex) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/expenses/${ex.expenseId}')
+                    ? () => _openExpenseSheet(
+                        context,
+                        title: l10n.editExpenseTitle,
+                        expenseId: ex.expenseId,
+                      )
                     : null,
               ),
             ),

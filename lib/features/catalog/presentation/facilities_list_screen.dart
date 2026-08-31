@@ -14,12 +14,79 @@ import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/cash_drawer_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/facilities_list_controller.dart';
+import 'package:mbe_ui/features/catalog/presentation/point_sale_form.dart';
+import 'package:mbe_ui/features/catalog/presentation/warehouse_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/widgets/facility_card.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _facilitiesPath = '/facilities';
+
+void _openWarehouseSheet(
+  BuildContext context, {
+  required String title,
+  int? warehouseId,
+  int? facilityId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<WarehouseFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => WarehouseForm(
+      key: formKey,
+      warehouseId: warehouseId,
+      facilityId: facilityId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
+
+void _openPointSaleSheet(
+  BuildContext context, {
+  required String title,
+  int? pointSaleId,
+  int? facilityId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<PointSaleFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => PointSaleForm(
+      key: formKey,
+      pointSaleId: pointSaleId,
+      facilityId: facilityId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
+
+void _openCashDrawerSheet(
+  BuildContext context, {
+  required String title,
+  int? cashDrawerId,
+  int? facilityId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<CashDrawerFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => CashDrawerForm(
+      key: formKey,
+      cashDrawerId: cashDrawerId,
+      facilityId: facilityId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Facilities catalog screen (018-nested-facility-management). Replaces the
 /// plain table with an expandable org-chart-style hierarchy — each facility
@@ -204,26 +271,23 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
                                       '/facilities/${facility.facilityId}',
                                     )
                                   : null,
-                              warehouseActions: _childActions(
+                              warehouseActions: _warehouseChildActions(
                                 context,
                                 access,
+                                l10n,
                                 facility.facilityId,
-                                object: SystemObject.warehouses,
-                                path: '/warehouses',
                               ),
-                              pointSaleActions: _childActions(
+                              pointSaleActions: _pointSaleChildActions(
                                 context,
                                 access,
+                                l10n,
                                 facility.facilityId,
-                                object: SystemObject.pointsOfSale,
-                                path: '/points-of-sale',
                               ),
-                              cashDrawerActions: _childActions(
+                              cashDrawerActions: _cashDrawerChildActions(
                                 context,
                                 access,
+                                l10n,
                                 facility.facilityId,
-                                object: SystemObject.cashDrawers,
-                                path: '/cash-drawers',
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -250,20 +314,104 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
     );
   }
 
-  FacilityChildActions _childActions(
+  FacilityChildActions _warehouseChildActions(
     BuildContext context,
     AccessControlService access,
-    int facilityId, {
-    required SystemObject object,
-    required String path,
-  }) {
-    final canUpdate = access.can(object, AccessRight.update);
-    final canCreate = access.can(object, AccessRight.create);
+    AppLocalizations l10n,
+    int facilityId,
+  ) {
+    final canUpdate = access.can(SystemObject.warehouses, AccessRight.update);
+    final canCreate = access.can(SystemObject.warehouses, AccessRight.create);
     return FacilityChildActions(
-      onView: (id) => context.push('$path/$id?view=true'),
-      onEdit: canUpdate ? (id) => context.push('$path/$id') : null,
+      onView: (id) => _openWarehouseSheet(
+        context,
+        title: l10n.viewWarehouseTitle,
+        warehouseId: id,
+        forceReadOnly: true,
+      ),
+      onEdit: canUpdate
+          ? (id) => _openWarehouseSheet(
+              context,
+              title: l10n.editWarehouseTitle,
+              warehouseId: id,
+            )
+          : null,
       onCreate: canCreate
-          ? () => context.push('$path/new?facility=$facilityId')
+          ? () => _openWarehouseSheet(
+              context,
+              title: l10n.newWarehouseTitle,
+              facilityId: facilityId,
+            )
+          : null,
+    );
+  }
+
+  FacilityChildActions _pointSaleChildActions(
+    BuildContext context,
+    AccessControlService access,
+    AppLocalizations l10n,
+    int facilityId,
+  ) {
+    final canUpdate = access.can(
+      SystemObject.pointsOfSale,
+      AccessRight.update,
+    );
+    final canCreate = access.can(
+      SystemObject.pointsOfSale,
+      AccessRight.create,
+    );
+    return FacilityChildActions(
+      onView: (id) => _openPointSaleSheet(
+        context,
+        title: l10n.viewPointSaleTitle,
+        pointSaleId: id,
+        forceReadOnly: true,
+      ),
+      onEdit: canUpdate
+          ? (id) => _openPointSaleSheet(
+              context,
+              title: l10n.editPointSaleTitle,
+              pointSaleId: id,
+            )
+          : null,
+      onCreate: canCreate
+          ? () => _openPointSaleSheet(
+              context,
+              title: l10n.newPointSaleTitle,
+              facilityId: facilityId,
+            )
+          : null,
+    );
+  }
+
+  FacilityChildActions _cashDrawerChildActions(
+    BuildContext context,
+    AccessControlService access,
+    AppLocalizations l10n,
+    int facilityId,
+  ) {
+    final canUpdate = access.can(SystemObject.cashDrawers, AccessRight.update);
+    final canCreate = access.can(SystemObject.cashDrawers, AccessRight.create);
+    return FacilityChildActions(
+      onView: (id) => _openCashDrawerSheet(
+        context,
+        title: l10n.viewCashDrawerTitle,
+        cashDrawerId: id,
+        forceReadOnly: true,
+      ),
+      onEdit: canUpdate
+          ? (id) => _openCashDrawerSheet(
+              context,
+              title: l10n.editCashDrawerTitle,
+              cashDrawerId: id,
+            )
+          : null,
+      onCreate: canCreate
+          ? () => _openCashDrawerSheet(
+              context,
+              title: l10n.newCashDrawerTitle,
+              facilityId: facilityId,
+            )
           : null,
     );
   }

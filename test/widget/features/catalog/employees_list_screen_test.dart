@@ -4,15 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/domain/gender.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
@@ -188,7 +192,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.list(
@@ -204,6 +209,19 @@ void main() {
           total: _testEmployees.length,
         ),
       );
+      when(() => repository.get(employeeId: 1)).thenAnswer(
+        (_) async => Employee(
+          employeeId: 1,
+          firstName: 'Jane',
+          lastName: 'Doe',
+          nickname: 'Janie',
+          gender: Gender.female,
+          birthday: DateTime(1990, 5, 15),
+          status: EntityStatus.active,
+          salesPerson: true,
+          startJobDate: DateTime(2020, 1, 10),
+        ),
+      );
 
       final router = GoRouter(
         initialLocation: '/',
@@ -214,16 +232,16 @@ void main() {
               body: EmployeesListScreen(query: ListQuery.fromUri(state.uri)),
             ),
           ),
-          GoRoute(
-            path: '/employees/:employeeId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
-          ),
         ],
       );
+
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             employeeRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
@@ -241,7 +259,13 @@ void main() {
       await tester.tap(find.text('Jane Doe'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/employees/1?view=true'), findsOneWidget);
+      expect(router.state.uri.path, '/');
+      final firstNameField = tester.widget<TextFormField>(
+        find.byKey(const Key('first_name_field')),
+      );
+      expect(firstNameField.initialValue, 'Jane');
+      expect(firstNameField.enabled, isFalse);
+      expect(find.byKey(const Key('edit_employee_button')), findsOneWidget);
     },
   );
 

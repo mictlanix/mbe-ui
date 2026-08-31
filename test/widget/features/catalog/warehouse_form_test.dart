@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -18,7 +17,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/warehouse_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/warehouse_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/warehouse_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -110,7 +109,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: WarehouseDetailScreen(
+            body: WarehouseForm(
               warehouseId: warehouseId,
               forceReadOnly: forceReadOnly,
             ),
@@ -121,213 +120,278 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('read-only view has no editable fields or delete affordance', (
-    tester,
-  ) async {
-    await pumpScreen(
+  group('view mode (forceReadOnly)', () {
+    testWidgets(
+      'read-only view has no editable fields or delete affordance, and the '
+      'edit toggle appears in the record action area — this form has no '
+      'AppBar of its own at all now (spec 035)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          warehouseId: 1,
+          forceReadOnly: true,
+        );
+
+        final codeField = tester.widget<TextFormField>(
+          find.byKey(const Key('code_field')),
+        );
+        expect(codeField.enabled, isFalse);
+        expect(find.byKey(const Key('delete_warehouse_button')), findsNothing);
+        expect(find.byKey(const Key('edit_warehouse_button')), findsOneWidget);
+        expect(find.byType(AppBar), findsNothing);
+      },
+    );
+
+    testWidgets('a user without update privilege gets no edit toggle', (
       tester,
-      signedInAs: _fullAccessUser,
-      warehouseId: 1,
-      forceReadOnly: true,
-    );
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        warehouseId: 1,
+        forceReadOnly: true,
+      );
 
-    final codeField = tester.widget<TextFormField>(
-      find.byKey(const Key('code_field')),
-    );
-    expect(codeField.enabled, isFalse);
-    expect(find.byKey(const Key('delete_warehouse_button')), findsNothing);
-    expect(find.byKey(const Key('edit_warehouse_button')), findsOneWidget);
-
-    // 017-ui-consistency-filters / constitution v1.10.0: the edit toggle
-    // lives in the record action area now, not the AppBar.
-    final appBar = tester.widget<AppBar>(find.byType(AppBar));
-    expect(appBar.actions, anyOf(isNull, isEmpty));
+      expect(find.byKey(const Key('edit_warehouse_button')), findsNothing);
+    });
   });
 
-  testWidgets('a user without update privilege gets no edit toggle', (
-    tester,
-  ) async {
-    await pumpScreen(
-      tester,
-      signedInAs: _readOnlyUser,
-      warehouseId: 1,
-      forceReadOnly: true,
+  group('edit mode', () {
+    testWidgets(
+      'a user with delete privilege sees the Delete button, and confirming '
+      'a still-referenced rejection leaves the form in place',
+      (tester) async {
+        when(() => repository.delete(warehouseId: 1)).thenThrow(
+          const AppError.server(
+            statusCode: 400,
+            message: 'Warehouse is referenced by a purchase order',
+          ),
+        );
+
+        await pumpScreen(tester, signedInAs: _fullAccessUser, warehouseId: 1);
+
+        expect(
+          find.byKey(const Key('delete_warehouse_button')),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(const Key('delete_warehouse_button')));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const Key('confirm_delete_warehouse_button')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('code_field')), findsOneWidget);
+      },
     );
 
-    expect(find.byKey(const Key('edit_warehouse_button')), findsNothing);
-  });
+    testWidgets('cancelling the confirmation dialog does not delete', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser, warehouseId: 1);
 
-  testWidgets('delete requires a confirmation dialog before submit (FR-007)', (
-    tester,
-  ) async {
-    when(
-      () => repository.get(warehouseId: 1),
-    ).thenAnswer((_) async => _warehouse);
-    when(() => repository.delete(warehouseId: 1)).thenAnswer((_) async {});
-    when(
-      () => facilityRepository.get(facilityId: any(named: 'facilityId')),
-    ).thenAnswer((invocation) async {
-      final id = invocation.namedArguments[#facilityId] as int;
-      return _facility(id);
+      await tester.tap(find.byKey(const Key('delete_warehouse_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => repository.delete(warehouseId: any(named: 'warehouseId')),
+      );
     });
 
-    // Router-wrapped so the post-delete `context.pop()` (constitution §VI —
-    // return to the list on success) has somewhere to go, mirroring the list
-    // screen's row-click test harness.
-    final router = GoRouter(
-      initialLocation: '/warehouses',
-      routes: [
-        GoRoute(
-          path: '/warehouses',
-          builder: (_, _) => const Scaffold(body: Text('warehouses list')),
+    testWidgets('a duplicate-code server rejection is surfaced on the form '
+        'without discarding input (FR-012)', (tester) async {
+      when(
+        () => repository.create(
+          facilityId: any(named: 'facilityId'),
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          comment: any(named: 'comment'),
+          status: any(named: 'status'),
         ),
-        GoRoute(
-          path: '/warehouses/:warehouseId',
-          builder: (_, state) => WarehouseDetailScreen(
-            warehouseId: int.parse(state.pathParameters['warehouseId']!),
+      ).thenThrow(
+        AppError.validation([
+          const FieldError(
+            loc: ['code'],
+            msg: 'Code already in use',
+            type: 'value_error',
+          ),
+        ]),
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          warehouseRepositoryProvider.overrideWithValue(repository),
+          facilityRepositoryProvider.overrideWithValue(facilityRepository),
+          accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Scaffold(body: WarehouseForm()),
           ),
         ),
-      ],
-    );
+      );
+      await tester.pumpAndSettle();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          warehouseRepositoryProvider.overrideWithValue(repository),
-          facilityRepositoryProvider.overrideWithValue(facilityRepository),
-          accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
-        ],
-        child: MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+      // Selecting the facility from the form's own picker widget is brittle
+      // to drive through the Autocomplete overlay in a widget test; seed it
+      // directly on the controller — client-side facility validation is
+      // covered separately, this test targets the server-rejection path.
+      container
+          .read(warehouseFormControllerProvider.notifier)
+          .facilitySelected(9, 'Main Store');
+      await tester.enterText(find.byKey(const Key('code_field')), 'WH-1');
+      await tester.enterText(find.byKey(const Key('name_field')), 'Duplicate');
+
+      await tester.tap(find.byKey(const Key('save_button')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => repository.create(
+          facilityId: 9,
+          code: 'WH-1',
+          name: 'Duplicate',
+          comment: any(named: 'comment'),
+          status: any(named: 'status'),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    router.push('/warehouses/1');
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('delete_warehouse_button')));
-    await tester.pumpAndSettle();
-
-    // The dialog is up, but delete() has NOT been called yet.
-    expect(find.byType(AlertDialog), findsOneWidget);
-    verifyNever(() => repository.delete(warehouseId: 1));
-
-    await tester.tap(find.byKey(const Key('confirm_delete_warehouse_button')));
-    await tester.pumpAndSettle();
-
-    verify(() => repository.delete(warehouseId: 1)).called(1);
-    // Success `context.pop()` returns to the list (constitution §VI).
-    expect(find.text('warehouses list'), findsOneWidget);
+      ).called(1);
+      expect(find.text('WH-1'), findsOneWidget);
+      expect(find.text('Duplicate'), findsOneWidget);
+      expect(find.text('Code already in use'), findsOneWidget);
+    });
   });
 
-  testWidgets('cancelling the confirmation dialog does not delete', (
-    tester,
-  ) async {
-    await pumpScreen(tester, signedInAs: _fullAccessUser, warehouseId: 1);
+  group('create mode with a pre-selected facility (018-nested-facility-'
+      'management FR-022/FR-023)', () {
+    testWidgets('a facilityId cold load pre-selects the parent facility', (
+      tester,
+    ) async {
+      when(
+        () => facilityRepository.get(facilityId: 9),
+      ).thenAnswer((_) async => _facility(9));
 
-    await tester.tap(find.byKey(const Key('delete_warehouse_button')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Cancel'));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            warehouseRepositoryProvider.overrideWithValue(repository),
+            facilityRepositoryProvider.overrideWithValue(facilityRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Scaffold(body: WarehouseForm(facilityId: 9)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    verifyNever(
-      () => repository.delete(warehouseId: any(named: 'warehouseId')),
+      expect(find.text('Facility 9'), findsOneWidget);
+    });
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          warehouseId: 1,
+          forceReadOnly: true,
+        );
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byKey(const Key('edit_warehouse_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
     );
   });
 
-  testWidgets('a duplicate-code server rejection is surfaced on the form '
-      'without discarding input (FR-012)', (tester) async {
-    when(
-      () => repository.create(
-        facilityId: any(named: 'facilityId'),
-        code: any(named: 'code'),
-        name: any(named: 'name'),
-        comment: any(named: 'comment'),
-        status: any(named: 'status'),
-      ),
-    ).thenThrow(
-      AppError.validation([
-        const FieldError(
-          loc: ['code'],
-          msg: 'Code already in use',
-          type: 'value_error',
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      final key = GlobalKey<WarehouseFormPanelState>();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            warehouseRepositoryProvider.overrideWithValue(repository),
+            facilityRepositoryProvider.overrideWithValue(facilityRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: WarehouseForm(key: key)),
+          ),
         ),
-      ]),
-    );
+      );
+      await tester.pumpAndSettle();
 
-    final container = ProviderContainer(
-      overrides: [
-        warehouseRepositoryProvider.overrideWithValue(repository),
-        facilityRepositoryProvider.overrideWithValue(facilityRepository),
-        accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
-      ],
-    );
-    addTearDown(container.dispose);
+      expect(key.currentState!.isDirty(), isFalse);
+    });
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: WarehouseDetailScreen()),
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      final key = GlobalKey<WarehouseFormPanelState>();
+      when(
+        () => repository.get(warehouseId: 1),
+      ).thenAnswer((_) async => _warehouse);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            warehouseRepositoryProvider.overrideWithValue(repository),
+            facilityRepositoryProvider.overrideWithValue(facilityRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: WarehouseForm(key: key, warehouseId: 1)),
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    // Selecting the facility from the form's own picker widget is brittle to
-    // drive through the Autocomplete overlay in a widget test; seed it
-    // directly on the controller — client-side facility validation is
-    // covered separately, this test targets the server-rejection path.
-    container
-        .read(warehouseFormControllerProvider.notifier)
-        .facilitySelected(9, 'Main Store');
-    await tester.enterText(find.byKey(const Key('code_field')), 'WH-1');
-    await tester.enterText(find.byKey(const Key('name_field')), 'Duplicate');
+      expect(key.currentState!.isDirty(), isFalse);
 
-    await tester.tap(find.byKey(const Key('save_button')));
-    await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('code_field')), 'WH-2');
+      await tester.pump();
 
-    verify(
-      () => repository.create(
-        facilityId: 9,
-        code: 'WH-1',
-        name: 'Duplicate',
-        comment: any(named: 'comment'),
-        status: any(named: 'status'),
-      ),
-    ).called(1);
-    expect(find.text('WH-1'), findsOneWidget);
-    expect(find.text('Duplicate'), findsOneWidget);
-    expect(find.text('Code already in use'), findsOneWidget);
-  });
-
-  testWidgets('a ?facility=<id> cold load pre-selects the parent facility '
-      '(018-nested-facility-management FR-022/FR-023)', (tester) async {
-    when(
-      () => facilityRepository.get(facilityId: 9),
-    ).thenAnswer((_) async => _facility(9));
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          warehouseRepositoryProvider.overrideWithValue(repository),
-          facilityRepositoryProvider.overrideWithValue(facilityRepository),
-          accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: WarehouseDetailScreen(facilityId: 9)),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Facility 9'), findsOneWidget);
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }

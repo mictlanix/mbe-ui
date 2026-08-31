@@ -15,7 +15,7 @@ import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_form.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -108,7 +108,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: CustomerDetailScreen(
+            body: CustomerForm(
               customerId: customerId,
               forceReadOnly: forceReadOnly,
             ),
@@ -137,7 +137,8 @@ void main() {
   group('view mode (forceReadOnly)', () {
     testWidgets(
       'renders the price-list and salesperson names, with the edit toggle '
-      'in the record action area, not the AppBar (constitution v1.10.0)',
+      'in the record action area — this form has no AppBar of its own at '
+      'all now (spec 035)',
       (tester) async {
         await pumpScreen(
           tester,
@@ -164,8 +165,7 @@ void main() {
         expect(find.byKey(const Key('delete_customer_button')), findsNothing);
         expect(find.byKey(const Key('edit_customer_button')), findsOneWidget);
 
-        final appBar = tester.widget<AppBar>(find.byType(AppBar));
-        expect(appBar.actions, anyOf(isNull, isEmpty));
+        expect(find.byType(AppBar), findsNothing);
       },
     );
 
@@ -232,5 +232,105 @@ void main() {
         expect(find.byKey(const Key('code_field')), findsOneWidget);
       },
     );
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          customerId: 1,
+          forceReadOnly: true,
+        );
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byKey(const Key('edit_customer_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
+    );
+  });
+
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      final key = GlobalKey<CustomerFormPanelState>();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(repository),
+            priceListRepositoryProvider.overrideWithValue(
+              priceListRepository,
+            ),
+            employeeRepositoryProvider.overrideWithValue(employeeRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: CustomerForm(key: key)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+    });
+
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      final key = GlobalKey<CustomerFormPanelState>();
+      when(
+        () => repository.get(customerId: 1),
+      ).thenAnswer((_) async => _existingWithSalesperson);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(repository),
+            priceListRepositoryProvider.overrideWithValue(
+              priceListRepository,
+            ),
+            employeeRepositoryProvider.overrideWithValue(employeeRepository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: CustomerForm(key: key, customerId: 1)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+
+      await tester.enterText(find.byKey(const Key('code_field')), 'CUST-999');
+      await tester.pump();
+
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }

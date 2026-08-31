@@ -3522,4 +3522,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String userProvisionedFromLabel(String profileName) {
     return 'Provisioned from $profileName';
   }
+
+  @override
+  String get recordSheetDiscardTitle => 'Discard unsaved changes?';
+
+  @override
+  String get recordSheetDiscardBody =>
+      'Your changes to this record have not been saved.';
+
+  @override
+  String get recordSheetDiscardConfirm => 'Discard';
+
+  @override
+  String get recordSheetDiscardCancel => 'Keep editing';
 }

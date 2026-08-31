@@ -13,11 +13,32 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
+import 'package:mbe_ui/features/pricing/presentation/price_list_form.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _priceListsPath = '/price-lists';
+
+void _openPriceListSheet(
+  BuildContext context, {
+  required String title,
+  int? priceListId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<PriceListFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => PriceListForm(
+      key: formKey,
+      priceListId: priceListId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Price-lists catalog list screen (FR-001, FR-005). Gated by
 /// `can(SystemObject.priceLists, AccessRight.read)` in the router.
@@ -63,7 +84,10 @@ class PriceListsListScreen extends ConsumerWidget {
                 key: const Key('new_price_list_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newPriceListTooltip),
-                onPressed: () => context.push('/price-lists/new'),
+                onPressed: () => _openPriceListSheet(
+                  context,
+                  title: l10n.newPriceListTitle,
+                ),
               ),
           ],
         ),
@@ -73,7 +97,12 @@ class PriceListsListScreen extends ConsumerWidget {
             isFiltered: query.isFiltered,
             emptyMessage: l10n.noPriceListsFound,
             createLabel: canCreate ? l10n.newPriceListTooltip : null,
-            onCreate: canCreate ? () => context.push('/price-lists/new') : null,
+            onCreate: canCreate
+                ? () => _openPriceListSheet(
+                    context,
+                    title: l10n.newPriceListTitle,
+                  )
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_priceListsPath),
             retryLabel: l10n.retryButton,
@@ -96,12 +125,20 @@ class PriceListsListScreen extends ConsumerWidget {
                     .toUri(_priceListsPath)
                     .toString(),
               ),
-              onRowTap: (p) =>
-                  context.push('/price-lists/${p.priceListId}?view=true'),
+              onRowTap: (p) => _openPriceListSheet(
+                context,
+                title: l10n.viewPriceListTitle,
+                priceListId: p.priceListId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, p) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/price-lists/${p.priceListId}')
+                    ? () => _openPriceListSheet(
+                        context,
+                        title: l10n.editPriceListTitle,
+                        priceListId: p.priceListId,
+                      )
                     : null,
               ),
             ),

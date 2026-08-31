@@ -156,7 +156,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.list(
@@ -168,6 +169,9 @@ void main() {
         (_) async =>
             PriceListResult(items: _testLists, total: _testLists.length),
       );
+      when(
+        () => repository.get(priceListId: 1),
+      ).thenAnswer((_) async => _testLists.first);
 
       final router = GoRouter(
         initialLocation: '/',
@@ -177,10 +181,6 @@ void main() {
             builder: (_, state) => Scaffold(
               body: PriceListsListScreen(query: ListQuery.fromUri(state.uri)),
             ),
-          ),
-          GoRoute(
-            path: '/price-lists/:priceListId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
           ),
         ],
       );
@@ -209,7 +209,16 @@ void main() {
       await tester.tap(find.text('Retail'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/price-lists/1?view=true'), findsOneWidget);
+      expect(router.state.uri.path, '/');
+      final nameField = tester.widget<TextFormField>(
+        find.byKey(const Key('price_list_name_field')),
+      );
+      expect(nameField.initialValue, 'Retail');
+      expect(nameField.enabled, isFalse);
+      expect(
+        find.byKey(const Key('edit_price_list_button')),
+        findsOneWidget,
+      );
     },
   );
 

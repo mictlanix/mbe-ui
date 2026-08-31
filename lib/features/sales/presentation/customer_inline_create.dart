@@ -6,7 +6,7 @@ import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
-import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart'
+import 'package:mbe_ui/features/catalog/presentation/customer_form.dart'
     show localizeCustomerFieldError, localizeCustomerFormError;
 import 'package:mbe_ui/features/catalog/presentation/customer_form_controller.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';

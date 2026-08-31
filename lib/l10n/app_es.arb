@@ -1112,5 +1112,10 @@
   "applyProfileConfirmLabel": "Aplicar",
   "applyProfileSuccessMessage": "Perfil aplicado.",
   "userFormApplyFailedError": "No se pudo aplicar el perfil.",
-  "userProvisionedFromLabel": "Aprovisionado desde {profileName}"
+  "userProvisionedFromLabel": "Aprovisionado desde {profileName}",
+
+  "recordSheetDiscardTitle": "\u00bfDescartar cambios sin guardar?",
+  "recordSheetDiscardBody": "Los cambios en este registro no se han guardado.",
+  "recordSheetDiscardConfirm": "Descartar",
+  "recordSheetDiscardCancel": "Seguir editando"
 }

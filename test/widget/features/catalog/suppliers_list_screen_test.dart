@@ -158,7 +158,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.listDetailed(
@@ -170,6 +171,9 @@ void main() {
         (_) async =>
             SupplierPage(items: _testSuppliers, total: _testSuppliers.length),
       );
+      when(
+        () => repository.get(supplierId: 1),
+      ).thenAnswer((_) async => _testSuppliers.first);
 
       final router = GoRouter(
         initialLocation: '/',
@@ -179,10 +183,6 @@ void main() {
             builder: (_, state) => Scaffold(
               body: SuppliersListScreen(query: ListQuery.fromUri(state.uri)),
             ),
-          ),
-          GoRoute(
-            path: '/suppliers/:supplierId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
           ),
         ],
       );
@@ -211,7 +211,13 @@ void main() {
       await tester.tap(find.text('Acme Corp'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/suppliers/1?view=true'), findsOneWidget);
+      expect(router.state.uri.path, '/');
+      final codeField = tester.widget<TextFormField>(
+        find.byKey(const Key('code_field')),
+      );
+      expect(codeField.initialValue, 'SUP-001');
+      expect(codeField.enabled, isFalse);
+      expect(find.byKey(const Key('edit_supplier_button')), findsOneWidget);
     },
   );
 

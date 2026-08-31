@@ -15,11 +15,32 @@ import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicle_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _vehiclesPath = '/vehicles';
+
+void _openVehicleSheet(
+  BuildContext context, {
+  required String title,
+  int? vehicleId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<VehicleFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => VehicleForm(
+      key: formKey,
+      vehicleId: vehicleId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Vehicles catalog list screen (FR-001, FR-002, FR-009, US2). Gated by
 /// `can(SystemObject.vehicle, AccessRight.read)` in the router. Ships a
@@ -67,7 +88,8 @@ class VehiclesListScreen extends ConsumerWidget {
                 key: const Key('new_vehicle_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newVehicleTooltip),
-                onPressed: () => context.push('/vehicles/new'),
+                onPressed: () =>
+                    _openVehicleSheet(context, title: l10n.newVehicleTitle),
               ),
           ],
           filters: [
@@ -99,7 +121,9 @@ class VehiclesListScreen extends ConsumerWidget {
             isFiltered: isFilteredBeyondStatusDefault(query, filter.status),
             emptyMessage: l10n.noVehiclesFound,
             createLabel: canCreate ? l10n.newVehicleTooltip : null,
-            onCreate: canCreate ? () => context.push('/vehicles/new') : null,
+            onCreate: canCreate
+                ? () => _openVehicleSheet(context, title: l10n.newVehicleTitle)
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_vehiclesPath),
             retryLabel: l10n.retryButton,
@@ -138,12 +162,20 @@ class VehiclesListScreen extends ConsumerWidget {
                     .toUri(_vehiclesPath)
                     .toString(),
               ),
-              onRowTap: (v) =>
-                  context.push('/vehicles/${v.vehicleId}?view=true'),
+              onRowTap: (v) => _openVehicleSheet(
+                context,
+                title: l10n.viewVehicleTitle,
+                vehicleId: v.vehicleId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, v) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/vehicles/${v.vehicleId}')
+                    ? () => _openVehicleSheet(
+                        context,
+                        title: l10n.editVehicleTitle,
+                        vehicleId: v.vehicleId,
+                      )
                     : null,
               ),
             ),

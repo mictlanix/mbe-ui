@@ -175,7 +175,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.list(
@@ -190,6 +191,9 @@ void main() {
           total: _testVehicles.length,
         ),
       );
+      when(
+        () => repository.get(vehicleId: 1),
+      ).thenAnswer((_) async => _testVehicles.first);
 
       final router = GoRouter(
         initialLocation: '/',
@@ -199,10 +203,6 @@ void main() {
             builder: (_, state) => Scaffold(
               body: VehiclesListScreen(query: ListQuery.fromUri(state.uri)),
             ),
-          ),
-          GoRoute(
-            path: '/vehicles/:vehicleId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
           ),
         ],
       );
@@ -227,7 +227,13 @@ void main() {
       await tester.tap(find.text('ABC-123'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/vehicles/1?view=true'), findsOneWidget);
+      expect(router.state.uri.path, '/');
+      final plateField = tester.widget<TextFormField>(
+        find.byKey(const Key('vehicle_license_plate_field')),
+      );
+      expect(plateField.initialValue, 'ABC-123');
+      expect(plateField.enabled, isFalse);
+      expect(find.byKey(const Key('edit_vehicle_button')), findsOneWidget);
     },
   );
 

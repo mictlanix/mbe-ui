@@ -215,7 +215,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.list(
@@ -230,6 +231,20 @@ void main() {
         (_) async =>
             CustomerPage(items: _testCustomers, total: _testCustomers.length),
       );
+      when(() => repository.get(customerId: 1)).thenAnswer(
+        (_) async => const Customer(
+          customerId: 1,
+          code: 'CUST-001',
+          name: 'Acme Corp',
+          creditLimit: '1000.50',
+          creditDays: 30,
+          priceList: PriceListRef(id: 1, name: 'Retail'),
+          shipping: false,
+          shippingRequiredDocument: false,
+          salesperson: EmployeeRef(id: 2, name: 'Jane Doe'),
+          status: EntityStatus.active,
+        ),
+      );
 
       final router = GoRouter(
         initialLocation: '/',
@@ -239,10 +254,6 @@ void main() {
             builder: (_, state) => Scaffold(
               body: CustomersListScreen(query: ListQuery.fromUri(state.uri)),
             ),
-          ),
-          GoRoute(
-            path: '/customers/:customerId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
           ),
         ],
       );
@@ -269,7 +280,13 @@ void main() {
       await tester.tap(find.text('Acme Corp'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/customers/1?view=true'), findsOneWidget);
+      expect(router.state.uri.path, '/');
+      final codeField = tester.widget<TextFormField>(
+        find.byKey(const Key('code_field')),
+      );
+      expect(codeField.initialValue, 'CUST-001');
+      expect(codeField.enabled, isFalse);
+      expect(find.byKey(const Key('edit_customer_button')), findsOneWidget);
     },
   );
 

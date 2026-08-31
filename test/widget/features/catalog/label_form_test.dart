@@ -13,7 +13,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/label_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/label_form.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockLabelRepository extends Mock implements LabelRepository {}
@@ -70,10 +70,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: LabelDetailScreen(
-              labelId: labelId,
-              forceReadOnly: forceReadOnly,
-            ),
+            body: LabelForm(labelId: labelId, forceReadOnly: forceReadOnly),
           ),
         ),
       ),
@@ -94,7 +91,9 @@ void main() {
   group('view mode (forceReadOnly)', () {
     testWidgets(
       'renders fields disabled with no Save/Delete, and the edit toggle '
-      'appears in the record action area, not the AppBar (constitution v1.10.0)',
+      'appears in the record action area — this form has no AppBar of its '
+      'own at all now (spec 035: the panel supplies the header, constitution '
+      '§VI amended to speak of a record surface rather than a route)',
       (tester) async {
         await pumpScreen(
           tester,
@@ -110,9 +109,7 @@ void main() {
         expect(find.byKey(const Key('save_button')), findsNothing);
         expect(find.byKey(const Key('delete_label_button')), findsNothing);
         expect(find.byKey(const Key('edit_label_button')), findsOneWidget);
-
-        final appBar = tester.widget<AppBar>(find.byType(AppBar));
-        expect(appBar.actions, anyOf(isNull, isEmpty));
+        expect(find.byType(AppBar), findsNothing);
       },
     );
   });
@@ -152,5 +149,98 @@ void main() {
         expect(find.byKey(const Key('label_name_field')), findsOneWidget);
       },
     );
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          labelId: 1,
+          forceReadOnly: true,
+        );
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('label_name_field')))
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byKey(const Key('edit_label_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('label_name_field')))
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
+    );
+  });
+
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      final key = GlobalKey<LabelFormPanelState>();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            labelRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: LabelForm(key: key)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+    });
+
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      final key = GlobalKey<LabelFormPanelState>();
+      when(() => repository.get(labelId: 1)).thenAnswer((_) async => _existing);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            labelRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: LabelForm(key: key, labelId: 1)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+
+      await tester.enterText(
+        find.byKey(const Key('label_name_field')),
+        'Renamed',
+      );
+      await tester.pump();
+
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }

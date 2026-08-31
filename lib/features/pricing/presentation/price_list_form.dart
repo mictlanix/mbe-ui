@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
@@ -15,10 +14,15 @@ import 'package:mbe_ui/features/pricing/presentation/price_list_delete_dialog.da
 import 'package:mbe_ui/features/pricing/presentation/price_list_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Create / view / edit screen for a single price list (FR-002, FR-003,
-/// FR-004). [priceListId] is `null` in create mode.
-class PriceListDetailScreen extends ConsumerStatefulWidget {
-  const PriceListDetailScreen({
+/// Create / view / edit form for a single price list (spec 035 US5 —
+/// converted from the pushed `/price-lists/new` / `/price-lists/:priceListId`
+/// routes to the shared record panel, `showRecordSheet`). [priceListId] is
+/// `null` in create mode. See `label_form.dart` for the base pattern (spec
+/// 035 T029); the delete flow here is its own review dialog
+/// (`showPriceListDeleteDialog`, spec 034), not the shared
+/// `RecordDeleteConfirmation`.
+class PriceListForm extends ConsumerStatefulWidget {
+  const PriceListForm({
     super.key,
     this.priceListId,
     this.forceReadOnly = false,
@@ -26,29 +30,47 @@ class PriceListDetailScreen extends ConsumerStatefulWidget {
 
   final int? priceListId;
 
-  /// Forces read-only rendering — set when navigated to via a row click
-  /// rather than Edit (constitution §VI), read from the `?view=true` query
-  /// parameter.
+  /// Opens the form read-only regardless of the caller's update privilege —
+  /// set for a row-click open (constitution §VI). The in-panel Edit control
+  /// clears this.
   final bool forceReadOnly;
 
   @override
-  ConsumerState<PriceListDetailScreen> createState() =>
-      _PriceListDetailScreenState();
+  ConsumerState<PriceListForm> createState() => PriceListFormPanelState();
 }
 
-class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
+/// Public so a caller can address it via `GlobalKey<PriceListFormPanelState>`
+/// and query [isDirty] from `showRecordSheet`'s `isDirty` callback.
+class PriceListFormPanelState extends ConsumerState<PriceListForm> {
   bool get _isEdit => widget.priceListId != null;
+
+  late bool _readOnlyOverride = widget.forceReadOnly;
+
+  /// Snapshot of [PriceListFormState] captured once loading actually
+  /// completes — awaited directly in [initState], not inferred from a
+  /// `build()`-timing flag (spec 035 T028).
+  PriceListFormState? _snapshot;
 
   @override
   void initState() {
     super.initState();
     if (_isEdit) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await ref
             .read(priceListFormControllerProvider.notifier)
             .loadForEdit(widget.priceListId!);
+        if (mounted) {
+          setState(() => _snapshot = ref.read(priceListFormControllerProvider));
+        }
       });
+    } else {
+      _snapshot = ref.read(priceListFormControllerProvider);
     }
+  }
+
+  bool isDirty() {
+    final current = ref.read(priceListFormControllerProvider);
+    return _snapshot != null && _snapshot != current;
   }
 
   @override
@@ -58,28 +80,26 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.priceLists, AccessRight.create);
     final canUpdate = access.can(SystemObject.priceLists, AccessRight.update);
-    final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
+    final readOnly = (_isEdit && !canUpdate) || _readOnlyOverride;
     final l10n = AppLocalizations.of(context)!;
 
-    final title = readOnly
-        ? l10n.viewPriceListTitle
-        : (_isEdit ? l10n.editPriceListTitle : l10n.newPriceListTitle);
-
     if (formState.loading) {
-      return Scaffold(
-        appBar: AppBar(title: Text(title)),
-        body: const Center(child: CircularProgressIndicator()),
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: CircularProgressIndicator(),
+        ),
       );
     }
 
     if (formState.saved) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.pop();
+        if (mounted) Navigator.of(context).pop();
       });
     }
 
     final fieldsEnabled = !formState.submitting && !readOnly;
-    final canSave = !widget.forceReadOnly && (_isEdit ? canUpdate : canCreate);
+    final canSave = !readOnly && (_isEdit ? canUpdate : canCreate);
     final canDelete =
         _isEdit &&
         !readOnly &&
@@ -89,85 +109,76 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
         ? RecordFormMode.create
         : (readOnly ? RecordFormMode.view : RecordFormMode.edit);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: ResponsiveFormGrid(
-          maxColumns: 2,
-          children: [
-            // Delete refusals are shown *inside* the review dialog instead
-            // (FR-019, `PriceListDeleteDialog`'s own `ErrorBanner`) — showing
-            // them here too would render the server's refusal twice, once
-            // behind the modal and once inside it.
-            if (formState.error != null && !_isDeleteError(formState.error!))
-              FormGridChild(
-                span: FormGridSpan.full,
-                ErrorBanner(
-                  error: AppError.validation([
-                    FieldError(
-                      loc: const [],
-                      msg: _localizeFormError(l10n, formState.error!),
-                      type: 'error',
-                    ),
-                    if (formState.errorDetail != null)
-                      FieldError(
-                        loc: const [],
-                        msg: formState.errorDetail!,
-                        type: 'error',
-                      ),
-                  ]),
+    return ResponsiveFormGrid(
+      maxColumns: 2,
+      children: [
+        // Delete refusals are shown *inside* the review dialog instead
+        // (FR-019, `PriceListDeleteDialog`'s own `ErrorBanner`) — showing
+        // them here too would render the server's refusal twice, once
+        // behind the modal and once inside it.
+        if (formState.error != null && !_isDeleteError(formState.error!))
+          FormGridChild(
+            span: FormGridSpan.full,
+            ErrorBanner(
+              error: AppError.validation([
+                FieldError(
+                  loc: const [],
+                  msg: _localizeFormError(l10n, formState.error!),
+                  type: 'error',
                 ),
-              ),
-            FormGridChild(
-              span: FormGridSpan.full,
-              TextFormField(
-                key: const Key('price_list_name_field'),
-                initialValue: formState.name,
-                decoration: InputDecoration(
-                  labelText: l10n.priceListNameLabel,
-                  errorText: _localizeFieldError(
-                    l10n,
-                    formState.fieldErrors['name'],
+                if (formState.errorDetail != null)
+                  FieldError(
+                    loc: const [],
+                    msg: formState.errorDetail!,
+                    type: 'error',
                   ),
-                ),
-                enabled: fieldsEnabled,
-                onChanged: controller.nameChanged,
+              ]),
+            ),
+          ),
+        FormGridChild(
+          span: FormGridSpan.full,
+          TextFormField(
+            key: const Key('price_list_name_field'),
+            initialValue: formState.name,
+            decoration: InputDecoration(
+              labelText: l10n.priceListNameLabel,
+              errorText: _localizeFieldError(
+                l10n,
+                formState.fieldErrors['name'],
               ),
             ),
-            FormGridChild(
-              span: FormGridSpan.full,
-              RecordFormActions(
-                mode: mode,
-                saveLabel: l10n.saveButton,
-                editLabel: l10n.editRecordTooltip,
-                deleteLabel: l10n.deletePriceListButton,
-                isSubmitting: formState.submitting,
-                editKey: const Key('edit_price_list_button'),
-                saveKey: const Key('save_button'),
-                deleteKey: const Key('delete_price_list_button'),
-                onEdit: (canUpdate && widget.priceListId != null)
-                    ? () =>
-                          context.replace('/price-lists/${widget.priceListId}')
-                    : null,
-                onSave: canSave
-                    ? (_isEdit
-                          ? controller.submitUpdate
-                          : controller.submitCreate)
-                    : null,
-                onDelete: canDelete
-                    ? () => _reviewAndDelete(context, formState, l10n)
-                    : null,
-                // The review dialog replaces this shared component's own
-                // confirmation (specs/034-price-list-retirement-ui
-                // research.md R7) — `RecordFormActions` already invokes
-                // `onDelete` directly whenever `deleteConfirmation` is null.
-                deleteConfirmation: null,
-              ),
-            ),
-          ],
+            enabled: fieldsEnabled,
+            onChanged: controller.nameChanged,
+          ),
         ),
-      ),
+        FormGridChild(
+          span: FormGridSpan.full,
+          RecordFormActions(
+            mode: mode,
+            saveLabel: l10n.saveButton,
+            editLabel: l10n.editRecordTooltip,
+            deleteLabel: l10n.deletePriceListButton,
+            isSubmitting: formState.submitting,
+            editKey: const Key('edit_price_list_button'),
+            saveKey: const Key('save_button'),
+            deleteKey: const Key('delete_price_list_button'),
+            onEdit: (canUpdate && widget.priceListId != null)
+                ? () => setState(() => _readOnlyOverride = false)
+                : null,
+            onSave: canSave
+                ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                : null,
+            onDelete: canDelete
+                ? () => _reviewAndDelete(context, formState, l10n)
+                : null,
+            // The review dialog replaces this shared component's own
+            // confirmation (specs/034-price-list-retirement-ui
+            // research.md R7) — `RecordFormActions` already invokes
+            // `onDelete` directly whenever `deleteConfirmation` is null.
+            deleteConfirmation: null,
+          ),
+        ),
+      ],
     );
   }
 
@@ -206,7 +217,7 @@ class _PriceListDetailScreenState extends ConsumerState<PriceListDetailScreen> {
         ),
       ),
     );
-    if (mounted) context.pop();
+    if (mounted) Navigator.of(context).pop();
   }
 }
 

@@ -54,7 +54,7 @@ void main() {
     repository = MockExchangeRateRepository();
   });
 
-  Future<void> pumpScreen(
+  Future<GoRouter> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
     ListQuery query = const ListQuery(),
@@ -113,7 +113,42 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    return router;
   }
+
+  testWidgets(
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
+    (tester) async {
+      when(
+        () => repository.get(exchangeRateId: 1),
+      ).thenAnswer(
+        (_) async => ExchangeRate(
+          exchangeRateId: 1,
+          date: DateTime(2026, 7, 17),
+          rate: '17.50',
+          rawBase: 1,
+          rawTarget: 0,
+        ),
+      );
+
+      final router = await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      await tester.tap(find.text('17.50'));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/exchange-rates');
+      final rateField = tester.widget<TextFormField>(
+        find.byKey(const Key('exchange_rate_rate_field')),
+      );
+      expect(rateField.initialValue, '17.50');
+      expect(rateField.enabled, isFalse);
+      expect(
+        find.byKey(const Key('edit_exchange_rate_button')),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('shows date/base/target/rate columns and filters', (
     tester,

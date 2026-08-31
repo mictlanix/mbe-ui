@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -22,7 +21,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/point_sale_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/point_sale_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/point_sale_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -117,7 +116,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: PointSaleDetailScreen(
+            body: PointSaleForm(
               pointSaleId: pointSaleId,
               forceReadOnly: forceReadOnly,
             ),
@@ -130,8 +129,8 @@ void main() {
 
   testWidgets(
     'view mode (forceReadOnly) renders fields disabled with no Save/Delete, '
-    'and the edit toggle appears in the record action area, not the AppBar '
-    '(017-ui-consistency-filters, constitution v1.10.0)',
+    'and the edit toggle appears in the record action area — this form has '
+    'no AppBar of its own at all now (spec 035)',
     (tester) async {
       await pumpScreen(tester, pointSaleId: 1, forceReadOnly: true);
 
@@ -143,8 +142,7 @@ void main() {
       expect(find.byKey(const Key('delete_point_sale_button')), findsNothing);
       expect(find.byKey(const Key('edit_point_sale_button')), findsOneWidget);
 
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.actions, anyOf(isNull, isEmpty));
+      expect(find.byType(AppBar), findsNothing);
     },
   );
 
@@ -286,57 +284,28 @@ void main() {
     },
   );
 
-  testWidgets('delete requires a confirmation dialog before submit (FR-007)', (
-    tester,
-  ) async {
-    when(() => repository.delete(pointSaleId: 1)).thenAnswer((_) async {});
-
-    final router = GoRouter(
-      initialLocation: '/points-of-sale',
-      routes: [
-        GoRoute(
-          path: '/points-of-sale',
-          builder: (_, _) => const Scaffold(body: Text('points of sale list')),
+  testWidgets(
+    'a user with delete privilege sees the Delete button, and confirming '
+    'a still-referenced rejection leaves the form in place',
+    (tester) async {
+      when(() => repository.delete(pointSaleId: 1)).thenThrow(
+        const AppError.server(
+          statusCode: 400,
+          message: 'Point of sale is referenced by a sale',
         ),
-        GoRoute(
-          path: '/points-of-sale/:pointSaleId',
-          builder: (_, state) => PointSaleDetailScreen(
-            pointSaleId: int.parse(state.pathParameters['pointSaleId']!),
-          ),
-        ),
-      ],
-    );
+      );
 
-    when(
-      () => repository.get(pointSaleId: 1),
-    ).thenAnswer((_) async => _pointSale);
+      await pumpScreen(tester, pointSaleId: 1);
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    router.push('/points-of-sale/1');
-    await tester.pumpAndSettle();
+      expect(find.byKey(const Key('delete_point_sale_button')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('delete_point_sale_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('confirm_delete_point_sale_button')));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('delete_point_sale_button')));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(AlertDialog), findsOneWidget);
-    verifyNever(() => repository.delete(pointSaleId: 1));
-
-    await tester.tap(find.byKey(const Key('confirm_delete_point_sale_button')));
-    await tester.pumpAndSettle();
-
-    verify(() => repository.delete(pointSaleId: 1)).called(1);
-    expect(find.text('points of sale list'), findsOneWidget);
-  });
+      expect(find.byKey(const Key('code_field')), findsOneWidget);
+    },
+  );
 
   testWidgets('a ?facility=<id> cold load pre-selects the parent facility '
       '(018-nested-facility-management FR-022/FR-023)', (tester) async {
@@ -346,12 +315,89 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: PointSaleDetailScreen(facilityId: 9)),
+          home: const Scaffold(body: PointSaleForm(facilityId: 9)),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('Facility 9'), findsOneWidget);
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(tester, pointSaleId: 1, forceReadOnly: true);
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byKey(const Key('edit_point_sale_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('code_field')))
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
+    );
+  });
+
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      final key = GlobalKey<PointSaleFormPanelState>();
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: PointSaleForm(key: key)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+    });
+
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      final key = GlobalKey<PointSaleFormPanelState>();
+      when(
+        () => repository.get(pointSaleId: 1),
+      ).thenAnswer((_) async => _pointSale);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: PointSaleForm(key: key, pointSaleId: 1)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+
+      await tester.enterText(find.byKey(const Key('code_field')), 'POS-2');
+      await tester.pump();
+
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }

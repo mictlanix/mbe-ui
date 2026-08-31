@@ -6432,6 +6432,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Provisioned from {profileName}'**
   String userProvisionedFromLabel(String profileName);
+
+  /// spec 035 FR-032: shown when a record panel with an unsaved edit is dismissed (barrier tap, Escape, or the close button)
+  ///
+  /// In en, this message translates to:
+  /// **'Discard unsaved changes?'**
+  String get recordSheetDiscardTitle;
+
+  /// No description provided for @recordSheetDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes to this record have not been saved.'**
+  String get recordSheetDiscardBody;
+
+  /// No description provided for @recordSheetDiscardConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get recordSheetDiscardConfirm;
+
+  /// No description provided for @recordSheetDiscardCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get recordSheetDiscardCancel;
 }
 
 class _AppLocalizationsDelegate

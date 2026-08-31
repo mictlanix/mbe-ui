@@ -13,11 +13,29 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label.dart';
+import 'package:mbe_ui/features/catalog/presentation/label_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/labels_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _labelsPath = '/labels';
+
+void _openLabelSheet(
+  BuildContext context, {
+  required String title,
+  int? labelId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<LabelFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) =>
+        LabelForm(key: formKey, labelId: labelId, forceReadOnly: forceReadOnly),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Labels catalog list screen (FR-001, FR-002, US2). Gated by
 /// `can(SystemObject.labels, AccessRight.read)` in the router. Search-only
@@ -65,7 +83,10 @@ class LabelsListScreen extends ConsumerWidget {
                 key: const Key('new_label_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newLabelTooltip),
-                onPressed: () => context.push('/labels/new'),
+                onPressed: () => _openLabelSheet(
+                  context,
+                  title: l10n.newLabelTitle,
+                ),
               ),
           ],
         ),
@@ -75,7 +96,9 @@ class LabelsListScreen extends ConsumerWidget {
             isFiltered: query.isFiltered,
             emptyMessage: l10n.noLabelsFound,
             createLabel: canCreate ? l10n.newLabelTooltip : null,
-            onCreate: canCreate ? () => context.push('/labels/new') : null,
+            onCreate: canCreate
+                ? () => _openLabelSheet(context, title: l10n.newLabelTitle)
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_labelsPath),
             retryLabel: l10n.retryButton,
@@ -102,11 +125,20 @@ class LabelsListScreen extends ConsumerWidget {
                     .toUri(_labelsPath)
                     .toString(),
               ),
-              onRowTap: (lb) => context.push('/labels/${lb.labelId}?view=true'),
+              onRowTap: (lb) => _openLabelSheet(
+                context,
+                title: l10n.viewLabelTitle,
+                labelId: lb.labelId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, lb) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/labels/${lb.labelId}')
+                    ? () => _openLabelSheet(
+                        context,
+                        title: l10n.editLabelTitle,
+                        labelId: lb.labelId,
+                      )
                     : null,
               ),
             ),

@@ -13,7 +13,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/expense_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/expense.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/expense_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/expense_detail_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/expense_form.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockExpenseRepository extends Mock implements ExpenseRepository {}
@@ -70,7 +70,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ExpenseDetailScreen(
+            body: ExpenseForm(
               expenseId: expenseId,
               forceReadOnly: forceReadOnly,
             ),
@@ -94,7 +94,8 @@ void main() {
   group('view mode (forceReadOnly)', () {
     testWidgets(
       'renders fields disabled with no Save/Delete, and the edit toggle '
-      'appears in the record action area, not the AppBar (constitution v1.10.0)',
+      'appears in the record action area — this form has no AppBar of its '
+      'own at all now (spec 035)',
       (tester) async {
         await pumpScreen(
           tester,
@@ -111,8 +112,7 @@ void main() {
         expect(find.byKey(const Key('delete_expense_button')), findsNothing);
         expect(find.byKey(const Key('edit_expense_button')), findsOneWidget);
 
-        final appBar = tester.widget<AppBar>(find.byType(AppBar));
-        expect(appBar.actions, anyOf(isNull, isEmpty));
+        expect(find.byType(AppBar), findsNothing);
       },
     );
   });
@@ -154,5 +154,100 @@ void main() {
         expect(find.byKey(const Key('expense_name_field')), findsOneWidget);
       },
     );
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          expenseId: 1,
+          forceReadOnly: true,
+        );
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('expense_name_field')))
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byKey(const Key('edit_expense_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(find.byKey(const Key('expense_name_field')))
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
+    );
+  });
+
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      final key = GlobalKey<ExpenseFormPanelState>();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            expenseRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: ExpenseForm(key: key)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+    });
+
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      final key = GlobalKey<ExpenseFormPanelState>();
+      when(
+        () => repository.get(expenseId: 1),
+      ).thenAnswer((_) async => _existing);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            expenseRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: ExpenseForm(key: key, expenseId: 1)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+
+      await tester.enterText(
+        find.byKey(const Key('expense_name_field')),
+        'Rent, Increased',
+      );
+      await tester.pump();
+
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }

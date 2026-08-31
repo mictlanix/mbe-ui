@@ -13,11 +13,32 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
+import 'package:mbe_ui/features/pricing/presentation/exchange_rate_form.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _exchangeRatesPath = '/exchange-rates';
+
+void _openExchangeRateSheet(
+  BuildContext context, {
+  required String title,
+  int? exchangeRateId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<ExchangeRateFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => ExchangeRateForm(
+      key: formKey,
+      exchangeRateId: exchangeRateId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Exchange-rates catalog list screen (FR-014, FR-015). Gated by
 /// `can(SystemObject.exchangeRates, AccessRight.read)` in the router.
@@ -60,7 +81,10 @@ class ExchangeRatesListScreen extends ConsumerWidget {
                 key: const Key('new_exchange_rate_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newExchangeRateTooltip),
-                onPressed: () => context.push('/exchange-rates/new'),
+                onPressed: () => _openExchangeRateSheet(
+                  context,
+                  title: l10n.newExchangeRateTitle,
+                ),
               ),
           ],
           filters: [
@@ -140,7 +164,10 @@ class ExchangeRatesListScreen extends ConsumerWidget {
             emptyMessage: l10n.noExchangeRatesFound,
             createLabel: canCreate ? l10n.newExchangeRateTooltip : null,
             onCreate: canCreate
-                ? () => context.push('/exchange-rates/new')
+                ? () => _openExchangeRateSheet(
+                    context,
+                    title: l10n.newExchangeRateTitle,
+                  )
                 : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_exchangeRatesPath),
@@ -180,12 +207,20 @@ class ExchangeRatesListScreen extends ConsumerWidget {
               pagination: page,
               onPageChanged: (pageIndex) =>
                   goTo(query.copyWith(pageIndex: pageIndex)),
-              onRowTap: (r) =>
-                  context.push('/exchange-rates/${r.exchangeRateId}?view=true'),
+              onRowTap: (r) => _openExchangeRateSheet(
+                context,
+                title: l10n.viewExchangeRateTitle,
+                exchangeRateId: r.exchangeRateId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, r) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/exchange-rates/${r.exchangeRateId}')
+                    ? () => _openExchangeRateSheet(
+                        context,
+                        title: l10n.editExchangeRateTitle,
+                        exchangeRateId: r.exchangeRateId,
+                      )
                     : null,
               ),
             ),

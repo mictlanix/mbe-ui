@@ -16,7 +16,7 @@ import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart'
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
-import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
+import 'package:mbe_ui/features/pricing/presentation/exchange_rate_form.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockExchangeRateRepository extends Mock
@@ -78,7 +78,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: ExchangeRateDetailScreen(
+            body: ExchangeRateForm(
               exchangeRateId: exchangeRateId,
               forceReadOnly: forceReadOnly,
             ),
@@ -101,8 +101,8 @@ void main() {
 
   testWidgets(
     'view mode (forceReadOnly) shows no Save/Delete, and the edit toggle '
-    'appears in the record action area, not the AppBar '
-    '(017-ui-consistency-filters, constitution v1.10.0)',
+    'appears in the record action area — this form has no AppBar of its '
+    'own at all now (spec 035)',
     (tester) async {
       await pumpScreen(tester, exchangeRateId: 1, forceReadOnly: true);
 
@@ -116,8 +116,7 @@ void main() {
         findsOneWidget,
       );
 
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.actions, anyOf(isNull, isEmpty));
+      expect(find.byType(AppBar), findsNothing);
     },
   );
 
@@ -168,5 +167,105 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  group('in-panel Edit toggle (spec 035 FR-027/FR-028)', () {
+    testWidgets(
+      'pressing Edit on a read-only form makes it editable in place — no '
+      'navigation, since there is no route to navigate to anymore',
+      (tester) async {
+        await pumpScreen(tester, exchangeRateId: 1, forceReadOnly: true);
+
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.byKey(const Key('exchange_rate_rate_field')),
+              )
+              .enabled,
+          isFalse,
+        );
+
+        await tester.tap(find.byKey(const Key('edit_exchange_rate_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester
+              .widget<TextFormField>(
+                find.byKey(const Key('exchange_rate_rate_field')),
+              )
+              .enabled,
+          isTrue,
+        );
+        expect(find.byKey(const Key('save_button')), findsOneWidget);
+      },
+    );
+  });
+
+  group('isDirty (spec 035 FR-032, data-model.md §3)', () {
+    testWidgets('false immediately after a create-mode form mounts', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final key = GlobalKey<ExchangeRateFormPanelState>();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+            exchangeRateRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: ExchangeRateForm(key: key)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+    });
+
+    testWidgets('false until loading finishes, then true after a field edit', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final key = GlobalKey<ExchangeRateFormPanelState>();
+      when(
+        () => repository.get(exchangeRateId: 1),
+      ).thenAnswer((_) async => _existing);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+            exchangeRateRepositoryProvider.overrideWithValue(repository),
+            accessControlProvider.overrideWithValue(
+              _accessFor(_fullAccessUser),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: ExchangeRateForm(key: key, exchangeRateId: 1)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(key.currentState!.isDirty(), isFalse);
+
+      await tester.enterText(
+        find.byKey(const Key('exchange_rate_rate_field')),
+        '18.00',
+      );
+      await tester.pump();
+
+      expect(key.currentState!.isDirty(), isTrue);
+    });
   });
 }
