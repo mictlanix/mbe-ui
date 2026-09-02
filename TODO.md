@@ -20,9 +20,9 @@
 - Operadores -> Agregar foto de licencia
 - Vehiculos -> Agregar Foto de tarjeta de circulación
 - Renombrar Sitio de producción => Planta de producción
-- En formularios sencillos, cambiar navegación por drawers
+- ~~En formularios sencillos, cambiar navegación por drawers~~
 - ¿Quitar catalogo Formas de Pago?
-- Mejorar UX de lista de precios, que sea lista de productos pivoted
+- ~~Mejorar UX de lista de precios, que sea lista de productos pivoted~~
 
 ## 2026-08-15
 - ~~Alinear textfields de cantidad/ precio/ descuento/ impuesto.~~
@@ -62,7 +62,7 @@
   - ~~Que CRUD actualice DataTableView al realizar busqueda, aun cuando el filtro no haya cambiado~~
 
 ## 2026-09-01
-Login
+Login:
   - Requerir reinicio de password en primer login
   - Requerir strong password
 
@@ -75,13 +75,23 @@ POS Sales:
   - Permitir que puedan regresar si no se ha pagado
   - Checar pasos de pos sale
   - Por default, al agregar primer domicilio, se asigne toda la qty a éste
+  - ¿Debounce en busqueda de productos?
 
 Pedidos:
   - De pedidos, quitar publico en gral, y se debe de elegir el cliente
   - Quitar pago y agregar entrega obligatorio
   - Fecha de entrega
-  - Vendedor associado al cliente
+  - Llenar campo Vendedor con aquel que está asociado al cliente
+  - ¿Debounce en busqueda de productos?
 
 lista de precios
   - Mostrar dos decimales
   - No detecta submit
+
+## 2026-09-02
+Pedidos:
+  - Balance field shows on two places, on customer bar and order header panel.
+  - On Customer bar, change label 'Credit Line' to Payment terms
+  - On Order header panel, remove payment terms.
+  - On Order header panel, reorder the fields: 1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details, 6. Contact, 7. Comment.
+  - Move Order header panel, below customer bar.
