@@ -73,6 +73,32 @@ class CatalogListStateView<T> extends StatelessWidget {
               onCreate: onCreate,
             );
     }
+    // `state.isLoading` here means a background refresh is in flight while
+    // data from a previous fetch is still shown (Riverpod's own
+    // `copyWithPrevious` — an invalidated provider transitions to
+    // `AsyncData(isLoading: true)`, not `AsyncLoading`, precisely so the
+    // list is never blanked/replaced by a spinner here). This is the
+    // visible confirmation that a refresh actually happened — e.g. pressing
+    // the search button on an unchanged term (spec 035 FR-008) — without
+    // disturbing the content, scroll position, or page below it. Reuses the
+    // exact same bare `CircularProgressIndicator()` this file already shows
+    // for the first-load/pagination-change case above (line 52/62), not a
+    // custom size/stroke, so every loading affordance in this component
+    // looks identical.
+    if (state.isLoading) {
+      return Column(
+        children: [
+          const SizedBox(
+            height: 56,
+            child: Center(
+              key: Key('list_state_refreshing'),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          Expanded(child: onData(page)),
+        ],
+      );
+    }
     return onData(page);
   }
 }
