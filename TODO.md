@@ -62,20 +62,26 @@
   - ~~Que CRUD actualice DataTableView al realizar busqueda, aun cuando el filtro no haya cambiado~~
 
 ## 2026-09-01
-- Requerir reinicio de password en primer login
-- Requerir strong password
-- Codigo de capura de cliente opcional y ubicarlo al final del form
-- Quitar bool envio y req documento
-- Mostrar sin existenicias en almacen
-- Permitir que puedan regresar si no se ha pagado
-- Checar pasos de pos sale
-- Por default, al agregar primer domicilio, se asigne toda la qty a èste
+Login
+  - Requerir reinicio de password en primer login
+  - Requerir strong password
 
-- De pedidos, quitar publico en gral, y se debe de elegir el cliente
-- Quitar pago y agregar entrega obligatorio
-- Fecha de entrega
-- Vendedor associado al cliente
+Clientes:
+  - Codigo de capura de cliente opcional y ubicarlo al final del form
+  - Quitar bool envio y req documento
+
+POS Sales:
+  - Mostrar sin existenicias en almacen
+  - Permitir que puedan regresar si no se ha pagado
+  - Checar pasos de pos sale
+  - Por default, al agregar primer domicilio, se asigne toda la qty a éste
+
+Pedidos:
+  - De pedidos, quitar publico en gral, y se debe de elegir el cliente
+  - Quitar pago y agregar entrega obligatorio
+  - Fecha de entrega
+  - Vendedor associado al cliente
 
 lista de precios
-- Mostrar dos decimales
-- No detecta
+  - Mostrar dos decimales
+  - No detecta submit
