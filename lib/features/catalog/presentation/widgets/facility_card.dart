@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -197,7 +198,7 @@ class _Header extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: theme.shapes.mdRadius,
       ),
       child: Icon(typeIcon, color: scheme.onPrimaryContainer, size: 22),
     );
@@ -245,7 +246,7 @@ class _Header extends StatelessWidget {
         : EntityStatusCell(status: facility.status);
 
     final tapArea = InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: theme.shapes.mdRadius,
       onTap: onView,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -522,7 +523,7 @@ class _ExpandedBody extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: theme.shapes.mdRadius,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -53,8 +53,23 @@ void main() {
       final filter = VehicleFilter.fromQuery(const ListQuery());
 
       expect(filter.search, '');
-      expect(filter.status, isNull);
+      // spec 035 FR-001/FR-002: an absent status facet now defaults to
+      // Active, not "no filter" — the "All" choice is the explicit
+      // `status=all` case, covered separately below.
+      expect(filter.status, EntityStatus.active);
       expect(filter.pageIndex, 0);
+    });
+
+    test('an explicit "all" status clears the default (FR-004)', () {
+      final filter = VehicleFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'status': ['all'],
+          },
+        ),
+      );
+
+      expect(filter.status, isNull);
     });
   });
 

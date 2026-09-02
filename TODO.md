@@ -39,24 +39,43 @@
 
 ## 2026-08-30
 - Ajustes a ui de cruds:
-  - Habilitar filtro status=activo por defecto
-  - Corrección de márgenes/paddings horizontales de CatalogFilterBar
-  - Cambiar formularios sencillos a drawers:
-    - PriceLists
-    - Suppliers
-    - Labels
-    - Employees
-    - Customers
-    - Taxpayer recipients
-    - Expenses
-    - Vehicles
-    - Operators
-    - Warehouse
-    - Point of Sale
-    - Cash Drawer
-    - Payment Method?
+  - ~~Habilitar filtro status=activo por defecto~~
+  - ~~Corrección de márgenes/paddings horizontales de CatalogFilterBar~~
+  - ~~Cambiar formularios sencillos a drawers:~~
+    - ~~PriceLists~~
+    - ~~Suppliers~~
+    - ~~Labels~~
+    - ~~Employees~~
+    - ~~Customers~~
+    - ~~Taxpayer recipients~~
+    - ~~Expenses~~
+    - ~~Vehicles~~
+    - ~~Operators~~
+    - ~~Warehouse~~
+    - ~~Point of Sale~~
+    - ~~Cash Drawer~~
+    - ~~Payment Method?~~
 
-  - Esquinas redondeadas de DataTableView?
-  - Hairline borders en tablas?
-  - Hairline borders en cards de FacilityCard WarehouseChildRow PointSaleChildRow CashDrawerChildRow
-  - Que CRUD actualice DataTableView al realizar busqueda, aun cuando el filtro no haya cambiado
+  - ~~Esquinas redondeadas de DataTableView?~~
+  - ~~Hairline borders en tablas?~~
+  - ~~Hairline borders en cards de FacilityCard WarehouseChildRow PointSaleChildRow CashDrawerChildRow~~
+  - ~~Que CRUD actualice DataTableView al realizar busqueda, aun cuando el filtro no haya cambiado~~
+
+## 2026-09-01
+- Requerir reinicio de password en primer login
+- Requerir strong password
+- Codigo de capura de cliente opcional y ubicarlo al final del form
+- Quitar bool envio y req documento
+- Mostrar sin existenicias en almacen
+- Permitir que puedan regresar si no se ha pagado
+- Checar pasos de pos sale
+- Por default, al agregar primer domicilio, se asigne toda la qty a èste
+
+- De pedidos, quitar publico en gral, y se debe de elegir el cliente
+- Quitar pago y agregar entrega obligatorio
+- Fecha de entrega
+- Vendedor associado al cliente
+
+lista de precios
+- Mostrar dos decimales
+- No detecta

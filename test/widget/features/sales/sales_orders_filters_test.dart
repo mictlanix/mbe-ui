@@ -190,6 +190,22 @@ void main() {
     ).called(greaterThan(0));
   });
 
+  testWidgets('opening the date-range picker on the default (unfiltered) '
+      'range does not crash — the default `to` is the current month\'s last '
+      'day, which is after today for every day but the last', (tester) async {
+    stubListOrders(salesOrders, page: testSalesPage(const []));
+
+    await pumpListRouted(tester);
+    await tester.tap(find.byKey(const Key('sales_orders_filter_button')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('date_range_filter_chip')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(DateRangePickerDialog), findsOneWidget);
+  });
+
   testWidgets('clear-all returns the range to the current month — never to '
       'unbounded', (tester) async {
     stubListOrders(salesOrders, page: testSalesPage(const []));

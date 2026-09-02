@@ -154,6 +154,48 @@ void main() {
       expect(container.read(resolvedLocaleProvider), const Locale('en', 'US'));
     });
 
+    test(
+      'a bare-language override matching the deployment language keeps its region, '
+      'so number/currency formatting stays in the deployment convention (es_MX, not es)',
+      () async {
+        final container = await containerWith(
+          prefs: {'locale_override': 'es'},
+          appSettings: const AppSettings(
+            apiBaseUrl: 'x',
+            photosBaseUrl: 'x',
+            posDefaultCustomerId: 1,
+            brand: BrandConfig(displayName: 'X'),
+            defaultLocale: Locale('es', 'MX'),
+            formatting: FormattingSettings(),
+          ),
+        );
+        addTearDown(container.dispose);
+
+        expect(container.read(resolvedLocaleProvider), const Locale('es', 'MX'));
+      },
+    );
+
+    test(
+      'a bare-language override for a different language than the deployment default '
+      'is kept as-is',
+      () async {
+        final container = await containerWith(
+          prefs: {'locale_override': 'en'},
+          appSettings: const AppSettings(
+            apiBaseUrl: 'x',
+            photosBaseUrl: 'x',
+            posDefaultCustomerId: 1,
+            brand: BrandConfig(displayName: 'X'),
+            defaultLocale: Locale('es', 'MX'),
+            formatting: FormattingSettings(),
+          ),
+        );
+        addTearDown(container.dispose);
+
+        expect(container.read(resolvedLocaleProvider), const Locale('en'));
+      },
+    );
+
     test('an unsupported deployment default falls back to the first supported locale', () async {
       final container = await containerWith(
         appSettings: const AppSettings(

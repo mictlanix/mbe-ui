@@ -13,11 +13,32 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/exchange_rate.dart';
+import 'package:mbe_ui/features/pricing/presentation/exchange_rate_form.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _exchangeRatesPath = '/exchange-rates';
+
+void _openExchangeRateSheet(
+  BuildContext context, {
+  required String title,
+  int? exchangeRateId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<ExchangeRateFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => ExchangeRateForm(
+      key: formKey,
+      exchangeRateId: exchangeRateId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Exchange-rates catalog list screen (FR-014, FR-015). Gated by
 /// `can(SystemObject.exchangeRates, AccessRight.read)` in the router.
@@ -52,89 +73,89 @@ class ExchangeRatesListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: const SizedBox.shrink(),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_exchange_rate_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newExchangeRateTooltip),
-                  onPressed: () => context.push('/exchange-rates/new'),
+        CatalogFilterBar(
+          search: const SizedBox.shrink(),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_exchange_rate_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newExchangeRateTooltip),
+                onPressed: () => _openExchangeRateSheet(
+                  context,
+                  title: l10n.newExchangeRateTitle,
                 ),
-            ],
-            filters: [
-              OutlinedButton.icon(
-                key: const Key('exchange_rate_date_range_filter'),
-                icon: const Icon(Icons.date_range),
-                label: Text(
-                  filter.dateFrom == null
-                      ? l10n.dateRangeFilterLabel
-                      : '${fmt.display.date(filter.dateFrom!)} – '
-                            '${fmt.display.date(filter.dateTo ?? filter.dateFrom!)}',
-                ),
-                onPressed: () async {
-                  final range = await showDateRangePicker(
-                    context: context,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                    initialDateRange:
-                        filter.dateFrom != null && filter.dateTo != null
-                        ? DateTimeRange(
-                            start: filter.dateFrom!,
-                            end: filter.dateTo!,
-                          )
-                        : null,
-                  );
-                  if (range != null) {
-                    goTo(
-                      query
-                          .withFacet('dateFrom', toIsoDateFacet(range.start))
-                          .withFacet('dateTo', toIsoDateFacet(range.end))
-                          .copyWith(pageIndex: 0),
-                    );
-                  }
-                },
               ),
-              if (filter.dateFrom != null)
-                IconButton(
-                  key: const Key('clear_date_range_button'),
-                  icon: const Icon(Icons.clear),
-                  tooltip: l10n.clearDateRangeTooltip,
-                  onPressed: () => goTo(
+          ],
+          filters: [
+            OutlinedButton.icon(
+              key: const Key('exchange_rate_date_range_filter'),
+              icon: const Icon(Icons.date_range),
+              label: Text(
+                filter.dateFrom == null
+                    ? l10n.dateRangeFilterLabel
+                    : '${fmt.display.date(filter.dateFrom!)} – '
+                          '${fmt.display.date(filter.dateTo ?? filter.dateFrom!)}',
+              ),
+              onPressed: () async {
+                final range = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                  initialDateRange:
+                      filter.dateFrom != null && filter.dateTo != null
+                      ? DateTimeRange(
+                          start: filter.dateFrom!,
+                          end: filter.dateTo!,
+                        )
+                      : null,
+                );
+                if (range != null) {
+                  goTo(
                     query
-                        .withFacet('dateFrom', null)
-                        .withFacet('dateTo', null)
+                        .withFacet('dateFrom', toIsoDateFacet(range.start))
+                        .withFacet('dateTo', toIsoDateFacet(range.end))
                         .copyWith(pageIndex: 0),
-                  ),
-                ),
-              DropdownButton<Currency?>(
-                key: const Key('exchange_rate_base_filter'),
-                value: filter.base != null
-                    ? Currency.fromValue(filter.base!)
-                    : null,
-                hint: Text(l10n.currencyFilterLabel),
-                items: [
-                  DropdownMenuItem(
-                    value: null,
-                    child: Text(l10n.currencyFilterLabel),
-                  ),
-                  for (final currency in Currency.values)
-                    DropdownMenuItem(
-                      value: currency,
-                      child: Text(_currencyLabel(l10n, currency)),
-                    ),
-                ],
-                onChanged: (currency) => goTo(
+                  );
+                }
+              },
+            ),
+            if (filter.dateFrom != null)
+              IconButton(
+                key: const Key('clear_date_range_button'),
+                icon: const Icon(Icons.clear),
+                tooltip: l10n.clearDateRangeTooltip,
+                onPressed: () => goTo(
                   query
-                      .withFacet('base', currency?.value.toString())
+                      .withFacet('dateFrom', null)
+                      .withFacet('dateTo', null)
                       .copyWith(pageIndex: 0),
                 ),
               ),
-            ],
-          ),
+            DropdownButton<Currency?>(
+              key: const Key('exchange_rate_base_filter'),
+              value: filter.base != null
+                  ? Currency.fromValue(filter.base!)
+                  : null,
+              hint: Text(l10n.currencyFilterLabel),
+              items: [
+                DropdownMenuItem(
+                  value: null,
+                  child: Text(l10n.currencyFilterLabel),
+                ),
+                for (final currency in Currency.values)
+                  DropdownMenuItem(
+                    value: currency,
+                    child: Text(_currencyLabel(l10n, currency)),
+                  ),
+              ],
+              onChanged: (currency) => goTo(
+                query
+                    .withFacet('base', currency?.value.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<ExchangeRate>(
@@ -143,7 +164,10 @@ class ExchangeRatesListScreen extends ConsumerWidget {
             emptyMessage: l10n.noExchangeRatesFound,
             createLabel: canCreate ? l10n.newExchangeRateTooltip : null,
             onCreate: canCreate
-                ? () => context.push('/exchange-rates/new')
+                ? () => _openExchangeRateSheet(
+                    context,
+                    title: l10n.newExchangeRateTitle,
+                  )
                 : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_exchangeRatesPath),
@@ -183,12 +207,20 @@ class ExchangeRatesListScreen extends ConsumerWidget {
               pagination: page,
               onPageChanged: (pageIndex) =>
                   goTo(query.copyWith(pageIndex: pageIndex)),
-              onRowTap: (r) =>
-                  context.push('/exchange-rates/${r.exchangeRateId}?view=true'),
+              onRowTap: (r) => _openExchangeRateSheet(
+                context,
+                title: l10n.viewExchangeRateTitle,
+                exchangeRateId: r.exchangeRateId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, r) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/exchange-rates/${r.exchangeRateId}')
+                    ? () => _openExchangeRateSheet(
+                        context,
+                        title: l10n.editExchangeRateTitle,
+                        exchangeRateId: r.exchangeRateId,
+                      )
                     : null,
               ),
             ),

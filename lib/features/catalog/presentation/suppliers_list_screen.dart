@@ -7,17 +7,39 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
+import 'package:mbe_ui/features/catalog/presentation/supplier_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _suppliersPath = '/suppliers';
+
+void _openSupplierSheet(
+  BuildContext context, {
+  required String title,
+  int? supplierId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<SupplierFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => SupplierForm(
+      key: formKey,
+      supplierId: supplierId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Suppliers catalog list screen (FR-001, FR-002, US1). Gated by
 /// `can(SystemObject.suppliers, AccessRight.read)` in the router. Search-only
@@ -44,31 +66,32 @@ class SuppliersListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('suppliers_search_field'),
-              label: l10n.suppliersSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) => context.go(
-                query
-                    .copyWith(search: value, pageIndex: 0)
-                    .toUri(_suppliersPath)
-                    .toString(),
-              ),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('suppliers_search_field'),
+            label: l10n.suppliersSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _suppliersPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () =>
+                  ref.invalidate(suppliersListControllerProvider(filter)),
             ),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_supplier_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newSupplierTooltip),
-                  onPressed: () => context.push('/suppliers/new'),
-                ),
-            ],
           ),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_supplier_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newSupplierTooltip),
+                onPressed: () =>
+                    _openSupplierSheet(context, title: l10n.newSupplierTitle),
+              ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<Supplier>(
@@ -76,7 +99,9 @@ class SuppliersListScreen extends ConsumerWidget {
             isFiltered: query.isFiltered,
             emptyMessage: l10n.noSuppliersFound,
             createLabel: canCreate ? l10n.newSupplierTooltip : null,
-            onCreate: canCreate ? () => context.push('/suppliers/new') : null,
+            onCreate: canCreate
+                ? () => _openSupplierSheet(context, title: l10n.newSupplierTitle)
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_suppliersPath),
             retryLabel: l10n.retryButton,
@@ -116,12 +141,20 @@ class SuppliersListScreen extends ConsumerWidget {
                     .toUri(_suppliersPath)
                     .toString(),
               ),
-              onRowTap: (s) =>
-                  context.push('/suppliers/${s.supplierId}?view=true'),
+              onRowTap: (s) => _openSupplierSheet(
+                context,
+                title: l10n.viewSupplierTitle,
+                supplierId: s.supplierId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, s) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/suppliers/${s.supplierId}')
+                    ? () => _openSupplierSheet(
+                        context,
+                        title: l10n.editSupplierTitle,
+                        supplierId: s.supplierId,
+                      )
                     : null,
               ),
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -9,6 +10,59 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// status-bearing catalogs (products, customers, employees, users, vehicles,
 /// vehicle operators) label and filter status identically, which is the whole
 /// point of the API-side unification.
+
+/// Decodes the shared status facet with the entity-lifecycle default (spec
+/// 035 FR-001/FR-002/FR-004): the facet absent means [EntityStatus.active] —
+/// the applied default, not "no filter" — present as the literal `all` means
+/// every state (the user's explicit choice to clear that default), and any
+/// other value parses as that [EntityStatus], falling back to the default on
+/// an unrecognized one rather than a filter that silently returns nothing.
+/// Replaces the identical private `byNameOrNull` extension every
+/// status-bearing list controller used to redefine for itself.
+EntityStatus? decodeStatusFacet(ListQuery query, {String facetKey = 'status'}) {
+  final raw = query.facet(facetKey);
+  if (raw == null) return EntityStatus.active;
+  if (raw == 'all') return null;
+  for (final status in EntityStatus.values) {
+    if (status.name == raw) return status;
+  }
+  return EntityStatus.active;
+}
+
+/// Encodes [status] onto [query]'s status facet, the write-side counterpart
+/// to [decodeStatusFacet]. `null` (the user's explicit "All" selection)
+/// writes the literal `all` rather than clearing the facet, so it stays
+/// distinguishable from the default-applied Active state that an absent
+/// facet now means — clearing the facet would silently reapply the default
+/// instead of honoring "All" (FR-004).
+ListQuery encodeStatusFacet(
+  ListQuery query,
+  EntityStatus? status, {
+  String facetKey = 'status',
+}) => query.withFacet(facetKey, status?.name ?? 'all');
+
+/// Whether a status-defaulted list's result should read as "your filters
+/// hide everything" rather than "this catalog is genuinely empty" (spec 035
+/// FR-003/FR-006, Edge Cases) — the value each of the ten status-defaulted
+/// list screens MUST pass as `CatalogListStateView.isFiltered` in place of
+/// the raw `query.isFiltered`.
+///
+/// `ListQuery.isFiltered` alone is wrong here: it is `true` whenever
+/// [query]'s raw `facets` map is non-empty, but writing the literal
+/// `status=all` (the user's explicit "show every state") *does* put a key
+/// in that map even though it means the opposite of "narrowed" — that
+/// combination previously read as "filtered" and showed the wrong empty
+/// state. This excludes [facetKey] from the raw check and instead asks
+/// whether the *decoded* [status] (from [decodeStatusFacet]) narrows to
+/// anything less than every state.
+bool isFilteredBeyondStatusDefault(
+  ListQuery query,
+  EntityStatus? status, {
+  String facetKey = 'status',
+}) {
+  final otherFacetsPresent = query.facets.keys.any((key) => key != facetKey);
+  return query.search.isNotEmpty || otherFacetsPresent || status != null;
+}
 
 /// The localized name of [status], for table cells and dropdown items.
 String entityStatusLabel(AppLocalizations l10n, EntityStatus status) =>

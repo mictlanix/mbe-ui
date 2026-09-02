@@ -3566,4 +3566,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String userProvisionedFromLabel(String profileName) {
     return 'Aprovisionado desde $profileName';
   }
+
+  @override
+  String get recordSheetDiscardTitle => '¿Descartar cambios sin guardar?';
+
+  @override
+  String get recordSheetDiscardBody =>
+      'Los cambios en este registro no se han guardado.';
+
+  @override
+  String get recordSheetDiscardConfirm => 'Descartar';
+
+  @override
+  String get recordSheetDiscardCancel => 'Seguir editando';
 }

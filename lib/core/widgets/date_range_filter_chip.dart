@@ -75,12 +75,27 @@ class DateRangeFilterChip extends ConsumerWidget {
 
   Future<void> _pick(BuildContext context) async {
     final now = DateTime.now();
+    final effectiveFirstDate = firstDate ?? DateTime(now.year - 1);
+    final effectiveLastDate = DateTime(now.year, now.month, now.day);
     final range = await showDateRangePicker(
       context: context,
-      firstDate: firstDate ?? DateTime(now.year - 1),
-      lastDate: now,
-      initialDateRange: DateTimeRange(start: from, end: to),
+      firstDate: effectiveFirstDate,
+      lastDate: effectiveLastDate,
+      initialDateRange: DateTimeRange(
+        start: _clamp(from, effectiveFirstDate, effectiveLastDate),
+        end: _clamp(to, effectiveFirstDate, effectiveLastDate),
+      ),
     );
     if (range != null) onChanged(range);
+  }
+
+  /// Bounds [value] to `[min, max]` — callers' default ranges can extend past
+  /// today (e.g. the sales orders screen defaults `to` the current month's
+  /// last day), which `showDateRangePicker` rejects as an `initialDateRange`
+  /// past its `lastDate`.
+  static DateTime _clamp(DateTime value, DateTime min, DateTime max) {
+    if (value.isBefore(min)) return min;
+    if (value.isAfter(max)) return max;
+    return value;
   }
 }

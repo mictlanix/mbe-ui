@@ -64,6 +64,21 @@ void main() {
         expect(filter.search, isEmpty);
         expect(filter.pageIndex, 0);
         expect(filter.facilityId, isNull);
+        // spec 035 FR-001/FR-002: an absent status facet now defaults to
+        // Active, not "no filter" — the "All" choice is the explicit
+        // `status=all` case, covered separately below.
+        expect(filter.status, EntityStatus.active);
+      });
+
+      test('an explicit "all" status clears the default (FR-004)', () {
+        final filter = PaymentMethodOptionFilter.fromQuery(
+          const ListQuery(
+            facets: {
+              'status': ['all'],
+            },
+          ),
+        );
+
         expect(filter.status, isNull);
       });
     },

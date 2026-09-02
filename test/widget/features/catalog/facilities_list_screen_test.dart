@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/cash_drawer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/point_sale.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
@@ -150,7 +151,7 @@ void main() {
     ).thenAnswer((_) async => const CashDrawerListResult(items: [], total: 0));
   });
 
-  Future<void> pumpScreen(
+  Future<GoRouter> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
     List<FacilityListItem> facilities = const [],
@@ -199,20 +200,6 @@ void main() {
           path: '/facilities/new',
           builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
         ),
-        for (final path in [
-          '/warehouses',
-          '/points-of-sale',
-          '/cash-drawers',
-        ]) ...[
-          GoRoute(
-            path: '$path/new',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
-          ),
-          GoRoute(
-            path: '$path/:id',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
-          ),
-        ],
       ],
     );
 
@@ -233,6 +220,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    return router;
   }
 
   group('collapsed card (US1, FR-006)', () {
@@ -271,7 +259,17 @@ void main() {
       expect(find.text('FAC-1'), findsOneWidget);
       expect(find.text('Store'), findsOneWidget);
       expect(find.text('2'), findsOneWidget); // warehouse count
-      expect(find.text('1'), findsOneWidget); // point-of-sale count
+      // spec 035 FR-006: the filters badge now also reads "1" (the
+      // default-applied Active status counts as an active filter), so a
+      // bare `find.text('1')` would match two widgets — scope to inside
+      // the facility card to isolate the point-of-sale count specifically.
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('facility_card_1')),
+          matching: find.text('1'),
+        ),
+        findsOneWidget,
+      ); // point-of-sale count
       expect(find.text('0'), findsOneWidget); // cash-drawer count
       // Expanded body not yet built.
       expect(
@@ -592,46 +590,89 @@ void main() {
       expect(find.text('/facilities/1?view=true'), findsOneWidget);
     });
 
-    testWidgets('a child row opens that record read-only', (tester) async {
-      when(
-        () => warehouseRepository.list(
-          facilityId: 1,
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).thenAnswer(
-        (_) async => WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
-      );
+    testWidgets(
+      'a child row opens that record read-only in a panel over the list — '
+      'no navigation, since there is no per-record route anymore (spec 035 '
+      'US5)',
+      (tester) async {
+        when(
+          () => warehouseRepository.list(
+            facilityId: 1,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async =>
+              WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
+        );
+        when(() => warehouseRepository.get(warehouseId: 1)).thenAnswer(
+          (_) async => _warehouse(1, 1),
+        );
 
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        facilities: [_store],
-      );
-      await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
-      await tester.pumpAndSettle();
+        final router = await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: [_store],
+        );
+        await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Warehouse 1'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Warehouse 1'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('/warehouses/1?view=true'), findsOneWidget);
-    });
+        expect(router.state.uri.path, '/facilities');
+        final codeField = tester.widget<TextFormField>(
+          find.byKey(const Key('code_field')),
+        );
+        expect(codeField.initialValue, 'WH-1');
+        expect(codeField.enabled, isFalse);
+        expect(
+          find.byKey(const Key('edit_warehouse_button')),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('a section create action opens the blank form with the parent '
-        'facility pre-selected via the URL (FR-022/FR-023)', (tester) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        facilities: [_store],
-      );
-      await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'a section create action opens the blank panel with the parent '
+      'facility pre-selected (FR-022/FR-023)',
+      (tester) async {
+        when(() => facilityRepository.get(facilityId: 1)).thenAnswer(
+          (_) async => Facility(
+            facilityId: 1,
+            code: 'FAC-1',
+            name: 'Main Store',
+            type: FacilityType.store,
+            locationId: '55600',
+            locationLabel: '55600',
+            addressId: 1,
+            addressLabel: 'Address',
+            taxpayerRfc: 'AAA010101AAA',
+            status: EntityStatus.active,
+          ),
+        );
 
-      await tester.tap(find.byKey(const Key('facility_create_warehouse_1')));
-      await tester.pumpAndSettle();
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: [_store],
+        );
+        await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
+        await tester.pumpAndSettle();
 
-      expect(find.text('/warehouses/new?facility=1'), findsOneWidget);
-    });
+        await tester.tap(find.byKey(const Key('facility_create_warehouse_1')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('code_field')), findsOneWidget);
+        final editable = tester.widget<EditableText>(
+          find.descendant(
+            of: find.byKey(const Key('facility_field')),
+            matching: find.byType(EditableText),
+          ),
+        );
+        expect(editable.controller.text, 'Main Store');
+      },
+    );
   });
 
   group('retained from before this feature (FR-014/FR-015/FR-016)', () {
@@ -646,16 +687,42 @@ void main() {
       expect(find.byKey(const Key('facilities_filter_button')), findsOneWidget);
     });
 
-    testWidgets('an empty result shows the empty state', (tester) async {
-      await pumpScreen(
-        tester,
-        signedInAs: _fullAccessUser,
-        facilities: const [],
-      );
+    testWidgets(
+      'an empty result, genuinely unfiltered (status=all), shows the empty '
+      'state',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: const [],
+          query: const ListQuery(
+            facets: {
+              'status': ['all'],
+            },
+          ),
+        );
 
-      expect(find.byKey(const Key('facilities_card_list')), findsNothing);
-      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
-    });
+        expect(find.byKey(const Key('facilities_card_list')), findsNothing);
+        expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'an empty result under the default-applied Active status shows the '
+      'filtered-empty state, not the plain empty state — the default '
+      'could be hiding inactive/archived facilities the client cannot see '
+      '(spec 035 FR-003/FR-006, Edge Cases)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: const [],
+        );
+
+        expect(find.byKey(const Key('facilities_card_list')), findsNothing);
+        expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      },
+    );
 
     testWidgets('a status facet in the URL is passed to the repository', (
       tester,

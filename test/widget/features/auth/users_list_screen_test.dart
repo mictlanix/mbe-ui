@@ -285,7 +285,9 @@ void main() {
       verify(
         () => userRepository.list(
           search: 'jdoe',
-          status: null,
+          // spec 035 FR-001/FR-002: an unmodified status facet now defaults
+          // to Active, not "no filter".
+          status: EntityStatus.active,
           profileId: any(named: 'profileId'),
           skip: 0,
           limit: 20,
@@ -335,7 +337,9 @@ void main() {
       () =>
           userRepository.list(
             search: null,
-            status: null,
+            // spec 035 FR-001/FR-002: an unmodified status facet now
+            // defaults to Active, not "no filter".
+            status: EntityStatus.active,
             profileId: any(named: 'profileId'),
             skip: 20,
             limit: 20,
@@ -565,7 +569,11 @@ void main() {
       verify(
         () => userRepository.list(
           search: any(named: 'search'),
-          status: null,
+          // spec 035 FR-001/FR-002: "Clear all" resets every facet to its
+          // own default — status's default is now Active, not "no filter"
+          // (reaching every status is the status facet's own "All" chip,
+          // a separate, still-one-click affordance covered elsewhere).
+          status: EntityStatus.active,
           profileId: null,
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),

@@ -17,38 +17,24 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
-import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/employee_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/expense_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/expenses_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/labels_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/vehicle_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/cash_drawer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facilities_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/payment_method_option_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/payment_method_options_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/point_sale_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/warehouse_detail_screen.dart';
 import 'package:mbe_ui/features/home/presentation/home_screen.dart';
-import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.dart';
-import 'package:mbe_ui/features/pricing/presentation/price_list_detail_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_grid_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
@@ -375,163 +361,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: '/price-lists/new',
-        builder: (context, state) => const PriceListDetailScreen(),
-      ),
-      GoRoute(
-        path: '/price-lists/:priceListId',
-        builder: (context, state) => PriceListDetailScreen(
-          priceListId: int.parse(state.pathParameters['priceListId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/exchange-rates/new',
-        builder: (context, state) => const ExchangeRateDetailScreen(),
-      ),
-      GoRoute(
-        path: '/exchange-rates/:exchangeRateId',
-        builder: (context, state) => ExchangeRateDetailScreen(
-          exchangeRateId: int.parse(state.pathParameters['exchangeRateId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/suppliers/new',
-        builder: (context, state) => const SupplierDetailScreen(),
-      ),
-      GoRoute(
-        path: '/suppliers/:supplierId',
-        builder: (context, state) => SupplierDetailScreen(
-          supplierId: int.parse(state.pathParameters['supplierId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/labels/new',
-        builder: (context, state) => const LabelDetailScreen(),
-      ),
-      GoRoute(
-        path: '/labels/:labelId',
-        builder: (context, state) => LabelDetailScreen(
-          labelId: int.parse(state.pathParameters['labelId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/employees/new',
-        builder: (context, state) => const EmployeeDetailScreen(),
-      ),
-      GoRoute(
-        path: '/employees/:employeeId',
-        builder: (context, state) => EmployeeDetailScreen(
-          employeeId: int.parse(state.pathParameters['employeeId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/customers/new',
-        builder: (context, state) => const CustomerDetailScreen(),
-      ),
-      GoRoute(
-        path: '/customers/:customerId',
-        builder: (context, state) => CustomerDetailScreen(
-          customerId: int.parse(state.pathParameters['customerId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/taxpayer-recipients/new',
-        builder: (context, state) => const TaxpayerRecipientDetailScreen(),
-      ),
-      GoRoute(
-        // String path param — taxpayerRecipientId is a client-supplied RFC,
-        // not a server-assigned int (research.md §9); no int.parse here.
-        path: '/taxpayer-recipients/:taxpayerRecipientId',
-        builder: (context, state) => TaxpayerRecipientDetailScreen(
-          taxpayerRecipientId: state.pathParameters['taxpayerRecipientId'],
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/expenses/new',
-        builder: (context, state) => const ExpenseDetailScreen(),
-      ),
-      GoRoute(
-        path: '/expenses/:expenseId',
-        builder: (context, state) => ExpenseDetailScreen(
-          expenseId: int.parse(state.pathParameters['expenseId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/vehicles/new',
-        builder: (context, state) => const VehicleDetailScreen(),
-      ),
-      GoRoute(
-        path: '/vehicles/:vehicleId',
-        builder: (context, state) => VehicleDetailScreen(
-          vehicleId: int.parse(state.pathParameters['vehicleId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/vehicle-operators/new',
-        builder: (context, state) => const VehicleOperatorDetailScreen(),
-      ),
-      GoRoute(
-        path: '/vehicle-operators/:vehicleOperatorId',
-        builder: (context, state) => VehicleOperatorDetailScreen(
-          vehicleOperatorId: int.parse(
-            state.pathParameters['vehicleOperatorId']!,
-          ),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/warehouses/new',
-        // `?facility=<id>` pre-selects the parent facility when reached from
-        // a facility card's "+ Almacén" (018-nested-facility-management
-        // FR-022/FR-023, contracts/routes.md §4). Absent/unparseable is
-        // `null` — the form opens with an empty picker, unchanged.
-        builder: (context, state) => WarehouseDetailScreen(
-          facilityId: int.tryParse(state.uri.queryParameters['facility'] ?? ''),
-        ),
-      ),
-      GoRoute(
-        path: '/warehouses/:warehouseId',
-        builder: (context, state) => WarehouseDetailScreen(
-          warehouseId: int.parse(state.pathParameters['warehouseId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/cash-drawers/new',
-        builder: (context, state) => CashDrawerDetailScreen(
-          facilityId: int.tryParse(state.uri.queryParameters['facility'] ?? ''),
-        ),
-      ),
-      GoRoute(
-        path: '/cash-drawers/:cashDrawerId',
-        builder: (context, state) => CashDrawerDetailScreen(
-          cashDrawerId: int.parse(state.pathParameters['cashDrawerId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/points-of-sale/new',
-        builder: (context, state) => PointSaleDetailScreen(
-          facilityId: int.tryParse(state.uri.queryParameters['facility'] ?? ''),
-        ),
-      ),
-      GoRoute(
-        path: '/points-of-sale/:pointSaleId',
-        builder: (context, state) => PointSaleDetailScreen(
-          pointSaleId: int.parse(state.pathParameters['pointSaleId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
         path: '/facilities/new',
         builder: (context, state) => const FacilityDetailScreen(),
       ),
@@ -539,19 +368,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/facilities/:facilityId',
         builder: (context, state) => FacilityDetailScreen(
           facilityId: int.parse(state.pathParameters['facilityId']!),
-          forceReadOnly: state.uri.queryParameters['view'] == 'true',
-        ),
-      ),
-      GoRoute(
-        path: '/payment-method-options/new',
-        builder: (context, state) => const PaymentMethodOptionDetailScreen(),
-      ),
-      GoRoute(
-        path: '/payment-method-options/:paymentMethodOptionId',
-        builder: (context, state) => PaymentMethodOptionDetailScreen(
-          paymentMethodOptionId: int.parse(
-            state.pathParameters['paymentMethodOptionId']!,
-          ),
           forceReadOnly: state.uri.queryParameters['view'] == 'true',
         ),
       ),
@@ -651,6 +467,9 @@ String? _redirect(Ref ref, GoRouterState state) {
 
   if (state.matchedLocation == '/auth/login') return '/';
 
+  final legacyRecordRoute = _legacyRecordRouteRedirect(state.matchedLocation);
+  if (legacyRecordRoute != null) return legacyRecordRoute;
+
   final gate = _routeGate(state.matchedLocation);
   final access = ref.read(accessControlProvider);
   final allowed = switch (gate) {
@@ -659,6 +478,46 @@ String? _redirect(Ref ref, GoRouterState state) {
     AdministratorGate() => access.isAdministrator,
   };
   if (!allowed) return '/';
+  return null;
+}
+
+/// Spec 035 converts 14 entities from a pushed per-record route to the
+/// shared record panel (`showRecordSheet`), opened from their own list
+/// screen — one at a time, as each is converted. **This map MUST only name
+/// an entity once its `/entity/new` and `/entity/:id` `GoRoute`s are
+/// actually removed below** — `redirect` runs before route matching, so an
+/// entry for an entity whose routes still exist would hijack its still-live
+/// detail screen. Once an entity's routes are gone, an old bookmark/shared
+/// link for it lands on that entity's list (FR-030) rather than "no route
+/// matched". `warehouses` / `points-of-sale` / `cash-drawers` have no
+/// top-level list screen of their own (they are facility children, opened
+/// from `/facilities`) — an old link to one of *those* lands on
+/// `/facilities` instead, the closest surviving surface.
+const _convertedEntityListPaths = <String, String>{
+  '/labels': '/labels',
+  '/suppliers': '/suppliers',
+  '/expenses': '/expenses',
+  '/vehicles': '/vehicles',
+  '/vehicle-operators': '/vehicle-operators',
+  '/price-lists': '/price-lists',
+  '/exchange-rates': '/exchange-rates',
+  '/payment-method-options': '/payment-method-options',
+  '/employees': '/employees',
+  '/customers': '/customers',
+  '/taxpayer-recipients': '/taxpayer-recipients',
+  '/warehouses': '/facilities',
+  '/points-of-sale': '/facilities',
+  '/cash-drawers': '/facilities',
+};
+
+String? _legacyRecordRouteRedirect(String location) {
+  for (final entry in _convertedEntityListPaths.entries) {
+    final base = entry.key;
+    if (location == base) continue; // the surviving list route itself
+    final isRecordPath =
+        location == '$base/new' || RegExp('^$base/[^/]+\$').hasMatch(location);
+    if (isRecordPath) return entry.value;
+  }
   return null;
 }
 

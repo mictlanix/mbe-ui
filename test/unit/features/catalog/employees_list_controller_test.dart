@@ -56,8 +56,24 @@ void main() {
 
       expect(filter.search, '');
       expect(filter.pageIndex, 0);
-      expect(filter.status, isNull);
+      // spec 035 FR-001/FR-002/FR-006: an absent status facet now defaults
+      // to Active, not "no filter" — and that default counts toward the
+      // filters badge, same as an explicit choice would.
+      expect(filter.status, EntityStatus.active);
       expect(filter.salesPerson, isNull);
+      expect(filter.hasActiveFilters, isTrue);
+    });
+
+    test('an explicit "all" status clears the default (FR-004)', () {
+      final filter = EmployeeFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'status': ['all'],
+          },
+        ),
+      );
+
+      expect(filter.status, isNull);
       expect(filter.hasActiveFilters, isFalse);
     });
   });

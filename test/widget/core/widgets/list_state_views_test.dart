@@ -217,6 +217,55 @@ void main() {
   });
 
   testWidgets(
+    'a background refresh (AsyncData with isLoading:true, e.g. an '
+    'unchanged-term search resubmission) shows the same bare '
+    'CircularProgressIndicator used for first-load/pagination-change above '
+    'the still-visible previous data, rather than no feedback at all',
+    (tester) async {
+      // Mirrors what a real `ref.invalidate()` actually produces (per
+      // Riverpod's own `AsyncNotifier` refresh logic): `AsyncLoading`
+      // merged with the previous `AsyncData` via `copyWithPrevious`,
+      // yielding `AsyncData(isLoading: true)` with the old value retained.
+      final loadingWithPreviousData = const AsyncValue<CatalogPage<String>>
+          .loading()
+          .copyWithPrevious(AsyncValue.data(_page(const ['a', 'b'])));
+
+      await pumpState(
+        tester,
+        state: loadingWithPreviousData,
+        isFiltered: false,
+      );
+
+      expect(find.byKey(const Key('list_state_refreshing')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('list_state_refreshing')),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+        findsOneWidget,
+      );
+      // The previous page's rows stay visible — this is additive
+      // feedback, not a replacement of the content (FR-012).
+      expect(find.byKey(const Key('list_state_data')), findsOneWidget);
+      expect(find.text('a'), findsOneWidget);
+      expect(find.text('b'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'a plain (non-refreshing) populated state shows no progress bar',
+    (tester) async {
+      await pumpState(
+        tester,
+        state: AsyncValue.data(_page(const ['a', 'b'])),
+        isFiltered: false,
+      );
+
+      expect(find.byKey(const Key('list_state_refreshing')), findsNothing);
+    },
+  );
+
+  testWidgets(
     'the four states are mutually distinguishable (SC-007): each has a '
     'unique key with no overlap',
     (tester) async {

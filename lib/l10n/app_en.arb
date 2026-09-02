@@ -2480,5 +2480,14 @@
   "userFormApplyFailedError": "Could not apply the profile.",
   "@userFormApplyFailedError": {},
   "userProvisionedFromLabel": "Provisioned from {profileName}",
-  "@userProvisionedFromLabel": {"placeholders": {"profileName": {"type": "String"}}}
+  "@userProvisionedFromLabel": {"placeholders": {"profileName": {"type": "String"}}},
+
+  "recordSheetDiscardTitle": "Discard unsaved changes?",
+  "@recordSheetDiscardTitle": {"description": "spec 035 FR-032: shown when a record panel with an unsaved edit is dismissed (barrier tap, Escape, or the close button)"},
+  "recordSheetDiscardBody": "Your changes to this record have not been saved.",
+  "@recordSheetDiscardBody": {},
+  "recordSheetDiscardConfirm": "Discard",
+  "@recordSheetDiscardConfirm": {},
+  "recordSheetDiscardCancel": "Keep editing",
+  "@recordSheetDiscardCancel": {}
 }

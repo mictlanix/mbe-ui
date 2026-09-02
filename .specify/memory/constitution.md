@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.12.0
+Version change: 1.0.0 → 1.13.0
 Modified principles:
   - V. Material 3, White-Labeled Design System — materially expanded with
     two rules [1.11.0]: (a) **two levels of configuration, kept distinct** —
@@ -147,6 +147,12 @@ Templates requiring updates:
     conversion, the cash-sessions shift sheet, and the POS sale-line
     symmetry fix. Value formatting was descoped from it on 2026-08-16 and
     carries its finished design forward to a future spec.
+  - DESIGN.md §4.2.3 ✅ (1.13.0, new section) added ahead of this amendment,
+    per Governance: names the "record surface" concept (full screen vs.
+    shared side panel), which entities use which, and why §4.2.1/§4.2.2's
+    existing rules already held for both without needing a parallel
+    panel-specific rule set. specs/035-crud-ui-refinements is the feature
+    landing the fourteen entity conversions this section documents.
 Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
   updated to "switches|labels" once specs/007-catalog-ui-improvements-2
   shipped the labels-in-place-of-prices change. specs/008-merge-products'
@@ -180,6 +186,29 @@ Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
     resolution drops the country subtag that `formattersProvider` (via
     `resolvedLocaleProvider`, v1.11.0) deliberately preserves — a live bug
     this migration fixed as a side effect [1.12.0]
+  - VI. Desktop/Web-First, Compact-Ready Layout — the row-click,
+    read-only-label/edit-toggle, and delete-placement rules are
+    re-expressed in terms of a record's own **surface** — a full detail
+    screen (its own route) or the shared responsive side panel opened over
+    the entity's list screen (`core/widgets/record_sheet.dart`,
+    `showRecordSheet`) — rather than assuming every record has its own
+    route. A new sentence names which entities use which surface: the
+    panel for Labels, Suppliers, Employees, Customers, Taxpayer
+    Recipients, Expenses, Vehicles, Vehicle Operators, Warehouses, Points
+    of Sale, Cash Drawers, Price Lists, Exchange Rates, and Payment Method
+    Options; a full detail screen for Products, Facilities, Taxpayer
+    Issuers, Users, User Profiles, and any other entity with nested child
+    collections. Both surfaces render the identical form and MUST satisfy
+    every rule in this principle identically; a panel surface has no
+    `AppBar` of its own, so its read-only-to-edit toggle and Delete action
+    live entirely within the shared `RecordFormActions` body area — this
+    is not an exception to the `AppBar.actions`-empty rule, just that rule
+    trivially satisfied by a surface with no app bar at all. Prompted by
+    specs/035-crud-ui-refinements, which converted the fourteen named
+    catalogs from a pushed full-screen route to the panel — a deliberate,
+    accepted loss of deep-linkable per-record URLs for those entities in
+    exchange for a lighter-weight create/view/edit flow that does not leave
+    the list screen [1.13.0]
 -->
 
 # MBE-UI Constitution
@@ -426,24 +455,40 @@ multi-column forms.
   icons total (Edit, plus either one direct action or one overflow menu).
   This action set MUST be built with the shared `core/widgets/`
   row-actions component, not reimplemented per module.
+- A record's own **surface** is either a full detail screen (its own
+  route) or the shared responsive side panel opened over the entity's
+  list screen (`core/widgets/record_sheet.dart`, `showRecordSheet`).
+  Which surface an entity uses is a per-entity choice, not a per-screen
+  one: a full detail screen for Products, Facilities, Taxpayer Issuers,
+  Users, User Profiles, and any other entity with nested child
+  collections; the shared panel for every other catalog/list entity
+  (Labels, Suppliers, Employees, Customers, Taxpayer Recipients,
+  Expenses, Vehicles, Vehicle Operators, Warehouses, Points of Sale, Cash
+  Drawers, Price Lists, Exchange Rates, and Payment Method Options). Both
+  surfaces render the identical form and MUST satisfy every rule below
+  identically.
 - Clicking anywhere on a row (outside the Edit icon) MUST open that
-  record's detail screen in **read-only** mode — the same form Edit
-  opens, rendered non-editable — never the editable form. This is the
-  row's sole non-icon affordance and MUST behave identically across
-  modules; a stray click MUST NOT risk an unintended edit.
-- The read-only detail screen MUST label itself as a "View" screen (not
-  an "Edit" title) and, when the current user holds the update privilege,
-  MUST offer an explicit control to switch to the editable form for the
-  same record; a user lacking that privilege MUST NOT be shown that
-  control.
+  record's own surface in **read-only** mode — the same form Edit opens,
+  rendered non-editable — never the editable form. This is the row's
+  sole non-icon affordance and MUST behave identically across modules; a
+  stray click MUST NOT risk an unintended edit.
+- The read-only surface MUST label itself as a "View" (an AppBar title
+  on a full detail screen, a panel header on the shared panel — never an
+  "Edit" title/header) and, when the current user holds the update
+  privilege, MUST offer an explicit control to switch to the editable
+  form for the same record, in place, without navigating away or
+  re-opening the surface; a user lacking that privilege MUST NOT be shown
+  that control.
 - Create remains a toolbar-only action (never a row action). Delete/
-  soft-delete MUST be surfaced on the record's own detail screen (e.g. a
+  soft-delete MUST be surfaced on the record's own surface (e.g. a
   warning-styled button in the form body for catalog records), not as a
   row/app-bar icon on the list — a module MAY additionally keep a
   delete affordance on its detail screen's app bar if a form-body warning
   button does not fit that module's layout, but MUST NOT place it back on
-  the list row. A module MUST NOT render a delete action a user lacks the
-  RBAC delete privilege for (see Principle IV) rather than hiding it.
+  the list row; a panel surface has no app bar to fall back to, so its
+  delete action MUST live in the shared form-body action area. A module
+  MUST NOT render a delete action a user lacks the RBAC delete privilege
+  for (see Principle IV) rather than hiding it.
 - Horizontal scrolling on data tables MUST be avoided wherever possible.
   When a column's content would otherwise force horizontal scroll, the
   shared table component MUST truncate that cell's text with an ellipsis
@@ -529,6 +574,18 @@ requirement exists because that same band's shared height and baseline took
 many iterations to land the first time — the derivation is recorded in
 `features/sales/presentation/capture/sale_line_layout.dart`, and an
 alignment that expensive to get right must not be left to the eye to keep.
+The v1.13.0 "record surface" re-expression comes from
+specs/035-crud-ui-refinements, which converted fourteen catalogs' create/
+view/edit presentation from a pushed full-screen route to the shared
+side panel (`showRecordSheet`) opened over the entity's own list screen —
+a lighter-weight flow for records that don't need a deep-linkable URL or
+nested child collections, accepted in exchange for losing that
+deep link. Every rule this principle stated in terms of a "detail
+screen" already held for the panel too (both render the same form via
+the same `RecordFormActions`), so this amendment names the shared
+concept — a record's own **surface** — rather than adding a parallel set
+of panel-specific rules that would drift from the screen rules over
+time.
 
 ### VII. Online-Only, Server-Rendered Documents
 
@@ -591,4 +648,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.12.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-08-17
+**Version**: 1.13.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-08-30

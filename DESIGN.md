@@ -401,6 +401,43 @@ for the full before/after comparison and the amendment sequencing (the rule
 change lands with the first converted screen, so no shipped screen is ever
 mid-flight between the two rules).
 
+### 4.2.3 Record surfaces — full screen vs. shared side panel
+
+**Decision** (constitution §VI, amended 2026-08-30 per
+specs/035-crud-ui-refinements): §4.2.1 and §4.2.2 are stated in terms of a
+record's own **surface**, not literally a "detail screen" — a surface is
+either a full detail screen (its own route) or the shared responsive side
+panel opened over the entity's list screen
+(`core/widgets/record_sheet.dart`, `showRecordSheet`). Which surface an
+entity uses is a per-entity choice: a full detail screen for Products,
+Facilities, Taxpayer Issuers, Users, User Profiles, and any other entity
+with nested child collections; the shared panel for every other
+catalog/list entity — Labels, Suppliers, Employees, Customers, Taxpayer
+Recipients, Expenses, Vehicles, Vehicle Operators, Warehouses, Points of
+Sale, Cash Drawers, Price Lists, Exchange Rates, and Payment Method
+Options. Both surfaces render the identical form via the same
+`RecordFormActions` (§4.2.2, §4.3) and satisfy §4.2.1's row-click,
+read-only-label, edit-toggle, and delete-placement rules identically. A
+panel surface simply has no `AppBar` of its own, so its read-only-to-edit
+toggle and Delete action live entirely within the shared
+`RecordFormActions` body area — not an exception to the app-bar-empty
+rule, just that rule trivially satisfied by a surface that never had an
+app bar to begin with.
+
+**Rationale**: specs/035-crud-ui-refinements converted fourteen catalogs'
+create/view/edit presentation from a pushed full-screen route to the
+panel, a deliberately lighter-weight flow for records that don't need a
+deep-linkable per-record URL or nested child collections — the fourteen
+converted entities accept losing that deep link in exchange for staying
+on the list screen throughout create/view/edit. Every rule §4.2.1/§4.2.2
+already stated held for the panel too once it existed (both render the
+same form through the same shared component), so this decision names the
+shared concept the two surfaces already had in common rather than writing
+a second, parallel set of panel-specific rules that would drift from the
+screen rules over time. See specs/035-crud-ui-refinements/research.md and
+plan.md for the full before/after and the entity-by-entity conversion
+list.
+
 ### 4.3 Shared component library
 
 Build a small `core/widgets/` library early for things every module needs:

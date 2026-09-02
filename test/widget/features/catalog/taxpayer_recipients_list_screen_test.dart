@@ -12,11 +12,16 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
+import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+class MockSatCatalogRepository extends Mock implements SatCatalogRepository {}
 
 class MockTaxpayerRecipientRepository extends Mock
     implements TaxpayerRecipientRepository {}
@@ -155,8 +160,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view with the String id in '
-    'the route (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.list(
@@ -168,6 +173,15 @@ void main() {
         (_) async => TaxpayerRecipientPage(
           items: _testTaxpayers,
           total: _testTaxpayers.length,
+        ),
+      );
+      when(
+        () => repository.get(taxpayerRecipientId: 'XAXX010101000'),
+      ).thenAnswer(
+        (_) async => const TaxpayerRecipient(
+          taxpayerRecipientId: 'XAXX010101000',
+          name: 'Acme Corp',
+          email: 'acme@example.com',
         ),
       );
 
@@ -182,17 +196,16 @@ void main() {
               ),
             ),
           ),
-          GoRoute(
-            path: '/taxpayer-recipients/:taxpayerRecipientId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
-          ),
         ],
       );
+
+      final satRepository = MockSatCatalogRepository();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
+            satCatalogRepositoryProvider.overrideWithValue(satRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
             ),
@@ -209,8 +222,14 @@ void main() {
       await tester.tap(find.text('Acme Corp'));
       await tester.pumpAndSettle();
 
+      expect(router.state.uri.path, '/');
+      final idField = tester.widget<TextFormField>(
+        find.byKey(const Key('taxpayer_recipient_id_field')),
+      );
+      expect(idField.initialValue, 'XAXX010101000');
+      expect(idField.enabled, isFalse);
       expect(
-        find.text('/taxpayer-recipients/XAXX010101000?view=true'),
+        find.byKey(const Key('edit_taxpayer_recipient_button')),
         findsOneWidget,
       );
     },

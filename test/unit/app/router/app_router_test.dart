@@ -27,6 +27,11 @@ import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/expense_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
+import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
+import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
@@ -36,6 +41,11 @@ import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.
 import 'package:mbe_ui/features/catalog/domain/repositories/label_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/expense_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
+import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
+import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
@@ -56,6 +66,18 @@ class MockUserProfileRepository extends Mock
     implements UserProfileRepository {}
 
 class MockSupplierRepository extends Mock implements SupplierRepository {}
+
+class MockExpenseRepository extends Mock implements ExpenseRepository {}
+
+class MockVehicleRepository extends Mock implements VehicleRepository {}
+
+class MockVehicleOperatorRepository extends Mock
+    implements VehicleOperatorRepository {}
+
+class MockPriceListRepository extends Mock implements PriceListRepository {}
+
+class MockExchangeRateRepository extends Mock
+    implements ExchangeRateRepository {}
 
 class MockLabelRepository extends Mock implements LabelRepository {}
 
@@ -141,7 +163,10 @@ const _administratorUser = User(
   privileges: [],
 );
 
-/// Holds read on all five spec 012 catalogs.
+/// Holds read on all five spec 012 catalogs, plus every other spec 035
+/// converted-entity list this file's redirect-loop tests exercise as they
+/// get added (kept in one place rather than minting a new reader user per
+/// entity — see the `spec 035 FR-030` group below).
 const _catalogsReaderUser = User(
   userId: 'catalogs-reader',
   email: 'catalogs-reader@example.com',
@@ -154,6 +179,12 @@ const _catalogsReaderUser = User(
     Privilege(systemObject: SystemObject.employees, rawValue: 2),
     Privilege(systemObject: SystemObject.customers, rawValue: 2),
     Privilege(systemObject: SystemObject.taxpayerRecipients, rawValue: 2),
+    Privilege(systemObject: SystemObject.expenses, rawValue: 2),
+    Privilege(systemObject: SystemObject.vehicle, rawValue: 2),
+    Privilege(systemObject: SystemObject.vehicleOperators, rawValue: 2),
+    Privilege(systemObject: SystemObject.priceLists, rawValue: 2),
+    Privilege(systemObject: SystemObject.exchangeRates, rawValue: 2),
+    Privilege(systemObject: SystemObject.paymentMethodOptions, rawValue: 2),
   ],
 );
 
@@ -282,6 +313,59 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const SupplierPage(items: [], total: 0));
+
+    final expenseRepository = MockExpenseRepository();
+    when(
+      () => expenseRepository.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const ExpenseListResult(items: [], total: 0));
+
+    final vehicleRepository = MockVehicleRepository();
+    when(
+      () => vehicleRepository.list(
+        search: any(named: 'search'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const VehicleListResult(items: [], total: 0));
+
+    final vehicleOperatorRepository = MockVehicleOperatorRepository();
+    when(
+      () => vehicleOperatorRepository.list(
+        search: any(named: 'search'),
+        driverId: any(named: 'driverId'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const VehicleOperatorListResult(items: [], total: 0),
+    );
+
+    final priceListRepository = MockPriceListRepository();
+    when(
+      () => priceListRepository.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const PriceListResult(items: [], total: 0));
+
+    final exchangeRateRepository = MockExchangeRateRepository();
+    when(
+      () => exchangeRateRepository.list(
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        base: any(named: 'base'),
+        target: any(named: 'target'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const ExchangeRateResult(items: [], total: 0));
 
     final labelRepository = MockLabelRepository();
     when(
@@ -440,6 +524,15 @@ void main() {
           userProfileRepository,
         ),
         supplierRepositoryProvider.overrideWithValue(supplierRepository),
+        expenseRepositoryProvider.overrideWithValue(expenseRepository),
+        vehicleRepositoryProvider.overrideWithValue(vehicleRepository),
+        vehicleOperatorRepositoryProvider.overrideWithValue(
+          vehicleOperatorRepository,
+        ),
+        priceListRepositoryProvider.overrideWithValue(priceListRepository),
+        exchangeRateRepositoryProvider.overrideWithValue(
+          exchangeRateRepository,
+        ),
         labelRepositoryProvider.overrideWithValue(labelRepository),
         employeeRepositoryProvider.overrideWithValue(employeeRepository),
         customerRepositoryProvider.overrideWithValue(customerRepository),
@@ -1018,6 +1111,125 @@ void main() {
       expect(handle.router.state.uri.path, '/');
     });
   });
+
+  group(
+    'spec 035 FR-030: converted entities\' removed per-record routes '
+    'redirect to their list, not "no route matched"',
+    () {
+      // One entry per entity as its routes are actually removed
+      // (app_router.dart's `_convertedEntityListPaths` — the two lists MUST
+      // stay in lockstep, since a path named here but not yet converted
+      // would just pass against the still-live detail route).
+      for (final path in ['/labels', '/suppliers', '/expenses', '/vehicles', '/vehicle-operators', '/price-lists', '/exchange-rates', '/payment-method-options', '/employees', '/customers', '/taxpayer-recipients']) {
+        testWidgets('$path/new redirects to $path', (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _catalogsReaderUser,
+            '$path/new',
+          );
+          expect(handle.router.state.uri.path, path);
+        });
+
+        testWidgets('$path/1 redirects to $path', (tester) async {
+          final handle = await pumpAt(tester, _catalogsReaderUser, '$path/1');
+          expect(handle.router.state.uri.path, path);
+        });
+
+        testWidgets(
+          '$path/1?view=true redirects to $path, not just to itself minus '
+          'the query',
+          (tester) async {
+            final handle = await pumpAt(
+              tester,
+              _catalogsReaderUser,
+              '$path/1?view=true',
+            );
+            expect(handle.router.state.uri.path, path);
+          },
+        );
+
+        testWidgets(
+          '$path itself is unaffected — the surviving list route, not a '
+          'legacy record path',
+          (tester) async {
+            final handle = await pumpAt(tester, _catalogsReaderUser, path);
+            expect(handle.router.state.uri.path, path);
+          },
+        );
+
+        testWidgets(
+          'the redirect composes with the existing privilege gate for '
+          '$path — a user without its read privilege hitting the legacy '
+          '$path/1 still ends up denied, not on a list they cannot see',
+          (tester) async {
+            final handle = await pumpAt(tester, _noAccessUser, '$path/1');
+            expect(handle.router.state.uri.path, '/');
+          },
+        );
+      }
+    },
+  );
+
+  group(
+    'spec 035 T040-T042: facility-child entities\' removed per-record '
+    'routes redirect to /facilities, the closest surviving surface — they '
+    'have no top-level list of their own',
+    () {
+      for (final path in ['/warehouses', '/points-of-sale', '/cash-drawers']) {
+        testWidgets('$path/new redirects to /facilities', (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _renumberedBranchesReaderUser,
+            '$path/new',
+          );
+          expect(handle.router.state.uri.path, '/facilities');
+        });
+
+        testWidgets('$path/1 redirects to /facilities', (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _renumberedBranchesReaderUser,
+            '$path/1',
+          );
+          expect(handle.router.state.uri.path, '/facilities');
+        });
+
+        testWidgets(
+          '$path/1?view=true redirects to /facilities, not just to itself '
+          'minus the query',
+          (tester) async {
+            final handle = await pumpAt(
+              tester,
+              _renumberedBranchesReaderUser,
+              '$path/1?view=true',
+            );
+            expect(handle.router.state.uri.path, '/facilities');
+          },
+        );
+
+        testWidgets(
+          'the redirect composes with the /facilities privilege gate — a '
+          'user without facilities:read hitting the legacy $path/1 still '
+          'ends up denied, not on a screen they cannot see',
+          (tester) async {
+            final handle = await pumpAt(tester, _noAccessUser, '$path/1');
+            expect(handle.router.state.uri.path, '/');
+          },
+        );
+      }
+
+      testWidgets('/facilities itself is unaffected by the redirect map', (
+        tester,
+      ) async {
+        final handle = await pumpAt(
+          tester,
+          _renumberedBranchesReaderUser,
+          '/facilities',
+        );
+        expect(handle.router.state.uri.path, '/facilities');
+      });
+    },
+  );
 }
 
 /// Flattens [kNavigationTree] to its leaf [NavDestination]s, in the same

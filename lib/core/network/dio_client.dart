@@ -29,7 +29,24 @@ final authInterceptorProvider = Provider<AuthInterceptor>((ref) {
 /// Base `Dio` instance for all mbe-api clients (auth + users for this
 /// feature; reused by every later feature's generated API clients).
 final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio(BaseOptions(baseUrl: ref.watch(appSettingsProvider).apiBaseUrl));
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: ref.watch(appSettingsProvider).apiBaseUrl,
+      // On Flutter Web, dio's adapter issues requests via XMLHttpRequest,
+      // which is subject to the browser's own HTTP cache — invisible to
+      // every mocked-repository test in this app, since none of them touch
+      // a real XHR. Without this header, a GET whose URL/params are byte-
+      // identical to a previous request (e.g. resubmitting an unchanged
+      // catalog search, spec 035 FR-008) can be served straight from the
+      // browser cache with no round-trip to mbe-api at all, silently
+      // defeating "always refetch" regardless of how correctly the
+      // Riverpod/widget layer above it behaves. `no-cache` (not `no-store`)
+      // forces revalidation with the origin on every request rather than
+      // disabling caching outright — the right one for a "must not read
+      // stale data" guarantee, since it costs a round-trip either way.
+      headers: const {'Cache-Control': 'no-cache'},
+    ),
+  );
   dio.interceptors.add(ref.watch(authInterceptorProvider));
   return dio;
 });

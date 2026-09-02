@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 
@@ -11,15 +12,6 @@ part 'vehicle_operators_list_controller.freezed.dart';
 part 'vehicle_operators_list_controller.g.dart';
 
 const _pageSize = 20;
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
-}
 
 /// The Vehicle Operators list screen's addressable view state
 /// (017-ui-consistency-filters FR-010, FR-017, FR-018): a driver facet and
@@ -37,13 +29,10 @@ class VehicleOperatorFilter with _$VehicleOperatorFilter {
 
   factory VehicleOperatorFilter.fromQuery(ListQuery query) {
     final driverRaw = query.facet('driver');
-    final statusRaw = query.facet('status');
     return VehicleOperatorFilter(
       search: query.search,
       driverId: driverRaw != null ? int.tryParse(driverRaw) : null,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       pageIndex: query.pageIndex,
     );
   }

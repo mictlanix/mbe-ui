@@ -43,7 +43,20 @@ ThemeData applyComponentThemes(
       // nothing actually consumed, silently defeating FR-013's "shared
       // controls visibly adapt" claim for every Card-bearing screen.
       margin: EdgeInsets.all(spacing.cardPadding),
-      shape: RoundedRectangleBorder(borderRadius: shapes.lgRadius),
+      // A hairline outline (spec 035 FR-019/FR-023), same colour/width as
+      // dividerTheme and dataTableTheme's own dividerThickness below --
+      // one outline definition for every card-based surface, including
+      // DataTableView's table card and FacilityCard.
+      shape: RoundedRectangleBorder(
+        borderRadius: shapes.lgRadius,
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+      // Card defaults to Clip.none, so a child that paints to its own edges
+      // (e.g. DataTableView's heading row fill) squares off this shape's
+      // rounded corners instead of being clipped to them (spec 035
+      // FR-017/FR-018/FR-020) -- this is the one line that fixes every
+      // table's square-top-corners bug, and every other Card at once.
+      clipBehavior: Clip.antiAlias,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

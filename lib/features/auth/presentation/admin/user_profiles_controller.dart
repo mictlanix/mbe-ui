@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 
@@ -15,15 +16,6 @@ part 'user_profiles_controller.freezed.dart';
 part 'user_profiles_controller.g.dart';
 
 const _pageSize = 20;
-
-extension _EntityStatusByName on List<EntityStatus> {
-  EntityStatus? byNameOrNull(String name) {
-    for (final value in this) {
-      if (value.name == name) return value;
-    }
-    return null;
-  }
-}
 
 /// The profile catalog's addressable view state (024-user-profiles FR-004),
 /// mirroring `UserFilter` (017-ui-consistency-filters). Derived from the
@@ -38,12 +30,9 @@ class UserProfileFilter with _$UserProfileFilter {
   }) = _UserProfileFilter;
 
   factory UserProfileFilter.fromQuery(ListQuery query) {
-    final statusRaw = query.facet('status');
     return UserProfileFilter(
       search: query.search,
-      status: statusRaw != null
-          ? EntityStatus.values.byNameOrNull(statusRaw)
-          : null,
+      status: decodeStatusFacet(query),
       pageIndex: query.pageIndex,
     );
   }
@@ -257,9 +246,9 @@ class UserProfileFormController extends _$UserProfileFormController {
   Future<void> deleteProfile(int profileId) async {
     state = state.copyWith(submitting: true, error: null, errorDetail: null);
     try {
-      await ref.read(userProfileRepositoryProvider).delete(
-        profileId: profileId,
-      );
+      await ref
+          .read(userProfileRepositoryProvider)
+          .delete(profileId: profileId);
       _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {

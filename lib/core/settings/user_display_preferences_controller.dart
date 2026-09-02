@@ -123,7 +123,19 @@ Locale resolvedLocale(Ref ref) {
       supported.any((l) => l.languageCode == locale.languageCode);
 
   final override = preferences.localeOverride;
-  if (override != null && isSupported(override)) return override;
+  if (override != null && isSupported(override)) {
+    // The language selector only ever stores a bare language code (e.g.
+    // `Locale('es')` — user_settings_screen.dart's segmented buttons). Left
+    // as-is, `NumberFormat`/`DateFormat` would fall back to that language's
+    // generic conventions (Spain's `1.234,50 $` for bare `es`) instead of
+    // the deployment's own region (`es_MX`'s `$1,234.50`). When the override
+    // matches the deployment's language, keep its region for formatting.
+    if (override.countryCode == null &&
+        override.languageCode == appSettings.defaultLocale.languageCode) {
+      return appSettings.defaultLocale;
+    }
+    return override;
+  }
   if (isSupported(appSettings.defaultLocale)) return appSettings.defaultLocale;
   return supported.first;
 }

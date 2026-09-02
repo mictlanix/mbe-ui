@@ -7,16 +7,38 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _taxpayerRecipientsPath = '/taxpayer-recipients';
+
+void _openTaxpayerRecipientSheet(
+  BuildContext context, {
+  required String title,
+  String? taxpayerRecipientId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<TaxpayerRecipientFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => TaxpayerRecipientForm(
+      key: formKey,
+      taxpayerRecipientId: taxpayerRecipientId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Taxpayer Recipients catalog list screen (FR-001, FR-002, US5). Gated by
 /// `can(SystemObject.taxpayerRecipients, AccessRight.read)` in the router.
@@ -50,31 +72,35 @@ class TaxpayerRecipientsListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('taxpayer_recipients_search_field'),
-              label: l10n.taxpayerRecipientsSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) => context.go(
-                query
-                    .copyWith(search: value, pageIndex: 0)
-                    .toUri(_taxpayerRecipientsPath)
-                    .toString(),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('taxpayer_recipients_search_field'),
+            label: l10n.taxpayerRecipientsSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _taxpayerRecipientsPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () => ref.invalidate(
+                taxpayerRecipientsListControllerProvider(filter),
               ),
             ),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_taxpayer_recipient_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newTaxpayerRecipientTooltip),
-                  onPressed: () => context.push('/taxpayer-recipients/new'),
-                ),
-            ],
           ),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_taxpayer_recipient_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newTaxpayerRecipientTooltip),
+                onPressed: () => _openTaxpayerRecipientSheet(
+                  context,
+                  title: l10n.newTaxpayerRecipientTitle,
+                ),
+              ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<TaxpayerRecipientListItem>(
@@ -83,7 +109,10 @@ class TaxpayerRecipientsListScreen extends ConsumerWidget {
             emptyMessage: l10n.noTaxpayerRecipientsFound,
             createLabel: canCreate ? l10n.newTaxpayerRecipientTooltip : null,
             onCreate: canCreate
-                ? () => context.push('/taxpayer-recipients/new')
+                ? () => _openTaxpayerRecipientSheet(
+                    context,
+                    title: l10n.newTaxpayerRecipientTitle,
+                  )
                 : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_taxpayerRecipientsPath),
@@ -118,14 +147,19 @@ class TaxpayerRecipientsListScreen extends ConsumerWidget {
                     .toUri(_taxpayerRecipientsPath)
                     .toString(),
               ),
-              onRowTap: (t) => context.push(
-                '/taxpayer-recipients/${t.taxpayerRecipientId}?view=true',
+              onRowTap: (t) => _openTaxpayerRecipientSheet(
+                context,
+                title: l10n.viewTaxpayerRecipientTitle,
+                taxpayerRecipientId: t.taxpayerRecipientId,
+                forceReadOnly: true,
               ),
               rowActionsBuilder: (context, t) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push(
-                        '/taxpayer-recipients/${t.taxpayerRecipientId}',
+                    ? () => _openTaxpayerRecipientSheet(
+                        context,
+                        title: l10n.editTaxpayerRecipientTitle,
+                        taxpayerRecipientId: t.taxpayerRecipientId,
                       )
                     : null,
               ),

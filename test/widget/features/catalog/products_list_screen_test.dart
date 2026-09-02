@@ -359,20 +359,31 @@ void main() {
         ),
       );
 
-      // No badge at rest.
-      expect(filterBadge().isLabelVisible, isFalse);
-
-      // Activate the stockable facet -> badge shows a count of 1.
-      await openFilterSheet(tester);
-      await tester.tap(find.byKey(const Key('products_filter_stockable')));
-      await tester.pumpAndSettle();
+      // spec 035 FR-001/FR-002/FR-006: the badge now shows "1" at rest, not
+      // no badge — the default-applied Active status counts as an active
+      // filter, same as an explicit choice would, so an empty-looking list
+      // is never mistaken for an empty catalog.
       expect(filterBadge().isLabelVisible, isTrue);
       expect(
         filterBadge().label,
         isA<Text>().having((t) => t.data, 'data', '1'),
       );
 
-      // Clear all resets facets and removes the badge; the chip avatar clears.
+      // Activate the stockable facet -> badge shows a count of 2 (the
+      // default status, plus stockable).
+      await openFilterSheet(tester);
+      await tester.tap(find.byKey(const Key('products_filter_stockable')));
+      await tester.pumpAndSettle();
+      expect(filterBadge().isLabelVisible, isTrue);
+      expect(
+        filterBadge().label,
+        isA<Text>().having((t) => t.data, 'data', '2'),
+      );
+
+      // Clear all resets every facet to its own default — status's default
+      // is Active, not "no filter" — so the chip avatar on the *stockable*
+      // facet clears, but the badge itself still reads "1" for the
+      // reapplied status default, not zero.
       await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
       await tester.pumpAndSettle();
       expect(
@@ -383,7 +394,11 @@ void main() {
             .avatar,
         isNull,
       );
-      expect(filterBadge().isLabelVisible, isFalse);
+      expect(filterBadge().isLabelVisible, isTrue);
+      expect(
+        filterBadge().label,
+        isA<Text>().having((t) => t.data, 'data', '1'),
+      );
     },
   );
 
@@ -448,7 +463,9 @@ void main() {
       verify(
         () => productRepository.list(
           search: 'widget',
-          status: null,
+          // spec 035 FR-001/FR-002: an unmodified status facet now defaults
+          // to Active, not "no filter".
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -591,7 +608,9 @@ void main() {
           matching: find.byType(Badge),
         ),
       );
-      expect(filterBadge.label, isA<Text>().having((t) => t.data, 'data', '2'));
+      // spec 035 FR-001/FR-002/FR-006: "3", not "2" — the default-applied
+      // Active status counts toward the badge alongside the two labels.
+      expect(filterBadge.label, isA<Text>().having((t) => t.data, 'data', '3'));
     },
   );
 
@@ -835,11 +854,37 @@ void main() {
     });
   });
 
-  testWidgets('shows an empty state when there are no matches', (tester) async {
-    await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);
+  testWidgets(
+    'shows an empty state when there are no matches, genuinely unfiltered '
+    '(status=all)',
+    (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _readOnlyUser,
+        products: const [],
+        query: const ListQuery(
+          facets: {
+            'status': ['all'],
+          },
+        ),
+      );
 
-    expect(find.text('No products found.'), findsOneWidget);
-  });
+      expect(find.text('No products found.'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'an empty result under the default-applied Active status shows the '
+    '"no matches" view, not "No products found" — the default could be '
+    'hiding inactive/archived products the client cannot see (spec 035 '
+    'FR-003/FR-006, Edge Cases)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);
+
+      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      expect(find.text('No products found.'), findsNothing);
+    },
+  );
 
   testWidgets('shows the New product action for a user with create right', (
     tester,

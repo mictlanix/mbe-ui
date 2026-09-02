@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -14,11 +15,32 @@ import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle.dart';
+import 'package:mbe_ui/features/catalog/presentation/vehicle_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicles_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _vehiclesPath = '/vehicles';
+
+void _openVehicleSheet(
+  BuildContext context, {
+  required String title,
+  int? vehicleId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<VehicleFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => VehicleForm(
+      key: formKey,
+      vehicleId: vehicleId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Vehicles catalog list screen (FR-001, FR-002, FR-009, US2). Gated by
 /// `can(SystemObject.vehicle, AccessRight.read)` in the router. Ships a
@@ -44,61 +66,64 @@ class VehiclesListScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CatalogFilterBar(
-            search: CatalogSearchBar(
-              key: const Key('vehicles_search_field'),
-              label: l10n.vehiclesSearchLabel,
-              searchTooltip: l10n.searchButtonTooltip,
-              initialValue: filter.search,
-              onSubmitted: (value) => context.go(
-                query
-                    .copyWith(search: value, pageIndex: 0)
-                    .toUri(_vehiclesPath)
-                    .toString(),
-              ),
+        CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('vehicles_search_field'),
+            label: l10n.vehiclesSearchLabel,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.search,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: _vehiclesPath,
+              submitted: value,
+              current: filter.search,
+              refresh: () =>
+                  ref.invalidate(vehiclesListControllerProvider(filter)),
             ),
-            actions: [
-              if (canCreate)
-                FilledButton.icon(
-                  key: const Key('new_vehicle_button'),
-                  icon: Icon(CatalogAction.create.icon),
-                  label: Text(l10n.newVehicleTooltip),
-                  onPressed: () => context.push('/vehicles/new'),
-                ),
-            ],
-            filters: [
-              Badge.count(
-                count: filter.activeFilterCount,
-                isLabelVisible: filter.hasActiveFilters,
-                child: IconButton.outlined(
-                  key: const Key('vehicles_filter_button'),
-                  icon: const Icon(Icons.tune),
-                  tooltip: l10n.filtersTooltip,
-                  onPressed: () => showCatalogFilterSheet(
-                    context,
-                    title: l10n.filtersButton,
-                    clearAllLabel: l10n.clearAllFilters,
-                    applyLabel: l10n.applyFilters,
-                    onClearAll: () => context.go(_vehiclesPath),
-                    builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, query) =>
-                          _VehicleFiltersPanel(query: query),
-                    ),
+          ),
+          actions: [
+            if (canCreate)
+              FilledButton.icon(
+                key: const Key('new_vehicle_button'),
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.newVehicleTooltip),
+                onPressed: () =>
+                    _openVehicleSheet(context, title: l10n.newVehicleTitle),
+              ),
+          ],
+          filters: [
+            Badge.count(
+              count: filter.activeFilterCount,
+              isLabelVisible: filter.hasActiveFilters,
+              child: IconButton.outlined(
+                key: const Key('vehicles_filter_button'),
+                icon: const Icon(Icons.tune),
+                tooltip: l10n.filtersTooltip,
+                onPressed: () => showCatalogFilterSheet(
+                  context,
+                  title: l10n.filtersButton,
+                  clearAllLabel: l10n.clearAllFilters,
+                  applyLabel: l10n.applyFilters,
+                  onClearAll: () => context.go(_vehiclesPath),
+                  builder: (_) => CurrentListQueryBuilder(
+                    builder: (context, query) =>
+                        _VehicleFiltersPanel(query: query),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         Expanded(
           child: CatalogListStateView<Vehicle>(
             state: pageAsync,
-            isFiltered: query.isFiltered,
+            isFiltered: isFilteredBeyondStatusDefault(query, filter.status),
             emptyMessage: l10n.noVehiclesFound,
             createLabel: canCreate ? l10n.newVehicleTooltip : null,
-            onCreate: canCreate ? () => context.push('/vehicles/new') : null,
+            onCreate: canCreate
+                ? () => _openVehicleSheet(context, title: l10n.newVehicleTitle)
+                : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_vehiclesPath),
             retryLabel: l10n.retryButton,
@@ -137,12 +162,20 @@ class VehiclesListScreen extends ConsumerWidget {
                     .toUri(_vehiclesPath)
                     .toString(),
               ),
-              onRowTap: (v) =>
-                  context.push('/vehicles/${v.vehicleId}?view=true'),
+              onRowTap: (v) => _openVehicleSheet(
+                context,
+                title: l10n.viewVehicleTitle,
+                vehicleId: v.vehicleId,
+                forceReadOnly: true,
+              ),
               rowActionsBuilder: (context, v) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => context.push('/vehicles/${v.vehicleId}')
+                    ? () => _openVehicleSheet(
+                        context,
+                        title: l10n.editVehicleTitle,
+                        vehicleId: v.vehicleId,
+                      )
                     : null,
               ),
             ),
@@ -181,11 +214,10 @@ class _VehicleFiltersPanel extends ConsumerWidget {
           filterKey: 'vehicles_filter_status',
           value: filter.status,
           onChanged: (status) => context.go(
-            query
-                .withFacet('status', status?.name)
-                .copyWith(pageIndex: 0)
-                .toUri(_vehiclesPath)
-                .toString(),
+            encodeStatusFacet(
+              query,
+              status,
+            ).copyWith(pageIndex: 0).toUri(_vehiclesPath).toString(),
           ),
         ),
       ],

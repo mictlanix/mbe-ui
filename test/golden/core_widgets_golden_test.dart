@@ -45,6 +45,11 @@ const _excludedFiles = {
   'catalog_action_icons.dart', // CatalogRowAction/CatalogAction: data classes
   'catalog_pagination.dart', // CatalogPage<T>: a data class, not a Widget
   'app_shell.dart', // requires a live go_router StatefulNavigationShell
+  // spec 035 — pure function, no Widget class of its own; showRecordSheet
+  // pins width/confirmDismiss and forwards straight to app_side_sheet.dart's
+  // showAppSideSheet (already covered above via catalog_filter_sheet.dart's
+  // golden), so it has no visual surface of its own to test.
+  'record_sheet.dart',
 };
 
 /// Every widget file with real golden coverage below.

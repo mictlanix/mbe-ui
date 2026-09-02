@@ -214,7 +214,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the read-only detail view (constitution §VI)',
+    'a row click opens the record read-only in a panel over the list — no '
+    'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
       when(
         () => repository.list(
@@ -230,6 +231,9 @@ void main() {
           total: _testOptions.length,
         ),
       );
+      when(
+        () => repository.get(paymentMethodOptionId: 1),
+      ).thenAnswer((_) async => _testOptions.first);
 
       final router = GoRouter(
         initialLocation: '/',
@@ -241,10 +245,6 @@ void main() {
                 query: ListQuery.fromUri(state.uri),
               ),
             ),
-          ),
-          GoRoute(
-            path: '/payment-method-options/:paymentMethodOptionId',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
           ),
         ],
       );
@@ -270,7 +270,16 @@ void main() {
       await tester.tap(find.text('Cash tender'));
       await tester.pumpAndSettle();
 
-      expect(find.text('/payment-method-options/1?view=true'), findsOneWidget);
+      expect(router.state.uri.path, '/');
+      final nameField = tester.widget<TextFormField>(
+        find.byKey(const Key('name_field')),
+      );
+      expect(nameField.initialValue, 'Cash tender');
+      expect(nameField.enabled, isFalse);
+      expect(
+        find.byKey(const Key('edit_payment_method_option_button')),
+        findsOneWidget,
+      );
     },
   );
 

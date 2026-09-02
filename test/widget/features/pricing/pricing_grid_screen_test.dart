@@ -204,7 +204,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -252,7 +252,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -300,7 +300,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -472,7 +472,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -586,7 +586,7 @@ void main() {
         verify(
           () => productRepository.list(
             search: null,
-            status: null,
+            status: EntityStatus.active,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -660,7 +660,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -710,7 +710,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -748,7 +748,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -798,7 +798,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -984,7 +984,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -1026,7 +1026,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,
@@ -1068,10 +1068,17 @@ void main() {
     /// `price_cell_test.dart`; what matters here is what happens to a cell
     /// that was already mounted in reading mode when it becomes the active
     /// one, which is every arrow/Tab move after the first.
+    // Keyed by `.fromQuery(const ListQuery())` — the same decode `pumpScreen`'s
+    // default empty query produces (spec 035 FR-001/FR-002 made the decoded
+    // filter's `status` default to Active, not null) — rather than a bare
+    // `PricingGridFilter()`, which would read a *different*, never-built
+    // provider instance now that the two no longer coincide.
     PricingGridController notifierOf(WidgetTester tester) =>
-        ProviderScope.containerOf(
-          tester.element(find.byType(PricingGridScreen)),
-        ).read(pricingGridControllerProvider(const PricingGridFilter()).notifier);
+        ProviderScope.containerOf(tester.element(find.byType(PricingGridScreen))).read(
+          pricingGridControllerProvider(
+            PricingGridFilter.fromQuery(const ListQuery()),
+          ).notifier,
+        );
 
     testWidgets(
       'a cell that BECOMES active holds the caret — the arrowed-to field '
@@ -1173,7 +1180,7 @@ void main() {
         when(
           () => productRepository.list(
             search: null,
-            status: null,
+            status: EntityStatus.active,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -1236,7 +1243,7 @@ void main() {
         when(
           () => productRepository.list(
             search: null,
-            status: null,
+            status: EntityStatus.active,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -1317,7 +1324,7 @@ void main() {
         when(
           () => productRepository.list(
             search: null,
-            status: null,
+            status: EntityStatus.active,
             stockable: null,
             salable: null,
             purchasable: null,
@@ -1390,7 +1397,7 @@ void main() {
       when(
         () => productRepository.list(
           search: null,
-          status: null,
+          status: EntityStatus.active,
           stockable: null,
           salable: null,
           purchasable: null,

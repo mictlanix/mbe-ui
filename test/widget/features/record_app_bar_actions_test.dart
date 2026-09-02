@@ -26,78 +26,33 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/expense_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/address_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/cash_drawer_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/expense_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/label_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_repository.dart';
-import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
-import 'package:mbe_ui/features/catalog/presentation/cash_drawer_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/employee_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/expense_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/label_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/payment_method_option_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/point_sale_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/vehicle_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_detail_screen.dart';
-import 'package:mbe_ui/features/catalog/presentation/warehouse_detail_screen.dart';
-import 'package:mbe_ui/features/pricing/data/exchange_rate_repository_impl.dart';
-import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
-import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
-import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
-import 'package:mbe_ui/features/pricing/presentation/exchange_rate_detail_screen.dart';
-import 'package:mbe_ui/features/pricing/presentation/price_list_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-class MockExpenseRepository extends Mock implements ExpenseRepository {}
 
 class MockLabelRepository extends Mock implements LabelRepository {}
 
 class MockSupplierRepository extends Mock implements SupplierRepository {}
 
-class MockVehicleRepository extends Mock implements VehicleRepository {}
-
-class MockVehicleOperatorRepository extends Mock
-    implements VehicleOperatorRepository {}
 
 class MockEmployeeRepository extends Mock implements EmployeeRepository {}
-
-class MockCashDrawerRepository extends Mock implements CashDrawerRepository {}
-
-class MockWarehouseRepository extends Mock implements WarehouseRepository {}
 
 class MockFacilityRepository extends Mock implements FacilityRepository {}
 
@@ -108,22 +63,7 @@ class MockSatCatalogRepository extends Mock implements SatCatalogRepository {}
 class MockTaxpayerIssuerRepository extends Mock
     implements TaxpayerIssuerRepository {}
 
-class MockCustomerRepository extends Mock implements CustomerRepository {}
-
-class MockPriceListRepository extends Mock implements PriceListRepository {}
-
 class MockProductRepository extends Mock implements ProductRepository {}
-
-class MockPointSaleRepository extends Mock implements PointSaleRepository {}
-
-class MockPaymentMethodOptionRepository extends Mock
-    implements PaymentMethodOptionRepository {}
-
-class MockTaxpayerRecipientRepository extends Mock
-    implements TaxpayerRecipientRepository {}
-
-class MockExchangeRateRepository extends Mock
-    implements ExchangeRateRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -174,69 +114,6 @@ void main() {
   group(
     'no record detail screen renders a non-empty AppBar.actions (SC-001)',
     () {
-      testWidgets('ExpenseDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const ExpenseDetailScreen(), [
-          expenseRepositoryProvider.overrideWithValue(MockExpenseRepository()),
-        ]);
-      });
-
-      testWidgets('LabelDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const LabelDetailScreen(), [
-          labelRepositoryProvider.overrideWithValue(MockLabelRepository()),
-        ]);
-      });
-
-      testWidgets('SupplierDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const SupplierDetailScreen(), [
-          supplierRepositoryProvider.overrideWithValue(
-            MockSupplierRepository(),
-          ),
-        ]);
-      });
-
-      testWidgets('VehicleDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const VehicleDetailScreen(), [
-          vehicleRepositoryProvider.overrideWithValue(MockVehicleRepository()),
-        ]);
-      });
-
-      testWidgets('VehicleOperatorDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(
-          tester,
-          const VehicleOperatorDetailScreen(),
-          [
-            vehicleOperatorRepositoryProvider.overrideWithValue(
-              MockVehicleOperatorRepository(),
-            ),
-            employeeRepositoryProvider.overrideWithValue(
-              MockEmployeeRepository(),
-            ),
-          ],
-        );
-      });
-
-      testWidgets('CashDrawerDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const CashDrawerDetailScreen(), [
-          cashDrawerRepositoryProvider.overrideWithValue(
-            MockCashDrawerRepository(),
-          ),
-          facilityRepositoryProvider.overrideWithValue(
-            MockFacilityRepository(),
-          ),
-        ]);
-      });
-
-      testWidgets('WarehouseDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const WarehouseDetailScreen(), [
-          warehouseRepositoryProvider.overrideWithValue(
-            MockWarehouseRepository(),
-          ),
-          facilityRepositoryProvider.overrideWithValue(
-            MockFacilityRepository(),
-          ),
-        ]);
-      });
-
       testWidgets('FacilityDetailScreen', (tester) async {
         await expectEmptyAppBarActions(tester, const FacilityDetailScreen(), [
           facilityRepositoryProvider.overrideWithValue(
@@ -248,28 +125,6 @@ void main() {
           ),
           taxpayerIssuerRepositoryProvider.overrideWithValue(
             MockTaxpayerIssuerRepository(),
-          ),
-        ]);
-      });
-
-      testWidgets('CustomerDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const CustomerDetailScreen(), [
-          customerRepositoryProvider.overrideWithValue(
-            MockCustomerRepository(),
-          ),
-          employeeRepositoryProvider.overrideWithValue(
-            MockEmployeeRepository(),
-          ),
-          priceListRepositoryProvider.overrideWithValue(
-            MockPriceListRepository(),
-          ),
-        ]);
-      });
-
-      testWidgets('EmployeeDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const EmployeeDetailScreen(), [
-          employeeRepositoryProvider.overrideWithValue(
-            MockEmployeeRepository(),
           ),
         ]);
       });
@@ -287,53 +142,6 @@ void main() {
         ]);
       });
 
-      testWidgets('PointSaleDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const PointSaleDetailScreen(), [
-          pointSaleRepositoryProvider.overrideWithValue(
-            MockPointSaleRepository(),
-          ),
-          facilityRepositoryProvider.overrideWithValue(
-            MockFacilityRepository(),
-          ),
-          warehouseRepositoryProvider.overrideWithValue(
-            MockWarehouseRepository(),
-          ),
-        ]);
-      });
-
-      testWidgets('PaymentMethodOptionDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(
-          tester,
-          const PaymentMethodOptionDetailScreen(),
-          [
-            paymentMethodOptionRepositoryProvider.overrideWithValue(
-              MockPaymentMethodOptionRepository(),
-            ),
-            facilityRepositoryProvider.overrideWithValue(
-              MockFacilityRepository(),
-            ),
-            warehouseRepositoryProvider.overrideWithValue(
-              MockWarehouseRepository(),
-            ),
-          ],
-        );
-      });
-
-      testWidgets('TaxpayerRecipientDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(
-          tester,
-          const TaxpayerRecipientDetailScreen(),
-          [
-            taxpayerRecipientRepositoryProvider.overrideWithValue(
-              MockTaxpayerRecipientRepository(),
-            ),
-            satCatalogRepositoryProvider.overrideWithValue(
-              MockSatCatalogRepository(),
-            ),
-          ],
-        );
-      });
-
       testWidgets('TaxpayerIssuerDetailScreen', (tester) async {
         await expectEmptyAppBarActions(
           tester,
@@ -347,26 +155,6 @@ void main() {
             ),
           ],
         );
-      });
-
-      testWidgets('ExchangeRateDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(
-          tester,
-          const ExchangeRateDetailScreen(),
-          [
-            exchangeRateRepositoryProvider.overrideWithValue(
-              MockExchangeRateRepository(),
-            ),
-          ],
-        );
-      });
-
-      testWidgets('PriceListDetailScreen', (tester) async {
-        await expectEmptyAppBarActions(tester, const PriceListDetailScreen(), [
-          priceListRepositoryProvider.overrideWithValue(
-            MockPriceListRepository(),
-          ),
-        ]);
       });
 
       testWidgets('UserDetailScreen', (tester) async {

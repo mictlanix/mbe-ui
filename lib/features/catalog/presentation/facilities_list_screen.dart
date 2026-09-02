@@ -7,18 +7,86 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/cash_drawer_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/facilities_list_controller.dart';
+import 'package:mbe_ui/features/catalog/presentation/point_sale_form.dart';
+import 'package:mbe_ui/features/catalog/presentation/warehouse_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/widgets/facility_card.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _facilitiesPath = '/facilities';
+
+void _openWarehouseSheet(
+  BuildContext context, {
+  required String title,
+  int? warehouseId,
+  int? facilityId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<WarehouseFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => WarehouseForm(
+      key: formKey,
+      warehouseId: warehouseId,
+      facilityId: facilityId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
+
+void _openPointSaleSheet(
+  BuildContext context, {
+  required String title,
+  int? pointSaleId,
+  int? facilityId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<PointSaleFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => PointSaleForm(
+      key: formKey,
+      pointSaleId: pointSaleId,
+      facilityId: facilityId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
+
+void _openCashDrawerSheet(
+  BuildContext context, {
+  required String title,
+  int? cashDrawerId,
+  int? facilityId,
+  bool forceReadOnly = false,
+}) {
+  final formKey = GlobalKey<CashDrawerFormPanelState>();
+  showRecordSheet(
+    context,
+    title: title,
+    form: (context) => CashDrawerForm(
+      key: formKey,
+      cashDrawerId: cashDrawerId,
+      facilityId: facilityId,
+      forceReadOnly: forceReadOnly,
+    ),
+    isDirty: () => formKey.currentState?.isDirty() ?? false,
+  );
+}
 
 /// Facilities catalog screen (018-nested-facility-management). Replaces the
 /// plain table with an expandable org-chart-style hierarchy — each facility
@@ -91,66 +159,69 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
           : null,
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: CatalogFilterBar(
-              search: CatalogSearchBar(
-                key: const Key('facilities_search_field'),
-                label: l10n.facilitiesSearchLabel,
-                searchTooltip: l10n.searchButtonTooltip,
-                initialValue: filter.search,
-                onSubmitted: (value) => context.go(
-                  widget.query
-                      .copyWith(search: value, pageIndex: 0)
-                      .toUri(_facilitiesPath)
-                      .toString(),
-                ),
+          CatalogFilterBar(
+            search: CatalogSearchBar(
+              key: const Key('facilities_search_field'),
+              label: l10n.facilitiesSearchLabel,
+              searchTooltip: l10n.searchButtonTooltip,
+              initialValue: filter.search,
+              onSubmitted: (value) => submitCatalogSearch(
+                context: context,
+                query: widget.query,
+                path: _facilitiesPath,
+                submitted: value,
+                current: filter.search,
+                refresh: () =>
+                    ref.invalidate(facilitiesListControllerProvider(filter)),
               ),
-              actions: [
-                _ExpandAllButton(
-                  facilities: pageAsync.valueOrNull?.items ?? const [],
-                  allExpanded: _allExpanded(
-                    pageAsync.valueOrNull?.items ?? const [],
-                  ),
-                  onPressed: () =>
-                      _toggleAll(pageAsync.valueOrNull?.items ?? const []),
+            ),
+            actions: [
+              _ExpandAllButton(
+                facilities: pageAsync.valueOrNull?.items ?? const [],
+                allExpanded: _allExpanded(
+                  pageAsync.valueOrNull?.items ?? const [],
                 ),
-                if (!isCompact && canCreateFacility)
-                  FilledButton.icon(
-                    key: const Key('new_facility_button'),
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.newFacilityTooltip),
-                    onPressed: () => context.push('/facilities/new'),
-                  ),
-              ],
-              filters: [
-                Badge.count(
-                  count: filter.activeFilterCount,
-                  isLabelVisible: filter.hasActiveFilters,
-                  child: IconButton.outlined(
-                    key: const Key('facilities_filter_button'),
-                    icon: const Icon(Icons.tune),
-                    tooltip: l10n.filtersTooltip,
-                    onPressed: () => showCatalogFilterSheet(
-                      context,
-                      title: l10n.filtersButton,
-                      clearAllLabel: l10n.clearAllFilters,
-                      applyLabel: l10n.applyFilters,
-                      onClearAll: () => context.go(_facilitiesPath),
-                      builder: (_) => CurrentListQueryBuilder(
-                        builder: (context, query) =>
-                            _FacilityFiltersPanel(query: query),
-                      ),
+                onPressed: () =>
+                    _toggleAll(pageAsync.valueOrNull?.items ?? const []),
+              ),
+              if (!isCompact && canCreateFacility)
+                FilledButton.icon(
+                  key: const Key('new_facility_button'),
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.newFacilityTooltip),
+                  onPressed: () => context.push('/facilities/new'),
+                ),
+            ],
+            filters: [
+              Badge.count(
+                count: filter.activeFilterCount,
+                isLabelVisible: filter.hasActiveFilters,
+                child: IconButton.outlined(
+                  key: const Key('facilities_filter_button'),
+                  icon: const Icon(Icons.tune),
+                  tooltip: l10n.filtersTooltip,
+                  onPressed: () => showCatalogFilterSheet(
+                    context,
+                    title: l10n.filtersButton,
+                    clearAllLabel: l10n.clearAllFilters,
+                    applyLabel: l10n.applyFilters,
+                    onClearAll: () => context.go(_facilitiesPath),
+                    builder: (_) => CurrentListQueryBuilder(
+                      builder: (context, query) =>
+                          _FacilityFiltersPanel(query: query),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           Expanded(
             child: CatalogListStateView<FacilityListItem>(
               state: pageAsync,
-              isFiltered: widget.query.isFiltered,
+              isFiltered: isFilteredBeyondStatusDefault(
+                widget.query,
+                filter.status,
+              ),
               emptyMessage: l10n.noFacilitiesFound,
               createLabel: canCreateFacility ? l10n.newFacilityTooltip : null,
               onCreate: canCreateFacility
@@ -200,26 +271,23 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
                                       '/facilities/${facility.facilityId}',
                                     )
                                   : null,
-                              warehouseActions: _childActions(
+                              warehouseActions: _warehouseChildActions(
                                 context,
                                 access,
+                                l10n,
                                 facility.facilityId,
-                                object: SystemObject.warehouses,
-                                path: '/warehouses',
                               ),
-                              pointSaleActions: _childActions(
+                              pointSaleActions: _pointSaleChildActions(
                                 context,
                                 access,
+                                l10n,
                                 facility.facilityId,
-                                object: SystemObject.pointsOfSale,
-                                path: '/points-of-sale',
                               ),
-                              cashDrawerActions: _childActions(
+                              cashDrawerActions: _cashDrawerChildActions(
                                 context,
                                 access,
+                                l10n,
                                 facility.facilityId,
-                                object: SystemObject.cashDrawers,
-                                path: '/cash-drawers',
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -246,20 +314,104 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
     );
   }
 
-  FacilityChildActions _childActions(
+  FacilityChildActions _warehouseChildActions(
     BuildContext context,
     AccessControlService access,
-    int facilityId, {
-    required SystemObject object,
-    required String path,
-  }) {
-    final canUpdate = access.can(object, AccessRight.update);
-    final canCreate = access.can(object, AccessRight.create);
+    AppLocalizations l10n,
+    int facilityId,
+  ) {
+    final canUpdate = access.can(SystemObject.warehouses, AccessRight.update);
+    final canCreate = access.can(SystemObject.warehouses, AccessRight.create);
     return FacilityChildActions(
-      onView: (id) => context.push('$path/$id?view=true'),
-      onEdit: canUpdate ? (id) => context.push('$path/$id') : null,
+      onView: (id) => _openWarehouseSheet(
+        context,
+        title: l10n.viewWarehouseTitle,
+        warehouseId: id,
+        forceReadOnly: true,
+      ),
+      onEdit: canUpdate
+          ? (id) => _openWarehouseSheet(
+              context,
+              title: l10n.editWarehouseTitle,
+              warehouseId: id,
+            )
+          : null,
       onCreate: canCreate
-          ? () => context.push('$path/new?facility=$facilityId')
+          ? () => _openWarehouseSheet(
+              context,
+              title: l10n.newWarehouseTitle,
+              facilityId: facilityId,
+            )
+          : null,
+    );
+  }
+
+  FacilityChildActions _pointSaleChildActions(
+    BuildContext context,
+    AccessControlService access,
+    AppLocalizations l10n,
+    int facilityId,
+  ) {
+    final canUpdate = access.can(
+      SystemObject.pointsOfSale,
+      AccessRight.update,
+    );
+    final canCreate = access.can(
+      SystemObject.pointsOfSale,
+      AccessRight.create,
+    );
+    return FacilityChildActions(
+      onView: (id) => _openPointSaleSheet(
+        context,
+        title: l10n.viewPointSaleTitle,
+        pointSaleId: id,
+        forceReadOnly: true,
+      ),
+      onEdit: canUpdate
+          ? (id) => _openPointSaleSheet(
+              context,
+              title: l10n.editPointSaleTitle,
+              pointSaleId: id,
+            )
+          : null,
+      onCreate: canCreate
+          ? () => _openPointSaleSheet(
+              context,
+              title: l10n.newPointSaleTitle,
+              facilityId: facilityId,
+            )
+          : null,
+    );
+  }
+
+  FacilityChildActions _cashDrawerChildActions(
+    BuildContext context,
+    AccessControlService access,
+    AppLocalizations l10n,
+    int facilityId,
+  ) {
+    final canUpdate = access.can(SystemObject.cashDrawers, AccessRight.update);
+    final canCreate = access.can(SystemObject.cashDrawers, AccessRight.create);
+    return FacilityChildActions(
+      onView: (id) => _openCashDrawerSheet(
+        context,
+        title: l10n.viewCashDrawerTitle,
+        cashDrawerId: id,
+        forceReadOnly: true,
+      ),
+      onEdit: canUpdate
+          ? (id) => _openCashDrawerSheet(
+              context,
+              title: l10n.editCashDrawerTitle,
+              cashDrawerId: id,
+            )
+          : null,
+      onCreate: canCreate
+          ? () => _openCashDrawerSheet(
+              context,
+              title: l10n.newCashDrawerTitle,
+              facilityId: facilityId,
+            )
           : null,
     );
   }
@@ -365,11 +517,10 @@ class _FacilityFiltersPanel extends ConsumerWidget {
           filterKey: 'facilities_filter_status',
           value: filter.status,
           onChanged: (status) => context.go(
-            query
-                .withFacet('status', status?.name)
-                .copyWith(pageIndex: 0)
-                .toUri(_facilitiesPath)
-                .toString(),
+            encodeStatusFacet(
+              query,
+              status,
+            ).copyWith(pageIndex: 0).toUri(_facilitiesPath).toString(),
           ),
         ),
       ],
