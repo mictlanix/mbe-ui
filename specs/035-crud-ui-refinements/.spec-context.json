@@ -3,7 +3,7 @@
   "specName": "crud ui refinements",
   "branch": "035-crud-ui-refinements",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -458,6 +458,13 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-08-31T10:15:21.894Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-02T17:31:17.553Z"
     }
   ],
   "telemetryInstanceId": "86d79834-1b93-490b-95c6-bf859215583e",

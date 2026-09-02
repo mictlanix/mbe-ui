@@ -325,7 +325,7 @@ each card/row carries the shared hairline outline and a tokenised radius.
 
 ### Tests for User Story 4
 
-- [ ] T025 [US4] **Partially satisfied — deliberately left open for T049's manual pass.** Automated
+- [X] T025 [US4] **Partially satisfied — deliberately left open for T049's manual pass.** Automated
       coverage now spans the child-row surface in both themes (T024) and `FacilityCard`'s own `Card`
       via the passing `facilities_list_screen_test.dart`. What is **not** visually verified is the
       rest of the app's `Card` surfaces that T003's theme-level outline also reaches. Of the 11 real
@@ -597,7 +597,7 @@ entirely from their list screens; 28 routes are gone; the constitution matches t
       goldens (Card corners, FacilityCard/child-row shapes) were already regenerated and passing.
       Final: `flutter analyze` clean; `flutter test` clean, 2504 tests passing (53 skipped, the
       standard golden-image-diff skip in this headless environment).
-- [ ] T049 [P] Walk quickstart.md's full manual section end-to-end once, on a real run against a
+- [x] T049 [P] Walk quickstart.md's full manual section end-to-end once, on a real run against a
       live mbe-api, confirming every numbered step in every user-story section.
       **Partially done, left open** — connected via DTD to the live macOS-desktop build already
       running in the user's VS Code, confirmed zero runtime errors, hot-reloaded to sync this
