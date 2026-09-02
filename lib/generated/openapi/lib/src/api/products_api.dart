@@ -273,6 +273,9 @@ class ProductsApi {
   /// * [stockable]
   /// * [salable]
   /// * [purchasable]
+  /// * [perishable]
+  /// * [seriable]
+  /// * [invoiceable]
   /// * [supplier]
   /// * [missingPriceList] - Only products with no price on this price list (#184)
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -292,6 +295,9 @@ class ProductsApi {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     int? missingPriceList,
     CancelToken? cancelToken,
@@ -350,6 +356,24 @@ class ProductsApi {
         r'purchasable': encodeQueryParameter(
           _serializers,
           purchasable,
+          const FullType(bool),
+        ),
+      if (perishable != null)
+        r'perishable': encodeQueryParameter(
+          _serializers,
+          perishable,
+          const FullType(bool),
+        ),
+      if (seriable != null)
+        r'seriable': encodeQueryParameter(
+          _serializers,
+          seriable,
+          const FullType(bool),
+        ),
+      if (invoiceable != null)
+        r'invoiceable': encodeQueryParameter(
+          _serializers,
+          invoiceable,
           const FullType(bool),
         ),
       if (supplier != null)
@@ -420,6 +444,9 @@ class ProductsApi {
   /// * [stockable]
   /// * [salable]
   /// * [purchasable]
+  /// * [perishable]
+  /// * [seriable]
+  /// * [invoiceable]
   /// * [supplier]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -438,6 +465,9 @@ class ProductsApi {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -495,6 +525,24 @@ class ProductsApi {
         r'purchasable': encodeQueryParameter(
           _serializers,
           purchasable,
+          const FullType(bool),
+        ),
+      if (perishable != null)
+        r'perishable': encodeQueryParameter(
+          _serializers,
+          perishable,
+          const FullType(bool),
+        ),
+      if (seriable != null)
+        r'seriable': encodeQueryParameter(
+          _serializers,
+          seriable,
+          const FullType(bool),
+        ),
+      if (invoiceable != null)
+        r'invoiceable': encodeQueryParameter(
+          _serializers,
+          invoiceable,
           const FullType(bool),
         ),
       if (supplier != null)
@@ -559,6 +607,9 @@ class ProductsApi {
   /// * [stockable]
   /// * [salable]
   /// * [purchasable]
+  /// * [perishable]
+  /// * [seriable]
+  /// * [invoiceable]
   /// * [supplier]
   /// * [missingPriceList] - Only products with no price on this price list (#184)
   /// * [skip]
@@ -579,6 +630,9 @@ class ProductsApi {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     int? missingPriceList,
     int? skip = 0,
@@ -639,6 +693,24 @@ class ProductsApi {
         r'purchasable': encodeQueryParameter(
           _serializers,
           purchasable,
+          const FullType(bool),
+        ),
+      if (perishable != null)
+        r'perishable': encodeQueryParameter(
+          _serializers,
+          perishable,
+          const FullType(bool),
+        ),
+      if (seriable != null)
+        r'seriable': encodeQueryParameter(
+          _serializers,
+          seriable,
+          const FullType(bool),
+        ),
+      if (invoiceable != null)
+        r'invoiceable': encodeQueryParameter(
+          _serializers,
+          invoiceable,
           const FullType(bool),
         ),
       if (supplier != null)
