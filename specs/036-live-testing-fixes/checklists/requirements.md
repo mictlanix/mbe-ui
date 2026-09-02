@@ -31,13 +31,17 @@
 
 ## Notes
 
-- Three points with more than one reasonable resolution were resolved as documented
-  assumptions rather than left as open questions, per this checklist's own guidance that a
-  reasonable default rules out a [NEEDS CLARIFICATION] marker: (1) what the POS delivery-method
-  selector does once the customer shipping flag is removed, (2) how "Público en General" is
-  excluded without a new customer-type flag, and (3) whether the debounce-duration setting is
-  deployment-level or a personal preference. Revisit these three during `/speckit-clarify` or
-  `/speckit-plan` if the requester disagrees with the assumed resolution.
-- Two mbe-api backend changes (making `code` optional, removing the two shipping fields) are
-  recorded as external dependencies in Out of Scope / Assumptions rather than functional
-  requirements on this codebase, consistent with this project's repo-boundary rule.
+- Four points raised during review are now all confirmed by the requester, none left as
+  assumptions: (1) the POS delivery-method selector offers shipping/mixed fulfillment to every
+  customer **except** "Público en General" (not "every customer" as first assumed); (2)
+  "Público en General" is excluded by recognizing that one known record, in both Sales Order
+  selection and fulfillment-mode gating, with no new customer-type flag; (3) the
+  debounce-duration setting is a deployment-level app setting, not a personal preference; and
+  (4) a sale's status MUST stay `draft` through the Cobro/Entrega steps and only leave `draft`
+  once a payment is actually recorded (FR-008) — resolving the open question about whether
+  reaching a later step alone could flip status early.
+- The two mbe-api backend changes (making `code` optional, removing the two shipping fields)
+  are now filed as [mbe-api#198](https://github.com/mictlanix/mbe-api/issues/198) and
+  [mbe-api#199](https://github.com/mictlanix/mbe-api/issues/199), expected same-day per the
+  requester — recorded in spec.md Assumptions, no longer framed as an indefinitely-deferred
+  external dependency.

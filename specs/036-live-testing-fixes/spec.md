@@ -134,10 +134,13 @@ toggle is present anywhere on the form.
    immediately after the credit days field, not in its previous position.
 3. **Given** the customer form, **When** it renders, **Then** no "shipping" or "shipping
    required document" toggle is present.
-4. **Given** a screen elsewhere in the app that currently changes behavior based on whether a
-   customer ships, **When** that customer's record no longer carries that flag, **Then** the
-   screen still behaves sensibly rather than erroring or hiding an option users still need
-   (see Assumptions).
+4. **Given** the POS delivery-method selector, which today gates shipping on a customer's
+   `shipping` flag, **When** that flag is removed, **Then** shipping and mixed (part-pickup,
+   part-delivery) fulfillment become available for every customer except the generic "Público
+   en General" customer, which remains restricted to pickup-only.
+5. **Given** the generic "Público en General" customer is the one selected for a POS sale,
+   **When** the cashier opens the fulfillment/delivery-method selector, **Then** shipping and
+   mixed fulfillment are not offered — only pickup.
 
 ---
 
@@ -316,76 +319,79 @@ behavior shifts together, with no field left on its own separately-hardcoded del
   blocked, unchanged from today.
 - **FR-007**: After the cart is corrected and the cashier advances again, the payment and
   delivery steps MUST reflect the corrected items.
+- **FR-008**: A sale's status MUST remain `draft` when the cashier advances to the Cobro or
+  Entrega step; it MUST transition away from `draft` only once a payment is actually recorded
+  against the sale, not merely by reaching a later step.
 
 #### Pricing grid commit bug
 
-- **FR-008**: Editing a price value and moving away from that field — by Enter, Tab, an arrow
+- **FR-009**: Editing a price value and moving away from that field — by Enter, Tab, an arrow
   key, or clicking directly into a different cell — MUST commit (save) the edited value before
   the newly-focused cell becomes active. No case exists in which moving to another cell leaves
   an edit uncommitted.
-- **FR-009**: A committed edit that fails validation MUST surface that failure to the user;
+- **FR-010**: A committed edit that fails validation MUST surface that failure to the user;
   it MUST NOT be silently discarded or silently accepted as valid.
 
 #### Customer form field changes
 
-- **FR-010**: The Customer form MUST allow saving a customer record with no value entered for
+- **FR-011**: The Customer form MUST allow saving a customer record with no value entered for
   `code`.
-- **FR-011**: The Customer form MUST present the `code` field immediately after the `credit
+- **FR-012**: The Customer form MUST present the `code` field immediately after the `credit
   days` field.
-- **FR-012**: The Customer form MUST NOT present a "shipping" toggle or a "shipping required
+- **FR-013**: The Customer form MUST NOT present a "shipping" toggle or a "shipping required
   document" toggle.
-- **FR-013**: A customer record MUST NOT store a shipping flag or a shipping-required-document
+- **FR-014**: A customer record MUST NOT store a shipping flag or a shipping-required-document
   flag.
-- **FR-014**: Any other part of the app that currently decides whether to offer a shipping-
-  related option based on a customer's shipping flag MUST be updated to behave sensibly once
-  that flag no longer exists (see Assumptions for the specific case found: the POS delivery-
-  method selector).
+- **FR-015**: The POS delivery-method selector MUST offer shipping and mixed (part-pickup,
+  part-delivery) fulfillment to every customer, replacing today's check of the removed
+  `shipping` flag, **except** for the generic "Público en General" customer, which MUST remain
+  restricted to pickup-only.
 
 #### Sales order salesperson autofill
 
-- **FR-015**: When a customer with an associated salesperson is selected for a Sales Order, the
+- **FR-016**: When a customer with an associated salesperson is selected for a Sales Order, the
   order's salesperson field MUST be pre-filled with that salesperson.
-- **FR-016**: The pre-filled salesperson MUST remain changeable by the user before the order is
+- **FR-017**: The pre-filled salesperson MUST remain changeable by the user before the order is
   saved.
-- **FR-017**: When the selected customer has no associated salesperson, the salesperson field
+- **FR-018**: When the selected customer has no associated salesperson, the salesperson field
   MUST remain blank for manual entry, unchanged from today.
 
 #### Warehouse stock visibility
 
-- **FR-018**: The warehouse picker used to choose a product line's source warehouse MUST
+- **FR-019**: The warehouse picker used to choose a product line's source warehouse MUST
   visibly flag, within the picker itself, any listed warehouse that lacks enough stock for the
   quantity being requested.
-- **FR-019**: A warehouse whose stock has not yet been checked in the current session MUST be
+- **FR-020**: A warehouse whose stock has not yet been checked in the current session MUST be
   shown as unknown, not implied to have stock.
-- **FR-020**: Flagging a warehouse as short on stock MUST remain informational — the cashier
+- **FR-021**: Flagging a warehouse as short on stock MUST remain informational — the cashier
   MUST still be able to select it, exactly as today.
 
 #### Delivery destination auto-assignment
 
-- **FR-021**: When the first delivery destination is added to a sale with no existing
+- **FR-022**: When the first delivery destination is added to a sale with no existing
   destinations, every line's full remaining (unassigned) quantity MUST be assigned to it
   automatically.
-- **FR-022**: Quantities assigned this way MUST remain adjustable by the user afterward, the
+- **FR-023**: Quantities assigned this way MUST remain adjustable by the user afterward, the
   same as a manually-entered quantity.
-- **FR-023**: Adding a second or later delivery destination MUST continue to default its
+- **FR-024**: Adding a second or later delivery destination MUST continue to default its
   quantities to zero, unchanged from today.
 
 #### Currency decimal-digit consistency
 
-- **FR-024**: Every currency-displaying or currency-editing field in the app MUST format its
+- **FR-025**: Every currency-displaying or currency-editing field in the app MUST format its
   amount using one single, deployment-configurable decimal-digit count, with no field applying
   its own separately-hardcoded digit count.
-- **FR-025**: That decimal-digit count MUST default to two when the deployment does not set it
+- **FR-026**: That decimal-digit count MUST default to two when the deployment does not set it
   explicitly.
 
 #### Debounce duration consistency
 
-- **FR-026**: The system MUST provide one deployment-configurable setting for the delay a
+- **FR-027**: The system MUST provide one deployment-configurable setting for the delay a
   debounced field waits, after the user stops typing or adjusting, before it acts.
-- **FR-027**: Every field in the app that currently waits a fixed delay before acting on typed
+- **FR-028**: Every field in the app that currently waits a fixed delay before acting on typed
   or adjusted input MUST use this single setting's value, with none left on its own
   independently-hardcoded delay.
-- **FR-028**: That delay MUST default to the value already in effect today when the deployment
+- **FR-029**: That delay MUST default to the value already in effect today when the deployment
   does not set it explicitly, so an unconfigured deployment sees no behavior change.
 
 ### Key Entities
@@ -430,14 +436,11 @@ behavior shifts together, with no field left on its own separately-hardcoded del
   fields in the app, from one place.
 - **SC-009**: A cashier can identify, from the warehouse picker alone and before selecting a
   warehouse, which listed warehouses lack enough stock for the product being sold.
+- **SC-010**: Every customer except the generic "Público en General" can select shipping or
+  mixed fulfillment for a POS sale; that one customer cannot select either.
 
 ## Out of Scope
 
-- The mbe-api backend changes needed to make `code` optional and to remove the
-  `shipping`/`shipping_required_document` fields are external dependencies on that service; per
-  this project's repo-boundary rule, they must be filed as mbe-api changes rather than made
-  directly from this codebase, and the corresponding mbe-ui work proceeds against the updated
-  contract once that ships (see Assumptions).
 - The two Login items noted in the same testing session (requiring a password reset on first
   login, requiring a strong password) are unrelated to these nine issues and are explicitly
   excluded from this feature.
@@ -455,25 +458,28 @@ behavior shifts together, with no field left on its own separately-hardcoded del
 ## Assumptions
 
 - Removing the shipping flag from Customer means the one place today that reads it — the POS
-  delivery-method selector, which currently offers a shipping delivery method only for
-  customers with that flag set — can no longer make that distinction. This feature assumes the
-  shipping delivery method becomes available for every customer once the flag is gone; a future
-  feature may reintroduce a different way to restrict it if the business still wants that, but
-  doing so now is out of scope here.
-- "Público en General" is excluded from Sales Order customer selection by recognizing it as the
-  one specific, already-configured generic customer record for the deployment, not by any new
-  customer classification (see Out of Scope).
+  delivery-method selector — can no longer use it to decide who may ship. Confirmed with the
+  requester: shipping and mixed fulfillment become available for every customer **except** the
+  generic "Público en General" customer, which stays pickup-only. That one exception is
+  recognized the same way as in Sales Order customer selection (see next bullet), not via any
+  new field.
+- "Público en General" is excluded from Sales Order customer selection, and from shipping/mixed
+  fulfillment in POS sales, by recognizing it as the one specific, already-configured generic
+  customer record for the deployment, not by any new customer classification (see Out of
+  Scope).
 - A customer has at most one associated salesperson, matching how the customer record already
   models that relationship today; User Story 5 does not change that model.
 - The currency decimal-digit setting requested in User Story 8 already exists as a
   deployment-level app setting defaulting to two digits; this feature's work is to close any
   remaining field that does not yet honor it, not to build a new setting.
-- The debounce-duration setting in User Story 9 is treated as a deployment-level app setting,
-  like the currency setting above, rather than a personal display preference — it reflects a
-  deployment's own network and backend characteristics more than individual user taste — and
-  defaults to the delay already in effect today (300 ms) so an unconfigured deployment is
-  unaffected.
-- Both the `code`-optional change and the removal of the two shipping fields require a
-  corresponding mbe-api schema change; until that ships, this feature's UI-side work is
-  understood to be coordinated with, not blocked indefinitely on, that backend change (see Out
-  of Scope).
+- Confirmed with the requester: the debounce-duration setting in User Story 9 is a
+  deployment-level app setting, like the currency setting above, not a personal display
+  preference. It defaults to the delay already in effect today (300 ms) so an unconfigured
+  deployment is unaffected.
+- The `code`-optional change and the removal of the two shipping fields both require a
+  corresponding mbe-api schema change. These are filed as
+  [mictlanix/mbe-api#198](https://github.com/mictlanix/mbe-api/issues/198) (`code` optional) and
+  [mictlanix/mbe-api#199](https://github.com/mictlanix/mbe-api/issues/199) (remove
+  `shipping`/`shipping_required_document`), and are expected to be completed the same day as
+  this spec. This feature's mbe-ui-side work (FR-011 through FR-015) is planned against the
+  updated contract landing on that timeline, not against an indefinite external dependency.
