@@ -151,9 +151,16 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   void _cancelSearch() => setState(() => _mode = _CustomerBandMode.facts);
 
   /// The customer the band reports on: the sale's own once there is one,
-  /// the configured walk-in default until then.
-  int get _customerId =>
-      widget.sale?.customer ?? ref.read(appSettingsProvider).posDefaultCustomerId;
+  /// the configured walk-in default until then — except on
+  /// [CustomerBar.excludeGenericCustomer] screens (spec 036 FR-002), where
+  /// that walk-in default is exactly the customer barred from these sales,
+  /// so defaulting to it here would show one as already attached when none
+  /// is. `null` there instead, until a real customer is chosen.
+  int? get _customerId =>
+      widget.sale?.customer ??
+      (widget.excludeGenericCustomer
+          ? null
+          : ref.read(appSettingsProvider).posDefaultCustomerId);
 
   /// Immediate is what mbe-api itself derives for a customer with no credit
   /// line, which the walk-in customer is — so the dropdown shows the terms
@@ -267,9 +274,11 @@ class _FactsView extends ConsumerWidget {
     required this.onTermsChanged,
   });
 
-  /// The sale's customer, or the walk-in default before a sale exists —
-  /// resolved by [CustomerBar], so this face never asks which it is.
-  final int customerId;
+  /// The sale's customer, the walk-in default before a sale exists, or
+  /// `null` on an [CustomerBar.excludeGenericCustomer] screen before one is
+  /// chosen — resolved by [CustomerBar], so this face never asks which it
+  /// is.
+  final int? customerId;
   final PaymentTerms terms;
   final bool enabled;
   final bool busy;
@@ -282,12 +291,14 @@ class _FactsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final customerAsync = ref.watch(saleCustomerControllerProvider(customerId));
+    final customerAsync = customerId == null
+        ? null
+        : ref.watch(saleCustomerControllerProvider(customerId!));
     // FR-023: the resolved customer record's name is what this shows. The
     // sale's own `customerName` is only the per-document override — null for
     // the walk-in customer even while this same record knows the name — so
     // reading it first left the band blank (mictlanix/mbe-api#172).
-    final displayName = customerAsync.valueOrNull?.name ?? '—';
+    final displayName = customerAsync?.valueOrNull?.name ?? '—';
 
     // Both actions share one height, so they sit on a single baseline rather
     // than each on its own.
@@ -345,16 +356,17 @@ class _FactsView extends ConsumerWidget {
           enabled: enabled,
           onChanged: onTermsChanged,
         ),
-        customerAsync.when(
-          data: (value) => _CustomerBarFact.fact(
-            context,
-            l10n.posCustomerPriceListLabel,
-            value.priceList.name,
-          ),
-          loading: () => const SizedBox(height: 20),
-          error: (error, stackTrace) => const SizedBox(height: 20),
-        ),
-        _BalanceFact(customerId: customerId),
+        customerAsync?.when(
+              data: (value) => _CustomerBarFact.fact(
+                context,
+                l10n.posCustomerPriceListLabel,
+                value.priceList.name,
+              ),
+              loading: () => const SizedBox(height: 20),
+              error: (error, stackTrace) => const SizedBox(height: 20),
+            ) ??
+            const SizedBox.shrink(),
+        if (customerId != null) _BalanceFact(customerId: customerId!),
       ],
     );
 
@@ -402,7 +414,7 @@ class _TermsFact extends ConsumerWidget {
     required this.onChanged,
   });
 
-  final int customerId;
+  final int? customerId;
   final PaymentTerms terms;
   final bool enabled;
   final ValueChanged<PaymentTerms> onChanged;
@@ -411,8 +423,10 @@ class _TermsFact extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final customer = ref.watch(saleCustomerControllerProvider(customerId));
-    final creditLimit = customer.valueOrNull?.creditLimit;
+    final customer = customerId == null
+        ? null
+        : ref.watch(saleCustomerControllerProvider(customerId!));
+    final creditLimit = customer?.valueOrNull?.creditLimit;
     final hasCredit = creditLimit != null && !isZeroAmount(creditLimit);
     final fmt = ref.watch(formattersProvider);
 

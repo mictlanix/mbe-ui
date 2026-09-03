@@ -149,6 +149,11 @@ void main() {
           find.byKey(const Key('sales_order_product_search_field')),
           findsNothing,
         );
+        // Regression: before this screen's first action opens an order
+        // (`sale == null`), the customer bar used to fall back to the POS
+        // register's own walk-in default and display it as though already
+        // attached — exactly the customer this screen exists to keep out.
+        expect(find.text('PÚBLICO EN GENERAL'), findsNothing);
         final button = tester.widget<FloatingActionButton>(
           find.byKey(const Key('sales_order_confirm_button')),
         );

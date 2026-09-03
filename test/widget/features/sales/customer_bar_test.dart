@@ -54,6 +54,8 @@ void main() {
     WidgetTester tester, {
     Customer? customer,
     Sale? sale,
+    bool noSale = false,
+    bool excludeGenericCustomer = false,
   }) async {
     when(
       () => customerRepository.get(customerId: any(named: 'customerId')),
@@ -61,7 +63,10 @@ void main() {
 
     await pumpPos(
       tester,
-      CustomerBar(sale: sale ?? testSale()),
+      CustomerBar(
+        sale: noSale ? null : (sale ?? testSale()),
+        excludeGenericCustomer: excludeGenericCustomer,
+      ),
       overrides: [
         customerRepositoryProvider.overrideWithValue(customerRepository),
         customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
@@ -80,6 +85,27 @@ void main() {
       expect(find.text('Mostrador'), findsOneWidget);
       expect(find.byKey(const Key('pos_payment_terms_dropdown')), findsOneWidget);
     });
+
+    testWidgets(
+      'excludeGenericCustomer with no sale yet shows no customer at all — '
+      'not the walk-in default POS falls back to (spec 036 FR-002)',
+      (tester) async {
+        await pumpBar(tester, noSale: true, excludeGenericCustomer: true);
+
+        expect(find.text('PÚBLICO EN GENERAL'), findsNothing);
+        expect(find.text('—'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'with no sale yet and the generic customer allowed (POS), it is shown '
+      'as the walk-in default',
+      (tester) async {
+        await pumpBar(tester, noSale: true);
+
+        expect(find.text('PÚBLICO EN GENERAL'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'the resolved customer name is visible even when the sale itself '
