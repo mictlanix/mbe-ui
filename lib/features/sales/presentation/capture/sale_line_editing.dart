@@ -367,11 +367,8 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
                     Flexible(
                       child: Text(w.name, overflow: TextOverflow.ellipsis),
                     ),
-                    if (_warehouseStockFlag(w.warehouseId)
-                        case final flag?) ...[
-                      const SizedBox(width: 8),
-                      flag,
-                    ],
+                    const SizedBox(width: 8),
+                    _warehouseStockFlag(w.warehouseId),
                   ],
                 ),
               ),
@@ -396,12 +393,15 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     );
   }
 
-  /// The picker-row rendering of [_stockLevelIn] (data-model.md §6): `null`
-  /// (no flag) when stock is known to cover the ordered quantity, otherwise
-  /// short icon-and-wording — reusing [Icons.warning_amber], the same icon
-  /// [shortfall] already warns with, so the picker and the line-level warning
-  /// never disagree.
-  Widget? _warehouseStockFlag(int warehouseId) {
+  /// The picker-row rendering of [_stockLevelIn] (data-model.md §6): the
+  /// confirmed available quantity when stock is known to cover the ordered
+  /// amount — otherwise short icon-and-wording, reusing [Icons.warning_amber],
+  /// the same icon [shortfall] already warns with, so the picker and the
+  /// line-level warning never disagree. `enough` renders the figure rather
+  /// than nothing (as it once did) so a warehouse the app actually checked
+  /// reads differently from one it never looked at — a bare `null` here was
+  /// visually identical to `unknown`, which defeated the point of checking.
+  Widget _warehouseStockFlag(int warehouseId) {
     final l10n = AppLocalizations.of(context)!;
     final fmt = ref.read(formattersProvider);
     final level = _stockLevelIn(warehouseId);
@@ -412,7 +412,10 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       color: Theme.of(context).colorScheme.error,
     );
     return switch (level) {
-      WarehouseStockLevel.enough => null,
+      WarehouseStockLevel.enough => Text(
+        fmt.field.quantity(_stockIn(warehouseId)!.available),
+        style: outline,
+      ),
       WarehouseStockLevel.unknown => Text(
         l10n.posLineWarehouseStockUnknown,
         style: outline,

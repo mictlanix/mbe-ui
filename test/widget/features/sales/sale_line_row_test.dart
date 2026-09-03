@@ -697,6 +697,30 @@ void main() {
   });
 
   group('warehouse picker stock flag (US6, FR-020…FR-022, data-model.md §6)', () {
+    testWidgets(
+      'opening the picker shows the confirmed quantity for a warehouse with '
+      'enough stock — silence there used to be visually identical to '
+      '"unknown", defeating the point of having checked (live-testing fix)',
+      (tester) async {
+        await pumpRow(
+          tester,
+          quantity: '2',
+          stock: const {
+            11: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')],
+          },
+        );
+
+        await tester.tap(find.byType(DropdownButtonFormField<int>));
+        await tester.pumpAndSettle();
+
+        // Warehouse 3 ("Main Warehouse") is the one with cached stock (10, ≥
+        // the ordered 2) — its own figure is shown, not silence. Warehouse 4
+        // ("Overflow") was never looked up, so it is fine for it to still
+        // read "unknown" — this test is only about warehouse 3's own case.
+        expect(find.text('10'), findsOneWidget);
+      },
+    );
+
     testWidgets('the closed display stays name-only even when the selected '
         'warehouse itself is short on stock (research R11)', (tester) async {
       // Warehouse 3 is the line's own selected warehouse (testLine's

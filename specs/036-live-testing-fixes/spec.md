@@ -187,12 +187,23 @@ selected.
 1. **Given** the warehouse picker for a product line, **When** it lists a warehouse known to
    lack enough stock for the requested quantity, **Then** that warehouse is visibly flagged as
    such in the list itself.
-2. **Given** that same picker, **When** a listed warehouse has enough stock, **Then** it is not
-   flagged.
+2. **Given** that same picker, **When** a listed warehouse has enough stock, **Then** the
+   confirmed quantity is shown beside it — not silence, which live testing found was visually
+   indistinguishable from Scenario 3's "unknown" and defeated the point of having checked
+   (amended 2026-09-03).
 3. **Given** a warehouse whose stock has not yet been checked this session, **When** it is
    listed, **Then** it is shown as unknown rather than implied to have stock.
 4. **Given** a warehouse flagged as lacking stock, **When** the cashier selects it anyway,
    **Then** the selection still succeeds — the flag is informational, not a block.
+
+**Known limitations, carried forward rather than fixed here** (research.md R11; confirmed live
+2026-09-03): mbe-api's product-lookup only returns stock for the one warehouse it is queried
+against (the register's configured default), so every *other* listed warehouse always reads
+"unknown" — never falsely "in stock," but not actually checked either. And the cache backing all
+of this is session-local, populated only when a product is freshly searched — an existing or
+resumed line carries no stock data at all until its product is searched again. Both are real
+gaps; a proper fix (a per-warehouse fetch, and/or fetching on line display rather than only on
+search) is future-spec work, not this feature's scope.
 
 ---
 
@@ -376,6 +387,9 @@ quantity-commit setting and confirm every quantity-commit field's delay shifts t
   quantity being requested.
 - **FR-021**: A warehouse whose stock has not yet been checked in the current session MUST be
   shown as unknown, not implied to have stock.
+- **FR-021a** *(added 2026-09-03, live-testing finding)*: A warehouse whose stock IS known and
+  sufficient MUST show the confirmed quantity, not silence — silence there was indistinguishable
+  from FR-021's "unknown" state and defeated the purpose of having checked.
 - **FR-022**: Flagging a warehouse as short on stock MUST remain informational — the cashier
   MUST still be able to select it, exactly as today.
 

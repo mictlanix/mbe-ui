@@ -313,6 +313,12 @@ visibly flagged; selecting it still succeeds.
       display stays name-only.
 - [X] T049 [P] [US6] Add l10n keys `posLineWarehouseStockUnknown`/`Short`/`None` to both
       `app_en.arb` and `app_es.arb`.
+- [X] T073 [US6] *(added 2026-09-03, live-testing finding, FR-021a)* In the same file's
+      `_warehouseStockFlag`, render the confirmed quantity for `WarehouseStockLevel.enough`
+      instead of `null` — a bare `null` was visually identical to `unknown`, so a warehouse the
+      app actually checked and confirmed fine was indistinguishable from one it never looked at.
+      `_warehouseStockFlag`'s return type drops its `?` (every branch now returns a widget) and
+      the call site's `case final flag?` null-check simplifies accordingly.
 
 ### Tests for User Story 6
 
@@ -321,8 +327,18 @@ visibly flagged; selecting it still succeeds.
       `updateLine`; the closed-display height/baseline invariant is unaffected.
 - [X] T051 [P] [US6] Add to `test/widget/features/sales/sale_line_symmetry_test.dart`: the largest
       text-scale level (1.3) with the dropdown open produces no overflow.
+- [X] T074 [P] [US6] *(added 2026-09-03, covers T073)* Add to
+      `test/widget/features/sales/sale_line_row_test.dart`: a warehouse with enough cached stock
+      shows its confirmed quantity when the picker opens.
 
 **Checkpoint**: US6 is independently shippable and testable (pending T046's live-backend check).
+
+**Known limitations carried forward, not fixed by T073** (see spec.md's User Story 6 section):
+mbe-api's product-lookup only returns stock for the one warehouse it is queried against (the
+register's default), so every other listed warehouse still always reads "unknown"; and the
+stock cache is session-local and search-populated only, so an existing/resumed line's product
+carries no stock data until it is searched again. Both are real gaps for a future spec, not
+addressed here.
 
 ---
 
