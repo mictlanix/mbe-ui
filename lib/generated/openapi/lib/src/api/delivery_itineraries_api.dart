@@ -383,7 +383,7 @@ class DeliveryItinerariesApi {
     required String receiverName,
     required String receiverIdShown,
     required String lines,
-    required String image,
+    required MultipartFile image,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -445,11 +445,7 @@ class DeliveryItinerariesApi {
           lines,
           const FullType(String),
         ),
-        r'image': encodeFormParameter(
-          _serializers,
-          image,
-          const FullType(String),
-        ),
+        r'image': image,
       });
     } catch (error, stackTrace) {
       throw DioException(

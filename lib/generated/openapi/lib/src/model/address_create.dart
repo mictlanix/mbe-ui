@@ -237,9 +237,10 @@ class _$AddressCreateSerializer implements PrimitiveSerializer<AddressCreate> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(AddressType),
+                    specifiedType: const FullType.nullable(AddressType),
                   )
-                  as AddressType;
+                  as AddressType?;
+          if (valueDes == null) continue;
           result.type = valueDes;
           break;
         case r'street':
@@ -359,9 +360,10 @@ class _$AddressCreateSerializer implements PrimitiveSerializer<AddressCreate> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(EntityStatus),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as EntityStatus;
+                  as EntityStatus?;
+          if (valueDes == null) continue;
           result.status = valueDes;
           break;
         default:

@@ -9,12 +9,10 @@ import 'package:built_value/serializer.dart';
 
 part 'refund_payout.g.dart';
 
+/// How the customer gets their money back (FR-065).  A refundable order is always fully paid, so its balance is zero and the whole refund total is owed back — the only question is the form.
 class RefundPayout extends EnumClass {
-  /// How the customer gets their money back (FR-065).  A refundable order is always fully paid, so its balance is zero and the whole refund total is owed back — the only question is the form.
   @BuiltValueEnumConst(wireName: r'cash')
   static const RefundPayout cash = _$cash;
-
-  /// How the customer gets their money back (FR-065).  A refundable order is always fully paid, so its balance is zero and the whole refund total is owed back — the only question is the form.
   @BuiltValueEnumConst(wireName: r'credit_note')
   static const RefundPayout creditNote = _$creditNote;
 

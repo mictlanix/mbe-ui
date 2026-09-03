@@ -9,12 +9,10 @@ import 'package:built_value/serializer.dart';
 
 part 'payment_terms.g.dart';
 
+/// `sales_order.payment_terms`, `sales_quote.payment_terms`.
 class PaymentTerms extends EnumClass {
-  /// `sales_order.payment_terms`, `sales_quote.payment_terms`.
   @BuiltValueEnumConst(wireNumber: 0)
   static const PaymentTerms number0 = _$number0;
-
-  /// `sales_order.payment_terms`, `sales_quote.payment_terms`.
   @BuiltValueEnumConst(wireNumber: 1)
   static const PaymentTerms number1 = _$number1;
 

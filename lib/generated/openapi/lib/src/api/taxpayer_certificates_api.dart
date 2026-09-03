@@ -238,8 +238,8 @@ class TaxpayerCertificatesApi {
   Future<Response<TaxpayerCertificateResponse>>
   uploadTaxpayerCertificateApiV1TaxpayerCertificatesPost({
     required String taxpayer,
-    required String certificate,
-    required String key,
+    required MultipartFile certificate,
+    required MultipartFile key,
     required String keyPassword,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -271,12 +271,8 @@ class TaxpayerCertificatesApi {
           taxpayer,
           const FullType(String),
         ),
-        r'certificate': encodeFormParameter(
-          _serializers,
-          certificate,
-          const FullType(String),
-        ),
-        r'key': encodeFormParameter(_serializers, key, const FullType(String)),
+        r'certificate': certificate,
+        r'key': key,
         r'key_password': encodeFormParameter(
           _serializers,
           keyPassword,

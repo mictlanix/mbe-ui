@@ -195,9 +195,10 @@ class _$FacilityCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(FacilityType),
+                    specifiedType: const FullType.nullable(FacilityType),
                   )
-                  as FacilityType;
+                  as FacilityType?;
+          if (valueDes == null) continue;
           result.type = valueDes;
           break;
         case r'location':
@@ -258,9 +259,10 @@ class _$FacilityCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(EntityStatus),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as EntityStatus;
+                  as EntityStatus?;
+          if (valueDes == null) continue;
           result.status = valueDes;
           break;
         default:

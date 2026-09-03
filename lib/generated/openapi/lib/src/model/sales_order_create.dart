@@ -28,7 +28,7 @@ part 'sales_order_create.g.dart';
 /// * [customerName]
 /// * [priority]
 /// * [comment]
-/// * [fulfillmentIntent]
+/// * [fulfillmentIntent] - How the cashier said the goods would reach the customer: 0 pickup, 1 delivery, 2 mixed (part collected, the rest shipped). Null means it was never recorded — not \"delivery\". Same scale as delivery_order.fulfillment_type, which never carries 2.
 @BuiltValue()
 abstract class SalesOrderCreate
     implements Built<SalesOrderCreate, SalesOrderCreateBuilder> {
@@ -74,6 +74,7 @@ abstract class SalesOrderCreate
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
+  /// How the cashier said the goods would reach the customer: 0 pickup, 1 delivery, 2 mixed (part collected, the rest shipped). Null means it was never recorded — not \"delivery\". Same scale as delivery_order.fulfillment_type, which never carries 2.
   @BuiltValueField(wireName: r'fulfillment_intent')
   FulfillmentType? get fulfillmentIntent;
   // enum fulfillmentIntentEnum {  0,  1,  2,  };
@@ -344,9 +345,10 @@ class _$SalesOrderCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(Priority),
+                    specifiedType: const FullType.nullable(Priority),
                   )
-                  as Priority;
+                  as Priority?;
+          if (valueDes == null) continue;
           result.priority = valueDes;
           break;
         case r'comment':

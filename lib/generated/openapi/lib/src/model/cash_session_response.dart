@@ -219,11 +219,12 @@ class _$CashSessionResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(MethodTotal),
                     ]),
                   )
-                  as BuiltList<MethodTotal>;
+                  as BuiltList<MethodTotal>?;
+          if (valueDes == null) continue;
           result.paymentsByMethod.replace(valueDes);
           break;
         default:

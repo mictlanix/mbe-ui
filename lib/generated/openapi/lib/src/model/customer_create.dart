@@ -234,15 +234,20 @@ class _$CustomerCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(CreditLimit),
+                    specifiedType: const FullType.nullable(CreditLimit),
                   )
-                  as CreditLimit;
+                  as CreditLimit?;
+          if (valueDes == null) continue;
           result.creditLimit.replace(valueDes);
           break;
         case r'credit_days':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
           result.creditDays = valueDes;
           break;
         case r'price_list':
@@ -265,9 +270,10 @@ class _$CustomerCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(EntityStatus),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as EntityStatus;
+                  as EntityStatus?;
+          if (valueDes == null) continue;
           result.status = valueDes;
           break;
         case r'comment':

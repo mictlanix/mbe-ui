@@ -376,11 +376,12 @@ class _$ProductLookupResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(ProductStockResponse),
                     ]),
                   )
-                  as BuiltList<ProductStockResponse>;
+                  as BuiltList<ProductStockResponse>?;
+          if (valueDes == null) continue;
           result.stock.replace(valueDes);
           break;
         default:

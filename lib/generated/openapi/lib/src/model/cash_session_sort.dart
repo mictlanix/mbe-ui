@@ -9,16 +9,12 @@ import 'package:built_value/serializer.dart';
 
 part 'cash_session_sort.g.dart';
 
+/// Ordering for the session list; a `-` prefix reads descending.  `ID_DESC` is the default because it is the ordering the list has always had.
 class CashSessionSort extends EnumClass {
-  /// Ordering for the session list; a `-` prefix reads descending.  `ID_DESC` is the default because it is the ordering the list has always had.
   @BuiltValueEnumConst(wireName: r'-id')
   static const CashSessionSort id = _$id;
-
-  /// Ordering for the session list; a `-` prefix reads descending.  `ID_DESC` is the default because it is the ordering the list has always had.
   @BuiltValueEnumConst(wireName: r'start')
   static const CashSessionSort start = _$start;
-
-  /// Ordering for the session list; a `-` prefix reads descending.  `ID_DESC` is the default because it is the ordering the list has always had.
   @BuiltValueEnumConst(wireName: r'-start')
   static const CashSessionSort start2 = _$start2;
 

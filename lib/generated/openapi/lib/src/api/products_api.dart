@@ -625,7 +625,7 @@ class ProductsApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseProductListItem>> listProductsApiV1ProductsGet({
     String? search,
-    BuiltList<int>? label,
+    BuiltList<int?>? label,
     EntityStatus? status,
     bool? stockable,
     bool? salable,
@@ -1059,7 +1059,7 @@ class ProductsApi {
   Future<Response<ProductResponse>>
   uploadProductImageApiV1ProductsProductIdImagePost({
     required int productId,
-    required String file,
+    required MultipartFile file,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -1093,13 +1093,7 @@ class ProductsApi {
     dynamic _bodyData;
 
     try {
-      _bodyData = FormData.fromMap(<String, dynamic>{
-        r'file': encodeFormParameter(
-          _serializers,
-          file,
-          const FullType(String),
-        ),
-      });
+      _bodyData = FormData.fromMap(<String, dynamic>{r'file': file});
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),

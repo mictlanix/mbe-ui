@@ -498,44 +498,256 @@ part 'serializers.g.dart';
 Serializers serializers =
     (_$serializers.toBuilder()
           ..addBuilderFactory(
-            const FullType(BuiltList, [FullType.nullable(int)]),
-            () => ListBuilder<int>(),
+            const FullType(BuiltList, [FullType(SalesQuoteSummary)]),
+            () => ListBuilder<SalesQuoteSummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ItineraryLineResponse)]),
+            () => ListBuilder<ItineraryLineResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CustomerPaymentResponse)]),
+            () => ListBuilder<CustomerPaymentResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(TaxpayerIssuerResponse)]),
+            () => ListBuilder<TaxpayerIssuerResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DenominationCount)]),
+            () => ListBuilder<DenominationCount>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CashDrawerResponse)]),
+            () => ListBuilder<CashDrawerResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PendingDeliveryLine)]),
+            () => ListBuilder<PendingDeliveryLine>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(OrderApplicationResponse)]),
             () => ListBuilder<OrderApplicationResponse>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltMap, [FullType(String), FullType(String)]),
-            () => MapBuilder<String, String>(),
+            const FullType(BuiltList, [FullType(WarehouseResponse)]),
+            () => ListBuilder<WarehouseResponse>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, [FullType(ProductPriceBulkItem)]),
-            () => ListBuilder<ProductPriceBulkItem>(),
+            const FullType(BuiltList, [FullType(CustomerRefundLineResponse)]),
+            () => ListBuilder<CustomerRefundLineResponse>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, [FullType(ProductLabelFacet)]),
-            () => ListBuilder<ProductLabelFacet>(),
+            const FullType(BuiltList, [FullType(PointSaleResponse)]),
+            () => ListBuilder<PointSaleResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(UserProfileListItem)]),
+            () => ListBuilder<UserProfileListItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CustomerRefundSummary)]),
+            () => ListBuilder<CustomerRefundSummary>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductLookupResponse)]),
             () => ListBuilder<ProductLookupResponse>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, [FullType(ProductPriceResponse)]),
-            () => ListBuilder<ProductPriceResponse>(),
+            const FullType(BuiltList, [FullType(ProductListItem)]),
+            () => ListBuilder<ProductListItem>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, [FullType(int)]),
+            const FullType(BuiltList, [FullType(TaxpayerRecipientResponse)]),
+            () => ListBuilder<TaxpayerRecipientResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CreditNoteResponse)]),
+            () => ListBuilder<CreditNoteResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType.nullable(int)]),
             () => ListBuilder<int>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ItinerarySummary)]),
+            () => ListBuilder<ItinerarySummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProfilePrivilegeUpdate)]),
+            () => ListBuilder<ProfilePrivilegeUpdate>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProfilePrivilegeResponse)]),
+            () => ListBuilder<ProfilePrivilegeResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(SatCatalogResponse)]),
+            () => ListBuilder<SatCatalogResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DeliveryOrderLineRequest)]),
+            () => ListBuilder<DeliveryOrderLineRequest>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(SalesOrderLineResponse)]),
+            () => ListBuilder<SalesOrderLineResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, [FullType(String), FullType(String)]),
+            () => MapBuilder<String, String>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DeliveryOrderSummary)]),
+            () => ListBuilder<DeliveryOrderSummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(SalesQuoteLineResponse)]),
+            () => ListBuilder<SalesQuoteLineResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PrivilegeResponse)]),
+            () => ListBuilder<PrivilegeResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductStockResponse)]),
+            () => ListBuilder<ProductStockResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(UserListItem)]),
+            () => ListBuilder<UserListItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(FacilityResponse)]),
+            () => ListBuilder<FacilityResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(SupplierResponse)]),
+            () => ListBuilder<SupplierResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(VehicleResponse)]),
+            () => ListBuilder<VehicleResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PriceListDeletePreviewItem)]),
+            () => ListBuilder<PriceListDeletePreviewItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductPriceBulkItem)]),
+            () => ListBuilder<ProductPriceBulkItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DeliveryOrderLineResponse)]),
+            () => ListBuilder<DeliveryOrderLineResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(MethodTotal)]),
+            () => ListBuilder<MethodTotal>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductPriceResponse)]),
+            () => ListBuilder<ProductPriceResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductMissingPriceFacet)]),
             () => ListBuilder<ProductMissingPriceFacet>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(LocationInner)]),
+            () => ListBuilder<LocationInner>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ApplicationResponse)]),
             () => ListBuilder<ApplicationResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(TaxpayerCertificateResponse)]),
+            () => ListBuilder<TaxpayerCertificateResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(VehicleOperatorResponse)]),
+            () => ListBuilder<VehicleOperatorResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PrivilegeUpdate)]),
+            () => ListBuilder<PrivilegeUpdate>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CustomerListItem)]),
+            () => ListBuilder<CustomerListItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ItineraryStopResponse)]),
+            () => ListBuilder<ItineraryStopResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ExpenseResponse)]),
+            () => ListBuilder<ExpenseResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(LabelResponse)]),
+            () => ListBuilder<LabelResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AddressResponse)]),
+            () => ListBuilder<AddressResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CashSessionResponse)]),
+            () => ListBuilder<CashSessionResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PendingDeliveryBucket)]),
+            () => ListBuilder<PendingDeliveryBucket>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductMergePreviewItem)]),
+            () => ListBuilder<ProductMergePreviewItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PaymentMethodOptionResponse)]),
+            () => ListBuilder<PaymentMethodOptionResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProductLabelFacet)]),
+            () => ListBuilder<ProductLabelFacet>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(OutstandingOrderResponse)]),
+            () => ListBuilder<OutstandingOrderResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(int)]),
+            () => ListBuilder<int>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ContactResponse)]),
+            () => ListBuilder<ContactResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ValidationError)]),
+            () => ListBuilder<ValidationError>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PriceListResponse)]),
+            () => ListBuilder<PriceListResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(EmployeeResponse)]),
+            () => ListBuilder<EmployeeResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ExchangeRateResponse)]),
+            () => ListBuilder<ExchangeRateResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(SalesOrderSummary)]),
+            () => ListBuilder<SalesOrderSummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(String)]),
+            () => ListBuilder<String>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(DeliveryOrderEventResponse)]),

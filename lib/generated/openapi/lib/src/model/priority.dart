@@ -9,20 +9,14 @@ import 'package:built_value/serializer.dart';
 
 part 'priority.g.dart';
 
+/// `sales_order.priority`.
 class Priority extends EnumClass {
-  /// `sales_order.priority`.
   @BuiltValueEnumConst(wireNumber: 0)
   static const Priority number0 = _$number0;
-
-  /// `sales_order.priority`.
   @BuiltValueEnumConst(wireNumber: 1)
   static const Priority number1 = _$number1;
-
-  /// `sales_order.priority`.
   @BuiltValueEnumConst(wireNumber: 2)
   static const Priority number2 = _$number2;
-
-  /// `sales_order.priority`.
   @BuiltValueEnumConst(wireNumber: 3)
   static const Priority number3 = _$number3;
 

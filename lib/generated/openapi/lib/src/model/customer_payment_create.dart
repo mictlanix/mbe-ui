@@ -229,9 +229,10 @@ class _$CustomerPaymentCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(PaymentType),
+                    specifiedType: const FullType.nullable(PaymentType),
                   )
-                  as PaymentType;
+                  as PaymentType?;
+          if (valueDes == null) continue;
           result.paymentType = valueDes;
           break;
         default:

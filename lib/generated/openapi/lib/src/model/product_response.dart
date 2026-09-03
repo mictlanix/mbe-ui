@@ -572,11 +572,12 @@ class _$ProductResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(LabelResponse),
                     ]),
                   )
-                  as BuiltList<LabelResponse>;
+                  as BuiltList<LabelResponse>?;
+          if (valueDes == null) continue;
           result.labels.replace(valueDes);
           break;
         default:

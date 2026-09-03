@@ -51,7 +51,7 @@ class _$AmountMaxSerializer implements PrimitiveSerializer<AmountMax> {
       anyOf,
       specifiedType: FullType(
         AnyOf,
-        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+        anyOf.types.map((type) => FullType(type)).toList(),
       ),
     )!;
   }

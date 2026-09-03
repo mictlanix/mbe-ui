@@ -204,11 +204,12 @@ class _$ItineraryStopResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(ItineraryLineResponse),
                     ]),
                   )
-                  as BuiltList<ItineraryLineResponse>;
+                  as BuiltList<ItineraryLineResponse>?;
+          if (valueDes == null) continue;
           result.lines.replace(valueDes);
           break;
         default:

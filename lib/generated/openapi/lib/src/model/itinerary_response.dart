@@ -279,22 +279,24 @@ class _$ItineraryResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(ItineraryStopResponse),
                     ]),
                   )
-                  as BuiltList<ItineraryStopResponse>;
+                  as BuiltList<ItineraryStopResponse>?;
+          if (valueDes == null) continue;
           result.stops.replace(valueDes);
           break;
         case r'warnings':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(String),
                     ]),
                   )
-                  as BuiltList<String>;
+                  as BuiltList<String>?;
+          if (valueDes == null) continue;
           result.warnings.replace(valueDes);
           break;
         default:

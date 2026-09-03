@@ -462,8 +462,12 @@ class _$ProductCreateSerializer implements PrimitiveSerializer<ProductCreate> {
           break;
         case r'currency':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
           result.currency = valueDes;
           break;
         case r'supplier':
@@ -480,54 +484,60 @@ class _$ProductCreateSerializer implements PrimitiveSerializer<ProductCreate> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.stockable = valueDes;
           break;
         case r'perishable':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.perishable = valueDes;
           break;
         case r'seriable':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.seriable = valueDes;
           break;
         case r'purchasable':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.purchasable = valueDes;
           break;
         case r'salable':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.salable = valueDes;
           break;
         case r'invoiceable':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.invoiceable = valueDes;
           break;
         case r'stock_required':

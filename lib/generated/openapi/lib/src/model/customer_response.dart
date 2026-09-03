@@ -300,33 +300,36 @@ class _$CustomerResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(AddressResponse),
                     ]),
                   )
-                  as BuiltList<AddressResponse>;
+                  as BuiltList<AddressResponse>?;
+          if (valueDes == null) continue;
           result.addresses.replace(valueDes);
           break;
         case r'contacts':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(ContactResponse),
                     ]),
                   )
-                  as BuiltList<ContactResponse>;
+                  as BuiltList<ContactResponse>?;
+          if (valueDes == null) continue;
           result.contacts.replace(valueDes);
           break;
         case r'taxpayers':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(TaxpayerRecipientResponse),
                     ]),
                   )
-                  as BuiltList<TaxpayerRecipientResponse>;
+                  as BuiltList<TaxpayerRecipientResponse>?;
+          if (valueDes == null) continue;
           result.taxpayers.replace(valueDes);
           break;
         default:

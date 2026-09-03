@@ -104,9 +104,10 @@ class _$CashSessionOpenSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(OpeningAmount),
+                    specifiedType: const FullType.nullable(OpeningAmount),
                   )
-                  as OpeningAmount;
+                  as OpeningAmount?;
+          if (valueDes == null) continue;
           result.openingAmount.replace(valueDes);
           break;
         default:

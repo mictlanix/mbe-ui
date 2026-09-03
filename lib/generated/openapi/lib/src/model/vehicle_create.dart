@@ -153,9 +153,10 @@ class _$VehicleCreateSerializer implements PrimitiveSerializer<VehicleCreate> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(EntityStatus),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as EntityStatus;
+                  as EntityStatus?;
+          if (valueDes == null) continue;
           result.status = valueDes;
           break;
         default:

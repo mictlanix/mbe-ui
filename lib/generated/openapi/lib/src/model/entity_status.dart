@@ -9,16 +9,12 @@ import 'package:built_value/serializer.dart';
 
 part 'entity_status.g.dart';
 
+/// Unified lifecycle state shared by all status-bearing entities.
 class EntityStatus extends EnumClass {
-  /// Unified lifecycle state shared by all status-bearing entities.
   @BuiltValueEnumConst(wireNumber: 0)
   static const EntityStatus number0 = _$number0;
-
-  /// Unified lifecycle state shared by all status-bearing entities.
   @BuiltValueEnumConst(wireNumber: 1)
   static const EntityStatus number1 = _$number1;
-
-  /// Unified lifecycle state shared by all status-bearing entities.
   @BuiltValueEnumConst(wireNumber: 2)
   static const EntityStatus number2 = _$number2;
 

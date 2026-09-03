@@ -18,7 +18,7 @@ set -euo pipefail
 SPEC_SOURCE="${1:-http://127.0.0.1:8000/openapi.json}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT_DIR="lib/generated/openapi"
-GENERATOR_IMAGE="openapitools/openapi-generator-cli"
+GENERATOR_IMAGE="openapitools/openapi-generator-cli:v7.25.0"
 
 # Keep the spec workdir inside the repo: VM-backed Docker runtimes (e.g. Colima)
 # only share $HOME, so a /var/folders temp dir mounts as an empty directory.

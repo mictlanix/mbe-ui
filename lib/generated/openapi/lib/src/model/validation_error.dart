@@ -162,9 +162,10 @@ class _$ValidationErrorSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(JsonObject),
+                    specifiedType: const FullType.nullable(JsonObject),
                   )
-                  as JsonObject;
+                  as JsonObject?;
+          if (valueDes == null) continue;
           result.ctx = valueDes;
           break;
         default:

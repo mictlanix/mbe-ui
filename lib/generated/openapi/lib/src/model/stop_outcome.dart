@@ -9,20 +9,14 @@ import 'package:built_value/serializer.dart';
 
 part 'stop_outcome.g.dart';
 
+/// `deliveries_itinerary_stop.outcome` — how a stop resolved.
 class StopOutcome extends EnumClass {
-  /// `deliveries_itinerary_stop.outcome` — how a stop resolved.
   @BuiltValueEnumConst(wireNumber: 0)
   static const StopOutcome number0 = _$number0;
-
-  /// `deliveries_itinerary_stop.outcome` — how a stop resolved.
   @BuiltValueEnumConst(wireNumber: 1)
   static const StopOutcome number1 = _$number1;
-
-  /// `deliveries_itinerary_stop.outcome` — how a stop resolved.
   @BuiltValueEnumConst(wireNumber: 2)
   static const StopOutcome number2 = _$number2;
-
-  /// `deliveries_itinerary_stop.outcome` — how a stop resolved.
   @BuiltValueEnumConst(wireNumber: 3)
   static const StopOutcome number3 = _$number3;
 

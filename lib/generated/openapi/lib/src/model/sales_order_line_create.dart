@@ -179,9 +179,10 @@ class _$SalesOrderLineCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(DiscountRate),
+                    specifiedType: const FullType.nullable(DiscountRate),
                   )
-                  as DiscountRate;
+                  as DiscountRate?;
+          if (valueDes == null) continue;
           result.discountRate.replace(valueDes);
           break;
         case r'tax_rate':

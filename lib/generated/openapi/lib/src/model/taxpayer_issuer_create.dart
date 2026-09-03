@@ -167,9 +167,12 @@ class _$TaxpayerIssuerCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(FiscalCertificationProvider),
+                    specifiedType: const FullType.nullable(
+                      FiscalCertificationProvider,
+                    ),
                   )
-                  as FiscalCertificationProvider;
+                  as FiscalCertificationProvider?;
+          if (valueDes == null) continue;
           result.provider = valueDes;
           break;
         case r'postal_code':

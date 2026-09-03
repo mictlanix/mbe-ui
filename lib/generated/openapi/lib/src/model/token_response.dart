@@ -99,9 +99,10 @@ class _$TokenResponseSerializer implements PrimitiveSerializer<TokenResponse> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(String),
                   )
-                  as String;
+                  as String?;
+          if (valueDes == null) continue;
           result.tokenType = valueDes;
           break;
         default:

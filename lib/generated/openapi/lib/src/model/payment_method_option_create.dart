@@ -187,17 +187,22 @@ class _$PaymentMethodOptionCreateSerializer
           break;
         case r'number_of_payments':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
           result.numberOfPayments = valueDes;
           break;
         case r'display_on_ticket':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.displayOnTicket = valueDes;
           break;
         case r'payment_method':
@@ -210,18 +215,20 @@ class _$PaymentMethodOptionCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(Commission),
+                    specifiedType: const FullType.nullable(Commission),
                   )
-                  as Commission;
+                  as Commission?;
+          if (valueDes == null) continue;
           result.commission.replace(valueDes);
           break;
         case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(EntityStatus),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as EntityStatus;
+                  as EntityStatus?;
+          if (valueDes == null) continue;
           result.status = valueDes;
           break;
         default:

@@ -54,7 +54,7 @@ class _$DiscountRate1Serializer implements PrimitiveSerializer<DiscountRate1> {
       anyOf,
       specifiedType: FullType(
         AnyOf,
-        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+        anyOf.types.map((type) => FullType(type)).toList(),
       ),
     )!;
   }

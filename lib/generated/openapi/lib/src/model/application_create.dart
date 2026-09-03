@@ -117,9 +117,10 @@ class _$ApplicationCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(AmountChange),
+                    specifiedType: const FullType.nullable(AmountChange),
                   )
-                  as AmountChange;
+                  as AmountChange?;
+          if (valueDes == null) continue;
           result.amountChange.replace(valueDes);
           break;
         default:
