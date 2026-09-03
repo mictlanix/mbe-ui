@@ -45,3 +45,9 @@
   [mbe-api#199](https://github.com/mictlanix/mbe-api/issues/199), expected same-day per the
   requester — recorded in spec.md Assumptions, no longer framed as an indefinitely-deferred
   external dependency.
+- Two more points surfaced during Phase 0 planning research and are now confirmed by the
+  requester: (5) the debounce ask (FR-028..FR-030) is two settings, not one — search-style
+  fields and the quantity-commit step already default to different delays (300ms/400ms) and a
+  single shared value can't preserve both; (6) FR-016 (new) — switching a sale's customer to
+  "Público en General" while already in delivery/mixed mode auto-resets it to pickup-only with
+  a notice, closing a gap the original spec didn't cover.

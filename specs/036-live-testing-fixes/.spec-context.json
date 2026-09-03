@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Live Testing Session Fixes",
   "branch": "036-live-testing-fixes",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-09-02T19:00:34.103Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-03T00:12:03.641Z"
     }
   ],
   "telemetryInstanceId": "7eecf035-2d06-47a8-bf87-227e9ed77a8f"
