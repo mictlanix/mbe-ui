@@ -25,8 +25,6 @@ part 'customer_response.g.dart';
 /// * [creditLimit]
 /// * [creditDays]
 /// * [priceList]
-/// * [shipping]
-/// * [shippingRequiredDocument]
 /// * [salesperson]
 /// * [status]
 /// * [comment]
@@ -56,12 +54,6 @@ abstract class CustomerResponse
 
   @BuiltValueField(wireName: r'price_list')
   PriceListResponse get priceList;
-
-  @BuiltValueField(wireName: r'shipping')
-  bool get shipping;
-
-  @BuiltValueField(wireName: r'shipping_required_document')
-  bool get shippingRequiredDocument;
 
   @BuiltValueField(wireName: r'salesperson')
   EmployeeResponse? get salesperson;
@@ -147,16 +139,6 @@ class _$CustomerResponseSerializer
     yield serializers.serialize(
       object.priceList,
       specifiedType: const FullType(PriceListResponse),
-    );
-    yield r'shipping';
-    yield serializers.serialize(
-      object.shipping,
-      specifiedType: const FullType(bool),
-    );
-    yield r'shipping_required_document';
-    yield serializers.serialize(
-      object.shippingRequiredDocument,
-      specifiedType: const FullType(bool),
     );
     yield r'salesperson';
     yield object.salesperson == null
@@ -284,24 +266,6 @@ class _$CustomerResponseSerializer
                   )
                   as PriceListResponse;
           result.priceList.replace(valueDes);
-          break;
-        case r'shipping':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.shipping = valueDes;
-          break;
-        case r'shipping_required_document':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.shippingRequiredDocument = valueDes;
           break;
         case r'salesperson':
           final valueDes =

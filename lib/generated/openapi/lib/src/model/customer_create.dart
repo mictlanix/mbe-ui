@@ -20,8 +20,6 @@ part 'customer_create.g.dart';
 /// * [creditLimit]
 /// * [creditDays]
 /// * [priceList]
-/// * [shipping]
-/// * [shippingRequiredDocument]
 /// * [salesperson]
 /// * [status]
 /// * [comment]
@@ -32,7 +30,7 @@ part 'customer_create.g.dart';
 abstract class CustomerCreate
     implements Built<CustomerCreate, CustomerCreateBuilder> {
   @BuiltValueField(wireName: r'code')
-  String get code;
+  String? get code;
 
   @BuiltValueField(wireName: r'name')
   String get name;
@@ -48,12 +46,6 @@ abstract class CustomerCreate
 
   @BuiltValueField(wireName: r'price_list')
   int get priceList;
-
-  @BuiltValueField(wireName: r'shipping')
-  bool? get shipping;
-
-  @BuiltValueField(wireName: r'shipping_required_document')
-  bool? get shippingRequiredDocument;
 
   @BuiltValueField(wireName: r'salesperson')
   int? get salesperson;
@@ -82,8 +74,6 @@ abstract class CustomerCreate
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(CustomerCreateBuilder b) => b
     ..creditDays = 0
-    ..shipping = false
-    ..shippingRequiredDocument = false
     ..status = EntityStatus.number0;
 
   @BuiltValueSerializer(custom: true)
@@ -104,11 +94,13 @@ class _$CustomerCreateSerializer
     CustomerCreate object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'code';
-    yield serializers.serialize(
-      object.code,
-      specifiedType: const FullType(String),
-    );
+    if (object.code != null) {
+      yield r'code';
+      yield serializers.serialize(
+        object.code,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'name';
     yield serializers.serialize(
       object.name,
@@ -140,20 +132,6 @@ class _$CustomerCreateSerializer
       object.priceList,
       specifiedType: const FullType(int),
     );
-    if (object.shipping != null) {
-      yield r'shipping';
-      yield serializers.serialize(
-        object.shipping,
-        specifiedType: const FullType(bool),
-      );
-    }
-    if (object.shippingRequiredDocument != null) {
-      yield r'shipping_required_document';
-      yield serializers.serialize(
-        object.shippingRequiredDocument,
-        specifiedType: const FullType(bool),
-      );
-    }
     if (object.salesperson != null) {
       yield r'salesperson';
       yield serializers.serialize(
@@ -227,9 +205,10 @@ class _$CustomerCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(String),
                   )
-                  as String;
+                  as String?;
+          if (valueDes == null) continue;
           result.code = valueDes;
           break;
         case r'name':
@@ -271,24 +250,6 @@ class _$CustomerCreateSerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.priceList = valueDes;
-          break;
-        case r'shipping':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.shipping = valueDes;
-          break;
-        case r'shipping_required_document':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.shippingRequiredDocument = valueDes;
           break;
         case r'salesperson':
           final valueDes =
