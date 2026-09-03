@@ -38,4 +38,4 @@ feature adds **no new field** for it. What changes is which call sites route thr
   hardcoded `2`.
 
 No other currency-displaying field was found bypassing this setting during Phase 0 research;
-if implementation discovers another one, it is in scope for FR-025/FR-026 to fix.
+if implementation discovers another one, it is in scope for FR-026/FR-027 to fix.

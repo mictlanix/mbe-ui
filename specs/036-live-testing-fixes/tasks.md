@@ -87,6 +87,11 @@ customer is chosen.
       the default `false` (POS usage), it still appears.
 - [ ] T008 [US1] Fix the existing `order_screen_test.dart` cases that assumed the search field is
       always present on mount (research.md R5 flags this as a known break from T003).
+- [ ] T071 [P] [US1] *(added post-`/speckit-analyze`, closes FR-004 coverage gap)* Add a
+      regression case to `test/widget/features/sales/order_screen_test.dart`: open an existing
+      order whose `customer` is already `posDefaultCustomerId` (saved before this feature
+      shipped) and confirm it still opens and displays correctly under T003's customer-first
+      gate — the gate must block only new selections, never reading existing data.
 
 **Checkpoint**: US1 is independently shippable and testable.
 
@@ -115,8 +120,9 @@ can be reopened and changed. Record a payment; confirm the cart can no longer be
       zero-priced line / stock shortfall) back to Venta using the existing `_toConfirmError`
       rendering rather than surfacing it as a payment failure (`contracts/pos-sale-lifecycle.md`
       C1).
-- [ ] T012 [US2] At the first delivery-order `create` call site (Entrega step, delivery/mixed
-      fulfillment), call `confirm()` first; route failures back to Venta the same way as T011.
+- [ ] T012 [US2] In `lib/features/sales/presentation/delivery/delivery_controller.dart`, at the
+      first delivery-order `create` call site (Entrega step, delivery/mixed fulfillment), call
+      `confirm()` first; route failures back to Venta the same way as T011.
 - [ ] T013 [US2] At the credit-terms leave-Cobro path (wherever `canLeavePayment`/
       `advanceFromCobro` is invoked, e.g. `payment_step.dart`), call `confirm()` before leaving
       Cobro when no cash payment was posted.
@@ -197,15 +203,27 @@ and that switching to the generic customer mid-sale resets fulfillment mode.
       [#199](https://github.com/mictlanix/mbe-api/issues/199) have landed and the client
       regenerated (`./tool/generate_api_client.sh`) — determines whether T030's create-path
       omission of `code` is possible yet, or must still send `""` (research.md R14).
-- [ ] T030 [US4] In `lib/features/catalog/presentation/customer_form_controller.dart`: drop the
-      code-required validation and its error code; drop the two shipping fields from state,
-      setters, load, and create/update payloads; change the update path to omit `code` when blank
-      instead of sending `""`.
+- [ ] T072 [US4] *(added post-`/speckit-analyze`, closes a constitution Development-Workflow gap)*
+      Once T029 confirms mbe-api#198/#199 have landed: run `./tool/generate_api_client.sh` to
+      regenerate `lib/generated/openapi/`, then update the domain-entity mapping so `code` is
+      read as nullable (if the regenerated response schema makes it so) and the two shipping
+      fields are fully gone from the generated DTOs, not just unread by T032/T033. This is the
+      constitution-mandated codegen re-run for a feature depending on an mbe-api schema change —
+      do not treat T029's landed/regenerated *check* as having done this step.
+- [ ] T030 [US4] **Depends on T033 landing first (or in the same commit)** — dropping the two
+      shipping args from this file's create/update calls only compiles once T033 removes them
+      from `CustomerRepository`'s method signatures. In
+      `lib/features/catalog/presentation/customer_form_controller.dart`: drop the code-required
+      validation and its error code; drop the two shipping fields from state, setters, load, and
+      create/update payloads; change the update path to omit `code` when blank instead of sending
+      `""`.
 - [ ] T031 [US4] In `lib/features/catalog/presentation/customer_form.dart`: move the `code` field
       to immediately after `credit_days`; remove the two shipping `SwitchListTile`s.
 - [ ] T032 [P] [US4] In `lib/features/catalog/domain/entities/customer.dart` (and
       `customer_list_item.dart` if applicable), drop `shipping`/`shippingRequiredDocument`.
-- [ ] T033 [P] [US4] In `lib/features/catalog/domain/repositories/customer_repository.dart` and
+- [ ] T033 [US4] **Not parallel with T030 — do this first, or in the same commit**: T030 stops
+      passing these two args and will not compile until this signature change lands. In
+      `lib/features/catalog/domain/repositories/customer_repository.dart` and
       `lib/features/catalog/data/customer_repository_impl.dart`, drop the two shipping fields from
       create/update payloads.
 - [ ] T034 [P] [US4] In `lib/features/sales/presentation/customer_inline_create.dart` (POS
@@ -427,8 +445,15 @@ without affecting search.
   rewrite having already landed in the same file region.
 - **Phase 5 (US3)** → **Phase 10 (US8)**: T055 edits the same `price_cell.dart` functions T022/T023
   (US3) already changed — US8 must sequence after US3, not run in parallel with it.
+- **Within Phase 6 (US4)**: T033 (repository signature) MUST land before or with T030 (form
+  controller) — T030 stops passing the two shipping args and will not compile until T033 removes
+  them from `CustomerRepository`'s required params. Do T033 → T030, or both in one commit.
 - **Phases 4 (US2), 8 (US6), 9 (US7), 11 (US9)**: each fully independent of every other story;
   may run in parallel with anything except their own stated file-level dependency above.
+- `sale_line_editing.dart` is also touched by both Phase 8 (US6 — T047/T048, warehouse stock
+  flag) and Phase 11 (US9 — T064, quantity-commit debounce wiring). Low conflict risk (different
+  functions: `warehousePicker()` vs. the stepper's debounce param), listed here for the same
+  reason the `customer_bar.dart` and `price_cell.dart` overlaps above are called out.
 - **Phase 12 (Polish)** runs last, after every story phase reaches its checkpoint.
 
 ### Parallel opportunities

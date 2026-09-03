@@ -185,13 +185,14 @@ proven.
    every other stage, can land in parallel with 1-3.
 5. **Sales Order customer-first + salesperson autofill** (US1, US5 — FR-001..FR-004, FR-017..
    FR-019). Depends on Stage 2's shared predicate for the generic-customer exclusion.
-6. **POS edit-before-payment** (US2 — FR-005..FR-008, plus FR-016's mid-sale fulfillment
-   demotion, which depends on Stage 2). The `confirm()`-timing move touches Payment, Delivery and
-   credit-terms leave-Cobro paths together and is the one item requiring a genuinely new
-   interaction pattern (back-navigation). Ships last, after Stages 1-5 have proven the smaller
-   pieces stable. **The resume-selector bucket relabeling (R3) needs requester sign-off before
-   its part of this stage ships** — the `confirm()`-timing move and back-navigation do not
-   depend on that sign-off and can proceed regardless.
+6. **POS edit-before-payment** (US2 — FR-005..FR-008 only; FR-016's mid-sale fulfillment demotion
+   was already completed in Stage 2 and is not re-scoped here — it is mentioned only because it
+   shares this stage's "customer/mode consistency" theme). The `confirm()`-timing move touches
+   Payment, Delivery and credit-terms leave-Cobro paths together and is the one item requiring a
+   genuinely new interaction pattern (back-navigation). Ships last, after Stages 1-5 have proven
+   the smaller pieces stable. **The resume-selector bucket relabeling (R3) needs requester
+   sign-off before its part of this stage ships** — the `confirm()`-timing move and
+   back-navigation do not depend on that sign-off and can proceed regardless.
 
 ## Risks
 

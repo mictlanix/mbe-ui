@@ -64,7 +64,7 @@ matching its existing guard+transition pairing style (`canConfirm`/`advanceToCob
 `canLeavePayment`/`advanceFromCobro`):
 
 ```dart
-bool canReturnToCapture({required bool isEditable, required bool hasPayments});
+bool canReturnToCapture({required bool isEditable, required bool hasNonCancelledPayments});
 void returnToVenta();
 ```
 
