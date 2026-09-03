@@ -20,7 +20,9 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT_DIR="lib/generated/openapi"
 GENERATOR_IMAGE="openapitools/openapi-generator-cli"
 
-WORKDIR="$(mktemp -d)"
+# Keep the spec workdir inside the repo: VM-backed Docker runtimes (e.g. Colima)
+# only share $HOME, so a /var/folders temp dir mounts as an empty directory.
+WORKDIR="$(mktemp -d "${REPO_ROOT}/.openapi-spec.XXXXXX")"
 trap 'rm -rf "$WORKDIR"' EXIT
 
 if [[ "$SPEC_SOURCE" == http://* || "$SPEC_SOURCE" == https://* ]]; then
