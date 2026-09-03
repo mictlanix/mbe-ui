@@ -542,8 +542,6 @@
 
   "priceListFieldLabel": "Lista de precios",
   "noneAssignedLabel": "Ninguno asignado",
-  "shippingLabel": "Envío",
-  "shippingRequiredDocumentLabel": "El envío requiere documento",
   "columnPriceList": "Lista de precios",
   "columnSalesperson": "Vendedor",
 
@@ -565,7 +563,6 @@
   "customerCreatePermissionDeniedError": "Ya no tienes permiso para crear clientes.",
   "customerUpdatePermissionDeniedError": "Ya no tienes permiso para editar clientes.",
   "customerDeletePermissionDeniedError": "Ya no tienes permiso para eliminar clientes.",
-  "customerCodeRequiredError": "El código es obligatorio.",
   "customerNameRequiredError": "El nombre es obligatorio.",
   "customerPriceListRequiredError": "La lista de precios es obligatoria.",
 
@@ -868,6 +865,7 @@
   "salesOrderNoFacilityMessage": "Tu cuenta no tiene una instalación asignada, así que los pedidos no se pueden listar. Pide a tu administrador que configure una en tu usuario.",
   "salesOrderConfirmAction": "Confirmar pedido",
   "salesOrderNoLinesYet": "Agrega al menos un producto para poder confirmar el pedido.",
+  "salesOrderChooseCustomerFirst": "Elige un cliente para empezar el pedido.",
   "salesOrdersEmptyMessage": "Aún no hay pedidos en este periodo.",
   "salesOrderCancelAction": "Cancelar pedido",
   "salesOrderCancelDialogTitle": "¿Cancelar este pedido?",
@@ -956,6 +954,9 @@
   "posLineNoStock": "Sin existencia en este almacén",
   "posLineShortfall": "Solo hay {available} disponibles",
   "posLineAdjustToAvailable": "Ajustar a disponible",
+  "posLineWarehouseStockUnknown": "Existencia sin verificar",
+  "posLineWarehouseStockShort": "Solo quedan {available}",
+  "posLineWarehouseStockNone": "Sin existencia",
   "posTotalsCounts": "{lines, plural, =1{{lines} línea} other{{lines} líneas}} · {units} {unitsValue, plural, =1{ud.} other{uds.}}",
   "posTotalsArticlesLabel": "Artículos",
   "posTotalsSubtotalLabel": "Subtotal",
@@ -1034,6 +1035,7 @@
   "posNewAddressAction": "Nueva dirección",
   "posNewContactAction": "Nuevo contacto",
   "posDeliveryNotPermitted": "Este cliente no está autorizado para recibir entregas.",
+  "posGenericCustomerResetToPickup": "Este cliente no puede recibir entregas — la venta se cambió a recolección en mostrador.",
   "posCounterPickupRemainder": "Se recoge en tienda",
   "posDeliveryAddressPending": "Dirección pendiente",
   "posDestinationCounts": "{lines} líneas · {units} uds.",

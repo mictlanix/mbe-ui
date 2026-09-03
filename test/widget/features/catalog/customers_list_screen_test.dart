@@ -239,8 +239,6 @@ void main() {
           creditLimit: '1000.50',
           creditDays: 30,
           priceList: PriceListRef(id: 1, name: 'Retail'),
-          shipping: false,
-          shippingRequiredDocument: false,
           salesperson: EmployeeRef(id: 2, name: 'Jane Doe'),
           status: EntityStatus.active,
         ),

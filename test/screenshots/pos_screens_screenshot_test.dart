@@ -304,8 +304,6 @@ void main() {
         creditLimit: '0.0000',
         creditDays: 0,
         priceList: PriceListRef(id: 1, name: 'Mostrador'),
-        shipping: false,
-        shippingRequiredDocument: false,
         status: EntityStatus.active,
       ),
     );

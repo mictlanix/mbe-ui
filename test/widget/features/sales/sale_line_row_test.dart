@@ -696,6 +696,136 @@ void main() {
     });
   });
 
+  group('warehouse picker stock flag (US6, FR-020…FR-022, data-model.md §6)', () {
+    testWidgets('the closed display stays name-only even when the selected '
+        'warehouse itself is short on stock (research R11)', (tester) async {
+      // Warehouse 3 is the line's own selected warehouse (testLine's
+      // default), so this also exercises the line-level shortfall warning
+      // — a second, independent Icons.warning_amber user — without the
+      // picker's own closed display picking up a flag alongside it.
+      await pumpRow(
+        tester,
+        quantity: '5',
+        stock: const {
+          11: [WarehouseStock(warehouse: 3, onHand: '2', available: '2')],
+        },
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      expect(find.text('Main Warehouse'), findsOneWidget);
+      expect(find.text(l10n.posLineWarehouseStockShort('2')), findsNothing);
+      expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
+      expect(find.text(l10n.posLineWarehouseStockUnknown), findsNothing);
+      // Exactly the shortfall row's own icon — the picker added none.
+      expect(find.byIcon(Icons.warning_amber), findsOneWidget);
+    });
+
+    testWidgets('opening the picker flags a warehouse with no cached stock '
+        'as unknown, never as silently in stock', (tester) async {
+      await pumpRow(
+        tester,
+        quantity: '2',
+        stock: const {
+          11: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')],
+        },
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.pumpAndSettle();
+
+      // Warehouse 3 has enough stock (2 ≤ 10): no flag at all.
+      expect(find.text(l10n.posLineWarehouseStockShort('10')), findsNothing);
+      expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
+      // Warehouse 4 ("Overflow") was never looked up this session.
+      expect(find.text(l10n.posLineWarehouseStockUnknown), findsOneWidget);
+    });
+
+    testWidgets('opening the picker flags an exhausted warehouse as having '
+        'no stock, distinct from a partial shortfall', (tester) async {
+      await pumpRow(
+        tester,
+        quantity: '1',
+        stock: const {
+          11: [WarehouseStock(warehouse: 4, onHand: '0', available: '0')],
+        },
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.posLineWarehouseStockNone), findsOneWidget);
+      expect(find.text(l10n.posLineWarehouseStockShort('0')), findsNothing);
+    });
+
+    testWidgets('a warehouse flagged short is still selectable — the flag is '
+        'informational, never a block (FR-022)', (tester) async {
+      final salesOrder = MockSalesOrderRepository();
+      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(
+        () => salesOrder.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer((_) async => testSale(lines: [testLine(warehouse: 4)]));
+
+      final container = await pumpPos(
+        tester,
+        Consumer(
+          builder: (context, ref, _) {
+            ref.watch(posSaleControllerProvider);
+            return SaleLineRow(
+              line: testLine(quantity: '5'),
+              facilityId: 9,
+            );
+          },
+        ),
+        overrides: [
+          warehouseOverride(warehouseRepository),
+          salesOrderOverride(salesOrder),
+          productStockCacheProvider.overrideWith(
+            (ref) => const {
+              11: [WarehouseStock(warehouse: 4, onHand: '2', available: '2')],
+            },
+          ),
+        ],
+        surface: const Size(1400, 900),
+      );
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      await tester.pumpAndSettle();
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.pumpAndSettle();
+      // The flagged warehouse's own wording is on screen before it is
+      // chosen — an informed choice, not a guess.
+      expect(find.text(l10n.posLineWarehouseStockShort('2')), findsOneWidget);
+
+      await tester.tap(find.text('Overflow').last);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => salesOrder.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: 5,
+          quantity: null,
+          price: null,
+          discountRate: null,
+          taxRate: null,
+          warehouse: 4,
+          comment: null,
+        ),
+      ).called(1);
+    });
+  });
+
   group('layout thresholds (spec 023 FR-037, FR-037a)', () {
     testWidgets(
       'a single row at 1024 px of available width — the tablet-landscape '

@@ -1695,12 +1695,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noneAssignedLabel => 'None assigned';
 
   @override
-  String get shippingLabel => 'Shipping';
-
-  @override
-  String get shippingRequiredDocumentLabel => 'Shipping requires document';
-
-  @override
   String get columnSalesperson => 'Salesperson';
 
   @override
@@ -1761,9 +1755,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get customerDeletePermissionDeniedError =>
       'You no longer have permission to delete customers.';
-
-  @override
-  String get customerCodeRequiredError => 'Code is required.';
 
   @override
   String get customerNameRequiredError => 'Name is required.';
@@ -2693,6 +2684,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add at least one product before confirming the order.';
 
   @override
+  String get salesOrderChooseCustomerFirst =>
+      'Choose a customer to start the order.';
+
+  @override
   String get salesOrdersEmptyMessage => 'No orders yet in this period.';
 
   @override
@@ -2985,6 +2980,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posLineAdjustToAvailable => 'Adjust to available';
 
   @override
+  String get posLineWarehouseStockUnknown => 'Stock not checked';
+
+  @override
+  String posLineWarehouseStockShort(String available) {
+    return 'Only $available left';
+  }
+
+  @override
+  String get posLineWarehouseStockNone => 'No stock';
+
+  @override
   String posTotalsCounts(int lines, String units, num unitsValue) {
     String _temp0 = intl.Intl.pluralLogic(
       lines,
@@ -3238,6 +3244,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get posDeliveryNotPermitted =>
       'This customer is not set up to receive deliveries.';
+
+  @override
+  String get posGenericCustomerResetToPickup =>
+      'This customer cannot receive deliveries — the sale was switched to counter pickup.';
 
   @override
   String get posCounterPickupRemainder => 'Collected at the counter';

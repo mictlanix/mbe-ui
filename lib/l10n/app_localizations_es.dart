@@ -1720,12 +1720,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noneAssignedLabel => 'Ninguno asignado';
 
   @override
-  String get shippingLabel => 'Envío';
-
-  @override
-  String get shippingRequiredDocumentLabel => 'El envío requiere documento';
-
-  @override
   String get columnSalesperson => 'Vendedor';
 
   @override
@@ -1786,9 +1780,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get customerDeletePermissionDeniedError =>
       'Ya no tienes permiso para eliminar clientes.';
-
-  @override
-  String get customerCodeRequiredError => 'El código es obligatorio.';
 
   @override
   String get customerNameRequiredError => 'El nombre es obligatorio.';
@@ -2732,6 +2723,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Agrega al menos un producto para poder confirmar el pedido.';
 
   @override
+  String get salesOrderChooseCustomerFirst =>
+      'Elige un cliente para empezar el pedido.';
+
+  @override
   String get salesOrdersEmptyMessage => 'Aún no hay pedidos en este periodo.';
 
   @override
@@ -3028,6 +3023,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posLineAdjustToAvailable => 'Ajustar a disponible';
 
   @override
+  String get posLineWarehouseStockUnknown => 'Existencia sin verificar';
+
+  @override
+  String posLineWarehouseStockShort(String available) {
+    return 'Solo quedan $available';
+  }
+
+  @override
+  String get posLineWarehouseStockNone => 'Sin existencia';
+
+  @override
   String posTotalsCounts(int lines, String units, num unitsValue) {
     String _temp0 = intl.Intl.pluralLogic(
       lines,
@@ -3283,6 +3289,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get posDeliveryNotPermitted =>
       'Este cliente no está autorizado para recibir entregas.';
+
+  @override
+  String get posGenericCustomerResetToPickup =>
+      'Este cliente no puede recibir entregas — la venta se cambió a recolección en mostrador.';
 
   @override
   String get posCounterPickupRemainder => 'Se recoge en tienda';

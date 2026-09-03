@@ -5,6 +5,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_layout.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
@@ -286,6 +288,46 @@ void main() {
       );
     });
   }
+
+  group('the warehouse picker\'s stock flag at the largest text-scale level '
+      '(US6, T051)', () {
+    testWidgets(
+      'opening the picker, with a flagged warehouse in the list, produces '
+      'no overflow at 1.3x text scale',
+      (tester) async {
+        await pumpGoldenScenario(
+          tester,
+          naturallySized(
+            MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+              child: SaleLineRow(line: testLine(quantity: '5'), facilityId: 9),
+            ),
+          ),
+          brightness: Brightness.light,
+          width: 1440,
+          overrides: [
+            warehouseOverride(warehouseRepository),
+            // Warehouse 3 (the only one in this file's mock list) short on
+            // stock, so the open menu renders the icon-and-wording flag —
+            // the widest of the four states — rather than a blank item.
+            productStockCacheProvider.overrideWith(
+              (ref) => const {
+                11: [
+                  WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
+                ],
+              },
+            ),
+          ],
+        );
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.byType(DropdownButtonFormField<int>));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+      },
+    );
+  });
 
   group('SaleLineCard (compact tier)', () {
     testWidgets('the outer card padding is symmetric top/bottom', (tester) async {

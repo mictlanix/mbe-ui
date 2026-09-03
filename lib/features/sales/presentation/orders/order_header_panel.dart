@@ -249,6 +249,10 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                       return result.items;
                     },
                     onSelected: (e) => _update(salesperson: e.employeeId),
+                    // spec 036 FR-017: renders an autofilled salesperson's
+                    // name on load — previously blank regardless of whether
+                    // one was already set (research.md R7).
+                    initialDisplayText: customer?.salesperson?.name,
                     enabled: canEdit,
                   ),
                 ),

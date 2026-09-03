@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -111,7 +113,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
           // `FilledButton.tonal` this replaces got for free.
           FloatingActionButton.extended(
             key: const Key('payment_close_button'),
-            onPressed: canClose ? onClose : null,
+            onPressed: canClose ? () => _handleClose(ref) : null,
             backgroundColor: canClose
                 ? null
                 : theme.colorScheme.onSurface.withValues(alpha: 0.12),
@@ -154,6 +156,21 @@ class PaymentSummaryPanel extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// spec 036 FR-008/R1: leaving Cobro on credit terms with no cash ever
+  /// tendered is the one path that reaches here without `PaymentController
+  /// .submit` having already confirmed the sale — so this confirms it here,
+  /// immediately before actually leaving. A no-op once already confirmed
+  /// (the ordinary case: a payment already ran `confirm()`). On failure the
+  /// error is routed to Venta's banner and this step is not left.
+  Future<void> _handleClose(WidgetRef ref) async {
+    try {
+      await confirmBeforePayableAction(ref.read, sale);
+    } on AppError {
+      return;
+    }
+    onClose();
   }
 
   Widget _row(

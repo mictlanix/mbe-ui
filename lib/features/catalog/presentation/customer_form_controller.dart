@@ -16,7 +16,6 @@ part 'customer_form_controller.g.dart';
 /// Error codes for [CustomerFormState.error]/`fieldErrors`, localized in the
 /// UI layer.
 abstract final class CustomerFormErrorCode {
-  static const codeRequired = 'codeRequired';
   static const nameRequired = 'nameRequired';
   static const priceListRequired = 'priceListRequired';
   static const creditLimitInvalid = 'creditLimitInvalid';
@@ -45,8 +44,6 @@ class CustomerFormState with _$CustomerFormState {
     @Default('') String creditDays,
     int? priceListId,
     @Default('') String priceListDisplayText,
-    @Default(false) bool shipping,
-    @Default(false) bool shippingRequiredDocument,
     int? salespersonId,
     @Default('') String salespersonDisplayText,
     /// The RFC this customer invoices under (mbe-api#150). One here even
@@ -110,11 +107,6 @@ class CustomerFormController extends _$CustomerFormController {
     fieldErrors: const {},
   );
 
-  void shippingChanged(bool v) => state = state.copyWith(shipping: v);
-
-  void shippingRequiredDocumentChanged(bool v) =>
-      state = state.copyWith(shippingRequiredDocument: v);
-
   void salespersonSelected(int? id, String displayText) => state = state
       .copyWith(salespersonId: id, salespersonDisplayText: displayText);
 
@@ -141,8 +133,6 @@ class CustomerFormController extends _$CustomerFormController {
         creditDays: customer.creditDays.toString(),
         priceListId: customer.priceList.id,
         priceListDisplayText: customer.priceList.name,
-        shipping: customer.shipping,
-        shippingRequiredDocument: customer.shippingRequiredDocument,
         salespersonId: customer.salesperson?.id,
         salespersonDisplayText: customer.salesperson?.name ?? '',
         taxpayerId: customer.taxpayers.firstOrNull?.taxpayerRecipientId,
@@ -159,12 +149,11 @@ class CustomerFormController extends _$CustomerFormController {
     }
   }
 
-  /// Client-side validation (FR-019).
+  /// Client-side validation (FR-019). `code` is intentionally not validated
+  /// here — spec 036 FR-011 makes it optional, since the business does not
+  /// assign one at intake.
   Map<String, String> _validate() {
     final errors = <String, String>{};
-    if (!CatalogFieldValidators.isRequiredNonEmpty(state.code)) {
-      errors['code'] = CustomerFormErrorCode.codeRequired;
-    }
     if (!CatalogFieldValidators.isRequiredNonEmpty(state.name)) {
       errors['name'] = CustomerFormErrorCode.nameRequired;
     }
@@ -217,14 +206,14 @@ class CustomerFormController extends _$CustomerFormController {
       final created = await ref
           .read(customerRepositoryProvider)
           .create(
-            code: state.code,
+            // spec 036 FR-011 (mbe-api#198): a blank code omits the field
+            // entirely rather than sending `""`.
+            code: _orNull(state.code),
             name: state.name,
             priceList: state.priceListId!,
             zone: _orNull(state.zone),
             creditLimit: _orNull(state.creditLimit),
             creditDays: _orNullInt(state.creditDays),
-            shipping: state.shipping,
-            shippingRequiredDocument: state.shippingRequiredDocument,
             salesperson: state.salespersonId,
             comment: _orNull(state.comment),
             taxpayers: _taxpayersOf(state),
@@ -290,14 +279,15 @@ class CustomerFormController extends _$CustomerFormController {
           .read(customerRepositoryProvider)
           .update(
             customerId: customerId,
-            code: state.code,
+            // A blank `code` omits the field rather than sending `""` — an
+            // empty code left in place is preferable to overwriting one that
+            // was set some other way (FR-011).
+            code: _orNull(state.code),
             name: state.name,
             priceList: state.priceListId,
             zone: state.zone,
             creditLimit: _orNull(state.creditLimit) ?? '',
             creditDays: _orNullInt(state.creditDays),
-            shipping: state.shipping,
-            shippingRequiredDocument: state.shippingRequiredDocument,
             salesperson: state.salespersonId,
             status: state.status,
             comment: state.comment,

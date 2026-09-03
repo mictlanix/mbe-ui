@@ -322,10 +322,15 @@ badge in the closed state.
 a second stock-comparison path, and respects an existing, test-asserted layout invariant instead
 of quietly breaking it.
 
-**Verify against a live backend before implementing:** whether the product-lookup call's
-`warehouse:` parameter filters the returned `stock` list to just that warehouse — if so, every
-non-default warehouse would show as permanently "unknown" and the feature needs a per-warehouse
-stock fetch to be useful. Not answerable from the generated client alone.
+**Confirmed live during implementation (T046 spike):** the product-lookup call's `warehouse:`
+parameter **does** filter the returned `stock` list to just that warehouse — requesting
+`warehouse=12` on a facility with warehouses `[12, 15, 16]` returned `stock` for warehouse 12
+only. Since `capture_step.dart`/`order_screen.dart` only ever look up a product at the register's
+single default warehouse, `productStockCacheProvider` never holds more than one warehouse's entry
+per product — every warehouse *other than* the one last looked up shows as "unknown" in the
+picker, never falsely "in stock" (still FR-020/021/022-compliant), but the flag's practical value
+is limited to that one warehouse until a per-warehouse stock fetch is added. That fetch is out of
+scope for this feature — recorded here as a known limitation, not fixed.
 
 ---
 

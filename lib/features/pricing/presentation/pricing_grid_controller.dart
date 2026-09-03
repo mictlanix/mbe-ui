@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
@@ -136,11 +140,14 @@ class PriceChange with _$PriceChange {
 /// older per-product `PricingState`, which predates this codebase's
 /// AsyncNotifier convention for list screens).
 ///
-/// Draft text of the cell currently being edited is deliberately **not**
-/// here — it lives in that cell's own local `State` (research.md §R3 — a
-/// per-keystroke provider write would rebuild the whole row and steal
-/// focus). [active] names *which* cell that is, which changes rarely enough
-/// (once per cell, not once per keystroke) that holding it here is safe.
+/// Draft text of the cell currently being edited **is** held here
+/// ([activeDraft]), despite the per-keystroke rebuild cost research.md §R3
+/// originally avoided by keeping it in the cell's own local `State` — spec
+/// 036's R9 supersedes that decision: a widget-local draft can never be
+/// committed reliably from `openCell` (a mouse click into another cell, or
+/// any future caller), only from the widget's own Focus/dispose lifecycle,
+/// which is exactly what silently lost edits (FR-009). [active] names
+/// *which* cell [activeDraft] belongs to.
 @freezed
 class PricingGridState with _$PricingGridState {
   const factory PricingGridState({
@@ -150,6 +157,12 @@ class PricingGridState with _$PricingGridState {
 
     /// The cell currently open for editing, or `null` when none is.
     PriceCellKey? active,
+
+    /// The typed text of the currently-active cell (data-model.md §3), or
+    /// `null` when nothing has been typed since it opened. Set on every
+    /// keystroke ([PricingGridController.updateDraft]); cleared whenever
+    /// [active] changes or the cell is committed or discarded.
+    String? activeDraft,
 
     /// Cells whose write is in flight (FR-022 "saving").
     @Default(<PriceCellKey>{}) Set<PriceCellKey> inFlight,
@@ -269,6 +282,12 @@ Future<List<ProductMissingPriceFacet>> pricingGridMissingFacets(
 /// observe each other's half-applied state.
 @riverpod
 class PricingGridController extends _$PricingGridController {
+  /// The value of a cell's write currently in flight, keyed by cell — not
+  /// part of [PricingGridState] since it is bookkeeping for [commitCell]'s
+  /// own duplicate guard (contracts/pricing-grid-commit.md C2), not
+  /// something any widget renders.
+  final Map<PriceCellKey, String> _committing = {};
+
   @override
   Future<PricingGridState> build(PricingGridFilter filter) async {
     final shownColumns = ref.watch(pricingGridShownColumnsProvider);
@@ -352,10 +371,47 @@ class PricingGridController extends _$PricingGridController {
 
   /// Opens [key] for editing — closes whatever else was open first, since
   /// exactly one cell is ever active at a time (research.md §R3).
+  ///
+  /// Commit-before-switch (contracts/pricing-grid-commit.md C1, FR-009):
+  /// whatever cell was active before [key] is opened has its typed-but-
+  /// uncommitted [PricingGridState.activeDraft] committed first, through the
+  /// exact same [commitCell] path a keyboard-triggered move already uses.
+  /// This is what makes "moving to another cell never silently drops an
+  /// edit" true regardless of *how* the move happened — a mouse click
+  /// straight into another cell (research.md R9's root cause) as much as a
+  /// keyboard move — because the guarantee lives here, not in a widget's
+  /// Focus lifecycle.
   void openCell(PriceCellKey key) {
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(current.copyWith(active: key));
+    final outgoing = current.active;
+    if (outgoing != null && outgoing != key) {
+      final draft = current.activeDraft;
+      if (draft != null && !sameAmount(draft.trim(), current.valueOf(outgoing))) {
+        // Fire-and-forget: every branch of `commitCell` clears `active`
+        // synchronously, before its first `await` (if any), so by the time
+        // control returns here `state.value` already reflects that — this
+        // does not race the `active: key` assignment below.
+        unawaited(
+          commitCell(
+            productId: outgoing.productId,
+            priceListId: outgoing.priceListId,
+            typed: draft,
+          ),
+        );
+      }
+    }
+    final latest = state.value ?? current;
+    state = AsyncData(latest.copyWith(active: key, activeDraft: null));
+  }
+
+  /// Records every keystroke in the active cell (data-model.md §3) — the
+  /// only way [PricingGridState.activeDraft] is set, short of it being
+  /// cleared by a commit, a discard, or the active cell changing.
+  void updateDraft(String value) {
+    final current = state.value;
+    if (current == null || current.active == null) return;
+    state = AsyncData(current.copyWith(activeDraft: value));
   }
 
   /// Closes the active cell without committing anything (Escape), and drops
@@ -374,6 +430,7 @@ class PricingGridController extends _$PricingGridController {
     state = AsyncData(
       current.copyWith(
         active: null,
+        activeDraft: null,
         rejected: active == null
             ? current.rejected
             : ({...current.rejected}..remove(active)),
@@ -688,6 +745,7 @@ class PricingGridController extends _$PricingGridController {
   }) async {
     final current = state.value;
     if (current == null) return 0;
+    final decimalDigits = ref.read(appSettingsProvider).formatting.currencyDecimalDigits;
     final factor =
         (Decimal.one +
         (percent / Decimal.fromInt(100)).toDecimal(
@@ -699,13 +757,14 @@ class PricingGridController extends _$PricingGridController {
       if (existing == null) continue;
       final currentPrice = Decimal.tryParse(existing.price);
       if (currentPrice == null) continue;
-      // Rounded to two places and rendered with `toString()` — the canonical
-      // decimal string, which is what goes on the wire and what the API
-      // stores. Fixed-precision rendering belongs to the display surface
-      // (spec 028), which formats this value again on the way back out; a
-      // presentation file building one by hand is what that spec's guard
-      // test exists to catch.
-      final next = (currentPrice * factor).round(scale: 2);
+      // Rounded to the deployment's configured currency decimal-digit count
+      // (contracts/app-settings-additions.md C3, spec 036 FR-026) and
+      // rendered with `toString()` — the canonical decimal string, which is
+      // what goes on the wire and what the API stores. Fixed-precision
+      // rendering belongs to the display surface (spec 028), which formats
+      // this value again on the way back out; a presentation file building
+      // one by hand is what that spec's guard test exists to catch.
+      final next = (currentPrice * factor).round(scale: decimalDigits);
       if (next < Decimal.zero) continue;
       writes.add(
         PriceWrite(
@@ -753,6 +812,7 @@ class PricingGridController extends _$PricingGridController {
       state = AsyncData(
         current.copyWith(
           active: null,
+          activeDraft: null,
           rejected: {...current.rejected}..remove(key),
         ),
       );
@@ -763,6 +823,7 @@ class PricingGridController extends _$PricingGridController {
       state = AsyncData(
         current.copyWith(
           active: null,
+          activeDraft: null,
           rejected: {
             ...current.rejected,
             key: RejectedEdit(
@@ -775,16 +836,37 @@ class PricingGridController extends _$PricingGridController {
       return;
     }
 
+    // Routes the value actually sent through the shared formatting surface
+    // (contracts/app-settings-additions.md C3) — here, not in each caller,
+    // so an explicit widget commit and `openCell`'s own commit-before-switch
+    // (which calls this directly with the raw typed draft, contracts/
+    // pricing-grid-commit.md C1) both send the same canonical wire value.
+    // Falls back to `trimmed` on a parse failure, which cannot happen here:
+    // `isNonNegativeDecimal` above already guarantees a parseable amount.
+    final effective =
+        ref.read(formattersProvider).field.parsePrice(trimmed) ?? trimmed;
+
     final existing = existingBefore;
-    if (existing != null && sameAmount(existing.price, trimmed)) {
+    if (existing != null && sameAmount(existing.price, effective)) {
       final rejected = {...current.rejected}..remove(key);
-      state = AsyncData(current.copyWith(active: null, rejected: rejected));
+      state = AsyncData(
+        current.copyWith(active: null, activeDraft: null, rejected: rejected),
+      );
       return;
     }
+
+    // Duplicate-in-flight guard (contracts/pricing-grid-commit.md C2): a
+    // keyboard-triggered commit and `openCell`'s own commit-before-switch
+    // can both reach here for the same (cell, value) edit before the first
+    // request has come back — comparing against `state.rows` alone would
+    // miss that, since it only updates once the server responds.
+    if (_committing[key] == effective) return;
+    _committing[key] = effective;
 
     state = AsyncData(
       current.copyWith(
         active: null,
+        activeDraft: null,
         inFlight: {...current.inFlight, key},
         rejected: {...current.rejected}..remove(key),
       ),
@@ -801,13 +883,13 @@ class PricingGridController extends _$PricingGridController {
                 .create(
                   productId: productId,
                   priceListId: priceListId,
-                  price: trimmed,
+                  price: effective,
                 )
           : await ref
                 .read(productPriceRepositoryProvider)
                 .update(
                   productPriceId: existing.productPriceId,
-                  price: trimmed,
+                  price: effective,
                 );
       final latest = state.value;
       if (latest == null) return; // filter/columns changed mid-write
@@ -853,6 +935,8 @@ class PricingGridController extends _$PricingGridController {
           },
         ),
       );
+    } finally {
+      _committing.remove(key);
     }
   }
 }

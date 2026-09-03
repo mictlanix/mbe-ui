@@ -27,14 +27,14 @@ abstract class CustomerRepository {
   Future<Customer> get({required int customerId});
 
   Future<Customer> create({
-    required String code,
+    // spec 036 FR-011: optional since mbe-api#198 landed — `null` omits the
+    // field entirely rather than sending an empty string.
+    String? code,
     required String name,
     required int priceList,
     String? zone,
     String? creditLimit,
     int? creditDays,
-    bool? shipping,
-    bool? shippingRequiredDocument,
     int? salesperson,
     String? comment,
     List<int>? addresses,
@@ -52,8 +52,6 @@ abstract class CustomerRepository {
     String? zone,
     String? creditLimit,
     int? creditDays,
-    bool? shipping,
-    bool? shippingRequiredDocument,
     int? salesperson,
     EntityStatus? status,
     String? comment,

@@ -858,6 +858,12 @@ mixin _$PricingGridState {
   /// The cell currently open for editing, or `null` when none is.
   PriceCellKey? get active => throw _privateConstructorUsedError;
 
+  /// The typed text of the currently-active cell (data-model.md §3), or
+  /// `null` when nothing has been typed since it opened. Set on every
+  /// keystroke ([PricingGridController.updateDraft]); cleared whenever
+  /// [active] changes or the cell is committed or discarded.
+  String? get activeDraft => throw _privateConstructorUsedError;
+
   /// Cells whose write is in flight (FR-022 "saving").
   Set<PriceCellKey> get inFlight => throw _privateConstructorUsedError;
 
@@ -892,6 +898,7 @@ abstract class $PricingGridStateCopyWith<$Res> {
     List<PriceList> allLists,
     CatalogPage<PricingGridRow>? page,
     PriceCellKey? active,
+    String? activeDraft,
     Set<PriceCellKey> inFlight,
     Map<PriceCellKey, RejectedEdit> rejected,
     Map<PriceCellKey, String?> baseline,
@@ -920,6 +927,7 @@ class _$PricingGridStateCopyWithImpl<$Res, $Val extends PricingGridState>
     Object? allLists = null,
     Object? page = freezed,
     Object? active = freezed,
+    Object? activeDraft = freezed,
     Object? inFlight = null,
     Object? rejected = null,
     Object? baseline = null,
@@ -943,6 +951,10 @@ class _$PricingGridStateCopyWithImpl<$Res, $Val extends PricingGridState>
                 ? _value.active
                 : active // ignore: cast_nullable_to_non_nullable
                       as PriceCellKey?,
+            activeDraft: freezed == activeDraft
+                ? _value.activeDraft
+                : activeDraft // ignore: cast_nullable_to_non_nullable
+                      as String?,
             inFlight: null == inFlight
                 ? _value.inFlight
                 : inFlight // ignore: cast_nullable_to_non_nullable
@@ -993,6 +1005,7 @@ abstract class _$$PricingGridStateImplCopyWith<$Res>
     List<PriceList> allLists,
     CatalogPage<PricingGridRow>? page,
     PriceCellKey? active,
+    String? activeDraft,
     Set<PriceCellKey> inFlight,
     Map<PriceCellKey, RejectedEdit> rejected,
     Map<PriceCellKey, String?> baseline,
@@ -1021,6 +1034,7 @@ class __$$PricingGridStateImplCopyWithImpl<$Res>
     Object? allLists = null,
     Object? page = freezed,
     Object? active = freezed,
+    Object? activeDraft = freezed,
     Object? inFlight = null,
     Object? rejected = null,
     Object? baseline = null,
@@ -1044,6 +1058,10 @@ class __$$PricingGridStateImplCopyWithImpl<$Res>
             ? _value.active
             : active // ignore: cast_nullable_to_non_nullable
                   as PriceCellKey?,
+        activeDraft: freezed == activeDraft
+            ? _value.activeDraft
+            : activeDraft // ignore: cast_nullable_to_non_nullable
+                  as String?,
         inFlight: null == inFlight
             ? _value._inFlight
             : inFlight // ignore: cast_nullable_to_non_nullable
@@ -1073,6 +1091,7 @@ class _$PricingGridStateImpl implements _PricingGridState {
     final List<PriceList> allLists = const <PriceList>[],
     this.page,
     this.active,
+    this.activeDraft,
     final Set<PriceCellKey> inFlight = const <PriceCellKey>{},
     final Map<PriceCellKey, RejectedEdit> rejected =
         const <PriceCellKey, RejectedEdit>{},
@@ -1109,6 +1128,13 @@ class _$PricingGridStateImpl implements _PricingGridState {
   /// The cell currently open for editing, or `null` when none is.
   @override
   final PriceCellKey? active;
+
+  /// The typed text of the currently-active cell (data-model.md §3), or
+  /// `null` when nothing has been typed since it opened. Set on every
+  /// keystroke ([PricingGridController.updateDraft]); cleared whenever
+  /// [active] changes or the cell is committed or discarded.
+  @override
+  final String? activeDraft;
 
   /// Cells whose write is in flight (FR-022 "saving").
   final Set<PriceCellKey> _inFlight;
@@ -1164,7 +1190,7 @@ class _$PricingGridStateImpl implements _PricingGridState {
 
   @override
   String toString() {
-    return 'PricingGridState(rows: $rows, allLists: $allLists, page: $page, active: $active, inFlight: $inFlight, rejected: $rejected, baseline: $baseline, history: $history)';
+    return 'PricingGridState(rows: $rows, allLists: $allLists, page: $page, active: $active, activeDraft: $activeDraft, inFlight: $inFlight, rejected: $rejected, baseline: $baseline, history: $history)';
   }
 
   @override
@@ -1176,6 +1202,8 @@ class _$PricingGridStateImpl implements _PricingGridState {
             const DeepCollectionEquality().equals(other._allLists, _allLists) &&
             (identical(other.page, page) || other.page == page) &&
             (identical(other.active, active) || other.active == active) &&
+            (identical(other.activeDraft, activeDraft) ||
+                other.activeDraft == activeDraft) &&
             const DeepCollectionEquality().equals(other._inFlight, _inFlight) &&
             const DeepCollectionEquality().equals(other._rejected, _rejected) &&
             const DeepCollectionEquality().equals(other._baseline, _baseline) &&
@@ -1189,6 +1217,7 @@ class _$PricingGridStateImpl implements _PricingGridState {
     const DeepCollectionEquality().hash(_allLists),
     page,
     active,
+    activeDraft,
     const DeepCollectionEquality().hash(_inFlight),
     const DeepCollectionEquality().hash(_rejected),
     const DeepCollectionEquality().hash(_baseline),
@@ -1213,6 +1242,7 @@ abstract class _PricingGridState implements PricingGridState {
     final List<PriceList> allLists,
     final CatalogPage<PricingGridRow>? page,
     final PriceCellKey? active,
+    final String? activeDraft,
     final Set<PriceCellKey> inFlight,
     final Map<PriceCellKey, RejectedEdit> rejected,
     final Map<PriceCellKey, String?> baseline,
@@ -1229,6 +1259,13 @@ abstract class _PricingGridState implements PricingGridState {
   /// The cell currently open for editing, or `null` when none is.
   @override
   PriceCellKey? get active;
+
+  /// The typed text of the currently-active cell (data-model.md §3), or
+  /// `null` when nothing has been typed since it opened. Set on every
+  /// keystroke ([PricingGridController.updateDraft]); cleared whenever
+  /// [active] changes or the cell is committed or discarded.
+  @override
+  String? get activeDraft;
 
   /// Cells whose write is in flight (FR-022 "saving").
   @override

@@ -322,8 +322,6 @@ mixin _$Customer {
   String get creditLimit => throw _privateConstructorUsedError;
   int get creditDays => throw _privateConstructorUsedError;
   PriceListRef get priceList => throw _privateConstructorUsedError;
-  bool get shipping => throw _privateConstructorUsedError;
-  bool get shippingRequiredDocument => throw _privateConstructorUsedError;
   EmployeeRef? get salesperson => throw _privateConstructorUsedError;
   EntityStatus get status => throw _privateConstructorUsedError;
   String? get comment =>
@@ -360,8 +358,6 @@ abstract class $CustomerCopyWith<$Res> {
     String creditLimit,
     int creditDays,
     PriceListRef priceList,
-    bool shipping,
-    bool shippingRequiredDocument,
     EmployeeRef? salesperson,
     EntityStatus status,
     String? comment,
@@ -396,8 +392,6 @@ class _$CustomerCopyWithImpl<$Res, $Val extends Customer>
     Object? creditLimit = null,
     Object? creditDays = null,
     Object? priceList = null,
-    Object? shipping = null,
-    Object? shippingRequiredDocument = null,
     Object? salesperson = freezed,
     Object? status = null,
     Object? comment = freezed,
@@ -435,14 +429,6 @@ class _$CustomerCopyWithImpl<$Res, $Val extends Customer>
                 ? _value.priceList
                 : priceList // ignore: cast_nullable_to_non_nullable
                       as PriceListRef,
-            shipping: null == shipping
-                ? _value.shipping
-                : shipping // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            shippingRequiredDocument: null == shippingRequiredDocument
-                ? _value.shippingRequiredDocument
-                : shippingRequiredDocument // ignore: cast_nullable_to_non_nullable
-                      as bool,
             salesperson: freezed == salesperson
                 ? _value.salesperson
                 : salesperson // ignore: cast_nullable_to_non_nullable
@@ -514,8 +500,6 @@ abstract class _$$CustomerImplCopyWith<$Res>
     String creditLimit,
     int creditDays,
     PriceListRef priceList,
-    bool shipping,
-    bool shippingRequiredDocument,
     EmployeeRef? salesperson,
     EntityStatus status,
     String? comment,
@@ -551,8 +535,6 @@ class __$$CustomerImplCopyWithImpl<$Res>
     Object? creditLimit = null,
     Object? creditDays = null,
     Object? priceList = null,
-    Object? shipping = null,
-    Object? shippingRequiredDocument = null,
     Object? salesperson = freezed,
     Object? status = null,
     Object? comment = freezed,
@@ -590,14 +572,6 @@ class __$$CustomerImplCopyWithImpl<$Res>
             ? _value.priceList
             : priceList // ignore: cast_nullable_to_non_nullable
                   as PriceListRef,
-        shipping: null == shipping
-            ? _value.shipping
-            : shipping // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        shippingRequiredDocument: null == shippingRequiredDocument
-            ? _value.shippingRequiredDocument
-            : shippingRequiredDocument // ignore: cast_nullable_to_non_nullable
-                  as bool,
         salesperson: freezed == salesperson
             ? _value.salesperson
             : salesperson // ignore: cast_nullable_to_non_nullable
@@ -638,8 +612,6 @@ class _$CustomerImpl implements _Customer {
     required this.creditLimit,
     required this.creditDays,
     required this.priceList,
-    required this.shipping,
-    required this.shippingRequiredDocument,
     this.salesperson,
     required this.status,
     this.comment,
@@ -664,10 +636,6 @@ class _$CustomerImpl implements _Customer {
   final int creditDays;
   @override
   final PriceListRef priceList;
-  @override
-  final bool shipping;
-  @override
-  final bool shippingRequiredDocument;
   @override
   final EmployeeRef? salesperson;
   @override
@@ -721,7 +689,7 @@ class _$CustomerImpl implements _Customer {
 
   @override
   String toString() {
-    return 'Customer(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salesperson: $salesperson, status: $status, comment: $comment, addresses: $addresses, contacts: $contacts, taxpayers: $taxpayers)';
+    return 'Customer(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceList: $priceList, salesperson: $salesperson, status: $status, comment: $comment, addresses: $addresses, contacts: $contacts, taxpayers: $taxpayers)';
   }
 
   @override
@@ -740,13 +708,6 @@ class _$CustomerImpl implements _Customer {
                 other.creditDays == creditDays) &&
             (identical(other.priceList, priceList) ||
                 other.priceList == priceList) &&
-            (identical(other.shipping, shipping) ||
-                other.shipping == shipping) &&
-            (identical(
-                  other.shippingRequiredDocument,
-                  shippingRequiredDocument,
-                ) ||
-                other.shippingRequiredDocument == shippingRequiredDocument) &&
             (identical(other.salesperson, salesperson) ||
                 other.salesperson == salesperson) &&
             (identical(other.status, status) || other.status == status) &&
@@ -772,8 +733,6 @@ class _$CustomerImpl implements _Customer {
     creditLimit,
     creditDays,
     priceList,
-    shipping,
-    shippingRequiredDocument,
     salesperson,
     status,
     comment,
@@ -800,8 +759,6 @@ abstract class _Customer implements Customer {
     required final String creditLimit,
     required final int creditDays,
     required final PriceListRef priceList,
-    required final bool shipping,
-    required final bool shippingRequiredDocument,
     final EmployeeRef? salesperson,
     required final EntityStatus status,
     final String? comment,
@@ -824,10 +781,6 @@ abstract class _Customer implements Customer {
   int get creditDays;
   @override
   PriceListRef get priceList;
-  @override
-  bool get shipping;
-  @override
-  bool get shippingRequiredDocument;
   @override
   EmployeeRef? get salesperson;
   @override

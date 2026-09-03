@@ -154,4 +154,47 @@ void main() {
       expect(settings.quantityDecimalDigits, 0);
     });
   });
+
+  // spec 036 T060: AppSettings.inputDebounce/quantityCommitDebounce parse
+  // with the same fallback-not-crash rule as
+  // FormattingSettings._parseDigits (contracts/app-settings-additions.md C1).
+  // AppSettings._parseDebounceMs is private; this group mirrors its
+  // documented rule directly, the same convention used above for
+  // FormattingSettings._parseDigits.
+  group('AppSettings debounce-setting fallback rules (spec 036 FR-030)', () {
+    Duration parseDebounceMs(String value, int fallbackMs) {
+      final parsed = int.tryParse(value);
+      if (parsed == null || parsed < 0) return Duration(milliseconds: fallbackMs);
+      return Duration(milliseconds: parsed);
+    }
+
+    test('a valid non-negative value is used as given', () {
+      expect(parseDebounceMs('150', 300), const Duration(milliseconds: 150));
+      expect(parseDebounceMs('0', 400), Duration.zero);
+    });
+
+    test('an empty value falls back to the default', () {
+      expect(parseDebounceMs('', 300), const Duration(milliseconds: 300));
+    });
+
+    test('a non-numeric value falls back to the default', () {
+      expect(parseDebounceMs('abc', 400), const Duration(milliseconds: 400));
+    });
+
+    test('a negative value falls back to the default', () {
+      expect(parseDebounceMs('-1', 300), const Duration(milliseconds: 300));
+    });
+
+    test(
+      'AppSettings.fromEnvironment reproduces the 300ms/400ms defaults with no --dart-define',
+      () {
+        // Mirrors the AppSettings.fromEnvironment() test above: fromEnvironment()
+        // reads compile-time values, so this only proves the no-.env path.
+        final settings = AppSettings.fromEnvironment();
+
+        expect(settings.inputDebounce, const Duration(milliseconds: 300));
+        expect(settings.quantityCommitDebounce, const Duration(milliseconds: 400));
+      },
+    );
+  });
 }

@@ -14,10 +14,12 @@ import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/customer_inline_create.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -39,7 +41,12 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// handling here: the response already carries every line re-priced, and
 /// the controller's normal wholesale replace picks it up.
 class CustomerBar extends ConsumerStatefulWidget {
-  const CustomerBar({super.key, required this.sale, this.enabled = true});
+  const CustomerBar({
+    super.key,
+    required this.sale,
+    this.enabled = true,
+    this.excludeGenericCustomer = false,
+  });
 
   /// `null` before the first action has opened a sale. The band still renders
   /// — on [posDefaultCustomerId], the walk-in customer mbe-api would raise
@@ -54,6 +61,12 @@ class CustomerBar extends ConsumerStatefulWidget {
   final Sale? sale;
   final bool enabled;
 
+  /// spec 036 FR-002: when `true`, the generic "Público en General" customer
+  /// is excluded from the picker's search results. The back-office Sales
+  /// Order screen sets this; POS capture keeps the default `false` — a POS
+  /// sale still needs to default to and allow that customer.
+  final bool excludeGenericCustomer;
+
   @override
   ConsumerState<CustomerBar> createState() => _CustomerBarState();
 }
@@ -65,19 +78,50 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   bool _busy = false;
   _CustomerBandMode _mode = _CustomerBandMode.facts;
 
-  Future<void> _updateHeader({int? customer, PaymentTerms? paymentTerms}) async {
+  Future<void> _updateHeader({
+    int? customer,
+    PaymentTerms? paymentTerms,
+    int? salesperson,
+  }) async {
     setState(() {
       _busy = true;
       _error = null;
     });
+    // spec 036 FR-016: switching to the generic "Público en General"
+    // customer while a sale is in delivery/mixed mode resets it to
+    // pickup-only, since that customer cannot use either — checked against
+    // the sale's own persisted `fulfillmentIntent` (shared between POS and
+    // back-office orders), not any POS-only local state.
+    final previousMode = widget.sale?.fulfillmentIntent ?? FulfillmentMode.counterPickup;
+    final demoteToPickup =
+        customer != null &&
+        previousMode != FulfillmentMode.counterPickup &&
+        ref.read(appSettingsProvider).isGenericCustomer(customer);
     try {
       await ref
           .read(saleEditorProvider)
-          .updateHeader(customer: customer, paymentTerms: paymentTerms);
+          .updateHeader(
+            customer: customer,
+            paymentTerms: paymentTerms,
+            salesperson: salesperson,
+            fulfillmentIntent: demoteToPickup ? FulfillmentMode.counterPickup : null,
+          );
       // A customer was just attached — return to reporting facts for it
       // (FR-023). A terms-only change has no face to return from.
       if (customer != null && mounted) {
         setState(() => _mode = _CustomerBandMode.facts);
+      }
+      if (demoteToPickup && mounted) {
+        // Keeps the POS mode selector's own local state in step with the
+        // server-side reset just made above; a no-op where this bar is used
+        // outside POS capture (no widget there reads this provider).
+        ref.read(posStepControllerProvider.notifier).setMode(FulfillmentMode.counterPickup);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            key: const Key('pos_generic_customer_pickup_reset_notice'),
+            content: Text(AppLocalizations.of(context)!.posGenericCustomerResetToPickup),
+          ),
+        );
       }
     } on AppError catch (e) {
       setState(() => _error = e);
@@ -183,8 +227,16 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                         enabled: enabled,
                         busy: _busy,
                         initialDisplayText: widget.sale?.customerName,
-                        onSelected: (customer) =>
-                            _updateHeader(customer: customer.customerId),
+                        excludeGenericCustomer: widget.excludeGenericCustomer,
+                        // spec 036 FR-017/FR-018/FR-019: prefills the
+                        // order's salesperson from the customer's own
+                        // record, in the same write that attaches the
+                        // customer; left unchanged when the customer has
+                        // none on file.
+                        onSelected: (customer) => _updateHeader(
+                          customer: customer.customerId,
+                          salesperson: customer.salesperson?.id,
+                        ),
                         onCancel: _cancelSearch,
                       ),
               ),
@@ -420,6 +472,7 @@ class _SearchingView extends ConsumerWidget {
     required this.enabled,
     required this.busy,
     required this.initialDisplayText,
+    required this.excludeGenericCustomer,
     required this.onSelected,
     required this.onCancel,
   });
@@ -427,6 +480,7 @@ class _SearchingView extends ConsumerWidget {
   final bool enabled;
   final bool busy;
   final String? initialDisplayText;
+  final bool excludeGenericCustomer;
   final ValueChanged<CustomerListItem> onSelected;
   final VoidCallback onCancel;
 
@@ -456,7 +510,11 @@ class _SearchingView extends ConsumerWidget {
                 final result = await ref
                     .read(customerRepositoryProvider)
                     .list(search: query, limit: 10);
-                return result.items;
+                if (!excludeGenericCustomer) return result.items;
+                final settings = ref.read(appSettingsProvider);
+                return result.items
+                    .where((c) => !settings.isGenericCustomer(c.customerId))
+                    .toList();
               },
               onSelected: onSelected,
             ),

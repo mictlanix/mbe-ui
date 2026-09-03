@@ -18,6 +18,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -43,13 +44,18 @@ Sale testSale({
   int? shipTo,
   FulfillmentMode? fulfillmentIntent,
   int pointSale = 3,
+  // Defaults to an ordinary (non-generic) customer id — pass
+  // `posDefaultCustomerId` (1, unless overridden by `--dart-define`) to
+  // build a sale attached to the generic "Público en General" customer
+  // (spec 036 FR-015/FR-016).
+  int customer = 7,
 }) => Sale(
   id: id,
   serial: serial,
   facility: 9,
   pointSale: pointSale,
   salesperson: 100,
-  customer: 7,
+  customer: customer,
   customerName: 'Público en general',
   // Null by default: a counter sale, which is what most fixtures want.
   // Pass a delivery address to make it a delivery sale (FR-057) — or, for a
@@ -301,6 +307,23 @@ void stubListSales(MockSalesOrderRepository repository, {required OpenSalePage p
 
 Override salesOrderOverride(SalesOrderRepository repository) =>
     salesOrderRepositoryProvider.overrideWithValue(repository);
+
+/// spec 036 R1: seeds [posSaleControllerProvider] directly with [sale],
+/// bypassing `open()`/`load()` — for a test that pumps a step widget (e.g.
+/// [DeliveryStep]) standalone via a `sale:` prop, without going through the
+/// full workspace wiring that would otherwise populate this controller.
+/// `confirmBeforePayableAction` (`pos_confirm.dart`) reads this controller's
+/// own state, so any test whose flow can reach a confirm-gated action needs
+/// this alongside [salesOrderOverride] (with `confirm` stubbed).
+Override fixedPosSale(Sale sale) =>
+    posSaleControllerProvider.overrideWith(() => _FixedPosSale(sale));
+
+class _FixedPosSale extends PosSaleController {
+  _FixedPosSale(this._sale);
+  final Sale _sale;
+  @override
+  Future<Sale?> build() async => _sale;
+}
 
 Override customerPaymentOverride(CustomerPaymentRepository repository) =>
     customerPaymentRepositoryProvider.overrideWithValue(repository);

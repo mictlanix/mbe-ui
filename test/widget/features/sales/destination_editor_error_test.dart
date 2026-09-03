@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -31,8 +32,6 @@ Customer _customer() => const Customer(
   creditLimit: '0',
   creditDays: 0,
   priceList: PriceListRef(id: 1, name: 'Mostrador'),
-  shipping: true,
-  shippingRequiredDocument: false,
   status: EntityStatus.active,
   addresses: [
     AddressListItem(
@@ -83,19 +82,27 @@ void main() {
   });
 
   Future<void> pumpStep(WidgetTester tester) async {
-    await pumpPos(
+    // 10 ordered, 4 already claimed by the existing destination.
+    final sale = testSale(lines: [testLine(id: 5, quantity: '10')]);
+    final salesOrders = MockSalesOrderRepository();
+    // spec 036 R1: a no-op-shaped answer — this file's tests care about the
+    // delivery-order create refusal, not confirm's own effect.
+    when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+    final container = await pumpPos(
       tester,
-      DeliveryStep(
-        // 10 ordered, 4 already claimed by the existing destination.
-        sale: testSale(lines: [testLine(id: 5, quantity: '10')]),
-        mode: FulfillmentMode.delivery,
-        onClose: () {},
-      ),
+      DeliveryStep(sale: sale, mode: FulfillmentMode.delivery, onClose: () {}),
       overrides: [
         deliveryOrderRepositoryProvider.overrideWithValue(deliveryRepository),
         customerRepositoryProvider.overrideWithValue(customerRepository),
+        salesOrderOverride(salesOrders),
+        fixedPosSale(sale),
       ],
     );
+    // `posSaleControllerProvider` is `autoDispose` and nothing in
+    // `DeliveryStep`'s own tree watches it — a live subscription keeps
+    // `fixedPosSale`'s seeded instance alive for the rest of the test.
+    container.listen(posSaleControllerProvider, (_, _) {});
+    await container.read(posSaleControllerProvider.future);
   }
 
   group('a destination the server refuses (FR-037)', () {
@@ -283,22 +290,32 @@ void main() {
         ),
       );
       var closed = false;
+      final sale = testSale(lines: [testLine(id: 5, quantity: '10')]);
+      final salesOrders = MockSalesOrderRepository();
+      when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
 
       // `FulfillmentMode.delivery` is what `resumeTargetFor` reconstructs
       // for *any* addressed sale — a genuinely mixed one included, since
       // `mixed` is UI-only state it cannot recover.
-      await pumpPos(
+      final container = await pumpPos(
         tester,
         DeliveryStep(
-          sale: testSale(lines: [testLine(id: 5, quantity: '10')]),
+          sale: sale,
           mode: FulfillmentMode.delivery,
           onClose: () => closed = true,
         ),
         overrides: [
           deliveryOrderRepositoryProvider.overrideWithValue(deliveryRepository),
           customerRepositoryProvider.overrideWithValue(customerRepository),
+          salesOrderOverride(salesOrders),
+          fixedPosSale(sale),
         ],
       );
+      // `posSaleControllerProvider` is `autoDispose` and nothing in
+    // `DeliveryStep`'s own tree watches it — a live subscription keeps
+    // `fixedPosSale`'s seeded instance alive for the rest of the test.
+    container.listen(posSaleControllerProvider, (_, _) {});
+    await container.read(posSaleControllerProvider.future);
 
       // 6 of 10 unassigned: the close is blocked and says so.
       expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);

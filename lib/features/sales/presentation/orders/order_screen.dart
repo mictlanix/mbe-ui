@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -194,11 +195,19 @@ class _OrderScreenBodyState extends ConsumerState<_OrderScreenBody> {
     );
   }
 
+  /// spec 036 FR-001/FR-003: no product line may be added, and confirming is
+  /// blocked, until a specific (non-generic) customer is attached — true for
+  /// a brand-new order and for one still sitting on the generic default.
+  bool _needsCustomer(Sale? sale) =>
+      sale == null ||
+      ref.read(appSettingsProvider).isGenericCustomer(sale.customer);
+
   Widget _body(BuildContext context, AppLocalizations l10n, Sale? sale) {
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.salesOrders, AccessRight.update);
     final editable = sale?.isEditable ?? true;
     final canEditFields = canUpdate && editable;
+    final needsCustomer = _needsCustomer(sale);
     final compact = LayoutBreakpoints.isCompact(context);
     final spacing = Theme.of(context).spacing;
     final pointSale = sale?.pointSale ?? ref.watch(registerPointSaleProvider);
@@ -237,17 +246,35 @@ class _OrderScreenBodyState extends ConsumerState<_OrderScreenBody> {
         ),
       Padding(
         padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
-        child: CustomerBar(sale: sale, enabled: canEditFields),
-      ),
-      Padding(
-        key: const Key('sales_order_product_search_field'),
-        padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
-        child: ProductSearchField(
+        child: CustomerBar(
+          sale: sale,
           enabled: canEditFields,
-          warehouse: defaultWarehouse.value,
-          onProductSelected: (result) => _addLine(result, defaultWarehouse.value),
+          excludeGenericCustomer: true,
         ),
       ),
+      // spec 036 FR-001/FR-003: no product line until a specific customer is
+      // attached — the field is absent, not merely disabled, matching this
+      // screen's existing "not applicable yet" convention (`showAction`
+      // above).
+      if (needsCustomer)
+        Padding(
+          padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
+          child: Text(
+            l10n.salesOrderChooseCustomerFirst,
+            key: const Key('sales_order_choose_customer_hint'),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        )
+      else
+        Padding(
+          key: const Key('sales_order_product_search_field'),
+          padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
+          child: ProductSearchField(
+            enabled: canEditFields,
+            warehouse: defaultWarehouse.value,
+            onProductSelected: (result) => _addLine(result, defaultWarehouse.value),
+          ),
+        ),
     ];
 
     return Column(
@@ -291,6 +318,7 @@ class _OrderScreenBodyState extends ConsumerState<_OrderScreenBody> {
           onContinue:
               (canUpdate &&
                   editable &&
+                  !needsCustomer &&
                   (sale?.lineCount ?? 0) > 0 &&
                   !_confirming &&
                   !writesPending)

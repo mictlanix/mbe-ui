@@ -140,21 +140,6 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
           ),
         FormGridChild(
           TextFormField(
-            key: const Key('code_field'),
-            initialValue: formState.code,
-            decoration: InputDecoration(
-              labelText: l10n.codeLabel,
-              errorText: localizeCustomerFieldError(
-                l10n,
-                formState.fieldErrors['code'],
-              ),
-            ),
-            enabled: fieldsEnabled,
-            onChanged: controller.codeChanged,
-          ),
-        ),
-        FormGridChild(
-          TextFormField(
             key: const Key('name_field'),
             initialValue: formState.name,
             decoration: InputDecoration(
@@ -269,6 +254,24 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             onChanged: controller.creditDaysChanged,
           ),
         ),
+        // `code` is optional (FR-011) and sits here, right after credit days
+        // (FR-012), rather than at the top of the form where a required
+        // identifier would normally go.
+        FormGridChild(
+          TextFormField(
+            key: const Key('code_field'),
+            initialValue: formState.code,
+            decoration: InputDecoration(
+              labelText: l10n.codeLabel,
+              errorText: localizeCustomerFieldError(
+                l10n,
+                formState.fieldErrors['code'],
+              ),
+            ),
+            enabled: fieldsEnabled,
+            onChanged: controller.codeChanged,
+          ),
+        ),
         FormGridChild(
           span: FormGridSpan.full,
           TextFormField(
@@ -278,31 +281,6 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             enabled: fieldsEnabled,
             onChanged: controller.commentChanged,
             maxLines: 3,
-          ),
-        ),
-        FormGridChild(
-          span: FormGridSpan.full,
-          Row(
-            children: [
-              Expanded(
-                child: SwitchListTile(
-                  key: const Key('shipping_switch'),
-                  title: Text(l10n.shippingLabel),
-                  value: formState.shipping,
-                  onChanged: fieldsEnabled ? controller.shippingChanged : null,
-                ),
-              ),
-              Expanded(
-                child: SwitchListTile(
-                  key: const Key('shipping_required_document_switch'),
-                  title: Text(l10n.shippingRequiredDocumentLabel),
-                  value: formState.shippingRequiredDocument,
-                  onChanged: fieldsEnabled
-                      ? controller.shippingRequiredDocumentChanged
-                      : null,
-                ),
-              ),
-            ],
           ),
         ),
         if (_isEdit)
@@ -369,8 +347,6 @@ String localizeCustomerFormError(AppLocalizations l10n, String code) {
 String? localizeCustomerFieldError(AppLocalizations l10n, String? code) {
   if (code == null) return null;
   switch (code) {
-    case CustomerFormErrorCode.codeRequired:
-      return l10n.customerCodeRequiredError;
     case CustomerFormErrorCode.nameRequired:
       return l10n.customerNameRequiredError;
     case CustomerFormErrorCode.priceListRequired:

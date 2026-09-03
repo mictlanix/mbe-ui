@@ -39,8 +39,6 @@ void main() {
     creditLimit: '0',
     creditDays: 0,
     priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-    shipping: true,
-    shippingRequiredDocument: false,
     status: EntityStatus.active,
     addresses: const [
       AddressListItem(addressId: 11, label: 'Destino uno', type: AddressType.business),

@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
@@ -50,8 +51,6 @@ Customer _customer() => const Customer(
   creditLimit: '0',
   creditDays: 0,
   priceList: PriceListRef(id: 1, name: 'Mostrador'),
-  shipping: false,
-  shippingRequiredDocument: false,
   status: EntityStatus.active,
 );
 
@@ -110,6 +109,88 @@ void main() {
       );
       expect(button.onPressed, isNull);
     });
+
+    testWidgets(
+      // spec 036 FR-001/FR-002/FR-003: only the customer bar and a hint
+      // render until a specific customer is attached; confirm stays
+      // disabled and the generic customer never appears in the picker.
+      'shows only the customer bar — no product search field — and the '
+      'generic customer is excluded from its picker',
+      (tester) async {
+        when(
+          () => customers.list(search: any(named: 'search'), limit: 10),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              // id 1 is `posDefaultCustomerId`'s test-time default (no
+              // `--dart-define` set) — the actual generic customer, not the
+              // unrelated id 7 this file's other fixtures happen to use.
+              CustomerListItem(
+                customerId: 1,
+                code: 'C-1',
+                name: 'PÚBLICO EN GENERAL',
+                creditLimit: '0',
+                creditDays: 0,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        await pumpOrderScreen(tester);
+
+        expect(
+          find.byKey(const Key('sales_order_choose_customer_hint')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('sales_order_product_search_field')),
+          findsNothing,
+        );
+        final button = tester.widget<FloatingActionButton>(
+          find.byKey(const Key('sales_order_confirm_button')),
+        );
+        expect(button.onPressed, isNull);
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'PUBLICO',
+        );
+        await tester.pumpAndSettle();
+        // The generic customer (id 1, `posDefaultCustomerId`) never appears
+        // as a result here — the picker excludes it.
+        expect(find.text('C-1 — PÚBLICO EN GENERAL'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      // spec 036 FR-004: reading an order that was already saved against the
+      // generic customer before this feature shipped still works correctly
+      // — the gate only blocks *new* selections, not existing data.
+      'an order already billed to the generic customer still opens and '
+      'displays correctly',
+      (tester) async {
+        when(() => salesOrders.getById(saleId: 99)).thenAnswer(
+          (_) async => testSale(id: 99, customer: 1, lines: [testLine()]),
+        );
+
+        await pumpOrderScreen(tester, orderId: 99);
+        await tester.pumpAndSettle();
+
+        expect(find.text('PÚBLICO EN GENERAL'), findsWidgets);
+        expect(
+          find.byKey(const Key('sales_order_product_search_field')),
+          findsNothing,
+          reason:
+              'the customer is still the generic one, so the gate still '
+              'applies — this only proves the read path itself works',
+        );
+      },
+    );
 
     testWidgets('the first added line opens the order, then reuses it', (
       tester,

@@ -25,8 +25,6 @@ mixin _$CustomerFormState {
   String get creditDays => throw _privateConstructorUsedError;
   int? get priceListId => throw _privateConstructorUsedError;
   String get priceListDisplayText => throw _privateConstructorUsedError;
-  bool get shipping => throw _privateConstructorUsedError;
-  bool get shippingRequiredDocument => throw _privateConstructorUsedError;
   int? get salespersonId => throw _privateConstructorUsedError;
   String get salespersonDisplayText => throw _privateConstructorUsedError;
 
@@ -68,8 +66,6 @@ abstract class $CustomerFormStateCopyWith<$Res> {
     String creditDays,
     int? priceListId,
     String priceListDisplayText,
-    bool shipping,
-    bool shippingRequiredDocument,
     int? salespersonId,
     String salespersonDisplayText,
     String? taxpayerId,
@@ -109,8 +105,6 @@ class _$CustomerFormStateCopyWithImpl<$Res, $Val extends CustomerFormState>
     Object? creditDays = null,
     Object? priceListId = freezed,
     Object? priceListDisplayText = null,
-    Object? shipping = null,
-    Object? shippingRequiredDocument = null,
     Object? salespersonId = freezed,
     Object? salespersonDisplayText = null,
     Object? taxpayerId = freezed,
@@ -159,14 +153,6 @@ class _$CustomerFormStateCopyWithImpl<$Res, $Val extends CustomerFormState>
                 ? _value.priceListDisplayText
                 : priceListDisplayText // ignore: cast_nullable_to_non_nullable
                       as String,
-            shipping: null == shipping
-                ? _value.shipping
-                : shipping // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            shippingRequiredDocument: null == shippingRequiredDocument
-                ? _value.shippingRequiredDocument
-                : shippingRequiredDocument // ignore: cast_nullable_to_non_nullable
-                      as bool,
             salespersonId: freezed == salespersonId
                 ? _value.salespersonId
                 : salespersonId // ignore: cast_nullable_to_non_nullable
@@ -243,8 +229,6 @@ abstract class _$$CustomerFormStateImplCopyWith<$Res>
     String creditDays,
     int? priceListId,
     String priceListDisplayText,
-    bool shipping,
-    bool shippingRequiredDocument,
     int? salespersonId,
     String salespersonDisplayText,
     String? taxpayerId,
@@ -283,8 +267,6 @@ class __$$CustomerFormStateImplCopyWithImpl<$Res>
     Object? creditDays = null,
     Object? priceListId = freezed,
     Object? priceListDisplayText = null,
-    Object? shipping = null,
-    Object? shippingRequiredDocument = null,
     Object? salespersonId = freezed,
     Object? salespersonDisplayText = null,
     Object? taxpayerId = freezed,
@@ -333,14 +315,6 @@ class __$$CustomerFormStateImplCopyWithImpl<$Res>
             ? _value.priceListDisplayText
             : priceListDisplayText // ignore: cast_nullable_to_non_nullable
                   as String,
-        shipping: null == shipping
-            ? _value.shipping
-            : shipping // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        shippingRequiredDocument: null == shippingRequiredDocument
-            ? _value.shippingRequiredDocument
-            : shippingRequiredDocument // ignore: cast_nullable_to_non_nullable
-                  as bool,
         salespersonId: freezed == salespersonId
             ? _value.salespersonId
             : salespersonId // ignore: cast_nullable_to_non_nullable
@@ -410,8 +384,6 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
     this.creditDays = '',
     this.priceListId,
     this.priceListDisplayText = '',
-    this.shipping = false,
-    this.shippingRequiredDocument = false,
     this.salespersonId,
     this.salespersonDisplayText = '',
     this.taxpayerId,
@@ -449,12 +421,6 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
   @override
   @JsonKey()
   final String priceListDisplayText;
-  @override
-  @JsonKey()
-  final bool shipping;
-  @override
-  @JsonKey()
-  final bool shippingRequiredDocument;
   @override
   final int? salespersonId;
   @override
@@ -502,7 +468,7 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
 
   @override
   String toString() {
-    return 'CustomerFormState(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, shipping: $shipping, shippingRequiredDocument: $shippingRequiredDocument, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText, taxpayerId: $taxpayerId, taxpayerDisplayText: $taxpayerDisplayText, status: $status, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'CustomerFormState(customerId: $customerId, code: $code, name: $name, zone: $zone, creditLimit: $creditLimit, creditDays: $creditDays, priceListId: $priceListId, priceListDisplayText: $priceListDisplayText, salespersonId: $salespersonId, salespersonDisplayText: $salespersonDisplayText, taxpayerId: $taxpayerId, taxpayerDisplayText: $taxpayerDisplayText, status: $status, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
   }
 
   @override
@@ -523,13 +489,6 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
                 other.priceListId == priceListId) &&
             (identical(other.priceListDisplayText, priceListDisplayText) ||
                 other.priceListDisplayText == priceListDisplayText) &&
-            (identical(other.shipping, shipping) ||
-                other.shipping == shipping) &&
-            (identical(
-                  other.shippingRequiredDocument,
-                  shippingRequiredDocument,
-                ) ||
-                other.shippingRequiredDocument == shippingRequiredDocument) &&
             (identical(other.salespersonId, salespersonId) ||
                 other.salespersonId == salespersonId) &&
             (identical(other.salespersonDisplayText, salespersonDisplayText) ||
@@ -565,8 +524,6 @@ class _$CustomerFormStateImpl implements _CustomerFormState {
     creditDays,
     priceListId,
     priceListDisplayText,
-    shipping,
-    shippingRequiredDocument,
     salespersonId,
     salespersonDisplayText,
     taxpayerId,
@@ -604,8 +561,6 @@ abstract class _CustomerFormState implements CustomerFormState {
     final String creditDays,
     final int? priceListId,
     final String priceListDisplayText,
-    final bool shipping,
-    final bool shippingRequiredDocument,
     final int? salespersonId,
     final String salespersonDisplayText,
     final String? taxpayerId,
@@ -637,10 +592,6 @@ abstract class _CustomerFormState implements CustomerFormState {
   int? get priceListId;
   @override
   String get priceListDisplayText;
-  @override
-  bool get shipping;
-  @override
-  bool get shippingRequiredDocument;
   @override
   int? get salespersonId;
   @override

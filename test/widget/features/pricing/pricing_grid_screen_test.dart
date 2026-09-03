@@ -1118,11 +1118,13 @@ void main() {
       final field = tester.widget<TextField>(
         find.byKey(const Key('price_cell_field_2_5')),
       );
-      expect(field.controller!.text, '20.0000');
+      // spec 036 US8: seeded at the configured decimal-digit count (default
+      // 2), not the raw wire value.
+      expect(field.controller!.text, '20.00');
       expect(field.controller!.selection.baseOffset, 0);
       expect(
         field.controller!.selection.extentOffset,
-        '20.0000'.length,
+        '20.00'.length,
       );
     });
 
@@ -1163,7 +1165,8 @@ void main() {
         final field = tester.widget<TextField>(
           find.byKey(const Key('price_cell_field_2_5')),
         );
-        expect(field.controller!.text, '22');
+        // spec 036 US8: seeded at the configured decimal-digit count.
+        expect(field.controller!.text, '22.00');
       },
     );
   });

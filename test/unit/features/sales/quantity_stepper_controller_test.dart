@@ -32,6 +32,40 @@ void main() {
       expect(commits, ['6']);
     });
 
+    // spec 036 SC-008: the quantity-commit debounce is deployment-configurable
+    // (`quantityCommitDebounceProvider`, read by `sale_line_editing.dart` and
+    // `destination_card.dart`) — this proves the `debounce` constructor param
+    // those hosts feed it actually changes when the commit fires, rather than
+    // the shared [kQuantityCommitDebounce] default always winning.
+    test(
+      'a custom debounce commits at its own delay, not kQuantityCommitDebounce',
+      () async {
+        const overriddenDebounce = Duration(milliseconds: 700);
+        final commits = <String>[];
+        final controller = QuantityStepperController(
+          value: '1',
+          debounce: overriddenDebounce,
+          onCommit: (v) async {
+            commits.add(v);
+            return true;
+          },
+        );
+        addTearDown(controller.dispose);
+
+        controller.step(1);
+
+        // Past the shared default (400ms) but short of the overridden one:
+        // nothing should have committed yet.
+        await Future<void>.delayed(kQuantityCommitDebounce + const Duration(milliseconds: 100));
+        expect(commits, isEmpty);
+
+        await Future<void>.delayed(
+          overriddenDebounce - kQuantityCommitDebounce + const Duration(milliseconds: 100),
+        );
+        expect(commits, ['2']);
+      },
+    );
+
     test('step never crosses the floor (FR-007/FR-008)', () {
       final controller = QuantityStepperController(
         value: '1',

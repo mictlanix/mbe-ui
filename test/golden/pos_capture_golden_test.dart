@@ -57,8 +57,6 @@ void main() {
         creditLimit: '5000.00',
         creditDays: 30,
         priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-        shipping: true,
-        shippingRequiredDocument: false,
         status: EntityStatus.active,
       ),
     );

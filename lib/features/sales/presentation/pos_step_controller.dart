@@ -76,6 +76,26 @@ class PosStepController extends _$PosStepController {
     state = state.copyWith(current: PosStep.entrega);
   }
 
+  /// spec 036 FR-005/FR-008: a cashier may return to Venta from Cobro or
+  /// Entrega and edit line items, for as long as no payment has been
+  /// recorded — which, post spec 036, is exactly [isEditable] (the sale
+  /// stays `draft` until the first payment/delivery/credit-close action
+  /// confirms it, `pos_confirm.dart`). [hasNonCancelledPayments] is passed
+  /// in rather than read here because it comes from
+  /// `orderPaymentsControllerProvider`, a family provider this controller
+  /// has no sale id to key.
+  bool canReturnToCapture({
+    required bool isEditable,
+    required bool hasNonCancelledPayments,
+  }) => isEditable && !hasNonCancelledPayments;
+
+  /// The actual return (FR-005). No server call — the sale is already
+  /// `draft` whenever [canReturnToCapture] allows this, so there is nothing
+  /// to tell the server.
+  void returnToVenta() {
+    state = state.copyWith(current: PosStep.venta);
+  }
+
   /// Back to Venta, counter pickup, nothing in flight — what a genuinely new
   /// sale starts from. Distinct from [jumpTo]: that reconstructs a *resumed*
   /// sale's own step/mode (contracts/pos-screen.md §5) and must keep whatever

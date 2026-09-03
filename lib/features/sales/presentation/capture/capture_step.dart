@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
@@ -16,6 +15,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.d
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
@@ -48,9 +48,6 @@ class CaptureStep extends ConsumerStatefulWidget {
 }
 
 class _CaptureStepState extends ConsumerState<CaptureStep> {
-  AppError? _confirmError;
-  bool _confirming = false;
-
   Future<void> _addLine(ProductLookupResult result, int? defaultWarehouse) async {
     ref.read(productStockCacheProvider.notifier).update(
       (cache) => {...cache, result.product: result.stock},
@@ -77,31 +74,27 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
   String _initialQuantity(ProductLookupResult result) =>
       result.minOrderQty > 0 ? '${result.minOrderQty}' : '1';
 
-  Future<void> _confirm() async {
-    setState(() {
-      _confirming = true;
-      _confirmError = null;
-    });
-    try {
-      await ref.read(posSaleControllerProvider.notifier).confirm();
-      if (mounted) ref.read(posStepControllerProvider.notifier).advanceToCobro();
-    } on AppError catch (e) {
-      setState(() => _confirmError = e);
-    } finally {
-      if (mounted) setState(() => _confirming = false);
-    }
+  /// spec 036 FR-008: advancing to Cobro is a pure client-side step change —
+  /// it no longer calls `confirm()` (that now happens just before the first
+  /// action that actually needs `completed` status: a payment, a delivery
+  /// destination, or leaving Cobro on credit terms — `pos_confirm.dart`).
+  /// The sale therefore stays `draft`, and can be returned to and edited,
+  /// for as long as the cashier remains on Cobro/Entrega without having
+  /// triggered one of those.
+  void _advanceToCobro() {
+    ref.read(posStepControllerProvider.notifier).advanceToCobro();
   }
 
   /// What "Continuar al cobro" actually calls (spec 031 FR-024…FR-030):
-  /// unconfirmed text anywhere on the step raises a decision before [_confirm]
-  /// ever runs, rather than the step silently discarding or silently
+  /// unconfirmed text anywhere on the step raises a decision before advancing
+  /// ever happens, rather than the step silently discarding or silently
   /// committing it. [resolveUnconfirmedEdits] is what makes that decision
   /// (spec 029 research §R12 — extracted so the back-office order screen's
   /// own confirm resolves it identically, on its own scope); this is now
-  /// only the step-specific half: proceed to [_confirm] when it says to.
+  /// only the step-specific half: proceed to Cobro when it says to.
   Future<void> _onContinuePressed() async {
     final proceed = await resolveUnconfirmedEdits(context, ref, posWritesScope);
-    if (proceed && mounted) await _confirm();
+    if (proceed && mounted) _advanceToCobro();
   }
 
   @override
@@ -128,14 +121,18 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     // CustomerBar's Card padding) was what misaligned the customer card's
     // edges against the search field below it (spec 023 research R12).
     final horizontalInset = EdgeInsets.symmetric(horizontal: spacing.screenMargin);
+    // spec 036 R1: a `confirm()` failure triggered from payment, delivery, or
+    // leaving Cobro on credit terms lands here — the step machine already
+    // jumped back to Venta by the time this renders.
+    final confirmError = ref.watch(confirmErrorProvider);
 
     final header = <Widget>[
-      if (_confirmError != null)
+      if (confirmError != null)
         Padding(
           padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
           child: ErrorBanner(
-            error: _confirmError!,
-            onDismiss: () => setState(() => _confirmError = null),
+            error: confirmError,
+            onDismiss: () => ref.read(confirmErrorProvider.notifier).state = null,
           ),
         ),
       if (!enabled)
@@ -258,11 +255,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         SaleTotalsBar(
           sale: sale,
           compact: compact,
-          confirming: _confirming,
-          onContinue:
-              (enabled && (sale?.lineCount ?? 0) > 0 && !_confirming && !writesPending)
-                  ? _onContinuePressed
-                  : null,
+          // spec 036 FR-008: advancing to Cobro is synchronous now (no
+          // server round-trip), so there is nothing left for this to show a
+          // spinner for.
+          confirming: false,
+          onContinue: (enabled && (sale?.lineCount ?? 0) > 0 && !writesPending)
+              ? _onContinuePressed
+              : null,
         ),
       ],
     );

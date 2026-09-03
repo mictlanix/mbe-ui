@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_cell_key.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/product_price.dart';
@@ -85,12 +86,25 @@ class _PriceCellState extends ConsumerState<PriceCell> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
 
+  /// Captured eagerly rather than looked up through `ref` when needed: `ref`
+  /// cannot be used once this widget starts disposing, which is exactly
+  /// when [dispose] needs to reach the controller to flush a still-active
+  /// edit (contracts/pricing-grid-commit.md C1).
+  late final PricingGridController _notifier;
+
+  /// Same reason as [_notifier]: [dispose] needs to seed/parse through the
+  /// shared formatting surface (contracts/app-settings-additions.md C3),
+  /// and `ref` is unusable by then.
+  late final AppFormatters _fmt;
+
   PriceCellKey get _key =>
       PriceCellKey(productId: widget.productId, priceListId: widget.priceListId);
 
   @override
   void initState() {
     super.initState();
+    _notifier = ref.read(pricingGridControllerProvider(widget.filter).notifier);
+    _fmt = ref.read(formattersProvider);
     _controller = TextEditingController();
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
@@ -118,9 +132,16 @@ class _PriceCellState extends ConsumerState<PriceCell> {
   /// built.
   void _activate() {
     final rejected = widget.rejected;
+    // A rejection is kept verbatim (contracts/app-settings-additions.md
+    // C3 only routes the *stored* price through the formatting surface — a
+    // rejected value was never accepted as a valid amount, so there is
+    // nothing of the configured digit count to apply to it). A stored price
+    // seeds through `field.price()` so the field opens already at the
+    // deployment's configured decimal-digit count, e.g. `20.0000` (the raw
+    // wire value) as `20.00`, instead of the wire string verbatim.
     _controller.text = rejected != null
         ? rejected.typed
-        : (widget.price?.price ?? '');
+        : (widget.price != null ? _fmt.field.price(widget.price!.price) : '');
     // Post-frame: on the false→true edge this runs during a build, and the
     // field being focused is only in the tree once that build lands.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -135,6 +156,26 @@ class _PriceCellState extends ConsumerState<PriceCell> {
 
   @override
   void dispose() {
+    // Flush a still-active edit *before* tearing down (contracts/pricing-
+    // grid-commit.md C1, FR-009): this cell may be unmounting precisely
+    // because the page or filter changed with an edit still uncommitted
+    // (research.md R9's "unmount-while-active" case) — Flutter suppresses
+    // the focus-lost notification below during teardown, so nothing else
+    // would catch it. Mirrors `openCell`'s own "only if it actually
+    // changed" guard: comparing against the value this cell was last
+    // seeded with (not just calling `_commit()` unconditionally) keeps an
+    // untouched cell from issuing a pointless write on every unmount.
+    if (widget.isActive) {
+      final baseline = widget.rejected?.typed ?? (widget.price?.price ?? '');
+      if (!sameAmount(_controller.text.trim(), baseline)) {
+        // A disposed `ProviderContainer` (the whole app/tab tearing down,
+        // racing this specific unmount) has nothing left to notify —
+        // swallow rather than crash. Every *expected* failure (`AppError`)
+        // is already handled inside `commitCell` itself; this only ever
+        // catches that one unrecoverable case.
+        _commit().catchError((_) {});
+      }
+    }
     // Detached *before* disposing the node: disposing a still-focused
     // `FocusNode` can itself fire a final "lost focus" notification, and
     // this cell may be unmounting precisely *because* a key handler below
@@ -153,14 +194,17 @@ class _PriceCellState extends ConsumerState<PriceCell> {
     if (!_focusNode.hasFocus) _commit();
   }
 
-  void _commit() {
-    ref
-        .read(pricingGridControllerProvider(widget.filter).notifier)
-        .commitCell(
-          productId: widget.productId,
-          priceListId: widget.priceListId,
-          typed: _controller.text,
-        );
+  Future<void> _commit() {
+    // `commitCell` itself routes the value it actually sends through the
+    // shared formatting surface (contracts/app-settings-additions.md C3) —
+    // not here, so `openCell`'s own commit-before-switch (which calls
+    // `commitCell` directly, bypassing this widget entirely) gets the same
+    // normalization without needing to duplicate it.
+    return _notifier.commitCell(
+      productId: widget.productId,
+      priceListId: widget.priceListId,
+      typed: _controller.text,
+    );
   }
 
   void _commitAndMove(PriceCellMove move) {
@@ -310,6 +354,14 @@ class _PriceCellState extends ConsumerState<PriceCell> {
         // active too — `autofocus` only ever covered the mount case.
         textAlign: TextAlign.right,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        // Every keystroke is mirrored into the controller's `activeDraft`
+        // (contracts/pricing-grid-commit.md C1, data-model.md §3) — the
+        // only way `openCell` can commit this cell's edit when the user
+        // leaves it by clicking straight into another cell, since that path
+        // never runs any callback of this widget's own.
+        onChanged: (value) => ref
+            .read(pricingGridControllerProvider(widget.filter).notifier)
+            .updateDraft(value),
         onSubmitted: (_) => _commitAndMove(PriceCellMove.down),
         // Suppresses `EditableText`'s default "done" behavior, which
         // unfocuses the field — that unfocus would fire `_onFocusChange`

@@ -46,8 +46,6 @@ class Customer with _$Customer {
     required String creditLimit,
     required int creditDays,
     required PriceListRef priceList,
-    required bool shipping,
-    required bool shippingRequiredDocument,
     EmployeeRef? salesperson,
     required EntityStatus status,
     String? comment,
@@ -74,8 +72,6 @@ class Customer with _$Customer {
       creditLimit: response.creditLimit,
       creditDays: response.creditDays,
       priceList: PriceListRef.fromResponse(response.priceList),
-      shipping: response.shipping,
-      shippingRequiredDocument: response.shippingRequiredDocument,
       salesperson: response.salesperson == null
           ? null
           : EmployeeRef.fromResponse(response.salesperson!),

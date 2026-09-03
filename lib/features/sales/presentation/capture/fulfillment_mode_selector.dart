@@ -7,7 +7,6 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
-import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -215,12 +214,6 @@ class FulfillmentModeSelector extends ConsumerStatefulWidget {
 }
 
 class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelector> {
-  /// The sale's customer, or the walk-in default until a sale exists — the
-  /// same resolution `CustomerBar` beside this makes, so the shipping check
-  /// and the address picker ask about the customer the band is naming.
-  int get _customerId =>
-      widget.sale?.customer ?? ref.read(appSettingsProvider).posDefaultCustomerId;
-
   AppError? _error;
   String? _refusal;
   bool _busy = false;
@@ -240,13 +233,14 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
       return;
     }
 
-    // FR-019 — a customer not permitted deliveries cannot use either
-    // delivery mode, and is told why rather than silently refused.
-    final customer = await ref.read(
-      saleCustomerControllerProvider(_customerId).future,
-    );
-    if (!mounted) return;
-    if (!customer.shipping) {
+    // FR-015 — only the generic "Público en General" customer is refused
+    // either delivery mode; every other customer may use them. A sale that
+    // hasn't been opened yet has no customer to check against, so choosing
+    // a delivery mode as the first action is not gated (spec 036 research
+    // R8) — `updateHeader` below opens the sale before recording it.
+    final sale = widget.sale;
+    if (sale != null &&
+        ref.read(appSettingsProvider).isGenericCustomer(sale.customer)) {
       setState(() => _refusal = AppLocalizations.of(context)!.posDeliveryNotPermitted);
       return;
     }

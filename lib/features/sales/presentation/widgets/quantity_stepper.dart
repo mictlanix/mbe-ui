@@ -43,6 +43,7 @@ class QuantityStepperController extends ConfirmableFieldController {
     this.min = '0',
     this.max,
     this.stepBy = '1',
+    this.debounce = kQuantityCommitDebounce,
     PendingWrites? pendingWrites,
     super.id,
     super.unconfirmedEdits,
@@ -62,6 +63,12 @@ class QuantityStepperController extends ConfirmableFieldController {
   String? max;
 
   final String stepBy;
+
+  /// The coalescing window [scheduleCommit] waits out before flushing
+  /// (spec 036 FR-028/FR-029, `quantityCommitDebounceProvider`). Defaults to
+  /// [kQuantityCommitDebounce] so a caller that doesn't pass it keeps
+  /// today's exact delay.
+  final Duration debounce;
 
   final PendingWrites? _pendingWrites;
 
@@ -148,7 +155,7 @@ class QuantityStepperController extends ConfirmableFieldController {
   void scheduleCommit() {
     _guardToken ??= _pendingWrites?.begin();
     _debounce?.cancel();
-    _debounce = Timer(kQuantityCommitDebounce, () {
+    _debounce = Timer(debounce, () {
       unawaited(flush());
     });
   }

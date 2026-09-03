@@ -55,8 +55,14 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
     super.dispose();
   }
 
+  // Routes every quick-amount insertion through the shared formatting
+  // surface (contracts/app-settings-additions.md C3, spec 036 FR-026)
+  // instead of setting the raw computed string straight into the field —
+  // the same raw-seed bypass US8 found in the pricing grid's editable
+  // cell, here in the "Restante" chip's `sale.balance` (a raw
+  // `Numeric(18,4)` wire value like `150.0000`).
   void _quickAmount(String amount) {
-    _amountController.text = amount;
+    _amountController.text = ref.read(formattersProvider).field.price(amount);
   }
 
   /// The round cash notes that exceed the balance — what a cashier is

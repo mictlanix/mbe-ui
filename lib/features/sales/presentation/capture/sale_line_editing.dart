@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
@@ -12,6 +13,12 @@ import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.d
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+/// The warehouse picker's per-warehouse stock flag (data-model.md §6,
+/// FR-020/FR-021): whether the cached availability for this product in that
+/// warehouse covers the line's ordered quantity, falls short, is exhausted,
+/// or was never looked up this session.
+enum WarehouseStockLevel { enough, short, none, unknown }
 
 /// Everything a sale line does, minus how it is laid out: the
 /// display-formatted field controllers, the server round-trip behind every
@@ -53,6 +60,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     value: line.quantity,
     min: '1',
     onCommit: _commitQuantity,
+    debounce: ref.read(quantityCommitDebounceProvider),
     // spec 031 FR-004: a stepped-but-not-yet-sent quantity holds the gate
     // for the whole of its ~400 ms coalescing window, not just the request
     // that eventually follows it — otherwise a tap-then-continue could still
@@ -349,29 +357,32 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
             for (final w in list)
               DropdownMenuItem(
                 value: w.warehouseId,
-                // FR-022: the chosen warehouse's availability for this product,
-                // shown alongside the name so switching warehouses is an
-                // informed choice rather than a guess. Blank for a warehouse
-                // this product was never looked up in — advisory, never invented.
+                // FR-020/FR-021: the chosen warehouse's stock flag for this
+                // product, shown alongside the name so choosing a warehouse
+                // is an informed choice rather than a guess-then-check —
+                // informational only (FR-022), never blocking.
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
                       child: Text(w.name, overflow: TextOverflow.ellipsis),
                     ),
-                    if (_availabilityIn(w.warehouseId)
-                        case final available?) ...[
+                    if (_warehouseStockFlag(w.warehouseId)
+                        case final flag?) ...[
                       const SizedBox(width: 8),
-                      Text(
-                        available,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                      ),
+                      flag,
                     ],
                   ],
                 ),
               ),
+          ],
+          // The closed display stays name-only (research R11): a flag
+          // rendered here as well would put the shared row-height/baseline
+          // invariant (sale_line_row_test.dart, sale_line_symmetry_test.dart)
+          // at risk.
+          selectedItemBuilder: (context) => [
+            for (final w in list)
+              Text(w.name, overflow: TextOverflow.ellipsis),
           ],
           onChanged: canEdit
               ? (value) {
@@ -383,6 +394,51 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       loading: () => const LinearProgressIndicator(),
       error: (error, stackTrace) => const SizedBox.shrink(),
     );
+  }
+
+  /// The picker-row rendering of [_stockLevelIn] (data-model.md §6): `null`
+  /// (no flag) when stock is known to cover the ordered quantity, otherwise
+  /// short icon-and-wording — reusing [Icons.warning_amber], the same icon
+  /// [shortfall] already warns with, so the picker and the line-level warning
+  /// never disagree.
+  Widget? _warehouseStockFlag(int warehouseId) {
+    final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.read(formattersProvider);
+    final level = _stockLevelIn(warehouseId);
+    final outline = Theme.of(context).textTheme.labelSmall?.copyWith(
+      color: Theme.of(context).colorScheme.outline,
+    );
+    final warning = Theme.of(context).textTheme.labelSmall?.copyWith(
+      color: Theme.of(context).colorScheme.error,
+    );
+    return switch (level) {
+      WarehouseStockLevel.enough => null,
+      WarehouseStockLevel.unknown => Text(
+        l10n.posLineWarehouseStockUnknown,
+        style: outline,
+      ),
+      WarehouseStockLevel.short => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.warning_amber, size: 14, color: warning?.color),
+          const SizedBox(width: 4),
+          Text(
+            l10n.posLineWarehouseStockShort(
+              fmt.field.quantity(_stockIn(warehouseId)!.available),
+            ),
+            style: warning,
+          ),
+        ],
+      ),
+      WarehouseStockLevel.none => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.warning_amber, size: 14, color: warning?.color),
+          const SizedBox(width: 4),
+          Text(l10n.posLineWarehouseStockNone, style: warning),
+        ],
+      ),
+    };
   }
 
   /// The cached availability entry for [warehouseId], or `null` when this
@@ -397,11 +453,17 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     return null;
   }
 
-  /// The availability figure shown beside a warehouse in the picker
-  /// (FR-022), trimmed for display; `null` when nothing is known.
-  String? _availabilityIn(int warehouseId) {
-    final stock = _stockIn(warehouseId);
-    return stock == null ? null : ref.read(formattersProvider).field.quantity(stock.available);
+  /// The 4-state stock flag (data-model.md §6, FR-020/FR-021) for
+  /// [warehouseId], computed with the exact same comparison [shortfall] uses
+  /// so the picker and the line-level warning can never disagree.
+  WarehouseStockLevel _stockLevelIn(int warehouseId) {
+    final entry = _stockIn(warehouseId);
+    if (entry == null) return WarehouseStockLevel.unknown;
+    final available = Decimal.tryParse(entry.available) ?? Decimal.zero;
+    final ordered = Decimal.tryParse(line.quantity) ?? Decimal.zero;
+    if (available.sign <= 0) return WarehouseStockLevel.none;
+    if (ordered > available) return WarehouseStockLevel.short;
+    return WarehouseStockLevel.enough;
   }
 
   /// FR-025/FR-026: a non-blocking warning when the ordered quantity exceeds
