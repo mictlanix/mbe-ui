@@ -84,12 +84,13 @@ Pedidos:
 
 lista de precios
   - ~~Mostrar dos decimales~~
-  - ~~No detecta submit~~
+  - No detecta submit
 
 ## 2026-09-02
-Pedidos:
-  - Balance field shows on two places, on customer bar and order header panel.
+Sales Orders:
+  - Balance field shows on two places, on customer bar and order header panel. Remove the last one.
   - On Customer bar, change label 'Credit Line' to Payment terms
   - On Order header panel, remove payment terms.
   - On Order header panel, reorder the fields: 1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details, 6. Contact, 7. Comment.
   - Move Order header panel, below customer bar.
+  - From nav, move Sales Orders after Point of Sales

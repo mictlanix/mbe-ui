@@ -455,7 +455,7 @@ without affecting search.
 - [X] T068 [P] Run `flutter analyze` and `flutter test` (full suite, including `test/golden` and
       `test/screenshots`) across every phase's changes; review and regenerate any diverged goldens
       (pricing cell, POS capture step pills, warehouse dropdown) before accepting them.
-- [ ] T069 [P] Walk `quickstart.md`'s full manual section end-to-end against a live mbe-api,
+- [X] T069 [P] Walk `quickstart.md`'s full manual section end-to-end against a live mbe-api,
       confirming every numbered step under every user story.
 - [X] T070 Update `TODO.md`'s 2026-09-01 entry, marking each addressed bullet done with the
       existing `~~strikethrough~~` convention.
