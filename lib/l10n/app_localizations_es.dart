@@ -3444,9 +3444,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posOpenSaleDraft => 'En captura';
 
   @override
-  String get posOpenSaleUnpaid => 'Por cobrar';
-
-  @override
   String get posOpenSaleUndelivered => 'Por entregar';
 
   @override

@@ -1075,7 +1075,6 @@
   "posNoOpenSales": "Sin otras ventas abiertas",
   "posOpenSalesCount": "{count, plural, =1{1 abierta} other{{count} abiertas}}",
   "posOpenSaleDraft": "En captura",
-  "posOpenSaleUnpaid": "Por cobrar",
   "posOpenSaleUndelivered": "Por entregar",
   "posCreateCustomerAction": "Crear cliente",
   "posStepProgress": "Paso {current} de {total}",

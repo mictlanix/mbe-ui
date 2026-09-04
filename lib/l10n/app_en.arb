@@ -2403,8 +2403,6 @@
   "@posOpenSalesCount": {"placeholders": {"count": {"type": "int"}}},
   "posOpenSaleDraft": "In progress",
   "@posOpenSaleDraft": {},
-  "posOpenSaleUnpaid": "Awaiting payment",
-  "@posOpenSaleUnpaid": {},
   "posOpenSaleUndelivered": "Awaiting delivery",
   "@posOpenSaleUndelivered": {},
   "posCreateCustomerAction": "Create customer",

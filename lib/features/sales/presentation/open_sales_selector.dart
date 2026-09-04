@@ -8,6 +8,14 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+/// The section a sale's status displays under (spec 036 FR-005, research.md
+/// R3): `completed` folds into `draft`'s own section — a captured-but-unpaid
+/// sale is `draft` now, indistinguishable from one still being captured — so
+/// showing them as two piles would be inaccurate. `paid` (awaiting delivery)
+/// is unaffected and keeps its own section.
+SaleStatus _sectionOf(SaleStatus status) =>
+    status == SaleStatus.completed ? SaleStatus.draft : status;
+
 /// The register's unfinished sales (FR-004, US3 scenario 1): reference,
 /// customer and total, newest first, with a count of how many are open.
 ///
@@ -50,13 +58,14 @@ class OpenSalesSelector extends ConsumerWidget {
             child: Text(l10n.posNoOpenSales),
           )
         else
-          // The list arrives grouped by status, so a heading goes in wherever
-          // the status changes. Saying it once per section beats repeating it
-          // on every row: what the cashier needs is which pile a sale is in,
-          // and the pile is now visible from its position.
+          // The list arrives grouped by section, so a heading goes in
+          // wherever the section changes. Saying it once per section beats
+          // repeating it on every row: what the cashier needs is which pile
+          // a sale is in, and the pile is now visible from its position.
           for (final (index, sale) in sales.indexed) ...[
-            if (index == 0 || sales[index - 1].status != sale.status)
-              _StatusHeading(status: sale.status),
+            if (index == 0 ||
+                _sectionOf(sales[index - 1].status) != _sectionOf(sale.status))
+              _StatusHeading(status: _sectionOf(sale.status)),
             MenuItemButton(
               key: Key('open_sale_${sale.id}'),
               onPressed: () => onSelected(sale),
@@ -162,6 +171,9 @@ class _OpenSaleRow extends ConsumerWidget {
 /// open, and therefore where selecting one will land the cashier
 /// (contracts/pos-screen.md §5). Said once per section rather than on every
 /// row.
+///
+/// [status] is always [_sectionOf]'s output, never a raw `completed` — the
+/// caller folds that into `draft` before constructing this.
 class _StatusHeading extends StatelessWidget {
   const _StatusHeading({required this.status});
 
@@ -197,7 +209,10 @@ class _StatusHeading extends StatelessWidget {
 
   String _statusLabel(AppLocalizations l10n, SaleStatus status) => switch (status) {
     SaleStatus.draft => l10n.posOpenSaleDraft,
-    SaleStatus.completed => l10n.posOpenSaleUnpaid,
+    // Never actually reached — `_sectionOf` remaps `completed` to `draft`
+    // before this widget is ever constructed (spec 036 R3). Kept only so
+    // this switch stays exhaustive over `SaleStatus`.
+    SaleStatus.completed => l10n.posOpenSaleDraft,
     SaleStatus.paid => l10n.posOpenSaleUndelivered,
     SaleStatus.cancelled => '',
   };

@@ -97,12 +97,17 @@ Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async
 
 /// Sale ids are sequential, so descending id is newest-first *within* a group
 /// — data-model.md §8's intent, kept inside each section.
+///
+/// `draft` and `completed` share a rank (spec 036 FR-005, research.md R3):
+/// under R1, a captured-but-unpaid sale is `draft` now, indistinguishable
+/// from one still being captured, so the two sort — and, in
+/// `open_sales_selector.dart`, group — as one section rather than two.
 int _statusRank(SaleStatus status) => switch (status) {
   SaleStatus.draft => 0,
-  SaleStatus.completed => 1,
-  SaleStatus.paid => 2,
+  SaleStatus.completed => 0,
+  SaleStatus.paid => 1,
   // Never listed; ranked last rather than left to chance.
-  SaleStatus.cancelled => 3,
+  SaleStatus.cancelled => 2,
 };
 
 /// Midnight of the register's trading day, as the wire wants it — a thin

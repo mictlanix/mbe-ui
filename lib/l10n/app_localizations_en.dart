@@ -3400,9 +3400,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posOpenSaleDraft => 'In progress';
 
   @override
-  String get posOpenSaleUnpaid => 'Awaiting payment';
-
-  @override
   String get posOpenSaleUndelivered => 'Awaiting delivery';
 
   @override

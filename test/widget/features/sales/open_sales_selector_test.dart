@@ -180,49 +180,73 @@ void main() {
       expect(find.text(r'$116.00'), findsWidgets);
     });
 
-    testWidgets('the status is a heading over each section, not a label on '
-        'every row', (tester) async {
-      stubStatuses(
-        draft: [
-          _openSale(id: 1, status: SaleStatus.draft),
-          _openSale(id: 2, status: SaleStatus.draft),
-        ],
-        completed: [_openSale(id: 3, status: SaleStatus.completed)],
-      );
+    testWidgets(
+      // spec 036 FR-005, research.md R3: a captured-but-unpaid sale is
+      // `draft` now, indistinguishable from one still being captured, so
+      // `draft` and `completed` share one heading — only the still-awaiting-
+      // delivery `paid` section stays separate.
+      'the status is a heading over each section, not a label on every row '
+      '— draft and completed share one section post-036',
+      (tester) async {
+        final delivered = _openSale(id: 4, status: SaleStatus.paid);
+        stubStatuses(
+          draft: [
+            _openSale(id: 1, status: SaleStatus.draft),
+            _openSale(id: 2, status: SaleStatus.draft),
+          ],
+          completed: [_openSale(id: 3, status: SaleStatus.completed)],
+          paid: [delivered],
+        );
+        when(() => salesOrders.getById(saleId: 4)).thenAnswer(
+          (_) async => testSale(
+            id: 4,
+            status: SaleStatus.paid,
+            shipTo: _deliveryAddress,
+            lines: [testLine(id: 5, quantity: '10')],
+          ),
+        );
+        when(
+          () => deliveries.listForSale(salesOrder: 4),
+        ).thenAnswer((_) async => []);
 
-      await pumpSelector(tester);
+        await pumpSelector(tester);
 
-      // One heading per section, however many sales it holds.
-      expect(find.text(l10n.posOpenSaleDraft), findsOneWidget);
-      expect(find.text(l10n.posOpenSaleUnpaid), findsOneWidget);
-      expect(
-        find.byKey(const Key('open_sales_heading_draft')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('open_sales_heading_completed')),
-        findsOneWidget,
-      );
-      // No section that has no sales in it.
-      expect(find.text(l10n.posOpenSaleUndelivered), findsNothing);
+        // One heading for the merged draft+completed section, one for paid.
+        expect(find.text(l10n.posOpenSaleDraft), findsOneWidget);
+        expect(find.text(l10n.posOpenSaleUndelivered), findsOneWidget);
+        expect(
+          find.byKey(const Key('open_sales_heading_draft')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('open_sales_heading_completed')),
+          findsNothing,
+          reason: 'completed folds into the draft heading, not its own',
+        );
+        expect(
+          find.byKey(const Key('open_sales_heading_paid')),
+          findsOneWidget,
+        );
 
-      // Each heading sits above its own sales.
-      final draftHeading = tester
-          .getTopLeft(find.byKey(const Key('open_sales_heading_draft')))
-          .dy;
-      final unpaidHeading = tester
-          .getTopLeft(find.byKey(const Key('open_sales_heading_completed')))
-          .dy;
-      for (final id in [1, 2]) {
-        final row = tester.getTopLeft(find.byKey(Key('open_sale_$id'))).dy;
-        expect(row, greaterThan(draftHeading));
-        expect(row, lessThan(unpaidHeading));
-      }
-      expect(
-        tester.getTopLeft(find.byKey(const Key('open_sale_3'))).dy,
-        greaterThan(unpaidHeading),
-      );
-    });
+        // Every draft/completed sale sits above the paid heading, below the
+        // one merged heading.
+        final draftHeading = tester
+            .getTopLeft(find.byKey(const Key('open_sales_heading_draft')))
+            .dy;
+        final paidHeading = tester
+            .getTopLeft(find.byKey(const Key('open_sales_heading_paid')))
+            .dy;
+        for (final id in [1, 2, 3]) {
+          final row = tester.getTopLeft(find.byKey(Key('open_sale_$id'))).dy;
+          expect(row, greaterThan(draftHeading));
+          expect(row, lessThan(paidHeading));
+        }
+        expect(
+          tester.getTopLeft(find.byKey(const Key('open_sale_4'))).dy,
+          greaterThan(paidHeading),
+        );
+      },
+    );
 
     testWidgets('a draft shows no folio line at all — it has not been '
         'assigned one yet', (tester) async {
@@ -284,45 +308,55 @@ void main() {
       expect(find.text(l10n.posOpenSaleId(337482)), findsOneWidget);
     });
 
-    testWidgets('grouped by status — capturing, then owed money, then owed a '
-        'delivery — however the dates fall', (tester) async {
-      // The draft is the *oldest* here, so a flat newest-first ordering would
-      // put it last. Grouping by what the cashier can do about it wins.
-      stubStatuses(
-        draft: [
-          _openSale(id: 1, status: SaleStatus.draft, date: DateTime(2026, 8, 5, 9)),
-        ],
-        completed: [
-          _openSale(
-            id: 2,
-            status: SaleStatus.completed,
-            date: DateTime(2026, 8, 5, 17),
+    testWidgets(
+      // spec 036 R3: draft and completed now merge into one section, sorted
+      // by id (recency) across both statuses — not "every draft, then every
+      // completed" — but that merged section as a whole still precedes paid
+      // however the dates fall, exactly as the old draft/completed/paid
+      // grouping did.
+      'the merged draft/completed section sorts by id across both statuses, '
+      'and precedes the paid section however the dates fall',
+      (tester) async {
+        stubStatuses(
+          draft: [
+            _openSale(id: 1, status: SaleStatus.draft, date: DateTime(2026, 8, 5, 9)),
+          ],
+          completed: [
+            _openSale(
+              id: 2,
+              status: SaleStatus.completed,
+              date: DateTime(2026, 8, 5, 17),
+            ),
+          ],
+          paid: [
+            _openSale(id: 3, status: SaleStatus.paid, date: DateTime(2026, 8, 5, 18)),
+          ],
+        );
+        when(() => salesOrders.getById(saleId: 3)).thenAnswer(
+          (_) async => testSale(
+            id: 3,
+            status: SaleStatus.paid,
+            shipTo: _deliveryAddress,
+            lines: [testLine(id: 5, quantity: '10')],
           ),
-        ],
-        paid: [
-          _openSale(id: 3, status: SaleStatus.paid, date: DateTime(2026, 8, 5, 18)),
-        ],
-      );
-      when(() => salesOrders.getById(saleId: 3)).thenAnswer(
-        (_) async => testSale(
-          id: 3,
-          status: SaleStatus.paid,
-          shipTo: _deliveryAddress,
-          lines: [testLine(id: 5, quantity: '10')],
-        ),
-      );
-      when(
-        () => deliveries.listForSale(salesOrder: 3),
-      ).thenAnswer((_) async => [_destination(claimed: '4')]);
+        );
+        when(
+          () => deliveries.listForSale(salesOrder: 3),
+        ).thenAnswer((_) async => [_destination(claimed: '4')]);
 
-      await pumpSelector(tester);
+        await pumpSelector(tester);
 
-      final capturing = tester.getTopLeft(find.byKey(const Key('open_sale_1')));
-      final owedMoney = tester.getTopLeft(find.byKey(const Key('open_sale_2')));
-      final owedDelivery = tester.getTopLeft(find.byKey(const Key('open_sale_3')));
-      expect(capturing.dy, lessThan(owedMoney.dy));
-      expect(owedMoney.dy, lessThan(owedDelivery.dy));
-    });
+        final draftRow = tester.getTopLeft(find.byKey(const Key('open_sale_1')));
+        final completedRow = tester.getTopLeft(
+          find.byKey(const Key('open_sale_2')),
+        );
+        final paidRow = tester.getTopLeft(find.byKey(const Key('open_sale_3')));
+        // Newest id first within the merged section...
+        expect(completedRow.dy, lessThan(draftRow.dy));
+        // ...and the whole merged section precedes paid.
+        expect(draftRow.dy, lessThan(paidRow.dy));
+      },
+    );
 
     testWidgets('newest first within a status group — ids are sequential, so '
         'the most recent draft is the top one', (tester) async {
@@ -416,9 +450,10 @@ void main() {
       expect(find.byKey(const Key('open_sale_337446')), findsOneWidget);
       expect(find.text(l10n.posOpenSaleUndelivered), findsOneWidget);
       expect(
-        find.text(l10n.posOpenSaleUnpaid),
+        find.text(l10n.posOpenSaleDraft),
         findsNothing,
-        reason: 'a paid sale owes nothing and must not read as unpaid',
+        reason: 'a paid sale is done capturing and owes nothing — it must '
+            'not show under the draft/in-progress heading',
       );
     });
 

@@ -85,7 +85,7 @@ transition) rather than inventing a new pattern.
 
 ---
 
-## R3 — The "Sin pagar" resume bucket needs relabeling
+## R3 — The "Sin pagar" resume bucket needs relabeling — IMPLEMENTED 2026-09-04 (T016)
 
 **Findings.** `open_sales_selector` buckets resumable sales into three sections keyed on status —
 Borrador (`draft`), Sin pagar (`completed`), Sin entregar (`paid`) (`open_sales_selector.dart:53-59,198-203`;
@@ -138,10 +138,13 @@ convention for "not applicable yet" — absent, not disabled, matching `showActi
 `!_needsCustomer` into the existing `onContinue` confirm-gate (`order_screen.dart:293-300`) for
 FR-003's "or saving" half.
 
-**Optional refinement, recommended:** extend `SalesOrderRepository.open()` to accept
-`{int? customer, int? salesperson}` (`SalesOrderCreate` already carries both fields,
-`sales_order_create.dart:35-39`) so the very first customer pick is a single POST instead of
-create-then-PATCH. No mbe-api change required either way.
+**Optional refinement, recommended — IMPLEMENTED 2026-09-04 (T005):** extend
+`SalesOrderRepository.open()` to accept `{int? customer, int? salesperson}` (`SalesOrderCreate`
+already carries both fields, `sales_order_create.dart:35-39`) so the very first customer pick is
+a single POST instead of create-then-PATCH. No mbe-api change required either way.
+`SaleEditing.updateHeader` takes this path only when no sale is open yet and nothing beyond
+customer/salesperson is requested; any other header field alongside falls through to the
+original create-then-PATCH.
 
 **Rationale.** Matches the existing absent-not-disabled convention, closes all three creation
 paths with one predicate, and the optional refinement is a small win with no added risk.

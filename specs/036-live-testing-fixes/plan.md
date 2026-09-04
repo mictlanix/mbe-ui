@@ -73,13 +73,14 @@ No gate fails outright, so **Complexity Tracking carries no entries**. The two m
 dependencies are handled the way this constitution requires (filed as issues, external-dependency
 recorded in spec.md), which is compliance, not a violation needing justification.
 
-### Deferred product decision (not a constitution gate, but blocks part of Stage 6)
+### Deferred product decision (not a constitution gate, but blocks part of Stage 6) — RESOLVED 2026-09-04
 
 Research R3 recommends merging the POS resume-selector's "Borrador" and "Sin pagar" buckets, a
 direct consequence of R1 (a captured-but-unpaid sale is now indistinguishable from a draft in
-progress). This is a user-visible change to a screen cashiers use constantly and has **not** been
+progress). This is a user-visible change to a screen cashiers use constantly and had **not** been
 confirmed with the requester (unlike the debounce-settings and mid-sale-switch decisions, which
-were). It does not block Stages 1-5 below; it blocks only the resume-selector relabeling inside
+were) — **sign-off given 2026-09-04, and the merge is implemented** (T016). It did not block
+Stages 1-5 below; it blocked only the resume-selector relabeling inside
 Stage 6.
 
 ## Project Structure
@@ -141,7 +142,7 @@ lib/
     │   │   ├── customer_inline_create.dart      # drop shipping switches
     │   │   ├── orders/order_screen.dart         # customer-first gate (R5)
     │   │   ├── orders/order_header_panel.dart   # salesperson initialDisplayText fix (R7)
-    │   │   ├── open_sales_selector.dart          # bucket merge — pending sign-off (R3)
+    │   │   ├── open_sales_selector.dart          # bucket merge — implemented (R3)
     │   │   ├── open_sales_selector_controller.dart
     │   │   └── pos_workspace_screen.dart        # tappable step pill (R2)
     │   └── domain/repositories/sales_order_repository.dart # optional open(customer:,
@@ -190,9 +191,9 @@ proven.
    shares this stage's "customer/mode consistency" theme). The `confirm()`-timing move touches
    Payment, Delivery and credit-terms leave-Cobro paths together and is the one item requiring a
    genuinely new interaction pattern (back-navigation). Ships last, after Stages 1-5 have proven
-   the smaller pieces stable. **The resume-selector bucket relabeling (R3) needs requester
-   sign-off before its part of this stage ships** — the `confirm()`-timing move and
-   back-navigation do not depend on that sign-off and can proceed regardless.
+   the smaller pieces stable. **The resume-selector bucket relabeling (R3) needed requester
+   sign-off before its part of this stage shipped** — given 2026-09-04, implemented (T016) — the
+   `confirm()`-timing move and back-navigation never depended on that sign-off.
 
 ## Risks
 
@@ -200,7 +201,7 @@ proven.
 |---|---|---|
 | Stock reservation now happens at confirm-just-before-payment instead of at capture | Two registers can race for the same stock during Cobro/Entrega, a window that didn't exist before | No code mitigation — flagged as an operational trade-off of the only mbe-api-change-free way to satisfy FR-008; revisit if it proves to matter in practice |
 | `confirm()` failures (empty order / stock shortfall) now surface at payment or delivery time | Must be routed back to Venta's existing error rendering, not treated as a payment/delivery failure, or the error message will be wrong | Explicit contract requirement (`pos-sale-lifecycle.md` C1); test each of the three trigger points explicitly |
-| "Sin pagar" resume bucket loses its meaning post-fix | A user-visible relabeling on a screen used constantly | Not shipped without requester sign-off (see Constitution Check); the rest of Stage 6 does not depend on it |
+| "Sin pagar" resume bucket loses its meaning post-fix | A user-visible relabeling on a screen used constantly | **Resolved 2026-09-04**: sign-off given, bucket merged into "Borrador" (T016) |
 | `posDefaultCustomerId` is a documented, drift-prone build-time constant | Was cosmetic before; under FR-015/FR-016 a stale value becomes a functional mis-gate (wrong customer blocked/allowed from shipping) | Not fixed by this feature — recorded as a known, now higher-stakes, existing issue |
 | **Confirmed** (T046 live spike): product-lookup's `warehouse:` param filters `stock` to one warehouse | Every warehouse other than the one last looked up always shows "unknown" in the picker — the flag is still correct (never falsely "in stock"), but its practical coverage is narrower than the spec's intent | Not fixed by this feature — a per-warehouse stock fetch would be needed to close the gap; recorded as a known limitation for a future feature |
 | The pricing-grid fix lifts commit ownership into the controller rather than patching the widget | Larger diff than the minimal patch; risk of regressing existing keyboard-traversal tests if the commit-before-switch call is wired incorrectly | `pricing-grid-commit.md` C1-C3 spell out the exact guarantee; existing `price_cell_test.dart` cases (Enter/Tab/Escape) must keep passing unchanged, with new cases added alongside |

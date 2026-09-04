@@ -6205,12 +6205,6 @@ abstract class AppLocalizations {
   /// **'In progress'**
   String get posOpenSaleDraft;
 
-  /// No description provided for @posOpenSaleUnpaid.
-  ///
-  /// In en, this message translates to:
-  /// **'Awaiting payment'**
-  String get posOpenSaleUnpaid;
-
   /// No description provided for @posOpenSaleUndelivered.
   ///
   /// In en, this message translates to:

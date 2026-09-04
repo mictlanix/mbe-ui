@@ -71,11 +71,14 @@ customer is chosen.
       `optionsBuilder`, and filter results with T002's `isGenericCustomer` when true. Pass
       `excludeGenericCustomer: true` only from `order_screen.dart` (T003); every POS `CustomerBar`
       usage keeps the default `false` (`contracts/sales-order-customer-flow.md` C2).
-- [ ] T005 [P] [US1] *(optional refinement, not required for correctness)* In
-      `lib/features/sales/domain/repositories/sales_order_repository.dart` and
+- [X] T005 [P] [US1] *(optional refinement, not required for correctness — implemented
+      2026-09-04)* In `lib/features/sales/domain/repositories/sales_order_repository.dart` and
       `lib/features/sales/data/sales_order_repository_impl.dart`, add optional
       `{int? customer, int? salesperson}` params to `open()` so the very first customer pick can
-      be a single POST instead of create-then-PATCH (research.md R5).
+      be a single POST instead of create-then-PATCH (research.md R5). `SaleEditing.updateHeader`
+      (`sale_editing.dart`) takes the single-POST path only when no sale is open yet and nothing
+      beyond customer/salesperson is requested — any other header field alongside falls through
+      to the original create-then-PATCH, since `open()` only ever takes these two.
 
 ### Tests for User Story 1
 
@@ -130,10 +133,15 @@ can be reopened and changed. Record a payment; confirm the cart can no longer be
       `_StepPill` tappable (desktop/web) when `canReturnToCapture` passes, calling `returnToVenta()`.
 - [X] T015 [US2] Add a compact-tier back-navigation affordance (the payment/delivery footer band,
       since compact renders a text progress indicator instead of pills) — same guard as T014.
-- [ ] T016 [US2] *(pending requester sign-off — see plan.md Risks; do not ship until approved)* In
+- [X] T016 [US2] *(requester sign-off given 2026-09-04 — see plan.md Risks)* In
       `lib/features/sales/presentation/open_sales_selector.dart` and
       `open_sales_selector_controller.dart`, merge the "Borrador"/"Sin pagar" buckets into one,
       since a captured-but-unpaid sale is now `draft`, indistinguishable from an in-progress draft.
+      `_statusRank` gives `draft`/`completed` the same rank (sorted by id across both, not
+      "every draft then every completed"); the widget's new `_sectionOf` collapses `completed`
+      into `draft` before grouping/heading, so the merged section always reads "En captura"/
+      "In progress" (`posOpenSaleDraft`) and the now-dead `posOpenSaleUnpaid` l10n key is
+      removed. "Sin entregar" (`paid`) is unaffected and keeps its own section.
 
 ### Tests for User Story 2
 

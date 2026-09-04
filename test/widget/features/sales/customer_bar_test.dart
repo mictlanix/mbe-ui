@@ -392,19 +392,9 @@ void main() {
         await tester.tap(find.text('C-8 — ACME SA DE CV'));
         await tester.pumpAndSettle();
 
-        verify(
-          () => salesOrder.updateHeader(
-            saleId: any(named: 'saleId'),
-            customer: 8,
-            paymentTerms: null,
-            currency: any(named: 'currency'),
-            shipTo: any(named: 'shipTo'),
-            contact: any(named: 'contact'),
-            customerName: any(named: 'customerName'),
-            salesperson: 20,
-            fulfillmentIntent: null,
-          ),
-        ).called(1);
+        // spec 036 T005: no sale open yet, and nothing but customer/
+        // salesperson requested — a single `open()`, not `updateHeader`.
+        verify(() => salesOrder.open(customer: 8, salesperson: 20)).called(1);
       },
     );
 
@@ -463,19 +453,9 @@ void main() {
         await tester.tap(find.text('C-9 — BETA LLC'));
         await tester.pumpAndSettle();
 
-        verify(
-          () => salesOrder.updateHeader(
-            saleId: any(named: 'saleId'),
-            customer: 9,
-            paymentTerms: null,
-            currency: any(named: 'currency'),
-            shipTo: any(named: 'shipTo'),
-            contact: any(named: 'contact'),
-            customerName: any(named: 'customerName'),
-            salesperson: null,
-            fulfillmentIntent: null,
-          ),
-        ).called(1);
+        // spec 036 T005: no sale open yet, and nothing but customer/
+        // salesperson requested — a single `open()`, not `updateHeader`.
+        verify(() => salesOrder.open(customer: 9, salesperson: null)).called(1);
       },
     );
 
@@ -565,10 +545,17 @@ void main() {
 /// never called by this test.
 MockSalesOrderRepository _updateHeaderStub(Sale sale, {int newCustomer = 8}) {
   final repository = MockSalesOrderRepository();
-  // `PosSaleController.updateHeader` calls `ensureOpen()` first — its own
-  // `state` was never seeded by this test, so it opens a sale before
-  // updating it, exactly as it would on a register nobody has touched yet.
-  when(() => repository.open()).thenAnswer((_) async => sale);
+  // `PosSaleController.updateHeader`'s own `state` was never seeded by this
+  // test, so every call here is the "no sale yet" case — spec 036 T005:
+  // when nothing but customer/salesperson is being set, that goes straight
+  // through a single `open(customer:, salesperson:)` instead of an empty
+  // `open()` followed by `updateHeader`, so this stub must answer both.
+  when(
+    () => repository.open(
+      customer: any(named: 'customer'),
+      salesperson: any(named: 'salesperson'),
+    ),
+  ).thenAnswer((_) async => sale);
   when(
     () => repository.updateHeader(
       saleId: any(named: 'saleId'),

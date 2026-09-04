@@ -83,8 +83,30 @@ mixin SaleEditing implements SaleEditor {
     String? comment,
     String? recipient,
   }) => tracked(() async {
-    final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
+    // spec 036 research.md R5: the very first customer pick on a brand-new
+    // sale — no sale open yet, and nothing beyond customer/salesperson
+    // requested — opens with both already set, one POST instead of an empty
+    // create followed by this same method's own PUT below. Any other field
+    // requested alongside falls through to the general path unchanged,
+    // since `open()` only ever takes these two.
+    if (state.valueOrNull == null &&
+        paymentTerms == null &&
+        currency == null &&
+        shipTo == null &&
+        contact == null &&
+        customerName == null &&
+        fulfillmentIntent == null &&
+        promiseDate == null &&
+        priority == null &&
+        comment == null &&
+        recipient == null) {
+      state = AsyncValue.data(
+        await repository.open(customer: customer, salesperson: salesperson),
+      );
+      return;
+    }
+    final current = await ensureOpen();
     final updated = await repository.updateHeader(
       saleId: current.id,
       customer: customer,
