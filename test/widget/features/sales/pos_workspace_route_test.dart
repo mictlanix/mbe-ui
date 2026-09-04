@@ -7,25 +7,30 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/app_navigation.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/point_sale.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -35,6 +40,9 @@ class MockCustomerRepository extends Mock implements CustomerRepository {}
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 
 class MockPointSaleRepository extends Mock implements PointSaleRepository {}
+
+class MockPaymentMethodOptionRepository extends Mock
+    implements PaymentMethodOptionRepository {}
 
 class _FixedAuthNotifier extends AuthNotifier {
   _FixedAuthNotifier(this._state);
@@ -54,8 +62,6 @@ Customer _customer({int id = 7}) => Customer(
   creditLimit: '0',
   creditDays: 0,
   priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-  shipping: false,
-  shippingRequiredDocument: false,
   status: EntityStatus.active,
 );
 
@@ -69,6 +75,7 @@ void main() {
   late MockWarehouseRepository warehouses;
   late MockCashSessionRepository cashSessions;
   late MockPointSaleRepository pointSales;
+  late MockPaymentMethodOptionRepository paymentMethodOptions;
 
   setUp(() {
     salesOrders = MockSalesOrderRepository();
@@ -77,6 +84,7 @@ void main() {
     warehouses = MockWarehouseRepository();
     cashSessions = MockCashSessionRepository();
     pointSales = MockPointSaleRepository();
+    paymentMethodOptions = MockPaymentMethodOptionRepository();
 
     when(() => cashSessions.getCurrent()).thenAnswer(
       (_) async => const CurrentSession(state: SessionState.open),
@@ -85,6 +93,15 @@ void main() {
         .thenAnswer((_) async => _customer());
     when(() => payments.outstandingBalanceFor(customerId: any(named: 'customerId')))
         .thenAnswer((_) async => '0');
+    when(
+      () => paymentMethodOptions.list(
+        search: any(named: 'search'),
+        facilityId: any(named: 'facilityId'),
+        status: any(named: 'status'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const PaymentMethodOptionPage(items: [], total: 0));
     when(() => pointSales.get(pointSaleId: any(named: 'pointSaleId'))).thenAnswer(
       (_) async => const PointSale(
         pointSaleId: _registerPointSale,
@@ -141,6 +158,7 @@ void main() {
     customerPaymentOverride(payments),
     cashSessionRepositoryProvider.overrideWithValue(cashSessions),
     pointSaleRepositoryProvider.overrideWithValue(pointSales),
+    paymentMethodOptionRepositoryProvider.overrideWithValue(paymentMethodOptions),
   ];
 
   group('/sales/pos/new — nothing is created until the first action', () {
@@ -505,6 +523,115 @@ void main() {
         findsOneWidget,
       );
     });
+  });
+
+  group('the Venta pill — return-to-capture (spec 036 FR-005/FR-008, US2)', () {
+    Future<ProviderContainer> pumpOnCobro(
+      WidgetTester tester, {
+      required int saleId,
+      required List<SalePayment> payments_,
+    }) async {
+      when(() => salesOrders.getById(saleId: saleId))
+          .thenAnswer((_) async => testSale(id: saleId, lines: [testLine()]));
+      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
+          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      when(() => payments.listForOrder(saleId: saleId))
+          .thenAnswer((_) async => payments_);
+
+      final (_, container) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/$saleId',
+        overrides: overrides(),
+        surface: const Size(1440, 900),
+      );
+      // The initial resume lands a draft counter-pickup sale on Venta
+      // (asserted above) — jumped forward here the same way advancing
+      // through the capture step would, without simulating that whole flow.
+      container.read(posStepControllerProvider.notifier).jumpTo(PosStep.cobro);
+      await tester.pumpAndSettle();
+      return container;
+    }
+
+    testWidgets(
+      'a draft sale on Cobro with no payment yet exposes the pill, and it '
+      'returns to Venta',
+      (tester) async {
+        final container = await pumpOnCobro(
+          tester,
+          saleId: 30,
+          payments_: const [],
+        );
+
+        final pill = find.byKey(const Key('pos_step_pill_return_to_venta'));
+        expect(pill, findsOneWidget);
+
+        await tester.tap(pill);
+        await tester.pumpAndSettle();
+
+        expect(
+          container.read(posStepControllerProvider).current,
+          PosStep.venta,
+        );
+      },
+    );
+
+    testWidgets(
+      'a sale with at least one non-cancelled payment does not expose the '
+      'pill',
+      (tester) async {
+        await pumpOnCobro(
+          tester,
+          saleId: 31,
+          payments_: [
+            SalePayment(
+              id: 900,
+              customerPayment: 900,
+              amount: '50.00',
+              methodCode: 1,
+              currency: Currency.mxn,
+              changeAmount: '0',
+              cancelled: false,
+              paymentDate: DateTime(2026, 8, 20),
+            ),
+          ],
+        );
+
+        expect(
+          find.byKey(const Key('pos_step_pill_return_to_venta')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets(
+      'a sale whose only payment was cancelled still exposes the pill',
+      (tester) async {
+        final container = await pumpOnCobro(
+          tester,
+          saleId: 32,
+          payments_: [
+            SalePayment(
+              id: 901,
+              customerPayment: 901,
+              amount: '50.00',
+              methodCode: 1,
+              currency: Currency.mxn,
+              changeAmount: '0',
+              cancelled: true,
+              paymentDate: DateTime(2026, 8, 20),
+            ),
+          ],
+        );
+
+        expect(
+          find.byKey(const Key('pos_step_pill_return_to_venta')),
+          findsOneWidget,
+        );
+        // Unused beyond keeping the analyzer quiet about an unread container
+        // in this particular case — the other two tests read it.
+        expect(container, isNotNull);
+      },
+    );
   });
 
   group('the footer band (spec 023 contracts/capture-surface.md §5)', () {

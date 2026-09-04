@@ -68,14 +68,12 @@ class CustomerRepositoryImpl implements CustomerRepository {
 
   @override
   Future<Customer> create({
-    required String code,
+    String? code,
     required String name,
     required int priceList,
     String? zone,
     String? creditLimit,
     int? creditDays,
-    bool? shipping,
-    bool? shippingRequiredDocument,
     int? salesperson,
     String? comment,
     List<int>? addresses,
@@ -91,8 +89,6 @@ class CustomerRepositoryImpl implements CustomerRepository {
             ..priceList = priceList
             ..zone = zone
             ..creditDays = creditDays
-            ..shipping = shipping
-            ..shippingRequiredDocument = shippingRequiredDocument
             ..salesperson = salesperson
             ..comment = comment;
           if (creditLimit != null) _setCreditLimit(b.creditLimit, creditLimit);
@@ -120,8 +116,6 @@ class CustomerRepositoryImpl implements CustomerRepository {
     String? zone,
     String? creditLimit,
     int? creditDays,
-    bool? shipping,
-    bool? shippingRequiredDocument,
     int? salesperson,
     EntityStatus? status,
     String? comment,
@@ -138,10 +132,6 @@ class CustomerRepositoryImpl implements CustomerRepository {
           if (priceList != null) b.priceList = priceList;
           if (zone != null) b.zone = zone;
           if (creditDays != null) b.creditDays = creditDays;
-          if (shipping != null) b.shipping = shipping;
-          if (shippingRequiredDocument != null) {
-            b.shippingRequiredDocument = shippingRequiredDocument;
-          }
           if (salesperson != null) b.salesperson = salesperson;
           if (status != null) b.status = status.toApi();
           if (comment != null) b.comment = comment;

@@ -240,9 +240,10 @@ class _$ContactCreateSerializer implements PrimitiveSerializer<ContactCreate> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(String),
                   )
-                  as String;
+                  as String?;
+          if (valueDes == null) continue;
           result.mobile = valueDes;
           break;
         case r'fax':

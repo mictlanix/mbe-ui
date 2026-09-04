@@ -173,18 +173,20 @@ class _$UserCreateSerializer implements PrimitiveSerializer<UserCreate> {
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(bool),
+                    specifiedType: const FullType.nullable(bool),
                   )
-                  as bool;
+                  as bool?;
+          if (valueDes == null) continue;
           result.administrator = valueDes;
           break;
         case r'status':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(EntityStatus),
+                    specifiedType: const FullType.nullable(EntityStatus),
                   )
-                  as EntityStatus;
+                  as EntityStatus?;
+          if (valueDes == null) continue;
           result.status = valueDes;
           break;
         case r'profile_id':

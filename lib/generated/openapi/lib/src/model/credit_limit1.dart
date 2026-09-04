@@ -52,7 +52,7 @@ class _$CreditLimit1Serializer implements PrimitiveSerializer<CreditLimit1> {
       anyOf,
       specifiedType: FullType(
         AnyOf,
-        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+        anyOf.types.map((type) => FullType(type)).toList(),
       ),
     )!;
   }

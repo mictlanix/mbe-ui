@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
@@ -34,6 +35,8 @@ class AppSettings {
     required this.brand,
     required this.defaultLocale,
     required this.formatting,
+    this.inputDebounce = const Duration(milliseconds: 300),
+    this.quantityCommitDebounce = const Duration(milliseconds: 400),
   });
 
   /// mbe-api base URL. Mirrors `dio_client.dart`'s `apiBaseUrl` const.
@@ -62,9 +65,41 @@ class AppSettings {
   /// exclusively through `formattersProvider` (`lib/core/formatting/`).
   final FormattingSettings formatting;
 
+  /// The delay a search-style field (one that waits after the user stops
+  /// typing before issuing a request) waits before calling out
+  /// (`INPUT_DEBOUNCE_MS`, spec 036 FR-028). Consumed via
+  /// `inputDebounceProvider` by `CatalogEntityPicker` and
+  /// `ProductSearchField` — neither keeps its own hardcoded delay.
+  final Duration inputDebounce;
+
+  /// The delay a quantity-commit field (one that waits after the user stops
+  /// adjusting a value before saving it) waits before saving
+  /// (`QUANTITY_COMMIT_DEBOUNCE_MS`, spec 036 FR-028). Consumed via
+  /// `quantityCommitDebounceProvider` by `QuantityStepperController` and its
+  /// two hosts (`sale_line_editing.dart`, `destination_card.dart`) — a
+  /// separate setting from [inputDebounce] because the two categories serve
+  /// different purposes and already default to different delays
+  /// (research.md R13).
+  final Duration quantityCommitDebounce;
+
+  /// Whether [customerId] is the generic walk-in customer
+  /// ([posDefaultCustomerId]). The one, shared way to answer that question
+  /// (spec 036 data-model.md §5) — the Sales Order customer picker and the
+  /// POS fulfillment-mode gate both call this rather than each comparing
+  /// against [posDefaultCustomerId] independently.
+  bool isGenericCustomer(int customerId) => customerId == posDefaultCustomerId;
+
   static const _defaultLocaleEnv = String.fromEnvironment(
     'DEFAULT_LOCALE',
     defaultValue: 'es_MX',
+  );
+  static const _inputDebounceMsEnv = String.fromEnvironment(
+    'INPUT_DEBOUNCE_MS',
+    defaultValue: '300',
+  );
+  static const _quantityCommitDebounceMsEnv = String.fromEnvironment(
+    'QUANTITY_COMMIT_DEBOUNCE_MS',
+    defaultValue: '400',
   );
 
   /// Build-time source (FR-001). Every field has a documented default
@@ -72,6 +107,16 @@ class AppSettings {
   /// startup (FR-005) — the same rule `BrandConfig._parseSeedColor` already
   /// applies to a bad hex color.
   factory AppSettings.fromEnvironment() {
+    if (kDebugMode) {
+      debugPrint(
+        '[AppSettings] API_BASE_URL=${dio_client.apiBaseUrl} '
+        'PHOTOS_BASE_URL=${photo_url.photosBaseUrl} '
+        'POS_DEFAULT_CUSTOMER_ID=${pos_defaults.posDefaultCustomerId} '
+        'DEFAULT_LOCALE=$_defaultLocaleEnv '
+        'INPUT_DEBOUNCE_MS=$_inputDebounceMsEnv '
+        'QUANTITY_COMMIT_DEBOUNCE_MS=$_quantityCommitDebounceMsEnv',
+      );
+    }
     return AppSettings(
       apiBaseUrl: dio_client.apiBaseUrl,
       photosBaseUrl: photo_url.photosBaseUrl,
@@ -79,7 +124,19 @@ class AppSettings {
       brand: BrandConfig.fromEnvironment(),
       defaultLocale: _parseLocale(_defaultLocaleEnv),
       formatting: FormattingSettings.fromEnvironment(),
+      inputDebounce: _parseDebounceMs(_inputDebounceMsEnv, 300),
+      quantityCommitDebounce: _parseDebounceMs(_quantityCommitDebounceMsEnv, 400),
     );
+  }
+
+  /// Parses a millisecond debounce duration. Falls back to [fallbackMs] on
+  /// anything that isn't a non-negative integer — a malformed build flag
+  /// must not brick app startup, mirroring
+  /// `FormattingSettings._parseDigits`.
+  static Duration _parseDebounceMs(String value, int fallbackMs) {
+    final parsed = int.tryParse(value);
+    if (parsed == null || parsed < 0) return Duration(milliseconds: fallbackMs);
+    return Duration(milliseconds: parsed);
   }
 
   /// Parses a `language_COUNTRY` or `language` code (e.g. `es_MX`, `en`)

@@ -55,8 +55,6 @@ Customer _customer({int id = 7}) => Customer(
   creditLimit: '0',
   creditDays: 0,
   priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-  shipping: false,
-  shippingRequiredDocument: false,
   status: EntityStatus.active,
 );
 

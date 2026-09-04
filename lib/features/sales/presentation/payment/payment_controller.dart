@@ -6,6 +6,7 @@ import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 
@@ -117,6 +118,17 @@ class PaymentController extends _$PaymentController {
   Future<bool> submit(Sale sale) async {
     final draft = state;
     if (!draft.isSubmittable) return false;
+
+    // spec 036 FR-008/R1: the sale is confirmed here, immediately before the
+    // first payment — not earlier, at Venta→Cobro. A no-op once already
+    // confirmed. A failure is routed to Venta's own banner and this submit
+    // aborts without ever setting the payment draft's own error, since the
+    // failure is about the sale, not this tender.
+    try {
+      await confirmBeforePayableAction(ref.read, sale);
+    } on AppError {
+      return false;
+    }
 
     state = draft.copyWith(submitting: true, clearError: true);
     try {

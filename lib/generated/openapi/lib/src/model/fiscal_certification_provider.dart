@@ -9,24 +9,16 @@ import 'package:built_value/serializer.dart';
 
 part 'fiscal_certification_provider.g.dart';
 
+/// PAC (Proveedor Autorizado de Certificación) integration used for CFDI stamping.
 class FiscalCertificationProvider extends EnumClass {
-  /// PAC (Proveedor Autorizado de Certificación) integration used for CFDI stamping.
   @BuiltValueEnumConst(wireNumber: 0)
   static const FiscalCertificationProvider number0 = _$number0;
-
-  /// PAC (Proveedor Autorizado de Certificación) integration used for CFDI stamping.
   @BuiltValueEnumConst(wireNumber: 1)
   static const FiscalCertificationProvider number1 = _$number1;
-
-  /// PAC (Proveedor Autorizado de Certificación) integration used for CFDI stamping.
   @BuiltValueEnumConst(wireNumber: 2)
   static const FiscalCertificationProvider number2 = _$number2;
-
-  /// PAC (Proveedor Autorizado de Certificación) integration used for CFDI stamping.
   @BuiltValueEnumConst(wireNumber: 3)
   static const FiscalCertificationProvider number3 = _$number3;
-
-  /// PAC (Proveedor Autorizado de Certificación) integration used for CFDI stamping.
   @BuiltValueEnumConst(wireNumber: 4)
   static const FiscalCertificationProvider number4 = _$number4;
 

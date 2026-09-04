@@ -9,6 +9,10 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/config/app_settings.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -81,6 +85,7 @@ void main() {
     required User signedInAs,
     required int initialProductId,
     String? initialProductDisplayText,
+    AppSettings? appSettings,
   }) async {
     final screen = PricingScreen(
       initialProductId: initialProductId,
@@ -99,6 +104,8 @@ void main() {
             productPriceRepository,
           ),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
+          if (appSettings != null)
+            appSettingsProvider.overrideWithValue(appSettings),
         ],
         // The screen supplies its own Scaffold/AppBar (it's pushed as a
         // full route) — no host Scaffold needed here.
@@ -248,6 +255,86 @@ void main() {
 
       expect(find.byKey(const Key('list_state_failed')), findsNothing);
       expect(find.text('Retail'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'the edit dialog seeds at the configured currency decimal digits, not '
+    'the raw wire precision (spec 036 US8)',
+    (tester) async {
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productPriceRepository.listByProduct(
+          productId: 1,
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          ProductPrice(
+            productPriceId: 10,
+            productId: 1,
+            priceList: _retail,
+            price: '20.1234',
+          ),
+        ],
+      );
+
+      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
+      await tester.tap(find.byKey(const Key('edit_price_button_1')));
+      await tester.pumpAndSettle();
+
+      final field = tester.widget<TextField>(
+        find.byKey(const Key('price_edit_price_field')),
+      );
+      expect(field.controller!.text, '20.12');
+    },
+  );
+
+  testWidgets(
+    'a deployment configured for 3 currency decimal digits seeds the edit '
+    'dialog at that count (spec 036 US8)',
+    (tester) async {
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async => const PriceListResult(items: [_retail], total: 1),
+      );
+      when(
+        () => productPriceRepository.listByProduct(
+          productId: 1,
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => [
+          ProductPrice(
+            productPriceId: 10,
+            productId: 1,
+            priceList: _retail,
+            price: '20.1234',
+          ),
+        ],
+      );
+
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+        appSettings: const AppSettings(
+          apiBaseUrl: 'x',
+          photosBaseUrl: 'x',
+          posDefaultCustomerId: 1,
+          brand: BrandConfig(displayName: 'X'),
+          defaultLocale: Locale('es', 'MX'),
+          formatting: FormattingSettings(currencyDecimalDigits: 3),
+        ),
+      );
+      await tester.tap(find.byKey(const Key('edit_price_button_1')));
+      await tester.pumpAndSettle();
+
+      final field = tester.widget<TextField>(
+        find.byKey(const Key('price_edit_price_field')),
+      );
+      expect(field.controller!.text, '20.123');
     },
   );
 }

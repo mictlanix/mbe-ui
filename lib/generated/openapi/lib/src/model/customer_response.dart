@@ -25,8 +25,6 @@ part 'customer_response.g.dart';
 /// * [creditLimit]
 /// * [creditDays]
 /// * [priceList]
-/// * [shipping]
-/// * [shippingRequiredDocument]
 /// * [salesperson]
 /// * [status]
 /// * [comment]
@@ -56,12 +54,6 @@ abstract class CustomerResponse
 
   @BuiltValueField(wireName: r'price_list')
   PriceListResponse get priceList;
-
-  @BuiltValueField(wireName: r'shipping')
-  bool get shipping;
-
-  @BuiltValueField(wireName: r'shipping_required_document')
-  bool get shippingRequiredDocument;
 
   @BuiltValueField(wireName: r'salesperson')
   EmployeeResponse? get salesperson;
@@ -147,16 +139,6 @@ class _$CustomerResponseSerializer
     yield serializers.serialize(
       object.priceList,
       specifiedType: const FullType(PriceListResponse),
-    );
-    yield r'shipping';
-    yield serializers.serialize(
-      object.shipping,
-      specifiedType: const FullType(bool),
-    );
-    yield r'shipping_required_document';
-    yield serializers.serialize(
-      object.shippingRequiredDocument,
-      specifiedType: const FullType(bool),
     );
     yield r'salesperson';
     yield object.salesperson == null
@@ -285,24 +267,6 @@ class _$CustomerResponseSerializer
                   as PriceListResponse;
           result.priceList.replace(valueDes);
           break;
-        case r'shipping':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.shipping = valueDes;
-          break;
-        case r'shipping_required_document':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType(bool),
-                  )
-                  as bool;
-          result.shippingRequiredDocument = valueDes;
-          break;
         case r'salesperson':
           final valueDes =
               serializers.deserialize(
@@ -336,33 +300,36 @@ class _$CustomerResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(AddressResponse),
                     ]),
                   )
-                  as BuiltList<AddressResponse>;
+                  as BuiltList<AddressResponse>?;
+          if (valueDes == null) continue;
           result.addresses.replace(valueDes);
           break;
         case r'contacts':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(ContactResponse),
                     ]),
                   )
-                  as BuiltList<ContactResponse>;
+                  as BuiltList<ContactResponse>?;
+          if (valueDes == null) continue;
           result.contacts.replace(valueDes);
           break;
         case r'taxpayers':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(TaxpayerRecipientResponse),
                     ]),
                   )
-                  as BuiltList<TaxpayerRecipientResponse>;
+                  as BuiltList<TaxpayerRecipientResponse>?;
+          if (valueDes == null) continue;
           result.taxpayers.replace(valueDes);
           break;
         default:

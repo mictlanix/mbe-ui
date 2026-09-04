@@ -54,8 +54,6 @@ Customer _customer({
   creditLimit: '0',
   creditDays: 0,
   priceList: PriceListRef(id: 1, name: priceList),
-  shipping: false,
-  shippingRequiredDocument: false,
   status: EntityStatus.active,
 );
 
@@ -207,8 +205,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
@@ -227,22 +223,26 @@ void main() {
       await tester.pumpAndSettle();
       await fillAndSave(tester);
 
-      final created = verify(
+      // Exact matchers, not `captureAny` — mocktail's `.captured` list order
+      // across several simultaneous `captureAny(named:)` calls follows
+      // `Invocation.namedArguments`'s own (unordered-by-contract) map
+      // iteration, observed to reorder here once `code` became nullable with
+      // no change to this call's own argument order. The expected values are
+      // already known from `fillAndSave`/the price-list fixture, so exact
+      // matchers avoid depending on that ordering at all.
+      verify(
         () => customers.create(
-          code: captureAny(named: 'code'),
-          name: captureAny(named: 'name'),
-          priceList: captureAny(named: 'priceList'),
+          code: 'C-99',
+          name: 'FERRETERÍA LOS PINOS',
+          priceList: 2,
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
         ),
-      ).captured;
-      expect(created, ['C-99', 'FERRETERÍA LOS PINOS', 2]);
+      ).called(1);
 
       verify(
         () => salesOrders.updateHeader(saleId: 42, customer: 99),
@@ -266,8 +266,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
@@ -311,8 +309,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
@@ -344,7 +340,7 @@ void main() {
       await tester.tap(find.byKey(const Key('pos_new_customer_save')));
       await tester.pumpAndSettle();
 
-      expect(find.text(l10n.customerCodeRequiredError), findsOneWidget);
+      // spec 036 FR-011: `code` is no longer among the missing-field errors.
       expect(find.text(l10n.customerNameRequiredError), findsOneWidget);
       expect(find.byKey(const Key('pos_new_customer_save')), findsOneWidget);
     });
@@ -360,8 +356,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
@@ -403,8 +397,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: captureAny(named: 'taxpayers'),
@@ -428,8 +420,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
@@ -456,8 +446,6 @@ void main() {
           zone: any(named: 'zone'),
           creditLimit: any(named: 'creditLimit'),
           creditDays: any(named: 'creditDays'),
-          shipping: any(named: 'shipping'),
-          shippingRequiredDocument: any(named: 'shippingRequiredDocument'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           taxpayers: captureAny(named: 'taxpayers'),

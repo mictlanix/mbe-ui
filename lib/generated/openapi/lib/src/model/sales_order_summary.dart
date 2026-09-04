@@ -16,8 +16,8 @@ part 'sales_order_summary.g.dart';
 /// * [salesOrderId]
 /// * [serial]
 /// * [customer]
-/// * [customerName]
-/// * [customerDisplayName]
+/// * [customerName] - The name printed on this document instead of the customer's own, when one was set. Null on an ordinary sale — most rows. To show who the customer is, read `customer_display_name`; this field only says whether the document overrides that name.
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [salesperson]
 /// * [date]
 /// * [dueDate]
@@ -37,9 +37,11 @@ abstract class SalesOrderSummary
   @BuiltValueField(wireName: r'customer')
   int get customer;
 
+  /// The name printed on this document instead of the customer's own, when one was set. Null on an ordinary sale — most rows. To show who the customer is, read `customer_display_name`; this field only says whether the document overrides that name.
   @BuiltValueField(wireName: r'customer_name')
   String? get customerName;
 
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
   @BuiltValueField(wireName: r'customer_display_name')
   String? get customerDisplayName;
 

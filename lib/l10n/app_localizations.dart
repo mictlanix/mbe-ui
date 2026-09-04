@@ -3105,18 +3105,6 @@ abstract class AppLocalizations {
   /// **'None assigned'**
   String get noneAssignedLabel;
 
-  /// No description provided for @shippingLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Shipping'**
-  String get shippingLabel;
-
-  /// No description provided for @shippingRequiredDocumentLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Shipping requires document'**
-  String get shippingRequiredDocumentLabel;
-
   /// No description provided for @columnSalesperson.
   ///
   /// In en, this message translates to:
@@ -3230,12 +3218,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You no longer have permission to delete customers.'**
   String get customerDeletePermissionDeniedError;
-
-  /// No description provided for @customerCodeRequiredError.
-  ///
-  /// In en, this message translates to:
-  /// **'Code is required.'**
-  String get customerCodeRequiredError;
 
   /// No description provided for @customerNameRequiredError.
   ///
@@ -4965,6 +4947,12 @@ abstract class AppLocalizations {
   /// **'Add at least one product before confirming the order.'**
   String get salesOrderNoLinesYet;
 
+  /// No description provided for @salesOrderChooseCustomerFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a customer to start the order.'**
+  String get salesOrderChooseCustomerFirst;
+
   /// No description provided for @salesOrdersEmptyMessage.
   ///
   /// In en, this message translates to:
@@ -5497,6 +5485,24 @@ abstract class AppLocalizations {
   /// **'Adjust to available'**
   String get posLineAdjustToAvailable;
 
+  /// No description provided for @posLineWarehouseStockUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock not checked'**
+  String get posLineWarehouseStockUnknown;
+
+  /// No description provided for @posLineWarehouseStockShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {available} left'**
+  String posLineWarehouseStockShort(String available);
+
+  /// No description provided for @posLineWarehouseStockNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No stock'**
+  String get posLineWarehouseStockNone;
+
   /// `units` is the formatted quantity (it may be fractional, e.g. 2.5); `unitsValue` is the same figure as a number, carried only so the noun can agree with it.
   ///
   /// In en, this message translates to:
@@ -5959,6 +5965,12 @@ abstract class AppLocalizations {
   /// **'This customer is not set up to receive deliveries.'**
   String get posDeliveryNotPermitted;
 
+  /// No description provided for @posGenericCustomerResetToPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'This customer cannot receive deliveries — the sale was switched to counter pickup.'**
+  String get posGenericCustomerResetToPickup;
+
   /// No description provided for @posCounterPickupRemainder.
   ///
   /// In en, this message translates to:
@@ -6192,12 +6204,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In progress'**
   String get posOpenSaleDraft;
-
-  /// No description provided for @posOpenSaleUnpaid.
-  ///
-  /// In en, this message translates to:
-  /// **'Awaiting payment'**
-  String get posOpenSaleUnpaid;
 
   /// No description provided for @posOpenSaleUndelivered.
   ///

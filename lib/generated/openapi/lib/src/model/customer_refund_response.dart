@@ -299,11 +299,12 @@ class _$CustomerRefundResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(CustomerRefundLineResponse),
                     ]),
                   )
-                  as BuiltList<CustomerRefundLineResponse>;
+                  as BuiltList<CustomerRefundLineResponse>?;
+          if (valueDes == null) continue;
           result.lines.replace(valueDes);
           break;
         case r'subtotal':

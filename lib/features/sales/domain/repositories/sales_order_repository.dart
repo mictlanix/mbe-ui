@@ -10,10 +10,16 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 /// returns the **whole** [Sale] — the caller replaces its held copy
 /// wholesale rather than patching it (research.md §1).
 abstract class SalesOrderRepository {
-  /// `POST /sales-orders` with an empty body — every field is optional, the
-  /// server fills point of sale, facility, salesperson, default customer,
-  /// currency and terms from the caller's own configuration (FR-002).
-  Future<Sale> open();
+  /// `POST /sales-orders` — every field is optional, the server fills point
+  /// of sale, facility, salesperson, default customer, currency and terms
+  /// from the caller's own configuration (FR-002) for whichever of
+  /// [customer]/[salesperson] is omitted.
+  ///
+  /// [customer]/[salesperson] let the very first customer pick on a
+  /// brand-new sale be a single POST instead of an empty create followed by
+  /// [updateHeader] (spec 036 research.md R5) — every other caller still
+  /// passes neither, for the plain empty-body open FR-002 describes.
+  Future<Sale> open({int? customer, int? salesperson});
 
   Future<Sale> getById({required int saleId});
 

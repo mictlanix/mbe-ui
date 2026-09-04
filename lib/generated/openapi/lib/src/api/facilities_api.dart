@@ -489,7 +489,7 @@ class FacilitiesApi {
   Future<Response<FacilityResponse>>
   uploadFacilityLogoApiV1FacilitiesFacilityIdLogoPost({
     required int facilityId,
-    required String file,
+    required MultipartFile file,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -523,13 +523,7 @@ class FacilitiesApi {
     dynamic _bodyData;
 
     try {
-      _bodyData = FormData.fromMap(<String, dynamic>{
-        r'file': encodeFormParameter(
-          _serializers,
-          file,
-          const FullType(String),
-        ),
-      });
+      _bodyData = FormData.fromMap(<String, dynamic>{r'file': file});
     } catch (error, stackTrace) {
       throw DioException(
         requestOptions: _options.compose(_dio.options, _path),

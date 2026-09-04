@@ -390,11 +390,12 @@ class _$SalesQuoteResponseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(SalesQuoteLineResponse),
                     ]),
                   )
-                  as BuiltList<SalesQuoteLineResponse>;
+                  as BuiltList<SalesQuoteLineResponse>?;
+          if (valueDes == null) continue;
           result.lines.replace(valueDes);
           break;
         case r'subtotal':

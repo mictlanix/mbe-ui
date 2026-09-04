@@ -25,10 +25,14 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
   final api.SalesOrdersApi _api;
 
   @override
-  Future<Sale> open() async {
+  Future<Sale> open({int? customer, int? salesperson}) async {
     try {
       final response = await _api.createSalesOrderApiV1SalesOrdersPost(
-        salesOrderCreate: api.SalesOrderCreate(),
+        salesOrderCreate: api.SalesOrderCreate((b) {
+          b
+            ..customer = customer
+            ..salesperson = salesperson;
+        }),
       );
       final result = response.data;
       if (result == null) throw const AppError.server();

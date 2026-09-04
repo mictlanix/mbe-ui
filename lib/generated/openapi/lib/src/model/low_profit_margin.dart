@@ -56,7 +56,7 @@ class _$LowProfitMarginSerializer
       anyOf,
       specifiedType: FullType(
         AnyOf,
-        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+        anyOf.types.map((type) => FullType(type)).toList(),
       ),
     )!;
   }

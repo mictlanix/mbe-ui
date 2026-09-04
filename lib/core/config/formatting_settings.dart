@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// The deployment's build-time formatting configuration (spec 028 FR-010),
 /// resolved once at startup via [FormattingSettings.fromEnvironment] and held
@@ -86,6 +86,17 @@ class FormattingSettings {
   /// so an unrecognized pattern surfaces as an odd rendering rather than a
   /// startup failure, which is consistent with every other fallback here.
   factory FormattingSettings.fromEnvironment() {
+    if (kDebugMode) {
+      debugPrint(
+        '[FormattingSettings] DATE_FORMAT=$_datePatternEnv '
+        'DATE_TIME_FORMAT=$_dateTimePatternEnv '
+        'CURRENCY_SYMBOL=$_currencySymbolEnv '
+        'CURRENCY_CODE=$_currencyCodeEnv '
+        'CURRENCY_DECIMAL_DIGITS=$_currencyDecimalDigitsEnv '
+        'PERCENT_DECIMAL_DIGITS=$_percentDecimalDigitsEnv '
+        'QUANTITY_DECIMAL_DIGITS=$_quantityDecimalDigitsEnv',
+      );
+    }
     return FormattingSettings(
       datePattern: _nonEmptyOrDefault(_datePatternEnv, 'yyyy-MM-dd'),
       dateTimePattern: _nonEmptyOrDefault(

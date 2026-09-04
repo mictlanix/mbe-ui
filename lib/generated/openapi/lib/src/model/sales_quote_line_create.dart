@@ -168,18 +168,20 @@ class _$SalesQuoteLineCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(PriceAdjustment),
+                    specifiedType: const FullType.nullable(PriceAdjustment),
                   )
-                  as PriceAdjustment;
+                  as PriceAdjustment?;
+          if (valueDes == null) continue;
           result.priceAdjustment.replace(valueDes);
           break;
         case r'discount_rate':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(DiscountRate),
+                    specifiedType: const FullType.nullable(DiscountRate),
                   )
-                  as DiscountRate;
+                  as DiscountRate?;
+          if (valueDes == null) continue;
           result.discountRate.replace(valueDes);
           break;
         case r'comment':

@@ -18,7 +18,7 @@ set -euo pipefail
 SPEC_SOURCE="${1:-http://127.0.0.1:8000/openapi.json}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUTPUT_DIR="lib/generated/openapi"
-GENERATOR_IMAGE="openapitools/openapi-generator-cli"
+GENERATOR_IMAGE="openapitools/openapi-generator-cli:v7.25.0"
 
 # Keep the spec workdir inside the repo: VM-backed Docker runtimes (e.g. Colima)
 # only share $HOME, so a /var/folders temp dir mounts as an empty directory.
@@ -35,6 +35,57 @@ fi
 rm -rf "${REPO_ROOT:?}/${OUTPUT_DIR}"
 mkdir -p "${REPO_ROOT}/${OUTPUT_DIR}"
 
+# Which top-level artifacts to emit. apis/models/supportingFiles must stay
+# bare: giving them a value (e.g. "apis=true") switches them into a different
+# mode where the value is parsed as a filename filter, which skips everything
+# since no file is literally named "true". apiDocs/modelDocs/apiTests/
+# modelTests are plain booleans and are spelled out explicitly (all match the
+# generator's defaults, apiTests/modelTests excepted) so a future bump of
+# GENERATOR_IMAGE can't silently change what gets generated.
+GLOBAL_PROPERTIES="apis,\
+models,\
+supportingFiles,\
+apiDocs=true,\
+modelDocs=true,\
+apiTests=false,\
+modelTests=false"
+
+# Every dart-dio config option (`docker run $GENERATOR_IMAGE config-help -g
+# dart-dio`), pinned to its documented default for v7.25.0 except
+# pubName/pubAuthor/pubDescription, which carry this project's values.
+# pubPublishTo and pubRepository are omitted: they have no default, and
+# passing an empty value would add empty fields to the generated pubspec.yaml.
+# serializationLibrary must stay built_value: the build_runner step below
+# generates built_value's *.g.dart files.
+# sortModelPropertiesByRequiredFlag is set to false even though config-help
+# documents its default as true: verified against v7.25.0 that omitting it
+# entirely (the prior behavior) keeps spec declaration order, so false is
+# what actually reproduces the already-committed generated models.
+ADDITIONAL_PROPERTIES="allowUnicodeIdentifiers=false,\
+dateLibrary=core,\
+disallowAdditionalPropertiesIfNotPresent=true,\
+ensureUniqueParams=true,\
+enumUnknownDefaultCase=false,\
+equalityCheckMethod=default,\
+finalProperties=true,\
+legacyDiscriminatorBehavior=true,\
+patchOnly=false,\
+prependFormOrBodyParameters=false,\
+pubAuthor=Mictlanix,\
+pubAuthorEmail=author@homepage,\
+pubDescription=mbe-api OpenAPI client (generated),\
+pubHomepage=homepage,\
+pubLibrary=openapi.api,\
+pubName=mbe_api_client,\
+pubVersion=1.0.0,\
+serializationLibrary=built_value,\
+skipCopyWith=false,\
+sortModelPropertiesByRequiredFlag=false,\
+sortParamsByRequiredFlag=true,\
+sourceFolder=src,\
+useEnumExtension=false,\
+useOptional=false"
+
 echo "Generating dart-dio client into ${OUTPUT_DIR} ..."
 docker run --rm \
   -v "${WORKDIR}:/spec:ro" \
@@ -44,8 +95,8 @@ docker run --rm \
   -g dart-dio \
   -o "/local/${OUTPUT_DIR}" \
   -t /local/tool/openapi-templates/dart-dio \
-  --global-property=apis,models,supportingFiles,apiTests=false,modelTests=false \
-  --additional-properties=pubName=mbe_api_client,pubAuthor=Mictlanix,pubDescription="mbe-api OpenAPI client (generated)"
+  --global-property="${GLOBAL_PROPERTIES}" \
+  --additional-properties="${ADDITIONAL_PROPERTIES}"
 
 # The generator may produce an sdk lower bound below 2.12.0 (e.g. '>=1.2.0'),
 # which Dart 3 rejects outright ('pub get' fails: "The lower bound must be

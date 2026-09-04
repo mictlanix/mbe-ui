@@ -51,8 +51,6 @@ const _existingWithSalesperson = Customer(
   creditLimit: '1000.50',
   creditDays: 30,
   priceList: PriceListRef(id: 1, name: 'Retail'),
-  shipping: false,
-  shippingRequiredDocument: false,
   salesperson: EmployeeRef(id: 2, name: 'Jane Doe'),
   status: EntityStatus.active,
 );
@@ -64,8 +62,6 @@ const _existingNoSalesperson = Customer(
   creditLimit: '0',
   creditDays: 0,
   priceList: PriceListRef(id: 1, name: 'Retail'),
-  shipping: false,
-  shippingRequiredDocument: false,
   status: EntityStatus.active,
 );
 
@@ -132,6 +128,34 @@ void main() {
       // (edit-only) must not render.
       expect(find.byKey(const Key('customer_disabled_switch')), findsNothing);
     });
+
+    // spec 036 FR-013: the two shipping toggles are gone entirely.
+    testWidgets('renders no shipping-related toggle', (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      expect(find.byKey(const Key('shipping_switch')), findsNothing);
+      expect(
+        find.byKey(const Key('shipping_required_document_switch')),
+        findsNothing,
+      );
+    });
+
+    // spec 036 FR-012: `code` sits immediately after `credit days`, not at
+    // the top of the form.
+    testWidgets('places code_field after credit_days_field', (tester) async {
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+      final creditDaysTop = tester
+          .getTopLeft(find.byKey(const Key('credit_days_field')))
+          .dy;
+      final codeTop = tester.getTopLeft(find.byKey(const Key('code_field'))).dy;
+      expect(
+        codeTop,
+        greaterThanOrEqualTo(creditDaysTop),
+        reason: 'code_field must not render above credit_days_field',
+      );
+    });
+
   });
 
   group('view mode (forceReadOnly)', () {

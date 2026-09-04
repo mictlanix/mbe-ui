@@ -67,31 +67,30 @@ Login:
   - Requerir strong password
 
 Clientes:
-  - Codigo de capura de cliente opcional y ubicarlo al final del form
-  - Quitar bool envio y req documento
+  - ~~Codigo de capura de cliente opcional y ubicarlo al final del form~~
+  - ~~Quitar bool envio y req documento~~
 
 POS Sales:
-  - Mostrar sin existenicias en almacen
-  - Permitir que puedan regresar si no se ha pagado
-  - Checar pasos de pos sale
-  - Por default, al agregar primer domicilio, se asigne toda la qty a éste
-  - ¿Debounce en busqueda de productos?
+  - ~~Mostrar sin existenicias en almacen~~
+  - ~~Permitir que puedan regresar si no se ha pagado~~
+  - ~~Checar pasos de pos sale~~
+  - ~~Por default, al agregar primer domicilio, se asigne toda la qty a éste~~
 
 Pedidos:
-  - De pedidos, quitar publico en gral, y se debe de elegir el cliente
+  - ~~De pedidos, quitar publico en gral, y se debe de elegir el cliente~~
   - Quitar pago y agregar entrega obligatorio
   - Fecha de entrega
-  - Llenar campo Vendedor con aquel que está asociado al cliente
-  - ¿Debounce en busqueda de productos?
+  - ~~Vendedor associado al cliente~~
 
 lista de precios
-  - Mostrar dos decimales
+  - ~~Mostrar dos decimales~~
   - No detecta submit
 
 ## 2026-09-02
-Pedidos:
-  - Balance field shows on two places, on customer bar and order header panel.
+Sales Orders:
+  - Balance field shows on two places, on customer bar and order header panel. Remove the last one.
   - On Customer bar, change label 'Credit Line' to Payment terms
   - On Order header panel, remove payment terms.
   - On Order header panel, reorder the fields: 1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details, 6. Contact, 7. Comment.
   - Move Order header panel, below customer bar.
+  - From nav, move Sales Orders after Point of Sales

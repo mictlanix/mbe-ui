@@ -9,20 +9,14 @@ import 'package:built_value/serializer.dart';
 
 part 'document_status.g.dart';
 
+/// One lifecycle state, derived from the completed/cancelled/paid flags.  Clients get a single state rather than three raw booleans they would have to combine themselves — and combine identically everywhere, or disagree about what an order is.
 class DocumentStatus extends EnumClass {
-  /// One lifecycle state, derived from the completed/cancelled/paid flags.  Clients get a single state rather than three raw booleans they would have to combine themselves — and combine identically everywhere, or disagree about what an order is.
   @BuiltValueEnumConst(wireName: r'draft')
   static const DocumentStatus draft = _$draft;
-
-  /// One lifecycle state, derived from the completed/cancelled/paid flags.  Clients get a single state rather than three raw booleans they would have to combine themselves — and combine identically everywhere, or disagree about what an order is.
   @BuiltValueEnumConst(wireName: r'completed')
   static const DocumentStatus completed = _$completed;
-
-  /// One lifecycle state, derived from the completed/cancelled/paid flags.  Clients get a single state rather than three raw booleans they would have to combine themselves — and combine identically everywhere, or disagree about what an order is.
   @BuiltValueEnumConst(wireName: r'paid')
   static const DocumentStatus paid = _$paid;
-
-  /// One lifecycle state, derived from the completed/cancelled/paid flags.  Clients get a single state rather than three raw booleans they would have to combine themselves — and combine identically everywhere, or disagree about what an order is.
   @BuiltValueEnumConst(wireName: r'cancelled')
   static const DocumentStatus cancelled = _$cancelled;
 

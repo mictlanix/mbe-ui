@@ -52,8 +52,6 @@ Customer _customer({EmployeeRef? salesperson}) => Customer(
   creditLimit: '1000.50',
   creditDays: 30,
   priceList: const PriceListRef(id: 1, name: 'Retail'),
-  shipping: false,
-  shippingRequiredDocument: false,
   salesperson: salesperson,
   status: EntityStatus.active,
 );
@@ -69,13 +67,12 @@ void main() {
   });
 
   group('CustomerFormController.submitCreate validation (FR-018, FR-019)', () {
-    test('code/name/priceList are required before submit', () async {
+    test('name/priceList are required before submit', () async {
       final notifier = container.read(customerFormControllerProvider.notifier);
 
       await notifier.submitCreate();
 
       final state = container.read(customerFormControllerProvider);
-      expect(state.fieldErrors['code'], CustomerFormErrorCode.codeRequired);
       expect(state.fieldErrors['name'], CustomerFormErrorCode.nameRequired);
       expect(
         state.fieldErrors['priceList'],
@@ -91,6 +88,22 @@ void main() {
     });
 
     test(
+      // spec 036 FR-011: `code` is optional — an empty value must not block
+      // submission, unlike name/priceList above.
+      'code is not required before submit',
+      () async {
+        final notifier = container.read(
+          customerFormControllerProvider.notifier,
+        );
+
+        await notifier.submitCreate();
+
+        final state = container.read(customerFormControllerProvider);
+        expect(state.fieldErrors.containsKey('code'), isFalse);
+      },
+    );
+
+    test(
       'a valid submission (with salesperson) creates the customer',
       () async {
         when(
@@ -101,8 +114,6 @@ void main() {
             zone: null,
             creditLimit: null,
             creditDays: null,
-            shipping: false,
-            shippingRequiredDocument: false,
             salesperson: 2,
             comment: null,
           ),

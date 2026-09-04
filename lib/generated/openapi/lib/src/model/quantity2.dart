@@ -51,7 +51,7 @@ class _$Quantity2Serializer implements PrimitiveSerializer<Quantity2> {
       anyOf,
       specifiedType: FullType(
         AnyOf,
-        anyOf.valueTypes.map((type) => FullType(type)).toList(),
+        anyOf.types.map((type) => FullType(type)).toList(),
       ),
     )!;
   }

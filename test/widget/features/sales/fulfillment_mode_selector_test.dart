@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
@@ -16,18 +14,6 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 import 'pos_test_harness.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
-
-Customer _customer({bool shipping = true}) => Customer(
-  customerId: 7,
-  code: 'C-7',
-  name: 'PÚBLICO EN GENERAL',
-  creditLimit: '0',
-  creditDays: 0,
-  priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-  shipping: shipping,
-  shippingRequiredDocument: false,
-  status: EntityStatus.active,
-);
 
 /// The hand-rolled replacement for `SegmentedButton` (contracts/
 /// capture-surface.md §2): it must still *behave* like one — one choice at a
@@ -43,19 +29,17 @@ void main() {
 
   setUp(() {
     customers = MockCustomerRepository();
-    when(
-      () => customers.get(customerId: any(named: 'customerId')),
-    ).thenAnswer((_) async => _customer());
   });
 
   Future<void> pumpSelector(
     WidgetTester tester, {
     bool enabled = true,
     bool stretch = false,
+    int customer = 7,
   }) => pumpPos(
     tester,
     FulfillmentModeSelector(
-      sale: testSale(),
+      sale: testSale(customer: customer),
       enabled: enabled,
       stretch: stretch,
     ),
@@ -205,20 +189,39 @@ void main() {
       expect(find.byIcon(Icons.local_shipping_outlined), findsOneWidget);
     });
 
-    testWidgets('a refused customer is told why, and the mode does not move '
-        '(FR-019)', (tester) async {
-      when(
-        () => customers.get(customerId: any(named: 'customerId')),
-      ).thenAnswer((_) async => _customer(shipping: false));
+    testWidgets(
+      // spec 036 FR-015: only the generic "Público en General" customer is
+      // refused — checked against `posDefaultCustomerId` (1 in tests, no
+      // `--dart-define` set), not a per-customer flag.
+      'the generic customer is told why, and the mode does not move '
+      '(FR-015)',
+      (tester) async {
+        await pumpSelector(tester, customer: 1);
+        await tester.tap(find.byKey(const Key('pos_fulfillment_delivery')));
+        await tester.pumpAndSettle();
 
-      await pumpSelector(tester);
-      await tester.tap(find.byKey(const Key('pos_fulfillment_delivery')));
-      await tester.pumpAndSettle();
+        expect(find.byKey(const Key('pos_delivery_refusal')), findsOneWidget);
+        // Still on counter pickup: its icon is still the check.
+        expect(find.byIcon(Icons.store_outlined), findsNothing);
+      },
+    );
 
-      expect(find.byKey(const Key('pos_delivery_refusal')), findsOneWidget);
-      // Still on counter pickup: its icon is still the check.
-      expect(find.byIcon(Icons.store_outlined), findsNothing);
-    });
+    testWidgets(
+      // spec 036 FR-015: every other customer — including one that would
+      // previously have been refused via a `shipping: false` flag — is never
+      // shown the refusal message. (The mode actually moving once the write
+      // succeeds is already covered by the "asks for no address" test below,
+      // which mocks the repository the real update goes through; this test
+      // isolates just the gate itself.)
+      'an ordinary customer is never shown the refusal message',
+      (tester) async {
+        await pumpSelector(tester, customer: 42);
+        await tester.tap(find.byKey(const Key('pos_fulfillment_delivery')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('pos_delivery_refusal')), findsNothing);
+      },
+    );
 
     testWidgets('a read-only sale refuses every segment (FR-041)', (
       tester,

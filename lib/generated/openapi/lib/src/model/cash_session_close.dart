@@ -84,11 +84,12 @@ class _$CashSessionCloseSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(DenominationCount),
                     ]),
                   )
-                  as BuiltList<DenominationCount>;
+                  as BuiltList<DenominationCount>?;
+          if (valueDes == null) continue;
           result.counts.replace(valueDes);
           break;
         default:

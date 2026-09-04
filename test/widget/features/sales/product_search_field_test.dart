@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
@@ -35,6 +36,12 @@ ProductLookupResult _product({
       stockable: true,
     );
 
+// Mirrors AppSettings.inputDebounce's documented default (spec 036 FR-030,
+// contracts/app-settings-additions.md C1) — fromEnvironment() reads
+// compile-time values, so tests pump this explicitly rather than reading
+// the provider (constitution §V's no-per-test-.env rule).
+const _defaultInputDebounce = Duration(milliseconds: 300);
+
 /// spec 023 contracts/capture-surface.md §3 — the field offers candidates as
 /// the cashier types, debounced, and never auto-adds from that path; only
 /// the scanner's type-and-Enter path still adds a single exact match
@@ -60,8 +67,6 @@ void main() {
         creditLimit: '0',
         creditDays: 0,
         priceList: PriceListRef(id: 1, name: 'Mostrador'),
-        shipping: false,
-        shippingRequiredDocument: false,
         status: EntityStatus.active,
       ),
     );
@@ -157,7 +162,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(find.text('CLA — Clavo estándar'), findsNothing);
 
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(_defaultInputDebounce);
       await tester.pumpAndSettle();
 
       expect(find.text('CLA — Clavo estándar'), findsOneWidget);
@@ -185,7 +190,7 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextField), 'c');
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(_defaultInputDebounce);
       await tester.pumpAndSettle();
 
       final photos = tester
@@ -220,7 +225,7 @@ void main() {
         );
 
         await tester.enterText(find.byType(TextField), 'CLA');
-        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pump(_defaultInputDebounce + const Duration(milliseconds: 50));
         await tester.pumpAndSettle();
 
         expect(selected, isNull);
@@ -239,7 +244,7 @@ void main() {
       ).thenAnswer((_) async => const []);
 
       await tester.enterText(find.byType(TextField), 'zzz');
-      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pump(_defaultInputDebounce + const Duration(milliseconds: 50));
       await tester.pumpAndSettle();
 
       expect(find.text(l10n.posProductSearchNoResults), findsOneWidget);
@@ -277,9 +282,9 @@ void main() {
       ).thenAnswer((_) async => longerPrefixResult);
 
       await tester.enterText(find.byType(TextField), 'cem');
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(_defaultInputDebounce);
       await tester.enterText(find.byType(TextField), 'cemento');
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(_defaultInputDebounce);
       await tester.pumpAndSettle();
 
       expect(find.text('CEMENTO-30 — Cemento gris 30kg'), findsOneWidget);
@@ -361,7 +366,7 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextField), 'x');
-      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pump(_defaultInputDebounce + const Duration(milliseconds: 50));
       await tester.pumpAndSettle();
       expect(find.text('A — Uno'), findsOneWidget);
 
@@ -372,4 +377,42 @@ void main() {
       expect(find.text('x'), findsOneWidget);
     });
   });
+
+  // spec 036 SC-008: changing the search-debounce setting changes this
+  // field's delay, from one place, with no field left on its own hardcoded
+  // literal.
+  testWidgets(
+    'overriding inputDebounceProvider changes when candidates actually appear',
+    (tester) async {
+      const overriddenDebounce = Duration(milliseconds: 900);
+      await pumpPos(
+        tester,
+        ProductSearchField(onProductSelected: (_) {}),
+        overrides: [
+          salesOrderOverride(salesOrders),
+          customerRepositoryProvider.overrideWithValue(customers),
+          inputDebounceProvider.overrideWithValue(overriddenDebounce),
+        ],
+      );
+      when(
+        () => salesOrders.productLookup(
+          pattern: any(named: 'pattern'),
+          customer: any(named: 'customer'),
+          warehouse: any(named: 'warehouse'),
+        ),
+      ).thenAnswer(
+        (_) async => [_product(product: 1, code: 'CLA', name: 'Clavo estándar')],
+      );
+
+      await tester.enterText(find.byType(TextField), 'cla');
+      // Past the default (300ms) debounce, but short of the overridden one:
+      // candidates must not have arrived yet.
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('CLA — Clavo estándar'), findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 550));
+      await tester.pumpAndSettle();
+      expect(find.text('CLA — Clavo estándar'), findsOneWidget);
+    },
+  );
 }

@@ -9,24 +9,16 @@ import 'package:built_value/serializer.dart';
 
 part 'shortfall_reason.g.dart';
 
+/// `deliveries_itinerary_detail.reason_code` — why a line fell short of what was sent.
 class ShortfallReason extends EnumClass {
-  /// `deliveries_itinerary_detail.reason_code` — why a line fell short of what was sent.
   @BuiltValueEnumConst(wireNumber: 0)
   static const ShortfallReason number0 = _$number0;
-
-  /// `deliveries_itinerary_detail.reason_code` — why a line fell short of what was sent.
   @BuiltValueEnumConst(wireNumber: 1)
   static const ShortfallReason number1 = _$number1;
-
-  /// `deliveries_itinerary_detail.reason_code` — why a line fell short of what was sent.
   @BuiltValueEnumConst(wireNumber: 2)
   static const ShortfallReason number2 = _$number2;
-
-  /// `deliveries_itinerary_detail.reason_code` — why a line fell short of what was sent.
   @BuiltValueEnumConst(wireNumber: 3)
   static const ShortfallReason number3 = _$number3;
-
-  /// `deliveries_itinerary_detail.reason_code` — why a line fell short of what was sent.
   @BuiltValueEnumConst(wireNumber: 4)
   static const ShortfallReason number4 = _$number4;
 

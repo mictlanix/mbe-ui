@@ -11,6 +11,7 @@ import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -27,8 +28,6 @@ Customer _customer({String creditLimit = '5000.00', String name = 'PÚBLICO EN G
       creditLimit: creditLimit,
       creditDays: 30,
       priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-      shipping: true,
-      shippingRequiredDocument: false,
       status: EntityStatus.active,
     );
 
@@ -55,6 +54,8 @@ void main() {
     WidgetTester tester, {
     Customer? customer,
     Sale? sale,
+    bool noSale = false,
+    bool excludeGenericCustomer = false,
   }) async {
     when(
       () => customerRepository.get(customerId: any(named: 'customerId')),
@@ -62,7 +63,10 @@ void main() {
 
     await pumpPos(
       tester,
-      CustomerBar(sale: sale ?? testSale()),
+      CustomerBar(
+        sale: noSale ? null : (sale ?? testSale()),
+        excludeGenericCustomer: excludeGenericCustomer,
+      ),
       overrides: [
         customerRepositoryProvider.overrideWithValue(customerRepository),
         customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
@@ -81,6 +85,27 @@ void main() {
       expect(find.text('Mostrador'), findsOneWidget);
       expect(find.byKey(const Key('pos_payment_terms_dropdown')), findsOneWidget);
     });
+
+    testWidgets(
+      'excludeGenericCustomer with no sale yet shows no customer at all — '
+      'not the walk-in default POS falls back to (spec 036 FR-002)',
+      (tester) async {
+        await pumpBar(tester, noSale: true, excludeGenericCustomer: true);
+
+        expect(find.text('PÚBLICO EN GENERAL'), findsNothing);
+        expect(find.text('—'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'with no sale yet and the generic customer allowed (POS), it is shown '
+      'as the walk-in default',
+      (tester) async {
+        await pumpBar(tester, noSale: true);
+
+        expect(find.text('PÚBLICO EN GENERAL'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'the resolved customer name is visible even when the sale itself '
@@ -311,18 +336,226 @@ void main() {
       expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
       expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
     });
+
+    testWidgets(
+      // spec 036 FR-017: selecting a customer with an associated salesperson
+      // prefills it in the same write that attaches the customer.
+      'picking a customer with an associated salesperson autofills it',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 8,
+                code: 'C-8',
+                name: 'ACME SA DE CV',
+                creditLimit: '0',
+                creditDays: 0,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                salesperson: EmployeeRef(id: 20, name: 'Jane Doe'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale();
+        final salesOrder = _updateHeaderStub(sale, newCustomer: 8);
+        await pumpPos(
+          tester,
+          CustomerBar(sale: sale),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+          ],
+        );
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'ACME',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-8 — ACME SA DE CV'));
+        await tester.pumpAndSettle();
+
+        // spec 036 T005: no sale open yet, and nothing but customer/
+        // salesperson requested — a single `open()`, not `updateHeader`.
+        verify(() => salesOrder.open(customer: 8, salesperson: 20)).called(1);
+      },
+    );
+
+    testWidgets(
+      // spec 036 FR-019: a customer with no associated salesperson leaves
+      // the field unchanged, rather than clearing whatever it held.
+      'picking a customer with no associated salesperson leaves the field '
+      'unchanged',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 9,
+                code: 'C-9',
+                name: 'BETA LLC',
+                creditLimit: '0',
+                creditDays: 0,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale();
+        final salesOrder = _updateHeaderStub(sale, newCustomer: 9);
+        await pumpPos(
+          tester,
+          CustomerBar(sale: sale),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+          ],
+        );
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'BETA',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-9 — BETA LLC'));
+        await tester.pumpAndSettle();
+
+        // spec 036 T005: no sale open yet, and nothing but customer/
+        // salesperson requested — a single `open()`, not `updateHeader`.
+        verify(() => salesOrder.open(customer: 9, salesperson: null)).called(1);
+      },
+    );
+
+    testWidgets(
+      // spec 036 FR-016: switching to the generic "Público en General"
+      // customer (id 1, matching `posDefaultCustomerId`'s test default) while
+      // the sale is in delivery/mixed mode resets it to pickup-only and
+      // notifies the user.
+      'picking the generic customer while in delivery mode resets to pickup '
+      'and notifies the user',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 1,
+                code: 'C-1',
+                name: 'PÚBLICO EN GENERAL',
+                creditLimit: '0',
+                creditDays: 0,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale(
+          customer: 7,
+          fulfillmentIntent: FulfillmentMode.delivery,
+        );
+        final salesOrder = _updateHeaderStub(sale, newCustomer: 1);
+        await pumpPos(
+          tester,
+          CustomerBar(sale: sale),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+          ],
+        );
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'PUBLICO',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-1 — PÚBLICO EN GENERAL'));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: 1,
+            paymentTerms: null,
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            fulfillmentIntent: FulfillmentMode.counterPickup,
+          ),
+        ).called(1);
+        expect(
+          find.byKey(const Key('pos_generic_customer_pickup_reset_notice')),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }
 
 /// A `SalesOrderRepository` stubbed just enough for `updateHeader` to
-/// answer with [sale] carrying the new customer — the rest of the interface
-/// is never called by this test.
-MockSalesOrderRepository _updateHeaderStub(Sale sale) {
+/// answer with [sale] carrying [newCustomer] — the rest of the interface is
+/// never called by this test.
+MockSalesOrderRepository _updateHeaderStub(Sale sale, {int newCustomer = 8}) {
   final repository = MockSalesOrderRepository();
-  // `PosSaleController.updateHeader` calls `ensureOpen()` first — its own
-  // `state` was never seeded by this test, so it opens a sale before
-  // updating it, exactly as it would on a register nobody has touched yet.
-  when(() => repository.open()).thenAnswer((_) async => sale);
+  // `PosSaleController.updateHeader`'s own `state` was never seeded by this
+  // test, so every call here is the "no sale yet" case — spec 036 T005:
+  // when nothing but customer/salesperson is being set, that goes straight
+  // through a single `open(customer:, salesperson:)` instead of an empty
+  // `open()` followed by `updateHeader`, so this stub must answer both.
+  when(
+    () => repository.open(
+      customer: any(named: 'customer'),
+      salesperson: any(named: 'salesperson'),
+    ),
+  ).thenAnswer((_) async => sale);
   when(
     () => repository.updateHeader(
       saleId: any(named: 'saleId'),
@@ -332,7 +565,17 @@ MockSalesOrderRepository _updateHeaderStub(Sale sale) {
       shipTo: any(named: 'shipTo'),
       contact: any(named: 'contact'),
       customerName: any(named: 'customerName'),
+      // spec 036: `CustomerBar._updateHeader` now always passes both of
+      // these (as `null` when not applicable) — matched here regardless of
+      // value so every existing caller of this stub keeps working.
+      salesperson: any(named: 'salesperson'),
+      fulfillmentIntent: any(named: 'fulfillmentIntent'),
     ),
-  ).thenAnswer((_) async => sale.copyWith(customer: 8, customerName: 'ACME SA DE CV'));
+  ).thenAnswer(
+    (_) async => sale.copyWith(
+      customer: newCustomer,
+      customerName: newCustomer == 1 ? 'PÚBLICO EN GENERAL' : 'ACME SA DE CV',
+    ),
+  );
   return repository;
 }

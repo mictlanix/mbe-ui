@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 
 /// A generic single-select search-as-you-type picker for form fields backed
 /// by paginated server-side search (data-model.md `CatalogEntityPicker<T>`,
 /// plan.md — no new pub deps, uses Flutter's built-in [Autocomplete]).
 ///
-/// Calls [optionsBuilder] with a 300 ms debounce on each text change.
+/// Calls [optionsBuilder] with a debounce (`inputDebounceProvider`, spec 036
+/// FR-028/FR-029, default 300 ms) on each text change.
 /// When [enabled] is false, renders a read-only [TextFormField] showing
 /// [initialDisplayText] with no dropdown.
 ///
@@ -17,7 +20,7 @@ import 'package:mbe_ui/core/widgets/product_photo.dart';
 /// render as a `ListTile` with a leading thumbnail and a secondary line,
 /// instead of the default text-only option. Existing callers that pass
 /// neither (the supplier and SAT-catalog pickers) are unaffected.
-class CatalogEntityPicker<T extends Object> extends StatefulWidget {
+class CatalogEntityPicker<T extends Object> extends ConsumerStatefulWidget {
   const CatalogEntityPicker({
     super.key,
     required this.label,
@@ -57,11 +60,12 @@ class CatalogEntityPicker<T extends Object> extends StatefulWidget {
   final String? Function(T)? optionSubtitle;
 
   @override
-  State<CatalogEntityPicker<T>> createState() => _CatalogEntityPickerState<T>();
+  ConsumerState<CatalogEntityPicker<T>> createState() =>
+      _CatalogEntityPickerState<T>();
 }
 
 class _CatalogEntityPickerState<T extends Object>
-    extends State<CatalogEntityPicker<T>> {
+    extends ConsumerState<CatalogEntityPicker<T>> {
   Timer? _debounce;
 
   @override
@@ -98,7 +102,7 @@ class _CatalogEntityPickerState<T extends Object>
         // Return a future via a completer so the debounce can cancel it.
         final completer = Completer<Iterable<T>>();
         _debounce?.cancel();
-        _debounce = Timer(const Duration(milliseconds: 300), () async {
+        _debounce = Timer(ref.read(inputDebounceProvider), () async {
           if (!completer.isCompleted) {
             try {
               final results = await widget.optionsBuilder(

@@ -87,11 +87,12 @@ class _$HTTPValidationErrorSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [
+                    specifiedType: const FullType.nullable(BuiltList, [
                       FullType(ValidationError),
                     ]),
                   )
-                  as BuiltList<ValidationError>;
+                  as BuiltList<ValidationError>?;
+          if (valueDes == null) continue;
           result.detail.replace(valueDes);
           break;
         default:

@@ -302,8 +302,12 @@ class _$VehicleOperatorResponseSerializer
           break;
         case r'days_until_expiry':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
           result.daysUntilExpiry = valueDes;
           break;
         default:

@@ -103,6 +103,52 @@ void main() {
     });
   });
 
+  group('canReturnToCapture (spec 036 FR-005/FR-008)', () {
+    test('allowed for an editable sale with no non-cancelled payments', () {
+      expect(
+        notifier().canReturnToCapture(
+          isEditable: true,
+          hasNonCancelledPayments: false,
+        ),
+        isTrue,
+      );
+    });
+
+    test('blocked once a non-cancelled payment exists, even if editable', () {
+      expect(
+        notifier().canReturnToCapture(
+          isEditable: true,
+          hasNonCancelledPayments: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('blocked for a sale that is no longer editable', () {
+      expect(
+        notifier().canReturnToCapture(
+          isEditable: false,
+          hasNonCancelledPayments: false,
+        ),
+        isFalse,
+      );
+    });
+  });
+
+  test('returnToVenta moves the current step back to Venta without touching '
+      'the fulfillment mode', () {
+    final n = notifier();
+    n.setMode(FulfillmentMode.delivery);
+    n.advanceToCobro();
+    n.advanceFromCobro();
+
+    n.returnToVenta();
+
+    final state = container.read(posStepControllerProvider);
+    expect(state.current, PosStep.venta);
+    expect(state.mode, FulfillmentMode.delivery);
+  });
+
   test('reset returns to Venta, counter pickup — what a genuinely new sale '
       'starts from (regression: a finished delivery/mixed sale left its mode '
       'selected on the next one)', () {

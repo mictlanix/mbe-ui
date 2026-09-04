@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
@@ -141,6 +142,7 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
       value: accepted,
       max: ceiling,
       onCommit: (value) => _commit(line.saleLineId, value),
+      debounce: ref.read(quantityCommitDebounceProvider),
     );
   }
 

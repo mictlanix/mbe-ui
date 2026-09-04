@@ -230,26 +230,6 @@ class _CustomerInlineCreateFormState
         ),
         FormGridChild(
           span: FormGridSpan.full,
-          SwitchListTile(
-            key: const Key('pos_new_customer_shipping'),
-            title: Text(l10n.shippingLabel),
-            value: form.shipping,
-            onChanged: enabled ? controller.shippingChanged : null,
-          ),
-        ),
-        FormGridChild(
-          span: FormGridSpan.full,
-          SwitchListTile(
-            key: const Key('pos_new_customer_shipping_document'),
-            title: Text(l10n.shippingRequiredDocumentLabel),
-            value: form.shippingRequiredDocument,
-            onChanged: enabled
-                ? controller.shippingRequiredDocumentChanged
-                : null,
-          ),
-        ),
-        FormGridChild(
-          span: FormGridSpan.full,
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             spacing: 8,

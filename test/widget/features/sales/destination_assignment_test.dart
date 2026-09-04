@@ -15,6 +15,8 @@ import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
+import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 
@@ -39,8 +41,6 @@ void main() {
     creditLimit: '0',
     creditDays: 0,
     priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-    shipping: true,
-    shippingRequiredDocument: false,
     status: EntityStatus.active,
     addresses: const [
       AddressListItem(addressId: 11, label: 'Destino uno', type: AddressType.business),
@@ -75,18 +75,32 @@ void main() {
     ).thenAnswer((_) async => customer);
   });
 
-  Future<void> pumpStep(WidgetTester tester) => pumpPos(
-    tester,
-    DeliveryStep(
-      sale: testSale(lines: [testLine(id: 5, quantity: '10')]),
-      mode: FulfillmentMode.delivery,
-      onClose: () {},
-    ),
-    overrides: [
-      deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
-      customerRepositoryProvider.overrideWithValue(customers),
-    ],
-  );
+  Future<void> pumpStep(WidgetTester tester) async {
+    final sale = testSale(lines: [testLine(id: 5, quantity: '10')]);
+    final salesOrders = MockSalesOrderRepository();
+    // spec 036 R1: `addDestination`/`sweepRemainderToCounter` confirm the
+    // sale first when it's still `draft` — a no-op answer is enough since
+    // these tests don't assert on confirm's own effect.
+    when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+    final container = await pumpPos(
+      tester,
+      DeliveryStep(sale: sale, mode: FulfillmentMode.delivery, onClose: () {}),
+      overrides: [
+        deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+        customerRepositoryProvider.overrideWithValue(customers),
+        salesOrderOverride(salesOrders),
+        fixedPosSale(sale),
+      ],
+    );
+    // `posSaleControllerProvider` is `autoDispose`, and nothing in
+    // `DeliveryStep`'s own tree watches it — without a live subscription it
+    // would be torn down right after the read below, so the *next* read
+    // (from a later button tap) would rebuild it from scratch and find
+    // `AsyncLoading` again. This keeps `fixedPosSale`'s seeded instance alive
+    // for the rest of the test.
+    container.listen(posSaleControllerProvider, (_, _) {});
+    await container.read(posSaleControllerProvider.future);
+  }
 
   Future<void> expand(WidgetTester tester) async {
     await tester.tap(find.byKey(const Key('destination_card_500')));
@@ -486,5 +500,191 @@ void main() {
       expect(find.textContaining('Ya existe'), findsOneWidget);
       expect(find.text('0'), findsWidgets);
     });
+  });
+
+  group('the first destination absorbs the full order automatically (US7, '
+      'FR-023…FR-025)', () {
+    Future<void> pumpEmptyStep(WidgetTester tester) async {
+      final sale = testSale(
+        lines: [
+          testLine(id: 5, quantity: '10', productName: 'Tuerca'),
+          testLine(id: 6, quantity: '4', productName: 'Tornillo'),
+        ],
+      );
+      final salesOrders = MockSalesOrderRepository();
+      when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+      final container = await pumpPos(
+        tester,
+        DeliveryStep(sale: sale, mode: FulfillmentMode.delivery, onClose: () {}),
+        overrides: [
+          deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+          customerRepositoryProvider.overrideWithValue(customers),
+          salesOrderOverride(salesOrders),
+          fixedPosSale(sale),
+        ],
+      );
+      // `posSaleControllerProvider` is `autoDispose` and nothing in
+      // `DeliveryStep`'s own tree watches it — a live subscription keeps
+      // `fixedPosSale`'s seeded instance alive for the rest of the test.
+      container.listen(posSaleControllerProvider, (_, _) {});
+      await container.read(posSaleControllerProvider.future);
+    }
+
+    Destination created({required List<DestinationLine> lines}) => Destination(
+      id: 500,
+      fulfillmentType: FulfillmentType.delivery,
+      shipTo: 11,
+      status: DeliveryOrderStatus.draft,
+      lines: lines,
+    );
+
+    Future<void> addFirstDestination(WidgetTester tester) async {
+      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('destination_address_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('address_option_11')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('destination_save_button')));
+      await tester.pumpAndSettle();
+    }
+
+    setUp(() {
+      when(
+        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer((_) async => const []);
+      when(
+        () => deliveries.create(
+          salesOrder: any(named: 'salesOrder'),
+          fulfillmentType: any(named: 'fulfillmentType'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          date: any(named: 'date'),
+          comment: any(named: 'comment'),
+          lines: any(named: 'lines'),
+        ),
+      ).thenAnswer(
+        (_) async => created(
+          lines: const [
+            DestinationLine(
+              id: 900,
+              salesOrderDetail: 5,
+              product: 11,
+              productCode: 'P-11',
+              productName: 'Tuerca',
+              quantity: '10',
+            ),
+            DestinationLine(
+              id: 901,
+              salesOrderDetail: 6,
+              product: 11,
+              productCode: 'P-11',
+              productName: 'Tornillo',
+              quantity: '4',
+            ),
+          ],
+        ),
+      );
+    });
+
+    testWidgets(
+      'every line lands on its full ordered quantity with zero manual '
+      'entry, and each stepper is still adjustable',
+      (tester) async {
+        when(
+          () => deliveries.updateLine(
+            destinationId: any(named: 'destinationId'),
+            lineId: any(named: 'lineId'),
+            quantity: any(named: 'quantity'),
+          ),
+        ).thenAnswer(
+          (_) async => created(
+            lines: const [
+              DestinationLine(
+                id: 900,
+                salesOrderDetail: 5,
+                product: 11,
+                productCode: 'P-11',
+                productName: 'Tuerca',
+                quantity: '9',
+              ),
+              DestinationLine(
+                id: 901,
+                salesOrderDetail: 6,
+                product: 11,
+                productCode: 'P-11',
+                productName: 'Tornillo',
+                quantity: '4',
+              ),
+            ],
+          ),
+        );
+
+        await pumpEmptyStep(tester);
+        await addFirstDestination(tester);
+
+        // Auto-expanded (it was just created) — no manual entry needed to
+        // see every line already at its full ordered quantity.
+        expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
+        expect(
+          tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+          '10',
+        );
+        expect(
+          tester.widget<TextField>(find.byKey(const Key('destination_quantity_6'))).controller!.text,
+          '4',
+        );
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+        expect(find.text(l10n.posDeliveryAssignedUnits('14', '14')), findsOneWidget);
+
+        // Still adjustable exactly like a manually-entered quantity (FR-024):
+        // stepping line 5 down one unit goes through the same adjustLine
+        // dispatch a manually-assigned line uses.
+        await tester.tap(
+          find.descendant(
+            of: find.byKey(const Key('destination_line_500_5')),
+            matching: find.byIcon(Icons.remove),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        verify(
+          () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '9'),
+        ).called(1);
+        expect(
+          tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+          '9',
+        );
+      },
+    );
+
+    testWidgets(
+      'deleting the auto-assigned destination returns every line to '
+      'unassigned',
+      (tester) async {
+        when(
+          () => deliveries.cancel(
+            destinationId: any(named: 'destinationId'),
+            reason: any(named: 'reason'),
+          ),
+        ).thenAnswer((_) async {});
+
+        await pumpEmptyStep(tester);
+        await addFirstDestination(tester);
+        expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
+
+        await tester.tap(find.byKey(const Key('destination_remove_500')));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => deliveries.cancel(destinationId: 500, reason: any(named: 'reason')),
+        ).called(1);
+        expect(find.byKey(const Key('destination_card_500')), findsNothing);
+
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+        expect(find.text(l10n.posDeliveryAssignedUnits('0', '14')), findsOneWidget);
+        expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
+      },
+    );
   });
 }

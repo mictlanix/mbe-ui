@@ -9,16 +9,12 @@ import 'package:built_value/serializer.dart';
 
 part 'session_state.g.dart';
 
+/// Three states, because a client routes differently for each (FR-053).  `STALE` is an open session started before today: selling continues to be refused until it is closed, which is a different remedy from having no session at all.
 class SessionState extends EnumClass {
-  /// Three states, because a client routes differently for each (FR-053).  `STALE` is an open session started before today: selling continues to be refused until it is closed, which is a different remedy from having no session at all.
   @BuiltValueEnumConst(wireName: r'none')
   static const SessionState none = _$none;
-
-  /// Three states, because a client routes differently for each (FR-053).  `STALE` is an open session started before today: selling continues to be refused until it is closed, which is a different remedy from having no session at all.
   @BuiltValueEnumConst(wireName: r'open')
   static const SessionState open = _$open;
-
-  /// Three states, because a client routes differently for each (FR-053).  `STALE` is an open session started before today: selling continues to be refused until it is closed, which is a different remedy from having no session at all.
   @BuiltValueEnumConst(wireName: r'stale')
   static const SessionState stale = _$stale;
 

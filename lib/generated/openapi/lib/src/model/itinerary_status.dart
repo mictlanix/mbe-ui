@@ -9,20 +9,14 @@ import 'package:built_value/serializer.dart';
 
 part 'itinerary_status.g.dart';
 
+/// `deliveries_itinerary.status` — the trip lifecycle (FR-033a).
 class ItineraryStatus extends EnumClass {
-  /// `deliveries_itinerary.status` — the trip lifecycle (FR-033a).
   @BuiltValueEnumConst(wireNumber: 0)
   static const ItineraryStatus number0 = _$number0;
-
-  /// `deliveries_itinerary.status` — the trip lifecycle (FR-033a).
   @BuiltValueEnumConst(wireNumber: 1)
   static const ItineraryStatus number1 = _$number1;
-
-  /// `deliveries_itinerary.status` — the trip lifecycle (FR-033a).
   @BuiltValueEnumConst(wireNumber: 2)
   static const ItineraryStatus number2 = _$number2;
-
-  /// `deliveries_itinerary.status` — the trip lifecycle (FR-033a).
   @BuiltValueEnumConst(wireNumber: 3)
   static const ItineraryStatus number3 = _$number3;
 

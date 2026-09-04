@@ -14,6 +14,7 @@ import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
@@ -275,6 +276,26 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     // reloading the page would strand every unfinished sale (US3).
     final pointSale = current?.pointSale ?? ref.watch(registerPointSaleProvider);
 
+    // spec 036 FR-005: whether the step track's Venta pill is a tappable way
+    // back to the cart. Loading/error on the payments read denies the
+    // transition (conservative default, matching `sale_workability.dart`).
+    final canReturnToCapture =
+        current != null &&
+        step.current != PosStep.venta &&
+        ref
+            .read(posStepControllerProvider.notifier)
+            .canReturnToCapture(
+              isEditable: current.isEditable,
+              hasNonCancelledPayments: ref
+                  .watch(orderPaymentsControllerProvider(current.id))
+                  .maybeWhen(
+                    data: (payments) => payments.any((p) => !p.cancelled),
+                    orElse: () => true,
+                  ),
+            );
+    void onReturnToVenta() =>
+        ref.read(posStepControllerProvider.notifier).returnToVenta();
+
     return Scaffold(
       appBar: AppBar(
         // The mock's own header rule (`border-bottom:1px solid #1E1E26`),
@@ -316,7 +337,11 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
               ),
             ],
             const Spacer(),
-            _StepIndicator(step: step),
+            _StepIndicator(
+              step: step,
+              canReturnToVenta: canReturnToCapture,
+              onReturnToVenta: onReturnToVenta,
+            ),
           ],
         ),
         // Constitution §VI (v1.10.0): a screen's actions live in the body,
@@ -379,9 +404,17 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
 /// the selector off the band, so it collapses to "Paso N de M" (US5, SC-007).
 /// The position is what matters; the names are on the step itself.
 class _StepIndicator extends StatelessWidget {
-  const _StepIndicator({required this.step});
+  const _StepIndicator({
+    required this.step,
+    required this.canReturnToVenta,
+    required this.onReturnToVenta,
+  });
 
   final PosStepState step;
+
+  /// spec 036 FR-005: whether tapping back to Venta is currently allowed.
+  final bool canReturnToVenta;
+  final VoidCallback onReturnToVenta;
 
   @override
   Widget build(BuildContext context) {
@@ -389,10 +422,18 @@ class _StepIndicator extends StatelessWidget {
     final theme = Theme.of(context);
 
     if (LayoutBreakpoints.isCompact(context)) {
-      return Text(
+      // spec 036 FR-005/research R2: pills collapse to plain text here, so
+      // the text itself is the compact-tier back-to-Venta affordance.
+      final progress = Text(
         key: const Key('pos_step_progress'),
         l10n.posStepProgress(step.current.index + 1, step.stepCount),
         style: theme.textTheme.titleSmall,
+      );
+      if (!canReturnToVenta) return progress;
+      return InkWell(
+        key: const Key('pos_step_progress_return_to_venta'),
+        onTap: onReturnToVenta,
+        child: progress,
       );
     }
 
@@ -431,6 +472,11 @@ class _StepIndicator extends StatelessWidget {
               label: labels[steps[i]]!,
               icon: icons[steps[i]]!,
               current: i == step.current.index,
+              // spec 036 FR-005: only the Venta pill is ever a way back, and
+              // only while it's actually allowed.
+              onTap: steps[i] == PosStep.venta && canReturnToVenta
+                  ? onReturnToVenta
+                  : null,
             ),
         ],
       ),
@@ -447,6 +493,7 @@ class _StepPill extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.current,
+    this.onTap,
   });
 
   final int position;
@@ -454,10 +501,14 @@ class _StepPill extends StatelessWidget {
   final IconData icon;
   final bool current;
 
+  /// spec 036 FR-005: non-null only for the Venta pill when returning to it
+  /// is currently allowed — every other pill stays inert, exactly as before.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
+    final content = Container(
       height: 28,
       margin: EdgeInsets.symmetric(horizontal: theme.spacing.xxs / 2),
       padding: EdgeInsets.symmetric(horizontal: theme.spacing.xs),
@@ -482,6 +533,13 @@ class _StepPill extends StatelessWidget {
           ),
         ],
       ),
+    );
+    if (onTap == null) return content;
+    return InkWell(
+      key: const Key('pos_step_pill_return_to_venta'),
+      customBorder: const StadiumBorder(),
+      onTap: onTap,
+      child: content,
     );
   }
 }

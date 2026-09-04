@@ -115,18 +115,20 @@ class _$PriceListCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(HighProfitMargin),
+                    specifiedType: const FullType.nullable(HighProfitMargin),
                   )
-                  as HighProfitMargin;
+                  as HighProfitMargin?;
+          if (valueDes == null) continue;
           result.highProfitMargin.replace(valueDes);
           break;
         case r'low_profit_margin':
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(LowProfitMargin),
+                    specifiedType: const FullType.nullable(LowProfitMargin),
                   )
-                  as LowProfitMargin;
+                  as LowProfitMargin?;
+          if (valueDes == null) continue;
           result.lowProfitMargin.replace(valueDes);
           break;
         default:

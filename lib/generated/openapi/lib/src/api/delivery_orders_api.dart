@@ -445,7 +445,7 @@ class DeliveryOrdersApi {
     required int deliveryOrderId,
     required String receiverName,
     required String receiverIdShown,
-    required String image,
+    required MultipartFile image,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -491,11 +491,7 @@ class DeliveryOrdersApi {
           receiverIdShown,
           const FullType(String),
         ),
-        r'image': encodeFormParameter(
-          _serializers,
-          image,
-          const FullType(String),
-        ),
+        r'image': image,
       });
     } catch (error, stackTrace) {
       throw DioException(

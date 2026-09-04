@@ -1,11 +1,14 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
@@ -48,6 +51,14 @@ ProductPrice _price({
 );
 
 void main() {
+  // spec 036 R10: `commitCell`/`adjustByPercent` now route through
+  // `formattersProvider`, which constructs a `DateFormat` — needs locale
+  // data initialized, unlike a widget test where the test binding does
+  // this implicitly.
+  setUpAll(() async {
+    await initializeDateFormatting();
+  });
+
   group('PricingGridFilter.fromQuery (spec 033 data-model.md §7)', () {
     test(
       'derives every product-list facet from a ListQuery, mirroring '
@@ -157,12 +168,20 @@ void main() {
     late MockProductPriceRepository productPriceRepository;
     late ProviderContainer container;
 
-    setUp(() {
+    setUp(() async {
       productRepository = MockProductRepository();
       priceListRepository = MockPriceListRepository();
       productPriceRepository = MockProductPriceRepository();
+      // `commitCell` now routes through `formattersProvider` (spec 036 US8,
+      // contracts/app-settings-additions.md C3), which chains through
+      // `resolvedLocaleProvider`/`UserDisplayPreferencesController` down to
+      // `sharedPreferencesProvider` — needs a value here too, or resolving
+      // it throws.
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
           productPriceRepositoryProvider.overrideWithValue(
@@ -484,11 +503,15 @@ void main() {
           products: [_product(1)],
           prices: const [],
         );
+        // spec 036 R10: the commit routes through `AppFormatters.field
+        // .parsePrice`, which round-trips via `Decimal` and so sends the
+        // canonical value — trailing zeros stripped — not the raw typed
+        // string.
         when(
           () => productPriceRepository.create(
             productId: 1,
             priceListId: 5,
-            price: '25.00',
+            price: '25',
           ),
         ).thenAnswer(
           (_) async => _price(productId: 1, priceListId: 5, price: '25.00'),
@@ -504,7 +527,7 @@ void main() {
           () => productPriceRepository.create(
             productId: 1,
             priceListId: 5,
-            price: '25.00',
+            price: '25',
           ),
         ).called(1);
       },
@@ -526,10 +549,11 @@ void main() {
             ),
           ],
         );
+        // spec 036 R10: sent as the canonical, trailing-zero-stripped value.
         when(
           () => productPriceRepository.update(
             productPriceId: 105,
-            price: '12.00',
+            price: '12',
           ),
         ).thenAnswer(
           (_) async => _price(
@@ -548,7 +572,7 @@ void main() {
         verify(
           () => productPriceRepository.update(
             productPriceId: 105,
-            price: '12.00',
+            price: '12',
           ),
         ).called(1);
         final state = container
@@ -569,7 +593,7 @@ void main() {
         () => productPriceRepository.create(
           productId: 1,
           priceListId: 5,
-          price: '25.00',
+          price: '25',
         ),
       ).thenThrow(
         const AppError.validation([
@@ -596,12 +620,20 @@ void main() {
     late MockProductPriceRepository productPriceRepository;
     late ProviderContainer container;
 
-    setUp(() {
+    setUp(() async {
       productRepository = MockProductRepository();
       priceListRepository = MockPriceListRepository();
       productPriceRepository = MockProductPriceRepository();
+      // `commitCell` now routes through `formattersProvider` (spec 036 US8,
+      // contracts/app-settings-additions.md C3), which chains through
+      // `resolvedLocaleProvider`/`UserDisplayPreferencesController` down to
+      // `sharedPreferencesProvider` — needs a value here too, or resolving
+      // it throws.
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
           productPriceRepositoryProvider.overrideWithValue(
@@ -843,12 +875,20 @@ void main() {
     late MockProductPriceRepository productPriceRepository;
     late ProviderContainer container;
 
-    setUp(() {
+    setUp(() async {
       productRepository = MockProductRepository();
       priceListRepository = MockPriceListRepository();
       productPriceRepository = MockProductPriceRepository();
+      // `commitCell` now routes through `formattersProvider` (spec 036 US8,
+      // contracts/app-settings-additions.md C3), which chains through
+      // `resolvedLocaleProvider`/`UserDisplayPreferencesController` down to
+      // `sharedPreferencesProvider` — needs a value here too, or resolving
+      // it throws.
+      SharedPreferences.setMockInitialValues({});
+      final sharedPreferences = await SharedPreferences.getInstance();
       container = ProviderContainer(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
           productPriceRepositoryProvider.overrideWithValue(
@@ -970,11 +1010,12 @@ void main() {
       'delete in the bulk write, and the count says so rather than pretending',
       () async {
         await primeWith(const []);
+        // spec 036 R10: sent as the canonical, trailing-zero-stripped value.
         when(
           () => productPriceRepository.create(
             productId: 1,
             priceListId: 5,
-            price: '25.00',
+            price: '25',
           ),
         ).thenAnswer(
           (_) async => _price(productId: 1, priceListId: 5, price: '25.00'),
@@ -1053,8 +1094,9 @@ void main() {
         _price(productId: 1, priceListId: 5, price: '10.00'),
         _price(productId: 2, priceListId: 5, price: '20.00'),
       ]);
+      // spec 036 R10: sent as the canonical, trailing-zero-stripped value.
       when(
-        () => productPriceRepository.update(productPriceId: 105, price: '11.00'),
+        () => productPriceRepository.update(productPriceId: 105, price: '11'),
       ).thenAnswer(
         (_) async => _price(productId: 1, priceListId: 5, price: '11.00'),
       );

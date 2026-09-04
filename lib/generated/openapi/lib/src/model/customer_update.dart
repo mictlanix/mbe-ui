@@ -20,8 +20,6 @@ part 'customer_update.g.dart';
 /// * [creditLimit]
 /// * [creditDays]
 /// * [priceList]
-/// * [shipping]
-/// * [shippingRequiredDocument]
 /// * [salesperson]
 /// * [status]
 /// * [comment]
@@ -48,12 +46,6 @@ abstract class CustomerUpdate
 
   @BuiltValueField(wireName: r'price_list')
   int? get priceList;
-
-  @BuiltValueField(wireName: r'shipping')
-  bool? get shipping;
-
-  @BuiltValueField(wireName: r'shipping_required_document')
-  bool? get shippingRequiredDocument;
 
   @BuiltValueField(wireName: r'salesperson')
   int? get salesperson;
@@ -140,20 +132,6 @@ class _$CustomerUpdateSerializer
       yield serializers.serialize(
         object.priceList,
         specifiedType: const FullType.nullable(int),
-      );
-    }
-    if (object.shipping != null) {
-      yield r'shipping';
-      yield serializers.serialize(
-        object.shipping,
-        specifiedType: const FullType.nullable(bool),
-      );
-    }
-    if (object.shippingRequiredDocument != null) {
-      yield r'shipping_required_document';
-      yield serializers.serialize(
-        object.shippingRequiredDocument,
-        specifiedType: const FullType.nullable(bool),
       );
     }
     if (object.salesperson != null) {
@@ -284,26 +262,6 @@ class _$CustomerUpdateSerializer
                   as int?;
           if (valueDes == null) continue;
           result.priceList = valueDes;
-          break;
-        case r'shipping':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(bool),
-                  )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.shipping = valueDes;
-          break;
-        case r'shipping_required_document':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(bool),
-                  )
-                  as bool?;
-          if (valueDes == null) continue;
-          result.shippingRequiredDocument = valueDes;
           break;
         case r'salesperson':
           final valueDes =

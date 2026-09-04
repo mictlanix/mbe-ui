@@ -217,9 +217,12 @@ class _$DeliveryOrderSummarySerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(BuiltList, [FullType(int)]),
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(int),
+                    ]),
                   )
-                  as BuiltList<int>;
+                  as BuiltList<int>?;
+          if (valueDes == null) continue;
           result.salesOrders.replace(valueDes);
           break;
         case r'ship_to':

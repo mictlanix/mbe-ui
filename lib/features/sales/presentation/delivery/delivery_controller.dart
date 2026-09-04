@@ -7,6 +7,10 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_control
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart'
+    show DestinationLineRequest;
+import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 
 part 'delivery_controller.g.dart';
@@ -77,18 +81,39 @@ class DeliveryController extends _$DeliveryController {
   Future<T> _tracked<T>(Future<T> Function() action) =>
       ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
 
-  /// Records one addressed destination from its header alone (FR-027) — an
-  /// explicit empty `lines: const []`, never omitted (mbe-api#165, research
-  /// R14): omitting `lines` claims everything the sale still owes, which is
-  /// the opposite of what a destination that has just been named should
-  /// hold. Every quantity is assigned afterwards, on the resulting card's own
-  /// stepper ([assignLine]).
+  /// Records one addressed destination (FR-027). The **first** destination
+  /// (no destinations yet) is the one case where "the obvious, almost-always-
+  /// correct assignment" (US7) is worth sending explicitly: every line's full
+  /// remaining `claimable` quantity, so the cashier lands on a fully assigned
+  /// destination with zero manual entry (FR-023) — still adjustable
+  /// afterwards on the resulting card's own stepper (FR-024), and this is one
+  /// `create` call, so a refused create leaves nothing partially assigned
+  /// (research R12). A second or later destination keeps the explicit empty
+  /// `lines: const []`, never omitted (mbe-api#165, research R14): omitting
+  /// `lines` claims everything the sale still owes, which is the opposite of
+  /// what a destination joining others already in progress should hold
+  /// (FR-025).
   Future<Destination> addDestination({
     required int shipTo,
     int? contact,
     DateTime? date,
     String? comment,
   }) => _tracked(() async {
+    // spec 036 FR-008/R1: the first delivery-order create needs the sale
+    // confirmed first — a no-op once already confirmed (e.g. a payment
+    // already ran it, or an earlier destination already did).
+    await confirmBeforePayableAction(ref.read, sale);
+    final existing = state.valueOrNull ?? const <Destination>[];
+    final lines = existing.isEmpty
+        ? [
+            for (final line in distributionFor(sale: sale, destinations: existing))
+              if (compareAmounts(line.claimable, '0') > 0)
+                DestinationLineRequest(
+                  salesOrderDetail: line.saleLineId,
+                  quantity: line.claimable,
+                ),
+          ]
+        : const <DestinationLineRequest>[];
     final created = await ref
         .read(deliveryOrderRepositoryProvider)
         .create(
@@ -98,11 +123,11 @@ class DeliveryController extends _$DeliveryController {
           contact: contact,
           date: date,
           comment: comment,
-          lines: const [],
+          lines: lines,
         );
 
     final labelled = await _labelled(created);
-    state = AsyncData([...?state.valueOrNull, labelled]);
+    state = AsyncData([...existing, labelled]);
     return labelled;
   });
 
@@ -141,6 +166,10 @@ class DeliveryController extends _$DeliveryController {
   /// owes, which is exactly the remainder, computed server-side against the
   /// same figure it validates every other destination against.
   Future<Destination> sweepRemainderToCounter() => _tracked(() async {
+    // spec 036 FR-008/R1: same guard as `addDestination` — this can also be
+    // the sale's first delivery-order create (a pure-counter-pickup sweep
+    // with no prior destination).
+    await confirmBeforePayableAction(ref.read, sale);
     final created = await ref
         .read(deliveryOrderRepositoryProvider)
         .create(

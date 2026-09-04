@@ -151,7 +151,14 @@ class _PricingTable extends ConsumerWidget {
     ProductPriceRow row,
   ) async {
     final l10n = AppLocalizations.of(context)!;
-    final priceController = TextEditingController(text: row.price?.price ?? '');
+    final fmt = ref.read(formattersProvider);
+    // Seeds through the shared formatting surface (contracts/app-settings-
+    // additions.md C3), same as the pricing grid's editable cell, so this
+    // dialog opens at the deployment's configured decimal-digit count
+    // instead of the raw wire value (e.g. `20.0000`).
+    final priceController = TextEditingController(
+      text: row.price != null ? fmt.field.price(row.price!.price) : '',
+    );
     Map<String, String> fieldErrors = const {};
 
     await showDialog<void>(
@@ -185,11 +192,18 @@ class _PricingTable extends ConsumerWidget {
             FilledButton(
               key: const Key('price_edit_save_button'),
               onPressed: () async {
+                // Round-trips through the same surface on the way back out,
+                // falling back to the raw text when it doesn't parse at all
+                // so `saveRow`'s own validation still flags it, unchanged
+                // from today (FR-010's equivalent here).
+                final parsed = fmt.field.parsePrice(priceController.text);
                 final errors = await ref
                     .read(pricingControllerProvider.notifier)
                     .saveRow(
                       priceListId: row.priceList.priceListId,
-                      edit: PricingRowEditState(price: priceController.text),
+                      edit: PricingRowEditState(
+                        price: parsed ?? priceController.text,
+                      ),
                     );
                 if (errors.isEmpty) {
                   if (dialogContext.mounted) Navigator.of(dialogContext).pop();

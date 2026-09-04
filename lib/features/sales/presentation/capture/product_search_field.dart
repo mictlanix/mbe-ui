@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
@@ -70,7 +71,7 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     // FR-033: offered as the cashier types, debounced — never auto-added.
     // Only `onSubmitted` (the scanner's Enter) may add a line directly.
     _debounce = Timer(
-      const Duration(milliseconds: 300),
+      ref.read(inputDebounceProvider),
       () => _search(pattern, autoAddSingleMatch: false),
     );
   }
