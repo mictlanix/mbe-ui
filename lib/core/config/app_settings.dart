@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
@@ -106,6 +107,16 @@ class AppSettings {
   /// startup (FR-005) — the same rule `BrandConfig._parseSeedColor` already
   /// applies to a bad hex color.
   factory AppSettings.fromEnvironment() {
+    if (kDebugMode) {
+      debugPrint(
+        '[AppSettings] API_BASE_URL=${dio_client.apiBaseUrl} '
+        'PHOTOS_BASE_URL=${photo_url.photosBaseUrl} '
+        'POS_DEFAULT_CUSTOMER_ID=${pos_defaults.posDefaultCustomerId} '
+        'DEFAULT_LOCALE=$_defaultLocaleEnv '
+        'INPUT_DEBOUNCE_MS=$_inputDebounceMsEnv '
+        'QUANTITY_COMMIT_DEBOUNCE_MS=$_quantityCommitDebounceMsEnv',
+      );
+    }
     return AppSettings(
       apiBaseUrl: dio_client.apiBaseUrl,
       photosBaseUrl: photo_url.photosBaseUrl,

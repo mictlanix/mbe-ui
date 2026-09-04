@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
@@ -54,24 +55,37 @@ class BrandConfig {
   ///  --dart-define=BRAND_SEED_COLOR=1B5E20`.
   factory BrandConfig.fromEnvironment() {
     const seedColorHex = String.fromEnvironment('BRAND_SEED_COLOR');
+    const displayName = String.fromEnvironment(
+      'BRAND_DISPLAY_NAME',
+      defaultValue: 'Mictlanix Business Essentials',
+    );
+    const welcomeAsset = bool.hasEnvironment('BRAND_WELCOME_ASSET')
+        ? String.fromEnvironment('BRAND_WELCOME_ASSET')
+        : null;
+    const lockupAsset = String.fromEnvironment(
+      'BRAND_LOCKUP_ASSET',
+      defaultValue: _defaultLockupAsset,
+    );
+    const markAsset = String.fromEnvironment(
+      'BRAND_MARK_ASSET',
+      defaultValue: _defaultMarkAsset,
+    );
+    if (kDebugMode) {
+      debugPrint(
+        '[BrandConfig] BRAND_DISPLAY_NAME=$displayName '
+        'BRAND_WELCOME_ASSET=$welcomeAsset '
+        'BRAND_SEED_COLOR=$seedColorHex '
+        'BRAND_LOCKUP_ASSET=$lockupAsset '
+        'BRAND_MARK_ASSET=$markAsset',
+      );
+    }
     return BrandConfig(
-      displayName: const String.fromEnvironment(
-        'BRAND_DISPLAY_NAME',
-        defaultValue: 'Mictlanix Business Essentials',
-      ),
-      welcomeAsset: const bool.hasEnvironment('BRAND_WELCOME_ASSET')
-          ? const String.fromEnvironment('BRAND_WELCOME_ASSET')
-          : null,
+      displayName: displayName,
+      welcomeAsset: welcomeAsset,
       seedColor: _parseSeedColor(seedColorHex),
       usesDefaultPalette: !const bool.hasEnvironment('BRAND_SEED_COLOR'),
-      lockupAsset: const String.fromEnvironment(
-        'BRAND_LOCKUP_ASSET',
-        defaultValue: _defaultLockupAsset,
-      ),
-      markAsset: const String.fromEnvironment(
-        'BRAND_MARK_ASSET',
-        defaultValue: _defaultMarkAsset,
-      ),
+      lockupAsset: lockupAsset,
+      markAsset: markAsset,
     );
   }
 
