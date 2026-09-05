@@ -91,6 +91,8 @@ Sales Orders:
   - Balance field shows on two places, on customer bar and order header panel. Remove the last one.
   - On Customer bar, change label 'Credit Line' to Payment terms
   - On Order header panel, remove payment terms.
-  - On Order header panel, reorder the fields: 1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details, 6. Contact, 7. Comment.
+  - On Order header panel, reorder the fields that show after expanding details as: 1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details, 6. Contact, 7. Comment.
   - Move Order header panel, below customer bar.
   - From nav, move Sales Orders after Point of Sales
+  - Improve design, too much wasted space within the text fields.
+  - If a customer has a credit line, select it by default.
