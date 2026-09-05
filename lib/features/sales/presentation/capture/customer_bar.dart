@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
+import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -494,50 +495,51 @@ class _TermsFact extends ConsumerWidget {
     final hasCredit = creditLimit != null && !isZeroAmount(creditLimit);
     final fmt = ref.watch(formattersProvider);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(l10n.salesOrderPaymentTermsLabel, style: theme.textTheme.labelSmall),
-        // A fixed width, rather than left to `DropdownButton`'s own
-        // widest-item measurement pass: that auto-sizing is known to
-        // overflow its own render box by a sub-pixel hair at some text
-        // scales (a longstanding Flutter framework quirk, not particular to
-        // this text) — reproduced live by a phone-width widget test.
-        // 132 px comfortably fits "Crédito"/"Contado" plus the built-in
-        // dropdown arrow with room to spare.
-        SizedBox(
-          width: 132,
-          child: DropdownButton<PaymentTerms>(
-            key: const Key('pos_payment_terms_dropdown'),
-            value: terms,
-            isDense: true,
-            isExpanded: true,
-            underline: const SizedBox.shrink(),
-            style: theme.textTheme.bodyMedium,
-            onChanged: enabled ? (terms) => terms != null ? onChanged(terms) : null : null,
-            items: [
-              DropdownMenuItem(
-                value: PaymentTerms.immediate,
-                child: Text(l10n.posPaymentTermsImmediate),
-              ),
-              DropdownMenuItem(
-                value: PaymentTerms.netD,
-                enabled: hasCredit,
-                child: Text(l10n.posPaymentTermsCredit),
-              ),
-            ],
-          ),
-        ),
+    // spec 037 FR-016/T024: this control is where the shape came from, so it
+    // now uses the shared widget rather than its own hand-rolled copy — which
+    // also retires the raw `labelSmall` it captioned itself with, a token
+    // bypass (`typeRoles` has no such role).
+    return SizedBox(
+      // The fixed 132px this used to carry is gone: `CompactField` fills its
+      // parent and the dropdown is `isExpanded`, so the width comes from
+      // outside rather than from a literal that overflows in a narrower cell
+      // (research R7). A floor keeps this bar's `Wrap` laying out as before.
+      width: 132,
+      child: CompactField(
+        label: l10n.salesOrderPaymentTermsLabel,
+        affordance: CompactFieldAffordance.dropdown,
+        enabled: enabled,
         // research R9: the credit-limit figure the dropdown's slot used to
-        // show is not lost — it becomes supporting text beneath the
-        // control, exactly like the "no credit line" hint it replaces when
-        // there is nothing to show instead.
-        Text(
-          hasCredit ? fmt.display.currency(creditLimit) : l10n.posCustomerNoCreditHint,
-          style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.outline),
+        // show is not lost — it is supporting text beneath the control,
+        // exactly like the "no credit line" hint it replaces when there is
+        // nothing to show instead.
+        supportingText: hasCredit
+            ? fmt.display.currency(creditLimit)
+            : l10n.posCustomerNoCreditHint,
+        child: DropdownButton<PaymentTerms>(
+          key: const Key('pos_payment_terms_dropdown'),
+          value: terms,
+          isDense: true,
+          isExpanded: true,
+          underline: const SizedBox.shrink(),
+          // `CompactField` draws the affordance, so the dropdown's own arrow
+          // would be a second one.
+          icon: const SizedBox.shrink(),
+          style: theme.textTheme.bodyMedium,
+          onChanged: enabled ? (terms) => terms != null ? onChanged(terms) : null : null,
+          items: [
+            DropdownMenuItem(
+              value: PaymentTerms.immediate,
+              child: Text(l10n.posPaymentTermsImmediate),
+            ),
+            DropdownMenuItem(
+              value: PaymentTerms.netD,
+              enabled: hasCredit,
+              child: Text(l10n.posPaymentTermsCredit),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -613,17 +615,11 @@ class _SearchingView extends ConsumerWidget {
 /// [_FactsView]'s name/price-list entries and [_BalanceFact] — the same
 /// `Column(label, value)` shape spec 020 already used.
 abstract final class _CustomerBarFact {
-  static Widget fact(BuildContext context, String label, String value) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(label, style: theme.textTheme.labelSmall),
-        Text(value, style: theme.textTheme.bodyMedium),
-      ],
-    );
-  }
+  /// spec 037 FR-016d: one caption rule for the whole header stack. These
+  /// captioned the bar with raw `labelSmall` — a token bypass, and visibly
+  /// unlike the terms control beside them once that adopted `CompactField`.
+  static Widget fact(BuildContext context, String label, String value) =>
+      CompactField(label: label, child: Text(value));
 }
 
 /// FR-011's outstanding balance. Separate from the rest of the facts so its

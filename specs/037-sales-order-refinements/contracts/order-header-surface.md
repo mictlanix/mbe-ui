@@ -20,21 +20,27 @@ live-write rule, and its edit gating.
 The panel moves below the bar at **every** breakpoint (FR-011). Both keep the horizontal inset the
 screen already supplies; neither gains a margin of its own.
 
-## C2 — The fact strip
+## C2 — The header row
 
-Three facts, in this order: **reference, status, date**. Balance is gone (FR-001).
+One row, in this order: **reference, status, date, due date, promise date, salesperson**, with the
+disclosure control on the trailing edge. Balance is gone (FR-001); payment terms is gone (FR-003).
 
-Everything else about the strip is spec 032's and unchanged: uppercase caption over value, the
-`recordId` / `timestamp` type roles, and the disclosure control on the trailing edge.
+This merges what spec 032 kept as two bands — a read-only fact strip and a row of always-visible
+fields — into one (FR-016b). It is only possible because FR-016's conversion removes the outlined
+boxes that made the second band look like a form; the settled mock is the record of that decision.
+
+Captions and values follow C5's single rule each. Spec 032's uppercase fact-strip captions and its
+`timestamp` role on the order date are both superseded (FR-016d): monospace survives on the order
+reference alone.
 
 The screen's only balance is now the customer bar's — the customer's live outstanding balance, not
 the order's stored one (FR-002). Spec 029's US4 scenario 3 ("the outstanding balance stays visible
 without leaving the screen") is satisfied by that one.
 
-## C3 — Always-visible fields
+## C3 — Collapsed state
 
-Three, down from four: **due date, promise date, salesperson**. Payment terms is gone (FR-003) — it
-duplicated the customer bar's own control sitting directly above it.
+The panel collapsed is exactly C2's row: no second band, nothing beneath it until the disclosure
+opens.
 
 ## C4 — Disclosed group
 
@@ -50,6 +56,17 @@ Seven fields, in exactly this order (FR-012):
 
 Same seven fields as before, reordered. Nothing added, nothing removed.
 
+The six non-comment fields sit on **one line at the large tier** (FR-016c) — roughly 187px per
+column inside the grid's 1200px cap, which clears the longest value ("MXN — Peso Mexicano").
+Narrower tiers keep the counts the grid already derives (2 at medium/expanded, 1 at compact), so
+the six become three rows of two, then six rows of one.
+
+`ResponsiveFormGrid.columnsForWidth` caps at three columns, and raising `maxColumns` alone cannot
+exceed it (`columns = min(tierColumns, maxColumns)`). Six therefore needs a new **opt-in** input on
+the shared grid — a large-tier column count this panel supplies and every other caller omits. A
+caller that omits it MUST get exactly today's behaviour; this is the one change in this feature
+that touches a component every form renders through, so it is additive by construction.
+
 ## C5 — Field presentation
 
 Every control in the panel adopts the shared `CompactField` shape — a caption above the control,
@@ -60,6 +77,15 @@ This is not optional for the read-only values and picker launchers. A `Responsiv
 tall as its tallest child, so one surviving outlined box pins its row and the panel gets no shorter
 (research R5). Converting selections alone would satisfy the letter of the ask and deliver none of
 its point.
+
+**One caption rule, one value rule** (FR-016d). Every caption in the header stack — customer bar
+and panel alike — is the same size, weight, colour and casing, and so is every value. No field
+carries its own type treatment. The only value variations are data-type distinctions the app
+already makes: monospace for the order reference, tabular figures for money.
+
+**Editability is carried by a trailing affordance** (FR-016e), since a converted field has no box:
+a downward arrow on a dropdown, a right chevron on a picker. The two date fields carry neither —
+their formatted date-time fills the column at the compact tier and the affordance truncates it.
 
 Rules the shape must obey:
 
@@ -104,6 +130,9 @@ Explicitly preserved from spec 032, and each is a regression risk worth assertin
 | Customer bar renders the terms caption | scoped to `CustomerBar` |
 | Disclosed fields appear in C4's order | by position, not merely presence |
 | `CustomerBar` precedes `OrderHeaderPanel` | by vertical position on screen |
+| Due date, promise date and salesperson sit on the header row, not a second band | same row as reference/status/date, collapsed |
+| Six disclosed fields on one line at the large tier | one distinct vertical position for the six, comment strictly below |
+| A caller that omits the new grid input gets today's column count | asserted against `ResponsiveFormGrid` directly, not through this panel |
 | Panel is materially shorter than before | measured height against the real app theme, never a bare `MaterialApp` (research R4) |
 | Symmetric padding and baselines | measured insets, per constitution §VI |
 | No overflow at four text-size levels × compact and expanded | extends `sales_orders_compact_test.dart` |

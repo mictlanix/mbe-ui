@@ -253,8 +253,10 @@ Orders appears immediately after Point of Sale.
 - **FR-002**: The customer bar's outstanding balance MUST remain exactly as it
   is, as the order screen's only balance.
 - **FR-003**: The order header panel MUST NOT show a payment-terms field in any
-  disclosure state. Its always-visible field row therefore carries three fields
-  — due date, promise date, salesperson. This amends spec 032 FR-003.
+  disclosure state. This amends spec 032 FR-003. (The three fields this leaves in
+  the always-visible row — due date, promise date, salesperson — move onto the
+  panel's own header row under FR-016b, after which that separate row no longer
+  exists.)
 - **FR-004**: The customer bar's payment-terms control MUST be labelled "Payment
   terms" (English) and "Forma de pago" (Spanish), on every surface that renders
   the bar — the point-of-sale register and the back-office order screen alike.
@@ -319,6 +321,30 @@ Orders appears immediately after Point of Sale.
   The comment field is the one exception: it is genuinely typed into and holds
   its own full-width row, so it keeps its text-field presentation without
   affecting any other field's height.
+*The four requirements below were settled by the FR-015 mock during review and
+supersede parts of spec 032 this feature had otherwise left standing.*
+
+- **FR-016b**: Due date, promise date and salesperson MUST render on the header
+  panel's own top row, beside reference, status and date, rather than in a
+  separate row beneath it. The panel's collapsed state is therefore one row of
+  facts and fields plus the disclosure control.
+- **FR-016c**: The disclosed group MUST present its six non-comment fields on a
+  single line at the large tier, with comment full-width beneath; narrower tiers
+  keep the column counts the shared grid already derives. The shared responsive
+  form grid MUST remain the layout (constitution §VI), and the change that allows
+  six columns MUST be opt-in, leaving the column count every other form receives
+  exactly as it is.
+- **FR-016d**: Every caption in the header stack MUST resolve through one rule
+  and every value through one rule — one size, weight, colour and casing each —
+  with no uppercase treatment. This supersedes spec 032 FR-002's uppercase
+  fact-strip captions. Monospace MUST be reserved for the order reference, so the
+  order date is no longer monospaced; tabular figures remain for money.
+- **FR-016e**: Because a converted field has no outlined box to mark it editable,
+  editability MUST be carried by a trailing affordance: a downward arrow on a
+  dropdown, a right chevron on a field that opens a picker. The two date fields
+  MUST carry neither — their formatted date-time already consumes the available
+  column width at the compact tier, and the affordance truncates it.
+
 - **FR-017**: The denser presentation MUST NOT change any field's edit gating,
   and every field MUST keep writing through on change with no Save step (spec
   032 FR-010, FR-011 hold).

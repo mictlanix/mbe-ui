@@ -34,6 +34,7 @@ class ResponsiveFormGrid extends StatelessWidget {
     this.maxContentWidth = LayoutBreakpoints.large,
     this.spacing = 16,
     this.maxColumns = 3,
+    this.largeTierColumns,
   });
 
   final List<FormGridChild> children;
@@ -44,11 +45,23 @@ class ResponsiveFormGrid extends StatelessWidget {
   /// prefers two columns even on the widest screens passes `maxColumns: 2`.
   final int maxColumns;
 
-  static int columnsForWidth(double width) =>
+  /// Opt-in override for the **large** tier's column count (spec 037 FR-016c),
+  /// for a form whose fields are short enough to read more than three-up —
+  /// the sales-order header's disclosed group, whose six fields fit one line
+  /// at ~187px each inside this grid's 1200px cap.
+  ///
+  /// Raising [maxColumns] alone cannot do this: the count is
+  /// `min(tierColumns, maxColumns)`, so it can only ever lower the tier's own
+  /// number. Null — every other caller — leaves the tier mapping below
+  /// untouched, which is what keeps this additive for every existing form.
+  /// Narrower tiers are unaffected either way.
+  final int? largeTierColumns;
+
+  static int columnsForWidth(double width, {int? largeTierColumns}) =>
       switch (LayoutBreakpoints.tierOf(width)) {
         LayoutTier.compact => 1,
         LayoutTier.medium || LayoutTier.expanded => 2,
-        LayoutTier.large => 3,
+        LayoutTier.large => largeTierColumns ?? 3,
       };
 
   @override
@@ -59,8 +72,17 @@ class ResponsiveFormGrid extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final inner = constraints.maxWidth;
-            final tierColumns = columnsForWidth(inner);
-            final columns = tierColumns > maxColumns ? maxColumns : tierColumns;
+            final tierColumns = columnsForWidth(
+              inner,
+              largeTierColumns: largeTierColumns,
+            );
+            // An explicit [largeTierColumns] is the caller stating this tier's
+            // count outright, so it raises the cap with it — otherwise the
+            // default `maxColumns: 3` would silently clamp the very number
+            // that was just asked for. Callers that omit it are clamped by
+            // `maxColumns` exactly as before.
+            final cap = largeTierColumns ?? maxColumns;
+            final columns = tierColumns > cap ? cap : tierColumns;
             // Subtract a sub-pixel epsilon so floating-point rounding never
             // pushes the last cell past `inner` and forces an early wrap.
             final cellWidth =

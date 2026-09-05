@@ -30,12 +30,26 @@ class CatalogEntityPicker<T extends Object> extends ConsumerStatefulWidget {
     this.initialDisplayText,
     this.errorText,
     this.enabled = true,
+    this.bare = false,
     this.optionImageUrl,
     this.optionSubtitle,
     this.autofocus = false,
   });
 
   final String label;
+
+  /// spec 037 FR-016: renders without the outlined box and without its own
+  /// label, for a caller that draws the caption itself — `CompactField` in the
+  /// sales-order header, where a boxed field would both duplicate the caption
+  /// and defeat the density the conversion exists for.
+  ///
+  /// Chrome only: type-to-search, debouncing, the options view and
+  /// [onSelected] all behave exactly as they do boxed, so a field converted
+  /// this way keeps its interaction rather than becoming a tap-to-open dialog.
+  /// [label] is still required and still reaches assistive tech. Default
+  /// `false` leaves every existing caller untouched.
+  final bool bare;
+
   final String Function(T) displayStringForOption;
   final Future<Iterable<T>> Function(String query) optionsBuilder;
   final ValueChanged<T> onSelected;
@@ -74,6 +88,22 @@ class _CatalogEntityPickerState<T extends Object>
     super.dispose();
   }
 
+  /// Boxed by default; stripped to bare text when the caller draws its own
+  /// caption (spec 037 FR-016). `errorText` survives either way — an invalid
+  /// value must still say so with no box to outline it.
+  InputDecoration _decoration({String? errorText}) => widget.bare
+      ? InputDecoration(
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          filled: false,
+          isDense: true,
+          contentPadding: EdgeInsets.zero,
+          errorText: errorText,
+        )
+      : InputDecoration(labelText: widget.label, errorText: errorText);
+
   @override
   Widget build(BuildContext context) {
     if (!widget.enabled) {
@@ -89,7 +119,7 @@ class _CatalogEntityPickerState<T extends Object>
       return TextFormField(
         key: ValueKey('ro-${widget.initialDisplayText}'),
         initialValue: widget.initialDisplayText ?? '',
-        decoration: InputDecoration(labelText: widget.label),
+        decoration: _decoration(),
         enabled: false,
       );
     }
@@ -122,10 +152,7 @@ class _CatalogEntityPickerState<T extends Object>
           controller: controller,
           focusNode: focusNode,
           autofocus: widget.autofocus,
-          decoration: InputDecoration(
-            labelText: widget.label,
-            errorText: widget.errorText,
-          ),
+          decoration: _decoration(errorText: widget.errorText),
           onFieldSubmitted: (_) => onFieldSubmitted(),
         );
       },

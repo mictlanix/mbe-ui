@@ -15,6 +15,7 @@ import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
+import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
@@ -62,6 +63,7 @@ const _coveredFiles = {
   'catalog_filter_bar.dart',
   'catalog_filter_sheet.dart',
   'catalog_search_bar.dart',
+  'compact_field.dart', // spec 037 — the sales-order header's field shape
   'confirmable_text_field.dart', // spec 031 — extracted from quantity_stepper.dart
   'data_table_view.dart',
   'date_range_filter_chip.dart', // spec 023 T023 — the sales list's date filter
@@ -166,6 +168,43 @@ void main() {
         'brand_logo',
         (brightness, width) =>
             const BrandLogo(style: BrandLogoStyle.mark, height: 34),
+      );
+    });
+
+    testWidgets('CompactField', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'compact_field',
+        // The three faces the sales-order header uses it in: a read-only
+        // value, a picker, and a dropdown carrying supporting text.
+        (brightness, width) => const SizedBox(
+          width: 260,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CompactField(
+                label: 'Fecha de entrega',
+                child: Text('2026-09-11 00:00'),
+              ),
+              SizedBox(height: 16),
+              CompactField(
+                label: 'Contacto',
+                affordance: CompactFieldAffordance.picker,
+                fillWidth: true,
+                child: Text('Ing. Laura Sáenz'),
+              ),
+              SizedBox(height: 16),
+              CompactField(
+                label: 'Forma de pago',
+                affordance: CompactFieldAffordance.dropdown,
+                supportingText: r'Límite: $50,000.00',
+                fillWidth: true,
+                child: Text('Crédito'),
+              ),
+            ],
+          ),
+        ),
       );
     });
 

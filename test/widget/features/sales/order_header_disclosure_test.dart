@@ -152,15 +152,17 @@ void main() {
         l10n.salesOrderStatusLabel,
         l10n.salesOrderDateLabel,
       ]) {
-        expect(
-          inPanel(label.toUpperCase()),
-          findsOneWidget,
-          reason: '$label should read as a fact-strip label',
-        );
+        // spec 037 FR-016d: one caption rule for the whole stack, sentence
+        // case — spec 032's uppercased fact-strip captions are superseded.
         expect(
           inPanel(label),
+          findsOneWidget,
+          reason: '$label should caption its value',
+        );
+        expect(
+          inPanel(label.toUpperCase()),
           findsNothing,
-          reason: '$label should no longer be an InputDecoration label',
+          reason: '$label should no longer be uppercased',
         );
       }
 
@@ -266,25 +268,27 @@ void main() {
         await tester.tap(find.byKey(_toggle));
         await tester.pumpAndSettle();
 
-        // A consistent measurement point for every field regardless of how
-        // it's located — the field's own decorated box, never a nested
-        // label/text that floats at a different inset than a keyed outer
-        // widget (which is what made a naive mix of `find.byKey` and
-        // `find.text` measurements disagree by a few px within one row).
-        Offset topOfLabel(String label) => tester.getTopLeft(
-          find.byWidgetPredicate(
-            (w) => w is InputDecorator && w.decoration.labelText == label,
+        // Since spec 037 FR-016 every field is a `CompactField`, so every one
+        // of them is located the same way — by its caption, inside the panel.
+        // That gives one consistent measurement point per field, which a mix
+        // of keyed widgets and nested labels did not (they sat at different
+        // insets and disagreed by a few px within a single row).
+        Offset topOf(String label) => tester.getTopLeft(
+          find.descendant(
+            of: find.byType(OrderHeaderPanel),
+            matching: find.text(label),
           ),
         );
-        Offset topOfKey(Key key) => tester.getTopLeft(find.byKey(key));
 
-        final priority = topOfKey(const Key('sales_order_priority_field'));
-        final currency = topOfKey(const Key('sales_order_currency_field'));
-        final exchangeRate = topOfLabel(l10n.salesOrderExchangeRateLabel);
-        final recipient = topOfKey(const Key('sales_order_recipient_field'));
-        final shipTo = topOfLabel(l10n.salesOrderShipToLabel);
-        final contact = topOfLabel(l10n.salesOrderContactLabel);
-        final comment = topOfKey(const Key('sales_order_comment_field'));
+        final priority = topOf(l10n.salesOrderPriorityLabel);
+        final currency = topOf(l10n.salesOrderCurrencyLabel);
+        final exchangeRate = topOf(l10n.salesOrderExchangeRateLabel);
+        final recipient = topOf(l10n.salesOrderRecipientLabel);
+        final shipTo = topOf(l10n.salesOrderShipToLabel);
+        final contact = topOf(l10n.salesOrderContactLabel);
+        final comment = tester.getTopLeft(
+          find.byKey(const Key('sales_order_comment_field')),
+        );
 
         // Reading order: a field on an earlier row precedes one on a later
         // row; within the same row, the leftmost field precedes.

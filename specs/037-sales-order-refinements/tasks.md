@@ -86,12 +86,12 @@ POS register.
       `expect(find.text(l10n.salesOrderPaymentTermsLabel), findsOneWidget)` (~line 153, in the
       `'the disclosure'` group) with a scoped negative assertion — the string now legitimately
       appears in `CustomerBar`, so an unscoped finder proves nothing (research R9).
-- [ ] T008 [P] [US1] In `test/widget/features/sales/customer_bar_test.dart`, update the
+- [X] T008 [P] [US1] In `test/widget/features/sales/customer_bar_test.dart`, update the
       `'the payment-terms dropdown'` group's caption assertion to expect
       `l10n.salesOrderPaymentTermsLabel`. Confirm (do not assume) that no case in this file asserts
       `posCustomerCreditLabel` directly — research R9 found none, but this file is exactly where
       one would live if it existed.
-- [ ] T009 [US1] Re-baseline `test/golden/pos_capture_golden_test.dart`'s four
+- [X] T009 [US1] Re-baseline `test/golden/pos_capture_golden_test.dart`'s four
       `pos_customer_bar_{light,dark}_{narrow,wide}.png` files and
       `test/screenshots/pos_screens_screenshot_test.dart` shots `02`–`07` via
       `flutter test --update-goldens`. Review every changed PNG before committing — no golden
@@ -254,12 +254,12 @@ writing exactly as before.
 >
 > Item 2 is the only one with blast radius beyond this panel.
 
-- [ ] T022 [US4] Create `lib/core/widgets/compact_field.dart`: a `CompactField` widget per
+- [X] T022 [US4] Create `lib/core/widgets/compact_field.dart`: a `CompactField` widget per
       data-model.md §4 — `label` (through `typeRoles.metricLabel`, not raw `labelSmall`), `child`,
       optional `supportingText`, `enabled`; **no fixed width**; symmetric vertical padding from
       `core/design/spacing.dart` tokens only; height driven by content (contract C5, constitution
       §VI).
-- [ ] T023 [US4] In `order_header_panel.dart`, convert every field except Comment — due date,
+- [X] T023 [US4] In `order_header_panel.dart`, convert every field except Comment — due date,
       promise date, salesperson, priority, currency, exchange rate, recipient, contact, ship-to —
       from `InputDecorator`/`DropdownButtonFormField`/`_PickerField` to `CompactField`, per the
       approved mock. Dropdowns inside it use `isExpanded: true`; none gets a fixed width (FR-016,
@@ -272,28 +272,28 @@ writing exactly as before.
       `test/widget/features/sales/order_screen_readonly_test.dart` type-casts exactly those three
       widgets by `Key` to assert FR-017's edit gating (research R9a); replacing the control type
       breaks those casts and silently removes the only gating coverage this panel has.
-- [ ] T024 [US4] In `customer_bar.dart`, convert `_TermsFact` to use T022's `CompactField`, removing
+- [X] T024 [US4] In `customer_bar.dart`, convert `_TermsFact` to use T022's `CompactField`, removing
       its hand-rolled `Column` + `SizedBox(width: 132)` and the raw `labelSmall` token bypass. Rely
       on `CompactField`'s fill-cell + `isExpanded: true` behaviour instead of a fixed width
       (research R7) — the 132 px workaround does not survive into a grid cell that can be narrower.
 
 ### Tests for User Story 4
 
-- [ ] T025 [P] [US4] Add `test/widget/features/sales/order_header_density_test.dart`: measure the
+- [X] T025 [P] [US4] Add `test/widget/features/sales/order_header_density_test.dart`: measure the
       expanded panel's height against a recorded pre-feature baseline and assert at least a 20%
       reduction (SC-004); assert symmetric vertical padding and a caption/control baseline
       relationship, measured against the real app theme — not a bare `MaterialApp` (research R4,
       constitution §VI's measuring-test rule; spec 027's T031 is the cautionary precedent for
       getting this wrong).
-- [ ] T026 [US4] Extend `test/widget/features/sales/sales_orders_compact_test.dart` into a loop over
+- [X] T026 [US4] Extend `test/widget/features/sales/sales_orders_compact_test.dart` into a loop over
       all four `TextSizeLevel` factors (0.9 / 1.0 / 1.15 / 1.3), asserting no overflow or clipping at
       both the compact and expanded tiers — mirroring the `group('at text-scale factor $level')`
       pattern already established in `test/widget/features/sales/sale_line_symmetry_test.dart`
       (research R8, constitution §V's largest-text-size requirement).
-- [ ] T027 [US4] Re-verify `customer_bar_test.dart`'s 390 px-width case (the existing `Wrap`
+- [X] T027 [US4] Re-verify `customer_bar_test.dart`'s 390 px-width case (the existing `Wrap`
       re-wrap scenario referenced in contract C7) still passes with the wider "Forma de pago"
       caption and the `CompactField` conversion.
-- [ ] T034 [US4] *(added post-`/speckit-analyze`, closes the FR-017 coverage gap)* Re-run
+- [X] T034 [US4] *(added post-`/speckit-analyze`, closes the FR-017 coverage gap)* Re-run
       `test/widget/features/sales/order_screen_readonly_test.dart` after T023/T024 and confirm its
       four typed assertions still hold: `DropdownButtonFormField<Currency>.onChanged` is null for a
       non-editable order (~line 143), `CatalogEntityPicker<EmployeeListItem>.enabled` is false
