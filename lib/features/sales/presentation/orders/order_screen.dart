@@ -229,9 +229,18 @@ class _OrderScreenBodyState extends ConsumerState<_OrderScreenBody> {
             onDismiss: () => setState(() => _confirmError = null),
           ),
         ),
+      // spec 037 FR-011: customer identity leads, order metadata follows.
+      Padding(
+        padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
+        child: CustomerBar(
+          sale: sale,
+          enabled: canEditFields,
+          excludeGenericCustomer: true,
+        ),
+      ),
       if (sale != null)
         Padding(
-          padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
+          padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
           child: OrderHeaderPanel(
             sale: sale,
             canEdit: canEditFields,
@@ -244,14 +253,6 @@ class _OrderScreenBodyState extends ConsumerState<_OrderScreenBody> {
                 .refresh(),
           ),
         ),
-      Padding(
-        padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
-        child: CustomerBar(
-          sale: sale,
-          enabled: canEditFields,
-          excludeGenericCustomer: true,
-        ),
-      ),
       // spec 036 FR-001/FR-003: no product line until a specific customer is
       // attached — the field is absent, not merely disabled, matching this
       // screen's existing "not applicable yet" convention (`showAction`

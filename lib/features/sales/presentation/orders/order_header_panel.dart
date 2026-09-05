@@ -31,14 +31,20 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// Spec 032 reshapes it from the flat fifteen-field grid spec 029 shipped
 /// into one raised card with three bands (FR-001):
 ///
-///  1. a read-only **fact strip** — reference, status, date, balance — as
+///  1. a read-only **fact strip** — reference, status, date — as
 ///     uppercase-label-over-value blocks, so nothing that cannot be typed
 ///     into looks like a field (FR-002), with the disclosure control on its
 ///     trailing edge (FR-006);
-///  2. the four fields that are always relevant — due date, promise date,
-///     payment terms, salesperson (FR-003);
+///  2. the fields that are always relevant — due date, promise date,
+///     salesperson (FR-003);
 ///  3. the remaining seven behind that disclosure, closed on arrival
 ///     (FR-004, FR-005).
+///
+/// Spec 037 removes balance from the strip and payment terms from the
+/// always-visible row: both duplicated `CustomerBar`'s own balance and its
+/// payment-terms dropdown directly above this panel, and the strip's copy of
+/// balance did not reflect live data the way `CustomerBar`'s does (FR-001,
+/// FR-003). It also reorders the disclosed group (FR-012).
 ///
 /// The disclosure changes **visibility only**. Every editable field still
 /// writes through a single [updateHeader] call the instant it changes —
@@ -230,14 +236,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                   ),
                 ),
                 FormGridChild(
-                  _readOnly(
-                    l10n.salesOrderPaymentTermsLabel,
-                    sale.paymentTerms == PaymentTerms.netD
-                        ? l10n.posPaymentTermsCredit
-                        : l10n.posPaymentTermsImmediate,
-                  ),
-                ),
-                FormGridChild(
                   CatalogEntityPicker<EmployeeListItem>(
                     key: const Key('sales_order_salesperson_field'),
                     label: l10n.salesOrderSalespersonLabel,
@@ -262,6 +260,9 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
             // the same row.
             if (_expanded) ...[
               Divider(height: spacing.lg, color: theme.colorScheme.outlineVariant),
+              // spec 037 FR-012: Priority, Currency, Exchange rate, Tax ID
+              // (recipient), Delivery details (ship-to), Contact, Comment —
+              // supersedes spec 032 FR-004's ordering.
               ResponsiveFormGrid(
                 children: [
                   FormGridChild(
@@ -282,43 +283,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                           : (priority) {
                               if (priority != null) _update(priority: priority);
                             },
-                    ),
-                  ),
-                  FormGridChild(
-                    _PickerField(
-                      label: l10n.salesOrderContactLabel,
-                      value: contactLabel,
-                      enabled: canEdit,
-                      onTap: _pickContact,
-                    ),
-                  ),
-                  FormGridChild(
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CatalogEntityPicker<TaxpayerRecipientListItem>(
-                          key: const Key('sales_order_recipient_field'),
-                          label: l10n.salesOrderRecipientLabel,
-                          displayStringForOption: (r) => r.taxpayerRecipientId,
-                          optionsBuilder: (query) async {
-                            final result = await ref
-                                .read(taxpayerRecipientRepositoryProvider)
-                                .list(search: query.isEmpty ? null : query);
-                            return result.items;
-                          },
-                          onSelected: (r) => _update(recipient: r.taxpayerRecipientId),
-                          initialDisplayText: sale.recipient,
-                          enabled: canEdit,
-                        ),
-                        if (sale.recipientName != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              sale.recipientName!,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ),
-                      ],
                     ),
                   ),
                   // FR-012: the artboard shows currency read-only in the
@@ -354,11 +318,48 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                     _readOnly(l10n.salesOrderExchangeRateLabel, sale.exchangeRate),
                   ),
                   FormGridChild(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CatalogEntityPicker<TaxpayerRecipientListItem>(
+                          key: const Key('sales_order_recipient_field'),
+                          label: l10n.salesOrderRecipientLabel,
+                          displayStringForOption: (r) => r.taxpayerRecipientId,
+                          optionsBuilder: (query) async {
+                            final result = await ref
+                                .read(taxpayerRecipientRepositoryProvider)
+                                .list(search: query.isEmpty ? null : query);
+                            return result.items;
+                          },
+                          onSelected: (r) => _update(recipient: r.taxpayerRecipientId),
+                          initialDisplayText: sale.recipient,
+                          enabled: canEdit,
+                        ),
+                        if (sale.recipientName != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              sale.recipientName!,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  FormGridChild(
                     _PickerField(
                       label: l10n.salesOrderShipToLabel,
                       value: shipToLabel,
                       enabled: canEdit,
                       onTap: _pickShipTo,
+                    ),
+                  ),
+                  FormGridChild(
+                    _PickerField(
+                      label: l10n.salesOrderContactLabel,
+                      value: contactLabel,
+                      enabled: canEdit,
+                      onTap: _pickContact,
                     ),
                   ),
                   FormGridChild(
@@ -428,12 +429,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                 l10n.salesOrderDateLabel,
                 fmt.display.dateTime(sale.date),
                 style: typeRoles.timestamp,
-              ),
-              _fact(
-                context,
-                l10n.salesOrdersColumnBalance,
-                fmt.display.currency(sale.balance),
-                style: typeRoles.money,
               ),
             ],
           ),

@@ -61,8 +61,8 @@ overdue orders. Both are recorded in research.md; the second would need an mbe-a
 rather than a client workaround.
 
 **Scale/Scope**: 2 screens + 1 shared widget + 1 nav entry; 5 user stories, 25 functional
-requirements; 1 new shared widget; 1 l10n key retired and 1 relocated; 0 new entities; 3 test files
-updated, ~3 added, 4 goldens + 6 screenshots re-baselined.
+requirements; 1 new shared widget; 1 l10n key retired and 1 relocated; 0 new entities; 4 test files
+updated, 1 added, 1 re-verified, 4 goldens + 6 screenshots re-baselined.
 
 ## Constitution Check
 
@@ -133,14 +133,18 @@ lib/
 test/
 ├── widget/features/sales/
 │   ├── order_header_disclosure_test.dart    # UPDATE — drop balance; scope the terms finder;
-│   │                                        #  assert disclosed order by position
+│   │                                        #  assert disclosed order by position; CustomerBar
+│   │                                        #  precedes OrderHeaderPanel
 │   ├── customer_bar_test.dart               # UPDATE — terms caption; the four C2 cases
 │   ├── sales_orders_compact_test.dart       # UPDATE — loop 4 TextSizeLevel factors
-│   ├── order_header_density_test.dart       # NEW — measured insets/baselines (§VI)
-│   └── order_screen_layout_test.dart        # NEW — CustomerBar precedes OrderHeaderPanel
+│   ├── order_screen_readonly_test.dart      # VERIFY — the only FR-017 edit-gating coverage
+│   │                                        #  OrderHeaderPanel has; type-casts the very widgets
+│   │                                        #  the density work converts (research R9a)
+│   └── order_header_density_test.dart       # NEW — measured insets/baselines (§VI)
 ├── unit/app/router/
-│   └── nav_order_test.dart                  # NEW — sales-orders follows pos (nothing asserts
-│                                            #  this today)
+│   └── app_router_test.dart                 # UPDATE — nav order assertion, reusing the file's
+│                                            #  existing _flattenDestinations helper (nothing
+│                                            #  asserts display order today)
 ├── golden/pos_capture_golden_test.dart      # RE-BASELINE — 4 customer-bar PNGs
 └── screenshots/pos_screens_screenshot_test.dart  # RE-BASELINE — shots 02..07
 ```
@@ -176,3 +180,4 @@ Stages 1–3 can proceed in any order or in parallel; 4 gates 5.
 | The hard-coded 132 px width overflows inside a grid cell, or after the wider caption | Research R7 — the shared widget takes no fixed width; the customer bar is re-verified at 390 px |
 | Density verified against a bare `MaterialApp` rather than the real theme | Spec 027's T031 is the precedent for exactly this mistake; measurements use the app theme |
 | An unscoped `find.text` silently passes because the string moved to the customer bar | Research R9 — every ambiguous finder is scoped by ancestor |
+| The density conversion replaces the control widgets, breaking the type-casts that carry FR-017's only edit-gating coverage | Research R9a — `CompactField` wraps rather than replaces; the `Key`-bearing widget keeps its type, and T034 re-verifies |

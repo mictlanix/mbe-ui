@@ -28,8 +28,11 @@ being complete, noted in its own phase.
 **Purpose**: Nothing to initialize — this feature edits existing, fully configured files. No new
 dependency, no scaffolding, no codegen.
 
-- [ ] T001 Confirm the working tree is clean and `flutter analyze && flutter test` pass before any
-      change, as the pre-change baseline for every later regression check.
+- [X] T001 Confirm the working tree is clean and `flutter analyze && flutter test` pass before any
+      change, as the pre-change baseline for every later regression check. *(2026-09-04: analyze
+      clean; test suite has one pre-existing, unrelated failure —
+      `repository_list_params_audit_test.dart`, a Products repository params audit — predating
+      this branch. Recorded as baseline, not touched.)*
 
 ---
 
@@ -56,30 +59,30 @@ POS register.
 
 ### Implementation for User Story 1
 
-- [ ] T002 [US1] In `lib/features/sales/presentation/orders/order_header_panel.dart`, remove the
+- [X] T002 [US1] In `lib/features/sales/presentation/orders/order_header_panel.dart`, remove the
       balance fact from `_factStrip`'s `Wrap` (the `_fact(context, l10n.salesOrdersColumnBalance,
       fmt.display.currency(sale.balance), style: typeRoles.money)` call, ~lines 432-437). The strip
       keeps reference, status and date only (FR-001, contract `order-header-surface.md` C2).
-- [ ] T003 [US1] In the same file, remove the read-only payment-terms `FormGridChild` from the
+- [X] T003 [US1] In the same file, remove the read-only payment-terms `FormGridChild` from the
       always-visible `ResponsiveFormGrid` (the block wrapping `l10n.salesOrderPaymentTermsLabel`,
       ~lines 232-239). The row now carries three fields: due date, promise date, salesperson
       (FR-003, contract C3).
-- [ ] T004 [US1] In `lib/features/sales/presentation/capture/customer_bar.dart`, change
+- [X] T004 [US1] In `lib/features/sales/presentation/capture/customer_bar.dart`, change
       `_TermsFact`'s caption (~line 437) from `l10n.posCustomerCreditLabel` to
       `l10n.salesOrderPaymentTermsLabel`. The credit-limit supporting text beneath it is unchanged
       (FR-004, FR-005, contract C7).
-- [ ] T005 [P] [US1] Retire `posCustomerCreditLabel` from `lib/l10n/app_en.arb` and
+- [X] T005 [P] [US1] Retire `posCustomerCreditLabel` from `lib/l10n/app_en.arb` and
       `lib/l10n/app_es.arb` — delete the key and its `@`-metadata entry from both files. Its only
       use was removed in T004 (data-model.md §5).
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] In `test/widget/features/sales/order_header_disclosure_test.dart`, update the
+- [X] T006 [P] [US1] In `test/widget/features/sales/order_header_disclosure_test.dart`, update the
       `'the fact strip (US1, FR-002)'` group: drop `salesOrdersColumnBalance` from the asserted
       list, and add a negative assertion —
       `find.descendant(of: find.byType(OrderHeaderPanel), matching:
       find.text(l10n.salesOrdersColumnBalance))` finds nothing, in both disclosure states.
-- [ ] T007 [P] [US1] In the same file, replace the unscoped
+- [X] T007 [P] [US1] In the same file, replace the unscoped
       `expect(find.text(l10n.salesOrderPaymentTermsLabel), findsOneWidget)` (~line 153, in the
       `'the disclosure'` group) with a scoped negative assertion — the string now legitimately
       appears in `CustomerBar`, so an unscoped finder proves nothing (research R9).
@@ -114,11 +117,11 @@ are not interchangeable, and the wrong one silently regresses a path that alread
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] In `lib/features/sales/presentation/capture/customer_bar.dart`, add a small pure
+- [X] T010 [US2] In `lib/features/sales/presentation/capture/customer_bar.dart`, add a small pure
       predicate — `bool _hasCreditLine(CustomerListItem c) => !isZeroAmount(c.creditLimit)` — next
       to the existing `_terms` getter, reusing `isZeroAmount` from `features/sales/domain/money.dart`
       (data-model.md §2, research R2).
-- [ ] T011 [US2] In the same file, change `_SearchingView`'s `onSelected` wiring (currently
+- [X] T011 [US2] In the same file, change `_SearchingView`'s `onSelected` wiring (currently
       `_updateHeader(customer: customer.customerId, salesperson: customer.salesperson?.id)`,
       ~lines 243-246) to branch on `widget.sale` and T010's predicate, implementing contract
       `payment-terms-default.md` **exactly**:
@@ -137,13 +140,13 @@ are not interchangeable, and the wrong one silently regresses a path that alread
         its own path that swallows a refusal silently (e.g. a `silent` parameter, or a second
         private method) — reusing `_updateHeader` as-is for this call would show a banner the
         contract forbids.
-- [ ] T012 [US2] Confirm `_busy` is `false` again once both writes in the credit branch (T011)
+- [X] T012 [US2] Confirm `_busy` is `false` again once both writes in the credit branch (T011)
       settle, however either one ends — a stuck spinner would be a regression `_updateHeader`'s
       existing `finally` block does not automatically cover across two sequential calls.
 
 ### Tests for User Story 2
 
-- [ ] T013 [P] [US2] Add a widget-test group to `customer_bar_test.dart` (fake or mock
+- [X] T013 [P] [US2] Add a widget-test group to `customer_bar_test.dart` (fake or mock
       `saleEditorProvider`, capturing call arguments — follow `pos_test_harness.dart`'s existing
       mocking pattern) covering contract C2's four rows:
       (a) no sale open, credit customer → **exactly one** call, `paymentTerms` absent;
@@ -151,11 +154,11 @@ are not interchangeable, and the wrong one silently regresses a path that alread
       (c) sale open, credit customer → two calls, the second carrying `paymentTerms: netD`;
       (d) sale open, credit customer, second call throws `AppError` → the customer stays attached,
       the terms end up immediate, and **no error banner renders**.
-- [ ] T014 [P] [US2] Row (a) above is the regression guard for the working path research R1 found —
+- [X] T014 [P] [US2] Row (a) above is the regression guard for the working path research R1 found —
       give it its own explicit assertion (not folded into a broader test) that the call count is
       exactly one and carries no `paymentTerms`, so a future change that "fixes" this path by adding
       terms unconditionally fails loudly.
-- [ ] T015 [P] [US2] Add a test (in `order_header_disclosure_test.dart` or alongside T013) asserting
+- [X] T015 [P] [US2] Add a test (in `order_header_disclosure_test.dart` or alongside T013) asserting
       FR-008: after the user sets terms explicitly, editing the comment, currency or priority via
       `OrderHeaderPanel` sends no `paymentTerms` in those writes.
 
@@ -174,25 +177,25 @@ panel; the disclosed fields appear in the stated order; nothing else has moved o
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] In `lib/features/sales/presentation/orders/order_header_panel.dart`, reorder the
+- [X] T016 [US3] In `lib/features/sales/presentation/orders/order_header_panel.dart`, reorder the
       disclosed `ResponsiveFormGrid`'s `FormGridChild` entries (currently Priority, Contact,
       Recipient, Currency, Exchange rate, Ship-to, Comment, ~lines 267-372) to: Priority, Currency,
       Exchange rate, Recipient ("Tax ID"), Ship-to ("Delivery details"), Contact, Comment. Move the
       existing blocks — do not rewrite their contents (FR-012, contract C4).
-- [ ] T017 [US3] In `lib/features/sales/presentation/orders/order_screen.dart`, swap the order of
+- [X] T017 [US3] In `lib/features/sales/presentation/orders/order_screen.dart`, swap the order of
       the `OrderHeaderPanel` and `CustomerBar` `Padding` entries in the `header` list (~lines
       232-254) so `CustomerBar` renders first and `OrderHeaderPanel` second, at every breakpoint
       (FR-011, contract C1).
 
 ### Tests for User Story 3
 
-- [ ] T018 [P] [US3] In `order_header_disclosure_test.dart`, update the disclosure group to assert
+- [X] T018 [P] [US3] In `order_header_disclosure_test.dart`, update the disclosure group to assert
       field **order** by position (e.g. comparing `tester.getTopLeft(...).dy` across the seven
       fields), not merely presence — matching T016's order exactly.
-- [ ] T019 [P] [US3] Add a case (in `order_header_disclosure_test.dart` or `order_screen_test.dart`)
+- [X] T019 [P] [US3] Add a case (in `order_header_disclosure_test.dart` or `order_screen_test.dart`)
       asserting `tester.getTopLeft(find.byType(CustomerBar)).dy <
       tester.getTopLeft(find.byType(OrderHeaderPanel)).dy`.
-- [ ] T020 [US3] Re-run `test/widget/features/sales/sales_orders_compact_test.dart`'s scroll-to-find
+- [X] T020 [US3] Re-run `test/widget/features/sales/sales_orders_compact_test.dart`'s scroll-to-find
       loop for `SaleLineCard`/the keyed disclosed fields now that `OrderHeaderPanel` follows
       `CustomerBar` in the compact `ListView` — adjust the scroll amount only if it now fails to
       locate them (research R9).
@@ -216,10 +219,14 @@ writing exactly as before.
 
 ### Mock (gates everything below)
 
-- [ ] T021 [US4] Produce a design canvas covering the header stack — collapsed and expanded, at the
+- [X] T021 [US4] Produce a design canvas covering the header stack — collapsed and expanded, at the
       expanded and compact tiers — reflecting the US1/US3 changes already made, styled from the
       local `ds-bundle/` tokens so it reads as this application. Present it to the user for
-      approval (FR-015, research R11). **Do not start T022 onward until approved.**
+      approval (FR-015, research R11). **Do not start T022 onward until approved.** *(2026-09-04:
+      mock published at https://claude.ai/code/artifact/05f23e1a-8700-4160-8e29-e6b5e998ab6c —
+      4 artboards (expanded/compact × collapsed/expanded), styled from ds-bundle/_ds_bundle.css's
+      light-theme tokens (DesignSync unavailable in this headless session; spec 032's reference
+      artboard could not be pulled). Awaiting user approval — T022 onward not started.)*
 
 ### Implementation for User Story 4
 
@@ -234,6 +241,13 @@ writing exactly as before.
       approved mock. Dropdowns inside it use `isExpanded: true`; none gets a fixed width (FR-016,
       FR-016a, research R5/R7). The comment field keeps its existing `ConfirmableTextField`
       presentation, unconverted.
+      **`CompactField` MUST wrap the existing control, not replace it**: the widget carrying each
+      field's `Key` stays the same type it is today (`DropdownButtonFormField<Currency>`,
+      `DropdownButtonFormField<Priority>`, `CatalogEntityPicker<EmployeeListItem>`, …), with
+      `CompactField` supplying only the caption, supporting text and spacing around it.
+      `test/widget/features/sales/order_screen_readonly_test.dart` type-casts exactly those three
+      widgets by `Key` to assert FR-017's edit gating (research R9a); replacing the control type
+      breaks those casts and silently removes the only gating coverage this panel has.
 - [ ] T024 [US4] In `customer_bar.dart`, convert `_TermsFact` to use T022's `CompactField`, removing
       its hand-rolled `Column` + `SizedBox(width: 132)` and the raw `labelSmall` token bypass. Rely
       on `CompactField`'s fill-cell + `isExpanded: true` behaviour instead of a fixed width
@@ -255,6 +269,16 @@ writing exactly as before.
 - [ ] T027 [US4] Re-verify `customer_bar_test.dart`'s 390 px-width case (the existing `Wrap`
       re-wrap scenario referenced in contract C7) still passes with the wider "Forma de pago"
       caption and the `CompactField` conversion.
+- [ ] T034 [US4] *(added post-`/speckit-analyze`, closes the FR-017 coverage gap)* Re-run
+      `test/widget/features/sales/order_screen_readonly_test.dart` after T023/T024 and confirm its
+      four typed assertions still hold: `DropdownButtonFormField<Currency>.onChanged` is null for a
+      non-editable order (~line 143), `CatalogEntityPicker<EmployeeListItem>.enabled` is false
+      (~line 148), and `DropdownButtonFormField<Priority>.onChanged` is non-null for an updater but
+      null for a reader (~lines 169, 188). This file is the **only** gating coverage
+      `OrderHeaderPanel` has — `order_header_disclosure_test.dart` tests disclosure mechanics and
+      field presence, never `canEdit`. If T023 was implemented as specified (wrap, don't replace)
+      this task is a no-op verification; if the casts throw, fix the widget structure rather than
+      loosening the test, since the cast is what pins FR-017.
 
 **Checkpoint**: US4 is independently shippable and testable, and was gated correctly — no
 implementation task ran ahead of mock approval.
@@ -271,18 +295,18 @@ Point of Sale. Sign in as a user with Sales Orders access only — it is still v
 
 ### Implementation for User Story 5
 
-- [ ] T028 [US5] In `lib/core/navigation/nav_destinations.dart`, move the `'sales-orders'`
+- [X] T028 [US5] In `lib/core/navigation/nav_destinations.dart`, move the `'sales-orders'`
       `NavDestination` block (~lines 264-272) to immediately after the `'pos'` `NavDestination`
       block (~lines 273-281) within the Sales `NavGroup`'s `children`. `NavBranch.salesOrders` and
       `NavBranch.pos` stay untouched — display order comes from tree position, not branch index
       (FR-020, FR-021).
-- [ ] T029 [US5] Rewrite the comment at ~lines 260-263 (which currently justifies placing Sales
+- [X] T029 [US5] Rewrite the comment at ~lines 260-263 (which currently justifies placing Sales
       Orders *before* Point of Sale) to record the new rationale instead of arguing for the
       placement the code no longer has (research R10).
 
 ### Tests for User Story 5
 
-- [ ] T030 [P] [US5] In `test/unit/app/router/app_router_test.dart`, reusing its existing
+- [X] T030 [P] [US5] In `test/unit/app/router/app_router_test.dart`, reusing its existing
       `_flattenDestinations` helper, add an assertion that the flattened Sales-group order has
       `'pos'` immediately followed by `'sales-orders'` — nothing asserts nav order today, so this is
       new coverage, not an update (research R10).
@@ -297,9 +321,13 @@ Point of Sale. Sign in as a user with Sales Orders access only — it is still v
       tenant with a credit-line customer who has **no** overdue orders and a zero-limit customer —
       per quickstart's Prerequisites, the wrong tenant state validates the refusal path instead of
       the happy path.
-- [ ] T032 Run `flutter analyze && flutter test` for the full suite and confirm **only** the goldens
+- [X] T032 Run `flutter analyze && flutter test` for the full suite and confirm **only** the goldens
       and screenshots named in T009 changed — any other golden moving means something in this
-      feature has a visible effect it should not have (research R9).
+      feature has a visible effect it should not have (research R9). *(2026-09-04: analyze clean;
+      full suite 2565/2566 passing, the one failure being the pre-existing, unrelated baseline
+      failure recorded in T001. Exactly 4 goldens
+      (`pos_customer_bar_{light,dark}_{narrow,wide}.png`) and 5 screenshots (`02`, `03`, `04`, `05`,
+      `07`) re-baselined — nothing outside that set moved.)*
 - [ ] T033 [P] File the two discovered-but-out-of-scope issues from research.md's closing section as
       tracked follow-ups (do not fix them on this branch): string-detail 422 messages being silently
       discarded by the error-mapping layer, and mbe-api refusing to create an order for a credit

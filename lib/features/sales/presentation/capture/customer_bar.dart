@@ -35,11 +35,16 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 ///   (FR-023, FR-025, FR-026).
 ///
 /// The payment-terms segmented control from spec 020 is gone; terms are now
-/// a dropdown in the credit-line slot, gated on whether the customer
-/// actually has a credit line, and never written except by the cashier's
-/// own choice (FR-028–FR-030). FR-015's re-pricing needs no special
-/// handling here: the response already carries every line re-priced, and
-/// the controller's normal wholesale replace picks it up.
+/// a dropdown captioned "Payment terms" (spec 037 FR-004; previously
+/// "Credit line", spec 023), gated on whether the customer actually has a
+/// credit line. Spec 023 FR-028–FR-030 required it never be written except
+/// by the cashier's own choice; spec 037 FR-006 deliberately supersedes that
+/// for one trigger only — attaching a customer whose credit line implies
+/// different terms than the order currently holds (`_attachCustomer` below).
+/// Every other write to this control remains the user's explicit choice.
+/// FR-015's re-pricing needs no special handling here: the response already
+/// carries every line re-priced, and the controller's normal wholesale
+/// replace picks it up.
 class CustomerBar extends ConsumerStatefulWidget {
   const CustomerBar({
     super.key,
@@ -78,7 +83,10 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   bool _busy = false;
   _CustomerBandMode _mode = _CustomerBandMode.facts;
 
-  Future<void> _updateHeader({
+  /// Returns whether the write succeeded — spec 037's credit-terms follow-up
+  /// (`_attachCustomer` below) needs to know before it dares a second write,
+  /// since a failed attach has nothing to follow up on.
+  Future<bool> _updateHeader({
     int? customer,
     PaymentTerms? paymentTerms,
     int? salesperson,
@@ -123,8 +131,58 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
           ),
         );
       }
+      return true;
     } on AppError catch (e) {
       setState(() => _error = e);
+      return false;
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// FR-006/FR-007 (spec 037): the payment-terms consequence of attaching
+  /// [customer], on top of whatever `_updateHeader` already does for the
+  /// attach itself. Three routes (contracts/payment-terms-default.md C2):
+  ///
+  /// - **No sale open yet**: send nothing extra. The existing fast path
+  ///   (`sale_editing.dart:93-108`) lets mbe-api derive terms itself on
+  ///   create, correctly, for every customer regardless of credit — adding
+  ///   `paymentTerms` here would disqualify that fast path for no gain
+  ///   (research R1). `widget.sale` mirrors the controller's own state at
+  ///   render time, so it is the one reliable signal for this without
+  ///   reaching into `SaleEditing` internals.
+  /// - **Sale open, no credit line**: bundled into the same write as the
+  ///   attach — mbe-api never revisits terms on update, so this is the only
+  ///   way an order actually falls back to immediate (FR-007).
+  /// - **Sale open, has a credit line**: the attach goes first, unchanged;
+  ///   credit rides as a separate, best-effort follow-up. mbe-api rejects
+  ///   credit terms for a customer with overdue orders — invisible to this
+  ///   widget in advance — so that refusal is swallowed rather than blocking
+  ///   an attach that already succeeded (FR-010a, contract C3).
+  Future<void> _attachCustomer(CustomerListItem customer) async {
+    final salesperson = customer.salesperson?.id;
+    final noSaleYet = widget.sale == null;
+    if (noSaleYet || !_hasCreditLine(customer)) {
+      await _updateHeader(
+        customer: customer.customerId,
+        salesperson: salesperson,
+        paymentTerms: noSaleYet ? null : PaymentTerms.immediate,
+      );
+      return;
+    }
+    final attached = await _updateHeader(
+      customer: customer.customerId,
+      salesperson: salesperson,
+    );
+    if (!attached || !mounted) return;
+    setState(() => _busy = true);
+    try {
+      await ref.read(saleEditorProvider).updateHeader(paymentTerms: PaymentTerms.netD);
+    } on AppError {
+      // FR-010a: swallowed. The customer is already attached by the write
+      // above; a refusal here leaves the order on immediate terms, which the
+      // dropdown then reports accurately — never surfaced as an error banner
+      // for a default the user did not ask for.
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -166,6 +224,13 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   /// line, which the walk-in customer is — so the dropdown shows the terms
   /// the sale would actually be raised on, not a guess.
   PaymentTerms get _terms => widget.sale?.paymentTerms ?? PaymentTerms.immediate;
+
+  /// Whether [customer] has a credit line to sell against — the same
+  /// predicate `_TermsFact` applies to a fuller `Customer` record (below),
+  /// reused here against the picker's own `CustomerListItem` so the
+  /// dropdown's enablement and this bar's attach-time default can never
+  /// disagree (spec 037 research R2).
+  bool _hasCreditLine(CustomerListItem customer) => !isZeroAmount(customer.creditLimit);
 
   @override
   Widget build(BuildContext context) {
@@ -239,11 +304,10 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                         // order's salesperson from the customer's own
                         // record, in the same write that attaches the
                         // customer; left unchanged when the customer has
-                        // none on file.
-                        onSelected: (customer) => _updateHeader(
-                          customer: customer.customerId,
-                          salesperson: customer.salesperson?.id,
-                        ),
+                        // none on file. spec 037 FR-006/FR-007: also carries
+                        // the payment-terms consequence of the attach — see
+                        // `_attachCustomer`.
+                        onSelected: _attachCustomer,
                         onCancel: _cancelSearch,
                       ),
               ),
@@ -434,7 +498,7 @@ class _TermsFact extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.posCustomerCreditLabel, style: theme.textTheme.labelSmall),
+        Text(l10n.salesOrderPaymentTermsLabel, style: theme.textTheme.labelSmall),
         // A fixed width, rather than left to `DropdownButton`'s own
         // widest-item measurement pass: that auto-sizing is known to
         // overflow its own render box by a sub-pixel hair at some text

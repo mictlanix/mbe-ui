@@ -303,6 +303,39 @@ loop must be re-run once the panel sits below the customer bar.
 own note prescribes, and treat the golden/screenshot re-baseline as expected output of FR-004 rather
 than as breakage.
 
+## R9a — The gating coverage R9 missed, and why the density work threatens it
+
+**Findings.** R9's pass above was scoped to the *label and ordering* changes and, in being so scoped,
+missed a file that the *density* change puts squarely in its path.
+`test/widget/features/sales/order_screen_readonly_test.dart` reaches three of `OrderHeaderPanel`'s
+fields by `Key` and immediately **type-casts** them:
+
+| Line | Cast | Asserts |
+|---|---|---|
+| ~143 | `tester.widget<DropdownButtonFormField<Currency>>` | `onChanged` is null on a non-editable order |
+| ~148 | `tester.widget<CatalogEntityPicker<EmployeeListItem>>` | `enabled` is false |
+| ~169, ~188 | `tester.widget<DropdownButtonFormField<Priority>>` | `onChanged` non-null for an updater, null for a reader |
+
+Only two test files reference `OrderHeaderPanel` at all
+(`order_header_disclosure_test.dart`, `sales_orders_compact_test.dart`), and **neither tests
+`canEdit`** — the disclosure test covers open/close mechanics and field presence only. So
+`order_screen_readonly_test.dart` is the *sole* coverage of FR-017's "edit gating unchanged"
+requirement for this panel, and it is coverage that lives outside the file set R9 enumerated.
+
+The exposure is specific: a `tester.widget<T>` cast throws if the widget at that `Key` is no longer a
+`T`. Converting the panel to a caption-over-control presentation invites exactly that substitution —
+"dense dropdown" reads as an instruction to stop using `DropdownButtonFormField`.
+
+**Decision.** `CompactField` **wraps** the existing control rather than replacing it. The widget
+carrying each field's `Key` keeps its current type; `CompactField` contributes the caption,
+supporting text and spacing around it. T034 re-runs this file after the conversion as an explicit
+verification step.
+
+**Rationale.** Preserving the type costs nothing — the caption-over-control look is achieved by what
+surrounds the control, not by what the control is — and it keeps a gating assertion that nothing else
+in the suite duplicates. Loosening the cast to make a replacement widget fit would trade the panel's
+only FR-017 coverage for a cosmetic preference.
+
 ## R10 — The nav reorder asserts nothing today, and one comment lies afterwards
 
 **Findings.** Nothing asserts nav display order. `app_router_test.dart:1022-1053` iterates

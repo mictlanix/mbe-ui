@@ -134,7 +134,15 @@ void main() {
       // `responsive_form_grid_test.dart`; this only confirms the panel
       // still renders every field without overflowing at this width.
       // Currency and priority moved behind the disclosure in spec 032
-      // FR-004, so the compact check has to open it first.
+      // FR-004, so the compact check has to open it first. spec 037 FR-011
+      // moved `OrderHeaderPanel` below `CustomerBar`, pushing the toggle far
+      // enough down this compact `ListView` that it's no longer reliably
+      // inside the initial viewport — scroll it into view before tapping,
+      // the same treatment this test already gives `SaleLineCard` below.
+      await tester.ensureVisible(
+        find.byKey(const Key('sales_order_more_details_toggle')),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('sales_order_more_details_toggle')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('sales_order_currency_field')), findsOneWidget);

@@ -257,19 +257,6 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.cashSessions,
         gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
       ),
-      // 029-back-office-sales-orders: placed before Point of Sale — the
-      // back-office order screen is the more general entry point, and it is
-      // gated on `salesOrders`, not `pos`, so a back-office salesperson with
-      // no register privilege reaches it (contracts/routes.md §1, FR-002).
-      NavDestination(
-        id: 'sales-orders',
-        label: _salesOrdersLabel,
-        icon: Icons.receipt_long_outlined,
-        selectedIcon: Icons.receipt_long,
-        route: '/sales/orders',
-        branchIndex: NavBranch.salesOrders,
-        gate: PrivilegeGate(SystemObject.salesOrders, AccessRight.read),
-      ),
       NavDestination(
         id: 'pos',
         label: _posLabel,
@@ -278,6 +265,20 @@ const List<NavItem> kNavigationTree = [
         route: '/sales/pos',
         branchIndex: NavBranch.pos,
         gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
+      ),
+      // 037-sales-order-refinements: moved after Point of Sale — the
+      // register is the more frequently used destination. This changes
+      // display order only: still gated on `salesOrders`, not `pos`, so a
+      // back-office salesperson with no register privilege still reaches it
+      // (FR-020, FR-021).
+      NavDestination(
+        id: 'sales-orders',
+        label: _salesOrdersLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/sales/orders',
+        branchIndex: NavBranch.salesOrders,
+        gate: PrivilegeGate(SystemObject.salesOrders, AccessRight.read),
       ),
     ],
   ),

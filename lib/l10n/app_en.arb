@@ -2283,8 +2283,6 @@
   "@posReversalReasonLabel": {},
   "posCustomerNameLabel": "Customer",
   "@posCustomerNameLabel": {},
-  "posCustomerCreditLabel": "Credit line",
-  "@posCustomerCreditLabel": {},
   "posCustomerPriceListLabel": "Price list",
   "@posCustomerPriceListLabel": {},
   "posCustomerSearchAction": "Search",

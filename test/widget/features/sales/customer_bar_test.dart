@@ -5,6 +5,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
@@ -14,6 +16,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -216,6 +219,10 @@ void main() {
     });
   });
 
+  // spec 023 FR-028-FR-030 required this control never write terms except by
+  // the user's own choice; spec 037 FR-006 supersedes that for one trigger —
+  // attaching a customer whose credit line implies different terms — tested
+  // separately below in 'attaching a customer defaults its payment terms'.
   group('the payment-terms dropdown (FR-028, FR-029, FR-030)', () {
     testWidgets('shows the credit limit as supporting text when the '
         'customer has a credit line', (tester) async {
@@ -256,6 +263,368 @@ void main() {
       );
       expect(dropdown.value, PaymentTerms.netD);
     });
+  });
+
+  group('attaching a customer defaults its payment terms '
+      '(spec 037 FR-006-FR-010a)', () {
+    testWidgets(
+      'no sale open yet, credit-line customer — a single request, no '
+      'paymentTerms (C2.1): the server already derives credit on create',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 8,
+                code: 'C-8',
+                name: 'ACME SA DE CV',
+                creditLimit: '5000.00',
+                creditDays: 30,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale();
+        final salesOrder = _updateHeaderStub(sale, newCustomer: 8);
+        await pumpPos(
+          tester,
+          // spec 037 research R1: `sale: null` is genuinely "no sale open
+          // yet" — the one case where adding `paymentTerms` would disqualify
+          // the create-time fast path for no gain.
+          const CustomerBar(sale: null),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+          ],
+        );
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'ACME',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-8 — ACME SA DE CV'));
+        await tester.pumpAndSettle();
+
+        // The already-working path (research R1): exactly one request, and
+        // it must not carry paymentTerms even though this customer has a
+        // credit line — the server derives credit on create.
+        verify(() => salesOrder.open(customer: 8, salesperson: null)).called(1);
+        verifyNever(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: any(named: 'customer'),
+            paymentTerms: any(named: 'paymentTerms'),
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          ),
+        );
+      },
+    );
+
+    testWidgets(
+      'sale already open, customer has no credit line — bundles immediate '
+      'terms into the same write (C2.2, FR-007)',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 9,
+                code: 'C-9',
+                name: 'BETA LLC',
+                creditLimit: '0',
+                creditDays: 0,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale(customer: 5);
+        final salesOrder = _updateHeaderStub(sale, newCustomer: 9);
+        final container = await pumpPos(
+          tester,
+          CustomerBar(sale: sale),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+            // Seeds the mixin's own `state` non-null, so this scenario is
+            // genuinely "sale already open" — not just a rendering prop
+            // (research R1's own test-harness caveat).
+            fixedPosSale(sale),
+          ],
+        );
+        // `_FixedPosSale.build()` is still async even with no `await`
+        // inside it — nothing in a bare `CustomerBar` pump reads
+        // `posSaleControllerProvider` to force it to settle before this,
+        // unlike a real screen that watches it to render. Without this,
+        // `state.valueOrNull` is still null when the tap fires, and the
+        // very fast path this scenario means to rule out fires instead.
+        // `posSaleControllerProvider` is auto-dispose and nothing in a bare
+        // `CustomerBar` pump keeps a live subscription on it (unlike a real
+        // screen, which watches it to render) — a bare `read` alone would
+        // let it dispose and rebuild before the tap fires, undoing the
+        // settle below. `listen` holds it alive for the rest of the test.
+        container.listen(posSaleControllerProvider, (_, _) {});
+        await container.read(posSaleControllerProvider.future);
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'BETA',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-9 — BETA LLC'));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: 9,
+            paymentTerms: PaymentTerms.immediate,
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'sale already open, customer has a credit line — attach unchanged, '
+      'credit follows as a separate write (C2.3, FR-006)',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 8,
+                code: 'C-8',
+                name: 'ACME SA DE CV',
+                creditLimit: '5000.00',
+                creditDays: 30,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale(customer: 5);
+        final salesOrder = _updateHeaderStub(sale, newCustomer: 8);
+        final container = await pumpPos(
+          tester,
+          CustomerBar(sale: sale),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+            fixedPosSale(sale),
+          ],
+        );
+        // See the note on the previous test: without this, `state` is still
+        // null when the tap fires and the fast path takes the first
+        // (paymentTerms-less) call instead of `updateHeader`.
+        // `posSaleControllerProvider` is auto-dispose and nothing in a bare
+        // `CustomerBar` pump keeps a live subscription on it (unlike a real
+        // screen, which watches it to render) — a bare `read` alone would
+        // let it dispose and rebuild before the tap fires, undoing the
+        // settle below. `listen` holds it alive for the rest of the test.
+        container.listen(posSaleControllerProvider, (_, _) {});
+        await container.read(posSaleControllerProvider.future);
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'ACME',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-8 — ACME SA DE CV'));
+        await tester.pumpAndSettle();
+
+        // The attach: unchanged, no paymentTerms.
+        verify(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: 8,
+            paymentTerms: null,
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          ),
+        ).called(1);
+        // The follow-up: a separate write, terms only.
+        verify(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: null,
+            paymentTerms: PaymentTerms.netD,
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'the follow-up credit write is refused — the customer stays attached, '
+      'terms fall back to immediate, and nothing is shown as an error '
+      '(C2.3/C3, FR-010a)',
+      (tester) async {
+        when(
+          () => customerRepository.list(
+            search: any(named: 'search'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const CustomerPage(
+            items: [
+              CustomerListItem(
+                customerId: 8,
+                code: 'C-8',
+                name: 'ACME SA DE CV',
+                creditLimit: '5000.00',
+                creditDays: 30,
+                priceList: PriceListRef(id: 1, name: 'Mostrador'),
+                status: EntityStatus.active,
+              ),
+            ],
+            total: 1,
+          ),
+        );
+
+        final sale = testSale(customer: 5);
+        final attached = sale.copyWith(customer: 8, customerName: 'ACME SA DE CV');
+        final salesOrder = MockSalesOrderRepository();
+        when(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: 8,
+            paymentTerms: null,
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          ),
+        ).thenAnswer((_) async => attached);
+        when(
+          () => salesOrder.updateHeader(
+            saleId: any(named: 'saleId'),
+            customer: null,
+            paymentTerms: PaymentTerms.netD,
+            currency: any(named: 'currency'),
+            shipTo: any(named: 'shipTo'),
+            contact: any(named: 'contact'),
+            customerName: any(named: 'customerName'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          ),
+        ).thenThrow(const AppError.validation([]));
+
+        final container = await pumpPos(
+          tester,
+          CustomerBar(sale: sale),
+          overrides: [
+            customerRepositoryProvider.overrideWithValue(customerRepository),
+            customerPaymentRepositoryProvider.overrideWithValue(
+              paymentRepository,
+            ),
+            salesOrderOverride(salesOrder),
+            fixedPosSale(sale),
+          ],
+        );
+        // See the note two tests up: without this, `state` is still null
+        // when the tap fires and the fast path takes the first
+        // (paymentTerms-less) call instead of `updateHeader`.
+        // `posSaleControllerProvider` is auto-dispose and nothing in a bare
+        // `CustomerBar` pump keeps a live subscription on it (unlike a real
+        // screen, which watches it to render) — a bare `read` alone would
+        // let it dispose and rebuild before the tap fires, undoing the
+        // settle below. `listen` holds it alive for the rest of the test.
+        container.listen(posSaleControllerProvider, (_, _) {});
+        await container.read(posSaleControllerProvider.future);
+        when(
+          () => customerRepository.get(customerId: any(named: 'customerId')),
+        ).thenAnswer((_) async => _customer());
+
+        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('pos_customer_picker')),
+          'ACME',
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('C-8 — ACME SA DE CV'));
+        await tester.pumpAndSettle();
+
+        // The attach succeeded and returned to the facts face — unaffected
+        // by the follow-up's refusal.
+        expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
+        expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+        // FR-010a: no error banner for a default the user never asked for.
+        expect(find.byType(ErrorBanner), findsNothing);
+      },
+    );
   });
 
   group('searching (FR-023, FR-025, FR-026, FR-027)', () {
@@ -369,7 +738,12 @@ void main() {
         final salesOrder = _updateHeaderStub(sale, newCustomer: 8);
         await pumpPos(
           tester,
-          CustomerBar(sale: sale),
+          // spec 037 research R1: `sale: null` is what "no sale open yet"
+          // actually means — `_attachCustomer` reads `widget.sale` to decide
+          // whether to preserve the create-time fast path this test asserts,
+          // and a non-null prop here would (correctly) tell it a sale
+          // already exists, defeating the very path under test.
+          const CustomerBar(sale: null),
           overrides: [
             customerRepositoryProvider.overrideWithValue(customerRepository),
             customerPaymentRepositoryProvider.overrideWithValue(
@@ -394,6 +768,8 @@ void main() {
 
         // spec 036 T005: no sale open yet, and nothing but customer/
         // salesperson requested — a single `open()`, not `updateHeader`.
+        // spec 037 FR-006: this holds for a credit-line customer too — see
+        // the C2.1 case below — but this customer (C-8) has none anyway.
         verify(() => salesOrder.open(customer: 8, salesperson: 20)).called(1);
       },
     );
@@ -430,7 +806,9 @@ void main() {
         final salesOrder = _updateHeaderStub(sale, newCustomer: 9);
         await pumpPos(
           tester,
-          CustomerBar(sale: sale),
+          // spec 037 research R1: see the `sale: null` note above — this
+          // scenario is likewise "no sale open yet".
+          const CustomerBar(sale: null),
           overrides: [
             customerRepositoryProvider.overrideWithValue(customerRepository),
             customerPaymentRepositoryProvider.overrideWithValue(
@@ -523,7 +901,11 @@ void main() {
           () => salesOrder.updateHeader(
             saleId: any(named: 'saleId'),
             customer: 1,
-            paymentTerms: null,
+            // spec 037 FR-007: a sale already exists here (customer 7 was
+            // already attached), and the generic customer has no credit
+            // line, so terms are bundled into this same write rather than
+            // left at `null` — mbe-api never revisits terms on update.
+            paymentTerms: PaymentTerms.immediate,
             currency: any(named: 'currency'),
             shipTo: any(named: 'shipTo'),
             contact: any(named: 'contact'),
