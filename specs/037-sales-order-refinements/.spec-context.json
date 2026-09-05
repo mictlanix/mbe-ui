@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Sales Order Refinements — Header, Customer Bar & Navigation",
   "branch": "037-sales-order-refinements",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-09-05T00:40:08.075Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-05T00:56:30.809Z"
     }
   ],
   "telemetryInstanceId": "bb4bb6e3-5e85-40b7-8b5b-d264fc9f3fd3"

@@ -10,9 +10,7 @@
 shows on two places, on customer bar and order header panel. Remove the last one
 because I think it doesn't show updated data. On Customer bar, change label
 'Credit Line' to 'Payment terms'. On Order header panel, remove payment terms.
-On Order header panel, reorder the fields that show after expanding details as:
-1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details,
-6. Contact, 7. Comment. Move Order header panel, below customer bar. From nav,
+On Order header panel, reorder the fields that show after expanding details as: 1. Priority, 2. Currency, 3. Exchange rate, 4. Tax ID, 5. Delivery details, 6. Contact, 7. Comment. Move Order header panel, below customer bar. From nav,
 move Sales Orders after Point of Sales. Improve design, too much wasted space
 within the text fields. For selections, we can use a similar widget to the
 formerly labeled 'Credit line'. Create a mock before implementation. If a
@@ -231,6 +229,16 @@ Orders appears immediately after Point of Sale.
   header writes; the default cannot fire because no customer can be attached.
 - **The register's walk-in customer.** It has no credit line, so the register's
   behaviour on the common path is unchanged by US2.
+- **A credit customer the server will not extend credit to.** The server refuses
+  credit terms for a customer with overdue orders — a fact the client cannot see
+  before asking. The customer still attaches and the order stays on immediate
+  terms (FR-010a); the salesperson can still select credit explicitly and get
+  the server's refusal, exactly as they do today.
+- **A customer created inline, mid-order.** The inline-create flow returns only
+  the new customer's identifier, so its credit line is not known at the moment it
+  is attached. A newly created customer's credit limit defaults to zero, so
+  immediate terms are correct; if a credit line was set during creation, the
+  default applies the next time that customer is attached.
 - **Compact tier.** The customer bar stacks its facts above its actions; the
   header panel follows beneath it in the same stacked order.
 
@@ -256,10 +264,14 @@ Orders appears immediately after Point of Sale.
 **Credit terms by default (US2)**
 
 - **FR-006**: Attaching a customer who has a non-zero credit line to an order
-  MUST set that order's payment terms to credit, persisted as part of the same
-  write that attaches the customer. This supersedes spec 023 FR-028/FR-029/
-  FR-030, which required that terms never be written except by the user's own
-  explicit choice.
+  MUST leave that order on credit terms, persisted, as a direct consequence of
+  attaching the customer and with no further user action. This supersedes spec
+  023 FR-028/FR-029/FR-030, which required that terms never be written except by
+  the user's own explicit choice. (Phase 0 research R1/R3 establishes that this
+  outcome is reached by three different routes depending on the case — the
+  server's own derivation on order creation, terms carried in the attach write,
+  or a follow-up write — so this requirement is stated as the observable outcome
+  rather than as one particular request shape.)
 - **FR-007**: Attaching a customer who has no credit line MUST leave the order
   on immediate terms, including when the order was on credit terms for a
   previously attached customer.
@@ -270,6 +282,12 @@ Orders appears immediately after Point of Sale.
   customers is explicitly out of scope.
 - **FR-010**: No header write other than attaching a customer may apply the
   default.
+- **FR-010a**: Applying the default MUST NOT be able to prevent the customer
+  from being attached. Where the server refuses credit terms for a customer the
+  client believes has a credit line — it also refuses on grounds the client
+  cannot see, such as the customer having overdue orders — the customer MUST
+  still be attached and the order MUST remain on immediate terms, which the
+  terms control then reports accurately.
 
 **Order and placement (US3)**
 
@@ -294,6 +312,13 @@ Orders appears immediately after Point of Sale.
   customer bar's payment-terms control already uses: a small caption above a
   dense control, with optional supporting text beneath, rather than a labelled
   outlined box.
+- **FR-016a**: Every control sharing a row with a converted field MUST be
+  converted too — read-only values and picker launchers included. Phase 0
+  research R5 found that a row is exactly as tall as its tallest control, so a
+  single unconverted field pins its whole row and the panel gets no shorter.
+  The comment field is the one exception: it is genuinely typed into and holds
+  its own full-width row, so it keeps its text-field presentation without
+  affecting any other field's height.
 - **FR-017**: The denser presentation MUST NOT change any field's edit gating,
   and every field MUST keep writing through on change with no Save step (spec
   032 FR-010, FR-011 hold).
@@ -370,6 +395,13 @@ the default in FR-006.
 - **The default persists rather than merely preselecting.** Decided with the
   user. A dropdown showing credit while the server holds immediate would be a
   worse failure than the manual step it replaces.
+- **Part of US2 already works, and must not be broken.** Phase 0 research R1
+  found that a *new* back-office order already reaches credit terms correctly,
+  because the server derives them when an order is created with a credit
+  customer. The genuine gaps are the register — where the sale is opened by the
+  first scan, before any customer — and changing the customer on an order that
+  already exists. The plan must therefore leave the working path alone rather
+  than routing it through a new one.
 - **Restricting immediate payment for credit customers stays deferred.** It is
   the second half of TODO.md's 2026-07-28 item; only the default is in scope
   here, and the TODO entry remains open for it.
