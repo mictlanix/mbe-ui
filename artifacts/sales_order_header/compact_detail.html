@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root {
+      --mbe-color-surface: #fbf8f3;
+      --mbe-color-surface-container: #f3ede3;
+      --mbe-color-surface-container-low: #f9f6f1;
+      --mbe-color-on-surface: #1c1a16;
+      --mbe-color-on-surface-variant: #5a5349;
+      --mbe-color-outline: #c4bbac;
+      --mbe-color-outline-variant: #e3dacc;
+      --mbe-color-primary: #ecab03;
+      --mbe-font-body: 'Roboto', system-ui, sans-serif;
+      --mbe-font-mono: 'Roboto Mono', ui-monospace, monospace;
+      --mbe-radius-lg: 16px;
+      --mbe-radius-xs: 4px;
+      --mbe-radius-full: 9999px;
+      --gap-stack: 16px;
+      /* Compact tier: layout tokens drop to 16px (spec 022) */
+      --pad-card: 16px;
+      --pad-screen: 16px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--mbe-color-surface); }
+    a { color: var(--mbe-color-primary); }
+    a:hover { color: #c78f00; }
+
+    .screen { padding: var(--pad-screen); font-family: var(--mbe-font-body); color: var(--mbe-color-on-surface); }
+    .stack { display: flex; flex-direction: column; gap: var(--gap-stack); }
+    .card {
+      background: var(--mbe-color-surface-container-low);
+      border: 1px solid var(--mbe-color-outline-variant);
+      border-radius: var(--mbe-radius-lg);
+      padding: var(--pad-card);
+    }
+
+    /* ONE label rule and ONE value rule for every field on the screen.
+       The only value modifiers are data-type distinctions the app itself
+       makes: mono for the record id, tabular figures for money. No field gets its own size, weight, colour or casing. */
+    .label {
+      font-size: 12px;
+      line-height: 1.33;
+      letter-spacing: 0.4px;
+      color: var(--mbe-color-on-surface-variant);
+    }
+    .value {
+      font-size: 16px;
+      line-height: 1.5;
+      font-weight: 400;
+      color: var(--mbe-color-on-surface);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .value--mono { font-family: var(--mbe-font-mono); }
+    .value--money { font-variant-numeric: tabular-nums; }
+    .support {
+      font-size: 12px;
+      line-height: 1.33;
+      letter-spacing: 0.4px;
+      color: var(--mbe-color-on-surface-variant);
+    }
+
+    .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .value-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .chev { flex-shrink: 0; color: var(--mbe-color-on-surface-variant); }
+
+    .actions { display: flex; gap: 8px; }
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: var(--mbe-radius-full);
+      border: 1px solid var(--mbe-color-outline);
+      background: transparent;
+      color: var(--mbe-color-primary);
+      font-family: var(--mbe-font-body);
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      flex: 1 1 0;
+      min-height: 48px;
+    }
+    .toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: var(--mbe-color-primary);
+      font-family: var(--mbe-font-body);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px;
+      flex-shrink: 0;
+    }
+    .divider { height: 1px; background: var(--mbe-color-outline-variant); border: none; margin: 20px 0; }
+
+    .comment-box {
+      border: 1px solid var(--mbe-color-outline);
+      border-radius: var(--mbe-radius-xs);
+      background: var(--mbe-color-surface-container);
+      padding: 12px 16px;
+    }
+    .comment-text {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--mbe-color-on-surface);
+      white-space: pre-line;
+    }
+
+    /* Layout — one column at this tier */
+    .bar-facts { display: flex; flex-wrap: wrap; gap: 20px; row-gap: 12px; }
+    .header-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    /* Two columns at this tier: identity, then who/when, then the two
+       fulfilment dates side by side. */
+    .header-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      flex: 1 1 100%;
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  </style>
+</helmet>
+
+<div class="screen" data-tier="compact">
+  <div class="stack">
+
+    <!-- CustomerBar -->
+    <div class="card">
+      <div class="bar-facts" style="margin-bottom:12px">
+        <div class="field" style="flex-basis:100%">
+          <div class="label">Cliente</div>
+          <div class="value">GRUPO INDUSTRIAL DEL NORTE SA DE CV</div>
+        </div>
+        <div class="field" style="min-width:120px">
+          <div class="label">Forma de pago</div>
+          <div class="value-row">
+            <span class="value">Crédito</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="support">Límite: $50,000.00</div>
+        </div>
+        <div class="field">
+          <div class="label">Lista de precios</div>
+          <div class="value">Distribuidor</div>
+        </div>
+        <div class="field">
+          <div class="label">Saldo</div>
+          <div class="value value--money">$12,450.00</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="pill-btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.75"/><path d="M17 17l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+          Buscar
+        </button>
+        <button class="pill-btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="8" cy="7" r="3.25" stroke="currentColor" stroke-width="1.75"/><path d="M2.5 17c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><path d="M16 8v4M14 10h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+          Nuevo
+        </button>
+      </div>
+    </div>
+
+    <!-- OrderHeaderPanel, expanded -->
+    <div class="card">
+      <div class="header-row">
+        <div class="header-fields">
+          <div class="field">
+            <div class="label">Referencia</div>
+            <div class="value value--mono">PED-1042</div>
+          </div>
+          <div class="field">
+            <div class="label">Estado</div>
+            <div class="value">Confirmado</div>
+          </div>
+          <div class="field">
+            <div class="label">Fecha</div>
+            <div class="value">2026-09-04</div>
+          </div>
+          <div class="field">
+            <div class="label">Vendedor</div>
+            <div class="value-row">
+              <span class="value">Juan Pérez</span>
+              <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label">Fecha de entrega</div>
+            <div class="value">2026-09-11 00:00</div>
+          </div>
+          <div class="field">
+            <div class="label">Fecha promesa</div>
+            <div class="value">2026-09-12 00:00</div>
+          </div>
+        </div>
+        <button class="toggle-btn">
+          Menos detalles
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 12l5-5 5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <hr class="divider">
+
+      <!-- FR-012 order, one column at this tier; Comentario last -->
+      <div class="field-grid">
+        <div class="field">
+          <div class="label">Prioridad</div>
+          <div class="value-row">
+            <span class="value">Normal</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Moneda</div>
+          <div class="value-row">
+            <span class="value">MXN — Peso Mexicano</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Tipo de cambio</div>
+          <div class="value">1.0000</div>
+        </div>
+        <div class="field">
+          <div class="label">RFC</div>
+          <div class="value-row">
+            <span class="value">GIN950214AB3</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Datos de entrega</div>
+          <div class="value-row">
+            <span class="value">Bodega Monterrey</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Contacto</div>
+          <div class="value-row">
+            <span class="value">Ing. Laura Sáenz</span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div>
+          <div class="comment-box">
+            <span class="label" style="display:block; margin-bottom:6px;">Comentario</span>
+            <span class="comment-text">Entregar en andén 3. Confirmar con almacén un día antes.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

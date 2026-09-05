@@ -226,9 +226,33 @@ writing exactly as before.
       mock published at https://claude.ai/code/artifact/05f23e1a-8700-4160-8e29-e6b5e998ab6c —
       4 artboards (expanded/compact × collapsed/expanded), styled from ds-bundle/_ds_bundle.css's
       light-theme tokens (DesignSync unavailable in this headless session; spec 032's reference
-      artboard could not be pulled). Awaiting user approval — T022 onward not started.)*
+      artboard could not be pulled).)*
+      *(2026-09-05: **approved by the requester**, after review revisions — due date, promise date
+      and salesperson moved onto the first header row; the six disclosed fields shown one-up;
+      one caption rule and one value rule throughout (no uppercase); mono narrowed to the order
+      reference; and the picker chevron dropped from the two date fields only, where it was
+      pushing the datetime value into an ellipsis. Archived at `artifacts/sales_order_header/`
+      per the `artifacts/<feature>/` convention — filenames there are lowercase and single-dot at
+      the requester's instruction, so the artboards must be renamed back to `<name>.dc.html`
+      before they can be re-seeded. **T022 onward is unblocked, but the approved design departs
+      from this spec's own contracts in four places — see the note below.**)*
 
 ### Implementation for User Story 4
+
+> **The approved mock supersedes parts of this feature's own contracts.** Before T022 onward is
+> implemented, `spec.md` and `contracts/order-header-surface.md` need updating to match what was
+> actually approved, in four places:
+>
+> 1. **C2/C3** — the fact strip absorbs due date, promise date and salesperson, so the strip is no
+>    longer "read-only facts only" and there is no separate always-visible row.
+> 2. **C5** — the disclosed group is six-across on one line. `ResponsiveFormGrid` caps at
+>    `maxColumns = 3` today, so this needs that cap raised (for this panel, or at the large tier
+>    generally) — a change to a shared component every form renders through.
+> 3. **C2** — captions are sentence case, not uppercase; one caption rule and one value rule for
+>    every field.
+> 4. **C2** — monospace narrows to the order reference; the strip date is no longer mono.
+>
+> Item 2 is the only one with blast radius beyond this panel.
 
 - [ ] T022 [US4] Create `lib/core/widgets/compact_field.dart`: a `CompactField` widget per
       data-model.md §4 — `label` (through `typeRoles.metricLabel`, not raw `labelSmall`), `child`,

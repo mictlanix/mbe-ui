@@ -3228,9 +3228,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posCustomerNameLabel => 'Cliente';
 
   @override
-  String get posCustomerCreditLabel => 'Crédito';
-
-  @override
   String get posCustomerPriceListLabel => 'Lista de precios';
 
   @override
