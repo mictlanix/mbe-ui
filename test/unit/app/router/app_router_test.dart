@@ -1053,6 +1053,18 @@ void main() {
     }
   });
 
+  group('037-sales-order-refinements — Sales Orders follows Point of Sale '
+      '(FR-020, FR-021)', () {
+    test('sales-orders is immediately after pos in the Sales group', () {
+      final flattened = _flattenDestinations(kNavigationTree);
+      final posIndex = flattened.indexWhere((d) => d.id == 'pos');
+      final salesOrdersIndex = flattened.indexWhere((d) => d.id == 'sales-orders');
+
+      expect(posIndex, isNonNegative);
+      expect(salesOrdersIndex, posIndex + 1);
+    });
+  });
+
   group('018-nested-facility-management — removed list routes; surviving '
       'detail routes keep their guards (contracts/routes.md §5)', () {
     // A reader who holds warehouses/cashDrawers/pointsOfSale read but not

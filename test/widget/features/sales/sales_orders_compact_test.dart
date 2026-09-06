@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
@@ -134,7 +135,15 @@ void main() {
       // `responsive_form_grid_test.dart`; this only confirms the panel
       // still renders every field without overflowing at this width.
       // Currency and priority moved behind the disclosure in spec 032
-      // FR-004, so the compact check has to open it first.
+      // FR-004, so the compact check has to open it first. spec 037 FR-011
+      // moved `OrderHeaderPanel` below `CustomerBar`, pushing the toggle far
+      // enough down this compact `ListView` that it's no longer reliably
+      // inside the initial viewport — scroll it into view before tapping,
+      // the same treatment this test already gives `SaleLineCard` below.
+      await tester.ensureVisible(
+        find.byKey(const Key('sales_order_more_details_toggle')),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('sales_order_more_details_toggle')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('sales_order_currency_field')), findsOneWidget);
@@ -157,4 +166,64 @@ void main() {
       expect(find.byType(SaleLineRow), findsNothing);
     },
   );
+
+  // spec 037 FR-018 / constitution §V: the largest text size must not clip or
+  // overflow anything, and a fixed column budget must be *verified* there
+  // rather than assumed to absorb it. The compact tier is the tight one — the
+  // header's two columns are ~155px at this width — so every level is checked
+  // here, following the pattern spec 027's T028 set in
+  // `sale_line_symmetry_test.dart`.
+  for (final level in TextSizeLevel.values) {
+    testWidgets(
+      'the order header survives text-scale factor ${level.factor} at 390 px '
+      'with nothing overflowing (FR-018)',
+      (tester) async {
+        when(() => salesOrders.getById(saleId: 42)).thenAnswer(
+          (_) async => testSale(id: 42, lines: [testLine()]),
+        );
+
+        await pumpPos(
+          tester,
+          MediaQuery(
+            // Mirrors app.dart's own wiring: the level composes over the
+            // platform scaler rather than replacing it (spec 027 research R1).
+            data: MediaQueryData(
+              textScaler: ComposedTextScaler(
+                platform: TextScaler.noScaling,
+                level: level,
+              ),
+            ),
+            child: const OrderScreen(orderId: 42),
+          ),
+          surface: phoneSurface,
+          overrides: [
+            _authOverride(),
+            salesOrderOverride(salesOrders),
+            warehouseOverride(warehouses),
+            customerRepositoryProvider.overrideWithValue(customers),
+            customerPaymentOverride(payments),
+          ],
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+
+        await tester.ensureVisible(
+          find.byKey(const Key('sales_order_more_details_toggle')),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const Key('sales_order_more_details_toggle')),
+        );
+        await tester.pumpAndSettle();
+
+        // Every disclosed field is built and laid out at this level, and the
+        // panel still asks nothing of the page sideways.
+        expect(find.byKey(const Key('sales_order_currency_field')), findsOneWidget);
+        expect(find.byKey(const Key('sales_order_priority_field')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        expectNoHorizontalScroll(tester);
+      },
+    );
+  }
 }

@@ -11,6 +11,8 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_header_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -58,9 +60,11 @@ const _disclosed = [
   Key('sales_order_comment_field'),
 ];
 
-/// Spec 032: the order header reshaped into a fact strip plus four
-/// always-relevant fields, with the rest behind one disclosure — and cancel
-/// moved out of its own band into the totals bar.
+/// Spec 032: the order header reshaped into a fact strip plus always-relevant
+/// fields, with the rest behind one disclosure — and cancel moved out of its
+/// own band into the totals bar. Spec 037 removes balance from the strip and
+/// payment terms from the always-visible row — both duplicated `CustomerBar`,
+/// which sits directly above this panel (FR-001, FR-003).
 void main() {
   late MockSalesOrderRepository salesOrders;
   late MockCustomerRepository customers;
@@ -87,6 +91,28 @@ void main() {
     when(() => salesOrders.getById(saleId: 42)).thenAnswer(
       (_) async => testSale(id: 42, serial: 1001, lines: [testLine()]),
     );
+    // spec 037 T015: a generic success stub for header writes other than the
+    // customer attach — the new group below verifies none of them ever
+    // carries `paymentTerms`.
+    when(
+      () => salesOrders.updateHeader(
+        saleId: any(named: 'saleId'),
+        customer: any(named: 'customer'),
+        paymentTerms: any(named: 'paymentTerms'),
+        currency: any(named: 'currency'),
+        shipTo: any(named: 'shipTo'),
+        contact: any(named: 'contact'),
+        customerName: any(named: 'customerName'),
+        fulfillmentIntent: any(named: 'fulfillmentIntent'),
+        promiseDate: any(named: 'promiseDate'),
+        salesperson: any(named: 'salesperson'),
+        priority: any(named: 'priority'),
+        comment: any(named: 'comment'),
+        recipient: any(named: 'recipient'),
+      ),
+    ).thenAnswer(
+      (_) async => testSale(id: 42, serial: 1001, lines: [testLine()]),
+    );
   });
 
   Future<void> pumpOrder(WidgetTester tester) async {
@@ -109,12 +135,13 @@ void main() {
   }
 
   group('the fact strip (US1, FR-002)', () {
-    testWidgets('carries reference, status, date and balance as plain '
+    testWidgets('carries reference, status and date as plain '
         'labelled values, not as input controls', (tester) async {
       await pumpOrder(tester);
 
       // Scoped to the panel: `CustomerBar` carries a "Saldo" of its own —
-      // the *customer's* balance, a different figure on the same screen.
+      // the *customer's* balance, a different figure on the same screen —
+      // and, since spec 037 FR-001, the strip's own copy is gone entirely.
       Finder inPanel(String text) => find.descendant(
         of: find.byType(OrderHeaderPanel),
         matching: find.text(text),
@@ -124,34 +151,72 @@ void main() {
         l10n.salesOrderReferenceLabel,
         l10n.salesOrderStatusLabel,
         l10n.salesOrderDateLabel,
-        l10n.salesOrdersColumnBalance,
       ]) {
-        expect(
-          inPanel(label.toUpperCase()),
-          findsOneWidget,
-          reason: '$label should read as a fact-strip label',
-        );
+        // spec 037 FR-016d: one caption rule for the whole stack, sentence
+        // case — spec 032's uppercased fact-strip captions are superseded.
         expect(
           inPanel(label),
+          findsOneWidget,
+          reason: '$label should caption its value',
+        );
+        expect(
+          inPanel(label.toUpperCase()),
           findsNothing,
-          reason: '$label should no longer be an InputDecoration label',
+          reason: '$label should no longer be uppercased',
         );
       }
 
       expect(inPanel('1001'), findsOneWidget);
       expect(inPanel(posSaleStatusLabelForTest(l10n)), findsOneWidget);
     });
+
+    testWidgets('shows no balance, collapsed or expanded (spec 037 FR-001)', (
+      tester,
+    ) async {
+      await pumpOrder(tester);
+
+      Finder inPanel(String text) => find.descendant(
+        of: find.byType(OrderHeaderPanel),
+        matching: find.text(text),
+      );
+
+      expect(
+        inPanel(l10n.salesOrdersColumnBalance.toUpperCase()),
+        findsNothing,
+      );
+      expect(inPanel(l10n.salesOrdersColumnBalance), findsNothing);
+
+      await tester.tap(find.byKey(_toggle));
+      await tester.pumpAndSettle();
+
+      expect(
+        inPanel(l10n.salesOrdersColumnBalance.toUpperCase()),
+        findsNothing,
+      );
+      expect(inPanel(l10n.salesOrdersColumnBalance), findsNothing);
+    });
   });
 
   group('the disclosure (US2, FR-003–FR-006)', () {
-    testWidgets('is closed on arrival, with the four always-relevant fields '
+    testWidgets('is closed on arrival, with the three always-relevant fields '
         'shown', (tester) async {
       await pumpOrder(tester);
 
       expect(find.text(l10n.salesOrderDueDateLabel), findsOneWidget);
       expect(find.text(l10n.salesOrderPromiseDateLabel), findsOneWidget);
-      expect(find.text(l10n.salesOrderPaymentTermsLabel), findsOneWidget);
       expect(find.byKey(const Key('sales_order_salesperson_field')), findsOneWidget);
+
+      // FR-003: payment terms is no longer a field here — it lives in
+      // `CustomerBar` directly above, which legitimately carries the same
+      // caption now (FR-004), so an unscoped finder would prove nothing
+      // (research R9).
+      expect(
+        find.descendant(
+          of: find.byType(OrderHeaderPanel),
+          matching: find.text(l10n.salesOrderPaymentTermsLabel),
+        ),
+        findsNothing,
+      );
 
       for (final key in _disclosed) {
         expect(find.byKey(key), findsNothing, reason: '$key should be collapsed');
@@ -178,12 +243,118 @@ void main() {
       expect(find.text(l10n.salesOrderExchangeRateLabel), findsOneWidget);
       expect(find.text(l10n.salesOrderFewerDetails), findsOneWidget);
       expect(find.text(l10n.salesOrderMoreDetails), findsNothing);
+      // FR-003 holds expanded too.
+      expect(
+        find.descendant(
+          of: find.byType(OrderHeaderPanel),
+          matching: find.text(l10n.salesOrderPaymentTermsLabel),
+        ),
+        findsNothing,
+      );
 
       await tester.tap(find.byKey(_toggle));
       await tester.pumpAndSettle();
 
       expect(find.byKey(_disclosed.first), findsNothing);
       expect(find.text(l10n.salesOrderMoreDetails), findsOneWidget);
+    });
+
+    testWidgets(
+      'the disclosed fields appear in order: Priority, Currency, Exchange '
+      'rate, Tax ID, Delivery details, Contact, Comment (spec 037 FR-012)',
+      (tester) async {
+        await pumpOrder(tester);
+
+        await tester.tap(find.byKey(_toggle));
+        await tester.pumpAndSettle();
+
+        // Since spec 037 FR-016 every field is a `CompactField`, so every one
+        // of them is located the same way — by its caption, inside the panel.
+        // That gives one consistent measurement point per field, which a mix
+        // of keyed widgets and nested labels did not (they sat at different
+        // insets and disagreed by a few px within a single row).
+        Offset topOf(String label) => tester.getTopLeft(
+          find.descendant(
+            of: find.byType(OrderHeaderPanel),
+            matching: find.text(label),
+          ),
+        );
+
+        final priority = topOf(l10n.salesOrderPriorityLabel);
+        final currency = topOf(l10n.salesOrderCurrencyLabel);
+        final exchangeRate = topOf(l10n.salesOrderExchangeRateLabel);
+        final recipient = topOf(l10n.salesOrderRecipientLabel);
+        final shipTo = topOf(l10n.salesOrderShipToLabel);
+        final contact = topOf(l10n.salesOrderContactLabel);
+        final comment = tester.getTopLeft(
+          find.byKey(const Key('sales_order_comment_field')),
+        );
+
+        // Reading order: a field on an earlier row precedes one on a later
+        // row; within the same row, the leftmost field precedes.
+        bool precedes(Offset a, Offset b) =>
+            a.dy < b.dy || (a.dy == b.dy && a.dx <= b.dx);
+
+        expect(precedes(priority, currency), isTrue, reason: 'Priority, then Currency');
+        expect(
+          precedes(currency, exchangeRate),
+          isTrue,
+          reason: 'Currency, then Exchange rate',
+        );
+        expect(
+          precedes(exchangeRate, recipient),
+          isTrue,
+          reason: 'Exchange rate, then Tax ID',
+        );
+        expect(precedes(recipient, shipTo), isTrue, reason: 'Tax ID, then Delivery details');
+        expect(precedes(shipTo, contact), isTrue, reason: 'Delivery details, then Contact');
+        // Comment always starts its own full-width row below everything.
+        expect(contact.dy, lessThan(comment.dy));
+      },
+    );
+  });
+
+  group('screen order (spec 037 FR-011)', () {
+    testWidgets('CustomerBar renders above OrderHeaderPanel', (tester) async {
+      await pumpOrder(tester);
+
+      expect(
+        tester.getTopLeft(find.byType(CustomerBar)).dy,
+        lessThan(tester.getTopLeft(find.byType(OrderHeaderPanel)).dy),
+      );
+    });
+  });
+
+  group('the payment-terms default never leaks into other writes '
+      '(spec 037 FR-008, FR-010)', () {
+    testWidgets('changing priority sends no paymentTerms', (tester) async {
+      await pumpOrder(tester);
+
+      await tester.tap(find.byKey(_toggle));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('sales_order_priority_field')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.salesOrderPriorityHigh).last);
+      await tester.pumpAndSettle();
+
+      verify(
+        () => salesOrders.updateHeader(
+          saleId: 42,
+          customer: null,
+          paymentTerms: null,
+          currency: null,
+          shipTo: null,
+          contact: null,
+          customerName: null,
+          fulfillmentIntent: null,
+          promiseDate: null,
+          salesperson: null,
+          priority: Priority.high,
+          comment: null,
+          recipient: null,
+        ),
+      ).called(1);
     });
   });
 

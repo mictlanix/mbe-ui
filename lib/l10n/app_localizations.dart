@@ -5845,12 +5845,6 @@ abstract class AppLocalizations {
   /// **'Customer'**
   String get posCustomerNameLabel;
 
-  /// No description provided for @posCustomerCreditLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Credit line'**
-  String get posCustomerCreditLabel;
-
   /// No description provided for @posCustomerPriceListLabel.
   ///
   /// In en, this message translates to:
