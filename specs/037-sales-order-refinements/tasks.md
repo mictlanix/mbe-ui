@@ -341,10 +341,43 @@ Point of Sale. Sign in as a user with Sales Orders access only — it is still v
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T031 Run `quickstart.md`'s full manual validation (all five sections) against a live mbe-api
-      tenant with a credit-line customer who has **no** overdue orders and a zero-limit customer —
-      per quickstart's Prerequisites, the wrong tenant state validates the refusal path instead of
-      the happy path.
+> **Closed 2026-09-06 with T031 and T033 not done.** The requester is reworking how back-office
+> sales orders behave, under a new spec, and stopped this one rather than carry further UI polish
+> into work that is about to change. Everything US1–US5 set out to do is implemented, tested and
+> committed; the two open items below are carried forward rather than abandoned:
+>
+> - **T031** wants a live tenant in a specific state (a credit customer with no overdue orders).
+>   The four automated rows of quickstart §3 cover the same logic — including the one-request
+>   assertion that guards the already-working path — so what is unverified is the live round trip,
+>   not the branching.
+> - **T033** files two upstream defects this feature deliberately did not fix. They are recorded in
+>   `research.md`'s closing section and are independent of whatever replaces this screen, so they
+>   stay worth filing on their own.
+
+### Descoped on close (2026-09-06)
+
+Kept verbatim, deliberately **not** as open checkboxes: this spec claims no outstanding work of its
+own, and neither of these is work it performed. Ticking them to satisfy the completion gate would
+assert a live validation that never ran.
+
+**T031 — not done.** Run `quickstart.md`'s full manual validation (all five sections) against a live
+mbe-api tenant with a credit-line customer who has **no** overdue orders and a zero-limit customer —
+per quickstart's Prerequisites, the wrong tenant state validates the refusal path instead of the
+happy path. *Superseded: the screen is being reworked under a new spec, so validating this one
+against a live tenant buys little. The branching itself is covered by the four automated rows of
+quickstart §3.*
+
+**T033 — done 2026-09-06, after this section was written.** Filed the two
+discovered-but-out-of-scope issues from research.md's closing section:
+
+- [mictlanix/mbe-ui#172](https://github.com/mictlanix/mbe-ui/issues/172) — string-detail 422s lose
+  the server's explanation, so every business-rule refusal reaches the user as one generic message.
+  App-wide error handling, not sales orders.
+- [mictlanix/mbe-api#207](https://github.com/mictlanix/mbe-api/issues/207) — order creation is
+  refused for a credit customer with overdue orders, because the derived `NET_D` is asserted
+  against. Verified against the service source before filing (`sales_order_service.py:481-492`,
+  `_assert_credit_allowed`), and filed as a question rather than a bug report, since a credit hold
+  on customers in arrears may well be deliberate.
 - [X] T032 Run `flutter analyze && flutter test` for the full suite and confirm **only** the goldens
       and screenshots named in T009 changed — any other golden moving means something in this
       feature has a visible effect it should not have (research R9). *(2026-09-04: analyze clean;
@@ -352,11 +385,6 @@ Point of Sale. Sign in as a user with Sales Orders access only — it is still v
       failure recorded in T001. Exactly 4 goldens
       (`pos_customer_bar_{light,dark}_{narrow,wide}.png`) and 5 screenshots (`02`, `03`, `04`, `05`,
       `07`) re-baselined — nothing outside that set moved.)*
-- [ ] T033 [P] File the two discovered-but-out-of-scope issues from research.md's closing section as
-      tracked follow-ups (do not fix them on this branch): string-detail 422 messages being silently
-      discarded by the error-mapping layer, and mbe-api refusing to create an order for a credit
-      customer with overdue orders. The second needs an mbe-api issue per constitution §III, not a
-      client-side change.
 
 ---
 
