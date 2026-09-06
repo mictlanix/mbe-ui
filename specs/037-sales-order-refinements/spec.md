@@ -340,10 +340,14 @@ supersede parts of spec 032 this feature had otherwise left standing.*
   fact-strip captions. Monospace MUST be reserved for the order reference, so the
   order date is no longer monospaced; tabular figures remain for money.
 - **FR-016e**: Because a converted field has no outlined box to mark it editable,
-  editability MUST be carried by a trailing affordance: a downward arrow on a
-  dropdown, a right chevron on a field that opens a picker. The two date fields
-  MUST carry neither — their formatted date-time already consumes the available
-  column width at the compact tier, and the affordance truncates it.
+  every editable field MUST carry a **dashed rule beneath its value**, and every
+  read-only one MUST carry none. This adopts the treatment the pricing-grid mock
+  already proposed for an editable cell (`artifacts/pricing_redesign` —
+  `.pg-canedit .pg-val { border-bottom: 1px dashed }`), so the two screens speak
+  the same vocabulary. A control that already owns an affordance — a dropdown's
+  own arrow — keeps it and MUST NOT be given a second one. A rule is preferred to
+  a trailing icon because it costs no horizontal width: an icon consumed enough
+  of a compact-tier column to push a formatted date-time into an ellipsis.
 
 - **FR-017**: The denser presentation MUST NOT change any field's edit gating,
   and every field MUST keep writing through on change with no Save step (spec

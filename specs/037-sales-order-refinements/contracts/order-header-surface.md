@@ -83,9 +83,24 @@ and panel alike — is the same size, weight, colour and casing, and so is every
 carries its own type treatment. The only value variations are data-type distinctions the app
 already makes: monospace for the order reference, tabular figures for money.
 
-**Editability is carried by a trailing affordance** (FR-016e), since a converted field has no box:
-a downward arrow on a dropdown, a right chevron on a picker. The two date fields carry neither —
-their formatted date-time fills the column at the compact tier and the affordance truncates it.
+The value role is `typeRoles.fieldInput` — `bodyMedium` on desktop, `bodyLarge` on touch tiers, so
+the whole stack grows together. **A control that resolves its own text style does not inherit it**
+and must be given the role explicitly: `TextField` (so the bare `CatalogEntityPicker`) falls back to
+the theme's `bodyLarge`, and `DropdownButton` to `titleMedium` — both 16px against everything else's
+14, which renders as a visibly taller row rather than as an obviously wrong font. A
+`DefaultTextStyle` around them does nothing. This is the failure mode to check first whenever a new
+kind of control goes inside a `CompactField`.
+
+**Editability is carried by a dashed rule under the value** (FR-016e), since a converted field has
+no box. Read-only values carry none. This is the treatment `artifacts/pricing_redesign` already
+proposed for an editable cell (`.pg-canedit .pg-val { border-bottom: 1px dashed }`), so both screens
+mark "you can change this" the same way; the rule resolves through the `outline` token rather than
+that mock's literal.
+
+A control that already owns an affordance keeps it and gets no second one — a dropdown renders its
+own arrow, so `CompactField` adds nothing beside it. The rule is preferred to a trailing icon
+because it costs no horizontal width: an icon took enough of a compact-tier column to push a
+formatted date-time into an ellipsis, which is why the date fields had to go without one.
 
 Rules the shape must obey:
 

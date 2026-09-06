@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -185,6 +186,87 @@ void main() {
         closeTo(cardPadding, 1),
         reason: 'bottom inset should match the top — symmetric (§VI)',
       );
+    });
+
+    testWidgets('every value reads at one size — a picker or dropdown resolves '
+        'its own style from the theme and drifts larger without help '
+        '(FR-016d)', (tester) async {
+      await pumpOrder(tester);
+      await tester.tap(find.byKey(_toggle));
+      await tester.pumpAndSettle();
+
+      final panel = find.byType(OrderHeaderPanel);
+      final valueSize = Theme.of(
+        tester.element(panel),
+      ).typeRoles.fieldInput.fontSize!;
+
+      // The salesperson field is a `TextField` behind a bare picker, and a
+      // `TextField` resolves its style from the theme rather than from
+      // `CompactField`'s `DefaultTextStyle`. Left alone it renders `bodyLarge`
+      // (16px) against everything else's `bodyMedium` (14) — a 24px row beside
+      // 20px ones, which is exactly what this regression guards.
+      final salesperson = tester
+          .widget<EditableText>(
+            find
+                .descendant(
+                  of: find.byKey(const Key('sales_order_salesperson_field')),
+                  matching: find.byType(EditableText),
+                )
+                .first,
+          )
+          .style;
+      expect(salesperson.fontSize, valueSize);
+
+      // And nothing inside a converted field renders *larger* than the value
+      // role — which covers the two dropdowns, whose own default is
+      // `titleMedium` (16px), without needing to reach through their generics.
+      // Captions and supporting text are smaller, so they pass this too.
+      //
+      // Scoped to `CompactField` rather than the whole panel: the comment is
+      // the deliberate exception (FR-016a) and keeps a real text field, whose
+      // floating label is sized as a label rather than as one of these values.
+      final paragraphs = tester.renderObjectList<RenderParagraph>(
+        find.descendant(
+          of: find.descendant(of: panel, matching: find.byType(CompactField)),
+          matching: find.byType(RichText),
+        ),
+      );
+      for (final paragraph in paragraphs) {
+        final style = paragraph.text.style;
+        final size = style?.fontSize;
+        // Icons are glyphs in a font of their own and are sized as icons, not
+        // as text — the disclosure chevron and the dropdown arrows.
+        if (size == null || style?.fontFamily == 'MaterialIcons') continue;
+        expect(
+          size,
+          lessThanOrEqualTo(valueSize),
+          reason: '"${paragraph.text.toPlainText()}" renders larger than the '
+              'value role',
+        );
+      }
+    });
+
+    testWidgets('the disclosed group starts at the same left edge as the '
+        'header row above it', (tester) async {
+      await pumpOrder(tester);
+
+      final panel = find.byType(OrderHeaderPanel);
+      final headerLeft = tester
+          .getTopLeft(
+            find.descendant(of: panel, matching: find.byType(CompactField)).first,
+          )
+          .dx;
+
+      await tester.tap(find.byKey(_toggle));
+      await tester.pumpAndSettle();
+
+      // The disclosed grid caps its own width, so on a wide surface a centred
+      // grid floated several columns right of the row above it.
+      final disclosedLeft = tester
+          .getTopLeft(find.byKey(const Key('sales_order_priority_field')))
+          .dx;
+
+      expect(disclosedLeft, closeTo(headerLeft, 1));
     });
 
     testWidgets('the caption is above the value, not beside it', (tester) async {

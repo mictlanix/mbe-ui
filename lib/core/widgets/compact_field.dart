@@ -2,22 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 
-/// What a [CompactField] offers to do when tapped, drawn on its trailing edge
-/// (spec 037 FR-016e). A converted field has no outlined box left to say it is
-/// editable, so the affordance carries that on its own.
-enum CompactFieldAffordance {
-  /// Nothing — a read-only value, or a field whose value already fills the
-  /// column (the date fields, whose formatted date-time an affordance pushes
-  /// into an ellipsis at the compact tier).
-  none,
-
-  /// Opens a menu in place.
-  dropdown,
-
-  /// Opens a picker elsewhere.
-  picker,
-}
-
 /// A caption over a dense value or control, with optional supporting text
 /// beneath — the shape spec 037 standardises the order header stack on
 /// (FR-016, FR-016a; data-model.md §4).
@@ -39,7 +23,7 @@ class CompactField extends StatelessWidget {
     required this.label,
     required this.child,
     this.supportingText,
-    this.affordance = CompactFieldAffordance.none,
+    this.editable = false,
     this.enabled = true,
     this.onTap,
     this.fillWidth = false,
@@ -57,15 +41,24 @@ class CompactField extends StatelessWidget {
   /// line" hint. Same treatment as [label].
   final String? supportingText;
 
-  final CompactFieldAffordance affordance;
+  /// Whether this field can be changed — drawn as a dashed rule beneath the
+  /// value, the one mark that says "editable" now the outlined box is gone
+  /// (FR-016e).
+  ///
+  /// A rule rather than a trailing icon, for two reasons. An icon consumes
+  /// horizontal space in a column already sized to its content — which is what
+  /// pushed the formatted date-time into an ellipsis at the compact tier — and
+  /// beside a dropdown's own arrow it reads as a second, competing affordance.
+  /// An underline costs no width and never doubles up.
+  final bool editable;
 
-  /// Dims the caption and the affordance to the disabled convention, and
-  /// suppresses [onTap]. The child governs its own enabled rendering.
+  /// Dims the caption and the rule to the disabled convention, and suppresses
+  /// [onTap]. The child governs its own enabled rendering.
   final bool enabled;
 
   /// For a field whose child is not itself tappable — a picker launcher whose
   /// child is a plain `Text`. A child that handles its own gestures (a
-  /// dropdown) leaves this null.
+  /// dropdown, a text field) leaves this null.
   final VoidCallback? onTap;
 
   /// Whether the value row fills the width its parent gives it.
@@ -74,11 +67,10 @@ class CompactField extends StatelessWidget {
   /// needs — an expanding row there claims the whole line and puts every field
   /// on one of its own.
   ///
-  /// `true` is for a **bounded** parent — a grid cell, or a `SizedBox` — where
-  /// the child must be held to the space left after the affordance. A child
-  /// that reports no natural width of its own (a text field, which will happily
-  /// take everything offered) otherwise overruns the icon beside it, and the
-  /// overflow only shows up once larger text makes the field wider still.
+  /// `true` is for a **bounded** parent — a grid cell, or a `ConstrainedBox` —
+  /// where the child must be held to the space it is given. A child that
+  /// reports no natural width of its own (a text field, which will happily take
+  /// everything offered) otherwise overruns its column.
   final bool fillWidth;
 
   @override
@@ -89,6 +81,38 @@ class CompactField extends StatelessWidget {
         ? theme.colorScheme.onSurfaceVariant
         : theme.disabledColor;
 
+    // FR-016d's one value rule. `fieldInput` is the design system's own role
+    // for a value in a field — `bodyMedium` on desktop, `bodyLarge` on touch
+    // tiers — so every value in the stack reads at one size and grows together.
+    //
+    // A `DefaultTextStyle` covers plain `Text` children. It does **not** reach
+    // a `TextField`, which resolves its own style from the theme: that is why
+    // the bare `CatalogEntityPicker` sets this same role on its field directly,
+    // and without it the salesperson value rendered 16px against everything
+    // else's 14 — a 24px row beside 20px ones.
+    Widget valueRow = DefaultTextStyle.merge(
+      style: theme.typeRoles.fieldInput.copyWith(
+        color: enabled ? theme.colorScheme.onSurface : theme.disabledColor,
+      ),
+      child: Row(
+        mainAxisSize: fillWidth ? MainAxisSize.max : MainAxisSize.min,
+        children: [
+          if (fillWidth) Expanded(child: child) else Flexible(child: child),
+        ],
+      ),
+    );
+
+    if (editable && enabled) {
+      valueRow = CustomPaint(
+        foregroundPainter: _DashedRulePainter(theme.colorScheme.outline),
+        child: Padding(
+          // Room for the rule to sit clear of the text's descenders.
+          padding: EdgeInsets.only(bottom: spacing.xxs),
+          child: valueRow,
+        ),
+      );
+    }
+
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -98,21 +122,7 @@ class CompactField extends StatelessWidget {
           style: theme.typeRoles.metricLabel.copyWith(color: captionColor),
         ),
         SizedBox(height: spacing.xxs),
-        // Shrink-wrapped, not `Expanded`: this field is laid out both inside a
-        // fixed-width grid cell *and* inside the header row's `Wrap`, where an
-        // expanding row would claim the whole line and put every field on one
-        // of its own. `Flexible` still lets the value ellipsize when the cell
-        // is narrower than its content.
-        Row(
-          mainAxisSize: fillWidth ? MainAxisSize.max : MainAxisSize.min,
-          children: [
-            if (fillWidth) Expanded(child: child) else Flexible(child: child),
-            if (_icon != null) ...[
-              SizedBox(width: spacing.xs),
-              Icon(_icon, size: 16, color: captionColor),
-            ],
-          ],
-        ),
+        valueRow,
         if (supportingText != null) ...[
           SizedBox(height: spacing.xxs),
           Text(
@@ -130,10 +140,34 @@ class CompactField extends StatelessWidget {
       child: content,
     );
   }
+}
 
-  IconData? get _icon => switch (affordance) {
-    CompactFieldAffordance.none => null,
-    CompactFieldAffordance.dropdown => Icons.arrow_drop_down,
-    CompactFieldAffordance.picker => Icons.chevron_right,
-  };
+/// The dashed rule under an editable value. Drawn rather than composed from a
+/// border because Flutter's `BorderSide` has no dash pattern, and the app
+/// ships no dashed-border dependency.
+class _DashedRulePainter extends CustomPainter {
+  const _DashedRulePainter(this.color);
+
+  final Color color;
+
+  static const _dash = 2.0;
+  static const _gap = 2.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+    // Half a pixel up, so the 1px stroke lands on the pixel rather than
+    // straddling two and rendering soft.
+    final y = size.height - 0.5;
+    for (var x = 0.0; x < size.width; x += _dash + _gap) {
+      final end = x + _dash > size.width ? size.width : x + _dash;
+      canvas.drawLine(Offset(x, y), Offset(end, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedRulePainter oldDelegate) =>
+      oldDelegate.color != color;
 }

@@ -507,7 +507,7 @@ class _TermsFact extends ConsumerWidget {
       width: 132,
       child: CompactField(
         label: l10n.salesOrderPaymentTermsLabel,
-        affordance: CompactFieldAffordance.dropdown,
+        editable: true,
         enabled: enabled,
         // research R9: the credit-limit figure the dropdown's slot used to
         // show is not lost — it is supporting text beneath the control,
@@ -522,10 +522,9 @@ class _TermsFact extends ConsumerWidget {
           isDense: true,
           isExpanded: true,
           underline: const SizedBox.shrink(),
-          // `CompactField` draws the affordance, so the dropdown's own arrow
-          // would be a second one.
-          icon: const SizedBox.shrink(),
-          style: theme.textTheme.bodyMedium,
+          // The shared value role, not a raw text-theme slot — same size as
+          // every other value in the bar, and tier-aware (FR-016d).
+          style: theme.typeRoles.fieldInput,
           onChanged: enabled ? (terms) => terms != null ? onChanged(terms) : null : null,
           items: [
             DropdownMenuItem(

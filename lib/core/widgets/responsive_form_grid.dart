@@ -35,6 +35,7 @@ class ResponsiveFormGrid extends StatelessWidget {
     this.spacing = 16,
     this.maxColumns = 3,
     this.largeTierColumns,
+    this.alignment = Alignment.center,
   });
 
   final List<FormGridChild> children;
@@ -57,6 +58,17 @@ class ResponsiveFormGrid extends StatelessWidget {
   /// Narrower tiers are unaffected either way.
   final int? largeTierColumns;
 
+  /// Where the grid sits when the space it is given is wider than
+  /// [maxContentWidth]. Centred by default — a standalone form reads better
+  /// centred on a wide screen.
+  ///
+  /// A grid that is one band *within* a larger surface wants
+  /// `AlignmentDirectional.centerStart` instead, so its first column lines up
+  /// with whatever sits above it rather than floating in from the left. The
+  /// sales-order header's disclosed group is that case: centred, it started
+  /// several columns right of the header row directly above it.
+  final AlignmentGeometry alignment;
+
   static int columnsForWidth(double width, {int? largeTierColumns}) =>
       switch (LayoutBreakpoints.tierOf(width)) {
         LayoutTier.compact => 1,
@@ -66,7 +78,8 @@ class ResponsiveFormGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: alignment,
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxContentWidth),
         child: LayoutBuilder(

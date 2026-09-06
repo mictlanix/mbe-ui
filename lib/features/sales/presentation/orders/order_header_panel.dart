@@ -231,12 +231,16 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                 // clears the widest value, "MXN — Peso Mexicano"). Opt-in, so
                 // every other form's column count is untouched.
                 largeTierColumns: 6,
+                // This grid is a band inside the panel, not a form of its own:
+                // centred, its first column started well right of the header
+                // row above it.
+                alignment: AlignmentDirectional.centerStart,
                 children: [
                   FormGridChild(
                     CompactField(
                       label: l10n.salesOrderPriorityLabel,
+                      editable: widget.canEditPriority,
                       fillWidth: true,
-                      affordance: CompactFieldAffordance.dropdown,
                       enabled: widget.canEditPriority,
                       // Still a `DropdownButtonFormField`, stripped of its box
                       // rather than swapped for another control: the gating
@@ -247,6 +251,10 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                         initialValue: sale.priority,
                         isExpanded: true,
                         isDense: true,
+                        // Same reason as the bare picker: a dropdown resolves
+                        // its style from the theme (`titleMedium`, 16px), not
+                        // from `CompactField`'s `DefaultTextStyle`.
+                        style: theme.typeRoles.fieldInput,
                         decoration: _bareField,
                         items: [
                           for (final priority in Priority.values)
@@ -271,8 +279,8 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                   FormGridChild(
                     CompactField(
                       label: l10n.salesOrderCurrencyLabel,
+                      editable: canEdit,
                       fillWidth: true,
-                      affordance: CompactFieldAffordance.dropdown,
                       enabled: canEdit,
                       child: DropdownButtonFormField<Currency>(
                         key: const Key('sales_order_currency_field'),
@@ -282,6 +290,10 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                         // the row overflows instead of ellipsizing.
                         isExpanded: true,
                         isDense: true,
+                        // Same reason as the bare picker: a dropdown resolves
+                        // its style from the theme (`titleMedium`, 16px), not
+                        // from `CompactField`'s `DefaultTextStyle`.
+                        style: theme.typeRoles.fieldInput,
                         decoration: _bareField,
                         items: [
                           for (final currency in Currency.values)
@@ -308,8 +320,8 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                   FormGridChild(
                     CompactField(
                       label: l10n.salesOrderRecipientLabel,
+                      editable: canEdit,
                       fillWidth: true,
-                      affordance: CompactFieldAffordance.picker,
                       enabled: canEdit,
                       // The customer's own name for this tax id, when the
                       // order carries one — the slot the boxed version put
@@ -437,6 +449,7 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
               // an icon beside it truncates the value.
               CompactField(
                 label: l10n.salesOrderPromiseDateLabel,
+                editable: canEdit,
                 enabled: canEdit,
                 onTap: canEdit ? _pickPromiseDate : null,
                 child: Text(fmt.display.dateTime(sale.promiseDate)),
@@ -450,8 +463,8 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                 constraints: const BoxConstraints(maxWidth: 200),
                 child: CompactField(
                   label: l10n.salesOrderSalespersonLabel,
+                  editable: canEdit,
                   fillWidth: true,
-                  affordance: CompactFieldAffordance.picker,
                   enabled: canEdit,
                   child: CatalogEntityPicker<EmployeeListItem>(
                     key: const Key('sales_order_salesperson_field'),
@@ -529,7 +542,7 @@ class _PickerField extends StatelessWidget {
     return CompactField(
       label: label,
       fillWidth: true,
-      affordance: CompactFieldAffordance.picker,
+      editable: enabled,
       enabled: enabled,
       onTap: onTap,
       child: Text(value ?? ''),

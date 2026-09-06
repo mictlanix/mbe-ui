@@ -190,14 +190,14 @@ void main() {
               SizedBox(height: 16),
               CompactField(
                 label: 'Contacto',
-                affordance: CompactFieldAffordance.picker,
+                editable: true,
                 fillWidth: true,
                 child: Text('Ing. Laura Sáenz'),
               ),
               SizedBox(height: 16),
               CompactField(
                 label: 'Forma de pago',
-                affordance: CompactFieldAffordance.dropdown,
+                editable: true,
                 supportingText: r'Límite: $50,000.00',
                 fillWidth: true,
                 child: Text('Crédito'),

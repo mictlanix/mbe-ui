@@ -79,6 +79,42 @@ void main() {
       }
     });
 
+    testWidgets('is centred by default, and starts at the leading edge when '
+        'asked (spec 037)', (tester) async {
+      Future<double> leftEdgeOf({AlignmentGeometry? alignment}) async {
+        tester.view.physicalSize = const Size(1600, 800);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              // Three children fill the large tier's three columns, so the
+              // grid actually occupies its 1200 cap — with one child the
+              // `Wrap` shrink-wraps and there is no alignment to observe.
+              body: ResponsiveFormGrid(
+                alignment: alignment ?? Alignment.center,
+                children: const [
+                  FormGridChild(SizedBox(key: ValueKey('first'), height: 20)),
+                  FormGridChild(SizedBox(height: 20)),
+                  FormGridChild(SizedBox(height: 20)),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        return tester.getTopLeft(find.byKey(const ValueKey('first'))).dx;
+      }
+
+      // 1600 wide against the grid's 1200 cap leaves 400 to distribute.
+      expect(await leftEdgeOf(), closeTo(200, 1));
+      expect(
+        await leftEdgeOf(alignment: AlignmentDirectional.centerStart),
+        closeTo(0, 1),
+      );
+    });
+
     testWidgets('the override leaves narrower tiers alone', (tester) async {
       final compact = await widths(tester, surface: 500, largeTierColumns: 6);
       expect(compact.first, closeTo(500, 1), reason: 'one column at compact');

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 
 /// A generic single-select search-as-you-type picker for form fields backed
@@ -88,6 +89,16 @@ class _CatalogEntityPickerState<T extends Object>
     super.dispose();
   }
 
+  /// In [CatalogEntityPicker.bare] mode the caller has drawn a caption and
+  /// expects this to read as one of its own values, so the field takes the
+  /// design system's `fieldInput` role explicitly. A `TextField` resolves its
+  /// style from the theme rather than from an ancestor `DefaultTextStyle`, so
+  /// the surrounding `CompactField` cannot set this for it — left alone the
+  /// field renders `bodyLarge` (16px) beside values at `bodyMedium` (14px),
+  /// which is a visibly taller row. Boxed callers keep the theme default.
+  TextStyle? _textStyle(BuildContext context) =>
+      widget.bare ? Theme.of(context).typeRoles.fieldInput : null;
+
   /// Boxed by default; stripped to bare text when the caller draws its own
   /// caption (spec 037 FR-016). `errorText` survives either way — an invalid
   /// value must still say so with no box to outline it.
@@ -120,6 +131,7 @@ class _CatalogEntityPickerState<T extends Object>
         key: ValueKey('ro-${widget.initialDisplayText}'),
         initialValue: widget.initialDisplayText ?? '',
         decoration: _decoration(),
+        style: _textStyle(context),
         enabled: false,
       );
     }
@@ -153,6 +165,7 @@ class _CatalogEntityPickerState<T extends Object>
           focusNode: focusNode,
           autofocus: widget.autofocus,
           decoration: _decoration(errorText: widget.errorText),
+          style: _textStyle(context),
           onFieldSubmitted: (_) => onFieldSubmitted(),
         );
       },
