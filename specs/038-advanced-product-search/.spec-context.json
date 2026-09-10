@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "advanced product search",
   "branch": "038-advanced-product-search",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-09-10T02:45:51.049Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:52:52.797Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:52:52.854Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-10T02:52:59.535Z"
     }
   ],
   "telemetryInstanceId": "dadcb06e-226e-4a72-a410-9d8f71de52e7",
