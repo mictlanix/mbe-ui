@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "advanced product search",
   "branch": "038-advanced-product-search",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-10T02:28:24.600Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:42:13.942Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:45:43.285Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:45:43.525Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-10T02:45:51.049Z"
     }
   ],
   "telemetryInstanceId": "dadcb06e-226e-4a72-a410-9d8f71de52e7",
@@ -124,5 +152,44 @@
     "No status column and no per-row action icons on the advanced search table",
     "Selection mode is not a per-user preference and is never changeable from the UI",
     "No select-all control and no cap on selection size"
+  ],
+  "decisions": [
+    {
+      "decision": "Screen is a top-level pushed route /sales/product-search; every in-screen navigation uses GoRouter.replace, never context.go (go would unmount the sale beneath and dispose the autoDispose sale controller)"
+    },
+    {
+      "decision": "Selection returns via two plain StateProviders consumed by ProductSearchField with ref.listen; the screen cannot add lines itself because OrderScreen overrides saleEditorProvider in a nested ProviderScope"
+    },
+    {
+      "decision": "ProductSearchField.onProductSelected becomes Future<void> Function(ProductLookupResult) so adds are sequential (ensureOpen is not concurrency-safe) and per-product failures can be reported"
+    },
+    {
+      "decision": "Checkbox cell is non-interactive (IgnorePointer); the row tap is the only toggle, avoiding two tap handlers on the same pixels; DataTableView is not modified"
+    },
+    {
+      "decision": "active+salable are forced inside ProductFilter so productLabelFacets counts match the listing; the screen computes its own filter badge instead of ProductFilterBadge.activeFilterCount"
+    },
+    {
+      "decision": "New app setting PRODUCT_SEARCH_MULTI_SELECT (String.fromEnvironment + Dart-side parse, default true)"
+    }
+  ],
+  "verified": [
+    {
+      "what": "MBE_POS_* is an administrator account, so no dev-tenant account can prove whether cashiers hold products.read (test/integration/TEST_ACCOUNTS.md) — spec Assumption 8 closed as unverifiable and safe either way"
+    },
+    {
+      "what": "_routeGate matches only /sales/cash-sessions, /sales/pos and /sales/orders — /sales/product-search would be ungated without a new clause"
+    },
+    {
+      "what": "GET /sales-orders/product-lookup takes pattern/customer/warehouse only, no paging or facets and no documented result cap"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "DataColumn2 mis-sizes consecutive fixed-width columns (privileges_grid.dart:98-102); the checkbox column makes three in a row on this table — assert alignment in a widget test"
+    },
+    {
+      "note": "GoRouter.replace reusing the page key is what preserves the screen State across filter changes; if it does not hold in the browser, fall back to a Navigator.push full-screen route with local view state (customer_inline_create.dart pattern)"
+    }
   ]
 }
