@@ -614,6 +614,54 @@ abstract class AppLocalizations {
   /// **'Labels'**
   String get productsLabelFilter;
 
+  /// Button on ProductSearchField that opens the Advanced search screen (spec 038 FR-001)
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced search'**
+  String get advancedSearchButton;
+
+  /// App bar title of the Advanced search screen (spec 038)
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced search'**
+  String get advancedSearchTitle;
+
+  /// Confirm button on the Advanced search screen (spec 038 FR-018), showing the number of selected products
+  ///
+  /// In en, this message translates to:
+  /// **'Add ({count})'**
+  String advancedSearchAddButton(int count);
+
+  /// Running count of selected products on the Advanced search screen (spec 038 FR-017)
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String advancedSearchSelectionCount(int count);
+
+  /// Clears every selected product on the Advanced search screen without leaving it (spec 038 FR-017)
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get advancedSearchClearSelection;
+
+  /// Shown beside the disabled confirm action when the Advanced search screen has no sale to return to (spec 038 research R8)
+  ///
+  /// In en, this message translates to:
+  /// **'Open this from a sale to add products'**
+  String get advancedSearchNoSaleHint;
+
+  /// Heading above the list of products that could not be priced/added from an Advanced search selection (spec 038 FR-021)
+  ///
+  /// In en, this message translates to:
+  /// **'These products could not be added:'**
+  String get advancedSearchSkipped;
+
+  /// Progress text while the Advanced search screen's selection is being priced and added (spec 038 FR-022, SC-005)
+  ///
+  /// In en, this message translates to:
+  /// **'Adding {done} of {total}…'**
+  String advancedSearchAdding(int done, int total);
+
   /// Tooltip on a disabled label filter chip that would return no products if selected
   ///
   /// In en, this message translates to:

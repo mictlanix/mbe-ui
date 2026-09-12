@@ -281,6 +281,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsLabelFilter => 'Etiquetas';
 
   @override
+  String get advancedSearchButton => 'Búsqueda avanzada';
+
+  @override
+  String get advancedSearchTitle => 'Búsqueda avanzada';
+
+  @override
+  String advancedSearchAddButton(int count) {
+    return 'Agregar ($count)';
+  }
+
+  @override
+  String advancedSearchSelectionCount(int count) {
+    return '$count seleccionados';
+  }
+
+  @override
+  String get advancedSearchClearSelection => 'Limpiar selección';
+
+  @override
+  String get advancedSearchNoSaleHint =>
+      'Ábrela desde una venta para agregar productos';
+
+  @override
+  String get advancedSearchSkipped => 'No se pudieron agregar estos productos:';
+
+  @override
+  String advancedSearchAdding(int done, int total) {
+    return 'Agregando $done de $total…';
+  }
+
+  @override
   String get labelUnavailableTooltip => 'Sin productos que coincidan';
 
   @override

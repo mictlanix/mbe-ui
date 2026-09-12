@@ -27,6 +27,7 @@ void main() {
       // spec 028 FR-011: the date default is ISO, not the locale-derived
       // rendering the app used before this feature.
       expect(settings.formatting, const FormattingSettings());
+      expect(settings.productSearchMultiSelect, true);
     });
   });
 
@@ -194,6 +195,42 @@ void main() {
 
         expect(settings.inputDebounce, const Duration(milliseconds: 300));
         expect(settings.quantityCommitDebounce, const Duration(milliseconds: 400));
+      },
+    );
+  });
+
+  // AppSettings._parseBool is private; this group mirrors its documented
+  // rule directly (spec 038 contracts/app-settings-additions.md C1), the
+  // same convention used above for the other private parsers.
+  group('PRODUCT_SEARCH_MULTI_SELECT fallback rules (spec 038 FR-025)', () {
+    bool parseBool(String value, bool fallback) {
+      switch (value.toLowerCase()) {
+        case 'true':
+          return true;
+        case 'false':
+          return false;
+        default:
+          return fallback;
+      }
+    }
+
+    test('true/false parse case-insensitively', () {
+      expect(parseBool('true', false), true);
+      expect(parseBool('TRUE', false), true);
+      expect(parseBool('false', true), false);
+      expect(parseBool('FALSE', true), false);
+    });
+
+    test('an unrecognized value falls back to the default', () {
+      expect(parseBool('', true), true);
+      expect(parseBool('yes', true), true);
+      expect(parseBool('1', false), false);
+    });
+
+    test(
+      'AppSettings.fromEnvironment reproduces the true default with no --dart-define',
+      () {
+        expect(AppSettings.fromEnvironment().productSearchMultiSelect, true);
       },
     );
   });

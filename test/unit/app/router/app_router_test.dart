@@ -710,6 +710,22 @@ void main() {
         },
       );
 
+      // spec 038 FR-002, SC-007: gated on `products`, matching `/products`
+      // itself — Advanced search is a catalog browser, not a register or
+      // order action.
+      testWidgets('a products-reader reaches /sales/product-search', (tester) async {
+        final handle = await pumpAt(tester, _readOnlyUser, '/sales/product-search');
+        expect(handle.router.state.uri.path, '/sales/product-search');
+      });
+
+      testWidgets(
+        'a user without products/read is redirected away from /sales/product-search',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/sales/product-search');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
       testWidgets('a user with users/read still reaches /users', (
         tester,
       ) async {

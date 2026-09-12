@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
@@ -210,6 +211,13 @@ Future<PosRoutedHarness> pumpPosRouted(
         path: '/sales/pos/:saleId',
         builder: (context, state) =>
             PosWorkspaceScreen(saleId: int.parse(state.pathParameters['saleId']!)),
+      ),
+      // spec 038: registered here too, mirroring app_router.dart, so a test
+      // driving the real "Advanced search" push/pop round trip has
+      // somewhere to land.
+      GoRoute(
+        path: advancedSearchPath,
+        builder: (context, state) => AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
       ),
     ],
   );

@@ -37,6 +37,7 @@ class AppSettings {
     required this.formatting,
     this.inputDebounce = const Duration(milliseconds: 300),
     this.quantityCommitDebounce = const Duration(milliseconds: 400),
+    this.productSearchMultiSelect = true,
   });
 
   /// mbe-api base URL. Mirrors `dio_client.dart`'s `apiBaseUrl` const.
@@ -82,6 +83,14 @@ class AppSettings {
   /// (research.md R13).
   final Duration quantityCommitDebounce;
 
+  /// Whether the sales product search's Advanced search screen lets the
+  /// operator pick several products at once (`true`) or exactly one
+  /// (`false`) (`PRODUCT_SEARCH_MULTI_SELECT`, spec 038 FR-024/FR-025).
+  /// Consumed via `productSearchMultiSelectProvider` by
+  /// `AdvancedSearchScreen` — never mutable from the UI and never a
+  /// per-user preference.
+  final bool productSearchMultiSelect;
+
   /// Whether [customerId] is the generic walk-in customer
   /// ([posDefaultCustomerId]). The one, shared way to answer that question
   /// (spec 036 data-model.md §5) — the Sales Order customer picker and the
@@ -101,6 +110,10 @@ class AppSettings {
     'QUANTITY_COMMIT_DEBOUNCE_MS',
     defaultValue: '400',
   );
+  static const _productSearchMultiSelectEnv = String.fromEnvironment(
+    'PRODUCT_SEARCH_MULTI_SELECT',
+    defaultValue: 'true',
+  );
 
   /// Build-time source (FR-001). Every field has a documented default
   /// (FR-004) and a malformed value falls back rather than preventing
@@ -114,7 +127,8 @@ class AppSettings {
         'POS_DEFAULT_CUSTOMER_ID=${pos_defaults.posDefaultCustomerId} '
         'DEFAULT_LOCALE=$_defaultLocaleEnv '
         'INPUT_DEBOUNCE_MS=$_inputDebounceMsEnv '
-        'QUANTITY_COMMIT_DEBOUNCE_MS=$_quantityCommitDebounceMsEnv',
+        'QUANTITY_COMMIT_DEBOUNCE_MS=$_quantityCommitDebounceMsEnv '
+        'PRODUCT_SEARCH_MULTI_SELECT=$_productSearchMultiSelectEnv',
       );
     }
     return AppSettings(
@@ -126,6 +140,7 @@ class AppSettings {
       formatting: FormattingSettings.fromEnvironment(),
       inputDebounce: _parseDebounceMs(_inputDebounceMsEnv, 300),
       quantityCommitDebounce: _parseDebounceMs(_quantityCommitDebounceMsEnv, 400),
+      productSearchMultiSelect: _parseBool(_productSearchMultiSelectEnv, true),
     );
   }
 
@@ -137,6 +152,20 @@ class AppSettings {
     final parsed = int.tryParse(value);
     if (parsed == null || parsed < 0) return Duration(milliseconds: fallbackMs);
     return Duration(milliseconds: parsed);
+  }
+
+  /// Parses a case-insensitive `true`/`false` flag. Falls back to
+  /// [fallback] on anything else — a malformed build flag must not brick
+  /// app startup, the same rule [_parseDebounceMs] applies.
+  static bool _parseBool(String value, bool fallback) {
+    switch (value.toLowerCase()) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return fallback;
+    }
   }
 
   /// Parses a `language_COUNTRY` or `language` code (e.g. `es_MX`, `en`)

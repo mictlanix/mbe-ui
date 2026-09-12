@@ -25,3 +25,10 @@ final inputDebounceProvider = Provider<Duration>(
 final quantityCommitDebounceProvider = Provider<Duration>(
   (ref) => ref.watch(appSettingsProvider).quantityCommitDebounce,
 );
+
+/// Whether the Advanced search screen (spec 038) permits selecting more than
+/// one product at once. A deployment-level option — never mutable from the
+/// UI — read by `AdvancedSearchScreen`.
+final productSearchMultiSelectProvider = Provider<bool>(
+  (ref) => ref.watch(appSettingsProvider).productSearchMultiSelect,
+);

@@ -61,9 +61,22 @@ class _ModeTrack extends StatelessWidget {
       height: fulfillmentModeSelectorHeight,
       // The children clip to the stadium, which is what lets the first and
       // last segment's fill run into the rounded ends instead of stopping
-      // square inside them.
+      // square inside them. `decoration`'s border also reserves the 1 px
+      // inset the segments sit inside (`ShapeDecoration.padding`, which
+      // `Container` folds into the child's constraints) — that is the part
+      // the tests below measure, and it must stay a *background* decoration
+      // for that padding to apply. But painted only there, the selected
+      // segment's own opaque fill — which runs flush to that same inset,
+      // right where the fill meets the container edge — is drawn on top of
+      // it and hides the stroke along that whole edge (visible on `Tienda`'s
+      // top/left/bottom in a screenshot). Repeating the identical shape as a
+      // *foreground* decoration draws the stroke again, last, so it is never
+      // covered by whichever segment happens to be filled.
       clipBehavior: Clip.antiAlias,
       decoration: ShapeDecoration(
+        shape: StadiumBorder(side: BorderSide(color: theme.colorScheme.outline)),
+      ),
+      foregroundDecoration: ShapeDecoration(
         shape: StadiumBorder(side: BorderSide(color: theme.colorScheme.outline)),
       ),
       child: Row(

@@ -1,0 +1,655 @@
+{
+  "workflow": "speckit",
+  "specName": "advanced product search",
+  "branch": "038-advanced-product-search",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-10T02:24:27.337Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T02:28:24.600Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:42:13.942Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:45:43.285Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:45:43.525Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-10T02:45:51.049Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:52:52.797Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T02:52:52.854Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-10T02:52:59.535Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-09-10T03:10:00.311Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.885Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-12T02:36:10.386Z"
+    }
+  ],
+  "telemetryInstanceId": "dadcb06e-226e-4a72-a410-9d8f71de52e7",
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "Product search field offers an \"Advanced search\" affordance in both hosting surfaces",
+      "tasks": [
+        "T016",
+        "T019",
+        "T024"
+      ]
+    },
+    "FR-002": {
+      "title": "Affordance hidden, and the screen route-gated, without catalog read access"
+    },
+    "FR-003": {
+      "title": "Affordance unavailable whenever the search field itself is disabled"
+    },
+    "FR-004": {
+      "title": "Text already typed in the field carries over as the screen's initial search term"
+    },
+    "FR-005": {
+      "title": "Opening the screen alters nothing on the sale until a selection is confirmed",
+      "tasks": [
+        "T013",
+        "T018"
+      ]
+    },
+    "FR-006": {
+      "title": "Own addressable screen carrying search/filters/page; returning lands back on the unchanged sale"
+    },
+    "FR-007": {
+      "title": "Columns are photo, code, name, brand, unit plus a leading selection control - no status, no row actions"
+    },
+    "FR-008": {
+      "title": "Only active and salable products listed; no status or salable control in the filter panel"
+    },
+    "FR-009": {
+      "title": "Same search box and badged filters button; panel offers Stockable, Purchasable, Supplier, Label and clear-all"
+    },
+    "FR-010": {
+      "title": "Filters badge counts by the catalog list's rule, each label individually"
+    },
+    "FR-011": {
+      "title": "Paged with the catalog list's page size; returns to the first page on search or filter change",
+      "tasks": [
+        "T013",
+        "T025",
+        "T029"
+      ]
+    },
+    "FR-012": {
+      "title": "Row tap toggles selection and never opens the product's catalog record"
+    },
+    "FR-013": {
+      "title": "Loading, empty and error states consistent with the catalog list, with retry and clear-filters",
+      "tasks": [
+        "T014",
+        "T021"
+      ]
+    },
+    "FR-014": {
+      "title": "Usable at a narrow window with confirm and cancel reachable and the count unobscured"
+    },
+    "FR-015": {
+      "title": "Selection permits one or many products according to the deployment's selection mode"
+    },
+    "FR-016": {
+      "title": "Single-selection mode releases the previously selected product"
+    },
+    "FR-017": {
+      "title": "Multiple selection survives paging/search/filter changes, shows a count, and can be cleared"
+    },
+    "FR-018": {
+      "title": "Explicit confirm required; cancel returns having added nothing"
+    },
+    "FR-019": {
+      "title": "One line per selected product, in selection order, with the scan path's starting quantity"
+    },
+    "FR-020": {
+      "title": "Every selected product priced for the sale's customer and warehouse before its line is created"
+    },
+    "FR-021": {
+      "title": "A product that cannot be priced is reported and skipped without blocking the rest"
+    },
+    "FR-022": {
+      "title": "Confirm protected against repeat submission; no duplicate lines on double-confirm or navigation",
+      "tasks": [
+        "T015",
+        "T017",
+        "T022"
+      ]
+    },
+    "FR-023": {
+      "title": "Confirming opens the sale when none is open yet, as the scan path already does",
+      "tasks": [
+        "T017",
+        "T023"
+      ]
+    },
+    "FR-024": {
+      "title": "Selection mode is a build-time deployment option, never UI-mutable, never per-user"
+    },
+    "FR-025": {
+      "title": "Option documented with a default in the configuration template; malformed values fall back"
+    },
+    "FR-026": {
+      "title": "New strings localized in Spanish and English; values use the app's established formatting"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 14,
+    "projectedTasks": 24,
+    "scopeSignal": "larger",
+    "verdict": "normal"
+  },
+  "context": [
+    "area: lib/features/sales/presentation/capture/product_search_field.dart (the widget being improved, and its two hosts capture_step.dart / orders/order_screen.dart)",
+    "area: lib/features/catalog/presentation/products_list_screen.dart + core/widgets (CatalogFilterBar, CatalogSearchBar, CatalogFilterSheet, DataTableView) — the pattern the new screen mirrors",
+    "area: lib/core/config/app_settings.dart + .env.template — where the new deployment-level selection-mode option lands (spec 027 FR-001..FR-007)",
+    "constraint: no mbe-api change — GET /sales-orders/product-lookup takes pattern/customer/warehouse only, no paging and no facets, so the table must be backed by the catalog listing and pricing resolved per selection at confirm time",
+    "constraint: /products is route-gated by PrivilegeGate(SystemObject.products, AccessRight.read) and the server enforces the same, so the affordance must be access-gated rather than lead to a 403"
+  ],
+  "intent": "Let an operator browse the catalog from inside a sale — a paged, filterable products table opened from the product search field — and bring one or several products back as sale lines.",
+  "expectations": [
+    "No mbe-api change: the sales-order product lookup endpoint stays as it is",
+    "No change to the existing scan / type-ahead behaviour of the product search field",
+    "No price editing from the advanced search screen",
+    "No status column and no per-row action icons on the advanced search table",
+    "Selection mode is not a per-user preference and is never changeable from the UI",
+    "No select-all control and no cap on selection size"
+  ],
+  "decisions": [
+    {
+      "decision": "Screen is a top-level pushed route /sales/product-search; every in-screen navigation uses GoRouter.replace, never context.go (go would unmount the sale beneath and dispose the autoDispose sale controller)"
+    },
+    {
+      "decision": "Selection returns via two plain StateProviders consumed by ProductSearchField with ref.listen; the screen cannot add lines itself because OrderScreen overrides saleEditorProvider in a nested ProviderScope"
+    },
+    {
+      "decision": "ProductSearchField.onProductSelected becomes Future<void> Function(ProductLookupResult) so adds are sequential (ensureOpen is not concurrency-safe) and per-product failures can be reported"
+    },
+    {
+      "decision": "Checkbox cell is non-interactive (IgnorePointer); the row tap is the only toggle, avoiding two tap handlers on the same pixels; DataTableView is not modified"
+    },
+    {
+      "decision": "active+salable are forced inside ProductFilter so productLabelFacets counts match the listing; the screen computes its own filter badge instead of ProductFilterBadge.activeFilterCount"
+    },
+    {
+      "decision": "New app setting PRODUCT_SEARCH_MULTI_SELECT (String.fromEnvironment + Dart-side parse, default true)"
+    },
+    {
+      "decision": "Analyze remediation: tasks.md renumbered to 48 tasks — added T021 (list states), T022 (double-confirm guard), T023 (lazy sale open), T024 (order-screen host), T037 (10-product batch); MVP checkpoint reworded with US2 as the release floor per constitution VI"
+    },
+    {
+      "decision": "Fixed a pre-existing bug found via T024's test: productLookupController had no Riverpod dependencies:[saleEditor], so it always resolved saleEditorProvider against the ROOT container regardless of OrderScreen's nested override — meaning a scan/lookup on an existing order silently opened a phantom register sale instead of adding to the order. Added @Riverpod(dependencies:[saleEditor]) and regenerated codegen. Verified via a minimal repro (fails before, passes after) and confirmed no regression across 1840 unit/widget/golden tests. User approved fixing this in-branch rather than deferring it."
+    }
+  ],
+  "verified": [
+    {
+      "what": "MBE_POS_* is an administrator account, so no dev-tenant account can prove whether cashiers hold products.read (test/integration/TEST_ACCOUNTS.md) — spec Assumption 8 closed as unverifiable and safe either way"
+    },
+    {
+      "what": "_routeGate matches only /sales/cash-sessions, /sales/pos and /sales/orders — /sales/product-search would be ungated without a new clause"
+    },
+    {
+      "what": "GET /sales-orders/product-lookup takes pattern/customer/warehouse only, no paging or facets and no documented result cap"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "DataColumn2 mis-sizes consecutive fixed-width columns (privileges_grid.dart:98-102); the checkbox column makes three in a row on this table — assert alignment in a widget test"
+    },
+    {
+      "note": "GoRouter.replace reusing the page key is what preserves the screen State across filter changes; if it does not hold in the browser, fall back to a Navigator.push full-screen route with local view state (customer_inline_create.dart pattern)"
+    }
+  ],
+  "currentTask": "T048"
+}
