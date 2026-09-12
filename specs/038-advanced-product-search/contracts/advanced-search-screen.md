@@ -68,6 +68,11 @@ Bottom action bar
   (FR-007). No Edit icon — constitution §VI's "Edit is the primary row action"
   rule governs catalog list screens; this is a picker, and its row click selects
   rather than opening a record.
+- Loading, empty, filtered-empty and failed states are `CatalogListStateView`'s, wired with
+  `emptyMessage: noProductsFound`, `retryLabel: retryButton` + an invalidate of
+  `productsListControllerProvider(filter)`, and `clearFiltersLabel: clearFiltersButton` + a
+  `_replaceWith` of the bare route. `createLabel`/`onCreate` stay `null` — this screen creates
+  nothing (FR-013).
 - Filter panel (`showCatalogFilterSheet` + `CurrentListQueryBuilder`) offers
   exactly: attributes `Stockable` and `Purchasable` (tri-state chips), the
   supplier picker, and the label multi-picker. **No status control, no salable
@@ -126,11 +131,15 @@ field:
      skip and continue;
    - `await widget.onProductSelected(result)`; on a thrown `AppError`, record a
      skip and continue.
-4. Render the outcome: nothing when no product was skipped; otherwise a list of
-   `code — name`, one per skipped product, keyed `advanced_search_skipped`.
+4. Render the outcome: nothing when no product was skipped; otherwise a
+   dismissable `SnackBar` (keyed `advanced_search_skipped`, swipeable, an
+   8-second duration) listing `code — name`, one per skipped product — a
+   one-time report, not a standing block in the field's own layout.
 
-While adding, the field shows its existing progress affordance and both the
-field and the advanced-search button are disabled (FR-022). Sequencing is not a
+While adding, the field reports counted progress (`advancedSearchAdding` —
+"Adding {done} of {total}…") and both the field and the advanced-search button are disabled
+(FR-022, SC-005). The screen's own confirm is guarded against a second tap landing before the pop
+completes, so one confirm can never publish two results. Sequencing is not a
 performance choice: `ensureOpen()` is not concurrency-safe and parallel first
 adds create two draft sales (research R3).
 

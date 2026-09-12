@@ -13,7 +13,14 @@ part 'product_lookup_controller.g.dart';
 /// `customer` is not part of the key: it is read from the current
 /// [Sale.customer] at call time, since pricing follows whichever customer is
 /// on the sale right now, not a separate dimension the search field controls.
-@riverpod
+///
+/// `dependencies: [saleEditor]` (spec 038 research) — without it, Riverpod
+/// has no reason to re-scope this provider under a nested `ProviderScope`
+/// override, so it would resolve `saleEditorProvider` against the *root*
+/// container regardless of where the calling widget sits (`OrderScreen`'s
+/// own override included), silently opening/writing to the register's sale
+/// from the order screen instead of the order.
+@Riverpod(dependencies: [saleEditor])
 Future<List<ProductLookupResult>> productLookupController(
   Ref ref,
   String pattern, {

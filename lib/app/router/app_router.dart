@@ -38,6 +38,7 @@ import 'package:mbe_ui/features/pricing/presentation/exchange_rates_list_screen.
 import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_grid_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
@@ -425,6 +426,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           orderId: int.parse(state.pathParameters['orderId']!),
         ),
       ),
+      // 038-advanced-product-search: a top-level sibling, not a shell branch
+      // — there is no nav entry for it. Search term, filters and page all
+      // live in its address exactly like `/products` (contracts/
+      // advanced-search-screen.md §1); the screen itself replaces its own
+      // location for every in-screen navigation, never `context.go`, since
+      // `go` would unmount whichever sale pushed it (research.md R1).
+      GoRoute(
+        path: advancedSearchPath,
+        builder: (context, state) => AdvancedSearchScreen(
+          query: ListQuery.fromUri(state.uri),
+        ),
+      ),
     ],
   );
 });
@@ -625,6 +638,13 @@ NavGate? _routeGate(String location) {
   // `/sales/pos` one above.
   if (location.startsWith('/sales/orders')) {
     return PrivilegeGate(SystemObject.salesOrders, AccessRight.read);
+  }
+  // 038-advanced-product-search: gated on `products`, matching `/products`
+  // itself — this is a catalog browser, not a register or order action, and
+  // it must be unreachable for a user who cannot read the catalog (FR-002,
+  // SC-007). Without this clause the route would be ungated.
+  if (location.startsWith(advancedSearchPath)) {
+    return PrivilegeGate(SystemObject.products, AccessRight.read);
   }
   return null;
 }

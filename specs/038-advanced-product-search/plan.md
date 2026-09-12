@@ -139,7 +139,10 @@ lib/
 │   ├── capture/
 │   │   ├── product_search_field.dart    # +affordance, awaitable callback, bulk add
 │   │   ├── advanced_search_screen.dart  # NEW — the picker screen
-│   │   └── advanced_search_state.dart   # NEW — selection + result providers
+│   │   ├── advanced_search_state.dart   # NEW — selection + result providers
+│   │   └── product_lookup_controller.dart  # +dependencies:[saleEditor] (research.md R11 —
+│   │                                        # pre-existing scoping bug found by T024, fixed
+│   │                                        # with user approval; regenerates .g.dart)
 │   ├── capture/capture_step.dart        # call site unchanged in shape (await)
 │   └── orders/order_screen.dart         # same
 └── l10n/
@@ -150,7 +153,8 @@ test/
 ├── unit/core/config/app_settings_test.dart          # setting default + parser rule
 └── widget/features/sales/
     ├── advanced_search_screen_test.dart             # NEW — table, filters, selection, compact
-    └── product_search_field_test.dart               # affordance, gating, bulk add, partial failure
+    ├── product_search_field_test.dart               # affordance, gating, bulk add, partial failure
+    └── pos_test_harness.dart                        # +advancedSearchPath route (T020's harness)
 
 .env.template                                        # +PRODUCT_SEARCH_MULTI_SELECT
 .env.settings                                        # optional local override

@@ -242,6 +242,46 @@
   "productsLabelFilter": "Labels",
   "@productsLabelFilter": {},
 
+  "advancedSearchButton": "Advanced search",
+  "@advancedSearchButton": {"description": "Button on ProductSearchField that opens the Advanced search screen (spec 038 FR-001)"},
+
+  "advancedSearchTitle": "Advanced search",
+  "@advancedSearchTitle": {"description": "App bar title of the Advanced search screen (spec 038)"},
+
+  "advancedSearchAddButton": "Add ({count})",
+  "@advancedSearchAddButton": {
+    "description": "Confirm button on the Advanced search screen (spec 038 FR-018), showing the number of selected products",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "advancedSearchSelectionCount": "{count} selected",
+  "@advancedSearchSelectionCount": {
+    "description": "Running count of selected products on the Advanced search screen (spec 038 FR-017)",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "advancedSearchClearSelection": "Clear selection",
+  "@advancedSearchClearSelection": {"description": "Clears every selected product on the Advanced search screen without leaving it (spec 038 FR-017)"},
+
+  "advancedSearchNoSaleHint": "Open this from a sale to add products",
+  "@advancedSearchNoSaleHint": {"description": "Shown beside the disabled confirm action when the Advanced search screen has no sale to return to (spec 038 research R8)"},
+
+  "advancedSearchSkipped": "These products could not be added:",
+  "@advancedSearchSkipped": {"description": "Heading above the list of products that could not be priced/added from an Advanced search selection (spec 038 FR-021)"},
+
+  "advancedSearchAdding": "Adding {done} of {total}…",
+  "@advancedSearchAdding": {
+    "description": "Progress text while the Advanced search screen's selection is being priced and added (spec 038 FR-022, SC-005)",
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
   "labelUnavailableTooltip": "No matching products",
   "@labelUnavailableTooltip": {"description": "Tooltip on a disabled label filter chip that would return no products if selected"},
 

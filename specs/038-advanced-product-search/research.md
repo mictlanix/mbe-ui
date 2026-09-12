@@ -306,3 +306,46 @@ screen, never a snackbar for failures
   `phoneSurface`/`expectNoHorizontalScroll` for the compact assertions. No new
   file lands in `lib/core/widgets/`, so no golden is forced by
   `core_widgets_golden_test.dart`'s file-scan guard.
+
+---
+
+## R11. A pre-existing scoping bug, found by T024 and fixed in this branch
+
+**Finding**: `productLookupController` (`lib/features/sales/presentation/capture/product_lookup_controller.dart`)
+had no `dependencies:` on its `@riverpod` annotation. Riverpod's codegen therefore recorded
+`dependencies = null` in the generated `.g.dart`, which means the provider is never re-scoped under
+a nested `ProviderScope` override — it always resolves `ref.read(saleEditorProvider)` against the
+**root** container. `OrderScreen`'s own nested override of `saleEditorProvider`
+(`order_screen.dart:48-58`) was therefore silently bypassed for every lookup issued from its embedded
+`ProductSearchField` — including the pre-existing scan/type-ahead path, not just this feature's new
+one. In practice: scanning or typing a product on an existing order opened a phantom **register**
+sale (via `PosSaleController`'s default `ensureOpen()`) instead of adding the line to the order.
+
+No unit, widget, or live-integration test in the repository exercised `ProductSearchField`'s real UI
+embedded inside `OrderScreen` before this feature — every existing order-line test drives
+`orderEditorControllerProvider(...).notifier.addLine(...)` directly, bypassing the widget layer
+entirely (`order_screen_test.dart`). T024, written to prove FR-001's "both surfaces" claim, is what
+first exercised this path end-to-end and surfaced the bug via a `MissingStubError` on
+`MockSalesOrderRepository.open()` — the register's `open()` was called, at the wrong scope, from an
+order-screen test with no register in play at all.
+
+**Decision**: fixed in this branch, with the user's explicit approval (out-of-band question during
+implementation) rather than deferred, because it directly undermines FR-001/FR-002 for the very
+feature being built — confirming a selection from Advanced Search on the order screen would have hit
+the same bug. The fix is one annotation:
+
+```dart
+@Riverpod(dependencies: [saleEditor])
+Future<List<ProductLookupResult>> productLookupController(...)
+```
+
+plus `dart run build_runner build --delete-conflicting-outputs` to regenerate
+`product_lookup_controller.g.dart`. Verified with a minimal reproduction (fails on `main`, passes
+after the fix) and against the full sales/golden/unit suite (1840 tests, zero regressions beyond the
+one pre-existing, unrelated failure already recorded in `tasks.md` T001).
+
+**Scope check**: every other `ref.read(saleEditorProvider)` call site in `lib/features/sales/` was
+audited (`customer_bar.dart`, `sale_line_editing.dart`, `order_header_panel.dart`) — all of them read
+it from a `ConsumerState`/mixin's own `ref`, which is positioned correctly in the Element tree by
+construction and needed no `dependencies:` annotation. `productLookupController` was the only
+provider-internal read.

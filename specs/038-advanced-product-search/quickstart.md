@@ -122,6 +122,20 @@ and the Add/Cancel bar to stay reachable.
 Scan (or type + Enter) a barcode matching exactly one product. Expect the line
 to be added directly, with no screen opening and no behavioural change.
 
+### V10 — Ten products, priced and added (SC-005)
+
+The one scenario the widget suite cannot judge: real per-product round trips against a live backend.
+
+1. With multiple selection enabled, tick **10** products and press **Agregar (10)**.
+2. Expect: a progress indicator that visibly advances ("Agregando 3 de 10…"), never a frozen field.
+3. Expect: all 10 lines on the sale — in tick order — within roughly **5 seconds** of confirming,
+   less any product reported as skipped.
+4. Expect: exactly 10 lines, never 11 — a slow batch must not let a second confirm through
+   (FR-022).
+
+T037 asserts the same counts and ordering against a mock repository; this scenario is only about the
+wall-clock budget and the progress being genuinely visible.
+
 ---
 
 ## Tests
