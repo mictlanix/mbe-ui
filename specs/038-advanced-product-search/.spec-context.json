@@ -3,7 +3,7 @@
   "specName": "advanced product search",
   "branch": "038-advanced-product-search",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -465,6 +465,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-10T10:43:44.886Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-12T02:36:10.386Z"
     }
   ],
   "telemetryInstanceId": "dadcb06e-226e-4a72-a410-9d8f71de52e7",
