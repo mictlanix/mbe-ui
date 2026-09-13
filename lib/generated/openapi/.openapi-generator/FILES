@@ -148,6 +148,7 @@ doc/LowProfitMargin1.md
 doc/MethodTotal.md
 doc/OpeningAmount.md
 doc/OrderApplicationResponse.md
+doc/OrderOrigin.md
 doc/OutstandingOrderResponse.md
 doc/PaymentMethod.md
 doc/PaymentMethodOptionCreate.md
@@ -447,6 +448,7 @@ lib/src/model/low_profit_margin1.dart
 lib/src/model/method_total.dart
 lib/src/model/opening_amount.dart
 lib/src/model/order_application_response.dart
+lib/src/model/order_origin.dart
 lib/src/model/outstanding_order_response.dart
 lib/src/model/payment_method.dart
 lib/src/model/payment_method_option_create.dart

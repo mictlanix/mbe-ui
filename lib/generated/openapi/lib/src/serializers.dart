@@ -143,6 +143,7 @@ import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/method_total.dart';
 import 'package:mbe_api_client/src/model/opening_amount.dart';
 import 'package:mbe_api_client/src/model/order_application_response.dart';
+import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/outstanding_order_response.dart';
 import 'package:mbe_api_client/src/model/payment_method.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
@@ -385,6 +386,7 @@ part 'serializers.g.dart';
   MethodTotal,
   OpeningAmount,
   OrderApplicationResponse,
+  OrderOrigin,
   OutstandingOrderResponse,
   PaymentMethod,
   PaymentMethodOptionCreate,
