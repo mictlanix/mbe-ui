@@ -32,6 +32,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo conectar con el servidor. Verifica tu conexión e inténtalo de nuevo.';
 
   @override
+  String get errorCreditHoldGeneric =>
+      'Este cliente no puede recibir crédito en este momento.';
+
+  @override
   String get viewActionTooltip => 'Ver';
 
   @override
@@ -2703,12 +2707,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesOrderSalespersonLabel => 'Vendedor';
 
   @override
-  String get salesOrderContactLabel => 'Contacto';
-
-  @override
-  String get salesOrderShipToLabel => 'Datos de entrega';
-
-  @override
   String get salesOrderRecipientLabel => 'RFC';
 
   @override
@@ -2756,6 +2754,26 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get salesOrderChooseCustomerFirst =>
       'Elige un cliente para empezar el pedido.';
+
+  @override
+  String get salesOrderStepCliente => 'Cliente';
+
+  @override
+  String get salesOrderStepVenta => 'Venta';
+
+  @override
+  String get salesOrderStepEntrega => 'Entrega';
+
+  @override
+  String salesOrderStepProgress(int current, int total) {
+    return 'Paso $current de $total';
+  }
+
+  @override
+  String get salesOrderContinueToDeliveryAction => 'Continuar a entrega';
+
+  @override
+  String get salesOrderCompleteDeliveryAction => 'Completar pedido';
 
   @override
   String get salesOrdersEmptyMessage => 'Aún no hay pedidos en este periodo.';

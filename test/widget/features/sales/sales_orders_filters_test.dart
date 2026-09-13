@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -11,13 +9,10 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
-import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
-import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
 import 'sales_orders_list_screen_test.dart' show stubListOrders;
@@ -41,56 +36,6 @@ User _user({int? facilityId = 9}) => User(
   ],
 );
 
-/// A minimal routed harness for `/sales/orders`, mirroring
-/// `pos_test_harness.dart`'s `pumpPosRouted` — that helper only wires the
-/// three POS routes, so this feature needs its own for tests that drive
-/// real navigation (facet taps that call `context.go`) rather than a bare
-/// widget pump.
-Future<GoRouter> pumpOrdersRouted(
-  WidgetTester tester, {
-  List<Override> overrides = const [],
-  String initialLocation = '/sales/orders',
-}) async {
-  tester.view.physicalSize = const Size(1200, 2400);
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.reset);
-
-  SharedPreferences.setMockInitialValues({});
-  final sharedPreferences = await SharedPreferences.getInstance();
-  final container = ProviderContainer(
-    overrides: [
-      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-      ...overrides,
-    ],
-  );
-  addTearDown(container.dispose);
-
-  final router = GoRouter(
-    initialLocation: initialLocation,
-    routes: [
-      GoRoute(
-        path: '/sales/orders',
-        builder: (context, state) =>
-            Scaffold(body: SalesOrdersListScreen(query: ListQuery.fromUri(state.uri))),
-      ),
-    ],
-  );
-
-  await tester.pumpWidget(
-    UncontrolledProviderScope(
-      container: container,
-      child: MaterialApp.router(
-        routerConfig: router,
-        locale: const Locale('es', 'MX'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-      ),
-    ),
-  );
-  await tester.pumpAndSettle();
-  return router;
-}
-
 /// FR-008, FR-009, FR-010, FR-013: date range and status facets narrow the
 /// list and land in the address; clearing returns to the current month,
 /// never to unbounded; an out-of-range page clamps to the last one.
@@ -104,8 +49,8 @@ void main() {
   Future<GoRouter> pumpListRouted(
     WidgetTester tester, {
     ListQuery query = const ListQuery(),
-  }) {
-    return pumpOrdersRouted(
+  }) async {
+    final (router, _) = await pumpOrdersRouted(
       tester,
       initialLocation: query.toUri('/sales/orders').toString(),
       overrides: [
@@ -115,6 +60,7 @@ void main() {
         salesOrderOverride(salesOrders),
       ],
     );
+    return router;
   }
 
   testWidgets('the status facet narrows the request and lands in the '

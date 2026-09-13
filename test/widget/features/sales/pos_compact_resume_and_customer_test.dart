@@ -311,7 +311,7 @@ void main() {
           builder: (context, ref, _) => ref
               .watch(posSaleControllerProvider)
               .when(
-                data: (value) => CaptureStep(sale: value),
+                data: (value) => CaptureStep(sale: value, onContinue: () {}),
                 loading: () => const SizedBox.shrink(),
                 error: (error, _) => Text('$error'),
               ),
@@ -350,7 +350,7 @@ void main() {
           builder: (context, ref, _) => ref
               .watch(posSaleControllerProvider)
               .when(
-                data: (value) => CaptureStep(sale: value),
+                data: (value) => CaptureStep(sale: value, onContinue: () {}),
                 loading: () => const SizedBox.shrink(),
                 error: (error, _) => Text('$error'),
               ),

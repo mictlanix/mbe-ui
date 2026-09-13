@@ -221,8 +221,6 @@ void main() {
       for (final key in _disclosed) {
         expect(find.byKey(key), findsNothing, reason: '$key should be collapsed');
       }
-      expect(find.text(l10n.salesOrderContactLabel), findsNothing);
-      expect(find.text(l10n.salesOrderShipToLabel), findsNothing);
       expect(find.text(l10n.salesOrderExchangeRateLabel), findsNothing);
       expect(find.text(l10n.salesOrderMoreDetails), findsOneWidget);
     });
@@ -238,8 +236,6 @@ void main() {
       for (final key in _disclosed) {
         expect(find.byKey(key), findsOneWidget, reason: '$key should be revealed');
       }
-      expect(find.text(l10n.salesOrderContactLabel), findsOneWidget);
-      expect(find.text(l10n.salesOrderShipToLabel), findsOneWidget);
       expect(find.text(l10n.salesOrderExchangeRateLabel), findsOneWidget);
       expect(find.text(l10n.salesOrderFewerDetails), findsOneWidget);
       expect(find.text(l10n.salesOrderMoreDetails), findsNothing);
@@ -261,7 +257,7 @@ void main() {
 
     testWidgets(
       'the disclosed fields appear in order: Priority, Currency, Exchange '
-      'rate, Tax ID, Delivery details, Contact, Comment (spec 037 FR-012)',
+      'rate, Tax ID, Comment (spec 037 FR-012, spec 039 FR-050)',
       (tester) async {
         await pumpOrder(tester);
 
@@ -284,8 +280,6 @@ void main() {
         final currency = topOf(l10n.salesOrderCurrencyLabel);
         final exchangeRate = topOf(l10n.salesOrderExchangeRateLabel);
         final recipient = topOf(l10n.salesOrderRecipientLabel);
-        final shipTo = topOf(l10n.salesOrderShipToLabel);
-        final contact = topOf(l10n.salesOrderContactLabel);
         final comment = tester.getTopLeft(
           find.byKey(const Key('sales_order_comment_field')),
         );
@@ -306,10 +300,8 @@ void main() {
           isTrue,
           reason: 'Exchange rate, then Tax ID',
         );
-        expect(precedes(recipient, shipTo), isTrue, reason: 'Tax ID, then Delivery details');
-        expect(precedes(shipTo, contact), isTrue, reason: 'Delivery details, then Contact');
         // Comment always starts its own full-width row below everything.
-        expect(contact.dy, lessThan(comment.dy));
+        expect(recipient.dy, lessThan(comment.dy));
       },
     );
   });

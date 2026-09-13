@@ -41,7 +41,7 @@ import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
@@ -418,11 +418,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // sibling route here.
       GoRoute(
         path: '/sales/orders/new',
-        builder: (context, state) => const OrderScreen(),
+        builder: (context, state) => const OrderWorkspaceScreen(),
       ),
       GoRoute(
         path: '/sales/orders/:orderId',
-        builder: (context, state) => OrderScreen(
+        builder: (context, state) => OrderWorkspaceScreen(
           orderId: int.parse(state.pathParameters['orderId']!),
         ),
       ),

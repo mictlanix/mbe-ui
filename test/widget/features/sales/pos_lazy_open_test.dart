@@ -66,6 +66,7 @@ void main() {
       Consumer(
         builder: (context, ref, _) => CaptureStep(
           sale: ref.watch(posSaleControllerProvider).valueOrNull,
+          onContinue: () {},
         ),
       ),
       overrides: [

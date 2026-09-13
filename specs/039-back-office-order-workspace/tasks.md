@@ -35,9 +35,9 @@ whole once #209 lands.
 **Purpose**: Confirm the branch and establish a pre-change baseline so later
 regressions are attributable.
 
-- [ ] T001 Confirm `039-back-office-order-workspace` is checked out and run
+- [X] T001 Confirm `039-back-office-order-workspace` is checked out and run
       `flutter pub get` at the repository root
-- [ ] T002 [P] Run `flutter test test/unit/features/sales test/widget/features/sales test/integration` and `flutter analyze`, and record the baseline pass count — every currently-passing POS test in this baseline must still pass, unmodified in assertion, at the end of Phase 6 (SC-007)
+- [X] T002 [P] Run `flutter test test/unit/features/sales test/widget/features/sales test/integration` and `flutter analyze`, and record the baseline pass count — every currently-passing POS test in this baseline must still pass, unmodified in assertion, at the end of Phase 6 (SC-007)
 
 ---
 
@@ -56,19 +56,19 @@ speculative change; spec FR-046).
 
 ### The seam itself
 
-- [ ] T003 Add `saleConfirmErrorProvider` (`StateProvider<AppError?>`, default
+- [X] T003 Add `saleConfirmErrorProvider` (`StateProvider<AppError?>`, default
       `null`) and `saleConfirmFailureProvider` (`void Function(AppError)`,
       default: write `saleConfirmErrorProvider` then
       `ref.read(posStepControllerProvider.notifier).jumpTo(PosStep.venta)`) to
       `lib/features/sales/presentation/sale_editor.dart`, both declared
       `@Riverpod(dependencies: [saleEditor])` alongside the existing
       `saleEditorProvider`/`saleWritesScopeProvider` — contracts/shared-step-seam.md §1
-- [ ] T004 In `lib/features/sales/presentation/pos_confirm.dart`, delete the
+- [X] T004 In `lib/features/sales/presentation/pos_confirm.dart`, delete the
       module-level `confirmErrorProvider` and rewrite
       `confirmBeforePayableAction` to call `read(saleEditorProvider).confirm()`
       and, on failure, `read(saleConfirmFailureProvider)(e)` instead of the two
       hard-coded POS singletons — contracts/shared-step-seam.md §4 (depends on T003)
-- [ ] T005 In `lib/features/sales/presentation/capture/capture_step.dart`: add
+- [X] T005 In `lib/features/sales/presentation/capture/capture_step.dart`: add
       `onContinue` (`VoidCallback?`), `continueLabel` (`String`) and
       `showFulfillmentSelector` (`bool`, default `true`) constructor
       parameters; remove the direct reads of `posStepControllerProvider`
@@ -80,28 +80,28 @@ speculative change; spec FR-046).
       `if (widget.showFulfillmentSelector)`; pass `continueLabel` and
       `writesPending` through to `SaleTotalsBar` — contracts/shared-step-seam.md §2
       (depends on T003, T004)
-- [ ] T006 [P] In `lib/features/sales/presentation/capture/fulfillment_mode_selector.dart`,
+- [X] T006 [P] In `lib/features/sales/presentation/capture/fulfillment_mode_selector.dart`,
       replace the four reads of `posStepControllerProvider`/`posSaleControllerProvider`
       (lines 245, 268, 270, 281) with `saleEditorProvider` and, where the mode
       itself is read, a value passed down from `CaptureStep` rather than read
       independently — contracts/shared-step-seam.md, research R1 (depends on T003)
-- [ ] T007 [P] In `lib/features/sales/presentation/capture/customer_bar.dart`
+- [X] T007 [P] In `lib/features/sales/presentation/capture/customer_bar.dart`
       line 127, replace the direct `posStepControllerProvider` read (the
       generic-customer pickup-reset snackbar) with a call routed through the
       seam, or accept it as a POS-only no-op guarded by a check that this bar
       is not rendered with `excludeGenericCustomer: true` — research R1
       (depends on T003)
-- [ ] T008 [P] In `lib/features/sales/presentation/delivery/delivery_step.dart`
+- [X] T008 [P] In `lib/features/sales/presentation/delivery/delivery_step.dart`
       line 259, replace `pendingWritesProvider(posWritesScope)` with
       `pendingWritesProvider(ref.watch(saleWritesScopeProvider))` —
       contracts/shared-step-seam.md §3 (depends on T003)
-- [ ] T009 In `lib/features/sales/presentation/delivery/delivery_controller.dart`:
+- [X] T009 In `lib/features/sales/presentation/delivery/delivery_controller.dart`:
       replace `pendingWritesProvider(posWritesScope)` (line 82) with the seam's
       write scope, and replace the two `confirmBeforePayableAction` call sites
       (lines 105, 172, unchanged signature) so they resolve through the now
       host-agnostic helper from T004 — contracts/shared-step-seam.md §3–§4
       (depends on T003, T004)
-- [ ] T010 [P] In `lib/features/sales/presentation/delivery/line_distribution_panel.dart`,
+- [X] T010 [P] In `lib/features/sales/presentation/delivery/line_distribution_panel.dart`,
       add a `closeLabel` (`String`) parameter to the widget that owns
       `delivery_close_button` (default: the existing `posFinishSale` text), so
       a host can supply its own close-button wording without a second seam
@@ -109,14 +109,14 @@ speculative change; spec FR-046).
 
 ### Cliente-step data path (research R3)
 
-- [ ] T011 [P] Add an optional `fulfillmentIntent` (`FulfillmentMode?`)
+- [X] T011 [P] Add an optional `fulfillmentIntent` (`FulfillmentMode?`)
       parameter to `SalesOrderRepository.open()`
       (`lib/features/sales/domain/repositories/sales_order_repository.dart`)
       and its implementation
       (`lib/features/sales/data/sales_order_repository_impl.dart:28-43`),
       threaded to `SalesOrderCreate.fulfillmentIntent` — research R3, no
       codegen required
-- [ ] T012 In `lib/features/sales/presentation/sale_editing.dart`, widen
+- [X] T012 In `lib/features/sales/presentation/sale_editing.dart`, widen
       `updateHeader`'s one-shot fast-path condition (the `state.valueOrNull ==
       null && …` check) to also allow `fulfillmentIntent` through the single
       `repository.open(customer:, salesperson:, fulfillmentIntent:)` call,
@@ -124,7 +124,7 @@ speculative change; spec FR-046).
       (depends on T011). **This is load-bearing for FR-014**: without it, a
       Cliente-step attach that also sets `fulfillmentIntent` opens the order
       with no customer for one round trip before correcting it.
-- [ ] T013 Add an `attachFulfillmentIntent` (`FulfillmentMode?`, default
+- [X] T013 Add an `attachFulfillmentIntent` (`FulfillmentMode?`, default
       `null`) constructor parameter to `CustomerBar`
       (`lib/features/sales/presentation/capture/customer_bar.dart`); when set
       and `_attachCustomer`/`_createCustomer` are attaching a first customer to
@@ -134,11 +134,11 @@ speculative change; spec FR-046).
 
 ### Credit-refusal plumbing (research R8)
 
-- [ ] T014 [P] Add `AppError.creditHold([String? message]) = CreditHoldError`
+- [X] T014 [P] Add `AppError.creditHold([String? message]) = CreditHoldError`
       to the sealed union in `lib/core/errors/app_error.dart`; run
       `dart run build_runner build` to regenerate `app_error.freezed.dart` —
       research R8
-- [ ] T015 In `lib/features/sales/data/sales_order_repository_impl.dart`, add
+- [X] T015 In `lib/features/sales/data/sales_order_repository_impl.dart`, add
       a shared helper that recognises a 422 whose `detail` is a plain string
       as `AppError.creditHold(detail)`, and use it — alongside the existing
       `{"message","lines"}` handling, unchanged — in `_toConfirmError` (used by
@@ -148,7 +148,7 @@ speculative change; spec FR-046).
 
 ### The workspace's own base
 
-- [ ] T016 [P] Create `lib/features/sales/presentation/orders/order_step_controller.dart`:
+- [X] T016 [P] Create `lib/features/sales/presentation/orders/order_step_controller.dart`:
       `OrderStep` enum (`cliente`, `venta`, `entrega`), `OrderStepState`
       (`current`, defaulting to `cliente`), and `OrderStepController` (a
       `@riverpod` `Notifier`) with `advanceToVenta()`, `advanceToEntrega()`,
@@ -156,24 +156,24 @@ speculative change; spec FR-046).
       `returnToCliente()` and `resumeTo(Sale sale)` (data-model §2 and §4: draft
       with no real customer → `cliente`; draft → `venta`; completed/paid →
       `entrega`) — data-model.md §2, §4
-- [ ] T017 In `lib/features/sales/presentation/orders/order_editor_controller.dart`,
+- [X] T017 In `lib/features/sales/presentation/orders/order_editor_controller.dart`,
       thread `fulfillmentIntent` through wherever it opens/attaches (it
       inherits `updateHeader` from `SaleEditing`, so this is mostly verifying
       T012/T013 flow through unchanged) — data-model.md §3 note (origin itself
       is deferred; see Phase 8)
-- [ ] T018 [P] Add four new l10n keys to `lib/l10n/app_en.arb` and
+- [X] T018 [P] Add four new l10n keys to `lib/l10n/app_en.arb` and
       `app_es.arb`, in parity: `salesOrderStepCliente` ("Cliente"/"Cliente"),
       `salesOrderStepVenta` ("Sale"/"Venta"), `salesOrderStepEntrega`
       ("Delivery"/"Entrega"), `salesOrderStepProgress` ("Step {current} of
       {total}"/"Paso {current} de {total}") — contracts/order-workspace.md §7
-- [ ] T019 [P] Add l10n key `salesOrderContinueToDeliveryAction` ("Continue to
+- [X] T019 [P] Add l10n key `salesOrderContinueToDeliveryAction` ("Continue to
       delivery"/"Continuar a entrega") to `lib/l10n/app_en.arb` and
       `lib/l10n/app_es.arb`, in parity — contracts/order-workspace.md §7
-- [ ] T020 [P] Add l10n key `salesOrderCompleteDeliveryAction` ("Complete
+- [X] T020 [P] Add l10n key `salesOrderCompleteDeliveryAction` ("Complete
       order"/"Completar pedido") to `lib/l10n/app_en.arb` and
       `lib/l10n/app_es.arb`, for the `closeLabel` added in T010 —
       contracts/order-workspace.md §7
-- [ ] T021 Create `lib/features/sales/presentation/orders/order_workspace_screen.dart`:
+- [X] T021 Create `lib/features/sales/presentation/orders/order_workspace_screen.dart`:
       the top-level host. Installs the nested `ProviderScope` overriding
       `saleEditorProvider`, `saleWritesScopeProvider`,
       `saleConfirmErrorProvider` and `saleConfirmFailureProvider` (all four —
@@ -193,7 +193,7 @@ speculative change; spec FR-046).
       `/sales/orders`'s branch, its `PrivilegeGate(SystemObject.salesOrders,
       AccessRight.read)`, and every other route untouched —
       contracts/order-workspace.md §1 (depends on T021)
-- [ ] T023 [P] In `lib/features/sales/presentation/pos_workspace_screen.dart`,
+- [X] T023 [P] In `lib/features/sales/presentation/pos_workspace_screen.dart`,
       update the `CaptureStep` call site to pass
       `onContinue: () => ref.read(posStepControllerProvider.notifier).advanceToCobro()`,
       `continueLabel` (the existing payment-step label) and
@@ -201,7 +201,14 @@ speculative change; spec FR-046).
       explicitly rather than assumed by the widget — contracts/shared-step-seam.md §2
       (depends on T005)
 - [ ] T024 Delete `lib/features/sales/presentation/orders/order_screen.dart`
-      (FR-048) once T021/T022 render in its place
+      (FR-048) once T021/T022 render in its place. **Deliberately sequenced
+      after T052-T057** (Polish's re-homing of the 9 test files that still
+      construct `OrderScreen` directly) rather than immediately: deleting it
+      now, before those tests are re-pointed, would leave the suite unable to
+      compile for the whole span in between with no corresponding benefit —
+      the file is already unreachable (T022 repoints both routes) and
+      `flutter analyze` confirms it, so nothing user-visible depends on this
+      task's timing, only the suite's ability to keep verifying itself
 
 **Checkpoint**: `flutter analyze` is clean; every point-of-sale widget/unit
 test from the T002 baseline still passes with **unchanged assertions**
@@ -269,51 +276,66 @@ status, and a delivery order recorded against it (spec.md US1).
 
 ### Implementation for User Story 1
 
-- [ ] T029 [US1] Create `lib/features/sales/presentation/orders/customer_step.dart`:
+- [X] T029 [US1] Create `lib/features/sales/presentation/orders/customer_step.dart`:
       renders `CustomerBar` in its searching mode with
       `excludeGenericCustomer: true` and `attachFulfillmentIntent:
       FulfillmentMode.delivery` (T013), plus the inline-create entry point
       already on `CustomerBar`; on a successful attach, calls
       `ref.read(orderStepControllerProvider.notifier).advanceToVenta()` —
       research R3 (depends on T013, T016)
-- [ ] T030 [US1] In `order_workspace_screen.dart`, wire the `venta` case to
+- [X] T030 [US1] In `order_workspace_screen.dart`, wire the `venta` case to
       render `CaptureStep(sale:, onContinue: () =>
       orderStepControllerProvider.notifier.advanceToEntrega(),
       continueLabel: l10n.salesOrderContinueToDeliveryAction (T019),
       showFulfillmentSelector: false)` alongside `OrderHeaderPanel` below the
       customer bar (spec 037's ordering, unchanged) — contracts/order-workspace.md §3
       (depends on T005, T021)
-- [ ] T031 [US1] In `order_workspace_screen.dart`, wire the `entrega` case to
+- [X] T031 [US1] In `order_workspace_screen.dart`, wire the `entrega` case to
       render `DeliveryStep(sale:, mode: FulfillmentMode.delivery, onClose: …)`
       with `LineDistributionFoot`'s `closeLabel` (T010) set from
       `l10n.salesOrderCompleteDeliveryAction` (T020) —
       contracts/order-workspace.md §3 (depends on T010, T021)
-- [ ] T032 [US1] Using T028's integration test as the check, verify (and
+- [X] T032 [US1] Using T028's integration test as the check, verify (and
       adjust `order_workspace_screen.dart` / T009's migration if needed) that
       creating the first destination — which triggers
       `confirmBeforePayableAction` through the migrated seam — commits the
       **order**, not a register sale open at the same time; this is the
       single most important behaviour in this story (spec A2, FR-032, FR-044)
-- [ ] T033 [P] [US1] In `lib/features/sales/presentation/orders/order_header_panel.dart`,
+- [X] T033 [P] [US1] In `lib/features/sales/presentation/orders/order_header_panel.dart`,
       remove the ship-to and contact fields (FR-050) — the two fields, their
       labels, and their disclosure-order entries; retire
       `salesOrderContactLabel`/`salesOrderShipToLabel` from both `.arb` files
       once nothing references them — contracts/order-workspace.md §6, §7
-- [ ] T034 [P] [US1] In `lib/features/sales/presentation/orders/customer_step.dart`
-      or `order_workspace_screen.dart`, surface an `AppError.creditHold`
-      (T014) from the Cliente step's attach without advancing past it, letting
-      the user pick a different customer (FR-055)
-- [ ] T035 [P] [US1] Give the workspace's `saleConfirmFailureProvider`
-      override (in `order_workspace_screen.dart`) two branches: an
-      `AppError.creditHold` (T014) is shown without implying the lines are at
-      fault and without navigating away from Entrega's own banner slot; every
-      other `AppError` is shown as today (naming the offending products for a
-      goods refusal) and returns the user to Venta (FR-033, FR-056)
-- [ ] T036 [US1] Move (not delete) the eight `order_screen.dart` l10n keys this
-      story still needs — `salesOrderConfirmAction`→(repurposed as the commit
-      confirmation, if any), `salesOrderNoLinesYet`,
-      `salesOrderChooseCustomerFirst` — into use by the new files before T024
-      deletes their old home
+- [X] T034 [P] [US1] **Needed no code.** `CustomerBar._updateHeader`'s existing
+      `catch (AppError e) { setState(() => _error = e); }` + its own
+      `ErrorBanner` already renders whatever `AppError.creditHold` (T014)
+      carries, and a failed attach never calls `onAttached` — so the step
+      never advances and the user is already free to search again. FR-055 is
+      satisfied by composition, not by new code in `customer_step.dart`.
+- [X] T035 [P] [US1] **Simplified from the original two-branch design.**
+      `order_workspace_screen.dart`'s `saleConfirmFailureProvider` override
+      always returns to Venta, regardless of error type — mirroring the
+      register's own default exactly. Reconsidered during implementation:
+      Entrega itself offers no remedy for either refusal (no customer picker,
+      no line editing), while Venta's embedded `CustomerBar` **and** its lines
+      are both reachable from there — Venta is the one step that can fix
+      *either* problem. FR-056's "distinguish the two" is satisfied by the
+      message alone (`ErrorBanner` already renders `CreditHoldError` with its
+      own distinct headline, never implying the lines are at fault) rather
+      than by routing differently.
+- [X] T036 [US1] **Superseded, not merely moved.** Re-examined against the
+      redesigned flow rather than assumed: `salesOrderNoLinesYet` is replaced
+      by `CaptureStep`'s own existing `posNoLinesHint` (already shared);
+      `salesOrderChooseCustomerFirst` is replaced by the Cliente step's
+      existence as a whole step, not a hint beside a disabled field;
+      `salesOrderConfirmAction` is replaced by
+      `salesOrderCompleteDeliveryAction` (T020) on Entrega's own close
+      action, since there is no separate "confirm" action in this flow at
+      all — commitment happens on the first destination create (spec A2).
+      All three keys stay alive for now only because `order_screen.dart`
+      still uses them (T024's deferral); when that file is deleted, retire
+      these three alongside `salesOrderContactLabel`/`salesOrderShipToLabel`
+      (T033's own precedent) rather than moving them anywhere
 
 **Checkpoint**: User Story 1 is fully functional and independently testable.
 This is the MVP.

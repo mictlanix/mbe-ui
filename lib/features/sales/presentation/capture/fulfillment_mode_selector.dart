@@ -7,8 +7,8 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One segment of [_ModeTrack].
@@ -264,9 +264,12 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
       // cashier names each actual destination's own address later, on the
       // Entrega step. `fulfillmentIntent` alone is what the mode now
       // survives a resume as (mbe-api#171).
-      await ref
-          .read(posSaleControllerProvider.notifier)
-          .updateHeader(fulfillmentIntent: mode);
+      // Through the seam, not `posSaleControllerProvider` directly (research
+      // R1): this widget is only ever rendered by the register today, but
+      // the write itself — not the local step-mode tracking below, which is
+      // POS's own UI state and has no back-office equivalent — is the one
+      // piece here a second host could otherwise silently misdirect.
+      await ref.read(saleEditorProvider).updateHeader(fulfillmentIntent: mode);
       if (mounted) ref.read(posStepControllerProvider.notifier).setMode(mode);
     } on AppError catch (e) {
       setState(() => _error = e);

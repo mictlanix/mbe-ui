@@ -19,6 +19,8 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
@@ -218,6 +220,67 @@ Future<PosRoutedHarness> pumpPosRouted(
       GoRoute(
         path: advancedSearchPath,
         builder: (context, state) => AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
+      ),
+    ],
+  );
+
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('es', 'MX'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return (router, container);
+}
+
+/// spec 039 contracts/order-workspace.md §6: the back-office order
+/// workspace's own twin of [pumpPosRouted] — a real `GoRouter` wired with
+/// `/sales/orders`, `/sales/orders/new` and `/sales/orders/:orderId`
+/// (mirroring `app_router.dart`), needed by any test exercising the
+/// `OrderWorkspaceScreen`'s own `GoRouter.of(context)` calls (the `/new` →
+/// `/sales/orders/<id>` URL rewrite, Back) rather than a bare widget pump.
+Future<PosRoutedHarness> pumpOrdersRouted(
+  WidgetTester tester, {
+  List<Override> overrides = const [],
+  String initialLocation = '/sales/orders/new',
+  Size surface = const Size(1200, 2400),
+}) async {
+  tester.view.physicalSize = surface;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+
+  SharedPreferences.setMockInitialValues({});
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ...overrides,
+    ],
+  );
+  addTearDown(container.dispose);
+
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: [
+      GoRoute(
+        path: '/sales/orders',
+        builder: (context, state) =>
+            Scaffold(body: SalesOrdersListScreen(query: ListQuery.fromUri(state.uri))),
+      ),
+      GoRoute(
+        path: '/sales/orders/new',
+        builder: (context, state) => const OrderWorkspaceScreen(),
+      ),
+      GoRoute(
+        path: '/sales/orders/:orderId',
+        builder: (context, state) =>
+            OrderWorkspaceScreen(orderId: int.parse(state.pathParameters['orderId']!)),
       ),
     ],
   );

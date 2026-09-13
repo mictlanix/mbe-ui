@@ -22,7 +22,6 @@ import 'package:mbe_ui/features/catalog/domain/repositories/employee_repository.
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 
 import 'pos_test_harness.dart';
-import 'sales_orders_filters_test.dart' show pumpOrdersRouted;
 import 'sales_orders_list_screen_test.dart' show stubListOrders;
 
 class _FixedAuthNotifier extends AuthNotifier {

@@ -19,7 +19,13 @@ abstract class SalesOrderRepository {
   /// brand-new sale be a single POST instead of an empty create followed by
   /// [updateHeader] (spec 036 research.md R5) — every other caller still
   /// passes neither, for the plain empty-body open FR-002 describes.
-  Future<Sale> open({int? customer, int? salesperson});
+  ///
+  /// [fulfillmentIntent] is spec 039's own addition (research R3): the
+  /// back-office order workspace's Cliente step records its intent to
+  /// deliver in this same request, so the order never has a moment where it
+  /// exists without one. POS never passes it here — it sets the intent later,
+  /// through [updateHeader], via its own fulfilment-mode selector.
+  Future<Sale> open({int? customer, int? salesperson, FulfillmentMode? fulfillmentIntent});
 
   Future<Sale> getById({required int saleId});
 

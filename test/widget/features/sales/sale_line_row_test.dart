@@ -879,7 +879,7 @@ void main() {
       (tester) async {
         await pumpPos(
           tester,
-          CaptureStep(sale: testSale(lines: [testLine()])),
+          CaptureStep(sale: testSale(lines: [testLine()]), onContinue: () {}),
           overrides: [warehouseOverride(warehouseRepository)],
           surface: const Size(1024, 900),
         );

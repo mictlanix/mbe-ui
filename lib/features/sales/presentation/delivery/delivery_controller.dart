@@ -11,7 +11,7 @@ import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart'
     show DestinationLineRequest;
 import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 
 part 'delivery_controller.g.dart';
 
@@ -26,7 +26,13 @@ part 'delivery_controller.g.dart';
 /// A refused create leaves this list exactly as it was: the failure is thrown
 /// for the editor to render, and every already-created destination is
 /// untouched (FR-037).
-@riverpod
+/// `dependencies: [saleWritesScope]` (spec 039 research R1, matching
+/// `product_lookup_controller.dart`'s own precedent): this family provider
+/// reads `saleWritesScopeProvider` internally (`_tracked` below), so without
+/// the annotation Riverpod would resolve it against the *root* container
+/// regardless of which host's nested `ProviderScope` is rendering it,
+/// tracking a back-office order's writes against the register's own scope.
+@Riverpod(dependencies: [saleWritesScope])
 class DeliveryController extends _$DeliveryController {
   @override
   Future<List<Destination>> build(Sale sale) async {
@@ -78,8 +84,9 @@ class DeliveryController extends _$DeliveryController {
   /// the distribution a gated step reads is already the sale's own (spec
   /// 031 FR-003, research R6). Every mutating method below routes through
   /// this.
-  Future<T> _tracked<T>(Future<T> Function() action) =>
-      ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
+  Future<T> _tracked<T>(Future<T> Function() action) => ref
+      .read(pendingWritesProvider(ref.read(saleWritesScopeProvider)).notifier)
+      .track(action);
 
   /// Records one addressed destination (FR-027). The **first** destination
   /// (no destinations yet) is the one case where "the obvious, almost-always-

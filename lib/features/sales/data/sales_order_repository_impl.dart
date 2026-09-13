@@ -25,20 +25,25 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
   final api.SalesOrdersApi _api;
 
   @override
-  Future<Sale> open({int? customer, int? salesperson}) async {
+  Future<Sale> open({
+    int? customer,
+    int? salesperson,
+    FulfillmentMode? fulfillmentIntent,
+  }) async {
     try {
       final response = await _api.createSalesOrderApiV1SalesOrdersPost(
         salesOrderCreate: api.SalesOrderCreate((b) {
           b
             ..customer = customer
-            ..salesperson = salesperson;
+            ..salesperson = salesperson
+            ..fulfillmentIntent = fulfillmentIntent?.toApi();
         }),
       );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return Sale.fromResponse(result);
     } on DioException catch (e) {
-      throw _toAppError(e);
+      throw _toSalesOrderError(e);
     }
   }
 
@@ -97,7 +102,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
       if (result == null) throw const AppError.server();
       return Sale.fromResponse(result);
     } on DioException catch (e) {
-      throw _toAppError(e);
+      throw _toSalesOrderError(e);
     }
   }
 
@@ -355,13 +360,36 @@ AppError _toAppError(DioException error) {
   return mapped is AppError ? mapped : mapDioException(error);
 }
 
+/// A credit refusal (`_assert_credit_allowed`/`_assert_within_credit_limit`,
+/// spec 039 research R8) answers a `422` with a **plain string** `detail` —
+/// "Customer is on credit hold: …", "Customer has no credit limit", "Customer
+/// is over their credit limit: …" — verified against a live backend. The
+/// global interceptor's own mapping (`mapDioException`) reads `detail` only as
+/// a `List` (FastAPI's field-level validation shape), so a plain string there
+/// maps to `AppError.validation(const [])` — the message silently vanishes,
+/// not merely goes unstyled. Scoped to the three sales-order calls that can
+/// actually produce this shape (create, update, confirm) rather than folded
+/// into the shared [_toAppError]: a plain-string `422` from some other
+/// endpoint means something else entirely, and miscategorising it as a
+/// credit hold would be worse than the generic message it already gets.
+AppError _toSalesOrderError(DioException error) {
+  final data = error.response?.data;
+  if (error.response?.statusCode == 422 && data is Map) {
+    final detail = data['detail'];
+    if (detail is String) return AppError.creditHold(detail);
+  }
+  return _toAppError(error);
+}
+
 /// Confirmation refusals carry more than a headline (FR-039,
 /// contracts/pos-screen.md §6): mbe-api answers a 409 with
 /// `{"detail": {"message": "Insufficient stock", "lines": ["`PRODUCT` requires
 /// stock but no warehouse is set", ...]}}` — verified against a live backend.
 /// `mapDioException` keeps only `message`, which would leave the cashier
 /// knowing something is wrong but not which line, so the per-line reasons are
-/// appended here. Every other endpoint keeps the plain [_toAppError] mapping.
+/// appended here. A confirm can also fail on credit (spec 039 FR-056) — that
+/// shape falls through to [_toSalesOrderError] rather than the plain
+/// [_toAppError] every other endpoint uses, so it is not lost the same way.
 AppError _toConfirmError(DioException error) {
   final data = error.response?.data;
   if (data is Map) {
@@ -380,7 +408,7 @@ AppError _toConfirmError(DioException error) {
       }
     }
   }
-  return _toAppError(error);
+  return _toSalesOrderError(error);
 }
 
 /// `quantity`/`price`/`discount_rate`/`tax_rate` are all `anyOf: [string,

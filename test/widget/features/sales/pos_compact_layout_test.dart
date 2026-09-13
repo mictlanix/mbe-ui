@@ -109,7 +109,7 @@ void main() {
     when(() => salesOrders.open()).thenAnswer((_) async => sale);
     await pumpPos(
       tester,
-      CaptureStep(sale: sale),
+      CaptureStep(sale: sale, onContinue: () {}),
       surface: surface,
       overrides: [
         salesOrderOverride(salesOrders),

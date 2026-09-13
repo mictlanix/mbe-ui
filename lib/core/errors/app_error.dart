@@ -22,6 +22,15 @@ sealed class AppError with _$AppError {
 
   /// Connection/timeout failure before a response is received.
   const factory AppError.network([String? message]) = NetworkError;
+
+  /// A `422` whose `detail` is a plain string naming a credit refusal —
+  /// arrears, no credit limit, or over the limit (spec 039 research R8) —
+  /// rather than the field-level list `ValidationError` carries or the
+  /// `{"message", "lines"}` shape a goods refusal carries. Its own variant
+  /// rather than folded into [ServerError] so a caller can tell "this
+  /// customer cannot take credit" apart from any other server refusal by
+  /// type, not by matching the server's own prose (spec 039 FR-055/FR-056).
+  const factory AppError.creditHold([String? message]) = CreditHoldError;
 }
 
 /// A single `loc`/`msg`/`type` entry from mbe-api's `ValidationError` schema.
@@ -45,6 +54,7 @@ extension AppErrorServerMessage on AppError {
     NotFoundError(message: final m) => m,
     ServerError(message: final m) => m,
     NetworkError(message: final m) => m,
+    CreditHoldError(message: final m) => m,
     ValidationError() => null,
   };
 }

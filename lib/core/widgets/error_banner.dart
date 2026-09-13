@@ -70,6 +70,7 @@ class ErrorBanner extends StatelessWidget {
       NotFoundError() => [l10n.errorNotFoundGeneric],
       ServerError() => [l10n.errorServerGeneric],
       NetworkError() => [l10n.errorNetworkGeneric],
+      CreditHoldError() => [l10n.errorCreditHoldGeneric],
     };
 
     // The server's own detail, when it sent one, below the localized
@@ -87,6 +88,7 @@ class ErrorBanner extends StatelessWidget {
     final detail = switch (error) {
       ServerError(message: final m) => m,
       NotFoundError(message: final m) => m,
+      CreditHoldError(message: final m) => m,
       AuthError() || NetworkError() || ValidationError() => null,
     };
     if (detail == null || detail.isEmpty) return generic;

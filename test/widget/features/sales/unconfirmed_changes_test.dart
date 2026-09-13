@@ -66,7 +66,11 @@ void main() {
       Consumer(
         builder: (context, ref, _) {
           final sale = ref.watch(posSaleControllerProvider).valueOrNull;
-          return CaptureStep(sale: sale);
+          return CaptureStep(
+            sale: sale,
+            onContinue: () =>
+                ref.read(posStepControllerProvider.notifier).advanceToCobro(),
+          );
         },
       ),
       overrides: [

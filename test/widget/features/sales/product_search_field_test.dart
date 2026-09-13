@@ -194,7 +194,10 @@ void main() {
           builder: (_, _) => Scaffold(
             body: Consumer(
               builder: (context, ref, _) =>
-                  CaptureStep(sale: ref.watch(posSaleControllerProvider).valueOrNull),
+                  CaptureStep(
+                    sale: ref.watch(posSaleControllerProvider).valueOrNull,
+                    onContinue: () {},
+                  ),
             ),
           ),
         ),

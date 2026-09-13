@@ -18,7 +18,7 @@ import 'package:mbe_ui/features/sales/presentation/delivery/destination_card.dar
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_counter_row.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/line_distribution_panel.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The Entrega step (contracts/pos-screen.md §3, spec 026
@@ -42,11 +42,17 @@ class DeliveryStep extends ConsumerStatefulWidget {
     required this.sale,
     required this.mode,
     required this.onClose,
+    this.closeLabel,
   });
 
   final Sale sale;
   final FulfillmentMode mode;
   final VoidCallback onClose;
+
+  /// Overrides the close button's label — see
+  /// [LineDistributionFoot.closeLabel]. `null` (the default) keeps the
+  /// register's own wording unchanged.
+  final String? closeLabel;
 
   @override
   ConsumerState<DeliveryStep> createState() => _DeliveryStepState();
@@ -252,11 +258,14 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
             .read(deliveryControllerProvider(widget.sale).notifier)
             .distribution();
         final complete = isDistributionComplete(distribution, isMixed: _isMixed);
-        // spec 031 FR-007: additional to `complete`/`_closing`, not instead
-        // of them — an assignment or a destination write still outstanding
-        // must not let the cashier finish on a distribution that is about
-        // to change.
-        final writesPending = ref.watch(pendingWritesProvider(posWritesScope)) > 0;
+        // spec 031 FR-007, spec 039 FR-007: additional to `complete`/
+        // `_closing`, not instead of them — an assignment or a destination
+        // write still outstanding must not let the user finish on a
+        // distribution that is about to change. Read through the seam so
+        // each host's own scope is checked (contracts/shared-step-seam.md §3).
+        final writesPending =
+            ref.watch(pendingWritesProvider(ref.watch(saleWritesScopeProvider))) >
+            0;
         final outstanding = distribution
             .where((d) => !d.isFullyDistributed)
             .toList();
@@ -398,6 +407,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                       onSweepAndClose: outstandingMessage == null
                           ? null
                           : () => _close(distribution, sweepRemainder: true),
+                      closeLabel: widget.closeLabel,
                     ),
                   ],
                 ),
@@ -439,6 +449,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
               onSweepAndClose: outstandingMessage == null
                   ? null
                   : () => _close(distribution, sweepRemainder: true),
+              closeLabel: widget.closeLabel,
             ),
           ],
         );

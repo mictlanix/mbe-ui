@@ -52,6 +52,9 @@ class CustomerBar extends ConsumerStatefulWidget {
     required this.sale,
     this.enabled = true,
     this.excludeGenericCustomer = false,
+    this.attachFulfillmentIntent,
+    this.startInSearchMode = false,
+    this.onAttached,
   });
 
   /// `null` before the first action has opened a sale. The band still renders
@@ -73,6 +76,29 @@ class CustomerBar extends ConsumerStatefulWidget {
   /// sale still needs to default to and allow that customer.
   final bool excludeGenericCustomer;
 
+  /// spec 039 FR-015, research R3: recorded in the **same** write that opens
+  /// the draft on a first customer attach, so the order's intent to deliver
+  /// is set before the server ever has a chance to omit it. `null` (the
+  /// default) is a no-op for POS, which has its own fulfilment-mode selector
+  /// for this. Has no effect once a sale already exists — that is what
+  /// [FulfillmentModeSelector] is for, and this bar does not compete with it.
+  final FulfillmentMode? attachFulfillmentIntent;
+
+  /// spec 039 FR-009: the back-office order workspace's Cliente step shows a
+  /// customer search from its first frame — there is nothing else to fill
+  /// in until one is chosen, so the ordinary facts-view-with-a-"Buscar"-
+  /// button start is skipped. `false` (the default) keeps POS's own
+  /// behaviour unchanged: a sale it already has a customer on opens
+  /// reporting facts, not searching.
+  final bool startInSearchMode;
+
+  /// spec 039: called once a customer has actually been attached (never for
+  /// a terms-only change) — the back-office order workspace's Cliente step
+  /// uses this to advance to Venta; `null` (the default) is what POS keeps,
+  /// since its own next step is chosen by the fulfilment-mode selector, not
+  /// by attaching a customer.
+  final VoidCallback? onAttached;
+
   @override
   ConsumerState<CustomerBar> createState() => _CustomerBarState();
 }
@@ -82,7 +108,9 @@ enum _CustomerBandMode { facts, searching }
 class _CustomerBarState extends ConsumerState<CustomerBar> {
   AppError? _error;
   bool _busy = false;
-  _CustomerBandMode _mode = _CustomerBandMode.facts;
+  late _CustomerBandMode _mode = widget.startInSearchMode
+      ? _CustomerBandMode.searching
+      : _CustomerBandMode.facts;
 
   /// Returns whether the write succeeded — spec 037's credit-terms follow-up
   /// (`_attachCustomer` below) needs to know before it dares a second write,
@@ -106,6 +134,14 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
         customer != null &&
         previousMode != FulfillmentMode.counterPickup &&
         ref.read(appSettingsProvider).isGenericCustomer(customer);
+    // spec 039 FR-015, research R3: composed with `demoteToPickup`, not
+    // overriding it — the two can never both apply. `demoteToPickup` needs an
+    // existing sale to demote *from*; `attachFulfillmentIntent` only fires on
+    // the first attach to a sale that does not exist yet.
+    final firstAttach = customer != null && widget.sale == null;
+    final fulfillmentIntent = demoteToPickup
+        ? FulfillmentMode.counterPickup
+        : (firstAttach ? widget.attachFulfillmentIntent : null);
     try {
       await ref
           .read(saleEditorProvider)
@@ -113,12 +149,13 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
             customer: customer,
             paymentTerms: paymentTerms,
             salesperson: salesperson,
-            fulfillmentIntent: demoteToPickup ? FulfillmentMode.counterPickup : null,
+            fulfillmentIntent: fulfillmentIntent,
           );
       // A customer was just attached — return to reporting facts for it
       // (FR-023). A terms-only change has no face to return from.
       if (customer != null && mounted) {
         setState(() => _mode = _CustomerBandMode.facts);
+        widget.onAttached?.call();
       }
       if (demoteToPickup && mounted) {
         // Keeps the POS mode selector's own local state in step with the

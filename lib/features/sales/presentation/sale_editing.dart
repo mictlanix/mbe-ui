@@ -85,24 +85,33 @@ mixin SaleEditing implements SaleEditor {
   }) => tracked(() async {
     final repository = ref.read(salesOrderRepositoryProvider);
     // spec 036 research.md R5: the very first customer pick on a brand-new
-    // sale — no sale open yet, and nothing beyond customer/salesperson
-    // requested — opens with both already set, one POST instead of an empty
-    // create followed by this same method's own PUT below. Any other field
-    // requested alongside falls through to the general path unchanged,
-    // since `open()` only ever takes these two.
+    // sale — no sale open yet, and nothing beyond customer/salesperson/
+    // fulfillmentIntent requested — opens with all three already set, one
+    // POST instead of an empty create followed by this same method's own PUT
+    // below. `fulfillmentIntent` joined this list in spec 039 (research R3):
+    // the back-office order's Cliente step attaches its first customer with
+    // an intent to deliver in the same call, and disqualifying that from the
+    // fast path would open the order on the server's own default customer
+    // for one round trip before this method's PUT corrected it — exactly
+    // what FR-014 exists to prevent. Any *other* field requested alongside
+    // still falls through to the general path unchanged, since `open()`
+    // takes only these three.
     if (state.valueOrNull == null &&
         paymentTerms == null &&
         currency == null &&
         shipTo == null &&
         contact == null &&
         customerName == null &&
-        fulfillmentIntent == null &&
         promiseDate == null &&
         priority == null &&
         comment == null &&
         recipient == null) {
       state = AsyncValue.data(
-        await repository.open(customer: customer, salesperson: salesperson),
+        await repository.open(
+          customer: customer,
+          salesperson: salesperson,
+          fulfillmentIntent: fulfillmentIntent,
+        ),
       );
       return;
     }

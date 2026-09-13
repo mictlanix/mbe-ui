@@ -119,10 +119,12 @@ void main() {
       await tester.tap(find.byKey(_toggle));
       await tester.pumpAndSettle();
 
-      // Expanded: those six plus priority, currency, exchange rate, tax id,
-      // delivery details and contact. The comment is the deliberate exception
-      // (FR-016a) — genuinely typed into, so it keeps its text field.
-      expect(fields(), findsNWidgets(12));
+      // Expanded: those six plus priority, currency, exchange rate and tax
+      // id. Delivery details and contact left this group in spec 039 — a
+      // destination now owns both, per shipment (FR-050). The comment is the
+      // deliberate exception (FR-016a) — genuinely typed into, so it keeps
+      // its text field.
+      expect(fields(), findsNWidgets(10));
       expect(
         find.descendant(
           of: find.byType(OrderHeaderPanel),

@@ -237,6 +237,7 @@ class LineDistributionFoot extends ConsumerWidget {
     required this.onClose,
     required this.closing,
     this.onSweepAndClose,
+    this.closeLabel,
   });
 
   final String assigned;
@@ -261,6 +262,15 @@ class LineDistributionFoot extends ConsumerWidget {
   /// `fulfillment_mode.dart` means by "the delivery step itself asks about
   /// rather than inferring".
   final VoidCallback? onSweepAndClose;
+
+  /// Overrides the close button's label — the back-office order workspace's
+  /// own "Completar pedido" rather than the register's "Finalizar venta"
+  /// (spec 039 contracts/order-workspace.md §7). `null` (the default) keeps
+  /// the register's own label exactly as before this feature. The check icon
+  /// is unaffected either way: unlike `SaleTotalsBar`'s arrow, it marks
+  /// completion rather than a direction to the next step, and reads the same
+  /// on both hosts.
+  final String? closeLabel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -335,7 +345,7 @@ class LineDistributionFoot extends ConsumerWidget {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(l10n.posFinishSale),
+                      Text(closeLabel ?? l10n.posFinishSale),
                       SizedBox(width: spacing.xs),
                       const Icon(Icons.check),
                     ],
