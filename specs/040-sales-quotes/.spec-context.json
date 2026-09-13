@@ -1,0 +1,70 @@
+{
+  "workflow": "speckit",
+  "specName": "Sales Quotes — Cotizaciones",
+  "branch": "040-sales-quotes",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-13T01:35:29.549Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-13T01:36:26.902Z"
+    }
+  ],
+  "telemetryInstanceId": "3cd58b37-21b3-4d83-8cc1-63b8014f6e14",
+  "decisions": [
+    {
+      "decision": "Two steps: Cliente → Cotización, not a single screen with a customer gate",
+      "why": "A quote cannot be opened without an explicit customer (the server defaults it to Público en General), and a customer-as-gate on one screen is the pattern 039 is replacing",
+      "rejected": "One step with the customer as a CustomerBar gate, matching todays OrderScreen"
+    },
+    {
+      "decision": "Converting a quote lands the user in the back-office order workspace on the Venta (goods) step",
+      "why": "The converted order arrives with no fulfilment intent and no warehouse on any line, so it is not finishable as it stands",
+      "rejected": "Landing on a read-only order detail, or staying on the quote with a link"
+    },
+    {
+      "decision": "Quote line prices stay read-only; absolute price_adjustment is deferred, not dropped",
+      "why": "Conversion folds price_adjustment into price anyway, so anything expressible as a markup is expressible as a discount; adopting it would diverge the quote host from the other two capture hosts for no v1 gain",
+      "rejected": "An editable price / showPriceAdjustment flag on the shared line row"
+    },
+    {
+      "decision": "The quotes list shows all quotes in the facility by default, not only the current users",
+      "why": "Matches how the orders list behaves today and suits a back office where quoting is a shared activity",
+      "rejected": "Defaulting to the API mine filter, as legacy did"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "Hard dependency on 039-back-office-order-workspace: the shared capture step is host-agnostic only after 039, and conversion lands in the workspace 039 creates. Both features edit the same capture files, so parallel branches will conflict.",
+      "step": "specify",
+      "kind": "dependency"
+    },
+    {
+      "note": "mbe-api#213 degrades the list story: quote rows carry no customer name and list search silently ignores non-numeric terms. Does not block P1.",
+      "step": "specify",
+      "kind": "upstream"
+    },
+    {
+      "note": "mbe-api#209 does not account for orders raised by quote conversion; raised upstream. Affects only whether a converted order is distinguishable from a register sale on a list row.",
+      "step": "specify",
+      "kind": "upstream"
+    }
+  ],
+  "expectations": [
+    "Payment and delivery on the quote itself",
+    "Printing, PDF and email of a quote — no server-side rendering exists, and the sibling printing effort does not currently scope quotes",
+    "Absolute per-line price adjustment (deferred, not dropped)",
+    "Profit-margin and credit checks on quotes",
+    "Changing the orders list to show that an order came from a quote"
+  ]
+}
