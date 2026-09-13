@@ -5031,6 +5031,18 @@ abstract class AppLocalizations {
   /// **'Complete order'**
   String get salesOrderCompleteDeliveryAction;
 
+  /// Headline of the declined state shown when the back-office workspace is asked to open an order raised at the register (spec 039 FR-053, research R5)
+  ///
+  /// In en, this message translates to:
+  /// **'This order cannot be edited here'**
+  String get salesOrderForeignOrderTitle;
+
+  /// Body of the declined foreign-order state — says where the order belongs rather than only refusing (spec 039 FR-053)
+  ///
+  /// In en, this message translates to:
+  /// **'It was raised at the point of sale. Open it from Ventas instead.'**
+  String get salesOrderForeignOrderMessage;
+
   /// No description provided for @salesOrdersEmptyMessage.
   ///
   /// In en, this message translates to:

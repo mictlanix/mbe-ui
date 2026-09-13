@@ -187,7 +187,7 @@ speculative change; spec FR-046).
       `pos_workspace_screen.dart`'s shape (full-screen, no shell, the
       `/new` → `/:orderId` URL rewrite on first write) —
       contracts/order-workspace.md §1–§2 (depends on T003, T016, T018)
-- [ ] T022 In `lib/app/router/app_router.dart`, replace the `OrderScreen`
+- [X] T022 In `lib/app/router/app_router.dart`, replace the `OrderScreen`
       builders at `/sales/orders/new` and `/sales/orders/:orderId` with
       `OrderWorkspaceScreen()` / `OrderWorkspaceScreen(orderId:)`; leave
       `/sales/orders`'s branch, its `PrivilegeGate(SystemObject.salesOrders,
@@ -231,7 +231,7 @@ status, and a delivery order recorded against it (spec.md US1).
 
 ### Tests for User Story 1
 
-- [ ] T025 [P] [US1] Unit test in
+- [X] T025 [P] [US1] Unit test in
       `test/unit/features/sales/order_step_controller_test.dart`: forward
       transitions (`cliente → venta → entrega`); `returnToVenta()` and
       `returnToCliente()` **succeed while the order is a draft** and are
@@ -239,8 +239,11 @@ status, and a delivery order recorded against it (spec.md US1).
       as load-bearing as the refusal); `resumeTo` maps draft/no-customer →
       `cliente`, draft → `venta`, completed/paid → `entrega` — model on
       `pos_step_controller_test.dart`
-- [ ] T026 [P] [US1] Widget test in
-      `test/widget/features/sales/order_customer_step_test.dart`: the generic
+- [X] T026 [P] [US1] Widget test in
+      `test/widget/features/sales/order_workspace_test.dart`'s "the Cliente
+      step" group (not the separate `order_customer_step_test.dart` this
+      task first named — the step is only reachable through the workspace's
+      own router, so the tests live with the host that mounts it): the generic
       walk-in customer never appears in search results; **nothing is written
       before a customer is picked** (`verifyNever(open())` while the step is
       merely rendered and searched — FR-005, US1 acceptance scenario 1);
@@ -251,7 +254,7 @@ status, and a delivery order recorded against it (spec.md US1).
       returned `Sale` and immediate terms for one who has none (FR-016 — the
       server derives this, so this asserts it still surfaces correctly through
       the new step); the step advances to Venta
-- [ ] T027 [P] [US1] Widget test in
+- [X] T027 [P] [US1] Widget test in
       `test/widget/features/sales/order_workspace_test.dart`: Venta shows the
       product search and totals bar once a customer is attached; "Continuar a
       entrega" is disabled with zero lines and enabled with one; **and is
@@ -419,7 +422,7 @@ list and confirm the workspace declines it (spec.md US3).
 
 ### Tests for User Story 3
 
-- [ ] T040 [P] [US3] Widget test, re-homed from `order_resume_test.dart` to
+- [X] T040 [P] [US3] Widget test, re-homed from `order_resume_test.dart` to
       `test/widget/features/sales/order_workspace_resume_test.dart`: a draft
       with lines and no destinations reopens on Venta with lines/totals
       restored; a committed order with a destination reopens on Entrega
@@ -429,12 +432,12 @@ list and confirm the workspace declines it (spec.md US3).
       the case a blanket "no origin ⇒ decline" rule would have broken, and the
       only test that pins it); a stale-draft write refusal re-reads the order
       rather than leaving stale figures on screen
-- [ ] T041 [P] [US3] Widget test, re-homed from `order_cancel_test.dart` to
+- [X] T041 [P] [US3] Widget test, re-homed from `order_cancel_test.dart` to
       `test/widget/features/sales/order_workspace_cancel_test.dart`: the
       cancel action (behind confirmation) is offered only on a draft; a
       cancelled or already-committed order shows read-only with no
       destructive action
-- [ ] T042 [P] [US3] Widget test in
+- [X] T042 [P] [US3] Widget test in
       `test/widget/features/sales/order_workspace_foreign_order_test.dart`:
       opening an order on the generic walk-in customer, or with
       `fulfillmentIntent: counterPickup`, or carrying a non-cancelled payment,
@@ -444,11 +447,11 @@ list and confirm the workspace declines it (spec.md US3).
 
 ### Implementation for User Story 3
 
-- [ ] T043 [US3] In `order_workspace_screen.dart`, on opening an existing
+- [X] T043 [US3] In `order_workspace_screen.dart`, on opening an existing
       order call `OrderStepController.resumeTo(sale)` (T016) once, mirroring
       `pos_workspace_screen.dart`'s `_syncStepTo` guard against re-deriving on
       every rebuild — data-model.md §4 (depends on T016, T021)
-- [ ] T044 [US3] Create the interim foreign-order guard as a pure function
+- [X] T044 [US3] Create the interim foreign-order guard as a pure function
       (e.g. `lib/features/sales/presentation/orders/foreign_order_guard.dart`):
       returns true when the order's customer `isGenericCustomer`, or
       `fulfillmentIntent == FulfillmentMode.counterPickup`, or it carries any
@@ -461,19 +464,19 @@ list and confirm the workspace declines it (spec.md US3).
       afterwards for orders carrying no recorded origin. It is not deleted —
       deleting it would refuse to reopen every order the previous back-office
       editor raised, breaking SC-008** (spec A9, data-model §3).
-- [ ] T045 [US3] Wire `OrderEditorController.cancel()` (already implemented)
+- [X] T045 [US3] Wire `OrderEditorController.cancel()` (already implemented)
       to a cancel action visible only while `sale.isEditable`, behind the
       existing `AlertDialog` confirmation pattern from the deleted
       `order_screen.dart` — re-home its dialog keys
       (`sales_order_cancel_button`, `sales_order_cancel_confirm_button`) rather
       than inventing new ones (contracts/order-workspace.md §8)
-- [ ] T046 [P] [US3] Confirm the five cancel-dialog l10n keys —
+- [X] T046 [P] [US3] Confirm the five cancel-dialog l10n keys —
       `salesOrderCancelAction`, `salesOrderCancelDialogTitle`,
       `salesOrderCancelDialogMessage`, `salesOrderCancelDialogKeepEditing`,
       `salesOrderCancelDialogConfirm` — survive in `lib/l10n/app_en.arb` and
       `lib/l10n/app_es.arb` unchanged once T024 deletes `order_screen.dart`;
       they belong to no file being deleted, only re-pointed to by T045
-- [ ] T047 [P] [US3] Add l10n keys `salesOrderForeignOrderTitle` and
+- [X] T047 [P] [US3] Add l10n keys `salesOrderForeignOrderTitle` and
       `salesOrderForeignOrderMessage` for the declined-order explanation to
       `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, in parity
 
@@ -554,7 +557,7 @@ than new.
       after its first (list-side) one to the new workspace at 390px —
       contracts/order-workspace.md flagged this file as in-scope despite its
       name
-- [ ] T058 [P] Extend `pos_test_harness.dart`: add `pumpOrdersRouted`
+- [X] T058 [P] Extend `pos_test_harness.dart`: add `pumpOrdersRouted`
       (consolidating the private copy `sales_orders_filters_test.dart` already
       carries), `fixedOrderSale` (twin of `fixedPosSale`), a shared
       auth/privilege fixture (currently redeclared in 7 files), and
@@ -596,14 +599,14 @@ in Phases 1–7 depends on this phase; it is what finally satisfies FR-051–FR-
 and SC-010–SC-012, and what demotes T044's check from the primary test to the
 `origin == null` fallback it remains afterwards.
 
-- [ ] T064 Re-run OpenAPI codegen (`lib/generated/openapi/`) against
+- [X] T064 Re-run OpenAPI codegen (`lib/generated/openapi/`) against
       mbe-api's updated spec once #209 ships; extend the `Sale.fromResponse`
       mapping in `lib/features/sales/domain/entities/sale.dart` with `origin`
       (data-model.md §3) — constitution III
-- [ ] T065 In `sale_editing.dart`'s `ensureOpen`/`open()` path (or wherever the
+- [X] T065 In `sale_editing.dart`'s `ensureOpen`/`open()` path (or wherever the
       Cliente step's attach ultimately posts), send the origin value this
       workspace always writes — never editable afterwards
-- [ ] T066 Make T044's `foreign_order_guard.dart` three-way against the real
+- [X] T066 Make T044's `foreign_order_guard.dart` three-way against the real
       `Sale.origin` field: `backOffice` → resume, `pointOfSale` → decline,
       `null` → fall through to the existing register-shaped conditions,
       unchanged. FR-052 binds the first two arms — every order raised from
@@ -611,7 +614,7 @@ and SC-010–SC-012, and what demotes T044's check from the primary test to the
       the only answer available rather than a violation (spec A9, FR-052,
       data-model §3). **Do not delete the proxy conditions**; SC-008 depends on
       them for legacy back-office orders
-- [ ] T067 Update `test/widget/features/sales/order_workspace_foreign_order_test.dart`
+- [X] T067 Update `test/widget/features/sales/order_workspace_foreign_order_test.dart`
       (T042) for the three-way rule: `origin == pointOfSale` is declined on the
       field alone (no proxy consulted); `origin == backOffice` resumes even if a
       proxy condition would have matched it; `origin == null` still takes the

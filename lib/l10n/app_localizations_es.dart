@@ -2776,6 +2776,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesOrderCompleteDeliveryAction => 'Completar pedido';
 
   @override
+  String get salesOrderForeignOrderTitle =>
+      'Este pedido no se puede editar aquí';
+
+  @override
+  String get salesOrderForeignOrderMessage =>
+      'Se originó en el punto de venta. Ábrelo desde Ventas.';
+
+  @override
   String get salesOrdersEmptyMessage => 'Aún no hay pedidos en este periodo.';
 
   @override

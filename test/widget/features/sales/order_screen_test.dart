@@ -97,7 +97,7 @@ void main() {
     testWidgets('opens no order at all on mount', (tester) async {
       await pumpOrderScreen(tester);
 
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
       verifyNever(() => salesOrders.getById(saleId: any(named: 'saleId')));
     });
 
@@ -203,7 +203,7 @@ void main() {
       final container = await pumpOrderScreen(tester);
       final notifier = container.read(orderEditorControllerProvider(null).notifier);
 
-      when(() => salesOrders.open()).thenAnswer((_) async => testSale(id: 500));
+      when(() => anyOpen(salesOrders)).thenAnswer((_) async => testSale(id: 500));
       when(
         () => salesOrders.addLine(
           saleId: any(named: 'saleId'),
@@ -221,7 +221,7 @@ void main() {
       await notifier.addLine(product: 12, quantity: '1');
       await tester.pumpAndSettle();
 
-      verify(() => salesOrders.open()).called(1);
+      verify(() => anyOpen(salesOrders)).called(1);
       expect(
         container.read(orderEditorControllerProvider(null)).valueOrNull?.id,
         500,
@@ -238,7 +238,7 @@ void main() {
       await pumpOrderScreen(tester, orderId: 42);
       await tester.pumpAndSettle();
 
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
       verify(() => salesOrders.getById(saleId: 42)).called(1);
     });
 

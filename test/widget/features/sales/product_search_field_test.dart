@@ -118,7 +118,7 @@ void main() {
     customers = MockCustomerRepository();
     productRepository = MockProductRepository();
     supplierRepository = MockSupplierRepository();
-    when(() => salesOrders.open()).thenAnswer((_) async => testSale());
+    when(() => anyOpen(salesOrders)).thenAnswer((_) async => testSale());
     when(() => customers.get(customerId: any(named: 'customerId'))).thenAnswer(
       (_) async => const Customer(
         customerId: 7,
@@ -726,7 +726,7 @@ void main() {
         // have unmounted `/host` and, with it, this sale.
         expect(router.state.uri.path, advancedSearchPath);
         expect(container.read(posSaleControllerProvider).valueOrNull?.id, sale.id);
-        verify(() => salesOrders.open()).called(1);
+        verify(() => anyOpen(salesOrders)).called(1);
       },
     );
 
@@ -804,13 +804,13 @@ void main() {
           catalogProducts: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
         );
 
-        verifyNever(() => salesOrders.open());
+        verifyNever(() => anyOpen(salesOrders));
 
         await openAndTick(tester, 'CLA');
         await tester.tap(find.byKey(const Key('advanced_search_add_button')));
         await pumpSettled(tester);
 
-        verify(() => salesOrders.open()).called(1);
+        verify(() => anyOpen(salesOrders)).called(1);
         verify(
           () => salesOrders.addLine(
             saleId: any(named: 'saleId'),
@@ -938,7 +938,7 @@ void main() {
             comment: any(named: 'comment'),
           ),
         ).called(1);
-        verifyNever(() => salesOrders.open());
+        verifyNever(() => anyOpen(salesOrders));
       },
     );
 

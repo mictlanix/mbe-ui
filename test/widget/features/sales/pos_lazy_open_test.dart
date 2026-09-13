@@ -51,7 +51,7 @@ void main() {
     payments = MockCustomerPaymentRepository();
     warehouses = MockWarehouseRepository();
 
-    when(() => salesOrders.open()).thenAnswer((_) async => testSale());
+    when(() => anyOpen(salesOrders)).thenAnswer((_) async => testSale());
     when(
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
@@ -82,7 +82,7 @@ void main() {
     testWidgets('opens no sale at all', (tester) async {
       await pumpRegister(tester);
 
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
     });
 
     testWidgets('still invites a scan — that is what starts the sale', (
@@ -114,7 +114,7 @@ void main() {
 
         // The point of the whole file: rendering that header is not an
         // action, so nothing is created to render it.
-        verifyNever(() => salesOrders.open());
+        verifyNever(() => anyOpen(salesOrders));
       },
     );
 
@@ -209,7 +209,7 @@ void main() {
       await notifier.addLine(product: 12, quantity: '1');
       await tester.pumpAndSettle();
 
-      verify(() => salesOrders.open()).called(1);
+      verify(() => anyOpen(salesOrders)).called(1);
       expect(container.read(posSaleControllerProvider).valueOrNull, isNotNull);
     });
 
@@ -228,7 +228,7 @@ void main() {
         productLookupControllerProvider('clavo').future,
       );
 
-      verify(() => salesOrders.open()).called(1);
+      verify(() => anyOpen(salesOrders)).called(1);
       verify(() => salesOrders.productLookup(
             pattern: 'clavo',
             customer: 7,
@@ -248,7 +248,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(container.read(posSaleControllerProvider).valueOrNull, isNull);
-      verify(() => salesOrders.open()).called(1);
+      verify(() => anyOpen(salesOrders)).called(1);
     });
   });
 }

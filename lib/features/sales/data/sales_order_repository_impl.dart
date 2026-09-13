@@ -11,6 +11,7 @@ import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 
 final salesOrderRepositoryProvider = Provider<SalesOrderRepository>((ref) {
@@ -29,6 +30,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     int? customer,
     int? salesperson,
     FulfillmentMode? fulfillmentIntent,
+    SaleOrigin? origin,
   }) async {
     try {
       final response = await _api.createSalesOrderApiV1SalesOrdersPost(
@@ -36,7 +38,8 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
           b
             ..customer = customer
             ..salesperson = salesperson
-            ..fulfillmentIntent = fulfillmentIntent?.toApi();
+            ..fulfillmentIntent = fulfillmentIntent?.toApi()
+            ..origin = origin?.toApi();
         }),
       );
       final result = response.data;

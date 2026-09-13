@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
@@ -52,7 +53,12 @@ Sale testSale({
   // build a sale attached to the generic "Público en General" customer
   // (spec 036 FR-015/FR-016).
   int customer = 7,
+  // Defaults to `null`: "origin not recorded", which is what every order
+  // raised before mbe-api#209 carries and what most fixtures here predate.
+  // Pass a value to build an order that says where it came from.
+  SaleOrigin? origin,
 }) => Sale(
+  origin: origin,
   id: id,
   serial: serial,
   facility: 9,
@@ -299,6 +305,24 @@ Future<PosRoutedHarness> pumpOrdersRouted(
   await tester.pumpAndSettle();
   return (router, container);
 }
+
+/// `open()` with any arguments — the matcher to use whenever a test does not
+/// care *which* arguments an open carried.
+///
+/// Since mbe-api#209 every `SaleEditor` passes `origin` on every open
+/// (`SaleEditing.origin`), so a bare `repo.open()` matcher matches nothing.
+/// For a `when(...)` stub that shows up as a `MissingStubError`, which is
+/// loud. For `verifyNever(() => repo.open())` it does **not**: it would keep
+/// passing while the call it is meant to forbid happened with arguments —
+/// which is exactly how POS's anti-empty-draft rule would stop being tested
+/// without anyone noticing. Hence one shared matcher rather than 65
+/// hand-written argument lists.
+Future<Sale> anyOpen(SalesOrderRepository repo) => repo.open(
+  customer: any(named: 'customer'),
+  salesperson: any(named: 'salesperson'),
+  fulfillmentIntent: any(named: 'fulfillmentIntent'),
+  origin: any(named: 'origin'),
+);
 
 /// A phone, for the US5 compact-tier tests — below `LayoutBreakpoints.compact`
 /// (600) so every `isCompact` branch is the one under test.

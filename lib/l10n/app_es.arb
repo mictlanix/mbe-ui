@@ -879,6 +879,8 @@
   "salesOrderStepProgress": "Paso {current} de {total}",
   "salesOrderContinueToDeliveryAction": "Continuar a entrega",
   "salesOrderCompleteDeliveryAction": "Completar pedido",
+  "salesOrderForeignOrderTitle": "Este pedido no se puede editar aquí",
+  "salesOrderForeignOrderMessage": "Se originó en el punto de venta. Ábrelo desde Ventas.",
   "salesOrdersEmptyMessage": "Aún no hay pedidos en este periodo.",
   "salesOrderCancelAction": "Cancelar pedido",
   "salesOrderCancelDialogTitle": "¿Cancelar este pedido?",

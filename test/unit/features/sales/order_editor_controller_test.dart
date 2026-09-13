@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
 
@@ -50,7 +51,14 @@ void main() {
       );
 
       expect(result, isNull);
-      verifyNever(() => repository.open());
+      verifyNever(
+        () => repository.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: any(named: 'origin'),
+        ),
+      );
       verifyNever(() => repository.getById(saleId: any(named: 'saleId')));
     });
 
@@ -67,7 +75,14 @@ void main() {
     test('the first addLine opens the order, then adds the line', () async {
       final opened = _sale(id: 100);
       final withLine = _sale(id: 100);
-      when(() => repository.open()).thenAnswer((_) async => opened);
+      when(
+        () => repository.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: any(named: 'origin'),
+        ),
+      ).thenAnswer((_) async => opened);
       when(
         () => repository.addLine(
           saleId: 100,
@@ -84,7 +99,14 @@ void main() {
       final notifier = container.read(orderEditorControllerProvider(null).notifier);
       await notifier.addLine(product: 11, quantity: '1');
 
-      verify(() => repository.open()).called(1);
+      verify(
+        () => repository.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: SaleOrigin.backOffice,
+        ),
+      ).called(1);
       expect(
         container.read(orderEditorControllerProvider(null)).value?.id,
         100,

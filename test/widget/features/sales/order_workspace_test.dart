@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,8 +24,11 @@ import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -69,7 +74,8 @@ Override _authOverride([User user = _updaterUser]) =>
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
-class MockDeliveryOrderRepository extends Mock implements DeliveryOrderRepository {}
+class MockDeliveryOrderRepository extends Mock
+    implements DeliveryOrderRepository {}
 
 class MockPriceListRepository extends Mock implements PriceListRepository {}
 
@@ -110,6 +116,18 @@ void main() {
   late MockDeliveryOrderRepository deliveries;
   late MockPriceListRepository priceLists;
   late MockTaxpayerRecipientRepository taxpayers;
+  late AppLocalizations l10n;
+
+  /// Venta's forward action, as `SaleTotalsBar` renders it — the shared key,
+  /// because it is the shared widget (contracts/shared-step-seam.md).
+  FloatingActionButton continueButton(WidgetTester tester) =>
+      tester.widget<FloatingActionButton>(
+        find.byKey(const Key('pos_continue_to_payment')),
+      );
+
+  setUpAll(() async {
+    l10n = await AppLocalizations.delegate.load(const Locale('es'));
+  });
 
   setUp(() {
     salesOrders = MockSalesOrderRepository();
@@ -157,7 +175,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customerRecord());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
     // Entrega's own destinations list — empty, since this file's job is the
     // seam and the transition into the step, not `DeliveryStep` itself
@@ -174,7 +193,9 @@ void main() {
   }) async {
     final (_, container) = await pumpOrdersRouted(
       tester,
-      initialLocation: orderId == null ? '/sales/orders/new' : '/sales/orders/$orderId',
+      initialLocation: orderId == null
+          ? '/sales/orders/new'
+          : '/sales/orders/$orderId',
       overrides: [
         _authOverride(user),
         salesOrderOverride(salesOrders),
@@ -194,11 +215,14 @@ void main() {
         'search, not the facts view', (tester) async {
       await pumpWorkspace(tester);
 
-      verifyNever(() => salesOrders.open(
-        customer: any(named: 'customer'),
-        salesperson: any(named: 'salesperson'),
-        fulfillmentIntent: any(named: 'fulfillmentIntent'),
-      ));
+      verifyNever(
+        () => salesOrders.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: any(named: 'origin'),
+        ),
+      );
       expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
       // Nothing else to fill in yet — no product search, no header panel.
       expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
@@ -240,13 +264,19 @@ void main() {
         '(FR-014, FR-015)', (tester) async {
       when(
         () => customers.list(search: any(named: 'search'), limit: 10),
-      ).thenAnswer((_) async => const CustomerPage(items: [_realCustomer], total: 1));
-      final opened = testSale(customer: 7, fulfillmentIntent: FulfillmentMode.delivery);
+      ).thenAnswer(
+        (_) async => const CustomerPage(items: [_realCustomer], total: 1),
+      );
+      final opened = testSale(
+        customer: 7,
+        fulfillmentIntent: FulfillmentMode.delivery,
+      );
       when(
         () => salesOrders.open(
           customer: 7,
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: FulfillmentMode.delivery,
+          origin: SaleOrigin.backOffice,
         ),
       ).thenAnswer((_) async => opened);
       // The `/sales/orders/new` → `/sales/orders/<id>` URL rewrite mounts a
@@ -271,6 +301,7 @@ void main() {
           customer: 7,
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: FulfillmentMode.delivery,
+          origin: SaleOrigin.backOffice,
         ),
       ).called(1);
       verifyNever(
@@ -293,7 +324,10 @@ void main() {
     /// Fills the inline form's required fields and saves — the same sequence
     /// `customer_inline_create_test.dart` drives for the register's copy.
     Future<void> fillAndSave(WidgetTester tester) async {
-      await tester.enterText(find.byKey(const Key('pos_new_customer_code')), 'C-99');
+      await tester.enterText(
+        find.byKey(const Key('pos_new_customer_code')),
+        'C-99',
+      );
       await tester.enterText(
         find.byKey(const Key('pos_new_customer_name')),
         'FERRETERÍA LOS PINOS',
@@ -335,7 +369,10 @@ void main() {
       tester,
     ) async {
       await pumpWorkspace(tester);
-      expect(find.byKey(const Key('pos_create_customer_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_create_customer_button')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the action is absent without customers.create '
@@ -358,12 +395,16 @@ void main() {
           status: EntityStatus.active,
         ),
       );
-      final opened = testSale(customer: 99, fulfillmentIntent: FulfillmentMode.delivery);
+      final opened = testSale(
+        customer: 99,
+        fulfillmentIntent: FulfillmentMode.delivery,
+      );
       when(
         () => salesOrders.open(
           customer: 99,
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: FulfillmentMode.delivery,
+          origin: SaleOrigin.backOffice,
         ),
       ).thenAnswer((_) async => opened);
       when(
@@ -382,6 +423,7 @@ void main() {
           customer: 99,
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: FulfillmentMode.delivery,
+          origin: SaleOrigin.backOffice,
         ),
       ).called(1);
       expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
@@ -413,6 +455,7 @@ void main() {
           customer: any(named: 'customer'),
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: any(named: 'origin'),
         ),
       );
       // Still on Cliente, still searching.
@@ -434,7 +477,9 @@ void main() {
           comment: any(named: 'comment'),
           taxpayers: any(named: 'taxpayers'),
         ),
-      ).thenThrow(const AppError.server(statusCode: 422, message: 'Code already used'));
+      ).thenThrow(
+        const AppError.server(statusCode: 422, message: 'Code already used'),
+      );
 
       await pumpWorkspace(tester);
       await tester.tap(find.byKey(const Key('pos_create_customer_button')));
@@ -469,6 +514,7 @@ void main() {
           customer: any(named: 'customer'),
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: any(named: 'origin'),
         ),
       );
     });
@@ -478,10 +524,15 @@ void main() {
     // Reaches Venta the same way a real user does — via the Cliente step's
     // attach — exercising the URL rewrite's own re-derivation of the step
     // from the order's state (research R2), not a shortcut around it.
-    Future<ProviderContainer> pumpOnVenta(WidgetTester tester, {int lineCount = 0}) async {
+    Future<ProviderContainer> pumpOnVenta(
+      WidgetTester tester, {
+      int lineCount = 0,
+    }) async {
       when(
         () => customers.list(search: any(named: 'search'), limit: 10),
-      ).thenAnswer((_) async => const CustomerPage(items: [_realCustomer], total: 1));
+      ).thenAnswer(
+        (_) async => const CustomerPage(items: [_realCustomer], total: 1),
+      );
       final opened = testSale(
         customer: 7,
         fulfillmentIntent: FulfillmentMode.delivery,
@@ -492,6 +543,7 @@ void main() {
           customer: 7,
           salesperson: any(named: 'salesperson'),
           fulfillmentIntent: FulfillmentMode.delivery,
+          origin: SaleOrigin.backOffice,
         ),
       ).thenAnswer((_) async => opened);
       when(
@@ -499,7 +551,10 @@ void main() {
       ).thenAnswer((_) async => opened);
 
       final container = await pumpWorkspace(tester);
-      await tester.enterText(find.byKey(const Key('pos_customer_picker')), 'PINOS');
+      await tester.enterText(
+        find.byKey(const Key('pos_customer_picker')),
+        'PINOS',
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.text('C-7 — FERRETERÍA LOS PINOS'));
       await tester.pumpAndSettle();
@@ -517,7 +572,10 @@ void main() {
         'no lines (FR-022)', (tester) async {
       await pumpOnVenta(tester);
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-      expect(find.text(l10n.salesOrderContinueToDeliveryAction), findsOneWidget);
+      expect(
+        find.text(l10n.salesOrderContinueToDeliveryAction),
+        findsOneWidget,
+      );
       final button = tester.widget<FloatingActionButton>(
         find.byKey(const Key('pos_continue_to_payment')),
       );
@@ -534,6 +592,81 @@ void main() {
       expect(button.onPressed, isNotNull);
     });
 
+    testWidgets('the forward action is disabled for the whole of an '
+        'outstanding line write (FR-007, issue #164)', (tester) async {
+      final completer = Completer<Sale>();
+      when(
+        () => salesOrders.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer((_) => completer.future);
+
+      final container = await pumpOnVenta(tester, lineCount: 1);
+      expect(continueButton(tester).onPressed, isNotNull);
+
+      // Driven through the controller rather than a specific field: the gate
+      // reads `pendingWritesProvider(salesOrderWritesScope)`, which every
+      // mutating call registers in identically — and reading it through this
+      // workspace's own scope, never the register's, is the point
+      // (contracts/shared-step-seam.md §1).
+      // Keyed to 42, not null: the `/new` → `/sales/orders/42` rewrite has
+      // already remounted the workspace on the order's real id, and that is
+      // the family member the screen is watching.
+      final write = container
+          .read(orderEditorControllerProvider(42).notifier)
+          .updateLine(lineId: 5, discountRate: '0.15');
+      await tester.pump();
+      expect(
+        continueButton(tester).onPressed,
+        isNull,
+        reason: 'the totals on screen are not the ones the order will hold',
+      );
+
+      completer.complete(
+        testSale(
+          customer: 7,
+          fulfillmentIntent: FulfillmentMode.delivery,
+          lines: [testLine(id: 5, discountRate: '0.15')],
+        ),
+      );
+      await write;
+      await tester.pumpAndSettle();
+      expect(continueButton(tester).onPressed, isNotNull);
+    });
+
+    testWidgets('uncommitted text in a line field raises the keep/discard '
+        'prompt before advancing, and Entrega stays behind it (FR-008)', (
+      tester,
+    ) async {
+      await pumpOnVenta(tester, lineCount: 1);
+
+      await tester.enterText(
+        find.byKey(const Key('sale_line_discount_5')),
+        '15',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('pos_continue_to_payment')));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.posUnconfirmedChangesTitle), findsOneWidget);
+      expect(
+        find.byKey(const Key('delivery_add_destination_button')),
+        findsNothing,
+        reason: 'the step has not advanced while the decision is open',
+      );
+
+      await tester.tap(find.text(l10n.posUnconfirmedChangesKeepEditing));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
+    });
+
     testWidgets('choosing "Continuar a entrega" advances to Entrega', (
       tester,
     ) async {
@@ -544,7 +677,10 @@ void main() {
       // Entrega is now showing: its own destinations empty-state/add action
       // replaces Venta's product search field.
       expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
-      expect(find.byKey(const Key('delivery_add_destination_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('delivery_add_destination_button')),
+        findsOneWidget,
+      );
     });
   });
 }

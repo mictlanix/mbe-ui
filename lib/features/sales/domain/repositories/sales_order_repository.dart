@@ -3,6 +3,7 @@ import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 /// Sale lifecycle: open, edit its header, capture lines, confirm, read one
 /// back, list the register's open sales, and look products up
@@ -25,7 +26,19 @@ abstract class SalesOrderRepository {
   /// deliver in this same request, so the order never has a moment where it
   /// exists without one. POS never passes it here — it sets the intent later,
   /// through [updateHeader], via its own fulfilment-mode selector.
-  Future<Sale> open({int? customer, int? salesperson, FulfillmentMode? fulfillmentIntent});
+  ///
+  /// [origin] records which workflow raised the order (mbe-api#209, spec 039
+  /// FR-051). Every caller passes it — it is the one fact nothing else on the
+  /// document can stand in for, and `SalesOrderUpdate` has no such field, so
+  /// an order raised without it can never be told apart afterwards. It comes
+  /// from the `SaleEditor` doing the opening rather than from a widget, so
+  /// the wrong host cannot send the wrong value.
+  Future<Sale> open({
+    int? customer,
+    int? salesperson,
+    FulfillmentMode? fulfillmentIntent,
+    SaleOrigin? origin,
+  });
 
   Future<Sale> getById({required int saleId});
 

@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 
 /// The mutation bodies [PosSaleController] and the back-office order
@@ -39,11 +40,26 @@ mixin SaleEditing implements SaleEditor {
   /// Never shared between the two.
   String get writesScope;
 
+  /// Which workflow this editor raises orders for (mbe-api#209, spec 039
+  /// FR-051) — `SaleOrigin.pointOfSale` for the register,
+  /// `SaleOrigin.backOffice` for the order workspace. Declared here rather
+  /// than passed in from a widget: the editor is the one thing that always
+  /// knows which host it belongs to, so no call site can send the wrong
+  /// value, and every path that opens an order carries it without each
+  /// caller having to remember.
+  SaleOrigin get origin;
+
   @override
   Future<Sale> ensureOpen() async {
     final current = state.valueOrNull;
     if (current != null) return current;
-    final opened = await ref.read(salesOrderRepositoryProvider).open();
+    // Carries [origin] like every other open: this is the path a register
+    // sale takes when the first *scan* opens it rather than a customer pick,
+    // and an order that recorded no origin can never be told apart later
+    // (`SalesOrderUpdate` has no such field).
+    final opened = await ref
+        .read(salesOrderRepositoryProvider)
+        .open(origin: origin);
     state = AsyncValue.data(opened);
     return opened;
   }
@@ -111,6 +127,7 @@ mixin SaleEditing implements SaleEditor {
           customer: customer,
           salesperson: salesperson,
           fulfillmentIntent: fulfillmentIntent,
+          origin: origin,
         ),
       );
       return;

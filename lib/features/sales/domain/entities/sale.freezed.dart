@@ -32,7 +32,14 @@ mixin _$Sale {
   // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
   // keeps that distinction rather than guessing). The capture step writes
   // this via `updateHeader` once the cashier picks a mode.
-  FulfillmentMode? get fulfillmentIntent => throw _privateConstructorUsedError;
+  FulfillmentMode? get fulfillmentIntent =>
+      throw _privateConstructorUsedError; // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
+  // `null` is "never recorded" — every order predating mbe-api migration
+  // 020 — and is **not** a synonym for either member: nothing infers it
+  // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
+  // opened the order; `SalesOrderUpdate` has no such field, so it cannot
+  // be edited afterwards.
+  SaleOrigin? get origin => throw _privateConstructorUsedError;
   DateTime get promiseDate => throw _privateConstructorUsedError;
   SaleStatus get status => throw _privateConstructorUsedError;
   List<SaleLine> get lines => throw _privateConstructorUsedError;
@@ -77,6 +84,7 @@ abstract class $SaleCopyWith<$Res> {
     String exchangeRate,
     int? shipTo,
     FulfillmentMode? fulfillmentIntent,
+    SaleOrigin? origin,
     DateTime promiseDate,
     SaleStatus status,
     List<SaleLine> lines,
@@ -121,6 +129,7 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
     Object? exchangeRate = null,
     Object? shipTo = freezed,
     Object? fulfillmentIntent = freezed,
+    Object? origin = freezed,
     Object? promiseDate = null,
     Object? status = null,
     Object? lines = null,
@@ -186,6 +195,10 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.fulfillmentIntent
                 : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
                       as FulfillmentMode?,
+            origin: freezed == origin
+                ? _value.origin
+                : origin // ignore: cast_nullable_to_non_nullable
+                      as SaleOrigin?,
             promiseDate: null == promiseDate
                 ? _value.promiseDate
                 : promiseDate // ignore: cast_nullable_to_non_nullable
@@ -269,6 +282,7 @@ abstract class _$$SaleImplCopyWith<$Res> implements $SaleCopyWith<$Res> {
     String exchangeRate,
     int? shipTo,
     FulfillmentMode? fulfillmentIntent,
+    SaleOrigin? origin,
     DateTime promiseDate,
     SaleStatus status,
     List<SaleLine> lines,
@@ -310,6 +324,7 @@ class __$$SaleImplCopyWithImpl<$Res>
     Object? exchangeRate = null,
     Object? shipTo = freezed,
     Object? fulfillmentIntent = freezed,
+    Object? origin = freezed,
     Object? promiseDate = null,
     Object? status = null,
     Object? lines = null,
@@ -375,6 +390,10 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.fulfillmentIntent
             : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
                   as FulfillmentMode?,
+        origin: freezed == origin
+            ? _value.origin
+            : origin // ignore: cast_nullable_to_non_nullable
+                  as SaleOrigin?,
         promiseDate: null == promiseDate
             ? _value.promiseDate
             : promiseDate // ignore: cast_nullable_to_non_nullable
@@ -452,6 +471,7 @@ class _$SaleImpl extends _Sale {
     required this.exchangeRate,
     this.shipTo,
     this.fulfillmentIntent,
+    this.origin,
     required this.promiseDate,
     required this.status,
     final List<SaleLine> lines = const <SaleLine>[],
@@ -497,6 +517,14 @@ class _$SaleImpl extends _Sale {
   // this via `updateHeader` once the cashier picks a mode.
   @override
   final FulfillmentMode? fulfillmentIntent;
+  // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
+  // `null` is "never recorded" — every order predating mbe-api migration
+  // 020 — and is **not** a synonym for either member: nothing infers it
+  // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
+  // opened the order; `SalesOrderUpdate` has no such field, so it cannot
+  // be edited afterwards.
+  @override
+  final SaleOrigin? origin;
   @override
   final DateTime promiseDate;
   @override
@@ -540,7 +568,7 @@ class _$SaleImpl extends _Sale {
 
   @override
   String toString() {
-    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance, date: $date, dueDate: $dueDate, contact: $contact, recipient: $recipient, recipientName: $recipientName, priority: $priority, comment: $comment)';
+    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, origin: $origin, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance, date: $date, dueDate: $dueDate, contact: $contact, recipient: $recipient, recipientName: $recipientName, priority: $priority, comment: $comment)';
   }
 
   @override
@@ -569,6 +597,7 @@ class _$SaleImpl extends _Sale {
             (identical(other.shipTo, shipTo) || other.shipTo == shipTo) &&
             (identical(other.fulfillmentIntent, fulfillmentIntent) ||
                 other.fulfillmentIntent == fulfillmentIntent) &&
+            (identical(other.origin, origin) || other.origin == origin) &&
             (identical(other.promiseDate, promiseDate) ||
                 other.promiseDate == promiseDate) &&
             (identical(other.status, status) || other.status == status) &&
@@ -606,6 +635,7 @@ class _$SaleImpl extends _Sale {
     exchangeRate,
     shipTo,
     fulfillmentIntent,
+    origin,
     promiseDate,
     status,
     const DeepCollectionEquality().hash(_lines),
@@ -645,6 +675,7 @@ abstract class _Sale extends Sale {
     required final String exchangeRate,
     final int? shipTo,
     final FulfillmentMode? fulfillmentIntent,
+    final SaleOrigin? origin,
     required final DateTime promiseDate,
     required final SaleStatus status,
     final List<SaleLine> lines,
@@ -688,7 +719,14 @@ abstract class _Sale extends Sale {
   // keeps that distinction rather than guessing). The capture step writes
   // this via `updateHeader` once the cashier picks a mode.
   @override
-  FulfillmentMode? get fulfillmentIntent;
+  FulfillmentMode? get fulfillmentIntent; // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
+  // `null` is "never recorded" — every order predating mbe-api migration
+  // 020 — and is **not** a synonym for either member: nothing infers it
+  // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
+  // opened the order; `SalesOrderUpdate` has no such field, so it cannot
+  // be edited afterwards.
+  @override
+  SaleOrigin? get origin;
   @override
   DateTime get promiseDate;
   @override

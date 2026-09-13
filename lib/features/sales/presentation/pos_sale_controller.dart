@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editing.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
@@ -39,6 +40,11 @@ class PosSaleController extends _$PosSaleController with SaleEditing implements 
 
   @override
   String get writesScope => posWritesScope;
+
+  /// mbe-api#209, spec 039 FR-051: this controller *is* the register, so
+  /// every order it opens is a register sale, whichever action opened it.
+  @override
+  SaleOrigin get origin => SaleOrigin.pointOfSale;
 
   /// Loads an existing sale instead of opening a new one — the open-sales
   /// selector's "resume" action (US3).

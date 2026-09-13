@@ -130,7 +130,7 @@ void main() {
     required Sale sale,
     bool canCreateCustomers = true,
   }) async {
-    when(() => salesOrders.open()).thenAnswer((_) async => sale);
+    when(() => anyOpen(salesOrders)).thenAnswer((_) async => sale);
 
     final container = await pumpPos(
       tester,

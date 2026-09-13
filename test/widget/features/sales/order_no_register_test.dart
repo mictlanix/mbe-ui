@@ -140,7 +140,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
       expect(find.byKey(const Key('sales_order_confirm_button')), findsOneWidget);
     },
   );

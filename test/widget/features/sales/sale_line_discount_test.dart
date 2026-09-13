@@ -90,7 +90,7 @@ void main() {
         tester,
       ) async {
         final salesOrder = MockSalesOrderRepository();
-        when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
         stubUpdateLine(salesOrder, (_) async => testSale());
 
         await pumpLine(tester, salesOrder, compact: compact);
@@ -116,7 +116,7 @@ void main() {
       testWidgets('losing focus without Enter discards — no write, the field '
           "returns to the line's own value", (tester) async {
         final salesOrder = MockSalesOrderRepository();
-        when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
         stubUpdateLine(salesOrder, (_) async => testSale());
 
         await pumpLine(tester, salesOrder, compact: compact);
@@ -149,7 +149,7 @@ void main() {
       testWidgets('unparseable text discards with the acknowledgement — no '
           'write', (tester) async {
         final salesOrder = MockSalesOrderRepository();
-        when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
         stubUpdateLine(salesOrder, (_) async => testSale());
 
         await pumpLine(tester, salesOrder, compact: compact);
@@ -175,7 +175,7 @@ void main() {
       testWidgets('a refused confirmed discount restores visibly, instead of '
           'the old silent rewrite (FR-017)', (tester) async {
         final salesOrder = MockSalesOrderRepository();
-        when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
         stubUpdateLine(salesOrder, (_) async => throw const AppError.server());
 
         await pumpLine(tester, salesOrder, compact: compact);
@@ -191,7 +191,7 @@ void main() {
           'rather than on unconfirmed text left a confirmed value showing '
           'raw keystrokes until the cashier tabbed away)', (tester) async {
         final salesOrder = MockSalesOrderRepository();
-        when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
         stubUpdateLine(salesOrder, (_) async => testSale());
 
         await pumpLine(tester, salesOrder, compact: compact);
@@ -214,7 +214,7 @@ void main() {
       testWidgets('Enter twice on the unchanged accepted value writes once, '
           'no reset', (tester) async {
         final salesOrder = MockSalesOrderRepository();
-        when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
         var calls = 0;
         stubUpdateLine(salesOrder, (_) {
           calls++;
@@ -238,7 +238,7 @@ void main() {
   testWidgets('the discount field keeps its band position and appearance '
       '(FR-021)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
     stubUpdateLine(salesOrder, (_) async => testSale());
 
     await pumpLine(tester, salesOrder);

@@ -38,7 +38,7 @@ void main() {
       (tester) async {
         final container = await pumpBoth(tester);
 
-        when(() => salesOrders.open()).thenAnswer((_) async => testSale(id: 1));
+        when(() => anyOpen(salesOrders)).thenAnswer((_) async => testSale(id: 1));
         when(() => salesOrders.getById(saleId: 2))
             .thenAnswer((_) async => testSale(id: 2));
 

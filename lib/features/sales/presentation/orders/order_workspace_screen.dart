@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
@@ -15,6 +16,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/customer_step.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/foreign_order_guard.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_header_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_step_controller.dart';
@@ -83,7 +85,8 @@ class _OrderWorkspaceBody extends ConsumerStatefulWidget {
   final int? orderId;
 
   @override
-  ConsumerState<_OrderWorkspaceBody> createState() => _OrderWorkspaceBodyState();
+  ConsumerState<_OrderWorkspaceBody> createState() =>
+      _OrderWorkspaceBodyState();
 }
 
 class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
@@ -91,6 +94,10 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
   /// already run for this instance — mirrors
   /// `pos_workspace_screen.dart`'s own `_rewrittenUrl`.
   bool _rewrittenUrl = false;
+
+  /// Whether a cancel is in flight — the action shows a spinner and
+  /// refuses to fire twice, as it did on the replaced `order_screen.dart`.
+  bool _cancelling = false;
 
   /// The order id the step machine was last aligned to (data-model.md §4).
   ///
@@ -121,7 +128,9 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
   void _syncStepTo(Sale order) {
     if (_syncedOrderId == order.id) return;
     _syncedOrderId = order.id;
-    final isGeneric = ref.read(appSettingsProvider).isGenericCustomer(order.customer);
+    final isGeneric = ref
+        .read(appSettingsProvider)
+        .isGenericCustomer(order.customer);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref
@@ -130,17 +139,74 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
     });
   }
 
+  Future<void> _cancel() async {
+    setState(() => _cancelling = true);
+    try {
+      await ref
+          .read(orderEditorControllerProvider(widget.orderId).notifier)
+          .cancel();
+    } on AppError catch (e) {
+      // Routed through the seam's own failure path rather than a private
+      // error field: a refused cancel is shown where every other refusal in
+      // this workspace is shown, on Venta's banner (FR-056).
+      if (mounted) ref.read(saleConfirmFailureProvider)(e);
+      await ref
+          .read(orderEditorControllerProvider(widget.orderId).notifier)
+          .refresh();
+    } finally {
+      if (mounted) setState(() => _cancelling = false);
+    }
+  }
+
+  Future<void> _confirmCancel(AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.salesOrderCancelDialogTitle),
+        content: Text(l10n.salesOrderCancelDialogMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.salesOrderCancelDialogKeepEditing),
+          ),
+          FilledButton(
+            key: const Key('sales_order_cancel_confirm_button'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+              foregroundColor: Theme.of(ctx).colorScheme.onError,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.salesOrderCancelDialogConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) await _cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     final orderAsync = ref.watch(orderEditorControllerProvider(widget.orderId));
     final step = ref.watch(orderStepControllerProvider);
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.salesOrders, AccessRight.update);
+    final l10n = AppLocalizations.of(context)!;
+    // Offered on a draft and nowhere else: a committed, paid or already
+    // cancelled order has nothing this action could do, so it is absent
+    // rather than disabled (FR-034, contracts/order-workspace.md §8).
+    final order = orderAsync.valueOrNull;
+    final canCancel =
+        canUpdate &&
+        order != null &&
+        order.isEditable &&
+        !isForeignOrder(order, settings: ref.watch(appSettingsProvider));
 
     return Scaffold(
       appBar: AppBar(
         shape: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+          bottom: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         leading: IconButton(
           key: const Key('sales_order_workspace_back'),
@@ -150,15 +216,46 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
               context.canPop() ? context.pop() : context.go('/sales/orders'),
         ),
         title: _StepIndicator(current: step.current),
-        actions: const [],
+        actions: [
+          if (canCancel)
+            Padding(
+              padding: EdgeInsets.only(right: Theme.of(context).spacing.xs),
+              child: TextButton(
+                key: const Key('sales_order_cancel_button'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                ),
+                onPressed: _cancelling ? null : () => _confirmCancel(l10n),
+                child: _cancelling
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.salesOrderCancelAction),
+              ),
+            ),
+        ],
       ),
       body: orderAsync.when(
         data: (order) {
+          // Checked before anything else touches the order: a register sale
+          // reached through the "Pedidos" list must not be advanced to a
+          // step, rewritten into this workspace's URL, or rendered with an
+          // editable control (FR-053, research R5).
+          if (order != null &&
+              isForeignOrder(order, settings: ref.watch(appSettingsProvider))) {
+            return const _ForeignOrderNotice();
+          }
           if (order != null) {
             _maybeRewriteUrl(order);
             _syncStepTo(order);
           }
-          return _StepHost(current: step.current, order: order, canUpdate: canUpdate);
+          return _StepHost(
+            current: step.current,
+            order: order,
+            canUpdate: canUpdate,
+          );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
@@ -170,6 +267,48 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
                   ref.invalidate(orderEditorControllerProvider(widget.orderId)),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The declined state for an order this workspace did not raise: an
+/// explanation and a way back, and no editable control at all — not a
+/// disabled one (FR-053, contracts/order-workspace.md §9).
+class _ForeignOrderNotice extends StatelessWidget {
+  const _ForeignOrderNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return Center(
+      key: const Key('sales_order_foreign_notice'),
+      child: Padding(
+        padding: EdgeInsets.all(theme.spacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: theme.spacing.sm,
+          children: [
+            Icon(
+              Icons.point_of_sale_outlined,
+              size: 48,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            Text(
+              l10n.salesOrderForeignOrderTitle,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              l10n.salesOrderForeignOrderMessage,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
@@ -282,7 +421,11 @@ class _StepPill extends StatelessWidget {
 }
 
 class _StepHost extends ConsumerWidget {
-  const _StepHost({required this.current, required this.order, required this.canUpdate});
+  const _StepHost({
+    required this.current,
+    required this.order,
+    required this.canUpdate,
+  });
 
   final OrderStep current;
 
@@ -307,13 +450,16 @@ class _StepHost extends ConsumerWidget {
         showFulfillmentSelector: false,
         continueLabel: l10n.salesOrderContinueToDeliveryAction,
         onContinue: (order!.lineCount > 0)
-            ? () => ref.read(orderStepControllerProvider.notifier).advanceToEntrega()
+            ? () => ref
+                  .read(orderStepControllerProvider.notifier)
+                  .advanceToEntrega()
             : null,
         headerExtra: OrderHeaderPanel(
           sale: order!,
           canEdit: canEditFields,
           canEditPriority: canUpdate,
-          onStale: () => ref.invalidate(orderEditorControllerProvider(order!.id)),
+          onStale: () =>
+              ref.invalidate(orderEditorControllerProvider(order!.id)),
         ),
       ),
       OrderStep.entrega => DeliveryStep(

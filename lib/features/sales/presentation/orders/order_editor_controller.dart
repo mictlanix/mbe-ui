@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editing.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart';
@@ -30,6 +31,13 @@ class OrderEditorController extends _$OrderEditorController
 
   @override
   String get writesScope => salesOrderWritesScope;
+
+  /// mbe-api#209, spec 039 FR-051: every order this controller opens is a
+  /// back-office order — which is what lets the workspace tell its own
+  /// orders from the register's on reopen (FR-052), without inferring it
+  /// from the customer, the register or the fulfilment intent.
+  @override
+  SaleOrigin get origin => SaleOrigin.backOffice;
 
   /// Re-fetches the order without mutating it — mirrors
   /// `PosSaleController.refresh`, for the stale-draft case (US2 scenario 5):

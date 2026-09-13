@@ -2737,6 +2737,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesOrderCompleteDeliveryAction => 'Complete order';
 
   @override
+  String get salesOrderForeignOrderTitle => 'This order cannot be edited here';
+
+  @override
+  String get salesOrderForeignOrderMessage =>
+      'It was raised at the point of sale. Open it from Ventas instead.';
+
+  @override
   String get salesOrdersEmptyMessage => 'No orders yet in this period.';
 
   @override
