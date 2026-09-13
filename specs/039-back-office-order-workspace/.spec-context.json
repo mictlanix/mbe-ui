@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Back-Office Order Workspace — Customer, Capture, Delivery",
   "branch": "039-back-office-order-workspace",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-09-12T03:41:27.862Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-13T02:10:53.610Z"
     }
   ],
   "telemetryInstanceId": "22504f59-7a52-48f1-9446-40870c72cd1a"

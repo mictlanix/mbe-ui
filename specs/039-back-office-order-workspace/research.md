@@ -143,17 +143,49 @@ table is consulted (see R5), not by it.
   the order with customer and salesperson in one `POST`. FR-014, FR-015 and
   FR-016 are one call.
 
-**The one gap**: `SalesOrderRepository.open()`
+**The gap is two-layered, not one.** `SalesOrderRepository.open()`
 (`sales_order_repository_impl.dart:27-36`) sends only `customer` and
-`salesperson`. `SalesOrderCreate` accepts `fulfillment_intent`
-(`app/schemas/sales_order.py:95`), so FR-015 needs that one parameter threaded
-through `open()`. Two lines, no codegen.
+`salesperson` — `SalesOrderCreate` already accepts `fulfillment_intent`
+(`app/schemas/sales_order.py:95`), so widening `open()` to pass it through is
+two lines and no codegen. But `CustomerBar._attachCustomer` calls
+`saleEditorProvider.updateHeader(customer:, salesperson:, paymentTerms:)` —
+never `fulfillmentIntent` — and `SaleEditing.updateHeader`'s one-shot fast path
+(`sale_editing.dart:93-108`) only takes the single-`POST` route when *every*
+field besides `customer`/`salesperson` is null. Reuse `CustomerBar` unchanged
+and the fast path's own guard disqualifies itself the moment the intent is
+added to the call: it falls through to `ensureOpen()` — which opens with
+**no** customer — followed by a `PUT` that attaches one. The order exists,
+briefly, on the walk-in customer before being corrected. That is exactly what
+FR-014 exists to prevent, and it would happen even though every individual
+piece involved is already-shared code.
+
+**The fix has three parts, so the whole line stays a single `POST`**:
+
+1. `SalesOrderRepository.open()` gains `fulfillmentIntent`, threaded to
+   `SalesOrderCreate.fulfillmentIntent`.
+2. `SaleEditing.updateHeader`'s fast-path condition drops `fulfillmentIntent`
+   from the fields required to be null, and its one-shot call becomes
+   `repository.open(customer:, salesperson:, fulfillmentIntent:)`.
+3. `CustomerBar` gains one new constructor parameter,
+   `attachFulfillmentIntent` (`FulfillmentMode?`, default `null` — a no-op for
+   POS). When set and the attach is a first customer on a sale that does not
+   exist yet, it flows into the same call `_updateHeader` already makes,
+   alongside the existing `demoteToPickup` computation it must not fight
+   (moot in the workspace, which never offers the generic customer to trigger
+   that branch). The workspace's Cliente step is then simply
+   `CustomerBar(excludeGenericCustomer: true, attachFulfillmentIntent:
+   FulfillmentMode.delivery, …)` — still no new search, picker or form.
+
+Payment terms need no equivalent widening: `create_order` already derives
+`NET_D` correctly from the customer's own credit line
+(`sales_order_service.py:481-490`), which is what FR-016 asks for, at zero
+extra parameters.
 
 **Why this matters beyond convenience**: mbe-api falls back to
 `settings.default_customer_id` when an order is created without a customer
 (`sales_order_service.py:474-476`). Opening the order *with* the customer
-already chosen is what makes FR-014's guarantee true at the server, not merely
-in the UI.
+already chosen — in the *same* request, not a create-then-correct pair — is
+what makes FR-014's guarantee true at the server, not merely in the UI.
 
 ---
 
@@ -302,3 +334,40 @@ Cliente step must surface it rather than inherit that silence.
 status and message; no sales-order schema changed. (The one schema change that
 did land, `sales_quote_summary`, is unrelated to this feature and is already
 regenerated.)
+
+**A concrete gap this surfaced**: today, a credit refusal's message is
+**silently lost**, not merely unlabelled. `mapDioException`
+(`auth_interceptor.dart:44-63`) maps every 422 to
+`AppError.validation(_fieldErrorsFrom(...))`, and `_fieldErrorsFrom` only reads
+a `List`-shaped `detail` — FastAPI's per-field validation shape. A credit
+refusal's `detail` is a **plain string** (`'Customer is on credit hold: …'`),
+so `_fieldErrorsFrom` returns `const []` and the reason vanishes. The
+sales-order `confirm()` call has its own mapper, `_toConfirmError`
+(`sales_order_repository_impl.dart:360-383`), but it only special-cases the
+*other* shape a sales-order refusal takes — `{"message", "lines"}` — and falls
+through to the same lossy generic mapping for a plain string. `open()` and
+`updateHeader()` do not even have that: they use the bare `_toAppError`, so a
+credit-hold refusal on attaching or changing a customer is invisible today by
+construction, not merely unstyled.
+
+**Decision**: add one `AppError` variant, `AppError.creditHold([String?
+message])`, alongside the existing well-known-shape variants (`auth`,
+`notFound`) rather than growing `server`'s fields — a credit hold is as
+distinct a server signal as an auth failure is, and the existing sealed union
+already distinguishes by *kind of failure*, not just status code. Recognise it
+in one place — a shared helper both `_toConfirmError` and a new mapper on
+`open()`/`updateHeader()` call — wherever a 422's `detail` is a bare string.
+This is what lets the Cliente step and the Entrega confirm-failure handler
+apply FR-055/FR-056 by pattern-matching the error's *kind*
+(`error is CreditHoldError`) rather than by inspecting or matching server
+prose, which is what FR-056 actually requires: the two refusal classes are
+told apart structurally, and only the goods-shaped one still carries `lines`
+reasons appended to its message exactly as today.
+
+**Alternative rejected**: leave the string-detail case inside `AppError.server`
+and have callers substring-match the message to tell a credit refusal from
+anything else `_toConfirmError`'s fallback can produce. Every future refusal
+mbe-api adds in this style (there is already a distinct arrears-vs-limit
+distinction inside credit itself) would need its own substring test, in every
+place that currently checks `error is ServerError`. A dedicated variant makes
+"is this a credit refusal" a type check once.

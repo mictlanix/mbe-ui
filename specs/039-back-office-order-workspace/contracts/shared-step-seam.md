@@ -21,13 +21,26 @@ Declared in `lib/features/sales/presentation/sale_editor.dart`. All are plain
 |---|---|---|---|
 | `saleEditorProvider` | `SaleEditor` | `posSaleControllerProvider.notifier` | `orderEditorControllerProvider(orderId).notifier` |
 | `saleWritesScopeProvider` | `String` | `posWritesScope` | `salesOrderWritesScope` |
-| `saleConfirmFailureProvider` *(new)* | `void Function(AppError)` | records on `confirmErrorProvider`, then `jumpTo(PosStep.venta)` | records on the workspace banner, then returns to `venta` |
+| `saleConfirmErrorProvider` *(new)* | `StateProvider<AppError?>` | its own instance, `null` initially | a second, independent instance |
+| `saleConfirmFailureProvider` *(new)* | `void Function(AppError)` | writes `saleConfirmErrorProvider`, then `jumpTo(PosStep.venta)` | writes `saleConfirmErrorProvider`, then returns to Venta |
 
-**Overriding one without the others is the mistake this contract exists to
-prevent.** Override only `saleEditorProvider` and the two screens silently share
-a write gate; override only the first two and a back-office delivery commits the
-cashier's sale. They are declared adjacently and documented as a set for that
-reason, and `sale_editor_isolation_test.dart` asserts it.
+**`saleConfirmErrorProvider` exists because a callback alone is not enough.**
+`CaptureStep` does not just need to be told a confirm failed — it needs
+somewhere to *read* the failure from, to render the banner it already renders
+today (a delivery-order create on Entrega can fail the confirm and send the
+user back to Venta to see why). A plain provider read directly, the way
+`confirmErrorProvider` is read today, would be shared by both hosts unless the
+workspace overrides it too — so it is declared and overridden as part of the
+same set, not bolted on separately. **This retires the standalone
+`confirmErrorProvider` in `pos_confirm.dart`**; nothing reads it by that name
+after this migration.
+
+**Overriding one of the four without the rest is the mistake this contract
+exists to prevent.** Override only `saleEditorProvider` and the two screens
+silently share a write gate; skip `saleConfirmErrorProvider` and a delivery
+failure in one host paints a banner in the other. They are declared adjacently
+and documented as a set for that reason, and `sale_editor_isolation_test.dart`
+asserts it.
 
 ### Rule: `dependencies:` is mandatory
 
@@ -59,10 +72,11 @@ CaptureStep({
 | Register | advance to Cobro | "Continuar al cobro" | `true` |
 | Workspace | advance to Entrega | "Continuar a entrega" | `false` (FR-021) |
 
-**The widget must not**: read `posStepControllerProvider`, read
+**The widget must not**: read `posStepControllerProvider`, read the old
 `confirmErrorProvider`, or name `posWritesScope`. It resolves its scope through
-`saleWritesScopeProvider` and reports a confirm failure through
-`saleConfirmFailureProvider`.
+`saleWritesScopeProvider` and renders its confirm-failure banner from
+`saleConfirmErrorProvider`, clearing it the same way the old banner cleared
+`confirmErrorProvider`.
 
 **The widget may assume**: `saleEditorProvider` edits the right document, and
 `resolveUnconfirmedEdits` has been given the right scope.
@@ -110,15 +124,16 @@ Becomes:
 
 ```dart
 read(saleEditorProvider).confirm();
-read(saleConfirmFailureProvider)(error);                          // on failure
+read(saleConfirmFailureProvider)(error);   // writes saleConfirmErrorProvider, then jumps back
 ```
 
 Everything else is preserved: it is still a no-op once `status != draft`, still
 rethrows so the caller aborts, and is still called from exactly
 `delivery_controller.addDestination` and `sweepRemainderToCounter`.
 
-`confirmErrorProvider` remains, POS-only, now written *by POS's implementation
-of the callback* rather than by the shared helper.
+The old module-level `confirmErrorProvider` is deleted, not kept alongside the
+new pair — a second, unscoped error channel next to the scoped one is exactly
+the kind of duplication this migration exists to remove.
 
 ---
 
@@ -130,10 +145,19 @@ ProviderScope(
     saleEditorProvider.overrideWith((ref) =>
         ref.watch(orderEditorControllerProvider(orderId).notifier)),
     saleWritesScopeProvider.overrideWithValue(salesOrderWritesScope),
+    saleConfirmErrorProvider.overrideWith((ref) => null),   // its own slot
     saleConfirmFailureProvider.overrideWithValue(_onConfirmFailed),
   ],
   child: …,
 )
+
+// _onConfirmFailed writes the workspace's own error slot, then returns to
+// Venta — the workspace's equivalent of jumpTo(PosStep.venta):
+//
+//   void _onConfirmFailed(AppError e) {
+//     ref.read(saleConfirmErrorProvider.notifier).state = e;
+//     ref.read(orderStepControllerProvider.notifier).returnToVenta();
+//   }
 ```
 
 ---
