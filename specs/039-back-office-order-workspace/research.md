@@ -215,26 +215,25 @@ stop-gap, and the task that adopts the real field must delete it.
 
 ---
 
-## R6 — Two deployment preconditions that no code change can satisfy
+## R6 — Deployment preconditions (revised 2026-09-12)
 
-Neither is a build-time blocker; both can make the shipped feature fail in a
-live environment, so they are release checks rather than tasks.
+Both issues raised by the original audit are now **closed upstream**. What
+remains is a single, much weaker release check.
 
-- **The expiry sweep** (mbe-api#210). `find_expired`
-  (`order_expiry.py:74-99`) cancels orders that are committed, unpaid,
-  undelivered and holding stock more than `UNPAID_ORDER_EXPIRY_DAYS` (default
-  **2**) after their order date. `sales_order.delivered` is set only when every
-  line has actually been delivered (`delivery_order_service.py:972-975`) —
-  planning a delivery does not set it. That is the normal resting state of a
-  back-office order, so if the sweep is scheduled, orders promised further out
-  than two days are cancelled. It is a CLI entry point with no scheduler in the
-  mbe-api repo; **confirm it is not scheduled, or that #210 is fixed, before
-  release.**
-- **The delivery payment gate** (mbe-api#211).
-  `delivery_order_requires_paid_or_credit_sales_order` defaults to `false`.
-  Enabled, it refuses delivery for any immediate-terms order
-  (`delivery_order_service.py:238-244`), which is every back-office order for a
-  non-credit customer. **Confirm it is off in the target deployment.**
+- **The expiry sweep — mbe-api#210, FIXED.** The sweep now distinguishes a
+  scheduled order from an abandoned one. An order carrying a live delivery
+  order, or whose promise date is still ahead, is judged against
+  `scheduled_order_expiry_days` (default **30**) instead of
+  `unpaid_order_expiry_days` (default **2**); once the promise date passes with
+  no delivery standing, it returns to the ordinary window. Setting
+  `scheduled_days = 0` exempts scheduled orders outright.
+  **Remaining check**: confirm the target deployment has not set
+  `SCHEDULED_ORDER_EXPIRY_DAYS` lower than the delivery lead times actually
+  promised. This is now a tuning question, not a design hazard.
+- **The delivery payment gate — mbe-api#211, CLOSED as documentation.** The
+  behaviour is unchanged and the default is still `false`; what changed is that
+  the setting now states what it assumes. **Remaining check**: confirm it is off,
+  as before.
 
 ---
 
@@ -262,3 +261,44 @@ Three layers, per the constitution's quality gates:
 
 The precise per-file disposition is inventoried in
 [contracts/order-workspace.md](./contracts/order-workspace.md) §6.
+## R8 — Credit gates on create and confirm (added 2026-09-12)
+
+Three server changes landed after this plan was written (#207, #219, #220) that
+add failure modes to two of the three steps. None changes the design; each adds
+a refusal the workspace must surface well.
+
+**What changed.** A customer with a credit line takes `NET_D` by default, and
+the credit gate is now asserted against the terms the order *will carry*,
+whether the caller named them or the server derived them. It runs in three
+places relevant here:
+
+| Where | Gate | Effect on this feature |
+|---|---|---|
+| `create_order` | `_assert_credit_allowed` | **Attaching a customer can fail.** A credit customer in arrears, with no limit, or already over it, refuses the create — so the Cliente step's one write is now fallible (FR-055) |
+| `update_order`, on a customer change | `_assert_credit_allowed` | Changing the customer mid-order can be refused for the same reasons |
+| `confirm_order` | `_assert_credit_allowed` **and** `_assert_within_credit_limit(adding: order total)` | **Committing can fail on credit**, weighed against the order's own value — a refusal that no edit to the lines can fix (FR-056) |
+
+All are `422` with a human-readable `detail` naming the reason ("on credit
+hold: N overdue credit order(s)…", "over their credit limit: X of Y…").
+
+**Decision**: surface these as their own refusal class, distinct from the
+goods-shaped refusals (zero-priced line, insufficient stock) that FR-033 already
+covers.
+
+**Rationale**: the two are fixed in different places. A goods refusal is
+corrected by editing lines, so returning the user to Venta is the right move. A
+credit refusal cannot be corrected there at all — the remedies are a different
+customer, immediate terms, or a payment collected elsewhere. Presenting both
+through one banner that says "returning you to the order" would send the user to
+a step where the problem is not solvable.
+
+**Implementation note**: the existing customer bar swallows a failed
+payment-terms write as best-effort (`customer_bar.dart:178-184`). That was
+tolerable when the failure only meant "terms stayed immediate"; it is not
+tolerable now that the same class of refusal can block the create outright. The
+Cliente step must surface it rather than inherit that silence.
+
+**No codegen needed.** These are behavioural changes expressed through HTTP
+status and message; no sales-order schema changed. (The one schema change that
+did land, `sales_quote_summary`, is unrelated to this feature and is already
+regenerated.)

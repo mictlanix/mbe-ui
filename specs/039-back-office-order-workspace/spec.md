@@ -222,6 +222,13 @@ edits to one never gate, block or alter the other.
   the new customer's price list and the totals update. The generic walk-in
   customer is refused as a replacement, exactly as it is refused as the original
   choice.
+- **The chosen customer is on credit hold or over their credit limit.** A
+  customer with a credit line takes credit terms by default, and the server
+  refuses to raise — or later to commit — an order for one who is in arrears or
+  whose limit the order would exceed. Both refusals are about the customer, not
+  the goods, so the workspace names the reason and lets the user act on it
+  (choose a different customer, or put the order on immediate terms) rather
+  than reporting a generic failure.
 - **A customer with no addresses on file.** The destination editor lets the user
   record a ship-to address without leaving the step; a customer with none is not
   a dead end.
@@ -366,6 +373,15 @@ edits to one never gate, block or alter the other.
 - **FR-047**: Access to this workspace MUST continue to be governed by
   sales-order rights, independently of point-of-sale rights.
 
+#### Credit refusals
+
+- **FR-055**: When attaching a customer is refused because that customer cannot
+  take credit, the system MUST show the reason, MUST NOT advance past the
+  customer step, and MUST leave the user able to choose a different customer.
+- **FR-056**: When committing is refused for a credit reason rather than a
+  goods reason, the system MUST distinguish the two in what it shows, since
+  only one of them can be fixed by editing the order's lines.
+
 #### Telling the two workflows apart
 
 - **FR-051**: Every order raised by this workspace MUST be recorded as having
@@ -495,8 +511,14 @@ edits to one never gate, block or alter the other.
   that are identical in every readable field. The precedent for adding one is
   the fulfilment intent, itself added as an optional field whose absence means
   "never recorded"; the same shape satisfies FR-054.
-- **A13 — Back-office orders sit committed and unpaid by design, and something
-  already collects such orders.** An automated sweep cancels orders that are
+- **A13 — RESOLVED 2026-09-12.** The sweep now judges a *scheduled* order — one
+  carrying a live delivery order, or whose promise date is still ahead — against
+  a separate, longer window, and reverts it to the ordinary window only once the
+  promise date passes with no delivery standing. The original text is kept
+  below for the record.
+
+  ~~Back-office orders sit committed and unpaid by design, and something
+  already collects such orders.~~ An automated sweep cancels orders that are
   committed, unpaid, undelivered and still holding stock, a short interval after
   their order date — which describes the normal resting state of a back-office
   order awaiting a delivery date further out than that interval. Whether this

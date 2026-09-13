@@ -60,12 +60,17 @@ test files affected. The "Pedidos" list is explicitly untouched (spec OS-2).
 
 | Issue | What it blocks | Status |
 |---|---|---|
-| [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) — `sales_order` records no origin | FR-051 – FR-054, SC-010 – SC-012, and User Story 5 entirely | Open. Needs the field **and** its backfill policy decided. |
-| [mbe-api#210](https://github.com/mictlanix/mbe-api/issues/210) — expiry sweep cancels scheduled orders | Nothing at build time; breaks the feature at run time if the sweep is scheduled (spec A13) | Open. **Verify against the target deployment before release.** |
-| [mbe-api#211](https://github.com/mictlanix/mbe-api/issues/211) — delivery gated on payment | Nothing if left at its default (`false`); blocks every non-credit order if enabled (spec A14) | Open. Deployment check only. |
+| [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) — `sales_order` records no origin | FR-051 – FR-054, SC-010 – SC-012, and User Story 5 entirely | **OPEN.** Needs the field **and** its backfill policy decided. |
+| [mbe-api#210](https://github.com/mictlanix/mbe-api/issues/210) — expiry sweep cancels scheduled orders | Nothing at build time | **CLOSED 2026-09-12** — fixed with a separate, longer window for scheduled orders. Downgraded to a tuning check (research R6). |
+| [mbe-api#211](https://github.com/mictlanix/mbe-api/issues/211) — delivery gated on payment | Nothing at its default | **CLOSED 2026-09-12** as documentation; behaviour and default unchanged. Deployment check only. |
 
-Only #209 blocks code. Research R5 sets out how the other work proceeds without
-it and what the interim behaviour is.
+Three further server changes landed on 2026-09-12 (#207, #219, #220) that this
+plan did not anticipate: credit is now checked when an order is **created** and
+again when it is **confirmed**. They add two refusal paths to the Cliente and
+Entrega steps — see research R8 and FR-055/FR-056. No codegen is required.
+
+**Only #209 blocks code**, and it blocks exactly one user story. Research R5
+sets out how the rest proceeds without it and what the interim behaviour is.
 
 ## Constitution Check
 
