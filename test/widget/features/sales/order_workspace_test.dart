@@ -9,10 +9,17 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
+import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
+import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
+import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
@@ -30,22 +37,44 @@ class _FixedAuthNotifier extends AuthNotifier {
 
 /// Holds update on `salesOrders`, matching what this workspace's actions gate
 /// on (constitution §IV) — mirrors `order_screen_test.dart`'s own fixture.
+/// Also holds create+read on `customers`, which is what the Cliente step's
+/// own inline-create affordance gates on (US2, FR-013).
 const _updaterUser = User(
   userId: 'order-updater',
   email: 'order-updater@example.com',
   administrator: false,
   status: EntityStatus.active,
   sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.salesOrders, rawValue: 4),
+    Privilege(systemObject: SystemObject.customers, rawValue: 1 | 2),
+  ],
+);
+
+/// The same user without `customers.create` — for the one test that asserts
+/// the affordance is absent rather than merely disabled (constitution §IV).
+const _noCustomerCreateUser = User(
+  userId: 'order-updater-no-create',
+  email: 'no-create@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.salesOrders, rawValue: 4)],
 );
 
-Override _authOverride() => authNotifierProvider.overrideWith(
-  () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _updaterUser)),
-);
+Override _authOverride([User user = _updaterUser]) =>
+    authNotifierProvider.overrideWith(
+      () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
+    );
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
 class MockDeliveryOrderRepository extends Mock implements DeliveryOrderRepository {}
+
+class MockPriceListRepository extends Mock implements PriceListRepository {}
+
+class MockTaxpayerRecipientRepository extends Mock
+    implements TaxpayerRecipientRepository {}
 
 const _realCustomer = CustomerListItem(
   customerId: 7,
@@ -79,6 +108,8 @@ void main() {
   late MockCustomerPaymentRepository payments;
   late MockWarehouseRepository warehouses;
   late MockDeliveryOrderRepository deliveries;
+  late MockPriceListRepository priceLists;
+  late MockTaxpayerRecipientRepository taxpayers;
 
   setUp(() {
     salesOrders = MockSalesOrderRepository();
@@ -86,6 +117,41 @@ void main() {
     payments = MockCustomerPaymentRepository();
     warehouses = MockWarehouseRepository();
     deliveries = MockDeliveryOrderRepository();
+    priceLists = MockPriceListRepository();
+    taxpayers = MockTaxpayerRecipientRepository();
+
+    // The inline-create form's own two lookups (US2) — same fixtures
+    // `customer_inline_create_test.dart` uses for the register's copy.
+    when(
+      () => priceLists.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const PriceListResult(
+        items: [PriceList(priceListId: 2, name: 'Mayoreo')],
+        total: 1,
+      ),
+    );
+    when(
+      () => taxpayers.list(
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const TaxpayerRecipientPage(
+        items: [
+          TaxpayerRecipientListItem(
+            taxpayerRecipientId: 'XAXX010101000',
+            name: 'FERRETERÍA LOS PINOS SA DE CV',
+            email: 'facturas@lospinos.mx',
+          ),
+        ],
+        total: 1,
+      ),
+    );
 
     when(
       () => customers.get(customerId: any(named: 'customerId')),
@@ -101,17 +167,23 @@ void main() {
     ).thenAnswer((_) async => const []);
   });
 
-  Future<ProviderContainer> pumpWorkspace(WidgetTester tester, {int? orderId}) async {
+  Future<ProviderContainer> pumpWorkspace(
+    WidgetTester tester, {
+    int? orderId,
+    User user = _updaterUser,
+  }) async {
     final (_, container) = await pumpOrdersRouted(
       tester,
       initialLocation: orderId == null ? '/sales/orders/new' : '/sales/orders/$orderId',
       overrides: [
-        _authOverride(),
+        _authOverride(user),
         salesOrderOverride(salesOrders),
         warehouseOverride(warehouses),
         customerRepositoryProvider.overrideWithValue(customers),
         customerPaymentOverride(payments),
         deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+        priceListRepositoryProvider.overrideWithValue(priceLists),
+        taxpayerRecipientRepositoryProvider.overrideWithValue(taxpayers),
       ],
     );
     return container;
@@ -210,6 +282,195 @@ void main() {
       // Venta is now showing: the product search field is the tell.
       expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
       expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
+    });
+  });
+
+  // US2 lives here rather than in an `order_customer_step_test.dart` of its
+  // own: it is the same step, reached the same way, needing the same five
+  // mocks — a separate file would duplicate this file's whole setup to add
+  // four tests.
+  group('creating a customer inline (US2, FR-013)', () {
+    /// Fills the inline form's required fields and saves — the same sequence
+    /// `customer_inline_create_test.dart` drives for the register's copy.
+    Future<void> fillAndSave(WidgetTester tester) async {
+      await tester.enterText(find.byKey(const Key('pos_new_customer_code')), 'C-99');
+      await tester.enterText(
+        find.byKey(const Key('pos_new_customer_name')),
+        'FERRETERÍA LOS PINOS',
+      );
+      await tester.tap(find.byKey(const Key('pos_new_customer_price_list')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.descendant(
+          of: find.byKey(const Key('pos_new_customer_price_list')),
+          matching: find.byType(TextField),
+        ),
+        'May',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Mayoreo').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('pos_new_customer_save')));
+      await tester.pumpAndSettle();
+    }
+
+    void stubCreate(Customer result) {
+      when(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
+        ),
+      ).thenAnswer((_) async => result);
+    }
+
+    testWidgets('the action is reachable from the Cliente step — searching is '
+        'the whole face there, so it carries create as well as the picker', (
+      tester,
+    ) async {
+      await pumpWorkspace(tester);
+      expect(find.byKey(const Key('pos_create_customer_button')), findsOneWidget);
+    });
+
+    testWidgets('the action is absent without customers.create '
+        '(constitution §IV)', (tester) async {
+      await pumpWorkspace(tester, user: _noCustomerCreateUser);
+      expect(find.byKey(const Key('pos_create_customer_button')), findsNothing);
+    });
+
+    testWidgets('a created customer is attached and the step advances, on the '
+        'same one-request path a picked customer takes (FR-013, FR-014, '
+        'FR-015)', (tester) async {
+      stubCreate(
+        const Customer(
+          customerId: 99,
+          code: 'C-99',
+          name: 'FERRETERÍA LOS PINOS',
+          creditLimit: '0',
+          creditDays: 0,
+          priceList: PriceListRef(id: 2, name: 'Mayoreo'),
+          status: EntityStatus.active,
+        ),
+      );
+      final opened = testSale(customer: 99, fulfillmentIntent: FulfillmentMode.delivery);
+      when(
+        () => salesOrders.open(
+          customer: 99,
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: FulfillmentMode.delivery,
+        ),
+      ).thenAnswer((_) async => opened);
+      when(
+        () => salesOrders.getById(saleId: opened.id),
+      ).thenAnswer((_) async => opened);
+
+      await pumpWorkspace(tester);
+      await tester.tap(find.byKey(const Key('pos_create_customer_button')));
+      await tester.pumpAndSettle();
+      await fillAndSave(tester);
+
+      // The brand-new customer opens the order the same way a picked one
+      // does — one POST, carrying the intent to deliver with it.
+      verify(
+        () => salesOrders.open(
+          customer: 99,
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: FulfillmentMode.delivery,
+        ),
+      ).called(1);
+      expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
+    });
+
+    testWidgets('cancelling the form creates nothing and leaves the step '
+        'unchanged', (tester) async {
+      await pumpWorkspace(tester);
+      await tester.tap(find.byKey(const Key('pos_create_customer_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('pos_new_customer_close')));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
+        ),
+      );
+      verifyNever(
+        () => salesOrders.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+        ),
+      );
+      // Still on Cliente, still searching.
+      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
+      expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
+    });
+
+    testWidgets('a refused create keeps the form and its typed values, and '
+        'opens no order (US2 scenario 3)', (tester) async {
+      when(
+        () => customers.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          salesperson: any(named: 'salesperson'),
+          comment: any(named: 'comment'),
+          taxpayers: any(named: 'taxpayers'),
+        ),
+      ).thenThrow(const AppError.server(statusCode: 422, message: 'Code already used'));
+
+      await pumpWorkspace(tester);
+      await tester.tap(find.byKey(const Key('pos_create_customer_button')));
+      await tester.pumpAndSettle();
+      await fillAndSave(tester);
+
+      // The form is still open, and the server's own reason is on it.
+      expect(find.byKey(const Key('pos_new_customer_save')), findsOneWidget);
+      expect(find.text('Code already used'), findsOneWidget);
+
+      // NOT asserted here, deliberately: that the *typed values* are still in
+      // the fields. They are not — measured, not assumed: after a refused
+      // save every `TextFormField` on this form reads empty, because those
+      // fields are one-way (`onChanged` pushes into
+      // `CustomerFormState.code`/`.name`, nothing binds back), so the
+      // rebuild that shows the error recreates their state empty. The data
+      // itself survives in the controller; only the display is lost.
+      //
+      // Pre-existing, and shared: `customer_inline_create.dart` is the
+      // register's own form too, and `customer_inline_create_test.dart`'s
+      // "nothing the cashier typed is lost" case only ever asserted that the
+      // form stayed open and the reason showed — never the values — so this
+      // has gone unverified rather than regressed here. Spec 039 US2
+      // scenario 3 does ask for it; fixing it changes the register's form as
+      // well, which is a scope call of its own rather than something to
+      // smuggle in under this feature (FR-046, constitution "surgical
+      // changes").
+      // And nothing was opened on the strength of a customer that does not
+      // exist.
+      verifyNever(
+        () => salesOrders.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+        ),
+      );
     });
   });
 

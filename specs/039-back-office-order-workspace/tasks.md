@@ -352,27 +352,56 @@ customer attached (spec.md US2).
 
 ### Tests for User Story 2
 
-- [ ] T037 [P] [US2] Widget test, added to
-      `test/widget/features/sales/order_customer_step_test.dart`: the
-      inline-create action opens `showCustomerInlineCreate`; on success the
-      new customer is attached (one request, customer id from the dialog) and
-      the step advances; on cancel, nothing is created and the step is
-      unchanged; on a refused create, the refusal is shown and the form keeps
-      what was typed
+- [X] T037 [P] [US2] Five widget tests added to
+      `test/widget/features/sales/order_workspace_test.dart`'s own
+      `creating a customer inline (US2, FR-013)` group — **not** a separate
+      `order_customer_step_test.dart`: it is the same step, reached the same
+      way, needing the same seven mocks, so a new file would have duplicated
+      that whole setup to add five tests. Covers: the action is reachable at
+      all; it is absent without `customers.create`; a created customer is
+      attached on the same one-request path a picked one takes and the step
+      advances; cancelling creates nothing and leaves the step unchanged; a
+      refused create keeps the form open with the server's reason and opens
+      no order.
+      **One assertion the spec asks for is deliberately not made** — that the
+      *typed values* survive a refused create. Measured, not assumed: they do
+      not. See T039.
 
 ### Implementation for User Story 2
 
-- [ ] T038 [US2] Confirm `customer_step.dart` (T029) exposes `CustomerBar`'s
-      existing "create customer" action unmodified — `_createCustomer`
-      already routes through the same `_updateHeader` path FR-014/FR-015 use,
-      so this story is largely already satisfied by T029; this task is the
-      explicit check plus any wiring `showCustomerInlineCreate`'s dialog vs.
-      full-screen split needs inside the workspace's own navigation context
-      (depends on T029)
-- [ ] T039 [US2] Verify a refused create (server-side validation on the new
-      customer) leaves the inline form open with its typed values intact and
-      opens no order — `customer_form_controller.dart`'s existing refusal
-      handling, exercised from this new host
+- [X] T038 [US2] **The check failed, and the fix was real work.** This task
+      assumed T029 already exposed `CustomerBar`'s create action; it did not.
+      `onCreate`/`canCreate` are passed only to `_FactsView`, and the Cliente
+      step renders `_SearchingView` (`startInSearchMode: true`, T029) — which
+      had no create affordance at all, leaving FR-013 unreachable from the
+      only step that needs it. Added `canCreate`/`onCreate` to
+      `_SearchingView` in
+      `lib/features/sales/presentation/capture/customer_bar.dart`, rendering
+      the same `pos_create_customer_button` the facts view uses, gated on
+      `startInSearchMode && _canCreateCustomers` so the register's own
+      searching face is untouched (FR-046). Guarded by a new regression test
+      in `customer_bar_test.dart`. The attach path itself needed nothing:
+      `_createCustomer` → `_updateHeader` is the same one-request path
+      FR-014/FR-015 use, and `showCustomerInlineCreate`'s dialog needs no
+      seam access (it returns the new id; the attach happens back inside the
+      nested scope).
+- [X] T039 [US2] Verified, and **found a pre-existing gap**. The form does
+      stay open, does show the server's reason, and opens no order — all
+      three asserted. Its *typed values* do not survive: after a refused save
+      every `TextFormField` on `customer_inline_create.dart` reads empty,
+      because those fields are one-way (`onChanged` pushes into
+      `CustomerFormState.code`/`.name`; nothing binds back), so the rebuild
+      that renders the error recreates their state empty. The data itself
+      survives in the controller — only the display is lost.
+      **Not introduced here and not register-specific**: that form is the
+      register's too, and `customer_inline_create_test.dart`'s own "nothing
+      the cashier typed is lost" case only ever asserted the form stayed open
+      and the reason showed, never the values — so this was unverified rather
+      than regressed. Left unfixed deliberately: the remedy changes the
+      register's form as well, which is a scope decision of its own rather
+      than something to fold into this feature silently. Recorded in the test
+      itself so the next reader finds the measurement, not a missing
+      assertion.
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
 

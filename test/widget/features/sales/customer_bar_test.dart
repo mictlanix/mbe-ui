@@ -641,6 +641,24 @@ void main() {
       expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
     });
 
+    testWidgets('the register\'s searching face carries no create action — '
+        'that lives in its facts view alone (spec 039 FR-046)', (
+      tester,
+    ) async {
+      // spec 039 gave `_SearchingView` a create affordance for the
+      // back-office order workspace's Cliente step, where searching is the
+      // whole face and inline creation would otherwise be unreachable. It is
+      // gated on `CustomerBar.startInSearchMode`, which the register never
+      // sets — so the register's own searching face must be exactly as it
+      // was: the picker and a dismiss, nothing more.
+      await pumpBar(tester);
+      await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
+      expect(find.byKey(const Key('pos_create_customer_button')), findsNothing);
+    });
+
     testWidgets('dismissing the search restores the facts, unchanged', (
       tester,
     ) async {

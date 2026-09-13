@@ -347,6 +347,11 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                         // `_attachCustomer`.
                         onSelected: _attachCustomer,
                         onCancel: _cancelSearch,
+                        // Only where searching is the whole face — see
+                        // `_SearchingView.canCreate`. POS keeps its create
+                        // action in the facts view alone, exactly as before.
+                        canCreate: widget.startInSearchMode && _canCreateCustomers,
+                        onCreate: _createCustomer,
                       ),
               ),
             ),
@@ -591,6 +596,8 @@ class _SearchingView extends ConsumerWidget {
     required this.excludeGenericCustomer,
     required this.onSelected,
     required this.onCancel,
+    required this.canCreate,
+    required this.onCreate,
   });
 
   final bool enabled;
@@ -599,6 +606,16 @@ class _SearchingView extends ConsumerWidget {
   final bool excludeGenericCustomer;
   final ValueChanged<CustomerListItem> onSelected;
   final VoidCallback onCancel;
+
+  /// spec 039 FR-013: `false` for POS, whose searching face is a detour from
+  /// the facts view that already carries this action — adding a second copy
+  /// there would change the register's own surface (FR-046). `true` only
+  /// where searching *is* the whole face and there is no facts view to fall
+  /// back to (the back-office order workspace's Cliente step,
+  /// `CustomerBar.startInSearchMode`), which would otherwise leave inline
+  /// customer creation unreachable from that step entirely.
+  final bool canCreate;
+  final VoidCallback onCreate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -635,6 +652,21 @@ class _SearchingView extends ConsumerWidget {
               onSelected: onSelected,
             ),
           ),
+          if (canCreate) ...[
+            SizedBox(width: Theme.of(context).spacing.xs),
+            // The same affordance and the same key the facts view uses, so a
+            // test (and a user) finds inline creation in one place whichever
+            // face carries it.
+            OutlinedButton.icon(
+              key: const Key('pos_create_customer_button'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(0, kMinInteractiveDimension),
+              ),
+              icon: const Icon(Icons.person_add_alt),
+              label: Text(l10n.posCustomerCreateAction),
+              onPressed: enabled && !busy ? onCreate : null,
+            ),
+          ],
           IconButton(
             key: const Key('pos_customer_search_cancel_button'),
             icon: const Icon(Icons.close),
