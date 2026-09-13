@@ -124,18 +124,19 @@ isn't one.
    steps, not three; the fulfilment-mode selector is present; the label still
    reads for payment (FR-046).
 
-### Scenario 5 — Declining a foreign order (User Story 5)
+### Scenario 5 — Declining a foreign order (User Story 3, scenario 3)
 
 **Blocked on [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209).**
-Until the origin field ships, the interim guard (research R5) is what is
-testable: open a register sale from the Pedidos list — one on the walk-in
+Until the origin field ships, the register-shaped fallback (research R5) is
+what is testable: open a register sale from the Pedidos list — one on the walk-in
 customer, or counter-pickup, or with a payment — and confirm the workspace
 declines to edit it rather than demanding a different customer.
 
 An order the guard cannot recognise (a register sale to a named customer, marked
 for delivery, unpaid) **will** still open. That is the known gap the issue
-closes, and it is why the guard is documented as a stop-gap rather than as an
-implementation of FR-052.
+closes. Note the fallback is not scaffolding: after #209 it stays on as the
+`origin == null` arm, because every order the previous back-office editor
+raised carries no origin either and must keep reopening (spec A9, SC-008).
 
 ---
 
@@ -150,4 +151,4 @@ implementation of FR-052.
 | SC-007 | The four POS integration tests pass **byte-identical**; no POS widget test's assertions change |
 | SC-008 | Scenario 3 |
 | SC-009 | No payment affordance anywhere in the workspace |
-| SC-010 – SC-012 | Deferred with User Story 5 until #209 |
+| SC-010 – SC-012 | Deferred with FR-051 – FR-054 until #209 |

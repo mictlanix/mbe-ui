@@ -99,8 +99,15 @@ disabled** (FR-034), priority still editable (FR-035).
 ## 5. Opening an existing order
 
 ```
-1. Is it this workspace's order?          ── no ──▶ decline, explain (FR-053)
-        │ yes                                       [#209; interim guard R5]
+1. Is it this workspace's order?
+     origin == backOffice   ─────────────▶ yes, continue
+     origin == pointOfSale  ── no ───────▶ decline, explain (FR-053)
+     origin == null         ─────────────▶ ask R5's fallback:
+         generic customer, counter-pickup intent, or any payment?
+             yes ────────────────────────▶ decline, explain (FR-053)
+             no  ────────────────────────▶ continue  (SC-008: legacy
+                                            back-office orders reopen)
+        │
         ▼
 2. status == cancelled?                   ── yes ─▶ read-only, no step
         │ no
@@ -108,6 +115,11 @@ disabled** (FR-034), priority still editable (FR-035).
 3. status == draft   ──▶ Venta            (or Cliente, if no real customer)
    status == completed | paid ──▶ Entrega
 ```
+
+Until #209 ships there is no `origin` to read, so every order takes the third
+branch. That is why the fallback is written as a permanent arm of this decision
+rather than as scaffolding: it is what answers the question for legacy rows
+after the field lands, not only before (spec A9, research R5).
 
 Step 3 needs no extra fetch: for an order this workspace raised, "is no longer
 a draft" and "has at least one destination" are the same condition (research R2).

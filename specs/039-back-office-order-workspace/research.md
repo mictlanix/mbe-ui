@@ -176,6 +176,25 @@ piece involved is already-shared code.
    `CustomerBar(excludeGenericCustomer: true, attachFulfillmentIntent:
    FulfillmentMode.delivery, …)` — still no new search, picker or form.
 
+**FR-012's "any route other than search", enumerated.** The requirement asks the
+workspace to refuse the generic customer however it is reached, which is only
+meaningful if the routes are named. In the composition above there are exactly
+three, and each already has an owner:
+
+1. **The picker** — excluded at source by `excludeGenericCustomer: true`
+   (`customer_bar.dart:592-596`), which filters the search result set rather
+   than rejecting a selection after the fact.
+2. **A resumed order that already carries it** — handled one layer earlier, by
+   the foreign-order check (R5): such an order is declined before any step is
+   chosen, so the Cliente step never sees it.
+3. **Inline customer creation** — cannot produce it; the generic customer is an
+   existing row, and a newly created customer is by definition a different one.
+
+There is deliberately no free-text customer-id entry anywhere in this
+workspace, so no fourth route exists to defend. Recording that here is the
+point: FR-012 is satisfied by the absence of a route plus (2)'s check, not by a
+fourth guard nobody could trigger.
+
 Payment terms need no equivalent widening: `create_order` already derives
 `NET_D` correctly from the customer's own credit line
 (`sales_order_service.py:481-490`), which is what FR-016 asks for, at zero
@@ -228,9 +247,30 @@ The exposure is narrow but real: the "Pedidos" list does not distinguish origin
 This is deliberately one-sided. Each condition is *sufficient* to prove an order
 is not a back-office order, and none is necessary, so the guard never wrongly
 rejects an order this workspace raised (it raises none of those states) and
-catches the large majority of register sales. It is a proxy, which FR-052
-explicitly forbids — so it is **not** an implementation of FR-052, it is a
-stop-gap, and the task that adopts the real field must delete it.
+catches the large majority of register sales.
+
+**It is a fallback, not purely a stop-gap — and this is a correction to the
+earlier framing.** The first draft of this decision said the task adopting the
+real field would simply delete the guard. That would break SC-008. Every order
+the previous back-office editor raised (specs 029, 032, 037) carries no recorded
+origin either, and deleting the guard in favour of "no origin ⇒ decline" would
+refuse to reopen real orders belonging to real customers — a regression dressed
+up as rigour. Deleting it in favour of "no origin ⇒ admit" is worse: it lets
+every historical register sale in.
+
+So the shape after #209 is three-way, not two-way:
+
+| `Sale.origin` | Decision |
+|---|---|
+| `backOffice` | resume normally |
+| `pointOfSale` | decline (FR-053) |
+| `null` (predates FR-051) | fall back to the three signals above |
+
+FR-052's "no proxy" rule governs orders that *carry* an origin, which is every
+order raised from FR-051 onward; a legacy row has no field to read, so the
+fallback is not a violation of it but the only available answer (spec FR-052,
+A9). What the adopting task removes is the guard's role as the *primary* test —
+not the guard.
 
 **Alternatives rejected**:
 

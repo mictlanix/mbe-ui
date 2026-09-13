@@ -71,9 +71,23 @@ SaleOrigin = pointOfSale | backOffice
 Mapped from the generated DTO in `Sale.fromResponse` once codegen has run
 (constitution III). Written once, at create, by this workspace; never edited.
 
-**Until the field exists**, `Sale.origin` is absent and the interim guard in
-research R5 stands in its place. That guard is a proxy and is therefore *not* an
-implementation of FR-052 — the task that adopts the real field deletes it.
+**Ownership of the question, before and after #209.** Until the field exists,
+the register-shaped check in research R5 answers "did this workspace raise it?"
+for every order. Once the field exists it answers that question for every order
+that *carries* one, and the R5 check remains as the fallback for the `null`
+rows — orders predating FR-051, which include every order the previous
+back-office editor raised and which SC-008 requires to keep reopening. The
+decision table:
+
+| `origin` | Decision |
+|---|---|
+| `backOffice` | resume (§4) |
+| `pointOfSale` | decline (FR-053) |
+| `null` | fall back to R5's three register-shaped signals |
+
+FR-052's "no proxy" rule binds the first two rows, which are the whole of the
+population from FR-051 onward. A `null` row has no field to read; the fallback
+is the only answer available, and A9 states it as the deliberate one.
 
 ---
 
@@ -89,7 +103,10 @@ Not stored anywhere. A pure function of the order (research R2):
 | `cancelled` | none — read-only | |
 
 An order that is not this workspace's own is declined **before** this table is
-consulted (FR-053), so no row here has to cope with a register sale.
+consulted (§3's decision table, FR-053), so no row here has to cope with a
+register sale. A legacy order that passes that check — no recorded origin and
+none of the register-shaped signals — reaches this table and resumes on exactly
+the same rules as any other, which is what SC-008 asks for.
 
 ---
 

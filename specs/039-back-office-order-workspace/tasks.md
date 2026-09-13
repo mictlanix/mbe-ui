@@ -179,7 +179,11 @@ speculative change; spec FR-046).
       `saleConfirmErrorProvider` and `saleConfirmFailureProvider` (all four —
       contracts/shared-step-seam.md §5); renders a step indicator
       (Cliente/Venta/Entrega, using T018's keys) and switches on
-      `OrderStepController`'s current step; mirrors
+      `OrderStepController`'s current step. **The indicator's pills for already
+      -visited steps MUST be tappable while the order is still a draft**, calling
+      `returnToVenta()`/`returnToCliente()` — FR-006 requires backward movement,
+      and the controller methods exist for nothing else; model on
+      `pos_step_pill_return_to_venta` (`pos_workspace_screen.dart:539`). Mirrors
       `pos_workspace_screen.dart`'s shape (full-screen, no shell, the
       `/new` → `/:orderId` URL rewrite on first write) —
       contracts/order-workspace.md §1–§2 (depends on T003, T016, T018)
@@ -222,24 +226,40 @@ status, and a delivery order recorded against it (spec.md US1).
 
 - [ ] T025 [P] [US1] Unit test in
       `test/unit/features/sales/order_step_controller_test.dart`: forward
-      transitions (`cliente → venta → entrega`), `returnToVenta()` refused
-      once the order is not a draft, `resumeTo` maps draft/no-customer →
+      transitions (`cliente → venta → entrega`); `returnToVenta()` and
+      `returnToCliente()` **succeed while the order is a draft** and are
+      refused once it is not (both directions of FR-006 — the positive case is
+      as load-bearing as the refusal); `resumeTo` maps draft/no-customer →
       `cliente`, draft → `venta`, completed/paid → `entrega` — model on
       `pos_step_controller_test.dart`
 - [ ] T026 [P] [US1] Widget test in
       `test/widget/features/sales/order_customer_step_test.dart`: the generic
-      walk-in customer never appears in search results; picking a customer
-      opens the draft with that customer and `fulfillmentIntent: delivery` in
-      one request (assert on the fake repository's captured `SalesOrderCreate`,
-      not just the resulting `Sale`); the step advances to Venta
+      walk-in customer never appears in search results; **nothing is written
+      before a customer is picked** (`verifyNever(open())` while the step is
+      merely rendered and searched — FR-005, US1 acceptance scenario 1);
+      picking a customer opens the draft with that customer and
+      `fulfillmentIntent: delivery` in **one** request (assert on the fake
+      repository's captured `SalesOrderCreate`, not just the resulting `Sale`);
+      attaching a customer who has a credit line yields `NET_D` terms on the
+      returned `Sale` and immediate terms for one who has none (FR-016 — the
+      server derives this, so this asserts it still surfaces correctly through
+      the new step); the step advances to Venta
 - [ ] T027 [P] [US1] Widget test in
       `test/widget/features/sales/order_workspace_test.dart`: Venta shows the
       product search and totals bar once a customer is attached; "Continuar a
-      entrega" is disabled with zero lines and enabled with one; the
-      fulfilment-mode selector is never rendered; Entrega requires every unit
-      assigned before its close action enables; closing commits the order
-      (folio assigned, `status != draft`) and the screen goes read-only with
-      only priority still editable
+      entrega" is disabled with zero lines and enabled with one; **and is
+      disabled again while a line write is outstanding, and while a line field
+      holds uncommitted text until the keep/discard prompt resolves** (FR-007,
+      FR-008 — this is the coverage T059 assumes has landed here before it
+      retires `order_write_gating_test.dart`; without it that deletion loses
+      FR-007 outright); the fulfilment-mode selector is never rendered;
+      **no payment affordance is present on any of the three steps** (FR-004,
+      SC-009 — a negative assertion, easy to lose because nothing fails without
+      it); Entrega requires every unit assigned before its close action
+      enables, and **offers no counter-pickup destination and no
+      sweep-to-counter action** (`delivery_sweep_to_counter_button` absent —
+      FR-031); closing commits the order (folio assigned, `status != draft`)
+      and the screen goes read-only with only priority still editable
 - [ ] T028 [P] [US1] Integration test in
       `test/integration/order_workspace_flow_test.dart` (live mbe-api, model on
       `sales_orders_flow_test.dart`): customer attach → add line → add
@@ -352,8 +372,12 @@ list and confirm the workspace declines it (spec.md US3).
       `test/widget/features/sales/order_workspace_resume_test.dart`: a draft
       with lines and no destinations reopens on Venta with lines/totals
       restored; a committed order with a destination reopens on Entrega
-      showing it; a stale-draft write refusal re-reads the order rather than
-      leaving stale figures on screen
+      showing it; **an order raised by the *previous* back-office editor — a
+      real customer, no recorded origin, no counter-pickup intent, no payment —
+      reopens normally rather than being declined** (SC-008, spec A9: this is
+      the case a blanket "no origin ⇒ decline" rule would have broken, and the
+      only test that pins it); a stale-draft write refusal re-reads the order
+      rather than leaving stale figures on screen
 - [ ] T041 [P] [US3] Widget test, re-homed from `order_cancel_test.dart` to
       `test/widget/features/sales/order_workspace_cancel_test.dart`: the
       cancel action (behind confirmation) is offered only on a draft; a
@@ -364,7 +388,8 @@ list and confirm the workspace declines it (spec.md US3).
       opening an order on the generic walk-in customer, or with
       `fulfillmentIntent: counterPickup`, or carrying a non-cancelled payment,
       is declined with an explanation and no editable control — this is the
-      interim guard (research R5), explicitly a stop-gap pending Phase 8
+      register-shaped fallback (research R5), which Phase 8 demotes to the
+      `origin == null` arm rather than removing
 
 ### Implementation for User Story 3
 
@@ -378,11 +403,13 @@ list and confirm the workspace declines it (spec.md US3).
       `fulfillmentIntent == FulfillmentMode.counterPickup`, or it carries any
       non-cancelled payment; call it from `order_workspace_screen.dart` before
       `resumeTo` and render a declined state (explanation, no editable
-      control) when it returns true — research R5. **Mark this function and
-      its call site with a comment naming
-      [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) and Phase
-      8: this is a proxy, not FR-052, and must be deleted when the real field
-      lands.**
+      control) when it returns true — research R5. **Comment it as the
+      fallback arm of a decision that becomes three-way once
+      [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) lands
+      (Phase 8): it is the primary test only until then, and survives
+      afterwards for orders carrying no recorded origin. It is not deleted —
+      deleting it would refuse to reopen every order the previous back-office
+      editor raised, breaking SC-008** (spec A9, data-model §3).
 - [ ] T045 [US3] Wire `OrderEditorController.cancel()` (already implemented)
       to a cancel action visible only while `sale.isEditable`, behind the
       existing `AlertDialog` confirmation pattern from the deleted
@@ -493,8 +520,16 @@ than new.
       `salesOrderPaymentTermsLabel` (`lib/features/sales/presentation/capture/customer_bar.dart`)
       — are byte-identical to before
 - [ ] T062 Run the full quickstart.md validation: automated commands, then
-      manual Scenarios 1–4 (Scenario 5 is Phase 8's, per quickstart's own note)
-- [ ] T063 `flutter analyze` clean; full suite green; manually confirm the two
+      manual Scenarios 1–4 (Scenario 5 is Phase 8's, per quickstart's own note).
+      Include SC-006's own check, which nothing else performs:
+      `grep -rn "class CaptureStep\|class DeliveryStep" lib/` returns exactly
+      one definition each, both under `capture/` and `delivery/` — proof that
+      the workspace renders the shared surfaces rather than a second copy
+- [ ] T063 `flutter analyze` clean; full suite green; confirm
+      `git diff --stat main -- lib/features/sales/presentation/sales_orders_list_screen.dart
+      lib/features/sales/presentation/orders/sales_orders_list_controller.dart`
+      is empty (FR-049's "otherwise unchanged", given the same rigour T061
+      applies to the shared l10n keys); manually confirm the two
       remaining deployment checks from quickstart.md (`SCHEDULED_ORDER_EXPIRY_DAYS`
       sized to real delivery lead times per mbe-api#210's fix, and
       `delivery_order_requires_paid_or_credit_sales_order` off) against the
@@ -507,7 +542,8 @@ than new.
 **Do not start until [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209)
 lands, its backfill policy is settled, and codegen has been re-run.** Nothing
 in Phases 1–7 depends on this phase; it is what finally satisfies FR-051–FR-054
-and SC-010–SC-012, and what deletes T044's interim guard.
+and SC-010–SC-012, and what demotes T044's check from the primary test to the
+`origin == null` fallback it remains afterwards.
 
 - [ ] T064 Re-run OpenAPI codegen (`lib/generated/openapi/`) against
       mbe-api's updated spec once #209 ships; extend the `Sale.fromResponse`
@@ -516,15 +552,22 @@ and SC-010–SC-012, and what deletes T044's interim guard.
 - [ ] T065 In `sale_editing.dart`'s `ensureOpen`/`open()` path (or wherever the
       Cliente step's attach ultimately posts), send the origin value this
       workspace always writes — never editable afterwards
-- [ ] T066 Replace T044's `foreign_order_guard.dart` with a check against the
-      real `Sale.origin` field; delete the proxy conditions (generic customer,
-      counter-pickup intent, non-cancelled payment) entirely — FR-052 is only
-      satisfied once nothing here infers origin from anything else
+- [ ] T066 Make T044's `foreign_order_guard.dart` three-way against the real
+      `Sale.origin` field: `backOffice` → resume, `pointOfSale` → decline,
+      `null` → fall through to the existing register-shaped conditions,
+      unchanged. FR-052 binds the first two arms — every order raised from
+      FR-051 onward — and a `null` row has no field to read, so the fallback is
+      the only answer available rather than a violation (spec A9, FR-052,
+      data-model §3). **Do not delete the proxy conditions**; SC-008 depends on
+      them for legacy back-office orders
 - [ ] T067 Update `test/widget/features/sales/order_workspace_foreign_order_test.dart`
-      (T042) to assert against `Sale.origin` instead of the proxy conditions;
-      add a case for an order whose origin is `null` (predates the field) and
-      confirm it is still declined exactly as a proxy-matched order was —
-      FR-054, SC-012
+      (T042) for the three-way rule: `origin == pointOfSale` is declined on the
+      field alone (no proxy consulted); `origin == backOffice` resumes even if a
+      proxy condition would have matched it; `origin == null` still takes the
+      fallback — **declined when register-shaped, and reopened when not**, which
+      is the legacy back-office case T040 also covers (FR-054, SC-008, SC-012).
+      The `null`-reopens-normally assertion is the one that would silently
+      invert if someone later "simplifies" the guard
 - [ ] T068 Confirm no existing order's list/open/read behaviour changed by
       this phase (SC-012) — a spot check against orders raised before #209
       shipped, which all have `origin: null`
@@ -610,7 +653,7 @@ Task: "Add AppError.creditHold (T014)"
 3. US4 → run alongside or immediately after US1; it is largely verification of
    Phase 2, so do not leave it until last out of habit
 4. US2 → inline customer creation
-5. US3 → resume, cancel, decline foreign orders (with the interim guard)
+5. US3 → resume, cancel, decline foreign orders (register-shaped fallback)
 6. Polish → re-home the remaining tests, close the loop on quickstart.md
 7. Phase 8, whenever mbe-api#209 lands — a self-contained final slice
 

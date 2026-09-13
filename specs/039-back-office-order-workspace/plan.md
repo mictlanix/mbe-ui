@@ -34,8 +34,12 @@ the shared surfaces host-agnostic without any register-visible change.
 **Storage**: None client-side (constitution VII — online only). All state is
 mbe-api's.
 
-**Testing**: `flutter_test` (unit + widget), `integration_test`, golden tests via
-the existing `test/golden` harness
+**Testing**: `flutter_test` (unit + widget), `integration_test`. No golden
+work is tasked: `test/golden/pos_capture_golden_test.dart` goldens the *leaf*
+widgets (`CustomerBar`, `SaleLineRow`, `SaleTotalsBar`) directly rather than
+the composed `CaptureStep`, so the seam's signature change does not reach it,
+and the one genuinely new visual surface — the step indicator — is covered by a
+compact widget test instead (post-design re-check, below)
 
 **Target Platform**: Web and desktop first, compact (phone) tier supported —
 constitution VI
@@ -60,7 +64,7 @@ test files affected. The "Pedidos" list is explicitly untouched (spec OS-2).
 
 | Issue | What it blocks | Status |
 |---|---|---|
-| [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) — `sales_order` records no origin | FR-051 – FR-054, SC-010 – SC-012, and User Story 5 entirely | **OPEN.** Needs the field **and** its backfill policy decided. |
+| [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) — `sales_order` records no origin | FR-051 – FR-054, SC-010 – SC-012, and US3's foreign-order scenario | **OPEN.** Needs the field **and** its backfill policy decided. |
 | [mbe-api#210](https://github.com/mictlanix/mbe-api/issues/210) — expiry sweep cancels scheduled orders | Nothing at build time | **CLOSED 2026-09-12** — fixed with a separate, longer window for scheduled orders. Downgraded to a tuning check (research R6). |
 | [mbe-api#211](https://github.com/mictlanix/mbe-api/issues/211) — delivery gated on payment | Nothing at its default | **CLOSED 2026-09-12** as documentation; behaviour and default unchanged. Deployment check only. |
 

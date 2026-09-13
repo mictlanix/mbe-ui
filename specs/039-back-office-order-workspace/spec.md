@@ -351,6 +351,10 @@ edits to one never gate, block or alter the other.
   sale's payment-based rules.
 - **FR-038**: An order that this workspace did not raise MUST NOT be resumed
   into the flow at all; it is declined under FR-053 before any step is chosen.
+  "Did not raise" is answered in this order: a recorded origin decides it
+  outright when the order carries one; an order carrying none — every order
+  predating FR-051 — is judged instead by whether it looks register-raised
+  (A9). The second test is weaker than the first by necessity, not by choice.
 - **FR-039**: A draft order with a real customer and no destinations MUST resume
   on Venta.
 - **FR-040**: An order that has at least one destination MUST resume on Entrega.
@@ -386,9 +390,11 @@ edits to one never gate, block or alter the other.
 
 - **FR-051**: Every order raised by this workspace MUST be recorded as having
   originated in the back office, durably and as part of the order itself.
-- **FR-052**: The workspace MUST be able to determine, from an order alone,
-  whether it raised that order, without inferring it from the customer, the
-  register, the fulfilment intent or any other proxy.
+- **FR-052**: For any order carrying a recorded origin, the workspace MUST
+  determine from that field alone whether it raised the order, without
+  inferring it from the customer, the register, the fulfilment intent or any
+  other proxy. This governs every order raised from FR-051 onward; orders
+  predating it carry nothing to read, and A9 governs those instead.
 - **FR-053**: The workspace MUST decline to edit an order it did not raise, and
   MUST say why rather than failing silently or partially.
 - **FR-054**: Recording the origin MUST NOT change how any existing order
@@ -448,7 +454,9 @@ edits to one never gate, block or alter the other.
   a register sale and a back-office order edited concurrently never gate or
   alter one another.
 - **SC-008**: An order interrupted at any step resumes on that step in 100% of
-  cases, including orders raised before this feature.
+  cases — including an order raised by the back office *before* this feature,
+  which carries no recorded origin and must still reopen rather than be turned
+  away as though it belonged to the register (A9).
 - **SC-009**: No screen in the workspace offers an action for recording payment.
 - **SC-010**: Every order raised through this workspace can be identified as
   back-office in origin from the order alone, with no reliance on its customer,
@@ -490,10 +498,29 @@ edits to one never gate, block or alter the other.
 - **A8 — Ship-to and contact move to destinations.** They were order-header
   fields when there was no delivery step. Now that destinations carry them
   per-shipment, the header no longer does (FR-050).
-- **A9 — Orders raised before this feature are left alone.** Nothing is
-  rewritten or backfilled. Their origin is unknowable from their own data —
-  which is precisely why a recorded origin is needed going forward — so they are
-  treated as belonging to another workflow and declined by FR-053.
+- **A9 — Orders raised before this feature are judged on appearances, not
+  turned away wholesale.** Nothing is rewritten or backfilled. Their origin is
+  unknowable from their own data — which is precisely why a recorded origin is
+  needed going forward — so the only question that can be asked of them is
+  whether they *look* register-raised: they carry the generic walk-in customer,
+  or a counter-pickup intent, or a payment. An order matching any one of those
+  is declined under FR-053; an order matching none of them reopens normally.
+
+  This is deliberately one-sided, and the asymmetry is the point. Each of the
+  three signals is **sufficient** to prove an order is not a back-office order;
+  none is **necessary**. So the test never wrongly turns away an order this
+  workspace raised (it produces none of those states), while still catching the
+  register sales that the "Pedidos" list mixes in (A1). A blanket "decline
+  everything without a recorded origin" would have been simpler to state and
+  would have broken SC-008 outright: every order the previous back-office editor
+  raised — specs 029, 032 and 037, real orders belonging to real customers —
+  predates the origin field exactly as much as a register sale does, and
+  refusing to reopen those is a regression, not caution.
+
+  The same fallback survives FR-051 rather than being retired by it: a recorded
+  origin answers the question outright where one exists, and this test answers
+  it where one does not. There is no point at which legacy orders stop needing
+  an answer.
 - **A10 — Making the surfaces shared is the main technical risk.** The capture
   and delivery surfaces currently reach the register's own sale and the
   register's own set of pending writes directly in about a dozen places. Reuse
