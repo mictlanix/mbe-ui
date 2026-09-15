@@ -462,16 +462,38 @@ class _StepHost extends ConsumerWidget {
               ref.invalidate(orderEditorControllerProvider(order!.id)),
         ),
       ),
-      OrderStep.entrega => DeliveryStep(
-        sale: order!,
-        mode: FulfillmentMode.delivery,
-        closeLabel: l10n.salesOrderCompleteDeliveryAction,
-        // The order is already committed by the time this fires — the first
-        // destination create is what did it (spec A2) — so there is nothing
-        // left to write here. Only the "Pedidos" list needs telling: it has
-        // its own read of this order's folio/status, taken before either
-        // existed.
-        onClose: () => ref.invalidate(salesOrdersListControllerProvider),
+      // The header rides above `DeliveryStep` here, same widget and same
+      // props as Venta's own `headerExtra` — not a second copy. Every
+      // reachable order on this step has `status != draft` (the first
+      // destination create is what got it here, spec A2), so `canEditFields`
+      // reads false and the panel renders read-only in place — except
+      // priority, which `canEditPriority` keeps editable on its own
+      // (FR-034, FR-035). This is the *only* place a committed order's
+      // priority is reachable at all: `resumeTargetFor` never sends a
+      // completed or paid order back to Venta.
+      OrderStep.entrega => Column(
+        children: [
+          OrderHeaderPanel(
+            sale: order!,
+            canEdit: canEditFields,
+            canEditPriority: canUpdate,
+            onStale: () =>
+                ref.invalidate(orderEditorControllerProvider(order!.id)),
+          ),
+          Expanded(
+            child: DeliveryStep(
+              sale: order!,
+              mode: FulfillmentMode.delivery,
+              closeLabel: l10n.salesOrderCompleteDeliveryAction,
+              // The order is already committed by the time this fires — the
+              // first destination create is what did it (spec A2) — so
+              // there is nothing left to write here. Only the "Pedidos"
+              // list needs telling: it has its own read of this order's
+              // folio/status, taken before either existed.
+              onClose: () => ref.invalidate(salesOrdersListControllerProvider),
+            ),
+          ),
+        ],
       ),
     };
   }

@@ -63,7 +63,9 @@ void main() {
     });
 
     test('build(id) loads the existing order', () async {
-      when(() => repository.getById(saleId: 42)).thenAnswer((_) async => _sale());
+      when(
+        () => repository.getById(saleId: 42),
+      ).thenAnswer((_) async => _sale());
 
       final result = await container.read(
         orderEditorControllerProvider(42).future,
@@ -72,50 +74,72 @@ void main() {
       expect(result?.id, 42);
     });
 
-    test('the first addLine opens the order, then adds the line', () async {
-      final opened = _sale(id: 100);
-      final withLine = _sale(id: 100);
-      when(
-        () => repository.open(
-          customer: any(named: 'customer'),
-          salesperson: any(named: 'salesperson'),
-          fulfillmentIntent: any(named: 'fulfillmentIntent'),
-          origin: any(named: 'origin'),
-        ),
-      ).thenAnswer((_) async => opened);
-      when(
-        () => repository.addLine(
-          saleId: 100,
-          product: 11,
-          quantity: any(named: 'quantity'),
-          price: any(named: 'price'),
-          discountRate: any(named: 'discountRate'),
-          taxRate: any(named: 'taxRate'),
-          warehouse: any(named: 'warehouse'),
-          comment: any(named: 'comment'),
-        ),
-      ).thenAnswer((_) async => withLine);
+    test(
+      'the first addLine opens the order, then reuses it — re-homed from '
+      "order_screen_test.dart: a second addLine must not open a second time",
+      () async {
+        final opened = _sale(id: 100);
+        final oneLine = _sale(id: 100);
+        final twoLines = _sale(id: 100);
+        when(
+          () => repository.open(
+            customer: any(named: 'customer'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+            origin: any(named: 'origin'),
+          ),
+        ).thenAnswer((_) async => opened);
+        when(
+          () => repository.addLine(
+            saleId: 100,
+            product: 11,
+            quantity: any(named: 'quantity'),
+            price: any(named: 'price'),
+            discountRate: any(named: 'discountRate'),
+            taxRate: any(named: 'taxRate'),
+            warehouse: any(named: 'warehouse'),
+            comment: any(named: 'comment'),
+          ),
+        ).thenAnswer((_) async => oneLine);
+        when(
+          () => repository.addLine(
+            saleId: 100,
+            product: 12,
+            quantity: any(named: 'quantity'),
+            price: any(named: 'price'),
+            discountRate: any(named: 'discountRate'),
+            taxRate: any(named: 'taxRate'),
+            warehouse: any(named: 'warehouse'),
+            comment: any(named: 'comment'),
+          ),
+        ).thenAnswer((_) async => twoLines);
 
-      final notifier = container.read(orderEditorControllerProvider(null).notifier);
-      await notifier.addLine(product: 11, quantity: '1');
+        final notifier = container.read(
+          orderEditorControllerProvider(null).notifier,
+        );
+        await notifier.addLine(product: 11, quantity: '1');
+        await notifier.addLine(product: 12, quantity: '1');
 
-      verify(
-        () => repository.open(
-          customer: any(named: 'customer'),
-          salesperson: any(named: 'salesperson'),
-          fulfillmentIntent: any(named: 'fulfillmentIntent'),
-          origin: SaleOrigin.backOffice,
-        ),
-      ).called(1);
-      expect(
-        container.read(orderEditorControllerProvider(null)).value?.id,
-        100,
-      );
-    });
+        verify(
+          () => repository.open(
+            customer: any(named: 'customer'),
+            salesperson: any(named: 'salesperson'),
+            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+            origin: SaleOrigin.backOffice,
+          ),
+        ).called(1);
+        expect(
+          container.read(orderEditorControllerProvider(null)).value?.id,
+          100,
+        );
+      },
+    );
 
     test('a refused mutation leaves state at its last accepted value and '
         'rethrows (FR-028)', () async {
-      when(() => repository.getById(saleId: 7)).thenAnswer((_) async => _sale(id: 7));
+      when(
+        () => repository.getById(saleId: 7),
+      ).thenAnswer((_) async => _sale(id: 7));
       when(
         () => repository.updateLine(
           saleId: 7,
@@ -130,7 +154,9 @@ void main() {
       ).thenThrow(Exception('refused'));
 
       await container.read(orderEditorControllerProvider(7).future);
-      final notifier = container.read(orderEditorControllerProvider(7).notifier);
+      final notifier = container.read(
+        orderEditorControllerProvider(7).notifier,
+      );
 
       await expectLater(
         () => notifier.updateLine(lineId: 1, quantity: '5'),

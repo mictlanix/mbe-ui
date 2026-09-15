@@ -12,9 +12,9 @@ import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_header_panel.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -86,10 +86,16 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
     when(() => salesOrders.getById(saleId: 42)).thenAnswer(
-      (_) async => testSale(id: 42, serial: 1001, lines: [testLine()]),
+      (_) async => testSale(
+        id: 42,
+        serial: 1001,
+        lines: [testLine()],
+        origin: SaleOrigin.backOffice,
+      ),
     );
     // spec 037 T015: a generic success stub for header writes other than the
     // customer attach — the new group below verifies none of them ever
@@ -116,9 +122,9 @@ void main() {
   });
 
   Future<void> pumpOrder(WidgetTester tester) async {
-    await pumpPos(
+    await pumpOrdersRouted(
       tester,
-      const OrderScreen(orderId: 42),
+      initialLocation: '/sales/orders/42',
       overrides: [
         authNotifierProvider.overrideWith(
           () => _FixedAuthNotifier(
@@ -131,7 +137,6 @@ void main() {
         customerPaymentOverride(payments),
       ],
     );
-    await tester.pumpAndSettle();
   }
 
   group('the fact strip (US1, FR-002)', () {
@@ -204,7 +209,10 @@ void main() {
 
       expect(find.text(l10n.salesOrderDueDateLabel), findsOneWidget);
       expect(find.text(l10n.salesOrderPromiseDateLabel), findsOneWidget);
-      expect(find.byKey(const Key('sales_order_salesperson_field')), findsOneWidget);
+      expect(
+        find.byKey(const Key('sales_order_salesperson_field')),
+        findsOneWidget,
+      );
 
       // FR-003: payment terms is no longer a field here — it lives in
       // `CustomerBar` directly above, which legitimately carries the same
@@ -219,7 +227,11 @@ void main() {
       );
 
       for (final key in _disclosed) {
-        expect(find.byKey(key), findsNothing, reason: '$key should be collapsed');
+        expect(
+          find.byKey(key),
+          findsNothing,
+          reason: '$key should be collapsed',
+        );
       }
       expect(find.text(l10n.salesOrderExchangeRateLabel), findsNothing);
       expect(find.text(l10n.salesOrderMoreDetails), findsOneWidget);
@@ -234,7 +246,11 @@ void main() {
       await tester.pumpAndSettle();
 
       for (final key in _disclosed) {
-        expect(find.byKey(key), findsOneWidget, reason: '$key should be revealed');
+        expect(
+          find.byKey(key),
+          findsOneWidget,
+          reason: '$key should be revealed',
+        );
       }
       expect(find.text(l10n.salesOrderExchangeRateLabel), findsOneWidget);
       expect(find.text(l10n.salesOrderFewerDetails), findsOneWidget);
@@ -289,7 +305,11 @@ void main() {
         bool precedes(Offset a, Offset b) =>
             a.dy < b.dy || (a.dy == b.dy && a.dx <= b.dx);
 
-        expect(precedes(priority, currency), isTrue, reason: 'Priority, then Currency');
+        expect(
+          precedes(priority, currency),
+          isTrue,
+          reason: 'Priority, then Currency',
+        );
         expect(
           precedes(currency, exchangeRate),
           isTrue,
@@ -351,24 +371,25 @@ void main() {
   });
 
   group('the cancel action (US3, FR-013, FR-014)', () {
-    testWidgets('rides inside the totals bar, not in a band of its own', (
+    // spec 039 re-homes this into the workspace's own AppBar rather than the
+    // totals bar — an existing element, not a dedicated band of its own,
+    // which was the point of the original assertion (spec 032). There is no
+    // `sales_order_confirm_button` for it to sit beside any more: this
+    // workspace has no separate confirm step (the order commits on its
+    // first destination create, spec A2), so the co-location half of the
+    // old assertion has nothing left to check.
+    testWidgets('rides in the app bar, not in a band of its own', (
       tester,
     ) async {
       await pumpOrder(tester);
 
+      expect(find.byKey(_cancel), findsOneWidget);
       expect(
         find.descendant(
           of: find.byKey(const Key('pos_totals_footer')),
           matching: find.byKey(_cancel),
         ),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(
-          of: find.byKey(const Key('pos_totals_footer')),
-          matching: find.byKey(const Key('sales_order_confirm_button')),
-        ),
-        findsOneWidget,
+        findsNothing,
       );
     });
   });
@@ -376,4 +397,5 @@ void main() {
 
 /// `posSaleStatusLabel` for the draft `testSale` these tests use — spelled
 /// out here rather than importing the widget file for one switch arm.
-String posSaleStatusLabelForTest(AppLocalizations l10n) => l10n.posSaleStatusDraft;
+String posSaleStatusLabelForTest(AppLocalizations l10n) =>
+    l10n.posSaleStatusDraft;

@@ -44,7 +44,10 @@ User _user({
   ],
 );
 
-void stubListOrders(MockSalesOrderRepository repository, {required OpenSalePage page}) {
+void stubListOrders(
+  MockSalesOrderRepository repository, {
+  required OpenSalePage page,
+}) {
   when(
     () => repository.listOrders(
       mine: any(named: 'mine'),
@@ -81,14 +84,18 @@ void main() {
     SalesOrdersListScreen(query: query),
     overrides: [
       authNotifierProvider.overrideWith(
-        () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user ?? _user())),
+        () => _FixedAuthNotifier(
+          AuthState.authenticated(token: 't', user: user ?? _user()),
+        ),
       ),
       salesOrderOverride(salesOrders),
     ],
   );
 
   group('the default view (FR-005, FR-006)', () {
-    testWidgets('shows the six columns for a mine=true request', (tester) async {
+    testWidgets('shows the six columns for a mine=true request', (
+      tester,
+    ) async {
       stubListOrders(
         salesOrders,
         page: testSalesPage([
@@ -128,10 +135,32 @@ void main() {
       await pumpList(tester, user: _user(canCreate: false));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('sales_orders_new_order_button')), findsNothing);
+      expect(
+        find.byKey(const Key('sales_orders_new_order_button')),
+        findsNothing,
+      );
     });
 
-    testWidgets('Edit row action is absent without update rights', (tester) async {
+    // Re-homed from `order_screen_readonly_test.dart` (T053): the same rule,
+    // for a user with neither create nor update rights at all (US4 scenario
+    // 4) — a fully read-only account, not merely one missing create.
+    testWidgets('New order is absent for a fully read-only user', (
+      tester,
+    ) async {
+      stubListOrders(salesOrders, page: testSalesPage(const []));
+
+      await pumpList(tester, user: _user(canCreate: false, canUpdate: false));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('sales_orders_new_order_button')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('Edit row action is absent without update rights', (
+      tester,
+    ) async {
       stubListOrders(
         salesOrders,
         page: testSalesPage([testOpenSale(id: 1, status: SaleStatus.draft)]),
@@ -147,7 +176,9 @@ void main() {
         'only', (tester) async {
       stubListOrders(
         salesOrders,
-        page: testSalesPage([testOpenSale(id: 1, status: SaleStatus.completed)]),
+        page: testSalesPage([
+          testOpenSale(id: 1, status: SaleStatus.completed),
+        ]),
       );
 
       await pumpList(tester);

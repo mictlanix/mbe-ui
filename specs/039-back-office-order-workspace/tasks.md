@@ -200,7 +200,7 @@ speculative change; spec FR-046).
       `showFulfillmentSelector: true`, so register behaviour is supplied
       explicitly rather than assumed by the widget — contracts/shared-step-seam.md §2
       (depends on T005)
-- [ ] T024 Delete `lib/features/sales/presentation/orders/order_screen.dart`
+- [X] T024 Delete `lib/features/sales/presentation/orders/order_screen.dart`
       (FR-048) once T021/T022 render in its place. **Deliberately sequenced
       after T052-T057** (Polish's re-homing of the 9 test files that still
       construct `OrderScreen` directly) rather than immediately: deleting it
@@ -276,6 +276,8 @@ status, and a delivery order recorded against it (spec.md US1).
       destination with full quantity → close → verify via
       `SalesOrderRepository`/`DeliveryOrderRepository` that the order is
       committed and the delivery order exists
+
+      **Blocked.** The local dev mbe-api (running under the user's own IDE debugger, at the #209 merge commit `21e590a`) 500s on both `GET` and `POST /api/v1/sales-orders` — confirmed with direct `curl` probes bypassing the Flutter client entirely, bearing a valid admin token. `/customers` and `/products` on the same server return 200 normally, so this is scoped to the sales-orders module, not a broad outage or an auth problem. This is a server-side bug to chase in mbe-api, not in this client — not attempted here.
 
 ### Implementation for User Story 1
 
@@ -499,7 +501,7 @@ not exist yet.
 
 ### Tests for User Story 4
 
-- [ ] T048 [US4] Extend `test/widget/features/sales/sale_editor_isolation_test.dart`
+- [X] T048 [US4] Extend `test/widget/features/sales/sale_editor_isolation_test.dart`
       (today the only guard on the seam, and covering the capture surface
       only) to also assert: a register sale and a back-office order can each
       have a destination created without affecting the other's status or
@@ -512,13 +514,19 @@ not exist yet.
       test/integration/pos_resume_flow_test.dart` and confirm they pass
       **byte-identical** to the T002 baseline — no edits permitted to these
       three files by this feature
-- [ ] T050 [P] [US4] Run `flutter test test/widget/features/sales/pos_write_gating_test.dart
+
+      **Blocked on the same backend issue as T028** — same 500 on `/sales-orders`. The static half holds regardless: `git diff --stat main` against these three files is empty, so no edit happened here even if the live run could complete
+- [X] T050 [P] [US4] Run `flutter test test/widget/features/sales/pos_write_gating_test.dart
       test/widget/features/sales/pos_compact_delivery_test.dart
       test/widget/features/sales/delivery_step_layout_test.dart
       test/widget/features/sales/pos_workspace_route_test.dart
       test/unit/features/sales/pos_step_controller_test.dart` and confirm every
       assertion in them is unchanged from baseline — only the constructor
       call sites touched in T005/T023 may differ
+      — 65/65 pass; the only diffs against `main` are the `anyOpen()` matcher
+      widening (T065 — a bare `.open()` matcher would otherwise pass
+      vacuously now that every open carries `origin`) and the T005 `onContinue`
+      constructor edit this task already permits. No assertion's meaning changed
 
 ### Implementation for User Story 4
 
@@ -538,22 +546,22 @@ also SC-007's operational proof.
 disposition is "modify" or "re-home" per contracts/order-workspace.md §6 rather
 than new.
 
-- [ ] T052 [P] Re-home `order_screen_test.dart` →
+- [X] T052 [P] Re-home `order_screen_test.dart` →
       `test/widget/features/sales/order_workspace_test.dart`'s assertions
       (folded into T027 where they overlap; anything not yet covered — lazy
       open, `verifyNever(open())` before a customer is chosen — moves here)
-- [ ] T053 [P] Re-home the one surviving test in `order_screen_readonly_test.dart`
+- [X] T053 [P] Re-home the one surviving test in `order_screen_readonly_test.dart`
       (list-side, "no `sales_orders_new_order_button`" on a no-register
       account) into `sales_orders_list_screen_test.dart`, and delete the rest
       of the file — its read-only assertions are covered by T027
-- [ ] T054 [P] Modify `order_header_disclosure_test.dart`: drop the
+- [X] T054 [P] Modify `order_header_disclosure_test.dart`: drop the
       `salesOrderContactLabel`/`salesOrderShipToLabel` assertions (T033),
       re-point its pump host to the new workspace, keep everything else
-- [ ] T055 [P] Modify `order_header_density_test.dart`: same re-point, and
+- [X] T055 [P] Modify `order_header_density_test.dart`: same re-point, and
       adjust the collapsed/expanded `CompactField` counts down by 2
-- [ ] T056 [P] Modify `order_no_register_test.dart`: keep its list-side test
+- [X] T056 [P] Modify `order_no_register_test.dart`: keep its list-side test
       verbatim, re-point its workspace-side test
-- [ ] T057 [P] Modify `sales_orders_compact_test.dart`: re-point every test
+- [X] T057 [P] Modify `sales_orders_compact_test.dart`: re-point every test
       after its first (list-side) one to the new workspace at 390px —
       contracts/order-workspace.md flagged this file as in-scope despite its
       name
@@ -563,12 +571,14 @@ than new.
       auth/privilege fixture (currently redeclared in 7 files), and
       `MockCustomerRepository` (currently duplicated in 6 files) —
       contracts/order-workspace.md §6
-- [ ] T059 [P] Delete `order_write_gating_test.dart`'s assertions only after
+- [X] T059 [P] Delete `order_write_gating_test.dart`'s assertions only after
       confirming they are folded into T027/T048 — this was flagged as the
       highest-value of the re-homed suite; do not lose coverage in the move
-- [ ] T060 Confirm `order_editor_controller_test.dart` still passes unmodified
-      (T017 should not have changed its observable behaviour)
-- [ ] T061 [P] Diff `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` against
+- [X] T060 Confirm `order_editor_controller_test.dart` still passes unmodified
+      (T017 should not have changed its observable behaviour) — passes; its
+      only changes since are T065's origin threading and T052's re-homed
+      lazy-open-reuse assertion, both later, deliberate, and unrelated to T017
+- [X] T061 [P] Diff `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` against
       their pre-feature state and confirm the two shared, do-not-touch keys —
       `salesOrdersMenuTitle` (`lib/core/navigation/nav_destinations.dart`) and
       `salesOrderPaymentTermsLabel` (`lib/features/sales/presentation/capture/customer_bar.dart`)
@@ -588,6 +598,16 @@ than new.
       sized to real delivery lead times per mbe-api#210's fix, and
       `delivery_order_requires_paid_or_credit_sales_order` off) against the
       target deployment
+
+      **Partially done.** `flutter analyze` clean; full suite green
+      (2600/2601 — the one failure, `repository_list_params_audit_test.dart`'s
+      Products case, is pre-existing and unrelated to this feature: the
+      generated client gained `perishable`/`seriable`/`invoiceable` list params
+      this feature never touched); the diff check is empty at the correct path
+      (`presentation/orders/sales_orders_list_screen.dart`, not
+      `presentation/sales_orders_list_screen.dart` as first written above — the
+      file moved into `orders/` earlier in this feature). **Not done**: the two
+      deployment checks — blocked, see T028/T049 note
 
 ---
 

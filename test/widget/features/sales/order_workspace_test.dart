@@ -667,6 +667,96 @@ void main() {
       expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
     });
 
+    // Re-homed from `order_write_gating_test.dart` (T059): the "keep" and
+    // "discard" arms of the same prompt, both of which end in advancing —
+    // the workspace has no separate confirm action for these to gate
+    // instead (there is no more explicit "confirm" step; the order commits
+    // on its first destination create, spec A2), so what they are folded
+    // into here is the step transition itself.
+    testWidgets('"keep" commits the typed discount, then advances', (
+      tester,
+    ) async {
+      await pumpOnVenta(tester, lineCount: 1);
+      when(
+        () => salesOrders.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: 5,
+          quantity: null,
+          price: null,
+          discountRate: '0.15',
+          taxRate: null,
+          warehouse: null,
+          comment: null,
+        ),
+      ).thenAnswer(
+        (_) async => testSale(
+          customer: 7,
+          fulfillmentIntent: FulfillmentMode.delivery,
+          lines: [testLine(id: 5, discountRate: '0.15')],
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const Key('sale_line_discount_5')),
+        '15',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('pos_continue_to_payment')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.posUnconfirmedChangesKeep));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => salesOrders.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: 5,
+          quantity: null,
+          price: null,
+          discountRate: '0.15',
+          taxRate: null,
+          warehouse: null,
+          comment: null,
+        ),
+      ).called(1);
+      expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
+      expect(
+        find.byKey(const Key('delivery_add_destination_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('"discard" drops the typed discount and advances on the '
+        'stored value', (tester) async {
+      await pumpOnVenta(tester, lineCount: 1);
+
+      await tester.enterText(
+        find.byKey(const Key('sale_line_discount_5')),
+        '15',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('pos_continue_to_payment')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.posUnconfirmedChangesDiscard));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => salesOrders.updateLine(
+          saleId: any(named: 'saleId'),
+          lineId: any(named: 'lineId'),
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      );
+      expect(
+        find.byKey(const Key('delivery_add_destination_button')),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('choosing "Continuar a entrega" advances to Entrega', (
       tester,
     ) async {

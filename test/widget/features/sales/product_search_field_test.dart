@@ -30,7 +30,7 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -80,17 +80,17 @@ ProductLookupResult _product({
   required String name,
   String? photo,
 }) => ProductLookupResult(
-      product: product,
-      code: code,
-      name: name,
-      photo: photo,
-      price: '10.00',
-      taxRate: '0.16',
-      taxIncluded: false,
-      minOrderQty: 1,
-      stockRequired: false,
-      stockable: true,
-    );
+  product: product,
+  code: code,
+  name: name,
+  photo: photo,
+  price: '10.00',
+  taxRate: '0.16',
+  taxIncluded: false,
+  minOrderQty: 1,
+  stockRequired: false,
+  stockable: true,
+);
 
 // Mirrors AppSettings.inputDebounce's documented default (spec 036 FR-030,
 // contracts/app-settings-additions.md C1) — fromEnvironment() reads
@@ -136,7 +136,9 @@ void main() {
     ProductLookupResult? selected;
     await pumpPos(
       tester,
-      ProductSearchField(onProductSelected: (result) async => selected = result),
+      ProductSearchField(
+        onProductSelected: (result) async => selected = result,
+      ),
       overrides: [
         salesOrderOverride(salesOrders),
         customerRepositoryProvider.overrideWithValue(customers),
@@ -173,7 +175,10 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
-      (_) async => ProductListResult(items: catalogProducts, total: catalogProducts.length),
+      (_) async => ProductListResult(
+        items: catalogProducts,
+        total: catalogProducts.length,
+      ),
     );
     when(
       () => productRepository.productLabelFacets(
@@ -193,17 +198,17 @@ void main() {
           path: '/host',
           builder: (_, _) => Scaffold(
             body: Consumer(
-              builder: (context, ref, _) =>
-                  CaptureStep(
-                    sale: ref.watch(posSaleControllerProvider).valueOrNull,
-                    onContinue: () {},
-                  ),
+              builder: (context, ref, _) => CaptureStep(
+                sale: ref.watch(posSaleControllerProvider).valueOrNull,
+                onContinue: () {},
+              ),
             ),
           ),
         ),
         GoRoute(
           path: advancedSearchPath,
-          builder: (_, state) => AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
+          builder: (_, state) =>
+              AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
         ),
       ],
     );
@@ -269,25 +274,21 @@ void main() {
             ),
           )
           .decoration!;
-      final themed =
-          Theme.of(
-            tester.element(find.byType(ProductSearchField)),
-          ).inputDecorationTheme;
+      final themed = Theme.of(
+        tester.element(find.byType(ProductSearchField)),
+      ).inputDecorationTheme;
 
-      for (final (name, border, source) in <(String, InputBorder?, InputBorder?)>[
-        ('border', decoration.border, themed.border),
-        ('enabled', decoration.enabledBorder, themed.enabledBorder),
-        ('focused', decoration.focusedBorder, themed.focusedBorder),
-        ('error', decoration.errorBorder, themed.errorBorder),
-      ]) {
+      for (final (name, border, source)
+          in <(String, InputBorder?, InputBorder?)>[
+            ('border', decoration.border, themed.border),
+            ('enabled', decoration.enabledBorder, themed.enabledBorder),
+            ('focused', decoration.focusedBorder, themed.focusedBorder),
+            ('error', decoration.errorBorder, themed.errorBorder),
+          ]) {
         final outline = border! as OutlineInputBorder;
         // Big enough that the corners resolve to a stadium at any height this
         // field is drawn at, rather than to a fixed "quite rounded".
-        expect(
-          outline.borderRadius.topLeft.x,
-          greaterThan(100),
-          reason: name,
-        );
+        expect(outline.borderRadius.topLeft.x, greaterThan(100), reason: name);
         // Only the corners change — the colour and width are still the
         // theme's, so a brand change still reaches this field.
         expect(
@@ -299,155 +300,173 @@ void main() {
     });
   });
 
-  group('typing offers candidates, debounced, never auto-adding (FR-033, FR-036)', () {
-    testWidgets('candidates appear after the debounce with no Enter pressed', (
-      tester,
-    ) async {
-      await pumpField(tester);
-      when(
-        () => salesOrders.productLookup(
-          pattern: any(named: 'pattern'),
-          customer: any(named: 'customer'),
-          warehouse: any(named: 'warehouse'),
-        ),
-      ).thenAnswer(
-        (_) async => [_product(product: 1, code: 'CLA', name: 'Clavo estándar')],
+  group(
+    'typing offers candidates, debounced, never auto-adding (FR-033, FR-036)',
+    () {
+      testWidgets(
+        'candidates appear after the debounce with no Enter pressed',
+        (tester) async {
+          await pumpField(tester);
+          when(
+            () => salesOrders.productLookup(
+              pattern: any(named: 'pattern'),
+              customer: any(named: 'customer'),
+              warehouse: any(named: 'warehouse'),
+            ),
+          ).thenAnswer(
+            (_) async => [
+              _product(product: 1, code: 'CLA', name: 'Clavo estándar'),
+            ],
+          );
+
+          await tester.enterText(find.byType(TextField), 'cla');
+          // Not yet — still inside the debounce window.
+          await tester.pump(const Duration(milliseconds: 100));
+          expect(find.text('CLA — Clavo estándar'), findsNothing);
+
+          await tester.pump(_defaultInputDebounce);
+          await tester.pumpAndSettle();
+
+          expect(find.text('CLA — Clavo estándar'), findsOneWidget);
+        },
       );
 
-      await tester.enterText(find.byType(TextField), 'cla');
-      // Not yet — still inside the debounce window.
-      await tester.pump(const Duration(milliseconds: 100));
-      expect(find.text('CLA — Clavo estándar'), findsNothing);
+      testWidgets(
+        'a candidate carries the product\'s own photo — no second call '
+        'to show it (mbe-api#157)',
+        (tester) async {
+          await pumpField(tester);
+          when(
+            () => salesOrders.productLookup(
+              pattern: any(named: 'pattern'),
+              customer: any(named: 'customer'),
+              warehouse: any(named: 'warehouse'),
+            ),
+          ).thenAnswer(
+            (_) async => [
+              _product(
+                product: 1,
+                code: 'CLA',
+                name: 'Clavo estándar',
+                photo: 'https://cdn.example.com/images/cla.jpg',
+              ),
+              _product(product: 2, code: 'TOR', name: 'Tornillo'),
+            ],
+          );
 
-      await tester.pump(_defaultInputDebounce);
-      await tester.pumpAndSettle();
+          await tester.enterText(find.byType(TextField), 'c');
+          await tester.pump(_defaultInputDebounce);
+          await tester.pumpAndSettle();
 
-      expect(find.text('CLA — Clavo estándar'), findsOneWidget);
-    });
-
-    testWidgets('a candidate carries the product\'s own photo — no second call '
-        'to show it (mbe-api#157)', (tester) async {
-      await pumpField(tester);
-      when(
-        () => salesOrders.productLookup(
-          pattern: any(named: 'pattern'),
-          customer: any(named: 'customer'),
-          warehouse: any(named: 'warehouse'),
-        ),
-      ).thenAnswer(
-        (_) async => [
-          _product(
-            product: 1,
-            code: 'CLA',
-            name: 'Clavo estándar',
-            photo: 'https://cdn.example.com/images/cla.jpg',
-          ),
-          _product(product: 2, code: 'TOR', name: 'Tornillo'),
-        ],
+          final photos = tester
+              .widgetList<ProductPhoto>(find.byType(ProductPhoto))
+              .map((p) => p.photoUrl)
+              .toList();
+          // One slot per candidate, and a product with no photo still gets its
+          // slot rather than a ragged list.
+          expect(photos, ['https://cdn.example.com/images/cla.jpg', null]);
+        },
       );
 
-      await tester.enterText(find.byType(TextField), 'c');
-      await tester.pump(_defaultInputDebounce);
-      await tester.pumpAndSettle();
+      testWidgets(
+        'a single match while typing is only offered, never added directly',
+        (tester) async {
+          ProductLookupResult? selected;
+          await pumpPos(
+            tester,
+            ProductSearchField(
+              onProductSelected: (result) async => selected = result,
+            ),
+            overrides: [
+              salesOrderOverride(salesOrders),
+              customerRepositoryProvider.overrideWithValue(customers),
+            ],
+          );
+          when(
+            () => salesOrders.productLookup(
+              pattern: any(named: 'pattern'),
+              customer: any(named: 'customer'),
+              warehouse: any(named: 'warehouse'),
+            ),
+          ).thenAnswer(
+            (_) async => [
+              _product(product: 1, code: 'CLA', name: 'Clavo estándar'),
+            ],
+          );
 
-      final photos = tester
-          .widgetList<ProductPhoto>(find.byType(ProductPhoto))
-          .map((p) => p.photoUrl)
-          .toList();
-      // One slot per candidate, and a product with no photo still gets its
-      // slot rather than a ragged list.
-      expect(photos, ['https://cdn.example.com/images/cla.jpg', null]);
-    });
+          await tester.enterText(find.byType(TextField), 'CLA');
+          await tester.pump(
+            _defaultInputDebounce + const Duration(milliseconds: 50),
+          );
+          await tester.pumpAndSettle();
 
-    testWidgets(
-      'a single match while typing is only offered, never added directly',
-      (tester) async {
-        ProductLookupResult? selected;
-        await pumpPos(
-          tester,
-          ProductSearchField(onProductSelected: (result) async => selected = result),
-          overrides: [
-            salesOrderOverride(salesOrders),
-            customerRepositoryProvider.overrideWithValue(customers),
-          ],
-        );
+          expect(selected, isNull);
+          expect(find.text('CLA — Clavo estándar'), findsOneWidget);
+        },
+      );
+
+      testWidgets('a search that matches nothing states so', (tester) async {
+        await pumpField(tester);
         when(
           () => salesOrders.productLookup(
             pattern: any(named: 'pattern'),
             customer: any(named: 'customer'),
             warehouse: any(named: 'warehouse'),
           ),
-        ).thenAnswer(
-          (_) async => [_product(product: 1, code: 'CLA', name: 'Clavo estándar')],
-        );
+        ).thenAnswer((_) async => const []);
 
-        await tester.enterText(find.byType(TextField), 'CLA');
-        await tester.pump(_defaultInputDebounce + const Duration(milliseconds: 50));
+        await tester.enterText(find.byType(TextField), 'zzz');
+        await tester.pump(
+          _defaultInputDebounce + const Duration(milliseconds: 50),
+        );
         await tester.pumpAndSettle();
 
-        expect(selected, isNull);
-        expect(find.text('CLA — Clavo estándar'), findsOneWidget);
-      },
-    );
-
-    testWidgets('a search that matches nothing states so', (tester) async {
-      await pumpField(tester);
-      when(
-        () => salesOrders.productLookup(
-          pattern: any(named: 'pattern'),
-          customer: any(named: 'customer'),
-          warehouse: any(named: 'warehouse'),
-        ),
-      ).thenAnswer((_) async => const []);
-
-      await tester.enterText(find.byType(TextField), 'zzz');
-      await tester.pump(_defaultInputDebounce + const Duration(milliseconds: 50));
-      await tester.pumpAndSettle();
-
-      expect(find.text(l10n.posProductSearchNoResults), findsOneWidget);
-    });
-
-    testWidgets('a stale (superseded) lookup is dropped even if it resolves last', (
-      tester,
-    ) async {
-      await pumpField(tester);
-      final shortPrefixCompleter = <ProductLookupResult>[
-        _product(product: 1, code: 'CEM', name: 'Cemento'),
-      ];
-      final longerPrefixResult = <ProductLookupResult>[
-        _product(product: 2, code: 'CEMENTO-30', name: 'Cemento gris 30kg'),
-      ];
-
-      when(
-        () => salesOrders.productLookup(
-          pattern: 'cem',
-          customer: any(named: 'customer'),
-          warehouse: any(named: 'warehouse'),
-        ),
-      ).thenAnswer((_) async {
-        // Resolves *after* the longer prefix's own lookup below, simulating
-        // a slow first request overtaken by a faster later one.
-        await Future<void>.delayed(const Duration(milliseconds: 50));
-        return shortPrefixCompleter;
+        expect(find.text(l10n.posProductSearchNoResults), findsOneWidget);
       });
-      when(
-        () => salesOrders.productLookup(
-          pattern: 'cemento',
-          customer: any(named: 'customer'),
-          warehouse: any(named: 'warehouse'),
-        ),
-      ).thenAnswer((_) async => longerPrefixResult);
 
-      await tester.enterText(find.byType(TextField), 'cem');
-      await tester.pump(_defaultInputDebounce);
-      await tester.enterText(find.byType(TextField), 'cemento');
-      await tester.pump(_defaultInputDebounce);
-      await tester.pumpAndSettle();
+      testWidgets(
+        'a stale (superseded) lookup is dropped even if it resolves last',
+        (tester) async {
+          await pumpField(tester);
+          final shortPrefixCompleter = <ProductLookupResult>[
+            _product(product: 1, code: 'CEM', name: 'Cemento'),
+          ];
+          final longerPrefixResult = <ProductLookupResult>[
+            _product(product: 2, code: 'CEMENTO-30', name: 'Cemento gris 30kg'),
+          ];
 
-      expect(find.text('CEMENTO-30 — Cemento gris 30kg'), findsOneWidget);
-      expect(find.text('CEM — Cemento'), findsNothing);
-    });
-  });
+          when(
+            () => salesOrders.productLookup(
+              pattern: 'cem',
+              customer: any(named: 'customer'),
+              warehouse: any(named: 'warehouse'),
+            ),
+          ).thenAnswer((_) async {
+            // Resolves *after* the longer prefix's own lookup below, simulating
+            // a slow first request overtaken by a faster later one.
+            await Future<void>.delayed(const Duration(milliseconds: 50));
+            return shortPrefixCompleter;
+          });
+          when(
+            () => salesOrders.productLookup(
+              pattern: 'cemento',
+              customer: any(named: 'customer'),
+              warehouse: any(named: 'warehouse'),
+            ),
+          ).thenAnswer((_) async => longerPrefixResult);
+
+          await tester.enterText(find.byType(TextField), 'cem');
+          await tester.pump(_defaultInputDebounce);
+          await tester.enterText(find.byType(TextField), 'cemento');
+          await tester.pump(_defaultInputDebounce);
+          await tester.pumpAndSettle();
+
+          expect(find.text('CEMENTO-30 — Cemento gris 30kg'), findsOneWidget);
+          expect(find.text('CEM — Cemento'), findsNothing);
+        },
+      );
+    },
+  );
 
   group("the scanner's type-and-Enter path (FR-034)", () {
     testWidgets(
@@ -478,7 +497,9 @@ void main() {
       ProductLookupResult? selected;
       await pumpPos(
         tester,
-        ProductSearchField(onProductSelected: (result) async => selected = result),
+        ProductSearchField(
+          onProductSelected: (result) async => selected = result,
+        ),
         overrides: [
           salesOrderOverride(salesOrders),
           customerRepositoryProvider.overrideWithValue(customers),
@@ -523,7 +544,9 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextField), 'x');
-      await tester.pump(_defaultInputDebounce + const Duration(milliseconds: 50));
+      await tester.pump(
+        _defaultInputDebounce + const Duration(milliseconds: 50),
+      );
       await tester.pumpAndSettle();
       expect(find.text('A — Uno'), findsOneWidget);
 
@@ -558,7 +581,9 @@ void main() {
           warehouse: any(named: 'warehouse'),
         ),
       ).thenAnswer(
-        (_) async => [_product(product: 1, code: 'CLA', name: 'Clavo estándar')],
+        (_) async => [
+          _product(product: 1, code: 'CLA', name: 'Clavo estándar'),
+        ],
       );
 
       await tester.enterText(find.byType(TextField), 'cla');
@@ -606,7 +631,10 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    Future<void> openAndTickMany(WidgetTester tester, List<String> codes) async {
+    Future<void> openAndTickMany(
+      WidgetTester tester,
+      List<String> codes,
+    ) async {
       await tester.tap(find.byKey(const Key('advanced_search_button')));
       await tester.pumpAndSettle();
       for (final code in codes) {
@@ -634,7 +662,9 @@ void main() {
         stubAddLine();
         final (router, _) = await pumpRoutedField(
           tester,
-          catalogProducts: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
+          catalogProducts: [
+            _catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar'),
+          ],
         );
 
         await tester.enterText(find.byType(TextField), 'cla');
@@ -671,10 +701,14 @@ void main() {
       },
     );
 
-    testWidgets('Cancel returns to the sale with nothing added', (tester) async {
+    testWidgets('Cancel returns to the sale with nothing added', (
+      tester,
+    ) async {
       final (router, _) = await pumpRoutedField(
         tester,
-        catalogProducts: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
+        catalogProducts: [
+          _catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar'),
+        ],
       );
 
       await openAndTick(tester, 'CLA');
@@ -703,9 +737,13 @@ void main() {
         stubLookup([_product(product: 1, code: 'CLA', name: 'Clavo estándar')]);
         final (router, container) = await pumpRoutedField(
           tester,
-          catalogProducts: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
+          catalogProducts: [
+            _catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar'),
+          ],
         );
-        final sale = await container.read(posSaleControllerProvider.notifier).ensureOpen();
+        final sale = await container
+            .read(posSaleControllerProvider.notifier)
+            .ensureOpen();
         await tester.pumpAndSettle();
 
         await tester.tap(find.byKey(const Key('advanced_search_button')));
@@ -725,7 +763,10 @@ void main() {
         // Still the same screen, at the same address family — a `go` would
         // have unmounted `/host` and, with it, this sale.
         expect(router.state.uri.path, advancedSearchPath);
-        expect(container.read(posSaleControllerProvider).valueOrNull?.id, sale.id);
+        expect(
+          container.read(posSaleControllerProvider).valueOrNull?.id,
+          sale.id,
+        );
         verify(() => anyOpen(salesOrders)).called(1);
       },
     );
@@ -745,7 +786,9 @@ void main() {
         stubAddLine();
         final (router, _) = await pumpRoutedField(
           tester,
-          catalogProducts: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
+          catalogProducts: [
+            _catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar'),
+          ],
         );
 
         await openAndTick(tester, 'CLA');
@@ -761,7 +804,11 @@ void main() {
         );
         expect(tester.widget<TextField>(hostFieldFinder()).enabled, isFalse);
         expect(
-          tester.widget<IconButton>(find.byKey(const Key('advanced_search_button'))).onPressed,
+          tester
+              .widget<IconButton>(
+                find.byKey(const Key('advanced_search_button')),
+              )
+              .onPressed,
           isNull,
         );
 
@@ -774,7 +821,9 @@ void main() {
         await tester.pump();
         expect(router.state.uri.path, '/host');
 
-        completer.complete([_product(product: 1, code: 'CLA', name: 'Clavo estándar')]);
+        completer.complete([
+          _product(product: 1, code: 'CLA', name: 'Clavo estándar'),
+        ]);
         await pumpSettled(tester);
 
         verify(
@@ -801,7 +850,9 @@ void main() {
         stubAddLine();
         await pumpRoutedField(
           tester,
-          catalogProducts: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
+          catalogProducts: [
+            _catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar'),
+          ],
         );
 
         verifyNever(() => anyOpen(salesOrders));
@@ -827,10 +878,12 @@ void main() {
     );
 
     testWidgets(
-      'inside the back-office order screen, a confirmed selection reaches that order\'s own '
-      'editor, not the register\'s (FR-001, research.md R2)',
+      'inside the back-office order workspace, a confirmed selection reaches that '
+      'order\'s own editor, not the register\'s (FR-001, research.md R2)',
       (tester) async {
-        when(() => salesOrders.getById(saleId: 501)).thenAnswer((_) async => testSale(id: 501));
+        when(
+          () => salesOrders.getById(saleId: 501),
+        ).thenAnswer((_) async => testSale(id: 501));
         stubLookup([_product(product: 1, code: 'CLA', name: 'Clavo estándar')]);
         stubAddLine();
         when(
@@ -847,7 +900,13 @@ void main() {
           ),
         ).thenAnswer(
           (_) async => ProductListResult(
-            items: [_catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar')],
+            items: [
+              _catalogProduct(
+                productId: 1,
+                code: 'CLA',
+                name: 'Clavo estándar',
+              ),
+            ],
             total: 1,
           ),
         );
@@ -877,10 +936,14 @@ void main() {
         final router = GoRouter(
           initialLocation: '/host',
           routes: [
-            GoRoute(path: '/host', builder: (_, _) => const OrderScreen(orderId: 501)),
+            GoRoute(
+              path: '/host',
+              builder: (_, _) => const OrderWorkspaceScreen(orderId: 501),
+            ),
             GoRoute(
               path: advancedSearchPath,
-              builder: (_, state) => AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
+              builder: (_, state) =>
+                  AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
             ),
           ],
         );
@@ -898,7 +961,9 @@ void main() {
             supplierRepositoryProvider.overrideWithValue(supplierRepository),
             allLabelsProvider.overrideWith((_) async => const []),
             authNotifierProvider.overrideWith(
-              () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: updaterUser)),
+              () => _FixedAuthNotifier(
+                AuthState.authenticated(token: 't', user: updaterUser),
+              ),
             ),
           ],
         );
@@ -998,7 +1063,10 @@ void main() {
         );
         // A dismissable SnackBar, not a persistent block — swipeable, and
         // gone on its own after a few seconds.
-        expect(find.byKey(const Key('advanced_search_skipped')), findsOneWidget);
+        expect(
+          find.byKey(const Key('advanced_search_skipped')),
+          findsOneWidget,
+        );
         expect(find.textContaining('TOR — Tornillo'), findsOneWidget);
       },
     );
@@ -1062,14 +1130,19 @@ void main() {
   });
 
   group('access gating (spec 038 FR-002, FR-003, SC-007)', () {
-    testWidgets('the button is absent for a user without products read access', (tester) async {
-      // `pumpField` overrides no auth provider — `accessControlProvider`
-      // defaults to `AuthState.unauthenticated()`, which holds no privileges.
-      await pumpField(tester);
-      expect(find.byKey(const Key('advanced_search_button')), findsNothing);
-    });
+    testWidgets(
+      'the button is absent for a user without products read access',
+      (tester) async {
+        // `pumpField` overrides no auth provider — `accessControlProvider`
+        // defaults to `AuthState.unauthenticated()`, which holds no privileges.
+        await pumpField(tester);
+        expect(find.byKey(const Key('advanced_search_button')), findsNothing);
+      },
+    );
 
-    testWidgets('the button is present for a user with products read access', (tester) async {
+    testWidgets('the button is present for a user with products read access', (
+      tester,
+    ) async {
       await pumpPos(
         tester,
         ProductSearchField(onProductSelected: (_) async {}),
@@ -1086,27 +1159,28 @@ void main() {
       expect(find.byKey(const Key('advanced_search_button')), findsOneWidget);
     });
 
-    testWidgets('the button is disabled whenever the field itself is disabled (FR-003)', (
-      tester,
-    ) async {
-      await pumpPos(
-        tester,
-        ProductSearchField(onProductSelected: (_) async {}, enabled: false),
-        overrides: [
-          salesOrderOverride(salesOrders),
-          customerRepositoryProvider.overrideWithValue(customers),
-          authNotifierProvider.overrideWith(
-            () => _FixedAuthNotifier(
-              AuthState.authenticated(token: 't', user: _catalogReaderUser),
+    testWidgets(
+      'the button is disabled whenever the field itself is disabled (FR-003)',
+      (tester) async {
+        await pumpPos(
+          tester,
+          ProductSearchField(onProductSelected: (_) async {}, enabled: false),
+          overrides: [
+            salesOrderOverride(salesOrders),
+            customerRepositoryProvider.overrideWithValue(customers),
+            authNotifierProvider.overrideWith(
+              () => _FixedAuthNotifier(
+                AuthState.authenticated(token: 't', user: _catalogReaderUser),
+              ),
             ),
-          ),
-        ],
-      );
+          ],
+        );
 
-      final button = tester.widget<IconButton>(
-        find.byKey(const Key('advanced_search_button')),
-      );
-      expect(button.onPressed, isNull);
-    });
+        final button = tester.widget<IconButton>(
+          find.byKey(const Key('advanced_search_button')),
+        );
+        expect(button.onPressed, isNull);
+      },
+    );
   });
 }

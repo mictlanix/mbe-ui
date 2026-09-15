@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
@@ -217,15 +218,17 @@ Future<PosRoutedHarness> pumpPosRouted(
       ),
       GoRoute(
         path: '/sales/pos/:saleId',
-        builder: (context, state) =>
-            PosWorkspaceScreen(saleId: int.parse(state.pathParameters['saleId']!)),
+        builder: (context, state) => PosWorkspaceScreen(
+          saleId: int.parse(state.pathParameters['saleId']!),
+        ),
       ),
       // spec 038: registered here too, mirroring app_router.dart, so a test
       // driving the real "Advanced search" push/pop round trip has
       // somewhere to land.
       GoRoute(
         path: advancedSearchPath,
-        builder: (context, state) => AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
+        builder: (context, state) =>
+            AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
       ),
     ],
   );
@@ -256,6 +259,11 @@ Future<PosRoutedHarness> pumpOrdersRouted(
   List<Override> overrides = const [],
   String initialLocation = '/sales/orders/new',
   Size surface = const Size(1200, 2400),
+  // Composes over the platform scaler exactly as `app.dart` wires it (spec
+  // 027 research R1) — a text-scale test needs this at the routed level
+  // too, since `MaterialApp.router` builds its own tree rather than
+  // wrapping a caller-supplied child the way a bare `pumpPos` widget does.
+  TextSizeLevel? textLevel,
 }) async {
   tester.view.physicalSize = surface;
   tester.view.devicePixelRatio = 1;
@@ -276,8 +284,9 @@ Future<PosRoutedHarness> pumpOrdersRouted(
     routes: [
       GoRoute(
         path: '/sales/orders',
-        builder: (context, state) =>
-            Scaffold(body: SalesOrdersListScreen(query: ListQuery.fromUri(state.uri))),
+        builder: (context, state) => Scaffold(
+          body: SalesOrdersListScreen(query: ListQuery.fromUri(state.uri)),
+        ),
       ),
       GoRoute(
         path: '/sales/orders/new',
@@ -285,8 +294,9 @@ Future<PosRoutedHarness> pumpOrdersRouted(
       ),
       GoRoute(
         path: '/sales/orders/:orderId',
-        builder: (context, state) =>
-            OrderWorkspaceScreen(orderId: int.parse(state.pathParameters['orderId']!)),
+        builder: (context, state) => OrderWorkspaceScreen(
+          orderId: int.parse(state.pathParameters['orderId']!),
+        ),
       ),
     ],
   );
@@ -299,6 +309,17 @@ Future<PosRoutedHarness> pumpOrdersRouted(
         locale: const Locale('es', 'MX'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        builder: textLevel == null
+            ? null
+            : (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: ComposedTextScaler(
+                    platform: TextScaler.noScaling,
+                    level: textLevel,
+                  ),
+                ),
+                child: child!,
+              ),
       ),
     ),
   );
@@ -357,6 +378,7 @@ OpenSale testOpenSale({
   int id = 42,
   SaleStatus status = SaleStatus.draft,
   int? serial,
+
   /// The per-document name *override*, null on every ordinary sale — which
   /// is why it defaults to null here, the shape mbe-api actually returns.
   String? customerName,
@@ -386,7 +408,10 @@ OpenSalePage testSalesPage(List<OpenSale> items, {int? total}) =>
 /// Stubs `SalesOrderRepository.listSales` to answer [page] for any query —
 /// the `pos_sales_list_screen_test.dart` default; a test asserting on the
 /// *arguments* `listSales` was called with should stub it directly instead.
-void stubListSales(MockSalesOrderRepository repository, {required OpenSalePage page}) {
+void stubListSales(
+  MockSalesOrderRepository repository, {
+  required OpenSalePage page,
+}) {
   when(
     () => repository.listSales(
       pointSale: any(named: 'pointSale'),
