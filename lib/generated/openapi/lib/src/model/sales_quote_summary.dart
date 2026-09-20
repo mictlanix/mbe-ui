@@ -16,6 +16,7 @@ part 'sales_quote_summary.g.dart';
 /// * [salesQuoteId]
 /// * [serial]
 /// * [customer]
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [salesperson]
 /// * [date]
 /// * [dueDate]
@@ -34,6 +35,10 @@ abstract class SalesQuoteSummary
 
   @BuiltValueField(wireName: r'customer')
   int get customer;
+
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
 
   @BuiltValueField(wireName: r'salesperson')
   int get salesperson;
@@ -101,6 +106,13 @@ class _$SalesQuoteSummarySerializer
       object.customer,
       specifiedType: const FullType(int),
     );
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'salesperson';
     yield serializers.serialize(
       object.salesperson,
@@ -184,6 +196,16 @@ class _$SalesQuoteSummarySerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.customer = valueDes;
+          break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
           break;
         case r'salesperson':
           final valueDes =

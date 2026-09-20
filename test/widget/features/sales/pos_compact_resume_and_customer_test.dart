@@ -303,7 +303,7 @@ void main() {
     testWidgets('the form opens full-screen and every field is reachable by '
         'scrolling down', (tester) async {
       final sale = testSale(lines: [testLine()]);
-      when(() => salesOrders.open()).thenAnswer((_) async => sale);
+      when(() => anyOpen(salesOrders)).thenAnswer((_) async => sale);
 
       final container = await pumpPos(
         tester,
@@ -311,7 +311,7 @@ void main() {
           builder: (context, ref, _) => ref
               .watch(posSaleControllerProvider)
               .when(
-                data: (value) => CaptureStep(sale: value),
+                data: (value) => CaptureStep(sale: value, onContinue: () {}),
                 loading: () => const SizedBox.shrink(),
                 error: (error, _) => Text('$error'),
               ),
@@ -342,7 +342,7 @@ void main() {
     testWidgets('backing out of the form returns to the sale with its lines '
         'intact — nothing was discarded to make room', (tester) async {
       final sale = testSale(lines: [testLine()]);
-      when(() => salesOrders.open()).thenAnswer((_) async => sale);
+      when(() => anyOpen(salesOrders)).thenAnswer((_) async => sale);
 
       final container = await pumpPos(
         tester,
@@ -350,7 +350,7 @@ void main() {
           builder: (context, ref, _) => ref
               .watch(posSaleControllerProvider)
               .when(
-                data: (value) => CaptureStep(sale: value),
+                data: (value) => CaptureStep(sale: value, onContinue: () {}),
                 loading: () => const SizedBox.shrink(),
                 error: (error, _) => Text('$error'),
               ),

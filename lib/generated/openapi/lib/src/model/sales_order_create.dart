@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/payment_terms.dart';
 import 'package:mbe_api_client/src/model/priority.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
@@ -29,6 +30,7 @@ part 'sales_order_create.g.dart';
 /// * [priority]
 /// * [comment]
 /// * [fulfillmentIntent] - How the cashier said the goods would reach the customer: 0 pickup, 1 delivery, 2 mixed (part collected, the rest shipped). Null means it was never recorded — not \"delivery\". Same scale as delivery_order.fulfillment_type, which never carries 2.
+/// * [origin] - Which workflow raised the order: 0 the point of sale, 1 the back office. Null means it was never recorded — not \"point of sale\". Set at creation; it cannot be changed afterwards.
 @BuiltValue()
 abstract class SalesOrderCreate
     implements Built<SalesOrderCreate, SalesOrderCreateBuilder> {
@@ -78,6 +80,11 @@ abstract class SalesOrderCreate
   @BuiltValueField(wireName: r'fulfillment_intent')
   FulfillmentType? get fulfillmentIntent;
   // enum fulfillmentIntentEnum {  0,  1,  2,  };
+
+  /// Which workflow raised the order: 0 the point of sale, 1 the back office. Null means it was never recorded — not \"point of sale\". Set at creation; it cannot be changed afterwards.
+  @BuiltValueField(wireName: r'origin')
+  OrderOrigin? get origin;
+  // enum originEnum {  0,  1,  };
 
   SalesOrderCreate._();
 
@@ -202,6 +209,13 @@ class _$SalesOrderCreateSerializer
       yield serializers.serialize(
         object.fulfillmentIntent,
         specifiedType: const FullType.nullable(FulfillmentType),
+      );
+    }
+    if (object.origin != null) {
+      yield r'origin';
+      yield serializers.serialize(
+        object.origin,
+        specifiedType: const FullType.nullable(OrderOrigin),
       );
     }
   }
@@ -370,6 +384,16 @@ class _$SalesOrderCreateSerializer
                   as FulfillmentType?;
           if (valueDes == null) continue;
           result.fulfillmentIntent = valueDes;
+          break;
+        case r'origin':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(OrderOrigin),
+                  )
+                  as OrderOrigin?;
+          if (valueDes == null) continue;
+          result.origin = valueDes;
           break;
         default:
           unhandled.add(key);

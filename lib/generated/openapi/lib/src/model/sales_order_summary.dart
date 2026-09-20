@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/document_status.dart';
 import 'package:mbe_api_client/src/model/currency_code.dart';
 import 'package:built_value/built_value.dart';
@@ -18,11 +19,13 @@ part 'sales_order_summary.g.dart';
 /// * [customer]
 /// * [customerName] - The name printed on this document instead of the customer's own, when one was set. Null on an ordinary sale — most rows. To show who the customer is, read `customer_display_name`; this field only says whether the document overrides that name.
 /// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
+/// * [salesQuote]
 /// * [salesperson]
 /// * [date]
 /// * [dueDate]
 /// * [currency]
 /// * [status]
+/// * [origin] - Which workflow raised the order: 0 the point of sale, 1 the back office. Null means it was never recorded — not \"point of sale\". Set at creation; it cannot be changed afterwards.
 /// * [total]
 /// * [balance]
 @BuiltValue()
@@ -45,6 +48,9 @@ abstract class SalesOrderSummary
   @BuiltValueField(wireName: r'customer_display_name')
   String? get customerDisplayName;
 
+  @BuiltValueField(wireName: r'sales_quote')
+  int? get salesQuote;
+
   @BuiltValueField(wireName: r'salesperson')
   int get salesperson;
 
@@ -61,6 +67,11 @@ abstract class SalesOrderSummary
   @BuiltValueField(wireName: r'status')
   DocumentStatus get status;
   // enum statusEnum {  draft,  completed,  paid,  cancelled,  };
+
+  /// Which workflow raised the order: 0 the point of sale, 1 the back office. Null means it was never recorded — not \"point of sale\". Set at creation; it cannot be changed afterwards.
+  @BuiltValueField(wireName: r'origin')
+  OrderOrigin? get origin;
+  // enum originEnum {  0,  1,  };
 
   @BuiltValueField(wireName: r'total')
   String get total;
@@ -125,6 +136,13 @@ class _$SalesOrderSummarySerializer
         specifiedType: const FullType.nullable(String),
       );
     }
+    if (object.salesQuote != null) {
+      yield r'sales_quote';
+      yield serializers.serialize(
+        object.salesQuote,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
     yield r'salesperson';
     yield serializers.serialize(
       object.salesperson,
@@ -150,6 +168,13 @@ class _$SalesOrderSummarySerializer
       object.status,
       specifiedType: const FullType(DocumentStatus),
     );
+    if (object.origin != null) {
+      yield r'origin';
+      yield serializers.serialize(
+        object.origin,
+        specifiedType: const FullType.nullable(OrderOrigin),
+      );
+    }
     yield r'total';
     yield serializers.serialize(
       object.total,
@@ -229,6 +254,16 @@ class _$SalesOrderSummarySerializer
           if (valueDes == null) continue;
           result.customerDisplayName = valueDes;
           break;
+        case r'sales_quote':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.salesQuote = valueDes;
+          break;
         case r'salesperson':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
@@ -270,6 +305,16 @@ class _$SalesOrderSummarySerializer
                   )
                   as DocumentStatus;
           result.status = valueDes;
+          break;
+        case r'origin':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(OrderOrigin),
+                  )
+                  as OrderOrigin?;
+          if (valueDes == null) continue;
+          result.origin = valueDes;
           break;
         case r'total':
           final valueDes =

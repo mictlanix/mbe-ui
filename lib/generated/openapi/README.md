@@ -436,6 +436,7 @@ Class | Method | HTTP request | Description
  - [MethodTotal](doc/MethodTotal.md)
  - [OpeningAmount](doc/OpeningAmount.md)
  - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
+ - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
  - [PaymentMethod](doc/PaymentMethod.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)

@@ -24,6 +24,7 @@ mixin _$AppError {
     required TResult Function(String? message) notFound,
     required TResult Function(int? statusCode, String? message) server,
     required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -32,6 +33,7 @@ mixin _$AppError {
     TResult? Function(String? message)? notFound,
     TResult? Function(int? statusCode, String? message)? server,
     TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -40,6 +42,7 @@ mixin _$AppError {
     TResult Function(String? message)? notFound,
     TResult Function(int? statusCode, String? message)? server,
     TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -49,6 +52,7 @@ mixin _$AppError {
     required TResult Function(NotFoundError value) notFound,
     required TResult Function(ServerError value) server,
     required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -57,6 +61,7 @@ mixin _$AppError {
     TResult? Function(NotFoundError value)? notFound,
     TResult? Function(ServerError value)? server,
     TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -65,6 +70,7 @@ mixin _$AppError {
     TResult Function(NotFoundError value)? notFound,
     TResult Function(ServerError value)? server,
     TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -173,6 +179,7 @@ class _$ValidationErrorImpl implements ValidationError {
     required TResult Function(String? message) notFound,
     required TResult Function(int? statusCode, String? message) server,
     required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
   }) {
     return validation(errors);
   }
@@ -185,6 +192,7 @@ class _$ValidationErrorImpl implements ValidationError {
     TResult? Function(String? message)? notFound,
     TResult? Function(int? statusCode, String? message)? server,
     TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
   }) {
     return validation?.call(errors);
   }
@@ -197,6 +205,7 @@ class _$ValidationErrorImpl implements ValidationError {
     TResult Function(String? message)? notFound,
     TResult Function(int? statusCode, String? message)? server,
     TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
     required TResult orElse(),
   }) {
     if (validation != null) {
@@ -213,6 +222,7 @@ class _$ValidationErrorImpl implements ValidationError {
     required TResult Function(NotFoundError value) notFound,
     required TResult Function(ServerError value) server,
     required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
   }) {
     return validation(this);
   }
@@ -225,6 +235,7 @@ class _$ValidationErrorImpl implements ValidationError {
     TResult? Function(NotFoundError value)? notFound,
     TResult? Function(ServerError value)? server,
     TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
   }) {
     return validation?.call(this);
   }
@@ -237,6 +248,7 @@ class _$ValidationErrorImpl implements ValidationError {
     TResult Function(NotFoundError value)? notFound,
     TResult Function(ServerError value)? server,
     TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
     required TResult orElse(),
   }) {
     if (validation != null) {
@@ -334,6 +346,7 @@ class _$AuthErrorImpl implements AuthError {
     required TResult Function(String? message) notFound,
     required TResult Function(int? statusCode, String? message) server,
     required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
   }) {
     return auth(message);
   }
@@ -346,6 +359,7 @@ class _$AuthErrorImpl implements AuthError {
     TResult? Function(String? message)? notFound,
     TResult? Function(int? statusCode, String? message)? server,
     TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
   }) {
     return auth?.call(message);
   }
@@ -358,6 +372,7 @@ class _$AuthErrorImpl implements AuthError {
     TResult Function(String? message)? notFound,
     TResult Function(int? statusCode, String? message)? server,
     TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
     required TResult orElse(),
   }) {
     if (auth != null) {
@@ -374,6 +389,7 @@ class _$AuthErrorImpl implements AuthError {
     required TResult Function(NotFoundError value) notFound,
     required TResult Function(ServerError value) server,
     required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
   }) {
     return auth(this);
   }
@@ -386,6 +402,7 @@ class _$AuthErrorImpl implements AuthError {
     TResult? Function(NotFoundError value)? notFound,
     TResult? Function(ServerError value)? server,
     TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
   }) {
     return auth?.call(this);
   }
@@ -398,6 +415,7 @@ class _$AuthErrorImpl implements AuthError {
     TResult Function(NotFoundError value)? notFound,
     TResult Function(ServerError value)? server,
     TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
     required TResult orElse(),
   }) {
     if (auth != null) {
@@ -494,6 +512,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
     required TResult Function(String? message) notFound,
     required TResult Function(int? statusCode, String? message) server,
     required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
   }) {
     return notFound(message);
   }
@@ -506,6 +525,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
     TResult? Function(String? message)? notFound,
     TResult? Function(int? statusCode, String? message)? server,
     TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
   }) {
     return notFound?.call(message);
   }
@@ -518,6 +538,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
     TResult Function(String? message)? notFound,
     TResult Function(int? statusCode, String? message)? server,
     TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
     required TResult orElse(),
   }) {
     if (notFound != null) {
@@ -534,6 +555,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
     required TResult Function(NotFoundError value) notFound,
     required TResult Function(ServerError value) server,
     required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
   }) {
     return notFound(this);
   }
@@ -546,6 +568,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
     TResult? Function(NotFoundError value)? notFound,
     TResult? Function(ServerError value)? server,
     TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
   }) {
     return notFound?.call(this);
   }
@@ -558,6 +581,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
     TResult Function(NotFoundError value)? notFound,
     TResult Function(ServerError value)? server,
     TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
     required TResult orElse(),
   }) {
     if (notFound != null) {
@@ -662,6 +686,7 @@ class _$ServerErrorImpl implements ServerError {
     required TResult Function(String? message) notFound,
     required TResult Function(int? statusCode, String? message) server,
     required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
   }) {
     return server(statusCode, message);
   }
@@ -674,6 +699,7 @@ class _$ServerErrorImpl implements ServerError {
     TResult? Function(String? message)? notFound,
     TResult? Function(int? statusCode, String? message)? server,
     TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
   }) {
     return server?.call(statusCode, message);
   }
@@ -686,6 +712,7 @@ class _$ServerErrorImpl implements ServerError {
     TResult Function(String? message)? notFound,
     TResult Function(int? statusCode, String? message)? server,
     TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
     required TResult orElse(),
   }) {
     if (server != null) {
@@ -702,6 +729,7 @@ class _$ServerErrorImpl implements ServerError {
     required TResult Function(NotFoundError value) notFound,
     required TResult Function(ServerError value) server,
     required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
   }) {
     return server(this);
   }
@@ -714,6 +742,7 @@ class _$ServerErrorImpl implements ServerError {
     TResult? Function(NotFoundError value)? notFound,
     TResult? Function(ServerError value)? server,
     TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
   }) {
     return server?.call(this);
   }
@@ -726,6 +755,7 @@ class _$ServerErrorImpl implements ServerError {
     TResult Function(NotFoundError value)? notFound,
     TResult Function(ServerError value)? server,
     TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
     required TResult orElse(),
   }) {
     if (server != null) {
@@ -824,6 +854,7 @@ class _$NetworkErrorImpl implements NetworkError {
     required TResult Function(String? message) notFound,
     required TResult Function(int? statusCode, String? message) server,
     required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
   }) {
     return network(message);
   }
@@ -836,6 +867,7 @@ class _$NetworkErrorImpl implements NetworkError {
     TResult? Function(String? message)? notFound,
     TResult? Function(int? statusCode, String? message)? server,
     TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
   }) {
     return network?.call(message);
   }
@@ -848,6 +880,7 @@ class _$NetworkErrorImpl implements NetworkError {
     TResult Function(String? message)? notFound,
     TResult Function(int? statusCode, String? message)? server,
     TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
     required TResult orElse(),
   }) {
     if (network != null) {
@@ -864,6 +897,7 @@ class _$NetworkErrorImpl implements NetworkError {
     required TResult Function(NotFoundError value) notFound,
     required TResult Function(ServerError value) server,
     required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
   }) {
     return network(this);
   }
@@ -876,6 +910,7 @@ class _$NetworkErrorImpl implements NetworkError {
     TResult? Function(NotFoundError value)? notFound,
     TResult? Function(ServerError value)? server,
     TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
   }) {
     return network?.call(this);
   }
@@ -888,6 +923,7 @@ class _$NetworkErrorImpl implements NetworkError {
     TResult Function(NotFoundError value)? notFound,
     TResult Function(ServerError value)? server,
     TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
     required TResult orElse(),
   }) {
     if (network != null) {
@@ -906,6 +942,176 @@ abstract class NetworkError implements AppError {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NetworkErrorImplCopyWith<_$NetworkErrorImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CreditHoldErrorImplCopyWith<$Res> {
+  factory _$$CreditHoldErrorImplCopyWith(
+    _$CreditHoldErrorImpl value,
+    $Res Function(_$CreditHoldErrorImpl) then,
+  ) = __$$CreditHoldErrorImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String? message});
+}
+
+/// @nodoc
+class __$$CreditHoldErrorImplCopyWithImpl<$Res>
+    extends _$AppErrorCopyWithImpl<$Res, _$CreditHoldErrorImpl>
+    implements _$$CreditHoldErrorImplCopyWith<$Res> {
+  __$$CreditHoldErrorImplCopyWithImpl(
+    _$CreditHoldErrorImpl _value,
+    $Res Function(_$CreditHoldErrorImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AppError
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? message = freezed}) {
+    return _then(
+      _$CreditHoldErrorImpl(
+        freezed == message
+            ? _value.message
+            : message // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CreditHoldErrorImpl implements CreditHoldError {
+  const _$CreditHoldErrorImpl([this.message]);
+
+  @override
+  final String? message;
+
+  @override
+  String toString() {
+    return 'AppError.creditHold(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CreditHoldErrorImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of AppError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CreditHoldErrorImplCopyWith<_$CreditHoldErrorImpl> get copyWith =>
+      __$$CreditHoldErrorImplCopyWithImpl<_$CreditHoldErrorImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(List<FieldError> errors) validation,
+    required TResult Function(String? message) auth,
+    required TResult Function(String? message) notFound,
+    required TResult Function(int? statusCode, String? message) server,
+    required TResult Function(String? message) network,
+    required TResult Function(String? message) creditHold,
+  }) {
+    return creditHold(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(List<FieldError> errors)? validation,
+    TResult? Function(String? message)? auth,
+    TResult? Function(String? message)? notFound,
+    TResult? Function(int? statusCode, String? message)? server,
+    TResult? Function(String? message)? network,
+    TResult? Function(String? message)? creditHold,
+  }) {
+    return creditHold?.call(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(List<FieldError> errors)? validation,
+    TResult Function(String? message)? auth,
+    TResult Function(String? message)? notFound,
+    TResult Function(int? statusCode, String? message)? server,
+    TResult Function(String? message)? network,
+    TResult Function(String? message)? creditHold,
+    required TResult orElse(),
+  }) {
+    if (creditHold != null) {
+      return creditHold(message);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ValidationError value) validation,
+    required TResult Function(AuthError value) auth,
+    required TResult Function(NotFoundError value) notFound,
+    required TResult Function(ServerError value) server,
+    required TResult Function(NetworkError value) network,
+    required TResult Function(CreditHoldError value) creditHold,
+  }) {
+    return creditHold(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ValidationError value)? validation,
+    TResult? Function(AuthError value)? auth,
+    TResult? Function(NotFoundError value)? notFound,
+    TResult? Function(ServerError value)? server,
+    TResult? Function(NetworkError value)? network,
+    TResult? Function(CreditHoldError value)? creditHold,
+  }) {
+    return creditHold?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ValidationError value)? validation,
+    TResult Function(AuthError value)? auth,
+    TResult Function(NotFoundError value)? notFound,
+    TResult Function(ServerError value)? server,
+    TResult Function(NetworkError value)? network,
+    TResult Function(CreditHoldError value)? creditHold,
+    required TResult orElse(),
+  }) {
+    if (creditHold != null) {
+      return creditHold(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class CreditHoldError implements AppError {
+  const factory CreditHoldError([final String? message]) =
+      _$CreditHoldErrorImpl;
+
+  String? get message;
+
+  /// Create a copy of AppError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CreditHoldErrorImplCopyWith<_$CreditHoldErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

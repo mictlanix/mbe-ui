@@ -106,10 +106,10 @@ void main() {
     required Sale sale,
     Size surface = phoneSurface,
   }) async {
-    when(() => salesOrders.open()).thenAnswer((_) async => sale);
+    when(() => anyOpen(salesOrders)).thenAnswer((_) async => sale);
     await pumpPos(
       tester,
-      CaptureStep(sale: sale),
+      CaptureStep(sale: sale, onContinue: () {}),
       surface: surface,
       overrides: [
         salesOrderOverride(salesOrders),

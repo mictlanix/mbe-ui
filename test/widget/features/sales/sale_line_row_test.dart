@@ -164,7 +164,7 @@ void main() {
     testWidgets('choosing a rate sends it; a refused change leaves the '
         'picker showing the rate the line still has', (tester) async {
       final salesOrder = MockSalesOrderRepository();
-      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
       when(
         () => salesOrder.updateLine(
           saleId: any(named: 'saleId'),
@@ -306,7 +306,7 @@ void main() {
       tester,
     ) async {
       final salesOrder = MockSalesOrderRepository();
-      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
       when(
         () => salesOrder.updateLine(
           saleId: any(named: 'saleId'),
@@ -786,7 +786,7 @@ void main() {
     testWidgets('a warehouse flagged short is still selectable — the flag is '
         'informational, never a block (FR-022)', (tester) async {
       final salesOrder = MockSalesOrderRepository();
-      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
       when(
         () => salesOrder.updateLine(
           saleId: any(named: 'saleId'),
@@ -879,7 +879,7 @@ void main() {
       (tester) async {
         await pumpPos(
           tester,
-          CaptureStep(sale: testSale(lines: [testLine()])),
+          CaptureStep(sale: testSale(lines: [testLine()]), onContinue: () {}),
           overrides: [warehouseOverride(warehouseRepository)],
           surface: const Size(1024, 900),
         );

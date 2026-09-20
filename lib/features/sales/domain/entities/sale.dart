@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 part 'sale.freezed.dart';
 
@@ -32,6 +33,13 @@ class Sale with _$Sale {
     // keeps that distinction rather than guessing). The capture step writes
     // this via `updateHeader` once the cashier picks a mode.
     FulfillmentMode? fulfillmentIntent,
+    // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
+    // `null` is "never recorded" — every order predating mbe-api migration
+    // 020 — and is **not** a synonym for either member: nothing infers it
+    // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
+    // opened the order; `SalesOrderUpdate` has no such field, so it cannot
+    // be edited afterwards.
+    SaleOrigin? origin,
     required DateTime promiseDate,
     required SaleStatus status,
     @Default(<SaleLine>[]) List<SaleLine> lines,
@@ -66,6 +74,7 @@ class Sale with _$Sale {
     exchangeRate: r.exchangeRate,
     shipTo: r.shipTo,
     fulfillmentIntent: FulfillmentMode.fromApi(r.fulfillmentIntent),
+    origin: SaleOrigin.fromApi(r.origin),
     promiseDate: r.promiseDate,
     status: SaleStatus.fromApi(r.status),
     lines: (r.lines ?? const <api.SalesOrderLineResponse>[])

@@ -88,7 +88,7 @@ void main() {
         Consumer(
           builder: (context, ref, _) {
             final sale = ref.watch(posSaleControllerProvider).valueOrNull;
-            return CaptureStep(sale: sale);
+            return CaptureStep(sale: sale, onContinue: () {});
           },
         ),
         overrides: [
@@ -102,7 +102,7 @@ void main() {
       'totals it produced are on screen (SC-001, SC-002)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
     final initial = testSale(lines: [testLine(discountRate: '0')]);
-    when(() => salesOrder.open()).thenAnswer((_) async => initial);
+    when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
     final completer = Completer<Sale>();
     stubUpdateLine(salesOrder, (_) => completer.future);
 
@@ -143,7 +143,7 @@ void main() {
       'permanent lockout (SC-003)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
     final initial = testSale(lines: [testLine()]);
-    when(() => salesOrder.open()).thenAnswer((_) async => initial);
+    when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
     stubUpdateLine(salesOrder, (_) async => throw const AppError.server());
 
     final container = await pumpCapture(tester, salesOrder);
@@ -163,7 +163,7 @@ void main() {
       'settle (SC-004)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
     final initial = testSale(lines: [testLine(id: 5), testLine(id: 6)]);
-    when(() => salesOrder.open()).thenAnswer((_) async => initial);
+    when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
     final first = Completer<Sale>();
     final second = Completer<Sale>();
     var call = 0;
@@ -201,7 +201,7 @@ void main() {
       'way a request in flight does (FR-004)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
     final initial = testSale(lines: [testLine()]);
-    when(() => salesOrder.open()).thenAnswer((_) async => initial);
+    when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
     stubUpdateLine(salesOrder, (_) async => initial);
 
     final container = await pumpCapture(tester, salesOrder);
@@ -236,7 +236,7 @@ void main() {
       'the rest of the surface stays live (FR-009, SC-005)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
     final initial = testSale(lines: [testLine(id: 5), testLine(id: 6)]);
-    when(() => salesOrder.open()).thenAnswer((_) async => initial);
+    when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
     final completer = Completer<Sale>();
     stubUpdateLine(salesOrder, (_) => completer.future);
 
@@ -299,7 +299,7 @@ void main() {
       final salesOrder = MockSalesOrderRepository();
       final paymentRepository = MockCustomerPaymentRepository();
       final initial = testSale(status: SaleStatus.completed, balance: '50.00');
-      when(() => salesOrder.open()).thenAnswer((_) async => initial);
+      when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
       when(
         () => salesOrder.getById(saleId: any(named: 'saleId')),
       ).thenAnswer((_) async => initial.copyWith(balance: '0.00'));
@@ -353,7 +353,7 @@ void main() {
       final salesOrder = MockSalesOrderRepository();
       final paymentRepository = MockCustomerPaymentRepository();
       final initial = testSale(status: SaleStatus.completed, balance: '0.00');
-      when(() => salesOrder.open()).thenAnswer((_) async => initial);
+      when(() => anyOpen(salesOrder)).thenAnswer((_) async => initial);
       when(
         () => salesOrder.getById(saleId: any(named: 'saleId')),
       ).thenAnswer((_) async => initial.copyWith(balance: '50.00'));

@@ -32,6 +32,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not reach the server. Check your connection and try again.';
 
   @override
+  String get errorCreditHoldGeneric =>
+      'This customer cannot be placed on credit right now.';
+
+  @override
   String get viewActionTooltip => 'View';
 
   @override
@@ -2664,12 +2668,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesOrderSalespersonLabel => 'Salesperson';
 
   @override
-  String get salesOrderContactLabel => 'Contact';
-
-  @override
-  String get salesOrderShipToLabel => 'Delivery details';
-
-  @override
   String get salesOrderRecipientLabel => 'Tax ID';
 
   @override
@@ -2717,6 +2715,30 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get salesOrderChooseCustomerFirst =>
       'Choose a customer to start the order.';
+
+  @override
+  String get salesOrderStepVenta => 'Sale';
+
+  @override
+  String get salesOrderStepEntrega => 'Delivery';
+
+  @override
+  String salesOrderStepProgress(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get salesOrderContinueToDeliveryAction => 'Continue to delivery';
+
+  @override
+  String get salesOrderCompleteDeliveryAction => 'Complete order';
+
+  @override
+  String get salesOrderForeignOrderTitle => 'This order cannot be edited here';
+
+  @override
+  String get salesOrderForeignOrderMessage =>
+      'It was raised at the point of sale. Open it from Ventas instead.';
 
   @override
   String get salesOrdersEmptyMessage => 'No orders yet in this period.';

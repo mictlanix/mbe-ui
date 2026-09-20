@@ -409,7 +409,7 @@ void main() {
     testWidgets('desktop 1440 — one row per line, footer flush', (tester) async {
       await pumpScreen(
         tester,
-        CaptureStep(sale: sale()),
+        CaptureStep(sale: sale(), onContinue: () {}),
         size: const Size(1440, 900),
         overrides: captureOverrides(),
       );
@@ -419,7 +419,7 @@ void main() {
     testWidgets('tablet landscape 1024 — still one row (FR-037a)', (tester) async {
       await pumpScreen(
         tester,
-        CaptureStep(sale: sale()),
+        CaptureStep(sale: sale(), onContinue: () {}),
         size: const Size(1024, 768),
         overrides: captureOverrides(),
       );
@@ -429,7 +429,7 @@ void main() {
     testWidgets('800 — two-row fallback', (tester) async {
       await pumpScreen(
         tester,
-        CaptureStep(sale: sale()),
+        CaptureStep(sale: sale(), onContinue: () {}),
         size: const Size(800, 900),
         overrides: captureOverrides(),
       );
@@ -439,7 +439,7 @@ void main() {
     testWidgets('phone 390 — stacked cards, pinned footer', (tester) async {
       await pumpScreen(
         tester,
-        CaptureStep(sale: sale()),
+        CaptureStep(sale: sale(), onContinue: () {}),
         size: const Size(390, 844),
         overrides: captureOverrides(),
       );
@@ -449,7 +449,7 @@ void main() {
     testWidgets('the customer band mid-search (US3)', (tester) async {
       await pumpScreen(
         tester,
-        CaptureStep(sale: sale()),
+        CaptureStep(sale: sale(), onContinue: () {}),
         size: const Size(1440, 900),
         overrides: captureOverrides(),
       );
@@ -477,7 +477,7 @@ void main() {
     testWidgets('light theme, desktop', (tester) async {
       await pumpScreen(
         tester,
-        CaptureStep(sale: sale()),
+        CaptureStep(sale: sale(), onContinue: () {}),
         size: const Size(1440, 900),
         brightness: Brightness.light,
         overrides: captureOverrides(),

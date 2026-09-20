@@ -613,9 +613,18 @@ class _StepHost extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = sale;
-    if (current == null) return CaptureStep(sale: null);
+    // spec 039 contracts/shared-step-seam.md §2: `CaptureStep` no longer
+    // knows what follows it — the register supplies its own forward action
+    // (advance to Cobro) explicitly. `continueLabel` and
+    // `showFulfillmentSelector` are left at their defaults, which preserve
+    // this step's rendering exactly as before this feature (FR-046).
+    void advanceToCobro() =>
+        ref.read(posStepControllerProvider.notifier).advanceToCobro();
+    if (current == null) {
+      return CaptureStep(sale: null, onContinue: advanceToCobro);
+    }
     return switch (step) {
-      PosStep.venta => CaptureStep(sale: current),
+      PosStep.venta => CaptureStep(sale: current, onContinue: advanceToCobro),
       PosStep.cobro => PaymentStep(
         sale: current,
         onClose: () => _closePayment(context, ref),

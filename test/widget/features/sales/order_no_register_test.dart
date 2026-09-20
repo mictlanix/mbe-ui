@@ -14,7 +14,7 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -52,7 +52,10 @@ const _noRegisterUser = User(
   sessionVersion: 1,
   settings: UserSettings(facilityId: 9),
   privileges: [
-    Privilege(systemObject: SystemObject.salesOrders, rawValue: 5), // create+read
+    Privilege(
+      systemObject: SystemObject.salesOrders,
+      rawValue: 5,
+    ), // create+read
   ],
 );
 
@@ -77,7 +80,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
   });
 
@@ -91,57 +95,60 @@ void main() {
     customerPaymentOverride(payments),
   ];
 
-  testWidgets(
-    'the list still loads, but New order is replaced by the notice',
-    (tester) async {
-      stubListOrders(salesOrders, page: testSalesPage(const []));
+  testWidgets('the list still loads, but New order is replaced by the notice', (
+    tester,
+  ) async {
+    stubListOrders(salesOrders, page: testSalesPage(const []));
 
-      await pumpPos(
-        tester,
-        const SalesOrdersListScreen(query: ListQuery()),
-        overrides: overridesFor(_noRegisterUser),
-      );
-      await tester.pumpAndSettle();
+    await pumpPos(
+      tester,
+      const SalesOrdersListScreen(query: ListQuery()),
+      overrides: overridesFor(_noRegisterUser),
+    );
+    await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('sales_orders_new_order_button')), findsNothing);
-      expect(
-        find.byKey(const Key('sales_order_no_register_notice')),
-        findsOneWidget,
-      );
-      expect(find.text(l10n.salesOrderNoRegisterTitle), findsOneWidget);
-      verify(
-        () => salesOrders.listOrders(
-          mine: any(named: 'mine'),
-          facility: any(named: 'facility'),
-          salesperson: any(named: 'salesperson'),
-          status: any(named: 'status'),
-          dateFrom: any(named: 'dateFrom'),
-          dateTo: any(named: 'dateTo'),
-          search: any(named: 'search'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).called(1);
-    },
-  );
+    expect(
+      find.byKey(const Key('sales_orders_new_order_button')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('sales_order_no_register_notice')),
+      findsOneWidget,
+    );
+    expect(find.text(l10n.salesOrderNoRegisterTitle), findsOneWidget);
+    verify(
+      () => salesOrders.listOrders(
+        mine: any(named: 'mine'),
+        facility: any(named: 'facility'),
+        salesperson: any(named: 'salesperson'),
+        status: any(named: 'status'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).called(1);
+  });
 
-  testWidgets(
-    'an already-open order still opens read-write — only creation is '
-    'blocked, never the read/edit surface',
-    (tester) async {
-      when(() => salesOrders.getById(saleId: 42)).thenAnswer(
-        (_) async => testSale(id: 42, lines: [testLine()]),
-      );
+  testWidgets('an already-open order still opens read-write — only creation is '
+      'blocked, never the read/edit surface', (tester) async {
+    when(() => salesOrders.getById(saleId: 42)).thenAnswer(
+      (_) async =>
+          testSale(id: 42, lines: [testLine()], origin: SaleOrigin.backOffice),
+    );
 
-      await pumpPos(
-        tester,
-        const OrderScreen(orderId: 42),
-        overrides: overridesFor(_noRegisterUser),
-      );
-      await tester.pumpAndSettle();
+    await pumpOrdersRouted(
+      tester,
+      initialLocation: '/sales/orders/42',
+      overrides: overridesFor(_noRegisterUser),
+    );
 
-      verifyNever(() => salesOrders.open());
-      expect(find.byKey(const Key('sales_order_confirm_button')), findsOneWidget);
-    },
-  );
+    verifyNever(() => anyOpen(salesOrders));
+    // The Venta step rendered — the tell that this workspace opened the
+    // order read-write, not the declined state (there is no more
+    // `sales_order_confirm_button`: this host has no separate confirm
+    // step, spec A2).
+    expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
+  });
 }

@@ -18,7 +18,7 @@ import 'package:mbe_ui/features/sales/presentation/delivery/destination_card.dar
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_counter_row.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/line_distribution_panel.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The Entrega step (contracts/pos-screen.md §3, spec 026
@@ -42,11 +42,36 @@ class DeliveryStep extends ConsumerStatefulWidget {
     required this.sale,
     required this.mode,
     required this.onClose,
+    this.closeLabel,
+    this.allowCounterSweep = true,
+    this.secondaryAction,
   });
 
   final Sale sale;
   final FulfillmentMode mode;
   final VoidCallback onClose;
+
+  /// Overrides the close button's label — see
+  /// [LineDistributionFoot.closeLabel]. `null` (the default) keeps the
+  /// register's own wording unchanged.
+  final String? closeLabel;
+
+  /// Whether an outstanding remainder may be swept to a counter-pickup
+  /// destination (`delivery_sweep_to_counter_button`). `true` (the default)
+  /// keeps the register's own behaviour unchanged — a counter-pickup order
+  /// legitimately finishes a mixed delivery that way. The back-office order
+  /// workspace passes `false`: it never offers counter pickup as a
+  /// fulfilment choice in the first place (FR-021), so falling back to one
+  /// here would contradict that (spec 039 FR-031).
+  final bool allowCounterSweep;
+
+  /// A low-emphasis action rendered immediately before the primary close
+  /// button (mirrors [SaleTotalsBar.secondaryAction] — the back-office order
+  /// workspace's own "Cancel order", moved here from the app bar 2026-09-20
+  /// for consistency with the register's own footer-anchored actions).
+  /// `null` (the default) renders the foot exactly as it was, so every
+  /// register screen is untouched.
+  final Widget? secondaryAction;
 
   @override
   ConsumerState<DeliveryStep> createState() => _DeliveryStepState();
@@ -130,10 +155,11 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
       destination: destination,
       onDone: () => Navigator.of(context, rootNavigator: true).pop(),
     );
-    final priorIds = (ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
-            const <Destination>[])
-        .map((d) => d.id)
-        .toSet();
+    final priorIds =
+        (ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
+                const <Destination>[])
+            .map((d) => d.id)
+            .toSet();
 
     if (!wide) {
       await showModalBottomSheet<void>(
@@ -148,8 +174,16 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(spacing.md, 0, spacing.md, spacing.xs),
-                  child: Text(title, style: Theme.of(ctx).typeRoles.sectionHeading),
+                  padding: EdgeInsets.fromLTRB(
+                    spacing.md,
+                    0,
+                    spacing.md,
+                    spacing.xs,
+                  ),
+                  child: Text(
+                    title,
+                    style: Theme.of(ctx).typeRoles.sectionHeading,
+                  ),
                 ),
                 editor,
               ],
@@ -197,7 +231,9 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
-                          tooltip: MaterialLocalizations.of(ctx).closeButtonLabel,
+                          tooltip: MaterialLocalizations.of(
+                            ctx,
+                          ).closeButtonLabel,
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
@@ -223,7 +259,8 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
 
   void _markJustCreated(Set<int> priorIds) {
     if (!mounted) return;
-    final current = ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
+    final current =
+        ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
         const <Destination>[];
     final created = current.where((d) => !priorIds.contains(d.id));
     if (created.isNotEmpty) setState(() => _justCreatedId = created.first.id);
@@ -251,12 +288,20 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         final distribution = ref
             .read(deliveryControllerProvider(widget.sale).notifier)
             .distribution();
-        final complete = isDistributionComplete(distribution, isMixed: _isMixed);
-        // spec 031 FR-007: additional to `complete`/`_closing`, not instead
-        // of them — an assignment or a destination write still outstanding
-        // must not let the cashier finish on a distribution that is about
-        // to change.
-        final writesPending = ref.watch(pendingWritesProvider(posWritesScope)) > 0;
+        final complete = isDistributionComplete(
+          distribution,
+          isMixed: _isMixed,
+        );
+        // spec 031 FR-007, spec 039 FR-007: additional to `complete`/
+        // `_closing`, not instead of them — an assignment or a destination
+        // write still outstanding must not let the user finish on a
+        // distribution that is about to change. Read through the seam so
+        // each host's own scope is checked (contracts/shared-step-seam.md §3).
+        final writesPending =
+            ref.watch(
+              pendingWritesProvider(ref.watch(saleWritesScopeProvider)),
+            ) >
+            0;
         final outstanding = distribution
             .where((d) => !d.isFullyDistributed)
             .toList();
@@ -264,7 +309,10 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         // Positional badges over the addressed destinations only (research
         // R8) — the same map keys both a card's header and the rail's chips,
         // so the two can never disagree.
-        final addressed = [for (final d in list) if (!d.isCounterPickup) d];
+        final addressed = [
+          for (final d in list)
+            if (!d.isCounterPickup) d,
+        ];
         final badges = <int, String>{
           for (var i = 0; i < addressed.length; i++)
             addressed[i].id: l10n.posDestinationBadge(i + 1),
@@ -297,9 +345,12 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         // unassigned — exactly the condition that opens the finish gate for
         // a pure-delivery sale, and always true once a mixed sale is fully
         // assigned too.
-        final nothingLeftToAssign = distribution.every((d) => isZeroAmount(d.atCounter));
+        final nothingLeftToAssign = distribution.every(
+          (d) => isZeroAmount(d.atCounter),
+        );
 
-        final outstandingMessage = (!complete && !_isMixed && outstanding.isNotEmpty)
+        final outstandingMessage =
+            (!complete && !_isMixed && outstanding.isNotEmpty)
             ? l10n.posDeliveryOutstanding(
                 outstanding
                     .map(
@@ -331,7 +382,8 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
           nothingLeftToAssign: nothingLeftToAssign,
         );
 
-        final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
+        final wide =
+            MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
 
         if (wide) {
           final theme = Theme.of(context);
@@ -395,9 +447,13 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                           ? () => _close(distribution)
                           : null,
                       closing: _closing,
-                      onSweepAndClose: outstandingMessage == null
+                      onSweepAndClose:
+                          (outstandingMessage == null ||
+                              !widget.allowCounterSweep)
                           ? null
                           : () => _close(distribution, sweepRemainder: true),
+                      closeLabel: widget.closeLabel,
+                      secondaryAction: widget.secondaryAction,
                     ),
                   ],
                 ),
@@ -434,11 +490,16 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
               assigned: assignedUnits,
               total: totalUnits,
               outstandingMessage: outstandingMessage,
-              onClose: (complete && !_closing && !writesPending) ? () => _close(distribution) : null,
+              onClose: (complete && !_closing && !writesPending)
+                  ? () => _close(distribution)
+                  : null,
               closing: _closing,
-              onSweepAndClose: outstandingMessage == null
+              onSweepAndClose:
+                  (outstandingMessage == null || !widget.allowCounterSweep)
                   ? null
                   : () => _close(distribution, sweepRemainder: true),
+              closeLabel: widget.closeLabel,
+              secondaryAction: widget.secondaryAction,
             ),
           ],
         );
@@ -495,7 +556,8 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
           distribution: distribution,
           enabled: !_closing,
           initiallyExpanded: destination.id == _justCreatedId,
-          onRemove: () => _remove(destination.id, l10n.posRemoveDestinationReason),
+          onRemove: () =>
+              _remove(destination.id, l10n.posRemoveDestinationReason),
           onEdit: () => _openDestinationSheet(destination: destination),
           onAssign: ({required saleLineId, required quantity}) => ref
               .read(deliveryControllerProvider(widget.sale).notifier)
@@ -506,7 +568,11 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
               ),
           onAdjust: ({required lineId, required quantity}) => ref
               .read(deliveryControllerProvider(widget.sale).notifier)
-              .adjustLine(destinationId: destination.id, lineId: lineId, quantity: quantity),
+              .adjustLine(
+                destinationId: destination.id,
+                lineId: lineId,
+                quantity: quantity,
+              ),
           onDrop: ({required lineId}) => ref
               .read(deliveryControllerProvider(widget.sale).notifier)
               .dropLine(destinationId: destination.id, lineId: lineId),
@@ -516,10 +582,14 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         alignment: Alignment.centerLeft,
         child: OutlinedButton.icon(
           key: const Key('delivery_add_destination_button'),
-          onPressed: (_closing || nothingLeftToAssign) ? null : _openDestinationSheet,
+          onPressed: (_closing || nothingLeftToAssign)
+              ? null
+              : _openDestinationSheet,
           icon: const Icon(Icons.add_location_alt_outlined),
           label: Text(
-            nothingLeftToAssign ? l10n.posAddDestinationNothingLeft : l10n.posAddDestination,
+            nothingLeftToAssign
+                ? l10n.posAddDestinationNothingLeft
+                : l10n.posAddDestination,
           ),
         ),
       ),

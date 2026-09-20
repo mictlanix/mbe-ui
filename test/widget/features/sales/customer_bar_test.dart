@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart'
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -23,16 +24,18 @@ import 'pos_test_harness.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
-Customer _customer({String creditLimit = '5000.00', String name = 'PÚBLICO EN GENERAL'}) =>
-    Customer(
-      customerId: 7,
-      code: 'C-7',
-      name: name,
-      creditLimit: creditLimit,
-      creditDays: 30,
-      priceList: const PriceListRef(id: 1, name: 'Mostrador'),
-      status: EntityStatus.active,
-    );
+Customer _customer({
+  String creditLimit = '5000.00',
+  String name = 'PÚBLICO EN GENERAL',
+}) => Customer(
+  customerId: 7,
+  code: 'C-7',
+  name: name,
+  creditLimit: creditLimit,
+  creditDays: 30,
+  priceList: const PriceListRef(id: 1, name: 'Mostrador'),
+  status: EntityStatus.active,
+);
 
 void main() {
   late MockCustomerRepository customerRepository;
@@ -86,7 +89,10 @@ void main() {
       expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
       expect(find.text('PÚBLICO EN GENERAL'), findsOneWidget);
       expect(find.text('Mostrador'), findsOneWidget);
-      expect(find.byKey(const Key('pos_payment_terms_dropdown')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_payment_terms_dropdown')),
+        findsOneWidget,
+      );
     });
 
     testWidgets(
@@ -158,7 +164,9 @@ void main() {
         CustomerBar(sale: testSale()),
         overrides: [
           customerRepositoryProvider.overrideWithValue(customerRepository),
-          customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(
+            paymentRepository,
+          ),
         ],
       );
 
@@ -176,7 +184,9 @@ void main() {
         CustomerBar(sale: testSale()),
         overrides: [
           customerRepositoryProvider.overrideWithValue(customerRepository),
-          customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(
+            paymentRepository,
+          ),
           // An administrator short-circuits every privilege check, which is
           // what makes the create action render at all here.
           accessControlProvider.overrideWithValue(
@@ -213,8 +223,12 @@ void main() {
 
       // ...and they sit on one line, not offset from each other.
       expect(
-        tester.getCenter(find.byKey(const Key('pos_customer_search_button'))).dy,
-        tester.getCenter(find.byKey(const Key('pos_create_customer_button'))).dy,
+        tester
+            .getCenter(find.byKey(const Key('pos_customer_search_button')))
+            .dy,
+        tester
+            .getCenter(find.byKey(const Key('pos_create_customer_button')))
+            .dy,
       );
     });
   });
@@ -267,81 +281,86 @@ void main() {
 
   group('attaching a customer defaults its payment terms '
       '(spec 037 FR-006-FR-010a)', () {
-    testWidgets(
-      'no sale open yet, credit-line customer — a single request, no '
-      'paymentTerms (C2.1): the server already derives credit on create',
-      (tester) async {
-        when(
-          () => customerRepository.list(
-            search: any(named: 'search'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          (_) async => const CustomerPage(
-            items: [
-              CustomerListItem(
-                customerId: 8,
-                code: 'C-8',
-                name: 'ACME SA DE CV',
-                creditLimit: '5000.00',
-                creditDays: 30,
-                priceList: PriceListRef(id: 1, name: 'Mostrador'),
-                status: EntityStatus.active,
-              ),
-            ],
-            total: 1,
-          ),
-        );
-
-        final sale = testSale();
-        final salesOrder = _updateHeaderStub(sale, newCustomer: 8);
-        await pumpPos(
-          tester,
-          // spec 037 research R1: `sale: null` is genuinely "no sale open
-          // yet" — the one case where adding `paymentTerms` would disqualify
-          // the create-time fast path for no gain.
-          const CustomerBar(sale: null),
-          overrides: [
-            customerRepositoryProvider.overrideWithValue(customerRepository),
-            customerPaymentRepositoryProvider.overrideWithValue(
-              paymentRepository,
+    testWidgets('no sale open yet, credit-line customer — a single request, no '
+        'paymentTerms (C2.1): the server already derives credit on create', (
+      tester,
+    ) async {
+      when(
+        () => customerRepository.list(
+          search: any(named: 'search'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => const CustomerPage(
+          items: [
+            CustomerListItem(
+              customerId: 8,
+              code: 'C-8',
+              name: 'ACME SA DE CV',
+              creditLimit: '5000.00',
+              creditDays: 30,
+              priceList: PriceListRef(id: 1, name: 'Mostrador'),
+              status: EntityStatus.active,
             ),
-            salesOrderOverride(salesOrder),
           ],
-        );
-        when(
-          () => customerRepository.get(customerId: any(named: 'customerId')),
-        ).thenAnswer((_) async => _customer());
+          total: 1,
+        ),
+      );
 
-        await tester.tap(find.byKey(const Key('pos_customer_search_button')));
-        await tester.pumpAndSettle();
-        await tester.enterText(
-          find.byKey(const Key('pos_customer_picker')),
-          'ACME',
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('C-8 — ACME SA DE CV'));
-        await tester.pumpAndSettle();
-
-        // The already-working path (research R1): exactly one request, and
-        // it must not carry paymentTerms even though this customer has a
-        // credit line — the server derives credit on create.
-        verify(() => salesOrder.open(customer: 8, salesperson: null)).called(1);
-        verifyNever(
-          () => salesOrder.updateHeader(
-            saleId: any(named: 'saleId'),
-            customer: any(named: 'customer'),
-            paymentTerms: any(named: 'paymentTerms'),
-            currency: any(named: 'currency'),
-            shipTo: any(named: 'shipTo'),
-            contact: any(named: 'contact'),
-            customerName: any(named: 'customerName'),
-            salesperson: any(named: 'salesperson'),
-            fulfillmentIntent: any(named: 'fulfillmentIntent'),
+      final sale = testSale();
+      final salesOrder = _updateHeaderStub(sale, newCustomer: 8);
+      await pumpPos(
+        tester,
+        // spec 037 research R1: `sale: null` is genuinely "no sale open
+        // yet" — the one case where adding `paymentTerms` would disqualify
+        // the create-time fast path for no gain.
+        const CustomerBar(sale: null),
+        overrides: [
+          customerRepositoryProvider.overrideWithValue(customerRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(
+            paymentRepository,
           ),
-        );
-      },
-    );
+          salesOrderOverride(salesOrder),
+        ],
+      );
+      when(
+        () => customerRepository.get(customerId: any(named: 'customerId')),
+      ).thenAnswer((_) async => _customer());
+
+      await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('pos_customer_picker')),
+        'ACME',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('C-8 — ACME SA DE CV'));
+      await tester.pumpAndSettle();
+
+      // The already-working path (research R1): exactly one request, and
+      // it must not carry paymentTerms even though this customer has a
+      // credit line — the server derives credit on create.
+      verify(
+        () => salesOrder.open(
+          customer: 8,
+          salesperson: null,
+          origin: SaleOrigin.pointOfSale,
+        ),
+      ).called(1);
+      verifyNever(
+        () => salesOrder.updateHeader(
+          saleId: any(named: 'saleId'),
+          customer: any(named: 'customer'),
+          paymentTerms: any(named: 'paymentTerms'),
+          currency: any(named: 'currency'),
+          shipTo: any(named: 'shipTo'),
+          contact: any(named: 'contact'),
+          customerName: any(named: 'customerName'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+        ),
+      );
+    });
 
     testWidgets(
       'sale already open, customer has no credit line — bundles immediate '
@@ -552,7 +571,10 @@ void main() {
         );
 
         final sale = testSale(customer: 5);
-        final attached = sale.copyWith(customer: 8, customerName: 'ACME SA DE CV');
+        final attached = sale.copyWith(
+          customer: 8,
+          customerName: 'ACME SA DE CV',
+        );
         final salesOrder = MockSalesOrderRepository();
         when(
           () => salesOrder.updateHeader(
@@ -641,6 +663,22 @@ void main() {
       expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
     });
 
+    testWidgets('the register\'s searching face carries no create action — '
+        'that lives in its facts view alone (spec 039 FR-046)', (tester) async {
+      // spec 039 gave `_SearchingView` a create affordance for the
+      // back-office order workspace's Cliente step, where searching is the
+      // whole face and inline creation would otherwise be unreachable. It is
+      // gated on `CustomerBar.startInSearchMode`, which the register never
+      // sets — so the register's own searching face must be exactly as it
+      // was: the picker and a dismiss, nothing more.
+      await pumpBar(tester);
+      await tester.tap(find.byKey(const Key('pos_customer_search_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
+      expect(find.byKey(const Key('pos_create_customer_button')), findsNothing);
+    });
+
     testWidgets('dismissing the search restores the facts, unchanged', (
       tester,
     ) async {
@@ -648,7 +686,9 @@ void main() {
       await tester.tap(find.byKey(const Key('pos_customer_search_button')));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('pos_customer_search_cancel_button')));
+      await tester.tap(
+        find.byKey(const Key('pos_customer_search_cancel_button')),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('pos_customer_facts')), findsOneWidget);
@@ -686,7 +726,9 @@ void main() {
         CustomerBar(sale: sale),
         overrides: [
           customerRepositoryProvider.overrideWithValue(customerRepository),
-          customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
+          customerPaymentRepositoryProvider.overrideWithValue(
+            paymentRepository,
+          ),
           salesOrderOverride(_updateHeaderStub(sale)),
         ],
       );
@@ -697,7 +739,10 @@ void main() {
       await tester.tap(find.byKey(const Key('pos_customer_search_button')));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const Key('pos_customer_picker')), 'ACME');
+      await tester.enterText(
+        find.byKey(const Key('pos_customer_picker')),
+        'ACME',
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.text('C-8 — ACME SA DE CV'));
       await tester.pumpAndSettle();
@@ -770,7 +815,13 @@ void main() {
         // salesperson requested — a single `open()`, not `updateHeader`.
         // spec 037 FR-006: this holds for a credit-line customer too — see
         // the C2.1 case below — but this customer (C-8) has none anyway.
-        verify(() => salesOrder.open(customer: 8, salesperson: 20)).called(1);
+        verify(
+          () => salesOrder.open(
+            customer: 8,
+            salesperson: 20,
+            origin: SaleOrigin.pointOfSale,
+          ),
+        ).called(1);
       },
     );
 
@@ -833,7 +884,13 @@ void main() {
 
         // spec 036 T005: no sale open yet, and nothing but customer/
         // salesperson requested — a single `open()`, not `updateHeader`.
-        verify(() => salesOrder.open(customer: 9, salesperson: null)).called(1);
+        verify(
+          () => salesOrder.open(
+            customer: 9,
+            salesperson: null,
+            origin: SaleOrigin.pointOfSale,
+          ),
+        ).called(1);
       },
     );
 
@@ -936,6 +993,11 @@ MockSalesOrderRepository _updateHeaderStub(Sale sale, {int newCustomer = 8}) {
     () => repository.open(
       customer: any(named: 'customer'),
       salesperson: any(named: 'salesperson'),
+      fulfillmentIntent: any(named: 'fulfillmentIntent'),
+      // mbe-api#209: every open now carries an origin, and an omitted named
+      // argument in a `when` means "must be null" — so without this the stub
+      // answers nothing at all.
+      origin: any(named: 'origin'),
     ),
   ).thenAnswer((_) async => sale);
   when(
