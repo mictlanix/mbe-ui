@@ -46,6 +46,7 @@ class CaptureStep extends ConsumerStatefulWidget {
     this.excludeGenericCustomer = false,
     this.attachFulfillmentIntent,
     this.headerExtra,
+    this.secondaryAction,
   });
 
   /// `null` on a register nobody has started a sale on yet, or a back-office
@@ -99,6 +100,12 @@ class CaptureStep extends ConsumerStatefulWidget {
   /// (the default) renders nothing here, which is POS's own header exactly
   /// as before this feature.
   final Widget? headerExtra;
+
+  /// A low-emphasis action rendered immediately before the primary one —
+  /// forwarded to [SaleTotalsBar.secondaryAction]. `null` (the default)
+  /// renders the bar exactly as it was, so every register screen is
+  /// untouched.
+  final Widget? secondaryAction;
 
   @override
   ConsumerState<CaptureStep> createState() => _CaptureStepState();
@@ -380,6 +387,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           sale: sale,
           compact: compact,
           actionLabel: widget.continueLabel,
+          secondaryAction: widget.secondaryAction,
           // spec 036 FR-008: advancing is synchronous now (no server round
           // trip on either host), so there is nothing left for this to show
           // a spinner for.

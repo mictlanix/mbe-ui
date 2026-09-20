@@ -44,6 +44,7 @@ class DeliveryStep extends ConsumerStatefulWidget {
     required this.onClose,
     this.closeLabel,
     this.allowCounterSweep = true,
+    this.secondaryAction,
   });
 
   final Sale sale;
@@ -63,6 +64,14 @@ class DeliveryStep extends ConsumerStatefulWidget {
   /// fulfilment choice in the first place (FR-021), so falling back to one
   /// here would contradict that (spec 039 FR-031).
   final bool allowCounterSweep;
+
+  /// A low-emphasis action rendered immediately before the primary close
+  /// button (mirrors [SaleTotalsBar.secondaryAction] — the back-office order
+  /// workspace's own "Cancel order", moved here from the app bar 2026-09-20
+  /// for consistency with the register's own footer-anchored actions).
+  /// `null` (the default) renders the foot exactly as it was, so every
+  /// register screen is untouched.
+  final Widget? secondaryAction;
 
   @override
   ConsumerState<DeliveryStep> createState() => _DeliveryStepState();
@@ -444,6 +453,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                           ? null
                           : () => _close(distribution, sweepRemainder: true),
                       closeLabel: widget.closeLabel,
+                      secondaryAction: widget.secondaryAction,
                     ),
                   ],
                 ),
@@ -489,6 +499,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
                   ? null
                   : () => _close(distribution, sweepRemainder: true),
               closeLabel: widget.closeLabel,
+              secondaryAction: widget.secondaryAction,
             ),
           ],
         );

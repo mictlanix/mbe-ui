@@ -779,3 +779,27 @@ what was actually built at the time, unedited.
 - [X] Full suite green (2597/2598 — the one failure is the pre-existing,
       unrelated Products params-audit issue), `flutter analyze` clean, the
       live `order_workspace_flow_test.dart` re-confirmed against mbe-api
+
+### App bar layout (2026-09-20)
+
+Reported directly against the running app. See spec.md's own Amendments
+section.
+
+- [X] App bar title row gained the current step's plain name on the left
+      (`Flexible` + ellipsis, guarding FR-018 at the compact tier under a
+      large text-scale factor), the indicator pushed right by a `Spacer` —
+      mirrors `PosWorkspaceScreen`'s own title row exactly
+      (`order_workspace_screen.dart`)
+- [X] "Cancel order" moved out of the app bar into whichever footer is
+      current, immediately before the primary action. `SaleTotalsBar`
+      already carried a `secondaryAction` slot for exactly this (built for
+      the single-screen editor spec 039 replaced); `LineDistributionFoot`
+      gained the same slot so Entrega gets it too, and `CaptureStep`/
+      `DeliveryStep` both forward it through (`sale_totals_bar.dart` needed
+      no change; `line_distribution_panel.dart`, `capture_step.dart`,
+      `delivery_step.dart`, `order_workspace_screen.dart` did)
+- [X] `order_header_disclosure_test.dart`'s cancel-placement test reverted to
+      its pre-spec-039 assertion (inside `pos_totals_footer`, not the app
+      bar) plus a new position check (left of "Continuar a entrega");
+      `order_workspace_test.dart` gained a title-text assertion across both
+      steps; full suite green (2599/2600 — same pre-existing failure)

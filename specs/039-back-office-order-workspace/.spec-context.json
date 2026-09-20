@@ -3,7 +3,7 @@
   "specName": "Back-Office Order Workspace — Customer, Capture, Delivery",
   "branch": "039-back-office-order-workspace",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -576,6 +576,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-20T21:04:20.564Z"
     }
   ],
   "telemetryInstanceId": "22504f59-7a52-48f1-9446-40870c72cd1a",

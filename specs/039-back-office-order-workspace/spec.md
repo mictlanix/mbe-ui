@@ -23,6 +23,19 @@
   pre-correction design, kept for its history rather than rewritten —
   contracts/order-workspace.md and data-model.md carry the same note.
 
+- **2026-09-20 — app bar layout, for consistency with `PosWorkspaceScreen`.**
+  Two corrections to the workspace's own app bar, reported directly against
+  the running app: (1) the current step's plain name (`Text`) had been
+  dropped from the title row entirely, leaving the step-indicator pill to
+  stand alone — restored on the left, with the indicator pushed to the
+  right by a `Spacer`, exactly mirroring the register's own title row; (2)
+  "Cancel order" moved out of the app bar into the current step's own
+  footer, immediately before the primary action (`SaleTotalsBar`/
+  `LineDistributionFoot`'s existing `secondaryAction` slot — a pre-existing
+  mechanism, originally built for this exact button on the single-screen
+  editor spec 039 replaced, that this workspace's own implementation had
+  simply never reused).
+
 ## Context
 
 The back-office order screen shipped in three passes — spec 029 built it, spec 032

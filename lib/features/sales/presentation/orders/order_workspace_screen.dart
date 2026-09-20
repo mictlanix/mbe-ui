@@ -139,6 +139,18 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
     });
   }
 
+  /// The current step named plainly — mirrors `PosWorkspaceScreen
+  /// ._stepTitle` exactly, so the app bar's title row reads the same way on
+  /// both hosts (corrected 2026-09-20: this workspace's own title had
+  /// dropped it entirely, leaving the step indicator pill to stand alone).
+  String _stepTitle(BuildContext context, OrderStep step) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (step) {
+      OrderStep.venta => l10n.salesOrderStepVenta,
+      OrderStep.entrega => l10n.salesOrderStepEntrega,
+    };
+  }
+
   Future<void> _cancel() async {
     setState(() => _cancelling = true);
     try {
@@ -201,6 +213,29 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
         order.isEditable &&
         !isForeignOrder(order, settings: ref.watch(appSettingsProvider));
 
+    // 2026-09-20: moved out of the app bar and into whichever footer is
+    // current — `SaleTotalsBar`/`LineDistributionFoot`'s own
+    // `secondaryAction` slot, immediately before the primary action, for
+    // consistency with the register's own footer-anchored actions. Built
+    // once here rather than in `_StepHost`, which has no access to
+    // `_cancelling`/`_confirmCancel`.
+    final cancelButton = canCancel
+        ? TextButton(
+            key: const Key('sales_order_cancel_button'),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: _cancelling ? null : () => _confirmCancel(l10n),
+            child: _cancelling
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(l10n.salesOrderCancelAction),
+          )
+        : null;
+
     return Scaffold(
       appBar: AppBar(
         shape: Border(
@@ -215,27 +250,40 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
           onPressed: () =>
               context.canPop() ? context.pop() : context.go('/sales/orders'),
         ),
-        title: _StepIndicator(current: step.current),
-        actions: [
-          if (canCancel)
-            Padding(
-              padding: EdgeInsets.only(right: Theme.of(context).spacing.xs),
-              child: TextButton(
-                key: const Key('sales_order_cancel_button'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.error,
-                ),
-                onPressed: _cancelling ? null : () => _confirmCancel(l10n),
-                child: _cancelling
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(l10n.salesOrderCancelAction),
+        // Mirrors `PosWorkspaceScreen`'s own title row exactly: the current
+        // step named plainly on the left, the step indicator pushed to the
+        // right (corrected 2026-09-20 — it used to sit where this plain
+        // title now does, with nothing on the right at all).
+        //
+        // `component_themes.dart` already sets `centerTitle: false` for
+        // every `AppBar`, so this title `Row` always gets the toolbar's full
+        // available width to lay out in (measured: 1112px of it on a 1200px
+        // surface) — centring was never the bug. The real bug was here: an
+        // earlier version paired `Flexible(child: Text(...))` (default
+        // `flex: 1`) with a separate `Spacer()`, so the title text claimed
+        // an equal, fixed share of the row's free space right alongside the
+        // `Spacer` — leaving whatever the (short) text didn't use stranded
+        // between the two, and the indicator ~270px short of the bar's true
+        // right edge. `Expanded` on the text alone, with no `Spacer`, makes
+        // it the row's *only* flexible child, so it absorbs 100% of the
+        // genuinely free space — the indicator then sits flush against
+        // whatever's left over, and the text, still left-aligned within its
+        // now-larger box, renders exactly where it did before.
+        title: Row(
+          children: [
+            Expanded(
+              // At the compact tier under a large text-scale factor, the
+              // plain title and the indicator's own pills compete for the
+              // same narrow row — this shrinks first, with an ellipsis,
+              // rather than overflow (FR-018).
+              child: Text(
+                _stepTitle(context, step.current),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-        ],
+            _StepIndicator(current: step.current),
+          ],
+        ),
       ),
       body: orderAsync.when(
         data: (order) {
@@ -255,6 +303,7 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
             current: step.current,
             order: order,
             canUpdate: canUpdate,
+            cancelButton: cancelButton,
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -423,6 +472,7 @@ class _StepHost extends ConsumerWidget {
     required this.current,
     required this.order,
     required this.canUpdate,
+    required this.cancelButton,
   });
 
   final OrderStep current;
@@ -434,6 +484,12 @@ class _StepHost extends ConsumerWidget {
   /// (FR-009, FR-011).
   final Sale? order;
   final bool canUpdate;
+
+  /// Built once by `_OrderWorkspaceBodyState` (which owns `_cancelling`) and
+  /// handed down rather than rebuilt here — `null` when cancel is not
+  /// offered (FR-034). Forwarded to whichever step is current as its own
+  /// `secondaryAction`, immediately before that step's primary action.
+  final Widget? cancelButton;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -462,6 +518,7 @@ class _StepHost extends ConsumerWidget {
                 onStale: () =>
                     ref.invalidate(orderEditorControllerProvider(order!.id)),
               ),
+        secondaryAction: cancelButton,
       ),
       // The header rides above `DeliveryStep` here, same widget and same
       // props as Venta's own `headerExtra` — not a second copy. Every
@@ -497,6 +554,7 @@ class _StepHost extends ConsumerWidget {
               // list needs telling: it has its own read of this order's
               // folio/status, taken before either existed.
               onClose: () => ref.invalidate(salesOrdersListControllerProvider),
+              secondaryAction: cancelButton,
             ),
           ),
         ],

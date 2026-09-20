@@ -796,5 +796,47 @@ void main() {
         findsNothing,
       );
     });
+
+    // The app bar's title had dropped this entirely, leaving the step
+    // indicator pill to stand alone — corrected 2026-09-20, mirroring
+    // `PosWorkspaceScreen`'s own title row: the current step named plainly
+    // on the left, the indicator on the right.
+    testWidgets('the app bar names the current step plainly, alongside the '
+        'indicator', (tester) async {
+      await pumpOnVenta(tester, lineCount: 1);
+      expect(find.text(l10n.salesOrderStepVenta), findsOneWidget);
+
+      // Not driven through `orderStepControllerProvider` directly: the
+      // instance actually behind this screen is the one
+      // `OrderWorkspaceScreen`'s own nested `ProviderScope` overrides, a
+      // different instance from the root container's.
+      await tester.tap(find.byKey(const Key('pos_continue_to_payment')));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.salesOrderStepEntrega), findsOneWidget);
+    });
+
+    // Reported directly against the running app on macOS: the indicator
+    // rendered well short of the app bar's far edge instead of flush
+    // against it. Root cause (found by measuring the actual render tree,
+    // not by inspecting `AppBar`'s centring default, which turned out to
+    // be a red herring — `component_themes.dart` already forces
+    // `centerTitle: false` globally, on every platform): the title `Row`
+    // paired `Flexible(child: Text(...))` (default `flex: 1`) with a
+    // separate `Spacer()`, so the two split the row's free space evenly
+    // instead of the `Spacer` getting all of it — see the comment on the
+    // `title:` itself for the full account. The bug and its fix are both
+    // platform-independent, so this needs no platform override to exercise.
+    testWidgets('the step indicator sits flush against the app bar\'s far '
+        'right edge', (tester) async {
+      await pumpOnVenta(tester, lineCount: 1);
+
+      final appBarRight = tester.getRect(find.byType(AppBar).first).right;
+      final indicatorRight = tester
+          .getTopRight(find.byKey(const Key('sales_order_step_indicator')))
+          .dx;
+      // Flush means "within the app bar's default 16px title spacing of
+      // its edge", not "touching it exactly".
+      expect(appBarRight - indicatorRight, closeTo(16, 1));
+    });
   });
 }

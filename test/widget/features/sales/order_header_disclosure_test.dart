@@ -371,26 +371,38 @@ void main() {
   });
 
   group('the cancel action (US3, FR-013, FR-014)', () {
-    // spec 039 re-homes this into the workspace's own AppBar rather than the
-    // totals bar — an existing element, not a dedicated band of its own,
-    // which was the point of the original assertion (spec 032). There is no
+    // Rides inside `SaleTotalsBar`'s own `secondaryAction` slot, immediately
+    // before "Continuar a entrega" — an existing element, not a dedicated
+    // band of its own, which is the point of the original assertion (spec
+    // 032). Briefly re-homed into the app bar earlier in spec 039's own
+    // implementation; moved back here 2026-09-20 for consistency with the
+    // register's own footer-anchored actions. There is no
     // `sales_order_confirm_button` for it to sit beside any more: this
     // workspace has no separate confirm step (the order commits on its
-    // first destination create, spec A2), so the co-location half of the
-    // old assertion has nothing left to check.
-    testWidgets('rides in the app bar, not in a band of its own', (
+    // first destination create, spec A2).
+    testWidgets('rides inside the totals bar, not in a band of its own', (
       tester,
     ) async {
       await pumpOrder(tester);
 
-      expect(find.byKey(_cancel), findsOneWidget);
       expect(
         find.descendant(
           of: find.byKey(const Key('pos_totals_footer')),
           matching: find.byKey(_cancel),
         ),
-        findsNothing,
+        findsOneWidget,
       );
+    });
+
+    testWidgets('sits to the left of "Continuar a entrega"', (tester) async {
+      await pumpOrder(tester);
+
+      final cancel = tester.getTopLeft(find.byKey(_cancel)).dx;
+      final continueAction = tester
+          .getTopLeft(find.byKey(const Key('pos_continue_to_payment')))
+          .dx;
+
+      expect(cancel, lessThan(continueAction));
     });
   });
 }
