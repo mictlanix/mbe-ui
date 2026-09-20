@@ -8,6 +8,21 @@
 
 **Input**: User description: "Let's create a spec to implement backoffice sales orders from scratch. It should reuse the point of sales capture step and delivery step, so all backoffice sales will be scheduled for delivery. These type of sales first step is to set a customer, either an existing one, or a new one. And the user must not be able to select customer 'Publico en General'." — later confirmed as a **redo**, not an addition.
 
+## Amendments
+
+- **2026-09-20 — the Cliente step was removed.** The workspace shipped with
+  three steps — Cliente → Venta → Entrega — reading FR-009's "first step is
+  to set a customer" as a screen of its own. Direct correction: naming a
+  customer was always meant to be Venta's own first move, not a separate
+  step. The workspace is **two** steps now — Venta → Entrega. Venta's
+  existing customer band (`CustomerBar`, already shared with the register)
+  opens straight into search when nothing is attached yet, exactly as the
+  removed step did, and product capture stays withheld until a real
+  customer exists (FR-009, FR-011). Every other requirement in this
+  document holds; `Cliente` throughout the rest of this file is the
+  pre-correction design, kept for its history rather than rewritten —
+  contracts/order-workspace.md and data-model.md carry the same note.
+
 ## Context
 
 The back-office order screen shipped in three passes — spec 029 built it, spec 032
@@ -268,10 +283,13 @@ edits to one never gate, block or alter the other.
   MUST raise a keep / discard / keep-editing decision before advancing a step,
   and MUST make a discard visible in the field it affects.
 
-#### Cliente step
+#### Naming the customer
 
-- **FR-009**: The Cliente step MUST require exactly one customer before any other
-  part of the order may be worked on.
+- **FR-009**: Venta MUST require exactly one customer before any other part of
+  the order may be worked on — product capture stays withheld until then.
+  **Amended 2026-09-20** (see Amendments): this was originally a separate
+  Cliente step ahead of Venta; direct correction folded it into Venta itself,
+  since naming a customer was never meant to be a screen of its own.
 - **FR-010**: Users MUST be able to find an existing customer by searching on
   name or code.
 - **FR-011**: The system MUST exclude the generic walk-in customer ("Público en

@@ -2756,9 +2756,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Elige un cliente para empezar el pedido.';
 
   @override
-  String get salesOrderStepCliente => 'Cliente';
-
-  @override
   String get salesOrderStepVenta => 'Venta';
 
   @override

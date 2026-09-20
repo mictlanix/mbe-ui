@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
@@ -43,6 +44,7 @@ class CaptureStep extends ConsumerStatefulWidget {
     this.continueLabel,
     this.showFulfillmentSelector = true,
     this.excludeGenericCustomer = false,
+    this.attachFulfillmentIntent,
     this.headerExtra,
   });
 
@@ -74,12 +76,19 @@ class CaptureStep extends ConsumerStatefulWidget {
   /// `true` so the register's behaviour is unchanged unless a caller opts out.
   final bool showFulfillmentSelector;
 
-  /// spec 039 FR-011: the back-office order workspace's own customer bar —
-  /// rendered here as much as on the Cliente step, since a Venta-step
-  /// customer change is still a customer choice — must refuse the generic
-  /// walk-in customer just as consistently. `false` (the default) keeps
-  /// POS's own behaviour, where that customer is the ordinary default.
+  /// spec 039 FR-011: the back-office order workspace's own customer bar
+  /// must refuse the generic walk-in customer, since it forbids the
+  /// customer choice entirely. `false` (the default) keeps POS's own
+  /// behaviour, where that customer is the ordinary default.
   final bool excludeGenericCustomer;
+
+  /// spec 039 FR-014/FR-015: the back-office order workspace's own intent to
+  /// deliver, recorded in the very same request that opens the draft on the
+  /// customer's first attach (forwarded to
+  /// [CustomerBar.attachFulfillmentIntent]). `null` (the default) is a no-op
+  /// for POS, whose own [FulfillmentModeSelector] covers this once a sale
+  /// exists.
+  final FulfillmentMode? attachFulfillmentIntent;
 
   /// spec 039 contracts/order-workspace.md §3: the back-office order
   /// workspace's own header panel, rendered directly below the customer
@@ -96,15 +105,18 @@ class CaptureStep extends ConsumerStatefulWidget {
 }
 
 class _CaptureStepState extends ConsumerState<CaptureStep> {
-  Future<void> _addLine(ProductLookupResult result, int? defaultWarehouse) async {
-    ref.read(productStockCacheProvider.notifier).update(
-      (cache) => {...cache, result.product: result.stock},
-    );
+  Future<void> _addLine(
+    ProductLookupResult result,
+    int? defaultWarehouse,
+  ) async {
+    ref
+        .read(productStockCacheProvider.notifier)
+        .update((cache) => {...cache, result.product: result.stock});
     // The product table's tax rate, cached for the line's tax picker
     // (FR-038b) — the lookup is the only payload that carries it.
-    ref.read(productTaxRateCacheProvider.notifier).update(
-      (cache) => {...cache, result.product: result.taxRate},
-    );
+    ref
+        .read(productTaxRateCacheProvider.notifier)
+        .update((cache) => {...cache, result.product: result.taxRate});
     await ref
         .read(saleEditorProvider)
         .addLine(
@@ -146,6 +158,23 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final l10n = AppLocalizations.of(context)!;
     final sale = widget.sale;
     final enabled = sale?.isEditable ?? true;
+    // spec 039 FR-011/FR-009: a host that excludes the generic customer has
+    // no valid default to lazily open a draft against, unlike POS's own
+    // walk-in fallback — so before a customer exists there, product capture
+    // is withheld rather than opening a sale attached to nothing. Once
+    // `sale` exists, a customer is already attached (this workspace's own
+    // picker never returns the generic one), so this reduces to `enabled`
+    // exactly as before.
+    final canCaptureProducts =
+        enabled && (sale != null || !widget.excludeGenericCustomer);
+    // Same reasoning, the other end: nothing else to fill in on a brand-new
+    // order here, so the customer band opens already searching instead of
+    // reporting facts about a customer that does not exist — mirrors what
+    // the replaced Cliente step did, without a step of its own (research R3,
+    // reworked 2026-09-20 per direct correction: this was never meant to be
+    // its own screen).
+    final startCustomerBarInSearchMode =
+        sale == null && widget.excludeGenericCustomer;
     final compact = LayoutBreakpoints.isCompact(context);
     // The register's own point of sale, known from the signed-in user's
     // settings before any sale exists — so the first scan already lands in
@@ -160,14 +189,17 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     // #164). Read through the seam so each host's own scope is checked, never
     // the other's (contracts/shared-step-seam.md §1).
     final writesPending =
-        ref.watch(pendingWritesProvider(ref.watch(saleWritesScopeProvider))) > 0;
+        ref.watch(pendingWritesProvider(ref.watch(saleWritesScopeProvider))) >
+        0;
     final spacing = Theme.of(context).spacing;
     // One horizontal margin for every header item, applied once per item
     // rather than each widget also carrying its own — the doubled
     // `EdgeInsets.all(12)` this replaces (the step's own wrapper *and*
     // CustomerBar's Card padding) was what misaligned the customer card's
     // edges against the search field below it (spec 023 research R12).
-    final horizontalInset = EdgeInsets.symmetric(horizontal: spacing.screenMargin);
+    final horizontalInset = EdgeInsets.symmetric(
+      horizontal: spacing.screenMargin,
+    );
     // spec 036 R1, spec 039 contracts/shared-step-seam.md §1: a `confirm()`
     // failure triggered from payment, delivery, or leaving Cobro on credit
     // terms lands here — the host has already returned to this step by the
@@ -204,57 +236,61 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
       // them stacked, where a three-segment mode control has no room left
       // beside the customer band.
       Padding(
-          // Top inset only: the search field below carries its own, and
-          // doubling them left a dead band between the two (the mock's own
-          // customer row is `12px 24px 0` for the same reason).
-          padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
-          child: LayoutBreakpoints.isExpanded(context)
-              ? Row(
-                  // Centred, not top-aligned: the mode control is a single
-                  // 56 px pill while the customer band is a taller card, so
-                  // `start` pinned it to the band's top edge and read as
-                  // misaligned. The mock centres the pair (`align-items:
-                  // center`) for exactly this reason.
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: CustomerBar(
-                        sale: sale,
-                        enabled: enabled,
-                        excludeGenericCustomer: widget.excludeGenericCustomer,
-                      ),
-                    ),
-                    if (widget.showFulfillmentSelector) ...[
-                      SizedBox(width: spacing.sm),
-                      FulfillmentModeSelector(sale: sale, enabled: enabled),
-                    ],
-                  ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomerBar(
+        // Top inset only: the search field below carries its own, and
+        // doubling them left a dead band between the two (the mock's own
+        // customer row is `12px 24px 0` for the same reason).
+        padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
+        child: LayoutBreakpoints.isExpanded(context)
+            ? Row(
+                // Centred, not top-aligned: the mode control is a single
+                // 56 px pill while the customer band is a taller card, so
+                // `start` pinned it to the band's top edge and read as
+                // misaligned. The mock centres the pair (`align-items:
+                // center`) for exactly this reason.
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: CustomerBar(
                       sale: sale,
                       enabled: enabled,
                       excludeGenericCustomer: widget.excludeGenericCustomer,
+                      attachFulfillmentIntent: widget.attachFulfillmentIntent,
+                      startInSearchMode: startCustomerBarInSearchMode,
                     ),
-                    // Stretched here and only here: stacked, it is one element
-                    // in a column where the band above it and the search field
-                    // below both run margin to margin, and a track hugging its
-                    // labels leaves dead space against the trailing edge —
-                    // most of it at tablet-portrait widths, where the natural
-                    // track is far narrower than the column.
-                    if (widget.showFulfillmentSelector) ...[
-                      SizedBox(height: spacing.sm),
-                      FulfillmentModeSelector(
-                        sale: sale,
-                        enabled: enabled,
-                        stretch: true,
-                      ),
-                    ],
+                  ),
+                  if (widget.showFulfillmentSelector) ...[
+                    SizedBox(width: spacing.sm),
+                    FulfillmentModeSelector(sale: sale, enabled: enabled),
                   ],
-                ),
-        ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomerBar(
+                    sale: sale,
+                    enabled: enabled,
+                    excludeGenericCustomer: widget.excludeGenericCustomer,
+                    attachFulfillmentIntent: widget.attachFulfillmentIntent,
+                    startInSearchMode: startCustomerBarInSearchMode,
+                  ),
+                  // Stretched here and only here: stacked, it is one element
+                  // in a column where the band above it and the search field
+                  // below both run margin to margin, and a track hugging its
+                  // labels leaves dead space against the trailing edge —
+                  // most of it at tablet-portrait widths, where the natural
+                  // track is far narrower than the column.
+                  if (widget.showFulfillmentSelector) ...[
+                    SizedBox(height: spacing.sm),
+                    FulfillmentModeSelector(
+                      sale: sale,
+                      enabled: enabled,
+                      stretch: true,
+                    ),
+                  ],
+                ],
+              ),
+      ),
       if (widget.headerExtra != null)
         Padding(
           padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
@@ -268,11 +304,14 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         // found would never be added — verified live, where the first scan
         // of a sale silently added nothing and the second worked.
         key: const Key('pos_product_search_field'),
-        padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
+        padding: horizontalInset.add(
+          EdgeInsets.symmetric(vertical: spacing.sm),
+        ),
         child: ProductSearchField(
-          enabled: enabled,
+          enabled: canCaptureProducts,
           warehouse: defaultWarehouse.value,
-          onProductSelected: (result) => _addLine(result, defaultWarehouse.value),
+          onProductSelected: (result) =>
+              _addLine(result, defaultWarehouse.value),
         ),
       ),
     ];
@@ -293,10 +332,21 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                 if (sale == null || sale.lines.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: Text(l10n.posNoLinesHint)),
+                    child: Center(
+                      child: Text(
+                        canCaptureProducts
+                            ? l10n.posNoLinesHint
+                            : l10n.salesOrderChooseCustomerFirst,
+                      ),
+                    ),
                   )
                 else
-                  ..._lines(sale, enabled, compact: true, inset: horizontalInset),
+                  ..._lines(
+                    sale,
+                    enabled,
+                    compact: true,
+                    inset: horizontalInset,
+                  ),
               ],
             ),
           )
@@ -304,7 +354,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           ...header,
           Expanded(
             child: sale == null || sale.lines.isEmpty
-                ? Center(child: Text(l10n.posNoLinesHint))
+                ? Center(
+                    child: Text(
+                      canCaptureProducts
+                          ? l10n.posNoLinesHint
+                          : l10n.salesOrderChooseCustomerFirst,
+                    ),
+                  )
                 : ListView(
                     // The same inset every header item carries, so a line's
                     // edges sit directly under the search field's rather than

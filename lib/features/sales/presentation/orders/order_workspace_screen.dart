@@ -15,7 +15,6 @@ import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/customer_step.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/foreign_order_guard.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_header_panel.dart';
@@ -26,9 +25,15 @@ import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart'
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The back-office order workspace (spec 039 contracts/order-workspace.md):
-/// a three-step host — Cliente, Venta, Entrega — reached at
-/// `/sales/orders/new` and `/sales/orders/:orderId`, top-level sibling
-/// routes mirroring `PosWorkspaceScreen`'s own shape (full-screen, no shell).
+/// a two-step host — Venta, Entrega — reached at `/sales/orders/new` and
+/// `/sales/orders/:orderId`, top-level sibling routes mirroring
+/// `PosWorkspaceScreen`'s own shape (full-screen, no shell).
+///
+/// Naming a customer is Venta's own first move, not a screen of its own
+/// (corrected 2026-09-20 — an earlier Cliente step ahead of Venta was
+/// removed): `CaptureStep.excludeGenericCustomer` keeps the walk-in customer
+/// out of reach, and withholds product capture until a real one is
+/// attached (FR-009, FR-011).
 ///
 /// Installs the nested `ProviderScope` the shared capture and delivery
 /// surfaces read through (contracts/shared-step-seam.md §5) — all **four**
@@ -38,8 +43,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 class OrderWorkspaceScreen extends ConsumerWidget {
   const OrderWorkspaceScreen({super.key, this.orderId});
 
-  /// `null` for `/sales/orders/new` — a fresh order, opened lazily by the
-  /// Cliente step's own first customer attach (FR-005). Non-null for
+  /// `null` for `/sales/orders/new` — a fresh order, opened lazily by
+  /// Venta's own first customer attach (FR-005). Non-null for
   /// `/sales/orders/:orderId` — an existing order to load.
   final int? orderId;
 
@@ -103,10 +108,10 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
   ///
   /// Needed for more than a genuine reopen: the URL rewrite below mounts a
   /// **brand-new** `OrderWorkspaceScreen`, with its own fresh
-  /// `orderStepControllerProvider` override defaulting to Cliente — unlike
+  /// `orderStepControllerProvider` override defaulting to Venta — unlike
   /// POS, where the step controller is one true app-wide singleton that
-  /// survives a widget remount. Without this, advancing to Venta from the
-  /// Cliente step's own attach would be silently undone the instant the URL
+  /// survives a widget remount. Without this, advancing to Entrega from
+  /// Venta's own line count would be silently undone the instant the URL
   /// rewrite fires, on every single order. So this runs unconditionally
   /// whenever an order exists, not only for a `widget.orderId != null`
   /// reopen — which also means US3's own resume case (a genuinely reopened
@@ -128,14 +133,9 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
   void _syncStepTo(Sale order) {
     if (_syncedOrderId == order.id) return;
     _syncedOrderId = order.id;
-    final isGeneric = ref
-        .read(appSettingsProvider)
-        .isGenericCustomer(order.customer);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref
-          .read(orderStepControllerProvider.notifier)
-          .resumeTo(order, isGenericCustomer: isGeneric);
+      ref.read(orderStepControllerProvider.notifier).resumeTo(order);
     });
   }
 
@@ -315,7 +315,7 @@ class _ForeignOrderNotice extends StatelessWidget {
   }
 }
 
-/// Always three steps — unlike POS, whose count varies with fulfilment mode,
+/// Always two steps — unlike POS, whose count varies with fulfilment mode,
 /// because this workspace has no mode to vary (FR-021). No chevrons, no
 /// current-pill icon distinction beyond fill — mirrors `_StepIndicator`'s
 /// own POS styling, minus the parts that do not apply here (no return-to-
@@ -339,12 +339,10 @@ class _StepIndicator extends StatelessWidget {
     }
 
     final labels = {
-      OrderStep.cliente: l10n.salesOrderStepCliente,
       OrderStep.venta: l10n.salesOrderStepVenta,
       OrderStep.entrega: l10n.salesOrderStepEntrega,
     };
     final icons = {
-      OrderStep.cliente: Icons.person_outline,
       OrderStep.venta: Icons.edit_note,
       OrderStep.entrega: Icons.local_shipping_outlined,
     };
@@ -429,38 +427,41 @@ class _StepHost extends ConsumerWidget {
 
   final OrderStep current;
 
-  /// `null` only while [OrderStep.cliente] is current and no order has been
-  /// opened yet — the Cliente step needs nothing else to render.
+  /// `null` only on a genuinely new order, nothing chosen yet — Venta's own
+  /// `CaptureStep` renders directly from this, exactly as it does for a
+  /// register nobody has started a sale on (FR-005): the customer band
+  /// shows a search, and product capture stays withheld until it succeeds
+  /// (FR-009, FR-011).
   final Sale? order;
   final bool canUpdate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    if (order == null) return const CustomerStep();
-
-    final editable = order!.isEditable;
+    final editable = order?.isEditable ?? true;
     final canEditFields = canUpdate && editable;
 
     return switch (current) {
-      OrderStep.cliente => const CustomerStep(),
       OrderStep.venta => CaptureStep(
         sale: order,
         excludeGenericCustomer: true,
         showFulfillmentSelector: false,
+        attachFulfillmentIntent: FulfillmentMode.delivery,
         continueLabel: l10n.salesOrderContinueToDeliveryAction,
-        onContinue: (order!.lineCount > 0)
+        onContinue: (order != null && order!.lineCount > 0)
             ? () => ref
                   .read(orderStepControllerProvider.notifier)
                   .advanceToEntrega()
             : null,
-        headerExtra: OrderHeaderPanel(
-          sale: order!,
-          canEdit: canEditFields,
-          canEditPriority: canUpdate,
-          onStale: () =>
-              ref.invalidate(orderEditorControllerProvider(order!.id)),
-        ),
+        headerExtra: order == null
+            ? null
+            : OrderHeaderPanel(
+                sale: order!,
+                canEdit: canEditFields,
+                canEditPriority: canUpdate,
+                onStale: () =>
+                    ref.invalidate(orderEditorControllerProvider(order!.id)),
+              ),
       ),
       // The header rides above `DeliveryStep` here, same widget and same
       // props as Venta's own `headerExtra` — not a second copy. Every

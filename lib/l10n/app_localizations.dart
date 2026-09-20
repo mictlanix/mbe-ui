@@ -4995,12 +4995,6 @@ abstract class AppLocalizations {
   /// **'Choose a customer to start the order.'**
   String get salesOrderChooseCustomerFirst;
 
-  /// Back-office order workspace step label (spec 039 FR-001) — the customer step. New vocabulary, not shared with POS's own posStep* labels (research R1).
-  ///
-  /// In en, this message translates to:
-  /// **'Customer'**
-  String get salesOrderStepCliente;
-
   /// Back-office order workspace step label — the capture step
   ///
   /// In en, this message translates to:

@@ -749,3 +749,33 @@ Task: "Add AppError.creditHold (T014)"
 - Every task above traces to a spec FR, a research decision, or a contract
   clause named inline — if a task's rationale is unclear during
   implementation, the citation is where to look before guessing.
+
+---
+
+## Post-completion correction (2026-09-20)
+
+All 68 tasks above shipped a three-step workspace — Cliente → Venta →
+Entrega. Direct correction: naming a customer was never meant to be a step
+of its own, only Venta's own first move. See spec.md's own Amendments
+section for the full rationale; every task above stays as the record of
+what was actually built at the time, unedited.
+
+- [X] Removed `OrderStep.cliente` and `customer_step.dart`; the workspace is
+      two steps now, `venta` → `entrega` (`order_step_controller.dart`,
+      `order_workspace_screen.dart`)
+- [X] `CaptureStep` gained `attachFulfillmentIntent` (forwarded to
+      `CustomerBar`) and a `canCaptureProducts` gate — product capture is
+      withheld until a customer is attached, reusing `excludeGenericCustomer`
+      as the signal a host has no valid default to lazily open against
+      (`capture_step.dart`)
+- [X] The now-orphaned `salesOrderStepCliente` l10n key removed; the
+      pre-existing (and previously orphaned) `salesOrderChooseCustomerFirst`
+      hint reused for the withheld-capture empty state
+- [X] `order_step_controller_test.dart` rewritten for two steps;
+      `order_workspace_test.dart`'s Cliente-step group folded into Venta's
+      own, with a `productSearchEnabled` helper replacing the
+      findsNothing/findsOneWidget assertions a disabled-not-absent field
+      needed; every other workspace test file needed no change
+- [X] Full suite green (2597/2598 — the one failure is the pre-existing,
+      unrelated Products params-audit issue), `flutter analyze` clean, the
+      live `order_workspace_flow_test.dart` re-confirmed against mbe-api

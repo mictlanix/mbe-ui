@@ -2016,8 +2016,6 @@
   "@salesOrderNoLinesYet": {},
   "salesOrderChooseCustomerFirst": "Choose a customer to start the order.",
   "@salesOrderChooseCustomerFirst": {},
-  "salesOrderStepCliente": "Customer",
-  "@salesOrderStepCliente": {"description": "Back-office order workspace step label (spec 039 FR-001) — the customer step. New vocabulary, not shared with POS's own posStep* labels (research R1)."},
   "salesOrderStepVenta": "Sale",
   "@salesOrderStepVenta": {"description": "Back-office order workspace step label — the capture step"},
   "salesOrderStepEntrega": "Delivery",

@@ -28,6 +28,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -42,8 +43,8 @@ class _FixedAuthNotifier extends AuthNotifier {
 
 /// Holds update on `salesOrders`, matching what this workspace's actions gate
 /// on (constitution §IV) — mirrors `order_screen_test.dart`'s own fixture.
-/// Also holds create+read on `customers`, which is what the Cliente step's
-/// own inline-create affordance gates on (US2, FR-013).
+/// Also holds create+read on `customers`, which is what Venta's own
+/// inline-create affordance gates on (US2, FR-013).
 const _updaterUser = User(
   userId: 'order-updater',
   email: 'order-updater@example.com',
@@ -102,12 +103,16 @@ Customer _customerRecord() => const Customer(
   status: EntityStatus.active,
 );
 
-/// Spec 039 US1: the full happy path for an existing customer, Cliente
-/// through the transition into Entrega. `DeliveryStep` itself — assigning
-/// destinations, closing the step, the commit that follows — is the real,
-/// unmodified widget (contracts/shared-step-seam.md), already covered by its
-/// own suite (`destination_assignment_test.dart` and siblings); this file's
-/// job is the seam and the two new steps, not re-proving `DeliveryStep`.
+/// Spec 039 US1: the full happy path for an existing customer, attached on
+/// Venta itself, through the transition into Entrega. Corrected 2026-09-20:
+/// an earlier, separate Cliente step ahead of Venta was removed — naming a
+/// customer was never meant to be a screen of its own, only Venta's own
+/// first move, gated by withholding product capture until one exists
+/// (FR-009, FR-011). `DeliveryStep` itself — assigning destinations, closing
+/// the step, the commit that follows — is the real, unmodified widget
+/// (contracts/shared-step-seam.md), already covered by its own suite
+/// (`destination_assignment_test.dart` and siblings); this file's job is the
+/// seam and the two steps, not re-proving `DeliveryStep`.
 void main() {
   late MockSalesOrderRepository salesOrders;
   late MockCustomerRepository customers;
@@ -124,6 +129,13 @@ void main() {
       tester.widget<FloatingActionButton>(
         find.byKey(const Key('pos_continue_to_payment')),
       );
+
+  /// `ProductSearchField.enabled` — product capture is withheld until a
+  /// customer is attached (FR-009, FR-011), and this is the widget the gate
+  /// actually reaches, not merely a key's presence.
+  bool productSearchEnabled(WidgetTester tester) => tester
+      .widget<ProductSearchField>(find.byType(ProductSearchField))
+      .enabled;
 
   setUpAll(() async {
     l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -210,9 +222,10 @@ void main() {
     return container;
   }
 
-  group('the Cliente step (FR-009…FR-016)', () {
-    testWidgets('a new order writes nothing on mount and shows the customer '
-        'search, not the facts view', (tester) async {
+  group('attaching a customer, Venta\'s own first move (FR-009…FR-016)', () {
+    testWidgets('a new order writes nothing on mount, shows the customer '
+        'search rather than the facts view, and withholds product capture '
+        '(FR-009, FR-011)', (tester) async {
       await pumpWorkspace(tester);
 
       verifyNever(
@@ -224,8 +237,11 @@ void main() {
         ),
       );
       expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
-      // Nothing else to fill in yet — no product search, no header panel.
-      expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
+      // Nothing else to fill in yet — no header panel, and the product
+      // search field is present but disabled rather than absent: this is
+      // the same `CaptureStep` a register sale renders, only withholding
+      // capture (constrained, not a second screen — corrected 2026-09-20).
+      expect(productSearchEnabled(tester), isFalse);
     });
 
     testWidgets('the generic walk-in customer never appears in results '
@@ -260,7 +276,7 @@ void main() {
     });
 
     testWidgets('picking a customer opens the draft with that customer and '
-        'an intent to deliver in one request, then advances to Venta '
+        'an intent to deliver in one request, then unlocks product capture '
         '(FR-014, FR-015)', (tester) async {
       when(
         () => customers.list(search: any(named: 'search'), limit: 10),
@@ -310,16 +326,16 @@ void main() {
           customer: any(named: 'customer'),
         ),
       );
-      // Venta is now showing: the product search field is the tell.
-      expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
+      // Product capture is unlocked now that a customer is attached — the
+      // tell, since this is the same screen throughout, not a transition.
+      expect(productSearchEnabled(tester), isTrue);
       expect(find.byKey(const Key('pos_customer_picker')), findsNothing);
     });
   });
 
-  // US2 lives here rather than in an `order_customer_step_test.dart` of its
-  // own: it is the same step, reached the same way, needing the same five
-  // mocks — a separate file would duplicate this file's whole setup to add
-  // four tests.
+  // US2 lives here rather than in a file of its own: it is the same Venta
+  // step, reached the same way, needing the same five mocks — a separate
+  // file would duplicate this file's whole setup to add four tests.
   group('creating a customer inline (US2, FR-013)', () {
     /// Fills the inline form's required fields and saves — the same sequence
     /// `customer_inline_create_test.dart` drives for the register's copy.
@@ -364,10 +380,9 @@ void main() {
       ).thenAnswer((_) async => result);
     }
 
-    testWidgets('the action is reachable from the Cliente step — searching is '
-        'the whole face there, so it carries create as well as the picker', (
-      tester,
-    ) async {
+    testWidgets('the action is reachable from Venta before any customer is '
+        'attached — searching is the whole face there, so it carries create '
+        'as well as the picker', (tester) async {
       await pumpWorkspace(tester);
       expect(
         find.byKey(const Key('pos_create_customer_button')),
@@ -381,9 +396,9 @@ void main() {
       expect(find.byKey(const Key('pos_create_customer_button')), findsNothing);
     });
 
-    testWidgets('a created customer is attached and the step advances, on the '
-        'same one-request path a picked customer takes (FR-013, FR-014, '
-        'FR-015)', (tester) async {
+    testWidgets('a created customer is attached and product capture unlocks, '
+        'on the same one-request path a picked customer takes (FR-013, '
+        'FR-014, FR-015)', (tester) async {
       stubCreate(
         const Customer(
           customerId: 99,
@@ -426,7 +441,7 @@ void main() {
           origin: SaleOrigin.backOffice,
         ),
       ).called(1);
-      expect(find.byKey(const Key('pos_product_search_field')), findsOneWidget);
+      expect(productSearchEnabled(tester), isTrue);
     });
 
     testWidgets('cancelling the form creates nothing and leaves the step '
@@ -458,9 +473,9 @@ void main() {
           origin: any(named: 'origin'),
         ),
       );
-      // Still on Cliente, still searching.
+      // Still searching, still no customer — capture stays withheld.
       expect(find.byKey(const Key('pos_customer_picker')), findsOneWidget);
-      expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
+      expect(productSearchEnabled(tester), isFalse);
     });
 
     testWidgets('a refused create keeps the form and its typed values, and '
@@ -521,9 +536,10 @@ void main() {
   });
 
   group('the Venta step (FR-017…FR-023)', () {
-    // Reaches Venta the same way a real user does — via the Cliente step's
-    // attach — exercising the URL rewrite's own re-derivation of the step
-    // from the order's state (research R2), not a shortcut around it.
+    // Reaches Venta's post-attach state the same way a real user does — by
+    // attaching a customer through the same picker every test above drives
+    // — exercising the URL rewrite's own re-derivation of the step from the
+    // order's state (research R2), not a shortcut around it.
     Future<ProviderContainer> pumpOnVenta(
       WidgetTester tester, {
       int lineCount = 0,

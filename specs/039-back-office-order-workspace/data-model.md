@@ -5,6 +5,11 @@
 This feature introduces **no new domain entity**. It adds one piece of UI-only
 state and one optional field to an existing entity. Everything else is reused.
 
+> **Amended 2026-09-20**: `OrderStep` below still lists `cliente` as a
+> member, kept for its history. A direct correction removed it: the
+> workspace is **two** steps — `venta`, `entrega` — not three. See spec.md's
+> own Amendments section.
+
 ---
 
 ## 1. Reused entities (unchanged)

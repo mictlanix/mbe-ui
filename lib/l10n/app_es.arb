@@ -873,7 +873,6 @@
   "salesOrderConfirmAction": "Confirmar pedido",
   "salesOrderNoLinesYet": "Agrega al menos un producto para poder confirmar el pedido.",
   "salesOrderChooseCustomerFirst": "Elige un cliente para empezar el pedido.",
-  "salesOrderStepCliente": "Cliente",
   "salesOrderStepVenta": "Venta",
   "salesOrderStepEntrega": "Entrega",
   "salesOrderStepProgress": "Paso {current} de {total}",

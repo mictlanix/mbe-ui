@@ -2,8 +2,15 @@
 
 **Feature**: `039-back-office-order-workspace` | **Date**: 2026-09-11
 
-The screen itself: its routes, its three steps, what gates each transition, and
+The screen itself: its routes, its steps, what gates each transition, and
 what happens to the code and tests it replaces.
+
+> **Amended 2026-09-20**: this document still describes a three-step
+> Cliente → Venta → Entrega workspace throughout, kept for its history. A
+> direct correction removed Cliente as a step: naming a customer is Venta's
+> own first move, gated by withholding product capture until one is
+> attached, not a screen of its own. The workspace is **two** steps —
+> Venta → Entrega. See spec.md's own Amendments section.
 
 ---
 
