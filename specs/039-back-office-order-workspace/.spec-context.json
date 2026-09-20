@@ -3,7 +3,7 @@
   "specName": "Back-Office Order Workspace — Customer, Capture, Delivery",
   "branch": "039-back-office-order-workspace",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -521,8 +521,63 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-13T12:00:32.275Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T068",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-15T03:04:34.347Z"
     }
   ],
   "telemetryInstanceId": "22504f59-7a52-48f1-9446-40870c72cd1a",
-  "currentTask": "T028"
+  "currentTask": "T068"
 }

@@ -485,6 +485,11 @@ class _StepHost extends ConsumerWidget {
               sale: order!,
               mode: FulfillmentMode.delivery,
               closeLabel: l10n.salesOrderCompleteDeliveryAction,
+              // FR-031: this workspace never offers counter pickup as a
+              // fulfilment choice (FR-021), so it must not fall back to one
+              // here either — found live (T062), not by a test that existed
+              // beforehand.
+              allowCounterSweep: false,
               // The order is already committed by the time this fires — the
               // first destination create is what did it (spec A2) — so
               // there is nothing left to write here. Only the "Pedidos"

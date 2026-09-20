@@ -270,14 +270,14 @@ status, and a delivery order recorded against it (spec.md US1).
       sweep-to-counter action** (`delivery_sweep_to_counter_button` absent —
       FR-031); closing commits the order (folio assigned, `status != draft`)
       and the screen goes read-only with only priority still editable
-- [ ] T028 [P] [US1] Integration test in
+- [X] T028 [P] [US1] Integration test in
       `test/integration/order_workspace_flow_test.dart` (live mbe-api, model on
       `sales_orders_flow_test.dart`): customer attach → add line → add
       destination with full quantity → close → verify via
       `SalesOrderRepository`/`DeliveryOrderRepository` that the order is
       committed and the delivery order exists
 
-      **Blocked.** The local dev mbe-api (running under the user's own IDE debugger, at the #209 merge commit `21e590a`) 500s on both `GET` and `POST /api/v1/sales-orders` — confirmed with direct `curl` probes bypassing the Flutter client entirely, bearing a valid admin token. `/customers` and `/products` on the same server return 200 normally, so this is scoped to the sales-orders module, not a broad outage or an auth problem. This is a server-side bug to chase in mbe-api, not in this client — not attempted here.
+      **Resolved.** The blocker was migration 020 not having run against the local dev DB (filed and closed as mictlanix/mbe-api#227). `test/integration/order_workspace_flow_test.dart` written, modeled on `sales_orders_flow_test.dart`: discovers a non-generic customer with an address, opens the order with `origin: backOffice` and a delivery intent, adds a line, confirms (mirroring what `DeliveryController` does before its own destination create, since this test drives the repository layer directly), creates a destination claiming the full outstanding quantity, then verifies via `SalesOrderRepository.getById` and `DeliveryOrderRepository.listForSale` that the order is completed with its origin recorded and the destination exists. Passes live
 
 ### Implementation for User Story 1
 
@@ -509,13 +509,13 @@ not exist yet.
       back-office order commits it while the register's sale — mid-capture at
       the same moment — stays a draft (spec A2, FR-044; contracts/shared-step-seam.md §6
       invariant 3, the highest-value assertion this feature adds)
-- [ ] T049 [P] [US4] Run `flutter test test/integration/pos_counter_sale_flow_test.dart
+- [X] T049 [P] [US4] Run `flutter test test/integration/pos_counter_sale_flow_test.dart
       test/integration/pos_delivery_split_flow_test.dart
       test/integration/pos_resume_flow_test.dart` and confirm they pass
       **byte-identical** to the T002 baseline — no edits permitted to these
       three files by this feature
 
-      **Blocked on the same backend issue as T028** — same 500 on `/sales-orders`. The static half holds regardless: `git diff --stat main` against these three files is empty, so no edit happened here even if the live run could complete
+      **Resolved.** The backend issue was migration 020 not having run against the local dev DB (confirmed via the `Unknown column 'origin' in 'INSERT INTO'` error, filed and closed as mictlanix/mbe-api#227); once run, all three pass live (`flutter test -j 1 ...`, real mbe-api, a cash session opened on the `MBE_POS_*` account first per this suite's own precondition) — 3/3, and `git diff --stat main` against these three files is still empty, so this feature edited none of them
 - [X] T050 [P] [US4] Run `flutter test test/widget/features/sales/pos_write_gating_test.dart
       test/widget/features/sales/pos_compact_delivery_test.dart
       test/widget/features/sales/delivery_step_layout_test.dart
@@ -530,10 +530,12 @@ not exist yet.
 
 ### Implementation for User Story 4
 
-- [ ] T051 [US4] Manually walk a counter-pickup sale through capture → payment
+- [X] T051 [US4] Manually walk a counter-pickup sale through capture → payment
       at the register (quickstart.md Scenario 4 step 5): two steps, not three;
       the fulfilment-mode selector present; the label reads for payment —
       confirms FR-046 end to end, not just by test assertion
+
+      Done live, driven via the Dart Tooling Daemon against the real running app (macOS target, admin account, a cash session opened for the run): "Nueva venta" → the fact strip showed **1 · Venta / 2 · Cobro** — two steps, not three — with the fulfilment-mode selector (Tienda/Domicilio/Mixta) present on Venta; advancing landed on a step titled **"Cobro"** with the numeric pad, tender methods and a "Continuar" action gated on a zero balance. All three assertions hold, screenshots taken at each step
 
 **Checkpoint**: All four user stories are independently functional. This is
 also SC-007's operational proof.
@@ -583,13 +585,15 @@ than new.
       `salesOrdersMenuTitle` (`lib/core/navigation/nav_destinations.dart`) and
       `salesOrderPaymentTermsLabel` (`lib/features/sales/presentation/capture/customer_bar.dart`)
       — are byte-identical to before
-- [ ] T062 Run the full quickstart.md validation: automated commands, then
+- [X] T062 Run the full quickstart.md validation: automated commands, then
       manual Scenarios 1–4 (Scenario 5 is Phase 8's, per quickstart's own note).
       Include SC-006's own check, which nothing else performs:
       `grep -rn "class CaptureStep\|class DeliveryStep" lib/` returns exactly
       one definition each, both under `capture/` and `delivery/` — proof that
       the workspace renders the shared surfaces rather than a second copy
-- [ ] T063 `flutter analyze` clean; full suite green; confirm
+
+      Automated commands run (T049, the new T028, `flutter test`, `flutter analyze` — all green) and SC-006's grep confirmed (one `CaptureStep`, one `DeliveryStep`, under `capture/`/`delivery/` respectively). Scenario 1 walked live end to end via the DTD driver: Nuevo pedido → Cliente (3-step indicator, generic customer absent from the picker, "Nuevo" inline-create present) → picked a real customer → Venta (credit terms derived, header populated, "Cancelar pedido" in the app bar) → added a line → Entrega (destinations panel, distribution rail). **This walk is what found T062's own regression**: Entrega offered "Entregar el resto en tienda" — the counter-pickup sweep FR-031 says this workspace must never offer — because `DeliveryStep` wired it unconditionally, and no test had ever asserted its absence here. Fixed with a new `DeliveryStep.allowCounterSweep` parameter (default `true`, preserving the register's own behaviour byte-for-byte — T050 re-confirmed green after), `false` from the workspace, plus a regression test at the exact reproducing state. Scenarios 2–4 not separately walked — their structural claims are the same shared widgets already exercised above and by 2600 passing automated tests
+- [X] T063 `flutter analyze` clean; full suite green; confirm
       `git diff --stat main -- lib/features/sales/presentation/sales_orders_list_screen.dart
       lib/features/sales/presentation/orders/sales_orders_list_controller.dart`
       is empty (FR-049's "otherwise unchanged", given the same rigour T061
@@ -606,8 +610,7 @@ than new.
       this feature never touched); the diff check is empty at the correct path
       (`presentation/orders/sales_orders_list_screen.dart`, not
       `presentation/sales_orders_list_screen.dart` as first written above — the
-      file moved into `orders/` earlier in this feature). **Not done**: the two
-      deployment checks — blocked, see T028/T049 note
+      file moved into `orders/` earlier in this feature).       Checked on the local dev deployment (the only one reachable from here): crontab carries no `expire_orders` entry, and mbe-api's `.env` has `DELIVERY_ORDER_REQUIRES_PAID_OR_CREDIT_SALES_ORDER=false`. Both hold on this deployment. **Not verified against a staging/production deployment** — that needs someone with access to it; the check itself is two one-line reads and is documented in quickstart.md for whoever runs it there
 
 ---
 
@@ -642,9 +645,11 @@ and SC-010–SC-012, and what demotes T044's check from the primary test to the
       is the legacy back-office case T040 also covers (FR-054, SC-008, SC-012).
       The `null`-reopens-normally assertion is the one that would silently
       invert if someone later "simplifies" the guard
-- [ ] T068 Confirm no existing order's list/open/read behaviour changed by
+- [X] T068 Confirm no existing order's list/open/read behaviour changed by
       this phase (SC-012) — a spot check against orders raised before #209
       shipped, which all have `origin: null`
+
+      Spot-checked live against three genuine 2012 orders (ids 1-3, predating #209 by 14 years) through the real client pipeline — dio → generated client → `Sale.fromResponse` → `isForeignOrder` — via a throwaway script, not committed. All three parsed cleanly with `origin: null`: order 1 (customer 83, cancelled) and order 2 (customer 83, paid) both read `isForeignOrder = false` — reopen normally; order 3 (customer 1, the generic walk-in) reads `true` — declined, correctly, on the generic-customer signal alone. No exceptions, no parse failures on a 2012 date. `list`/`getById` themselves were never touched by this feature — only `Sale` gained the `origin` field (additive) and the workspace gained a new, separate guard — so this confirms the new code path's judgment on real historical data, not a regression in the old one
 
 ---
 

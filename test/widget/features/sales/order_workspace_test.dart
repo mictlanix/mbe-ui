@@ -771,6 +771,14 @@ void main() {
         find.byKey(const Key('delivery_add_destination_button')),
         findsOneWidget,
       );
+      // FR-031: found live (T062), not by a test that existed beforehand —
+      // `DeliveryStep` offered this unconditionally until `allowCounterSweep`
+      // was added specifically for this workspace. An unassigned line with
+      // no destination yet is exactly the state that renders it.
+      expect(
+        find.byKey(const Key('delivery_sweep_to_counter_button')),
+        findsNothing,
+      );
     });
   });
 }
