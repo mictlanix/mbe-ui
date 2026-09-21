@@ -27,6 +27,7 @@ import 'package:mbe_ui/features/sales/presentation/orders/order_no_register_noti
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/pos_sale_status_chip.dart';
+import 'package:mbe_ui/features/sales/presentation/widgets/sale_origin_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _ordersPath = '/sales/orders';
@@ -176,6 +177,7 @@ class SalesOrdersListScreen extends ConsumerWidget {
                         .withFacet('status', null)
                         .withFacet('salesperson', null)
                         .withFacet('facility', null)
+                        .withFacet('hide-point-of-sale', null)
                         .copyWith(pageIndex: 0),
                   ),
                   builder: (_) => CurrentListQueryBuilder(
@@ -228,6 +230,12 @@ class SalesOrdersListScreen extends ConsumerWidget {
                   size: ColumnSize.S,
                   cellBuilder: (context, sale) =>
                       PosSaleStatusChip(status: sale.status),
+                ),
+                DataTableColumn(
+                  label: l10n.salesOrdersColumnOrigin,
+                  size: ColumnSize.S,
+                  cellBuilder: (context, sale) =>
+                      SaleOriginChip(origin: sale.origin),
                 ),
                 DataTableColumn(
                   label: l10n.salesOrdersColumnTotal,
@@ -356,6 +364,22 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
                 ),
               ),
           ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          l10n.salesOrdersOriginFilterLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        FilterChip(
+          key: const Key('sales_orders_filter_hide_point_of_sale'),
+          label: Text(l10n.salesOrdersOriginFilterHidePointOfSale),
+          selected: filter.hidePointOfSale,
+          onSelected: (selected) => goTo(
+            query
+                .withFacet('hide-point-of-sale', selected ? 'true' : null)
+                .copyWith(pageIndex: 0),
+          ),
         ),
         if (isAdministrator) ...[
           const SizedBox(height: 12),

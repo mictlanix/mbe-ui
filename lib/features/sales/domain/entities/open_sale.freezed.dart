@@ -41,6 +41,11 @@ mixin _$OpenSale {
   SaleStatus get status => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
 
+  /// Which workflow raised the order — `null` means it was never recorded
+  /// (every order raised before mbe-api#209), not "point of sale"
+  /// (sale_origin.dart).
+  SaleOrigin? get origin => throw _privateConstructorUsedError;
+
   /// Create a copy of OpenSale
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -62,6 +67,7 @@ abstract class $OpenSaleCopyWith<$Res> {
     String balance,
     SaleStatus status,
     DateTime date,
+    SaleOrigin? origin,
   });
 }
 
@@ -88,6 +94,7 @@ class _$OpenSaleCopyWithImpl<$Res, $Val extends OpenSale>
     Object? balance = null,
     Object? status = null,
     Object? date = null,
+    Object? origin = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -123,6 +130,10 @@ class _$OpenSaleCopyWithImpl<$Res, $Val extends OpenSale>
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            origin: freezed == origin
+                ? _value.origin
+                : origin // ignore: cast_nullable_to_non_nullable
+                      as SaleOrigin?,
           )
           as $Val,
     );
@@ -147,6 +158,7 @@ abstract class _$$OpenSaleImplCopyWith<$Res>
     String balance,
     SaleStatus status,
     DateTime date,
+    SaleOrigin? origin,
   });
 }
 
@@ -172,6 +184,7 @@ class __$$OpenSaleImplCopyWithImpl<$Res>
     Object? balance = null,
     Object? status = null,
     Object? date = null,
+    Object? origin = freezed,
   }) {
     return _then(
       _$OpenSaleImpl(
@@ -207,6 +220,10 @@ class __$$OpenSaleImplCopyWithImpl<$Res>
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        origin: freezed == origin
+            ? _value.origin
+            : origin // ignore: cast_nullable_to_non_nullable
+                  as SaleOrigin?,
       ),
     );
   }
@@ -224,6 +241,7 @@ class _$OpenSaleImpl implements _OpenSale {
     required this.balance,
     required this.status,
     required this.date,
+    this.origin,
   });
 
   @override
@@ -258,9 +276,15 @@ class _$OpenSaleImpl implements _OpenSale {
   @override
   final DateTime date;
 
+  /// Which workflow raised the order — `null` means it was never recorded
+  /// (every order raised before mbe-api#209), not "point of sale"
+  /// (sale_origin.dart).
+  @override
+  final SaleOrigin? origin;
+
   @override
   String toString() {
-    return 'OpenSale(id: $id, serial: $serial, customerName: $customerName, customerDisplayName: $customerDisplayName, total: $total, balance: $balance, status: $status, date: $date)';
+    return 'OpenSale(id: $id, serial: $serial, customerName: $customerName, customerDisplayName: $customerDisplayName, total: $total, balance: $balance, status: $status, date: $date, origin: $origin)';
   }
 
   @override
@@ -277,7 +301,8 @@ class _$OpenSaleImpl implements _OpenSale {
             (identical(other.total, total) || other.total == total) &&
             (identical(other.balance, balance) || other.balance == balance) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.date, date) || other.date == date));
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.origin, origin) || other.origin == origin));
   }
 
   @override
@@ -291,6 +316,7 @@ class _$OpenSaleImpl implements _OpenSale {
     balance,
     status,
     date,
+    origin,
   );
 
   /// Create a copy of OpenSale
@@ -312,6 +338,7 @@ abstract class _OpenSale implements OpenSale {
     required final String balance,
     required final SaleStatus status,
     required final DateTime date,
+    final SaleOrigin? origin,
   }) = _$OpenSaleImpl;
 
   @override
@@ -345,6 +372,12 @@ abstract class _OpenSale implements OpenSale {
   SaleStatus get status;
   @override
   DateTime get date;
+
+  /// Which workflow raised the order — `null` means it was never recorded
+  /// (every order raised before mbe-api#209), not "point of sale"
+  /// (sale_origin.dart).
+  @override
+  SaleOrigin? get origin;
 
   /// Create a copy of OpenSale
   /// with the given fields replaced by the non-null parameter values.

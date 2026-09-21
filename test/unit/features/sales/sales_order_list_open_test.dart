@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 /// `listOpen` through the **real** generated client rather than a mocked
 /// repository, because that is where the open-sales selector broke: a local
@@ -117,6 +118,59 @@ void main() {
             '"today" filter answer total: 0 for a register that had traded',
       );
     });
+
+    test(
+      'excludeOrigin: backOffice reaches the wire as exclude_origin=1, and '
+      'never as an inclusive origin — spec 041 FR-002, contracts/origin-filter.md §1',
+      () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode({'items': <Object?>[], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.listSales(
+          pointSale: 18,
+          excludeOrigin: SaleOrigin.backOffice,
+        );
+
+        final query = requests.single.queryParameters;
+        expect(query['exclude_origin'], 1);
+        expect(
+          query.containsKey('origin'),
+          isFalse,
+          reason: 'the inclusive origin parameter must never be sent — it '
+              'would hide every order raised before mbe-api#209 (FR-005)',
+        );
+      },
+    );
+
+    test(
+      'omitting excludeOrigin sends neither exclude_origin nor origin at all '
+      '— the default request stays byte-identical to before this feature '
+      '(FR-012)',
+      () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode({'items': <Object?>[], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.listSales(pointSale: 18);
+
+        final query = requests.single.queryParameters;
+        expect(query.containsKey('exclude_origin'), isFalse);
+        expect(query.containsKey('origin'), isFalse);
+      },
+    );
   });
 }
 

@@ -148,6 +148,12 @@ abstract class SalesOrderRepository {
   /// live-verified quirk [listOpen] already documents (`completed` answers
   /// with `paid` rows too) — so a caller that cares about an exact status
   /// match must still narrow the returned page itself.
+  ///
+  /// [excludeOrigin] omits every order whose recorded origin matches it,
+  /// while always keeping an order whose origin was never recorded (spec 041
+  /// contracts/origin-filter.md §1) — never pass [SaleOrigin] via an
+  /// inclusive filter here, which would hide every order raised before
+  /// mbe-api#209.
   Future<OpenSalePage> listSales({
     required int pointSale,
     SaleStatus? status,
@@ -156,6 +162,7 @@ abstract class SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
+    SaleOrigin? excludeOrigin,
   });
 
   /// `GET /sales-orders?mine=&facility=&salesperson=&status=&date_from=
@@ -171,6 +178,10 @@ abstract class SalesOrderRepository {
   /// - [mine], when true, matches an order whose creator, last updater **or**
   ///   salesperson is the caller — not creator alone.
   /// - [status], like [listSales]'s, is not guaranteed exclusive server-side.
+  ///
+  /// [excludeOrigin] follows [listSales]'s own contract: it omits one
+  /// workflow's orders while always keeping an order whose origin was never
+  /// recorded.
   Future<OpenSalePage> listOrders({
     bool mine = false,
     int? facility,
@@ -181,6 +192,7 @@ abstract class SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
+    SaleOrigin? excludeOrigin,
   });
 }
 

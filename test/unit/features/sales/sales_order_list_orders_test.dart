@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 /// `listOrders` (spec 029 FR-006–FR-011, contracts/mbe-api-sales-orders.md
 /// §1) through the **real** generated client with a fake HTTP adapter,
@@ -109,7 +110,61 @@ void main() {
 
       expect(page.total, 2);
       expect(page.items.map((o) => o.id), [337427, 337426]);
+      // A response omitting `origin` entirely (every pre-mbe-api#209 payload
+      // shape) must decode to `null`, not throw and not default to either
+      // workflow (spec 041 FR-005).
+      expect(page.items.every((o) => o.origin == null), isTrue);
     });
+
+    test(
+      'excludeOrigin: pointOfSale reaches the wire as exclude_origin=0, and '
+      'never as an inclusive origin — spec 041 FR-004, contracts/origin-filter.md §1',
+      () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode({'items': <Object?>[], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.listOrders(excludeOrigin: SaleOrigin.pointOfSale);
+
+        final query = requests.single.queryParameters;
+        expect(query['exclude_origin'], 0);
+        expect(
+          query.containsKey('origin'),
+          isFalse,
+          reason: 'the inclusive origin parameter must never be sent — it '
+              'would hide every order raised before mbe-api#209 (FR-005)',
+        );
+      },
+    );
+
+    test(
+      'omitting excludeOrigin sends neither exclude_origin nor origin at all '
+      '— the default request stays byte-identical to before this feature '
+      '(FR-012)',
+      () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode({'items': <Object?>[], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.listOrders();
+
+        final query = requests.single.queryParameters;
+        expect(query.containsKey('exclude_origin'), isFalse);
+        expect(query.containsKey('origin'), isFalse);
+      },
+    );
   });
 }
 

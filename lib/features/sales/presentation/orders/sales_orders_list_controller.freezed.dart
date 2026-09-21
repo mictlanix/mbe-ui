@@ -25,6 +25,11 @@ mixin _$SalesOrdersFilter {
   String get search => throw _privateConstructorUsedError;
   int get pageIndex => throw _privateConstructorUsedError;
 
+  /// Hides point-of-sale-originated orders, while always keeping an order
+  /// whose origin was never recorded (spec 041 FR-003/FR-005,
+  /// contracts/origin-filter.md §1-2).
+  bool get hidePointOfSale => throw _privateConstructorUsedError;
+
   /// Create a copy of SalesOrdersFilter
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -47,6 +52,7 @@ abstract class $SalesOrdersFilterCopyWith<$Res> {
     int? facility,
     String search,
     int pageIndex,
+    bool hidePointOfSale,
   });
 }
 
@@ -72,6 +78,7 @@ class _$SalesOrdersFilterCopyWithImpl<$Res, $Val extends SalesOrdersFilter>
     Object? facility = freezed,
     Object? search = null,
     Object? pageIndex = null,
+    Object? hidePointOfSale = null,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +110,10 @@ class _$SalesOrdersFilterCopyWithImpl<$Res, $Val extends SalesOrdersFilter>
                 ? _value.pageIndex
                 : pageIndex // ignore: cast_nullable_to_non_nullable
                       as int,
+            hidePointOfSale: null == hidePointOfSale
+                ? _value.hidePointOfSale
+                : hidePointOfSale // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -126,6 +137,7 @@ abstract class _$$SalesOrdersFilterImplCopyWith<$Res>
     int? facility,
     String search,
     int pageIndex,
+    bool hidePointOfSale,
   });
 }
 
@@ -150,6 +162,7 @@ class __$$SalesOrdersFilterImplCopyWithImpl<$Res>
     Object? facility = freezed,
     Object? search = null,
     Object? pageIndex = null,
+    Object? hidePointOfSale = null,
   }) {
     return _then(
       _$SalesOrdersFilterImpl(
@@ -181,6 +194,10 @@ class __$$SalesOrdersFilterImplCopyWithImpl<$Res>
             ? _value.pageIndex
             : pageIndex // ignore: cast_nullable_to_non_nullable
                   as int,
+        hidePointOfSale: null == hidePointOfSale
+            ? _value.hidePointOfSale
+            : hidePointOfSale // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -197,6 +214,7 @@ class _$SalesOrdersFilterImpl implements _SalesOrdersFilter {
     this.facility,
     this.search = '',
     this.pageIndex = 0,
+    this.hidePointOfSale = false,
   });
 
   @override
@@ -216,9 +234,16 @@ class _$SalesOrdersFilterImpl implements _SalesOrdersFilter {
   @JsonKey()
   final int pageIndex;
 
+  /// Hides point-of-sale-originated orders, while always keeping an order
+  /// whose origin was never recorded (spec 041 FR-003/FR-005,
+  /// contracts/origin-filter.md §1-2).
+  @override
+  @JsonKey()
+  final bool hidePointOfSale;
+
   @override
   String toString() {
-    return 'SalesOrdersFilter(from: $from, to: $to, status: $status, salesperson: $salesperson, facility: $facility, search: $search, pageIndex: $pageIndex)';
+    return 'SalesOrdersFilter(from: $from, to: $to, status: $status, salesperson: $salesperson, facility: $facility, search: $search, pageIndex: $pageIndex, hidePointOfSale: $hidePointOfSale)';
   }
 
   @override
@@ -235,7 +260,9 @@ class _$SalesOrdersFilterImpl implements _SalesOrdersFilter {
                 other.facility == facility) &&
             (identical(other.search, search) || other.search == search) &&
             (identical(other.pageIndex, pageIndex) ||
-                other.pageIndex == pageIndex));
+                other.pageIndex == pageIndex) &&
+            (identical(other.hidePointOfSale, hidePointOfSale) ||
+                other.hidePointOfSale == hidePointOfSale));
   }
 
   @override
@@ -248,6 +275,7 @@ class _$SalesOrdersFilterImpl implements _SalesOrdersFilter {
     facility,
     search,
     pageIndex,
+    hidePointOfSale,
   );
 
   /// Create a copy of SalesOrdersFilter
@@ -271,6 +299,7 @@ abstract class _SalesOrdersFilter implements SalesOrdersFilter {
     final int? facility,
     final String search,
     final int pageIndex,
+    final bool hidePointOfSale,
   }) = _$SalesOrdersFilterImpl;
 
   @override
@@ -287,6 +316,12 @@ abstract class _SalesOrdersFilter implements SalesOrdersFilter {
   String get search;
   @override
   int get pageIndex;
+
+  /// Hides point-of-sale-originated orders, while always keeping an order
+  /// whose origin was never recorded (spec 041 FR-003/FR-005,
+  /// contracts/origin-filter.md §1-2).
+  @override
+  bool get hidePointOfSale;
 
   /// Create a copy of SalesOrdersFilter
   /// with the given fields replaced by the non-null parameter values.

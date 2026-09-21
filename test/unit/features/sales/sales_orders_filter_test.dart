@@ -189,4 +189,60 @@ void main() {
       expect(filter.activeFilterCount(today), 0);
     });
   });
+
+  group(
+    'SalesOrdersFilter.fromQuery — hide-point-of-sale facet (spec 041 FR-003)',
+    () {
+      test('defaults to false when the facet is absent', () {
+        final filter = SalesOrdersFilter.fromQuery(
+          const ListQuery(),
+          today: DateTime(2026, 8, 10),
+          isAdministrator: false,
+        );
+        expect(filter.hidePointOfSale, isFalse);
+      });
+
+      test('decodes to true when the facet is "true"', () {
+        final filter = SalesOrdersFilter.fromQuery(
+          const ListQuery(facets: {'hide-point-of-sale': ['true']}),
+          today: DateTime(2026, 8, 10),
+          isAdministrator: false,
+        );
+        expect(filter.hidePointOfSale, isTrue);
+      });
+
+      test('counts toward the badge independently of the other facets', () {
+        final today = DateTime(2026, 8, 10);
+        final filter = SalesOrdersFilter.fromQuery(
+          const ListQuery(facets: {'hide-point-of-sale': ['true']}),
+          today: today,
+          isAdministrator: false,
+        );
+        expect(filter.activeFilterCount(today), 1);
+        expect(filter.hasActiveFilters(today), isTrue);
+      });
+
+      test(
+        'a non-default range, a status, an admin facet and '
+        'hide-point-of-sale all count independently',
+        () {
+          final today = DateTime(2026, 8, 10);
+          final filter = SalesOrdersFilter.fromQuery(
+            const ListQuery(
+              facets: {
+                'date-from': ['2026-08-01'],
+                'date-to': ['2026-08-01'],
+                'status': ['draft'],
+                'salesperson': ['100'],
+                'hide-point-of-sale': ['true'],
+              },
+            ),
+            today: today,
+            isAdministrator: true,
+          );
+          expect(filter.activeFilterCount(today), 4);
+        },
+      );
+    },
+  );
 }

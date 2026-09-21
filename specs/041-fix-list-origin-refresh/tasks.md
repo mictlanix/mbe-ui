@@ -34,13 +34,14 @@ checkpoint so it is not mistaken for a blocking dependency.
 **Purpose**: Confirm the branch and establish a pre-change baseline so a later
 regression is attributable to this feature rather than pre-existing.
 
-- [ ] T001 Confirm `041-fix-list-origin-refresh` is checked out and run
+- [X] T001 Confirm `041-fix-list-origin-refresh` is checked out and run
       `flutter pub get` at the repository root
-- [ ] T002 [P] Run `flutter analyze` and
+- [X] T002 [P] Run `flutter analyze` and
       `flutter test test/unit/features/sales test/widget/features/sales`, and
       record the baseline pass count — every currently-passing test in this
       baseline must still pass, unmodified in assertion, once this feature is
-      complete (FR-012, SC-005)
+      complete (FR-012, SC-005) — **baseline: 718 tests passed, 0 analyzer
+      issues**
 
 ---
 
@@ -54,32 +55,32 @@ implementation tasks until this phase is complete.**
 **US3 has no dependency on this phase** and its tasks (Phase 5) may proceed at
 any time, including in parallel with Phase 2.
 
-- [ ] T003 Add `SaleOrigin? origin` to the `OpenSale` factory and map
+- [X] T003 Add `SaleOrigin? origin` to the `OpenSale` factory and map
       `origin: SaleOrigin.fromApi(r.origin)` in `fromResponse`, plus the
       `sale_origin.dart` import, in
       `lib/features/sales/domain/entities/open_sale.dart:11-48`; then run
       `dart run build_runner build --delete-conflicting-outputs` to regenerate
       `open_sale.freezed.dart` — data-model.md §2
-- [ ] T004 Add an optional `SaleOrigin? origin` parameter to the `testOpenSale`
+- [X] T004 Add an optional `SaleOrigin? origin` parameter to the `testOpenSale`
       fixture helper (`test/widget/features/sales/pos_test_harness.dart:377-400`),
       forwarding it into the `OpenSale(...)` it builds (depends on T003)
-- [ ] T005 [P] Add `SaleOrigin? excludeOrigin` to the `listSales` (lines
+- [X] T005 [P] Add `SaleOrigin? excludeOrigin` to the `listSales` (lines
       151-159) and `listOrders` (lines 174-184) declarations in
       `lib/features/sales/domain/repositories/sales_order_repository.dart`,
       documented per contracts/origin-filter.md §1-2 — data-model.md §4
-- [ ] T006 Add `excludeOrigin` to the `listSales` and `listOrders`
+- [X] T006 Add `excludeOrigin` to the `listSales` and `listOrders`
       implementations in
       `lib/features/sales/data/sales_order_repository_impl.dart:273-334`,
       forwarding as `excludeOrigin: excludeOrigin?.toApi()` to the generated
       `_api.listSalesOrdersApiV1SalesOrdersGet(...)` call (depends on T005) —
       contracts/origin-filter.md §2
-- [ ] T007 [P] Add `saleOriginPointOfSale`, `saleOriginBackOffice` and
+- [X] T007 [P] Add `saleOriginPointOfSale`, `saleOriginBackOffice` and
       `saleOriginUnrecorded` keys (with `"@key": {}` stubs in `app_en.arb`) to
       `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` — reuse "Punto de venta"
       for `saleOriginPointOfSale`, matching the wording already established by
       `salesOrderForeignOrderMessage` (`app_es.arb:881-882`); then run
       `flutter gen-l10n` — contracts/origin-filter.md §6, research.md R7
-- [ ] T008 Create `SaleOriginChip` in
+- [X] T008 Create `SaleOriginChip` in
       `lib/features/sales/presentation/widgets/sale_origin_chip.dart`,
       wrapping the shared `StatusChip<SaleOrigin?>`
       (`lib/core/widgets/status_chip.dart:14-42`) and mirroring
@@ -107,11 +108,11 @@ back-office orders disappear.
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Unit test: `PosSalesFilter.fromQuery` decodes the
+- [X] T009 [P] [US1] Unit test: `PosSalesFilter.fromQuery` decodes the
       `hide-back-office` facet (absent ⇒ `false`; `"true"` ⇒ `true`), and
       `activeFilterCount`/`hasActiveFilters` include it, in
       `test/unit/features/sales/pos_sales_filter_test.dart`
-- [ ] T010 [P] [US1] Unit test: `listSales` forwards
+- [X] T010 [P] [US1] Unit test: `listSales` forwards
       `excludeOrigin: SaleOrigin.backOffice` to the wire as `exclude_origin=1`,
       and sends no `exclude_origin` parameter at all when `excludeOrigin` is
       `null`. **Both cases MUST also assert the outbound query contains no
@@ -121,20 +122,20 @@ back-office orders disappear.
       the `'listSales query parameters'` group in
       `test/unit/features/sales/sales_order_list_open_test.dart` (depends on
       Foundational T006)
-- [ ] T011 [P] [US1] Widget test: the POS sales list's filter drawer shows a
+- [X] T011 [P] [US1] Widget test: the POS sales list's filter drawer shows a
       "hide back-office orders" chip; toggling it updates the URL facet,
       resets to page 0, and raises the filter badge count by one. **Also
       assert the reverse direction**: with the origin facet on, changing the
       date range or status leaves the `hide-back-office` facet intact in the
       resulting URL (FR-007, spec US1 Acceptance Scenario 4). In
       `test/widget/features/sales/pos_sales_list_screen_test.dart`
-- [ ] T012 [P] [US1] Widget test: the POS sales list renders a distinct
+- [X] T012 [P] [US1] Widget test: the POS sales list renders a distinct
       `SaleOriginChip` per row for point-of-sale, back-office and unrecorded
       origins, with no layout overflow at desktop width and at the largest of
       the four text-size levels, in
       `test/widget/features/sales/pos_sales_list_screen_test.dart` (depends on
       Foundational T003, T004, T008)
-- [ ] T013 [US1] **Live integration test — new coverage, not just a re-run.**
+- [X] T013 [US1] **Live integration test — new coverage, not just a re-run.**
       Add a case to `test/integration/pos_sales_list_flow_test.dart` that
       calls `listSales(excludeOrigin: SaleOrigin.backOffice)` against the real
       mbe-api and asserts (a) no returned row carries
@@ -146,27 +147,27 @@ back-office orders disappear.
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Add `hideBackOffice` (`bool`, default `false`) to
+- [X] T014 [US1] Add `hideBackOffice` (`bool`, default `false`) to
       `PosSalesFilter`, decode it in `fromQuery`, and include it in
       `activeFilterCount`/`hasActiveFilters` in the `PosSalesFilterBadge`
       extension, in `lib/features/sales/presentation/pos_sales_list_controller.dart:26-64,91-122`
       — data-model.md §3, contracts/origin-filter.md §3
-- [ ] T015 [US1] In `PosSalesListController.build` (line ~155), pass
+- [X] T015 [US1] In `PosSalesListController.build` (line ~155), pass
       `excludeOrigin: filter.hideBackOffice ? SaleOrigin.backOffice : null` to
       `.listSales(...)` (depends on T014, Foundational T006) —
       contracts/origin-filter.md §2
-- [ ] T016 [US1] Add the "hide back-office orders" `FilterChip` to
+- [X] T016 [US1] Add the "hide back-office orders" `FilterChip` to
       `_PosSalesFiltersPanel` (`lib/features/sales/presentation/pos_sales_list_screen.dart:303-374`),
       placed after the status `Wrap` with its own `titleSmall` label,
       navigating with `query.withFacet('hide-back-office', ...)` and
       `.copyWith(pageIndex: 0)` on every change (depends on T014) —
       contracts/origin-filter.md §4
-- [ ] T017 [US1] Add an origin column to the POS sales list's
+- [X] T017 [US1] Add an origin column to the POS sales list's
       `DataTableView` columns (`pos_sales_list_screen.dart:185-223`),
       immediately after Status, rendering
       `SaleOriginChip(origin: sale.origin)` with a `fixedWidth` (depends on
       Foundational T003, T008) — contracts/origin-filter.md §5
-- [ ] T018 [US1] Add the new facet to the screen's `onClearAll` and to its
+- [X] T018 [US1] Add the new facet to the screen's `onClearAll` and to its
       `isFiltered` expression (`pos_sales_list_screen.dart:147-153,172-175`)
       (depends on T014) — contracts/origin-filter.md §3
 
@@ -189,11 +190,11 @@ disappear.
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Unit test: `SalesOrdersFilter.fromQuery` decodes the
+- [X] T019 [P] [US2] Unit test: `SalesOrdersFilter.fromQuery` decodes the
       `hide-point-of-sale` facet (absent ⇒ `false`), and
       `activeFilterCount`/`hasActiveFilters` include it, in
       `test/unit/features/sales/sales_orders_filter_test.dart`
-- [ ] T020 [P] [US2] Unit test: `listOrders` forwards
+- [X] T020 [P] [US2] Unit test: `listOrders` forwards
       `excludeOrigin: SaleOrigin.pointOfSale` to the wire as
       `exclude_origin=0`, and sends no parameter when `null`. **Both cases
       MUST also assert the outbound query contains no `origin` key**, for the
@@ -201,19 +202,19 @@ disappear.
       the `'listOrders query parameters'` group in
       `test/unit/features/sales/sales_order_list_orders_test.dart` (depends on
       Foundational T006)
-- [ ] T021 [P] [US2] Widget test: the "Pedidos" list's filter drawer shows a
+- [X] T021 [P] [US2] Widget test: the "Pedidos" list's filter drawer shows a
       "hide point-of-sale sales" chip with the same toggle/reset-page/badge
       behavior as US1's, placed before the admin-only facets. **Also assert
       the reverse direction**: with the origin facet on, changing the date
       range, status, salesperson or facility leaves the `hide-point-of-sale`
       facet intact (FR-007, spec US2 Acceptance Scenario 4). In
       `test/widget/features/sales/sales_orders_filters_test.dart`
-- [ ] T022 [P] [US2] Widget test: the "Pedidos" list renders a distinct
+- [X] T022 [P] [US2] Widget test: the "Pedidos" list renders a distinct
       `SaleOriginChip` per row for all three origin states, with no layout
       overflow at desktop width and at the largest text-size level, in
       `test/widget/features/sales/sales_orders_list_screen_test.dart`
       (depends on Foundational T003, T004, T008)
-- [ ] T023 [US2] **Live integration test — new coverage, not just a re-run.**
+- [X] T023 [US2] **Live integration test — new coverage, not just a re-run.**
       Add a case to `test/integration/sales_orders_flow_test.dart` that calls
       `listOrders(excludeOrigin: SaleOrigin.pointOfSale)` against the real
       mbe-api and asserts (a) no returned row carries
@@ -225,26 +226,26 @@ disappear.
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Add `hidePointOfSale` (`bool`, default `false`) to
+- [X] T024 [US2] Add `hidePointOfSale` (`bool`, default `false`) to
       `SalesOrdersFilter`, decode it in `fromQuery`, and include it in
       `activeFilterCount`/`hasActiveFilters` in the `SalesOrdersFilterBadge`
       extension, in
       `lib/features/sales/presentation/orders/sales_orders_list_controller.dart:34-75,98-123`
       — data-model.md §3, contracts/origin-filter.md §3
-- [ ] T025 [US2] In `SalesOrdersListController.build` (line ~156), pass
+- [X] T025 [US2] In `SalesOrdersListController.build` (line ~156), pass
       `excludeOrigin: filter.hidePointOfSale ? SaleOrigin.pointOfSale : null`
       to `.listOrders(...)` (depends on T024, Foundational T006) —
       contracts/origin-filter.md §2
-- [ ] T026 [US2] Add the "hide point-of-sale sales" `FilterChip` to
+- [X] T026 [US2] Add the "hide point-of-sale sales" `FilterChip` to
       `_SalesOrdersFiltersPanel`
       (`lib/features/sales/presentation/orders/sales_orders_list_screen.dart:283-427`),
       placed after the status `Wrap` and before the `if (isAdministrator)`
       block (depends on T024) — contracts/origin-filter.md §4
-- [ ] T027 [US2] Add an origin column to the "Pedidos" list's `DataTableView`
+- [X] T027 [US2] Add an origin column to the "Pedidos" list's `DataTableView`
       columns (`sales_orders_list_screen.dart:208-246`), immediately after
       Status, mirroring T017 (depends on Foundational T003, T008) —
       contracts/origin-filter.md §5
-- [ ] T028 [US2] Add the new facet to the screen's `onClearAll` and to its
+- [X] T028 [US2] Add the new facet to the screen's `onClearAll` and to its
       `hasActiveFilters`-based `isFiltered` expression
       (`sales_orders_list_screen.dart:172-180,197-198`) (depends on T024) —
       contracts/origin-filter.md §3
@@ -270,7 +271,7 @@ and can be implemented and tested independently of US1/US2.
 
 ### Tests for User Story 3
 
-- [ ] T029 [P] [US3] Widget test: opening a session from the shift sheet
+- [X] T029 [P] [US3] Widget test: opening a session from the shift sheet
       causes `cashSessionRepository.list(...)` to be called a second time (the
       initial load, then the post-open refresh) and the new session to appear,
       with no further user action. **Apply a non-default `CashSessionFilter`
@@ -278,13 +279,13 @@ and can be implemented and tested independently of US1/US2.
       carries those *same* arguments — the refresh must re-run the list under
       its existing filter, not reset it (FR-011, spec US3 Acceptance
       Scenario 4). In `test/widget/features/sales/cash_sessions_screen_test.dart`
-- [ ] T030 [P] [US3] Widget test: closing the current session — via the shift
+- [X] T030 [P] [US3] Widget test: closing the current session — via the shift
       card, which navigates to the session's detail screen and back — causes
       the history list to re-fetch and show it closed, using the harness's
       existing `/sales/cash-sessions/:id` stand-in route. **Assert filter
       preservation on the re-fetch as in T029.** In
       `test/widget/features/sales/cash_sessions_screen_test.dart`
-- [ ] T031 [P] [US3] Widget test: cancelling/dismissing the open form without
+- [X] T031 [P] [US3] Widget test: cancelling/dismissing the open form without
       submitting does not trigger any additional
       `cashSessionRepository.list(...)` call, and leaves the list's rendered
       contents and applied filters unchanged (FR-010), in
@@ -292,16 +293,16 @@ and can be implemented and tested independently of US1/US2.
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Add `ref.invalidate(cashSessionsListControllerProvider);` in
+- [X] T032 [US3] Add `ref.invalidate(cashSessionsListControllerProvider);` in
       `OpenSessionFormController.submit()`
       (`lib/features/sales/presentation/open_session_form_controller.dart:104-143`),
       beside the existing `ref.invalidate(currentSessionControllerProvider);`
       — contracts/list-refresh.md §1-2
-- [ ] T033 [US3] Add `ref.invalidate(cashSessionsListControllerProvider);` in
+- [X] T033 [US3] Add `ref.invalidate(cashSessionsListControllerProvider);` in
       `CloseSessionFormController.submit()`
       (`lib/features/sales/presentation/close_session_form_controller.dart:98-140`,
       beside the existing invalidation at line ~136) — contracts/list-refresh.md §1-2
-- [ ] T034 [US3] Correct the stale comment at
+- [X] T034 [US3] Correct the stale comment at
       `lib/features/sales/presentation/cash_sessions_screen.dart:176-184`,
       which currently claims the history list is "already refreshing" once
       `currentSessionControllerProvider` is invalidated — state instead that
@@ -320,10 +321,10 @@ leaves it untouched.
 **Purpose**: Confirm nothing outside this feature's own three stories moved,
 and that the constitution's guardrails hold.
 
-- [ ] T035 [P] Run `flutter analyze` with zero new findings, and confirm
+- [X] T035 [P] Run `flutter analyze` with zero new findings, and confirm
       `git diff --stat lib/generated/openapi/` is empty — this feature
       requires no OpenAPI codegen (constitution §III; quickstart.md Stage 0-1)
-- [ ] T036 [P] Run
+- [X] T036 [P] Run
       `flutter test test/unit/features/sales test/widget/features/sales` and
       compare against the Phase 1 baseline (T002): every previously-passing
       test still passes, unmodified in assertion (FR-012, SC-005)
@@ -331,7 +332,11 @@ and that the constitution's guardrails hold.
       `flutter test --dart-define-from-file=.env -j 1 test/integration/pos_sales_list_flow_test.dart test/integration/sales_orders_flow_test.dart test/integration/cash_session_flow_test.dart`
       — confirming the new cases from T013 and T023 actually execute (not
       skipped for missing credentials) and pass alongside the existing
-      open→close cash-session cycle (quickstart.md Stage 3)
+      open→close cash-session cycle (quickstart.md Stage 3). **Not run**: this
+      environment has no `.env`/live mbe-api; run with real
+      `MBE_POS_*`/`MBE_CASH_SESSION_*` credentials before merging — a compile
+      + graceful-skip check only confirms the new tests are well-formed, not
+      that they pass against a server.
 - [ ] T038 Perform the six manual checks in quickstart.md Stage 4: unchanged
       default view on both lists, POS toggle, Pedidos toggle, the origin facet
       surviving an unrelated filter change, no horizontal scroll/clipping on

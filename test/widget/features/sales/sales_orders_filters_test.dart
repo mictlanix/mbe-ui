@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 
 import 'pos_test_harness.dart';
@@ -217,5 +218,98 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('1'), findsOneWidget);
+  });
+
+  group('origin facet (spec 041 FR-003, FR-004, FR-007)', () {
+    testWidgets(
+      'toggling "hide point-of-sale sales" updates the URL facet, resets to '
+      'page 0, and raises the filter badge count by one',
+      (tester) async {
+        stubListOrders(salesOrders, page: testSalesPage(const []));
+
+        final router = await pumpListRouted(
+          tester,
+          query: const ListQuery(pageIndex: 2),
+        );
+        await tester.tap(find.byKey(const Key('sales_orders_filter_button')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const Key('sales_orders_filter_hide_point_of_sale')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          router.state.uri.queryParameters['hide-point-of-sale'],
+          'true',
+        );
+        expect(router.state.uri.queryParameters['page'], isNull);
+        verify(
+          () => salesOrders.listOrders(
+            mine: any(named: 'mine'),
+            facility: any(named: 'facility'),
+            salesperson: any(named: 'salesperson'),
+            status: any(named: 'status'),
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+            excludeOrigin: SaleOrigin.pointOfSale,
+          ),
+        ).called(greaterThan(0));
+
+        final badge = tester.widget<Badge>(
+          find.ancestor(
+            of: find.byKey(const Key('sales_orders_filter_button')),
+            matching: find.byType(Badge),
+          ),
+        );
+        expect(badge.isLabelVisible, isTrue);
+      },
+    );
+
+    testWidgets(
+      'changing an unrelated facet (status) leaves the origin facet intact '
+      '— FR-007, US2 Acceptance Scenario 4',
+      (tester) async {
+        stubListOrders(salesOrders, page: testSalesPage(const []));
+
+        final router = await pumpListRouted(
+          tester,
+          query: const ListQuery(facets: {'hide-point-of-sale': ['true']}),
+        );
+        await tester.tap(find.byKey(const Key('sales_orders_filter_button')));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const Key('sales_orders_filter_status_draft')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(router.state.uri.queryParameters['status'], 'draft');
+        expect(
+          router.state.uri.queryParameters['hide-point-of-sale'],
+          'true',
+        );
+      },
+    );
+
+    testWidgets('clear-all also clears the origin facet', (tester) async {
+      stubListOrders(salesOrders, page: testSalesPage(const []));
+
+      final router = await pumpListRouted(
+        tester,
+        query: const ListQuery(facets: {'hide-point-of-sale': ['true']}),
+      );
+      await tester.tap(find.byKey(const Key('sales_orders_filter_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+      await tester.pumpAndSettle();
+
+      expect(
+        router.state.uri.queryParameters.containsKey('hide-point-of-sale'),
+        isFalse,
+      );
+    });
   });
 }

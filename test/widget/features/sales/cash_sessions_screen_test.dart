@@ -24,6 +24,7 @@ import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/close_session_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
@@ -68,6 +69,18 @@ const _canOpenNoDrawerAtAllUser = User(
   privileges: [Privilege(systemObject: SystemObject.pos, rawValue: 1)],
 );
 
+const _canCloseUser = User(
+  userId: 'u5',
+  email: 'u5@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.pos, rawValue: 1), // create
+    Privilege(systemObject: SystemObject.cashSessionClose, rawValue: 4), // update
+  ],
+);
+
 const _cannotOpenUser = User(
   userId: 'u4',
   email: 'u4@example.com',
@@ -100,7 +113,7 @@ void main() {
     cashDrawerRepository = MockCashDrawerRepository();
   });
 
-  Future<void> pumpScreen(
+  Future<ProviderContainer> pumpScreen(
     WidgetTester tester, {
     required User user,
     required CurrentSession current,
@@ -189,6 +202,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    return container;
   }
 
   Future<void> openShiftSheet(WidgetTester tester) async {
@@ -523,4 +537,145 @@ void main() {
       expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
     });
   });
+
+  group(
+    'CashSessionsScreen — history list refresh after open/close (spec 041 '
+    'US3, FR-008–FR-011)',
+    () {
+      testWidgets(
+        'opening a session causes the history list to be fetched a second '
+        'time, with no other action taken',
+        (tester) async {
+          when(
+            () => cashSessionRepository.open(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              openingAmount: any(named: 'openingAmount'),
+            ),
+          ).thenAnswer((_) async => _session());
+
+          await pumpScreen(
+            tester,
+            user: _canOpenNoDrawerAccessAssignedUser,
+            current: const CurrentSession(state: SessionState.none),
+          );
+          verify(
+            () => cashSessionRepository.list(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              cashierId: any(named: 'cashierId'),
+              status: any(named: 'status'),
+              skip: any(named: 'skip'),
+              limit: any(named: 'limit'),
+            ),
+          ).called(1);
+
+          await openShiftSheet(tester);
+          await tester.tap(find.byKey(const Key('cash_session_open_button')));
+          await tester.pumpAndSettle();
+
+          verify(
+            () => cashSessionRepository.list(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              cashierId: any(named: 'cashierId'),
+              status: any(named: 'status'),
+              skip: any(named: 'skip'),
+              limit: any(named: 'limit'),
+            ),
+          ).called(1);
+        },
+      );
+
+      testWidgets(
+        'closing the current session causes the history list to be fetched '
+        'a second time',
+        (tester) async {
+          when(
+            () => cashSessionRepository.close(
+              cashSessionId: any(named: 'cashSessionId'),
+              counts: any(named: 'counts'),
+            ),
+          ).thenAnswer((_) async => _session());
+
+          final container = await pumpScreen(
+            tester,
+            user: _canCloseUser,
+            current: CurrentSession(state: SessionState.open, session: _session()),
+          );
+          verify(
+            () => cashSessionRepository.list(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              cashierId: any(named: 'cashierId'),
+              status: any(named: 'status'),
+              skip: any(named: 'skip'),
+              limit: any(named: 'limit'),
+            ),
+          ).called(1);
+
+          // The close button on this screen's shift card only navigates to
+          // the session's own detail route (`cash_session_detail_screen
+          // .dart`), where the real submit actually happens — this test's
+          // stand-in `/sales/cash-sessions/:id` route is a bare `Text`, so
+          // the close is driven directly through the same controller the
+          // real detail screen uses, exactly as `pos_lazy_open_test.dart`
+          // drives a controller directly rather than simulating its host
+          // screen.
+          final closeController = container.read(
+            closeSessionFormControllerProvider.notifier,
+          );
+          closeController.loadSession(_session());
+          await closeController.submit();
+          await tester.pumpAndSettle();
+
+          verify(
+            () => cashSessionRepository.list(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              cashierId: any(named: 'cashierId'),
+              status: any(named: 'status'),
+              skip: any(named: 'skip'),
+              limit: any(named: 'limit'),
+            ),
+          ).called(1);
+        },
+      );
+
+      testWidgets(
+        'cancelling the open form without submitting does not trigger any '
+        'additional history-list fetch',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            user: _canOpenWithDrawerAccessUser,
+            current: const CurrentSession(state: SessionState.none),
+          );
+          verify(
+            () => cashSessionRepository.list(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              cashierId: any(named: 'cashierId'),
+              status: any(named: 'status'),
+              skip: any(named: 'skip'),
+              limit: any(named: 'limit'),
+            ),
+          ).called(1);
+
+          await openShiftSheet(tester);
+          await tester.tap(find.byKey(const Key('filter_sheet_close_button')));
+          await tester.pumpAndSettle();
+
+          // mocktail's `verify` marks matched calls VERIFIED so a later
+          // verify/verifyNever only sees calls made *since* the previous
+          // verify — the initial load's one call was already consumed
+          // above, so `verifyNever` here correctly asserts no *new* call
+          // followed the cancel (FR-010).
+          verifyNever(
+            () => cashSessionRepository.list(
+              cashDrawerId: any(named: 'cashDrawerId'),
+              cashierId: any(named: 'cashierId'),
+              status: any(named: 'status'),
+              skip: any(named: 'skip'),
+              limit: any(named: 'limit'),
+            ),
+          );
+        },
+      );
+    },
+  );
 }

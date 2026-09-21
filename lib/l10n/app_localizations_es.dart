@@ -2668,10 +2668,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesOrdersColumnStatus => 'Estado';
 
   @override
+  String get salesOrdersColumnOrigin => 'Origen';
+
+  @override
   String get salesOrdersColumnTotal => 'Total';
 
   @override
   String get salesOrdersColumnBalance => 'Saldo';
+
+  @override
+  String get salesOrdersOriginFilterLabel => 'Origen';
+
+  @override
+  String get salesOrdersOriginFilterHidePointOfSale =>
+      'Ocultar ventas de punto de venta';
 
   @override
   String get salesOrdersSearchLabel => 'Buscar pedidos';
@@ -3133,6 +3143,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posSalesStatusFilterAll => 'Todos los estados';
 
   @override
+  String get posSalesOriginFilterLabel => 'Origen';
+
+  @override
+  String get posSalesOriginFilterHideBackOffice => 'Ocultar pedidos de oficina';
+
+  @override
   String get posSalesNewSaleAction => 'Nueva venta';
 
   @override
@@ -3146,6 +3162,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posSalesColumnStatus => 'Estado';
+
+  @override
+  String get posSalesColumnOrigin => 'Origen';
 
   @override
   String get posSalesColumnTotal => 'Total';
@@ -3185,6 +3204,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posSaleStatusCancelled => 'Cancelada';
+
+  @override
+  String get saleOriginPointOfSale => 'Punto de venta';
+
+  @override
+  String get saleOriginBackOffice => 'Oficina';
+
+  @override
+  String get saleOriginUnrecorded => 'Sin registrar';
 
   @override
   String get posSaleUnreachableTitle => 'Esta venta no se puede abrir';

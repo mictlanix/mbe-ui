@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/presentation/cash_sessions_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 
 part 'open_session_form_controller.freezed.dart';
@@ -136,6 +137,10 @@ class OpenSessionFormController extends _$OpenSessionFormController {
             openingAmount: rawAmount.isEmpty ? '0' : rawAmount,
           );
       ref.invalidate(currentSessionControllerProvider);
+      // spec 041 US3/FR-008: the history list watches this family, not
+      // currentSessionControllerProvider — invalidated bare so every live
+      // instance re-runs under its own already-applied filter (FR-011).
+      ref.invalidate(cashSessionsListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       await _handleSubmitError(e);

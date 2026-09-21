@@ -69,4 +69,65 @@ void main() {
       expect(filter.from, DateTime(2026, 8, 10));
     });
   });
+
+  group('PosSalesFilter.fromQuery — hide-back-office facet (spec 041 FR-001)', () {
+    test('defaults to false when the facet is absent', () {
+      final filter = PosSalesFilter.fromQuery(
+        const ListQuery(),
+        today: DateTime(2026, 8, 10),
+      );
+      expect(filter.hideBackOffice, isFalse);
+    });
+
+    test('decodes to true when the facet is "true"', () {
+      final filter = PosSalesFilter.fromQuery(
+        const ListQuery(facets: {'hide-back-office': ['true']}),
+        today: DateTime(2026, 8, 10),
+      );
+      expect(filter.hideBackOffice, isTrue);
+    });
+
+    test('any other facet value also decodes to true (presence, not the exact string, is what matters)', () {
+      final filter = PosSalesFilter.fromQuery(
+        const ListQuery(facets: {'hide-back-office': ['1']}),
+        today: DateTime(2026, 8, 10),
+      );
+      expect(filter.hideBackOffice, isTrue);
+    });
+  });
+
+  group('activeFilterCount / hasActiveFilters (spec 041 FR-001, FR-007)', () {
+    test('zero for the default filter', () {
+      final today = DateTime(2026, 8, 10);
+      final filter = PosSalesFilter.fromQuery(const ListQuery(), today: today);
+      expect(filter.activeFilterCount(today), 0);
+      expect(filter.hasActiveFilters(today), isFalse);
+    });
+
+    test('hide-back-office counts toward the badge independently of date/status', () {
+      final today = DateTime(2026, 8, 10);
+      final filter = PosSalesFilter.fromQuery(
+        const ListQuery(facets: {'hide-back-office': ['true']}),
+        today: today,
+      );
+      expect(filter.activeFilterCount(today), 1);
+      expect(filter.hasActiveFilters(today), isTrue);
+    });
+
+    test('a non-default range, a status and hide-back-office all count independently', () {
+      final today = DateTime(2026, 8, 10);
+      final filter = PosSalesFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'date-from': ['2026-08-01'],
+            'date-to': ['2026-08-01'],
+            'status': ['draft'],
+            'hide-back-office': ['true'],
+          },
+        ),
+        today: today,
+      );
+      expect(filter.activeFilterCount(today), 3);
+    });
+  });
 }

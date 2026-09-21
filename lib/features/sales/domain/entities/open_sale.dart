@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 part 'open_sale.freezed.dart';
 
@@ -34,6 +35,11 @@ class OpenSale with _$OpenSale {
     required String balance,
     required SaleStatus status,
     required DateTime date,
+
+    /// Which workflow raised the order — `null` means it was never recorded
+    /// (every order raised before mbe-api#209), not "point of sale"
+    /// (sale_origin.dart).
+    SaleOrigin? origin,
   }) = _OpenSale;
 
   factory OpenSale.fromResponse(api.SalesOrderSummary r) => OpenSale(
@@ -45,6 +51,7 @@ class OpenSale with _$OpenSale {
     balance: r.balance,
     status: SaleStatus.fromApi(r.status),
     date: r.date,
+    origin: SaleOrigin.fromApi(r.origin),
   );
 }
 

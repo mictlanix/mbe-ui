@@ -7,11 +7,13 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -210,5 +212,69 @@ void main() {
       );
       expect(find.byKey(const Key('sales_orders_no_facility')), findsOneWidget);
     });
+  });
+
+  group('origin column (spec 041 FR-006)', () {
+    testWidgets(
+      'renders a distinct chip for point-of-sale, back-office and '
+      'unrecorded origins',
+      (tester) async {
+        stubListOrders(
+          salesOrders,
+          page: testSalesPage([
+            testOpenSale(id: 1, origin: SaleOrigin.pointOfSale),
+            testOpenSale(id: 2, origin: SaleOrigin.backOffice),
+            testOpenSale(id: 3, origin: null),
+          ]),
+        );
+
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('sale_origin_chip_pointOfSale')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('sale_origin_chip_backOffice')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('sale_origin_chip_unrecorded')),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'no layout overflow at desktop width and the largest text-size level',
+      (tester) async {
+        stubListOrders(
+          salesOrders,
+          page: testSalesPage([
+            testOpenSale(id: 1, origin: SaleOrigin.pointOfSale),
+            testOpenSale(id: 2, origin: SaleOrigin.backOffice),
+            testOpenSale(id: 3, origin: null),
+          ]),
+        );
+
+        await pumpOrdersRouted(
+          tester,
+          initialLocation: '/sales/orders',
+          textLevel: TextSizeLevel.extraLarge,
+          overrides: [
+            authNotifierProvider.overrideWith(
+              () => _FixedAuthNotifier(
+                AuthState.authenticated(token: 't', user: _user()),
+              ),
+            ),
+            salesOrderOverride(salesOrders),
+          ],
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

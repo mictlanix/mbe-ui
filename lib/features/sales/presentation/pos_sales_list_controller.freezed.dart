@@ -23,6 +23,11 @@ mixin _$PosSalesFilter {
   String get search => throw _privateConstructorUsedError;
   int get pageIndex => throw _privateConstructorUsedError;
 
+  /// Hides back-office-originated orders, while always keeping an order
+  /// whose origin was never recorded (spec 041 FR-001/FR-005,
+  /// contracts/origin-filter.md §1-2).
+  bool get hideBackOffice => throw _privateConstructorUsedError;
+
   /// Create a copy of PosSalesFilter
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -43,6 +48,7 @@ abstract class $PosSalesFilterCopyWith<$Res> {
     SaleStatus? status,
     String search,
     int pageIndex,
+    bool hideBackOffice,
   });
 }
 
@@ -66,6 +72,7 @@ class _$PosSalesFilterCopyWithImpl<$Res, $Val extends PosSalesFilter>
     Object? status = freezed,
     Object? search = null,
     Object? pageIndex = null,
+    Object? hideBackOffice = null,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +96,10 @@ class _$PosSalesFilterCopyWithImpl<$Res, $Val extends PosSalesFilter>
                 ? _value.pageIndex
                 : pageIndex // ignore: cast_nullable_to_non_nullable
                       as int,
+            hideBackOffice: null == hideBackOffice
+                ? _value.hideBackOffice
+                : hideBackOffice // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -110,6 +121,7 @@ abstract class _$$PosSalesFilterImplCopyWith<$Res>
     SaleStatus? status,
     String search,
     int pageIndex,
+    bool hideBackOffice,
   });
 }
 
@@ -132,6 +144,7 @@ class __$$PosSalesFilterImplCopyWithImpl<$Res>
     Object? status = freezed,
     Object? search = null,
     Object? pageIndex = null,
+    Object? hideBackOffice = null,
   }) {
     return _then(
       _$PosSalesFilterImpl(
@@ -155,6 +168,10 @@ class __$$PosSalesFilterImplCopyWithImpl<$Res>
             ? _value.pageIndex
             : pageIndex // ignore: cast_nullable_to_non_nullable
                   as int,
+        hideBackOffice: null == hideBackOffice
+            ? _value.hideBackOffice
+            : hideBackOffice // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -169,6 +186,7 @@ class _$PosSalesFilterImpl implements _PosSalesFilter {
     this.status,
     this.search = '',
     this.pageIndex = 0,
+    this.hideBackOffice = false,
   });
 
   @override
@@ -184,9 +202,16 @@ class _$PosSalesFilterImpl implements _PosSalesFilter {
   @JsonKey()
   final int pageIndex;
 
+  /// Hides back-office-originated orders, while always keeping an order
+  /// whose origin was never recorded (spec 041 FR-001/FR-005,
+  /// contracts/origin-filter.md §1-2).
+  @override
+  @JsonKey()
+  final bool hideBackOffice;
+
   @override
   String toString() {
-    return 'PosSalesFilter(from: $from, to: $to, status: $status, search: $search, pageIndex: $pageIndex)';
+    return 'PosSalesFilter(from: $from, to: $to, status: $status, search: $search, pageIndex: $pageIndex, hideBackOffice: $hideBackOffice)';
   }
 
   @override
@@ -199,12 +224,21 @@ class _$PosSalesFilterImpl implements _PosSalesFilter {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.search, search) || other.search == search) &&
             (identical(other.pageIndex, pageIndex) ||
-                other.pageIndex == pageIndex));
+                other.pageIndex == pageIndex) &&
+            (identical(other.hideBackOffice, hideBackOffice) ||
+                other.hideBackOffice == hideBackOffice));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, from, to, status, search, pageIndex);
+  int get hashCode => Object.hash(
+    runtimeType,
+    from,
+    to,
+    status,
+    search,
+    pageIndex,
+    hideBackOffice,
+  );
 
   /// Create a copy of PosSalesFilter
   /// with the given fields replaced by the non-null parameter values.
@@ -225,6 +259,7 @@ abstract class _PosSalesFilter implements PosSalesFilter {
     final SaleStatus? status,
     final String search,
     final int pageIndex,
+    final bool hideBackOffice,
   }) = _$PosSalesFilterImpl;
 
   @override
@@ -237,6 +272,12 @@ abstract class _PosSalesFilter implements PosSalesFilter {
   String get search;
   @override
   int get pageIndex;
+
+  /// Hides back-office-originated orders, while always keeping an order
+  /// whose origin was never recorded (spec 041 FR-001/FR-005,
+  /// contracts/origin-filter.md §1-2).
+  @override
+  bool get hideBackOffice;
 
   /// Create a copy of PosSalesFilter
   /// with the given fields replaced by the non-null parameter values.
