@@ -1,0 +1,1 @@
+../../../.specify/extensions/wireframes/.specify-dev/agent-commands/claude/speckit-wireframes-draft/SKILL.md

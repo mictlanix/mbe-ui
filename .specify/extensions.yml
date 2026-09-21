@@ -2,6 +2,7 @@ installed:
 - agent-context
 - companion
 - git
+- wireframes
 settings:
   auto_execute_hooks: true
 hooks:
@@ -28,8 +29,7 @@ hooks:
     optional: false
     priority: 10
     prompt: Execute speckit.companion.after-specify?
-    description: Record specify completion (currentStep=specify, status=specified)
-      into .spec-context.json
+    description: Record specify completion (currentStep=specify, status=specified) into .spec-context.json
     condition: null
   after_plan:
   - extension: agent-context
@@ -84,6 +84,14 @@ hooks:
     description: Auto-commit before spec clarification
     condition: null
   before_plan:
+  - extension: wireframes
+    command: speckit.wireframes.draft
+    enabled: true
+    optional: true
+    priority: 5
+    prompt: Draft wireframes from the spec before planning?
+    description: Draft wireframes from the spec before planning
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -170,8 +178,8 @@ hooks:
     optional: false
     priority: 10
     prompt: Execute speckit.companion.after-tasks?
-    description: Record tasks completion (currentStep=tasks, status=ready-to-implement)
-      into .spec-context.json
+    description: Record tasks completion (currentStep=tasks, status=ready-to-implement) into
+      .spec-context.json
     condition: null
   after_implement:
   - extension: git

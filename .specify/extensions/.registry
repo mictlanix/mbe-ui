@@ -80,6 +80,20 @@
       },
       "registered_skills": [],
       "installed_at": "2026-09-20T21:02:04.988884+00:00"
+    },
+    "wireframes": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:9ace8331f03d0c10e1b336d98c480774a581936c87248981a140536a68201b69",
+      "enabled": true,
+      "priority": 5,
+      "registered_commands": {
+        "claude": [
+          "speckit.wireframes.draft"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-09-21T10:08:59.450571+00:00"
     }
   }
 }
