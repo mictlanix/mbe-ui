@@ -3,7 +3,7 @@
   "specName": "Fix List Origin Filtering and Cash Session List Refresh",
   "branch": "041-fix-list-origin-refresh",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",

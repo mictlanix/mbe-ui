@@ -342,20 +342,39 @@ and that the constitution's guardrails hold.
       `flutter test test/unit/features/sales test/widget/features/sales` and
       compare against the Phase 1 baseline (T002): every previously-passing
       test still passes, unmodified in assertion (FR-012, SC-005)
-- [ ] T037 Run the live integration suites —
+- [X] T037 Run the live integration suites —
       `flutter test --dart-define-from-file=.env -j 1 test/integration/pos_sales_list_flow_test.dart test/integration/sales_orders_flow_test.dart test/integration/cash_session_flow_test.dart`
       — confirming the new cases from T013 and T023 actually execute (not
       skipped for missing credentials) and pass alongside the existing
-      open→close cash-session cycle (quickstart.md Stage 3). **Not run**: this
-      environment has no `.env`/live mbe-api; run with real
-      `MBE_POS_*`/`MBE_CASH_SESSION_*` credentials before merging — a compile
-      + graceful-skip check only confirms the new tests are well-formed, not
-      that they pass against a server.
-- [ ] T038 Perform the six manual checks in quickstart.md Stage 4: unchanged
+      open→close cash-session cycle (quickstart.md Stage 3). **Run live
+      2026-09-21 against mbe-api at 127.0.0.1:8000.** `pos_sales_list_flow`
+      2/2 pass — the amended inclusive filter verified against the real
+      server: a back-office probe **and** a no-origin probe are both absent,
+      a point-of-sale probe present. `sales_orders_flow` 2/2 pass (needs
+      `--dart-define=MBE_POS_PRODUCT_PATTERN=clavo`; the `.env` default `a`
+      matches no stocked product and skips step 3).
+      `cash_session_flow_test.dart` **skipped on its own documented
+      precondition** — the `MBE_CASH_SESSION_*` account already holds an open
+      session; not closed, since that account's session is not this feature's
+      to end. US3 was instead verified end-to-end in the running app (T038),
+      which is the stronger check for a UI-refresh bug anyway.
+- [X] T038 Perform the six manual checks in quickstart.md Stage 4: unchanged
       default view on both lists, POS toggle, Pedidos toggle, the origin facet
       surviving an unrelated filter change, no horizontal scroll/clipping on
       either table at the largest text-size level, and cash-session
-      open/close/cancel behavior in the running app
+      open/close/cancel behavior in the running app — **done 2026-09-21**
+      via the live macOS app over flutter_driver. Both lists render six
+      columns with no Origin column and no origin control in either filter
+      drawer. Scoping confirmed disjoint against live data: the POS list
+      showed only `origin=0` rows (337609/337605/337600/337598), "Pedidos"
+      showed exactly the `origin=1`-and-null set
+      (337610/337608/337606/337604/337603/337602/337601/337599). The
+      accepted consequence is now measured: `point_sale=18` unfiltered is
+      **19,827** orders, with `origin=0` just **5** — the register's list
+      shows only post-#209 sales. Cash sessions: closing flipped the top row
+      from Abierta/`—` to Cerrada/`2026-09-21 03:33` in place; opening added
+      a new Abierta row and moved the count 10.012 → 10.013; dismissing the
+      sheet without submitting changed nothing. No runtime errors.
 
 ---
 
