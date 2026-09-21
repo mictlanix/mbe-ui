@@ -69,4 +69,30 @@ void main() {
       expect(filter.from, DateTime(2026, 8, 10));
     });
   });
+
+  group('activeFilterCount / hasActiveFilters', () {
+    test('zero for the default filter', () {
+      final today = DateTime(2026, 8, 10);
+      final filter = PosSalesFilter.fromQuery(const ListQuery(), today: today);
+      expect(filter.activeFilterCount(today), 0);
+      expect(filter.hasActiveFilters(today), isFalse);
+    });
+
+    test('a non-default range and a status count independently — origin is '
+        'not a facet here (spec 041, amended: the register\'s list is always '
+        'point-of-sale-only, with nothing for the cashier to vary)', () {
+      final today = DateTime(2026, 8, 10);
+      final filter = PosSalesFilter.fromQuery(
+        const ListQuery(
+          facets: {
+            'date-from': ['2026-08-01'],
+            'date-to': ['2026-08-01'],
+            'status': ['draft'],
+          },
+        ),
+        today: today,
+      );
+      expect(filter.activeFilterCount(today), 2);
+    });
+  });
 }

@@ -185,6 +185,10 @@ Future<PosRoutedHarness> pumpPosRouted(
   List<Override> overrides = const [],
   String initialLocation = '/sales/pos',
   Size surface = const Size(1200, 2400),
+  // Mirrors `pumpOrdersRouted`'s own `textLevel` (spec 041 FR-006/contracts
+  // origin-filter.md §5 overflow check) — composes over the platform scaler
+  // exactly as `app.dart` wires it (spec 027 research R1).
+  TextSizeLevel? textLevel,
 }) async {
   tester.view.physicalSize = surface;
   tester.view.devicePixelRatio = 1;
@@ -241,6 +245,17 @@ Future<PosRoutedHarness> pumpPosRouted(
         locale: const Locale('es', 'MX'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        builder: textLevel == null
+            ? null
+            : (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: ComposedTextScaler(
+                    platform: TextScaler.noScaling,
+                    level: textLevel,
+                  ),
+                ),
+                child: child!,
+              ),
       ),
     ),
   );
@@ -421,6 +436,7 @@ void stubListSales(
       search: any(named: 'search'),
       skip: any(named: 'skip'),
       limit: any(named: 'limit'),
+      origin: any(named: 'origin'),
     ),
   ).thenAnswer((_) async => page);
 }

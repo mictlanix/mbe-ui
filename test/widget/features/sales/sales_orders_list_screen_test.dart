@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -59,6 +60,7 @@ void stubListOrders(
       search: any(named: 'search'),
       skip: any(named: 'skip'),
       limit: any(named: 'limit'),
+      excludeOrigin: any(named: 'excludeOrigin'),
     ),
   ).thenAnswer((_) async => page);
 }
@@ -117,6 +119,7 @@ void main() {
           search: null,
           skip: 0,
           limit: 20,
+          excludeOrigin: any(named: 'excludeOrigin'),
         ),
       ).called(1);
 
@@ -206,9 +209,40 @@ void main() {
           search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
+          excludeOrigin: any(named: 'excludeOrigin'),
         ),
       );
       expect(find.byKey(const Key('sales_orders_no_facility')), findsOneWidget);
     });
+  });
+
+  group('origin scoping (spec 041, amended)', () {
+    testWidgets(
+      'every request excludes point-of-sale origin — unconditionally, with '
+      'no facet offered for it. Exclusion, not inclusion, so an order with '
+      'no recorded origin stays visible here (this list is where that '
+      'history remains reachable)',
+      (tester) async {
+        stubListOrders(salesOrders, page: testSalesPage(const []));
+
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        verify(
+          () => salesOrders.listOrders(
+            mine: any(named: 'mine'),
+            facility: any(named: 'facility'),
+            salesperson: any(named: 'salesperson'),
+            status: any(named: 'status'),
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+            excludeOrigin: SaleOrigin.pointOfSale,
+          ),
+        ).called(1);
+      },
+    );
   });
 }

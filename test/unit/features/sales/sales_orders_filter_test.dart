@@ -189,4 +189,5 @@ void main() {
       expect(filter.activeFilterCount(today), 0);
     });
   });
+
 }

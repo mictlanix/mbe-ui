@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
@@ -18,6 +19,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
@@ -127,6 +129,7 @@ void main() {
   Future<GoRouter> pumpListRouted(
     WidgetTester tester, {
     ListQuery query = const ListQuery(),
+    TextSizeLevel? textLevel,
   }) async {
     when(() => cashSessions.getCurrent()).thenAnswer(
       (_) async => const CurrentSession(state: SessionState.open),
@@ -134,6 +137,7 @@ void main() {
     final (router, _) = await pumpPosRouted(
       tester,
       initialLocation: query.toUri('/sales/pos').toString(),
+      textLevel: textLevel,
       overrides: [
         authNotifierProvider.overrideWith(
           () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _user())),
@@ -397,6 +401,7 @@ void main() {
             search: any(named: 'search'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
+            origin: any(named: 'origin'),
           ),
         ).called(greaterThan(0));
       },
@@ -430,6 +435,50 @@ void main() {
     );
   });
 
+  group('PosSalesListScreen — origin scoping (spec 041, amended)', () {
+    testWidgets(
+      'every request asks for point-of-sale origin only — unconditionally, '
+      'with no facet offered for it, so back-office orders and orders with '
+      'no recorded origin are both absent from the register\'s list',
+      (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpList(tester);
+        await tester.pumpAndSettle();
+
+        verify(
+          () => salesOrders.listSales(
+            pointSale: any(named: 'pointSale'),
+            status: any(named: 'status'),
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+            origin: SaleOrigin.pointOfSale,
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'the filter drawer offers no origin control — the scoping is fixed, '
+      'not a facet',
+      (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpListRouted(tester);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('pos_sales_filter_hide_back_office')),
+          findsNothing,
+        );
+      },
+    );
+  });
+
   group('PosSalesListScreen — no register configured', () {
     testWidgets('explains a register is needed and issues no query', (
       tester,
@@ -446,6 +495,7 @@ void main() {
           search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
+          origin: any(named: 'origin'),
         ),
       );
     });

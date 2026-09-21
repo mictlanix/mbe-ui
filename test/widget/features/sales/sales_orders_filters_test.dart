@@ -86,6 +86,7 @@ void main() {
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).called(greaterThan(0));
 
@@ -132,6 +133,7 @@ void main() {
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).called(greaterThan(0));
   });
@@ -187,6 +189,7 @@ void main() {
         search: any(named: 'search'),
         skip: 100,
         limit: 20,
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).thenAnswer((_) async => const OpenSalePage(items: [], total: 3));
     when(
@@ -200,6 +203,7 @@ void main() {
         search: any(named: 'search'),
         skip: 0,
         limit: 20,
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).thenAnswer(
       // A page's `items` must actually fill up to `total` (or the page
@@ -218,4 +222,5 @@ void main() {
 
     expect(find.text('1'), findsOneWidget);
   });
+
 }

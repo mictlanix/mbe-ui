@@ -148,6 +148,14 @@ abstract class SalesOrderRepository {
   /// live-verified quirk [listOpen] already documents (`completed` answers
   /// with `paid` rows too) — so a caller that cares about an exact status
   /// match must still narrow the returned page itself.
+  ///
+  /// [origin] keeps **only** orders whose recorded origin matches it — an
+  /// inclusive filter, so an order whose origin was never recorded is
+  /// excluded too. The register's list passes `pointOfSale` unconditionally
+  /// (spec 041, amended): a cashier's list is register sales only, and a
+  /// pre-mbe-api#209 sale — which recorded no origin at all — is
+  /// deliberately not shown here. It remains visible on the back-office
+  /// list, which filters by exclusion instead ([listOrders]).
   Future<OpenSalePage> listSales({
     required int pointSale,
     SaleStatus? status,
@@ -156,6 +164,7 @@ abstract class SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
+    SaleOrigin? origin,
   });
 
   /// `GET /sales-orders?mine=&facility=&salesperson=&status=&date_from=
@@ -171,6 +180,13 @@ abstract class SalesOrderRepository {
   /// - [mine], when true, matches an order whose creator, last updater **or**
   ///   salesperson is the caller — not creator alone.
   /// - [status], like [listSales]'s, is not guaranteed exclusive server-side.
+  ///
+  /// [excludeOrigin] omits every order whose recorded origin matches it,
+  /// while **keeping** an order whose origin was never recorded. The
+  /// back-office list passes `pointOfSale` unconditionally (spec 041,
+  /// amended): everything that is not a register sale belongs here,
+  /// pre-mbe-api#209 orders included, which is why this side filters by
+  /// exclusion rather than by [listSales]'s inclusive `origin`.
   Future<OpenSalePage> listOrders({
     bool mine = false,
     int? facility,
@@ -181,6 +197,7 @@ abstract class SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
+    SaleOrigin? excludeOrigin,
   });
 }
 

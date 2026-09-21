@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 part 'pos_sales_list_controller.freezed.dart';
 part 'pos_sales_list_controller.g.dart';
@@ -160,6 +161,12 @@ class PosSalesListController extends _$PosSalesListController {
           search: filter.search.isEmpty ? null : filter.search,
           skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
+          // Unconditional, not a facet the cashier can vary (spec 041,
+          // amended): the register's list is register sales only. Inclusive
+          // `origin` — not `excludeOrigin` — so an order with no recorded
+          // origin (every sale predating mbe-api#209) is left out here too;
+          // the back-office list is where those remain visible.
+          origin: SaleOrigin.pointOfSale,
         );
     final items = filter.status == null
         ? result.items
