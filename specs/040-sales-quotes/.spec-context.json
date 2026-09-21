@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Sales Quotes — Cotizaciones",
   "branch": "040-sales-quotes",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-13T01:36:26.902Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-21T04:07:29.538Z"
     }
   ],
   "telemetryInstanceId": "3cd58b37-21b3-4d83-8cc1-63b8014f6e14",
@@ -46,6 +53,21 @@
       "decision": "REVERSED 2026-09-20 — the quote is ONE step, with the customer named inside it",
       "why": "Spec 039 shipped and was then directly corrected to remove its own Cliente step; the shipped CaptureStep carries the gate itself via excludeGenericCustomer (opens the customer band searching, withholds product capture until a real customer exists). This restores the original feature description, which said capture would be the only step.",
       "rejected": "Two steps (Cliente → Cotización), the 2026-09-12 decision, now superseded"
+    },
+    {
+      "decision": "A quote is carried by the existing Sale/SaleLine entities, widened — not a separate Quote entity",
+      "why": "The seam forecloses it: SaleEditor.ensureOpen() returns Future<Sale> and every shared capture widget takes Sale, so a quote controller state MUST be Sale?. A separate entity buys nothing without forking the widgets or adding a sentinel-filled projection.",
+      "rejected": "A separate Quote/QuoteLine entity pair; and filling order-only fields with sentinels"
+    },
+    {
+      "decision": "Sale.balance becomes nullable, costing 10 edits in the POS payment surface, mitigated by one balanceOrZero getter",
+      "why": "Keeping it required and passing total or 0 would make a quote LOOK payable to the one code path that must never accept one. Nullability turns that from a silent behaviour into a compile error — the right trade in the highest-consequence files in the app.",
+      "rejected": "balance = total (defensible but silently payable); balance = 0 (also asserts settled)"
+    },
+    {
+      "decision": "One new CaptureStep parameter, showWarehouse, gates three things together: the picker, the stock-cache seed, and the point-of-sale lookup",
+      "why": "They are one decision, not three symptoms. The picker currently WRITES updateLine(warehouse:), and :189-192 resolves a default warehouse via the signed-in users register — wrong twice for a quote.",
+      "rejected": "A stockAware tri-state enum; passing enabled:false (still renders a dead control and reserves 168px); letting the quote repository silently drop the field"
     }
   ],
   "concerns": [
@@ -73,6 +95,21 @@
       "note": "TRAP for planning: the shipped CaptureStep takes four more params than contracts/shared-step-seam.md documents (excludeGenericCustomer, attachFulfillmentIntent, headerExtra, secondaryAction) and continueLabel is optional, not required. Build against the code, not that contract file.",
       "step": "specify",
       "kind": "trap"
+    },
+    {
+      "note": "HIGHEST-RISK OMISSION: the quote repository must carry its own 422 mapper. mapDioException reads 422 detail only as a list, so a plain-string detail yields validation([]) and the server message is DESTROYED. convert creates an order and mbe-api credit-checks on creation, so this path is live — and FR-030 (no point of sale) arrives this way. Fails silently, only against a live server.",
+      "step": "plan",
+      "kind": "trap"
+    },
+    {
+      "note": "039/contracts/shared-step-seam.md is STALE: documents a 4-param CaptureStep; the shipped widget takes 8 and continueLabel is optional. Tasks must be written against the code, not that file.",
+      "step": "plan",
+      "kind": "trap"
+    },
+    {
+      "note": "Two release checks the client cannot assert (quickstart): the quote list is facility-scoped server-side (endpoint has no facility param), and the live shape of converts refusal bodies.",
+      "step": "plan",
+      "kind": "verification"
     }
   ],
   "expectations": [
