@@ -62,6 +62,7 @@ void main() {
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
   });
@@ -102,6 +103,7 @@ void main() {
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).called(1);
   });
@@ -128,6 +130,7 @@ void main() {
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).called(1);
   });
@@ -155,6 +158,7 @@ void main() {
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
+        excludeOrigin: any(named: 'excludeOrigin'),
       ),
     ).called(1);
   });

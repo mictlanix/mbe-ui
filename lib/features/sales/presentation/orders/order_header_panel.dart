@@ -21,8 +21,6 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart';
-import 'package:mbe_ui/features/sales/presentation/widgets/customer_address_picker.dart';
-import 'package:mbe_ui/features/sales/presentation/widgets/customer_contact_picker.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/pos_sale_status_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -138,8 +136,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
     Currency? currency,
     Priority? priority,
     int? salesperson,
-    int? contact,
-    int? shipTo,
     String? recipient,
   }) async {
     setState(() => _error = null);
@@ -151,8 +147,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
             currency: currency,
             priority: priority,
             salesperson: salesperson,
-            contact: contact,
-            shipTo: shipTo,
             recipient: recipient,
           );
     } on AppError catch (e) {
@@ -172,22 +166,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
     if (picked != null && mounted) await _update(promiseDate: picked);
   }
 
-  Future<void> _pickContact() async {
-    final id = await showCustomerContactPicker(
-      context,
-      customerId: widget.sale.customer,
-    );
-    if (id != null && mounted) await _update(contact: id);
-  }
-
-  Future<void> _pickShipTo() async {
-    final id = await showCustomerAddressPicker(
-      context,
-      customerId: widget.sale.customer,
-    );
-    if (id != null && mounted) await _update(shipTo: id);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -199,14 +177,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
     final customer = ref
         .watch(saleCustomerControllerProvider(sale.customer))
         .valueOrNull;
-    final contactLabel = customer?.contacts
-        .where((c) => c.contactId == sale.contact)
-        .firstOrNull
-        ?.name;
-    final shipToLabel = customer?.addresses
-        .where((a) => a.addressId == sale.shipTo)
-        .firstOrNull
-        ?.label;
 
     return Card(
       // The screen already supplies the horizontal inset this card sits in,
@@ -223,14 +193,15 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
             if (_expanded) ...[
               Divider(height: spacing.lg, color: theme.colorScheme.outlineVariant),
               // spec 037 FR-012: Priority, Currency, Exchange rate, Tax ID
-              // (recipient), Delivery details (ship-to), Contact, Comment —
-              // supersedes spec 032 FR-004's ordering.
+              // (recipient), Comment — supersedes spec 032 FR-004's ordering.
+              // Delivery details (ship-to) and Contact left this group in
+              // spec 039: a destination now owns both, per shipment
+              // (FR-050) — one fact, one place.
               ResponsiveFormGrid(
-                // FR-016c: the six non-comment fields read on one line at the
-                // large tier (~187px each inside the grid's 1200px cap, which
-                // clears the widest value, "MXN — Peso Mexicano"). Opt-in, so
-                // every other form's column count is untouched.
-                largeTierColumns: 6,
+                // FR-016c: the four non-comment fields read on one line at the
+                // large tier. Opt-in, so every other form's column count is
+                // untouched.
+                largeTierColumns: 4,
                 // This grid is a band inside the panel, not a form of its own:
                 // centred, its first column started well right of the header
                 // row above it.
@@ -342,22 +313,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                         initialDisplayText: sale.recipient,
                         enabled: canEdit,
                       ),
-                    ),
-                  ),
-                  FormGridChild(
-                    _PickerField(
-                      label: l10n.salesOrderShipToLabel,
-                      value: shipToLabel,
-                      enabled: canEdit,
-                      onTap: _pickShipTo,
-                    ),
-                  ),
-                  FormGridChild(
-                    _PickerField(
-                      label: l10n.salesOrderContactLabel,
-                      value: contactLabel,
-                      enabled: canEdit,
-                      onTap: _pickContact,
                     ),
                   ),
                   // FR-016a's one exception: the comment is genuinely typed
@@ -523,32 +478,6 @@ const _bareField = InputDecoration(
   isDense: true,
   contentPadding: EdgeInsets.zero,
 );
-
-class _PickerField extends StatelessWidget {
-  const _PickerField({
-    required this.label,
-    required this.value,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final String label;
-  final String? value;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return CompactField(
-      label: label,
-      fillWidth: true,
-      editable: enabled,
-      enabled: enabled,
-      onTap: onTap,
-      child: Text(value ?? ''),
-    );
-  }
-}
 
 String _currencyLabel(AppLocalizations l10n, Currency currency) => switch (currency) {
   Currency.mxn => l10n.currencyMxnLabel,

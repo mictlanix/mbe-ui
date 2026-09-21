@@ -14,8 +14,8 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_header_panel.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
 
 import 'pos_test_harness.dart';
 
@@ -73,17 +73,23 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
     when(() => salesOrders.getById(saleId: 42)).thenAnswer(
-      (_) async => testSale(id: 42, serial: 1001, lines: [testLine()]),
+      (_) async => testSale(
+        id: 42,
+        serial: 1001,
+        lines: [testLine()],
+        origin: SaleOrigin.backOffice,
+      ),
     );
   });
 
   Future<void> pumpOrder(WidgetTester tester, {Size? surface}) async {
-    await pumpPos(
+    await pumpOrdersRouted(
       tester,
-      const OrderScreen(orderId: 42),
+      initialLocation: '/sales/orders/42',
       surface: surface ?? const Size(1440, 2400),
       overrides: [
         authNotifierProvider.overrideWith(
@@ -97,7 +103,6 @@ void main() {
         customerPaymentOverride(payments),
       ],
     );
-    await tester.pumpAndSettle();
   }
 
   group('the converted fields (FR-016, FR-016a)', () {
@@ -119,10 +124,12 @@ void main() {
       await tester.tap(find.byKey(_toggle));
       await tester.pumpAndSettle();
 
-      // Expanded: those six plus priority, currency, exchange rate, tax id,
-      // delivery details and contact. The comment is the deliberate exception
-      // (FR-016a) — genuinely typed into, so it keeps its text field.
-      expect(fields(), findsNWidgets(12));
+      // Expanded: those six plus priority, currency, exchange rate and tax
+      // id. Delivery details and contact left this group in spec 039 — a
+      // destination now owns both, per shipment (FR-050). The comment is the
+      // deliberate exception (FR-016a) — genuinely typed into, so it keeps
+      // its text field.
+      expect(fields(), findsNWidgets(10));
       expect(
         find.descendant(
           of: find.byType(OrderHeaderPanel),
@@ -149,7 +156,8 @@ void main() {
       expect(
         height,
         lessThan(400),
-        reason: 'expanded panel should be materially shorter than the boxed layout',
+        reason:
+            'expanded panel should be materially shorter than the boxed layout',
       );
     });
   });
@@ -163,7 +171,9 @@ void main() {
       final cardPadding = theme.spacing.cardPadding;
 
       final panelTop = tester.getTopLeft(find.byType(OrderHeaderPanel)).dy;
-      final panelBottom = tester.getBottomLeft(find.byType(OrderHeaderPanel)).dy;
+      final panelBottom = tester
+          .getBottomLeft(find.byType(OrderHeaderPanel))
+          .dy;
 
       // The first caption and the disclosure control bound the row; the card's
       // own padding must be the same above and below it.
@@ -240,7 +250,8 @@ void main() {
         expect(
           size,
           lessThanOrEqualTo(valueSize),
-          reason: '"${paragraph.text.toPlainText()}" renders larger than the '
+          reason:
+              '"${paragraph.text.toPlainText()}" renders larger than the '
               'value role',
         );
       }
@@ -253,7 +264,9 @@ void main() {
       final panel = find.byType(OrderHeaderPanel);
       final headerLeft = tester
           .getTopLeft(
-            find.descendant(of: panel, matching: find.byType(CompactField)).first,
+            find
+                .descendant(of: panel, matching: find.byType(CompactField))
+                .first,
           )
           .dx;
 
@@ -269,7 +282,9 @@ void main() {
       expect(disclosedLeft, closeTo(headerLeft, 1));
     });
 
-    testWidgets('the caption is above the value, not beside it', (tester) async {
+    testWidgets('the caption is above the value, not beside it', (
+      tester,
+    ) async {
       await pumpOrder(tester);
 
       final field = find
@@ -278,7 +293,9 @@ void main() {
             matching: find.byType(CompactField),
           )
           .first;
-      final caption = find.descendant(of: field, matching: find.byType(Text)).first;
+      final caption = find
+          .descendant(of: field, matching: find.byType(Text))
+          .first;
 
       expect(
         tester.getTopLeft(caption).dy,

@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 
 part 'sales_orders_list_controller.freezed.dart';
@@ -171,6 +172,12 @@ class SalesOrdersListController extends _$SalesOrdersListController {
           search: filter.search.isEmpty ? null : filter.search,
           skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
+          // Unconditional, not a facet the user can vary (spec 041,
+          // amended): "Pedidos" is everything that is not a register sale.
+          // Exclusive — not inclusive — so an order with no recorded origin
+          // (every order predating mbe-api#209) stays visible here, which is
+          // what keeps that history reachable at all.
+          excludeOrigin: SaleOrigin.pointOfSale,
         );
     return CatalogPage(
       items: result.items,

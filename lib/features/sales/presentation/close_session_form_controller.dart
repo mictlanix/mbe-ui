@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/denomination_count.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/presentation/cash_sessions_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 
 part 'close_session_form_controller.freezed.dart';
@@ -134,6 +135,9 @@ class CloseSessionFormController extends _$CloseSessionFormController {
           .read(cashSessionRepositoryProvider)
           .close(cashSessionId: cashSessionId, counts: counts);
       ref.invalidate(currentSessionControllerProvider);
+      // spec 041 US3/FR-009: see the matching comment in
+      // OpenSessionFormController.submit().
+      ref.invalidate(cashSessionsListControllerProvider);
       state = state.copyWith(submitting: false, closed: true);
     } on AppError catch (e) {
       if (e is ValidationError) {

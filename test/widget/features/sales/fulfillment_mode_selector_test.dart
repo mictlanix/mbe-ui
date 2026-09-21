@@ -241,7 +241,7 @@ void main() {
     testWidgets('asks for no address — writes fulfillmentIntent alone and '
         'moves the selection directly', (tester) async {
       final salesOrder = MockSalesOrderRepository();
-      when(() => salesOrder.open()).thenAnswer((_) async => testSale());
+      when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
       when(
         () => salesOrder.updateHeader(
           saleId: any(named: 'saleId'),

@@ -6,9 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_editor_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart';
 
 import 'pos_test_harness.dart';
@@ -38,9 +40,12 @@ void main() {
       (tester) async {
         final container = await pumpBoth(tester);
 
-        when(() => salesOrders.open()).thenAnswer((_) async => testSale(id: 1));
-        when(() => salesOrders.getById(saleId: 2))
-            .thenAnswer((_) async => testSale(id: 2));
+        when(
+          () => anyOpen(salesOrders),
+        ).thenAnswer((_) async => testSale(id: 1));
+        when(
+          () => salesOrders.getById(saleId: 2),
+        ).thenAnswer((_) async => testSale(id: 2));
 
         await container.read(posSaleControllerProvider.notifier).ensureOpen();
         await container.read(orderEditorControllerProvider(2).future);
@@ -71,7 +76,10 @@ void main() {
             .read(posSaleControllerProvider.notifier)
             .updateLine(lineId: 5, quantity: '3');
 
-        expect(container.read(posSaleControllerProvider).valueOrNull?.total, '999.00');
+        expect(
+          container.read(posSaleControllerProvider).valueOrNull?.total,
+          '999.00',
+        );
         expect(
           container.read(orderEditorControllerProvider(2)).valueOrNull?.id,
           2,
@@ -88,7 +96,9 @@ void main() {
       (tester) async {
         final container = await pumpBoth(tester);
 
-        final posGate = container.read(pendingWritesProvider(posWritesScope).notifier);
+        final posGate = container.read(
+          pendingWritesProvider(posWritesScope).notifier,
+        );
         final orderGate = container.read(
           pendingWritesProvider(salesOrderWritesScope).notifier,
         );
@@ -101,7 +111,8 @@ void main() {
         expect(
           container.read(pendingWritesProvider(salesOrderWritesScope)),
           0,
-          reason: 'the order screen\'s gate is untouched by the register\'s write',
+          reason:
+              'the order screen\'s gate is untouched by the register\'s write',
         );
 
         unblock.complete();
@@ -117,7 +128,8 @@ void main() {
         expect(
           container.read(pendingWritesProvider(posWritesScope)),
           0,
-          reason: 'the register\'s gate is untouched by the order screen\'s write',
+          reason:
+              'the register\'s gate is untouched by the order screen\'s write',
         );
 
         unblock2.complete();
@@ -125,4 +137,95 @@ void main() {
       },
     );
   });
+
+  // spec 039 US4 / contracts/shared-step-seam.md §6 invariant 3 — "the
+  // single most important test this feature adds". `confirmBeforePayableAction`
+  // (pos_confirm.dart) commits whichever document `saleEditorProvider`
+  // resolves to; this proves that resolution genuinely differs by scope,
+  // not merely by construction, with both documents open in the same
+  // session at once.
+  group(
+    'creating a destination commits the order, not the register (FR-044)',
+    () {
+      testWidgets(
+        'confirming through the seam inside the workspace\'s nested scope '
+        'commits the order and leaves a register sale, open at the same '
+        'time, a draft — untouched',
+        (tester) async {
+          late ProviderContainer orderContainer;
+          final container = await pumpPos(
+            tester,
+            ProviderScope(
+              overrides: [
+                // The exact four-provider override block
+                // `OrderWorkspaceScreen.build()` installs
+                // (contracts/shared-step-seam.md §5) — reproduced here
+                // rather than mounting the real screen, since this
+                // invariant is about the seam's resolution, not the
+                // workspace's own UI.
+                saleEditorProvider.overrideWith(
+                  (ref) => ref.watch(orderEditorControllerProvider(2).notifier),
+                ),
+                saleWritesScopeProvider.overrideWithValue(
+                  salesOrderWritesScope,
+                ),
+                saleConfirmErrorProvider.overrideWith((ref) => null),
+                saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
+              ],
+              child: Builder(
+                builder: (context) {
+                  orderContainer = ProviderScope.containerOf(
+                    context,
+                    listen: false,
+                  );
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+            overrides: [salesOrderOverride(salesOrders)],
+          );
+
+          when(
+            () => anyOpen(salesOrders),
+          ).thenAnswer((_) async => testSale(id: 1, lines: [testLine()]));
+          when(
+            () => salesOrders.getById(saleId: 2),
+          ).thenAnswer((_) async => testSale(id: 2, lines: [testLine()]));
+          when(() => salesOrders.confirm(saleId: 2)).thenAnswer(
+            (_) async => testSale(
+              id: 2,
+              lines: [testLine()],
+              status: SaleStatus.completed,
+            ),
+          );
+
+          // Both open at once, exactly as a cashier and a back-office user
+          // would have them in the same running app.
+          await container.read(posSaleControllerProvider.notifier).ensureOpen();
+          await orderContainer.read(orderEditorControllerProvider(2).future);
+
+          // The trigger a real destination create fires — resolved through
+          // the seam inside the *nested* scope, so it reaches the order's
+          // own controller, never the register's.
+          await orderContainer.read(saleEditorProvider).confirm();
+
+          verify(() => salesOrders.confirm(saleId: 2)).called(1);
+          verifyNever(() => salesOrders.confirm(saleId: 1));
+          expect(
+            orderContainer
+                .read(orderEditorControllerProvider(2))
+                .valueOrNull
+                ?.status,
+            SaleStatus.completed,
+            reason: 'the order is committed',
+          );
+          expect(
+            container.read(posSaleControllerProvider).valueOrNull?.status,
+            SaleStatus.draft,
+            reason: 'the register sale, open at the same time, is untouched',
+          );
+        },
+      );
+    },
+  );
 }

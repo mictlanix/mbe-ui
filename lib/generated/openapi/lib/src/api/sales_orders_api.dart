@@ -13,6 +13,7 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_sales_order_summary.dart';
 import 'package:mbe_api_client/src/model/order_application_response.dart';
+import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/product_lookup_response.dart';
 import 'package:mbe_api_client/src/model/sales_order_create.dart';
 import 'package:mbe_api_client/src/model/sales_order_line_create.dart';
@@ -593,6 +594,8 @@ class SalesOrdersApi {
   /// * [dateTo]
   /// * [facility]
   /// * [pointSale]
+  /// * [origin]
+  /// * [excludeOrigin] - Every order except this workflow's, including orders that recorded no origin — which is every order raised before #209. The register's own list is the caller this exists for: asking for its own workflow instead would drop its whole history.
   /// * [search]
   /// * [skip]
   /// * [limit]
@@ -615,6 +618,8 @@ class SalesOrdersApi {
     DateTime? dateTo,
     int? facility,
     int? pointSale,
+    OrderOrigin? origin,
+    OrderOrigin? excludeOrigin,
     String? search,
     int? skip = 0,
     int? limit = 20,
@@ -682,6 +687,18 @@ class SalesOrdersApi {
           _serializers,
           pointSale,
           const FullType(int),
+        ),
+      if (origin != null)
+        r'origin': encodeQueryParameter(
+          _serializers,
+          origin,
+          const FullType(OrderOrigin),
+        ),
+      if (excludeOrigin != null)
+        r'exclude_origin': encodeQueryParameter(
+          _serializers,
+          excludeOrigin,
+          const FullType(OrderOrigin),
         ),
       if (search != null)
         r'search': encodeQueryParameter(

@@ -102,17 +102,19 @@ class LineDistributionPanel extends ConsumerWidget {
       shrinkWrap: true,
       physics: fillHeight ? null : const NeverScrollableScrollPhysics(),
       itemCount: distribution.length,
-      separatorBuilder: (context, index) => Divider(
-        height: 1,
-        color: theme.colorScheme.outlineVariant,
-      ),
-      itemBuilder: (context, index) => _row(context, l10n, fmt, distribution[index]),
+      separatorBuilder: (context, index) =>
+          Divider(height: 1, color: theme.colorScheme.outlineVariant),
+      itemBuilder: (context, index) =>
+          _row(context, l10n, fmt, distribution[index]),
     );
 
     if (fillHeight) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [header, Expanded(child: rows)],
+        children: [
+          header,
+          Expanded(child: rows),
+        ],
       );
     }
     return Column(
@@ -145,7 +147,9 @@ class LineDistributionPanel extends ConsumerWidget {
         ? (line.perDestination[counterDestination!.id] ?? '0')
         : line.atCounter;
     if (!isZeroAmount(counterShare)) {
-      chips.add(l10n.posDestinationCounterChip(fmt.field.quantity(counterShare)));
+      chips.add(
+        l10n.posDestinationCounterChip(fmt.field.quantity(counterShare)),
+      );
     }
 
     // FR-034: a pure-delivery line still outstanding is marked, never by
@@ -189,7 +193,9 @@ class LineDistributionPanel extends ConsumerWidget {
             Padding(
               padding: EdgeInsets.only(right: spacing.xxs),
               child: Icon(
-                overClaimed ? Icons.error_outline : Icons.warning_amber_outlined,
+                overClaimed
+                    ? Icons.error_outline
+                    : Icons.warning_amber_outlined,
                 size: 16,
                 color: overClaimed
                     ? theme.colorScheme.error
@@ -237,6 +243,8 @@ class LineDistributionFoot extends ConsumerWidget {
     required this.onClose,
     required this.closing,
     this.onSweepAndClose,
+    this.closeLabel,
+    this.secondaryAction,
   });
 
   final String assigned;
@@ -262,6 +270,24 @@ class LineDistributionFoot extends ConsumerWidget {
   /// rather than inferring".
   final VoidCallback? onSweepAndClose;
 
+  /// Overrides the close button's label — the back-office order workspace's
+  /// own "Completar pedido" rather than the register's "Finalizar venta"
+  /// (spec 039 contracts/order-workspace.md §7). `null` (the default) keeps
+  /// the register's own label exactly as before this feature. The check icon
+  /// is unaffected either way: unlike `SaleTotalsBar`'s arrow, it marks
+  /// completion rather than a direction to the next step, and reads the same
+  /// on both hosts.
+  final String? closeLabel;
+
+  /// A low-emphasis action rendered immediately before the primary close
+  /// button — mirrors `SaleTotalsBar.secondaryAction`'s own placement, the
+  /// back-office order workspace's "Cancel order" (moved here from the app
+  /// bar 2026-09-20 for consistency with the register's own footer-anchored
+  /// actions). Unconditional, unlike [onSweepAndClose]: it does not wait on
+  /// [outstandingMessage]. `null` (the default) renders this foot exactly as
+  /// it was, so every register screen is untouched.
+  final Widget? secondaryAction;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
@@ -273,7 +299,9 @@ class LineDistributionFoot extends ConsumerWidget {
       padding: EdgeInsets.all(spacing.cardPadding),
       decoration: BoxDecoration(
         color: theme.elevations.raised.surfaceColor,
-        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -307,6 +335,10 @@ class LineDistributionFoot extends ConsumerWidget {
               ),
             ],
           ],
+          if (secondaryAction != null) ...[
+            SizedBox(height: spacing.sm),
+            secondaryAction!,
+          ],
           SizedBox(height: spacing.sm),
           // The same footer action `SaleTotalsBar` carries on the capture
           // step: an extended FAB, stretched by the column it sits in, with
@@ -335,7 +367,7 @@ class LineDistributionFoot extends ConsumerWidget {
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(l10n.posFinishSale),
+                      Text(closeLabel ?? l10n.posFinishSale),
                       SizedBox(width: spacing.xs),
                       const Icon(Icons.check),
                     ],

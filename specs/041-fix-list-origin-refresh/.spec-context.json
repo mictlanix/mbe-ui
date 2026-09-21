@@ -1,0 +1,45 @@
+{
+  "workflow": "speckit",
+  "specName": "Fix List Origin Filtering and Cash Session List Refresh",
+  "branch": "041-fix-list-origin-refresh",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-20T22:48:16.359Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-20T22:59:34.093Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-20T23:56:53.800Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-21T00:54:15.877Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-21T03:35:47.478Z"
+    }
+  ],
+  "telemetryInstanceId": "7f3f1701-3895-4036-b8ce-b50258fec0ab"
+}

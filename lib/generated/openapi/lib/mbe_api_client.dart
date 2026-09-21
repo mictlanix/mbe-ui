@@ -174,6 +174,7 @@ export 'package:mbe_api_client/src/model/low_profit_margin1.dart';
 export 'package:mbe_api_client/src/model/method_total.dart';
 export 'package:mbe_api_client/src/model/opening_amount.dart';
 export 'package:mbe_api_client/src/model/order_application_response.dart';
+export 'package:mbe_api_client/src/model/order_origin.dart';
 export 'package:mbe_api_client/src/model/outstanding_order_response.dart';
 export 'package:mbe_api_client/src/model/payment_method.dart';
 export 'package:mbe_api_client/src/model/payment_method_option_create.dart';

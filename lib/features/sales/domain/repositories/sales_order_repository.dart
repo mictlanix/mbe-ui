@@ -3,6 +3,7 @@ import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 /// Sale lifecycle: open, edit its header, capture lines, confirm, read one
 /// back, list the register's open sales, and look products up
@@ -19,7 +20,25 @@ abstract class SalesOrderRepository {
   /// brand-new sale be a single POST instead of an empty create followed by
   /// [updateHeader] (spec 036 research.md R5) — every other caller still
   /// passes neither, for the plain empty-body open FR-002 describes.
-  Future<Sale> open({int? customer, int? salesperson});
+  ///
+  /// [fulfillmentIntent] is spec 039's own addition (research R3): the
+  /// back-office order workspace's Cliente step records its intent to
+  /// deliver in this same request, so the order never has a moment where it
+  /// exists without one. POS never passes it here — it sets the intent later,
+  /// through [updateHeader], via its own fulfilment-mode selector.
+  ///
+  /// [origin] records which workflow raised the order (mbe-api#209, spec 039
+  /// FR-051). Every caller passes it — it is the one fact nothing else on the
+  /// document can stand in for, and `SalesOrderUpdate` has no such field, so
+  /// an order raised without it can never be told apart afterwards. It comes
+  /// from the `SaleEditor` doing the opening rather than from a widget, so
+  /// the wrong host cannot send the wrong value.
+  Future<Sale> open({
+    int? customer,
+    int? salesperson,
+    FulfillmentMode? fulfillmentIntent,
+    SaleOrigin? origin,
+  });
 
   Future<Sale> getById({required int saleId});
 
@@ -129,6 +148,14 @@ abstract class SalesOrderRepository {
   /// live-verified quirk [listOpen] already documents (`completed` answers
   /// with `paid` rows too) — so a caller that cares about an exact status
   /// match must still narrow the returned page itself.
+  ///
+  /// [origin] keeps **only** orders whose recorded origin matches it — an
+  /// inclusive filter, so an order whose origin was never recorded is
+  /// excluded too. The register's list passes `pointOfSale` unconditionally
+  /// (spec 041, amended): a cashier's list is register sales only, and a
+  /// pre-mbe-api#209 sale — which recorded no origin at all — is
+  /// deliberately not shown here. It remains visible on the back-office
+  /// list, which filters by exclusion instead ([listOrders]).
   Future<OpenSalePage> listSales({
     required int pointSale,
     SaleStatus? status,
@@ -137,6 +164,7 @@ abstract class SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
+    SaleOrigin? origin,
   });
 
   /// `GET /sales-orders?mine=&facility=&salesperson=&status=&date_from=
@@ -152,6 +180,13 @@ abstract class SalesOrderRepository {
   /// - [mine], when true, matches an order whose creator, last updater **or**
   ///   salesperson is the caller — not creator alone.
   /// - [status], like [listSales]'s, is not guaranteed exclusive server-side.
+  ///
+  /// [excludeOrigin] omits every order whose recorded origin matches it,
+  /// while **keeping** an order whose origin was never recorded. The
+  /// back-office list passes `pointOfSale` unconditionally (spec 041,
+  /// amended): everything that is not a register sale belongs here,
+  /// pre-mbe-api#209 orders included, which is why this side filters by
+  /// exclusion rather than by [listSales]'s inclusive `origin`.
   Future<OpenSalePage> listOrders({
     bool mine = false,
     int? facility,
@@ -162,6 +197,7 @@ abstract class SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
+    SaleOrigin? excludeOrigin,
   });
 }
 

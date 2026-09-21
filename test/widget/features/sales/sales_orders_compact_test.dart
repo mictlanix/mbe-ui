@@ -17,10 +17,10 @@ import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_header_panel.dart';
-import 'package:mbe_ui/features/sales/presentation/orders/order_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 
 import 'pos_test_harness.dart';
@@ -79,7 +79,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
   });
 
@@ -106,16 +107,20 @@ void main() {
   );
 
   testWidgets(
-    'the order screen renders at 390 px with lines as SaleLineCard — the '
+    'the order workspace renders at 390 px with lines as SaleLineCard — the '
     'established compact treatment — and no horizontal overflow',
     (tester) async {
       when(() => salesOrders.getById(saleId: 42)).thenAnswer(
-        (_) async => testSale(id: 42, lines: [testLine()]),
+        (_) async => testSale(
+          id: 42,
+          lines: [testLine()],
+          origin: SaleOrigin.backOffice,
+        ),
       );
 
-      await pumpPos(
+      await pumpOrdersRouted(
         tester,
-        const OrderScreen(orderId: 42),
+        initialLocation: '/sales/orders/42',
         surface: phoneSurface,
         overrides: [
           _authOverride(),
@@ -125,10 +130,14 @@ void main() {
           customerPaymentOverride(payments),
         ],
       );
-      await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      expect(LayoutBreakpoints.isCompact(tester.element(find.byType(OrderHeaderPanel))), isTrue);
+      expect(
+        LayoutBreakpoints.isCompact(
+          tester.element(find.byType(OrderHeaderPanel)),
+        ),
+        isTrue,
+      );
       // `OrderHeaderPanel`'s `ResponsiveFormGrid` measures its own width
       // (not `MediaQuery`) and collapses to one column below its first
       // breakpoint — already covered generically by
@@ -144,16 +153,28 @@ void main() {
         find.byKey(const Key('sales_order_more_details_toggle')),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('sales_order_more_details_toggle')));
+      await tester.tap(
+        find.byKey(const Key('sales_order_more_details_toggle')),
+      );
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('sales_order_currency_field')), findsOneWidget);
-      expect(find.byKey(const Key('sales_order_priority_field')), findsOneWidget);
+      expect(
+        find.byKey(const Key('sales_order_currency_field')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('sales_order_priority_field')),
+        findsOneWidget,
+      );
 
       // The compact body puts header and lines in one `ListView` — the
       // line lives below the fold at this height, so it must be scrolled
       // into view before a finder can see it (a lazily-built sliver child
       // that's off-screen simply isn't mounted yet).
-      for (var i = 0; i < 10 && find.byType(SaleLineCard).evaluate().isEmpty; i++) {
+      for (
+        var i = 0;
+        i < 10 && find.byType(SaleLineCard).evaluate().isEmpty;
+        i++
+      ) {
         await tester.drag(find.byType(ListView), const Offset(0, -400));
         await tester.pumpAndSettle();
       }
@@ -179,23 +200,18 @@ void main() {
       'with nothing overflowing (FR-018)',
       (tester) async {
         when(() => salesOrders.getById(saleId: 42)).thenAnswer(
-          (_) async => testSale(id: 42, lines: [testLine()]),
+          (_) async => testSale(
+            id: 42,
+            lines: [testLine()],
+            origin: SaleOrigin.backOffice,
+          ),
         );
 
-        await pumpPos(
+        await pumpOrdersRouted(
           tester,
-          MediaQuery(
-            // Mirrors app.dart's own wiring: the level composes over the
-            // platform scaler rather than replacing it (spec 027 research R1).
-            data: MediaQueryData(
-              textScaler: ComposedTextScaler(
-                platform: TextScaler.noScaling,
-                level: level,
-              ),
-            ),
-            child: const OrderScreen(orderId: 42),
-          ),
+          initialLocation: '/sales/orders/42',
           surface: phoneSurface,
+          textLevel: level,
           overrides: [
             _authOverride(),
             salesOrderOverride(salesOrders),
@@ -204,7 +220,6 @@ void main() {
             customerPaymentOverride(payments),
           ],
         );
-        await tester.pumpAndSettle();
 
         expect(tester.takeException(), isNull);
 
@@ -219,8 +234,14 @@ void main() {
 
         // Every disclosed field is built and laid out at this level, and the
         // panel still asks nothing of the page sideways.
-        expect(find.byKey(const Key('sales_order_currency_field')), findsOneWidget);
-        expect(find.byKey(const Key('sales_order_priority_field')), findsOneWidget);
+        expect(
+          find.byKey(const Key('sales_order_currency_field')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('sales_order_priority_field')),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
         expectNoHorizontalScroll(tester);
       },

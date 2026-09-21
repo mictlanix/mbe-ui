@@ -140,6 +140,12 @@ abstract class AppLocalizations {
   /// **'Could not reach the server. Check your connection and try again.'**
   String get errorNetworkGeneric;
 
+  /// Generic CreditHoldError message shown when the server sent no detail
+  ///
+  /// In en, this message translates to:
+  /// **'This customer cannot be placed on credit right now.'**
+  String get errorCreditHoldGeneric;
+
   /// No description provided for @viewActionTooltip.
   ///
   /// In en, this message translates to:
@@ -4899,18 +4905,6 @@ abstract class AppLocalizations {
   /// **'Salesperson'**
   String get salesOrderSalespersonLabel;
 
-  /// No description provided for @salesOrderContactLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Contact'**
-  String get salesOrderContactLabel;
-
-  /// No description provided for @salesOrderShipToLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Delivery details'**
-  String get salesOrderShipToLabel;
-
   /// No description provided for @salesOrderRecipientLabel.
   ///
   /// In en, this message translates to:
@@ -5000,6 +4994,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a customer to start the order.'**
   String get salesOrderChooseCustomerFirst;
+
+  /// Back-office order workspace step label — the capture step
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get salesOrderStepVenta;
+
+  /// Back-office order workspace step label — the delivery step
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get salesOrderStepEntrega;
+
+  /// Back-office order workspace step progress announcement
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String salesOrderStepProgress(int current, int total);
+
+  /// Venta step's forward action label (spec 039 FR-022) — replaces CaptureStep's default POS label for this host
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to delivery'**
+  String get salesOrderContinueToDeliveryAction;
+
+  /// Entrega step's close action label (spec 039 contracts/order-workspace.md §7) — replaces DeliveryStep's default POS label ("Finish sale") for this host
+  ///
+  /// In en, this message translates to:
+  /// **'Complete order'**
+  String get salesOrderCompleteDeliveryAction;
+
+  /// Headline of the declined state shown when the back-office workspace is asked to open an order raised at the register (spec 039 FR-053, research R5)
+  ///
+  /// In en, this message translates to:
+  /// **'This order cannot be edited here'**
+  String get salesOrderForeignOrderTitle;
+
+  /// Body of the declined foreign-order state — says where the order belongs rather than only refusing (spec 039 FR-053)
+  ///
+  /// In en, this message translates to:
+  /// **'It was raised at the point of sale. Open it from Ventas instead.'**
+  String get salesOrderForeignOrderMessage;
 
   /// No description provided for @salesOrdersEmptyMessage.
   ///

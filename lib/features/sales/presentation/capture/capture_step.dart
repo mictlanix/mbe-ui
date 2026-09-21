@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/customer_bar.dart';
@@ -15,50 +16,116 @@ import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.d
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
-import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// The Venta step (contracts/pos-screen.md §3): customer, fulfilment mode,
-/// main delivery address, terms and lines. Composes [CustomerBar],
+/// The Venta step (contracts/pos-screen.md §3; spec 039
+/// contracts/shared-step-seam.md §2): customer, fulfilment mode, main
+/// delivery address, terms and lines. Composes [CustomerBar],
 /// [FulfillmentModeSelector], [ProductSearchField], [SaleLineRow] and
-/// [SaleTotalsBar]; "Continuar al cobro" is enabled only once at least one
-/// line exists (FR-038) and, on success, advances `PosStepController` to
-/// `cobro` (§2). A confirm rejected for zero-priced lines or insufficient
-/// stock is shown as a banner here and the step stays on Venta (FR-039, §6).
+/// [SaleTotalsBar]. Shared by the register and the back-office order
+/// workspace — it edits whichever document [saleEditorProvider] resolves to,
+/// and knows nothing about what step follows it: the host supplies
+/// [onContinue] and [continueLabel], and disables the fulfilment-mode choice
+/// entirely via [showFulfillmentSelector] where it does not apply. A confirm
+/// rejected for zero-priced lines or insufficient stock is shown as a banner
+/// here once the host has returned to this step (§4 of the same contract).
 /// The server names each offending line in its refusal — the repository
-/// flattens `{"message", "lines"}` into the banner text — so the cashier is
+/// flattens `{"message", "lines"}` into the banner text — so the user is
 /// told which products are at fault, by name, not merely that something is
 /// wrong.
 class CaptureStep extends ConsumerStatefulWidget {
-  const CaptureStep({super.key, required this.sale});
+  const CaptureStep({
+    super.key,
+    required this.sale,
+    required this.onContinue,
+    this.continueLabel,
+    this.showFulfillmentSelector = true,
+    this.excludeGenericCustomer = false,
+    this.attachFulfillmentIntent,
+    this.headerExtra,
+    this.secondaryAction,
+  });
 
-  /// `null` on a register nobody has started a sale on yet. The search field
-  /// still works — scanning is what opens the sale — but everything that
-  /// describes a sale (customer, fulfilment mode, totals) has nothing to
+  /// `null` on a register nobody has started a sale on yet, or a back-office
+  /// order not yet opened. The search field still works — the first product
+  /// or the first customer pick is what opens the sale — but everything that
+  /// describes one (customer, fulfilment mode, totals) has nothing to
   /// describe until then.
   final Sale? sale;
+
+  /// What the step's primary action does once it has resolved unconfirmed
+  /// edits and found at least one line — advance to Cobro at the register,
+  /// advance to Entrega in the back-office workspace. `null` disables the
+  /// action regardless of what [SaleTotalsBar]'s own enabling rule would
+  /// otherwise allow (contracts/shared-step-seam.md §2).
+  final VoidCallback? onContinue;
+
+  /// The primary action's label. `null` (the default) keeps
+  /// [SaleTotalsBar]'s own register-flavoured "Cobro →" text and arrow
+  /// exactly as before this feature (FR-046) — the register's call site
+  /// passes nothing here. The back-office workspace passes its own text
+  /// ("Continuar a entrega"), which drops the arrow: there is no "next step"
+  /// for it to point at, and this screen has no prior rendering to preserve.
+  /// The step itself carries no opinion about what follows it (FR-045).
+  final String? continueLabel;
+
+  /// `false` in the back-office workspace, where every order is for delivery
+  /// and no fulfilment-mode choice is offered (spec 039 FR-021). Defaults to
+  /// `true` so the register's behaviour is unchanged unless a caller opts out.
+  final bool showFulfillmentSelector;
+
+  /// spec 039 FR-011: the back-office order workspace's own customer bar
+  /// must refuse the generic walk-in customer, since it forbids the
+  /// customer choice entirely. `false` (the default) keeps POS's own
+  /// behaviour, where that customer is the ordinary default.
+  final bool excludeGenericCustomer;
+
+  /// spec 039 FR-014/FR-015: the back-office order workspace's own intent to
+  /// deliver, recorded in the very same request that opens the draft on the
+  /// customer's first attach (forwarded to
+  /// [CustomerBar.attachFulfillmentIntent]). `null` (the default) is a no-op
+  /// for POS, whose own [FulfillmentModeSelector] covers this once a sale
+  /// exists.
+  final FulfillmentMode? attachFulfillmentIntent;
+
+  /// spec 039 contracts/order-workspace.md §3: the back-office order
+  /// workspace's own header panel, rendered directly below the customer
+  /// band and fulfilment-mode row, above the product search field (spec
+  /// 037's ordering) — `CaptureStep` itself carries no header fields beyond
+  /// the customer bar, so this is where a host's own document-level fields
+  /// are given a place, without restructuring the step's own layout. `null`
+  /// (the default) renders nothing here, which is POS's own header exactly
+  /// as before this feature.
+  final Widget? headerExtra;
+
+  /// A low-emphasis action rendered immediately before the primary one —
+  /// forwarded to [SaleTotalsBar.secondaryAction]. `null` (the default)
+  /// renders the bar exactly as it was, so every register screen is
+  /// untouched.
+  final Widget? secondaryAction;
 
   @override
   ConsumerState<CaptureStep> createState() => _CaptureStepState();
 }
 
 class _CaptureStepState extends ConsumerState<CaptureStep> {
-  Future<void> _addLine(ProductLookupResult result, int? defaultWarehouse) async {
-    ref.read(productStockCacheProvider.notifier).update(
-      (cache) => {...cache, result.product: result.stock},
-    );
+  Future<void> _addLine(
+    ProductLookupResult result,
+    int? defaultWarehouse,
+  ) async {
+    ref
+        .read(productStockCacheProvider.notifier)
+        .update((cache) => {...cache, result.product: result.stock});
     // The product table's tax rate, cached for the line's tax picker
     // (FR-038b) — the lookup is the only payload that carries it.
-    ref.read(productTaxRateCacheProvider.notifier).update(
-      (cache) => {...cache, result.product: result.taxRate},
-    );
+    ref
+        .read(productTaxRateCacheProvider.notifier)
+        .update((cache) => {...cache, result.product: result.taxRate});
     await ref
-        .read(posSaleControllerProvider.notifier)
+        .read(saleEditorProvider)
         .addLine(
           product: result.product,
           quantity: _initialQuantity(result),
@@ -74,27 +141,23 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
   String _initialQuantity(ProductLookupResult result) =>
       result.minOrderQty > 0 ? '${result.minOrderQty}' : '1';
 
-  /// spec 036 FR-008: advancing to Cobro is a pure client-side step change —
-  /// it no longer calls `confirm()` (that now happens just before the first
-  /// action that actually needs `completed` status: a payment, a delivery
-  /// destination, or leaving Cobro on credit terms — `pos_confirm.dart`).
-  /// The sale therefore stays `draft`, and can be returned to and edited,
-  /// for as long as the cashier remains on Cobro/Entrega without having
-  /// triggered one of those.
-  void _advanceToCobro() {
-    ref.read(posStepControllerProvider.notifier).advanceToCobro();
-  }
-
-  /// What "Continuar al cobro" actually calls (spec 031 FR-024…FR-030):
-  /// unconfirmed text anywhere on the step raises a decision before advancing
-  /// ever happens, rather than the step silently discarding or silently
-  /// committing it. [resolveUnconfirmedEdits] is what makes that decision
-  /// (spec 029 research §R12 — extracted so the back-office order screen's
-  /// own confirm resolves it identically, on its own scope); this is now
-  /// only the step-specific half: proceed to Cobro when it says to.
+  /// What the primary action actually calls (spec 031 FR-024…FR-030, spec 039
+  /// FR-008): unconfirmed text anywhere on the step raises a decision before
+  /// advancing ever happens, rather than the step silently discarding or
+  /// silently committing it. [resolveUnconfirmedEdits] is what makes that
+  /// decision (spec 029 research §R12 — shared by both hosts on their own
+  /// scope); this is only the step-specific half — proceed via
+  /// [CaptureStep.onContinue] when it says to. Advancing itself is a pure
+  /// client-side step change on both hosts: it no longer calls `confirm()`
+  /// (that now happens just before the first action that actually needs
+  /// `completed` status — a payment, a delivery destination, or leaving
+  /// Cobro on credit terms — `pos_confirm.dart`). The sale therefore stays
+  /// `draft`, and can be returned to and edited, for as long as neither host
+  /// has triggered one of those.
   Future<void> _onContinuePressed() async {
-    final proceed = await resolveUnconfirmedEdits(context, ref, posWritesScope);
-    if (proceed && mounted) _advanceToCobro();
+    final scope = ref.read(saleWritesScopeProvider);
+    final proceed = await resolveUnconfirmedEdits(context, ref, scope);
+    if (proceed && mounted) widget.onContinue?.call();
   }
 
   @override
@@ -102,6 +165,23 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final l10n = AppLocalizations.of(context)!;
     final sale = widget.sale;
     final enabled = sale?.isEditable ?? true;
+    // spec 039 FR-011/FR-009: a host that excludes the generic customer has
+    // no valid default to lazily open a draft against, unlike POS's own
+    // walk-in fallback — so before a customer exists there, product capture
+    // is withheld rather than opening a sale attached to nothing. Once
+    // `sale` exists, a customer is already attached (this workspace's own
+    // picker never returns the generic one), so this reduces to `enabled`
+    // exactly as before.
+    final canCaptureProducts =
+        enabled && (sale != null || !widget.excludeGenericCustomer);
+    // Same reasoning, the other end: nothing else to fill in on a brand-new
+    // order here, so the customer band opens already searching instead of
+    // reporting facts about a customer that does not exist — mirrors what
+    // the replaced Cliente step did, without a step of its own (research R3,
+    // reworked 2026-09-20 per direct correction: this was never meant to be
+    // its own screen).
+    final startCustomerBarInSearchMode =
+        sale == null && widget.excludeGenericCustomer;
     final compact = LayoutBreakpoints.isCompact(context);
     // The register's own point of sale, known from the signed-in user's
     // settings before any sale exists — so the first scan already lands in
@@ -110,21 +190,28 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final defaultWarehouse = pointSale == null
         ? const AsyncValue<int>.loading()
         : ref.watch(defaultWarehouseControllerProvider(pointSale));
-    // spec 031 FR-007: additional to every condition below, not instead of
-    // any of them — a line write still outstanding must not let the cashier
-    // advance on figures the sale does not hold yet (issue #164).
-    final writesPending = ref.watch(pendingWritesProvider(posWritesScope)) > 0;
+    // spec 031 FR-007, spec 039 FR-007: additional to every condition below,
+    // not instead of any of them — a line write still outstanding must not
+    // let the user advance on figures the sale does not hold yet (issue
+    // #164). Read through the seam so each host's own scope is checked, never
+    // the other's (contracts/shared-step-seam.md §1).
+    final writesPending =
+        ref.watch(pendingWritesProvider(ref.watch(saleWritesScopeProvider))) >
+        0;
     final spacing = Theme.of(context).spacing;
     // One horizontal margin for every header item, applied once per item
     // rather than each widget also carrying its own — the doubled
     // `EdgeInsets.all(12)` this replaces (the step's own wrapper *and*
     // CustomerBar's Card padding) was what misaligned the customer card's
     // edges against the search field below it (spec 023 research R12).
-    final horizontalInset = EdgeInsets.symmetric(horizontal: spacing.screenMargin);
-    // spec 036 R1: a `confirm()` failure triggered from payment, delivery, or
-    // leaving Cobro on credit terms lands here — the step machine already
-    // jumped back to Venta by the time this renders.
-    final confirmError = ref.watch(confirmErrorProvider);
+    final horizontalInset = EdgeInsets.symmetric(
+      horizontal: spacing.screenMargin,
+    );
+    // spec 036 R1, spec 039 contracts/shared-step-seam.md §1: a `confirm()`
+    // failure triggered from payment, delivery, or leaving Cobro on credit
+    // terms lands here — the host has already returned to this step by the
+    // time this renders, on whichever host's own scope failed.
+    final confirmError = ref.watch(saleConfirmErrorProvider);
 
     final header = <Widget>[
       if (confirmError != null)
@@ -132,7 +219,8 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           padding: horizontalInset.add(EdgeInsets.only(top: spacing.xs)),
           child: ErrorBanner(
             error: confirmError,
-            onDismiss: () => ref.read(confirmErrorProvider.notifier).state = null,
+            onDismiss: () =>
+                ref.read(saleConfirmErrorProvider.notifier).state = null,
           ),
         ),
       if (!enabled)
@@ -155,42 +243,65 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
       // them stacked, where a three-segment mode control has no room left
       // beside the customer band.
       Padding(
-          // Top inset only: the search field below carries its own, and
-          // doubling them left a dead band between the two (the mock's own
-          // customer row is `12px 24px 0` for the same reason).
-          padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
-          child: LayoutBreakpoints.isExpanded(context)
-              ? Row(
-                  // Centred, not top-aligned: the mode control is a single
-                  // 56 px pill while the customer band is a taller card, so
-                  // `start` pinned it to the band's top edge and read as
-                  // misaligned. The mock centres the pair (`align-items:
-                  // center`) for exactly this reason.
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(child: CustomerBar(sale: sale, enabled: enabled)),
+        // Top inset only: the search field below carries its own, and
+        // doubling them left a dead band between the two (the mock's own
+        // customer row is `12px 24px 0` for the same reason).
+        padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
+        child: LayoutBreakpoints.isExpanded(context)
+            ? Row(
+                // Centred, not top-aligned: the mode control is a single
+                // 56 px pill while the customer band is a taller card, so
+                // `start` pinned it to the band's top edge and read as
+                // misaligned. The mock centres the pair (`align-items:
+                // center`) for exactly this reason.
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: CustomerBar(
+                      sale: sale,
+                      enabled: enabled,
+                      excludeGenericCustomer: widget.excludeGenericCustomer,
+                      attachFulfillmentIntent: widget.attachFulfillmentIntent,
+                      startInSearchMode: startCustomerBarInSearchMode,
+                    ),
+                  ),
+                  if (widget.showFulfillmentSelector) ...[
                     SizedBox(width: spacing.sm),
                     FulfillmentModeSelector(sale: sale, enabled: enabled),
                   ],
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomerBar(sale: sale, enabled: enabled),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomerBar(
+                    sale: sale,
+                    enabled: enabled,
+                    excludeGenericCustomer: widget.excludeGenericCustomer,
+                    attachFulfillmentIntent: widget.attachFulfillmentIntent,
+                    startInSearchMode: startCustomerBarInSearchMode,
+                  ),
+                  // Stretched here and only here: stacked, it is one element
+                  // in a column where the band above it and the search field
+                  // below both run margin to margin, and a track hugging its
+                  // labels leaves dead space against the trailing edge —
+                  // most of it at tablet-portrait widths, where the natural
+                  // track is far narrower than the column.
+                  if (widget.showFulfillmentSelector) ...[
                     SizedBox(height: spacing.sm),
-                    // Stretched here and only here: stacked, it is one element
-                    // in a column where the band above it and the search field
-                    // below both run margin to margin, and a track hugging its
-                    // labels leaves dead space against the trailing edge —
-                    // most of it at tablet-portrait widths, where the natural
-                    // track is far narrower than the column.
                     FulfillmentModeSelector(
                       sale: sale,
                       enabled: enabled,
                       stretch: true,
                     ),
                   ],
-                ),
+                ],
+              ),
+      ),
+      if (widget.headerExtra != null)
+        Padding(
+          padding: horizontalInset.add(EdgeInsets.only(top: spacing.sm)),
+          child: widget.headerExtra,
         ),
       Padding(
         // Keyed because this list changes shape underneath it: the customer
@@ -200,11 +311,14 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         // found would never be added — verified live, where the first scan
         // of a sale silently added nothing and the second worked.
         key: const Key('pos_product_search_field'),
-        padding: horizontalInset.add(EdgeInsets.symmetric(vertical: spacing.sm)),
+        padding: horizontalInset.add(
+          EdgeInsets.symmetric(vertical: spacing.sm),
+        ),
         child: ProductSearchField(
-          enabled: enabled,
+          enabled: canCaptureProducts,
           warehouse: defaultWarehouse.value,
-          onProductSelected: (result) => _addLine(result, defaultWarehouse.value),
+          onProductSelected: (result) =>
+              _addLine(result, defaultWarehouse.value),
         ),
       ),
     ];
@@ -225,10 +339,21 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                 if (sale == null || sale.lines.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: Text(l10n.posNoLinesHint)),
+                    child: Center(
+                      child: Text(
+                        canCaptureProducts
+                            ? l10n.posNoLinesHint
+                            : l10n.salesOrderChooseCustomerFirst,
+                      ),
+                    ),
                   )
                 else
-                  ..._lines(sale, enabled, compact: true, inset: horizontalInset),
+                  ..._lines(
+                    sale,
+                    enabled,
+                    compact: true,
+                    inset: horizontalInset,
+                  ),
               ],
             ),
           )
@@ -236,7 +361,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           ...header,
           Expanded(
             child: sale == null || sale.lines.isEmpty
-                ? Center(child: Text(l10n.posNoLinesHint))
+                ? Center(
+                    child: Text(
+                      canCaptureProducts
+                          ? l10n.posNoLinesHint
+                          : l10n.salesOrderChooseCustomerFirst,
+                    ),
+                  )
                 : ListView(
                     // The same inset every header item carries, so a line's
                     // edges sit directly under the search field's rather than
@@ -255,11 +386,17 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         SaleTotalsBar(
           sale: sale,
           compact: compact,
-          // spec 036 FR-008: advancing to Cobro is synchronous now (no
-          // server round-trip), so there is nothing left for this to show a
-          // spinner for.
+          actionLabel: widget.continueLabel,
+          secondaryAction: widget.secondaryAction,
+          // spec 036 FR-008: advancing is synchronous now (no server round
+          // trip on either host), so there is nothing left for this to show
+          // a spinner for.
           confirming: false,
-          onContinue: (enabled && (sale?.lineCount ?? 0) > 0 && !writesPending)
+          onContinue:
+              (enabled &&
+                  (sale?.lineCount ?? 0) > 0 &&
+                  !writesPending &&
+                  widget.onContinue != null)
               ? _onContinuePressed
               : null,
         ),

@@ -6,6 +6,7 @@ import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 
 /// Golden-path integration test against a *real* mbe-api instance
@@ -154,6 +155,84 @@ void main() {
     // line, confirm, list) — comfortably under the default timeout, but
     // pinned explicitly like its siblings so a slow shared dev backend
     // doesn't flake this out from unrelated suite contention.
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
+
+  // spec 041 US2/T023: the live proof of SC-002/SC-003 that no widget test
+  // can give — mirrors T013's design in `pos_sales_list_flow_test.dart`.
+  // Three probes carrying three different origins (one deliberately
+  // omitted) settle this without depending on any pre-existing legacy row
+  // happening to be in the dev database. This suite needs no open cash
+  // session, per this file's own doc comment above.
+  test(
+    'excludeOrigin: pointOfSale hides only point-of-sale orders — a '
+    'back-office order and an order with no recorded origin both survive '
+    'the filter (spec 041 FR-004, FR-005, SC-002, SC-003)',
+    () async {
+      final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
+      final token = await AuthRepositoryImpl(
+        dio,
+      ).login(username: _username, password: _password);
+      dio.options.headers['Authorization'] = 'Bearer $token';
+
+      final salesOrders = SalesOrderRepositoryImpl(dio);
+
+      final Sale officeProbe;
+      final Sale posProbe;
+      final Sale unrecordedProbe;
+      try {
+        officeProbe = await salesOrders.open(origin: SaleOrigin.backOffice);
+        posProbe = await salesOrders.open(origin: SaleOrigin.pointOfSale);
+        unrecordedProbe = await salesOrders.open();
+      } on Object catch (e) {
+        markTestSkipped('this account cannot open a sales order: $e');
+        return;
+      }
+      addTearDown(() async {
+        for (final probe in [officeProbe, posProbe, unrecordedProbe]) {
+          try {
+            await salesOrders.cancel(saleId: probe.id);
+          } on Object {
+            // Best-effort cleanup, matching this file's other probe.
+          }
+        }
+      });
+
+      expect(
+        unrecordedProbe.origin,
+        isNull,
+        reason: 'an order created without an explicit origin must record '
+            'none — never silently default to either workflow',
+      );
+
+      Future<bool> foundInFilteredList(int saleId) async {
+        final page = await salesOrders.listOrders(
+          mine: true,
+          limit: 100,
+          excludeOrigin: SaleOrigin.pointOfSale,
+        );
+        return page.items.any((s) => s.id == saleId);
+      }
+
+      expect(
+        await foundInFilteredList(posProbe.id),
+        isFalse,
+        reason: 'excludeOrigin: pointOfSale must remove every point-of-sale '
+            'order (FR-004)',
+      );
+      expect(
+        await foundInFilteredList(officeProbe.id),
+        isTrue,
+        reason: 'a back-office order must survive the filter',
+      );
+      expect(
+        await foundInFilteredList(unrecordedProbe.id),
+        isTrue,
+        reason: 'an order with no recorded origin must never be hidden by '
+            'either list\'s origin filter (FR-005, SC-003)',
+      );
+    },
+    skip: !_canRun,
     timeout: const Timeout(Duration(minutes: 2)),
   );
 }

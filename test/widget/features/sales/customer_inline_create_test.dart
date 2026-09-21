@@ -130,7 +130,7 @@ void main() {
     required Sale sale,
     bool canCreateCustomers = true,
   }) async {
-    when(() => salesOrders.open()).thenAnswer((_) async => sale);
+    when(() => anyOpen(salesOrders)).thenAnswer((_) async => sale);
 
     final container = await pumpPos(
       tester,
@@ -138,7 +138,7 @@ void main() {
         builder: (context, ref, _) => ref
             .watch(posSaleControllerProvider)
             .when(
-              data: (value) => CaptureStep(sale: value),
+              data: (value) => CaptureStep(sale: value, onContinue: () {}),
               loading: () => const SizedBox.shrink(),
               error: (error, _) => Text('$error'),
             ),

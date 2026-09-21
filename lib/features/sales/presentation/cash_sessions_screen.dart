@@ -175,8 +175,10 @@ class _OpenForm extends ConsumerWidget {
 
     // Dismiss the sheet the moment a submit succeeds (FR-028b) — the form's
     // own `saved` flag flips true right after `currentSessionControllerProvider`
-    // is invalidated, so the history list and the toolbar action are already
-    // refreshing by the time this pops.
+    // is invalidated, so the toolbar action is already refreshing by the
+    // time this pops. The history list's own refresh (spec 041 FR-008) comes
+    // from that same `submit()` separately invalidating
+    // `cashSessionsListControllerProvider` — not from this sheet closing.
     ref.listen(openSessionFormControllerProvider, (previous, next) {
       if (next.saved && !(previous?.saved ?? false)) {
         Navigator.of(context).pop();

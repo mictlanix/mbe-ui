@@ -171,14 +171,14 @@ void main() {
         overrides: overrides(),
       );
 
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
       expect(router.state.uri.path, '/sales/pos/new');
     });
 
     testWidgets(
       'the first action opens the sale and rewrites the URL to /sales/pos/<id>',
       (tester) async {
-        when(() => salesOrders.open()).thenAnswer((_) async => testSale(id: 99));
+        when(() => anyOpen(salesOrders)).thenAnswer((_) async => testSale(id: 99));
 
         final (router, container) = await pumpPosRouted(
           tester,
@@ -190,7 +190,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(router.state.uri.path, '/sales/pos/99');
-        verify(() => salesOrders.open()).called(1);
+        verify(() => anyOpen(salesOrders)).called(1);
       },
     );
   });
@@ -208,7 +208,7 @@ void main() {
 
       expect(router.state.uri.path, '/sales/pos/42');
       verify(() => salesOrders.getById(saleId: 42)).called(1);
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
     });
   });
 
@@ -226,7 +226,7 @@ void main() {
       );
 
       expect(find.byKey(const Key('pos_sale_unreachable')), findsOneWidget);
-      verifyNever(() => salesOrders.open());
+      verifyNever(() => anyOpen(salesOrders));
     });
 
     testWidgets('a cancelled sale renders the unreachable panel', (tester) async {
@@ -263,7 +263,7 @@ void main() {
     testWidgets('cancels the empty draft, then returns to the list', (
       tester,
     ) async {
-      when(() => salesOrders.open())
+      when(() => anyOpen(salesOrders))
           .thenAnswer((_) async => testSale(id: 77, lines: const []));
       when(() => salesOrders.cancel(saleId: 77)).thenAnswer((_) async {});
       when(
@@ -275,6 +275,7 @@ void main() {
           search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
+          origin: any(named: 'origin'),
         ),
       ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
 
@@ -309,7 +310,7 @@ void main() {
         stubListSales(salesOrders, page: const OpenSalePage(items: [], total: 0));
         // A sale with lines: the Back path only cancels an *empty* draft, so
         // this is one that was actually recorded.
-        when(() => salesOrders.open())
+        when(() => anyOpen(salesOrders))
             .thenAnswer((_) async => testSale(id: 77, lines: [testLine()]));
         when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
             .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
@@ -332,6 +333,7 @@ void main() {
             search: any(named: 'search'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
+            origin: any(named: 'origin'),
           ),
         ).called(1);
 
@@ -356,6 +358,7 @@ void main() {
             search: any(named: 'search'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
+            origin: any(named: 'origin'),
           ),
         ).called(1);
       },
