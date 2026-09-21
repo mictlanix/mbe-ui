@@ -50,6 +50,24 @@ All items pass. Notes on the two judgement calls:
   rather than left open. The remaining research questions were resolved into A5 – A12 as
   documented defaults.
 
+### Validation record — iteration 2 (2026-09-20, after merging `main`)
+
+Re-validated after `039-back-office-order-workspace` and `041-fix-list-origin-refresh`
+landed. All items still pass. What changed and why the checklist still holds:
+
+- **A1 reversed, FR-005 rewritten.** `039` shipped and was then corrected to remove its
+  Cliente step; the quote follows, and is now one screen whose customer band opens already
+  searching. The requirement is still testable and unambiguous — arguably more so, since the
+  gate it describes is now observable in shipped code rather than promised by a contract.
+- **All three dependencies cleared**, so "Dependencies and assumptions identified" now
+  records facts rather than risks. mbe-api#213 and #209 shipped; the shared capture step is
+  in `main`.
+- **One new caution recorded in Dependencies**: the shipped `CaptureStep` takes four more
+  parameters than `contracts/shared-step-seam.md` documents, and `continueLabel` is optional
+  rather than required. The plan must build against the code, not that contract file.
+- **No requirement was added or removed**; FR-001 – FR-042 and SC-001 – SC-008 are unchanged
+  in number and scope, so the coverage table below still holds as written.
+
 ### Coverage check — every user story has success criteria and every FR group has a story
 
 | Story | Priority | FRs | Success criteria |

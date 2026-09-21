@@ -41,6 +41,11 @@
       "decision": "The quotes list shows all quotes in the facility by default, not only the current users",
       "why": "Matches how the orders list behaves today and suits a back office where quoting is a shared activity",
       "rejected": "Defaulting to the API mine filter, as legacy did"
+    },
+    {
+      "decision": "REVERSED 2026-09-20 — the quote is ONE step, with the customer named inside it",
+      "why": "Spec 039 shipped and was then directly corrected to remove its own Cliente step; the shipped CaptureStep carries the gate itself via excludeGenericCustomer (opens the customer band searching, withholds product capture until a real customer exists). This restores the original feature description, which said capture would be the only step.",
+      "rejected": "Two steps (Cliente → Cotización), the 2026-09-12 decision, now superseded"
     }
   ],
   "concerns": [
@@ -58,6 +63,16 @@
       "note": "mbe-api#209 does not account for orders raised by quote conversion; raised upstream. Affects only whether a converted order is distinguishable from a register sale on a list row.",
       "step": "specify",
       "kind": "upstream"
+    },
+    {
+      "note": "RESOLVED: 039 has landed; mbe-api#213 and #209 both shipped. convert_to_order stamps origin=BACK_OFFICE, so a converted order appears in Pedidos (exclusive filter) and not the POS list (inclusive filter) per spec 041.",
+      "step": "specify",
+      "kind": "resolved"
+    },
+    {
+      "note": "TRAP for planning: the shipped CaptureStep takes four more params than contracts/shared-step-seam.md documents (excludeGenericCustomer, attachFulfillmentIntent, headerExtra, secondaryAction) and continueLabel is optional, not required. Build against the code, not that contract file.",
+      "step": "specify",
+      "kind": "trap"
     }
   ],
   "expectations": [

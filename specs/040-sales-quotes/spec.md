@@ -8,6 +8,28 @@
 
 **Input**: User description: "Sales quotes, reusing the point-of-sale capture step, targeted only at customers other than 'Público en General', with capture as the only step. A quote the customer accepts can be turned into a back-office sale."
 
+## Amendments
+
+- **2026-09-20 — the quote is one step, and three dependencies have cleared.**
+  This spec was drafted while `039-back-office-order-workspace` was unbuilt, and
+  took two things from its then-current design that are no longer true.
+  - **The customer is not a step.** `039` shipped, and was then directly
+    corrected: its Cliente step was removed and naming a customer folded into
+    the capture step itself, which now opens with its customer band already
+    searching and withholds product capture until a real customer is attached.
+    A quote therefore has **one step**, not two — which is what the original
+    feature description said ("capture will be the only step"). **A1 is
+    reversed**, and FR-005 and the affected scenarios are rewritten below.
+  - **Everything this spec listed as an unresolved dependency has shipped**:
+    the shared capture step is host-agnostic and in `main`; mbe-api#213 added
+    the quote list's customer name *and* name search; mbe-api#209 shipped, and
+    conversion stamps the resulting order's origin as back-office.
+  Because nothing has been planned or built from this document yet, the body is
+  **rewritten in place** rather than layered with corrections — there is no
+  implementation whose history needs preserving. Requirement numbering is
+  unchanged. This differs from the amendment convention in `039` and `041`
+  deliberately, and for that reason.
+
 ## Context
 
 A **sales quote** ("cotización") is a priced, non-binding offer made to a named customer.
@@ -29,10 +51,10 @@ constrained:
   quote it came from. Nothing needs to be built or changed on the backend to ship this.
 - **The permission slot already exists.** Quotes have had a reserved, unused permission
   object since the permission catalog was ported from legacy.
-- **The screen it needs is being built next door.** This feature renders the *same* capture
-  surface the register and the back-office order workspace use, as a third host of it. That
-  surface only becomes host-agnostic in `039-back-office-order-workspace`. See
-  **Dependencies**.
+- **The screen it needs already exists.** This feature renders the *same* capture
+  surface the register and the back-office order workspace use, as a third host of it.
+  `039-back-office-order-workspace` made that surface host-agnostic and has landed, so
+  this feature adds a caller rather than a capability. See **Dependencies**.
 
 > **Relationship to the point of sale and to back-office orders.** A quote is captured the
 > same way a sale is: same customer band, same product search, same line rows, same totals.
@@ -49,8 +71,9 @@ messages, divergences from legacy, and the reasoning behind the decisions record
 ### User Story 1 - Write and confirm a quote for a named customer (Priority: P1)
 
 A salesperson is asked what a basket of goods would cost. They start a new quote. The screen
-asks first for the customer — they search by name or code and pick one. Only then does the
-quote exist, and only then can they add products: they search, add lines, adjust quantity,
+asks first for the customer — the customer band opens already searching, and they pick one by
+name or code. Only then does the quote exist, and only then can they add products: they
+search, add lines, adjust quantity,
 discount and tax, and watch the totals build. When the numbers are right they confirm the
 quote. It is assigned a folio, becomes read-only, and can be given to the customer.
 
@@ -64,19 +87,19 @@ confirmed status, and totals that match the lines.
 **Acceptance Scenarios**:
 
 1. **Given** a user with quote-create rights, **When** they choose "Nueva cotización",
-   **Then** the workspace opens on the **Cliente** step showing a customer search and
-   nothing else to fill in, and **no quote has been written to the server**.
-2. **Given** the Cliente step, **When** the user searches for customers, **Then** the
+   **Then** the quote screen opens with its customer band **already searching**, product
+   capture withheld until a customer exists, and **no quote written to the server**.
+2. **Given** the customer band, **When** the user searches for customers, **Then** the
    generic walk-in customer ("Público en General") never appears among the results,
    whatever they type.
-3. **Given** the Cliente step, **When** the user picks a customer, **Then** the draft quote
+3. **Given** the customer band, **When** the user picks a customer, **Then** the draft quote
    is created at that moment carrying that customer and that customer's implied payment
-   terms, and the workspace advances to the **Cotización** step.
-4. **Given** the Cotización step with a customer attached, **When** the user adds the first
+   terms, and product capture becomes available on the same screen — without a step change.
+4. **Given** a quote with a customer attached, **When** the user adds the first
    product, **Then** the line appears priced from that customer's price list, with its
    quantity defaulted to the product's minimum order quantity (or 1 when that minimum is
    zero) and its own tax rate.
-5. **Given** the Cotización step, **When** the user views a line, **Then** no source
+5. **Given** a quote line, **When** the user views it, **Then** no source
    warehouse is shown and no stock or shortfall warning appears, because a quote commits no
    goods.
 6. **Given** a draft quote with at least one line and nothing left unconfirmed, **When** the
@@ -156,8 +179,8 @@ reflected on the list.
    customer's quotes are shown.
 4. **Given** a quote in the list that has passed its expiry date, **When** the user views the
    row, **Then** it is visibly marked as expired, distinctly from its status.
-5. **Given** a draft quote, **When** the user reopens it, **Then** it opens on the
-   Cotización step with its lines intact and fully editable.
+5. **Given** a draft quote, **When** the user reopens it, **Then** it opens with its
+   customer and lines intact and fully editable.
 6. **Given** a confirmed quote, **When** the user reopens it, **Then** it opens read-only and
    offers only the actions still available to it.
 7. **Given** a draft or confirmed quote, **When** the user cancels it, **Then** it becomes
@@ -171,23 +194,23 @@ reflected on the list.
 
 The enquiry comes from someone who has never bought before — which is the normal case for a
 quote. Rather than abandon the quote, open the customers screen, create the record and start
-over, the salesperson creates the customer from the Cliente step itself. The new customer is
+over, the salesperson creates the customer from the quote's own customer band. The new customer is
 attached to the quote the moment it is saved.
 
-**Why this priority**: The Cliente step is a hard gate, and quotes are disproportionately
+**Why this priority**: The customer is a hard gate, and quotes are disproportionately
 written for prospects rather than established customers. Without inline creation the gate
 becomes a dead end for exactly the enquiries a quote exists to answer.
 
-**Independent Test**: From the Cliente step of a new quote, create a customer that does not
-exist, and confirm the quote proceeds to Cotización with that new customer attached.
+**Independent Test**: From the customer band of a new quote, create a customer that does not
+exist, and confirm the quote opens for capture with that new customer attached.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Cliente step, **When** the user chooses to create a customer and completes
+1. **Given** the customer band, **When** the user chooses to create a customer and completes
    the form, **Then** the customer is created, attached to a newly opened draft quote, and
-   the workspace advances to Cotización — without the user having left the workspace.
+   product capture becomes available — without the user having left the screen.
 2. **Given** the inline customer form, **When** the user cancels it, **Then** no customer and
-   no quote are created and the step is unchanged.
+   no quote are created and the screen is unchanged.
 3. **Given** the inline customer form, **When** creation is refused by the server, **Then**
    the refusal is shown, the form keeps what was typed, and no quote is opened.
 
@@ -234,9 +257,9 @@ draft appears with the same products and today's prices.
   with the server's state.
 - **A quote with no lines.** It can exist as a draft — a customer was chosen and nothing was
   added — but cannot be confirmed.
-- **Searching the list by customer name.** The server matches only numeric references today,
-  so a name typed into search does not narrow the list. Until that changes, the customer
-  filter is the supported way to find a customer's quotes (see **Dependencies**).
+- **Searching the list by customer name.** The server matches a numeric term against the
+  quote's reference and a non-numeric term against the customer's name, so both are
+  meaningful searches and neither silently returns the unfiltered list.
 - **Losing the right to create orders between opening a quote and converting it.** The
   convert action must be gated on the permission at the time it is offered, and the server's
   refusal handled if it changes underneath.
@@ -259,21 +282,23 @@ draft appears with the same products and today's prices.
 - **FR-004**: Converting a quote MUST additionally require permission to create orders, and
   MUST NOT be offered to a user who lacks it.
 
-**The Cliente step**
+**Naming the customer**
 
-- **FR-005**: A new quote MUST open on a customer step that asks only for the customer.
+- **FR-005**: A new quote MUST open with its customer band already searching, and MUST
+  withhold product capture until a customer is attached. Naming the customer MUST NOT be a
+  step of its own.
 - **FR-006**: Nothing MUST be written to the server until a customer has been chosen.
 - **FR-007**: The generic walk-in customer MUST NOT appear in the customer search results,
   whatever the user types.
 - **FR-008**: The system MUST NOT attach the generic walk-in customer to a quote by any
   route, including by allowing the server to apply it as a default.
 - **FR-009**: Choosing a customer MUST open the draft quote already carrying that customer.
-- **FR-010**: The user MUST be able to create a new customer from the customer step without
-  leaving the workspace, and that customer MUST be attached to the quote on save.
+- **FR-010**: The user MUST be able to create a new customer from the customer band without
+  leaving the quote screen, and that customer MUST be attached to the quote on save.
 - **FR-011**: Cancelling inline customer creation MUST leave no customer and no quote
   created.
 
-**The Cotización step**
+**Capturing the quote**
 
 - **FR-012**: The quote MUST be captured on the same capture surface the point of sale and
   the back-office order workspace use, rendered as a third host of it rather than copied.
@@ -332,11 +357,12 @@ draft appears with the same products and today's prices.
   by default.
 - **FR-035**: Each row MUST show enough to identify the quote: its reference, its customer,
   its date, its expiry, its status and its total.
-- **FR-036**: The list MUST offer filtering by status and by customer.
+- **FR-036**: The list MUST offer filtering by status and by customer, and MUST support
+  searching by the quote's reference or the customer's name.
 - **FR-037**: The list MUST mark expired quotes distinctly from their status.
 - **FR-038**: The list MUST page through results rather than loading all quotes at once.
-- **FR-039**: Opening a draft from the list MUST resume it on the Cotización step with its
-  lines intact.
+- **FR-039**: Opening a draft from the list MUST resume it with its customer and lines
+  intact and editable.
 
 **Behaviour shared with the other capture hosts**
 
@@ -395,11 +421,14 @@ draft appears with the same products and today's prices.
 Decisions taken where the description left room, and the reasoning behind each. The
 supporting evidence is in [`docs/sales-quotes-research.md`](../../docs/sales-quotes-research.md).
 
-- **A1 — Two steps, not one.** The description called capture "the only step", which rules
-  out payment and delivery but leaves the customer open. The customer is a step of its own
-  (Cliente → Cotización), mirroring the back-office order workspace, because a quote cannot
-  be opened without an explicit customer and a customer-as-gate on a single screen is the
-  pattern `039` is replacing. *(User decision, 2026-09-12.)*
+- **A1 — One step, with the customer named inside it.** The description called capture "the
+  only step". This was briefly specified as two steps (Cliente → Cotización) to mirror the
+  back-office order workspace as it then stood; `039` was subsequently corrected to drop its
+  own Cliente step, on the grounds that naming a customer was never meant to be a screen of
+  its own. A quote follows suit: one screen, whose customer band opens already searching and
+  which withholds product capture until a real customer is attached — the same gate, without
+  a step. *(User decision 2026-09-12, reversed 2026-09-20 per `039`'s correction; see
+  Amendments.)*
 - **A2 — Conversion lands on the goods step of the order workspace.** The converted order
   arrives with no fulfilment intent and no warehouse on any line, so it is not finishable as
   it stands. Dropping the user anywhere else would leave them holding an order they cannot
@@ -441,25 +470,36 @@ supporting evidence is in [`docs/sales-quotes-research.md`](../../docs/sales-quo
 
 ## Dependencies
 
-- **`039-back-office-order-workspace` — hard dependency, both ways.**
-  - *For capture*: this feature renders the shared capture step as a third host. That step
-    only becomes host-agnostic in `039`. Built before it, this feature would either have to
-    perform `039`'s migration itself — inheriting its risk of regressing the register — or
-    carry a third copy of the capture body, which is the defect `039` exists to remove. The
-    tasks for this feature MUST be written against `039`'s shared-step contract, not against
-    the capture step as it stands today.
-  - *For conversion*: FR-027 lands the user on the goods step of the back-office order
-    workspace, which `039` creates.
-  - Both features also modify the same capture files, so parallel branches will conflict
-    there.
-- **mbe-api#213 — degrades US3, does not block it.** Quote list rows carry a customer
-  reference but no customer name, and list search matches only numeric references. Until
-  this ships, the list must resolve customer names for display by other means, and finding a
-  customer's quotes is done through the customer filter rather than search.
-- **mbe-api#209 — affects how a converted order is later recognised.** The proposed
-  order-origin marker does not currently account for orders raised by conversion. Raised
-  upstream; it does not block any story here, but the resolution determines whether a
-  converted order can be told apart from a register sale on a list row.
+All three dependencies this spec was drafted against have since **cleared**. They are kept
+here because each one shaped a requirement, and because the plan needs to build on what
+actually shipped rather than on what was promised.
+
+- **`039-back-office-order-workspace` — landed (merged to `main`).** The capture step is now
+  host-agnostic, and a quote is its third host. Two consequences for planning:
+  - The shipped widget takes **more** than the published contract records. Beyond
+    `sale`, `onContinue`, `continueLabel` and `showFulfillmentSelector`, it also accepts
+    `excludeGenericCustomer`, `attachFulfillmentIntent`, `headerExtra` and
+    `secondaryAction`. `continueLabel` is optional, not required. The quote host needs
+    `excludeGenericCustomer: true` and `showFulfillmentSelector: false`, and needs
+    **neither** `attachFulfillmentIntent` (a quote has no fulfilment intent) nor a step
+    machine. `contracts/shared-step-seam.md` still documents the pre-shipping signature —
+    **build against the code, not that file.**
+  - The generic-customer gate this feature needs is already implemented inside that widget:
+    with `excludeGenericCustomer: true` it opens the customer band in search mode while no
+    document exists and withholds product capture until one does. FR-005 and FR-007 are
+    therefore satisfied by configuring the shared step, not by new gating logic.
+- **mbe-api#213 — shipped, and closed.** Quote list rows now carry the customer's display
+  name, and list search matches a non-numeric term against the customer's name instead of
+  silently returning the unfiltered page. US3 is no longer degraded, and FR-035 and FR-036
+  are directly supported.
+- **mbe-api#209 — shipped, and conversion is accounted for.** Orders now record which
+  workflow raised them, and **conversion stamps the resulting order as back-office**
+  explicitly rather than leaving it unrecorded. Combined with `041-fix-list-origin-refresh`,
+  which scopes the back-office "Pedidos" list by *excluding* register sales and the
+  point-of-sale list by *including* only them, this means a converted quote's order appears
+  in "Pedidos" and not in the register's list, with no further work in this feature. The
+  order summary also now exposes the originating quote, so a quote-origin badge on that list
+  is newly feasible — though still out of scope here.
 
 ## Out of Scope
 
@@ -477,4 +517,6 @@ supporting evidence is in [`docs/sales-quotes-research.md`](../../docs/sales-quo
   outside a product's margin band, and required a credit check before allowing deferred
   terms. Neither is enforced for quotes server-side today, and neither is added here.
 - **Changing the orders list.** Whether an order shows that it came from a quote is not part
-  of this feature.
+  of this feature. Note this became *feasible* while this spec was in draft — the order list
+  row now carries its originating quote — so it is a deliberate exclusion rather than a
+  blocked one.

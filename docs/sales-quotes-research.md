@@ -1,7 +1,9 @@
 # Sales Quotes Research & Design Foundation
 
-**Status**: Pre-spec — foundation for a future `NNN-sales-quotes` feature
-**Date**: 2026-09-12
+**Status**: Superseded in part — the spec it fed is [`specs/040-sales-quotes`](../specs/040-sales-quotes/spec.md)
+**Date**: 2026-09-12, revised 2026-09-20
+**Revision note**: everything this document listed as blocked or missing has since shipped.
+See §12 for what changed; sections below are annotated where they no longer hold.
 **Audience**: whoever writes the spec, possibly in parallel with other in-flight work
 **Sources**: mbe-api source (`app/`, `specs/011-sales-cycle-endpoints/`), the generated
 OpenAPI client in this repo, legacy `mbe/docs/`, and the current mbe-ui sales feature
@@ -27,12 +29,11 @@ Three findings dominate everything else:
    declared in `lib/core/access/system_object.dart:42` and referenced nowhere else in
    `lib/`. No enum change, no privilege plumbing. (§7)
 
-3. **The reuse the feature depends on is being built right now by spec 039.** Quotes want
-   to be the *third host* of the point-of-sale capture step. Spec 039
-   (`039-back-office-order-workspace`, spec+plan+research written, **not implemented**) is
-   the feature that makes that step host-agnostic. Before 039, reusing capture means
-   fighting eleven hardcoded POS call sites; after 039, it is mostly free. **This is a
-   sequencing constraint, not a preference.** (§5)
+3. ~~**The reuse the feature depends on is being built right now by spec 039.**~~
+   **RESOLVED 2026-09-20 — spec 039 has landed.** The capture step is host-agnostic and in
+   `main`, so a quote is simply its third host. Spec 039 was also *corrected* after shipping:
+   its Cliente step was removed and naming a customer folded into the capture step itself.
+   A quote is therefore **one step**, not two. (§5, §12)
 
 The single largest design decision is not the screen — it is **whether the quote document
 can share the `Sale`/`SaleLine` domain entities with sales orders**, because a quote's wire
@@ -179,14 +180,13 @@ Two knock-on notes for whoever writes the spec:
   from the caller (`:508`), so a converted order looks like a register sale to any
   `point_sale`-based heuristic.
 
-  **Raised on [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209#issuecomment-5648664474)**
-  before it is implemented. Two workable shapes were put to the maintainer: a third
-  `QUOTE_CONVERSION` enum member (which would then need set-filtering on
-  `GET /sales-orders`), or two members with convert stamping `BACK_OFFICE` and
-  `sales_quote` added to `SalesOrderSummary` — the latter recommended, since `origin`
-  ("which surface raised this") and `sales_quote` ("what preceded it") are orthogonal
-  facts. Either works for this feature; the load-bearing part is that convert must set
-  `origin` explicitly.
+  **RESOLVED 2026-09-20.** mbe-api#209 shipped and took the recommended shape: two origin
+  members, with `convert_to_order` stamping `BACK_OFFICE` explicitly
+  (`sales_quote_service.py:587`, commented *"Left unset, every converted order would read as
+  'not recorded' forever (#209)"*), and `sales_quote` added to `SalesOrderSummary`.
+  Combined with spec `041`, which scopes the "Pedidos" list by *excluding* register sales and
+  the POS list by *including* only them, a converted quote's order lands in "Pedidos" and not
+  in the register's list with no further work.
 
 ### 3.3 `sales_order.sales_quote` is read-only on the wire
 
@@ -195,9 +195,9 @@ Two knock-on notes for whoever writes the spec:
 `SalesOrderUpdate`** — the *only* way to set it is the convert endpoint. The UI cannot
 fake a link.
 
-It is also **absent from `SalesOrderSummary`**, so the "Pedidos" list cannot show
-"came from quote #123" without opening each order. If that badge is wanted, it is an
-mbe-api request.
+~~It is also absent from `SalesOrderSummary`~~ — **as of 2026-09-20 it is present**, so a
+"came from quote #123" badge on the Pedidos list is feasible without opening each order.
+Still out of scope for the quotes feature itself.
 
 **Not currently mapped in this repo**: `Sale.fromResponse`
 (`lib/features/sales/domain/entities/sale.dart:56`) does not read `sales_quote`. Adding it
@@ -295,56 +295,51 @@ already demonstrates.
 `@Riverpod(dependencies: [saleEditor])`, or it resolves against the root container and
 writes to the register's sale. This is documented in 039's research and is not optional.
 
-### 5.2 What is not yet shared
+### 5.2 What is now shared — spec 039 has landed
 
-The **capture step itself** still hardcodes POS in eleven places — most damagingly
-`capture_step.dart:61`, where `_addLine` writes to `posSaleControllerProvider` directly, and
-`capture_step.dart:85`, where the forward action is hardwired to `advanceToCobro()`.
-
-Spec 039 fixes exactly this. Its `contracts/shared-step-seam.md` specifies the target:
+**Superseding the original §5.2/§5.3, which described this as unbuilt.** The capture step no
+longer hardcodes POS. The shipped widget is:
 
 ```dart
 CaptureStep({
   required Sale? sale,
-  required VoidCallback? onContinue,   // null disables the forward action
-  required String continueLabel,
+  required VoidCallback? onContinue,
+  String? continueLabel,                    // optional, not required
   bool showFulfillmentSelector = true,
+  bool excludeGenericCustomer = false,      // not in the published contract
+  FulfillmentMode? attachFulfillmentIntent, // not in the published contract
+  Widget? headerExtra,                      // not in the published contract
+  Widget? secondaryAction,                  // not in the published contract
 })
 ```
 
-The contract's own host table gains a third row:
+⚠ `specs/039-back-office-order-workspace/contracts/shared-step-seam.md` still documents the
+**pre-shipping** four-parameter signature. **Build against the code.**
 
-| Host | `onContinue` | `continueLabel` | `showFulfillmentSelector` |
-|---|---|---|---|
-| Register | advance to Cobro | "Continuar al cobro" | `true` |
-| Workspace | advance to Entrega | "Continuar a entrega" | `false` |
-| **Quote** | **confirm the quote** | **e.g. "Confirmar cotización"** | **`false`** |
+The host table, as it actually stands:
 
-Note the quote host is the first whose forward action *ends* the document rather than
-advancing to another step. `onContinue` is already just a callback, so this costs nothing —
-but it is the reason a quote screen needs no step machine at all.
+| Host | `onContinue` | `continueLabel` | `showFulfillmentSelector` | `excludeGenericCustomer` |
+|---|---|---|---|---|
+| Register | advance to Cobro | `null` (keeps "Cobro →") | `true` | `false` |
+| Order workspace | advance to Entrega | "Continuar a entrega" | `false` | `true` |
+| **Quote** | **confirm the quote** | **"Confirmar cotización"** | **`false`** | **`true`** |
 
-### 5.3 Sequencing — the one hard constraint
+Two things fall out for quotes:
 
-> **Quotes should be specified after spec 039 is implemented, or explicitly built on its
-> contract.**
+- **The customer gate is already built.** With `excludeGenericCustomer: true` the step opens
+  its customer band in search mode while no document exists, and withholds product capture
+  until one does (`capture_step.dart:176-184`). That is the whole of the Cliente step's
+  behaviour, inside the one step — which is why the quote needs no step machine and no
+  second screen.
+- **`attachFulfillmentIntent` is not used.** A quote has no fulfilment intent; the order
+  workspace passes one, the register uses its own selector, the quote passes neither.
 
-The user has noted this work may proceed in parallel with other specs. That is fine for
-*writing* the spec, but the implementation order matters:
+### 5.3 Sequencing — resolved
 
-- **If 039 lands first**: quotes reuse `CaptureStep` by passing three parameters. Cheap.
-- **If quotes land first**: quotes must either perform 039's eleven-call-site migration
-  themselves — inheriting all of its register-regression risk — or carry a **third copy**
-  of the capture body, which is the precise defect 039 was raised to eliminate.
-
-If both are genuinely in flight at once, the quote spec should declare 039's
-`contracts/shared-step-seam.md` as a **hard dependency** and write its tasks against that
-signature, not against today's `CaptureStep`.
-
-Also note both features touch the same files (`capture_step.dart`, `sale_editor.dart`,
-`sale_line_row.dart`). Parallel branches will conflict there.
-
----
+The original constraint ("specify after 039, or build on its contract") is discharged: 039
+is merged to `main`. The remaining care is the contract/code divergence noted above, and the
+ordinary risk that the quote host must not disturb the two existing ones — for which
+`sale_editor_isolation_test.dart` already exists.
 
 ## 6. Excluding "Público en General"
 
@@ -401,10 +396,9 @@ unlike the POS sales list, dedup does not help, because a quote list is *all* di
 customers (quotes are never for the walk-in customer). Given that a quote list is
 *primarily* browsed by customer, this is a real gap.
 
-**Filed upstream as [mbe-api#213](https://github.com/mictlanix/mbe-api/issues/213)**,
-covering this and §8.2 together — they are the same join. Precedent: #172 did this for
-`SalesOrderSummary`, #173/#174 for `CustomerPaymentSummary`; quotes are the third list of
-the same shape and the only one still missing it.
+**RESOLVED — [mbe-api#213](https://github.com/mictlanix/mbe-api/issues/213) shipped and is
+closed (2026-09-12).** `SalesQuoteSummary.customer_display_name` now exists, matching
+`SalesOrderSummary` and `CustomerPaymentSummary`.
 
 ### 8.2 Quote search is numeric-only
 
@@ -418,9 +412,9 @@ Legacy searched quotes by customer name and salesperson nickname
 (`mbe/docs/specs/02-sales.md` §2). Combined with §8.1, finding "that quote for Acme" is not
 currently possible server-side.
 
-**Filed upstream as part of [mbe-api#213](https://github.com/mictlanix/mbe-api/issues/213).**
-Until it ships, filter by `customer` instead — which requires picking the customer first,
-and is consistent with the customer-first framing of this feature.
+**RESOLVED — shipped as part of [mbe-api#213](https://github.com/mictlanix/mbe-api/issues/213).**
+A non-numeric term now matches the customer's name via a subquery, so search narrows the
+list instead of silently widening it.
 
 ### 8.3 No print / PDF / email
 
@@ -457,19 +451,13 @@ the same provisional-reference treatment `Sale.provisionalReference` already giv
 
 ## 9. Open Design Questions
 
-**Q1 — Is the customer a gate on one step, or a step of its own?** *(the biggest one)*
-
-The user said capture "will be the only step". That clearly rules out payment and delivery
-steps. It is ambiguous about the customer, which must still be chosen and must not be the
-generic one.
-
-- **(a) One step**, customer as a `CustomerBar` gate — matches the user's words literally
-  and mirrors today's `OrderScreen` (spec 029/036).
-- **(b) Two steps**, `Cliente → Cotización` — mirrors spec 039, which is *replacing*
-  pattern (a) precisely because a gate-on-one-screen reads as a dead end.
-
-Building (a) while 039 deletes (a) next door is the kind of inconsistency worth resolving
-before either ships. Worth an explicit clarification with the user.
+**Q1 — Is the customer a gate on one step, or a step of its own?** — **ANSWERED (a), one
+step.** Decided (b) two steps on 2026-09-12, then reversed on 2026-09-20: spec 039 removed
+its own Cliente step by direct correction, on the grounds that naming a customer was never
+meant to be a screen of its own. The shipped `CaptureStep` implements the gate itself — with
+`excludeGenericCustomer: true` it opens the customer band already searching and withholds
+product capture until a real customer is attached. The user's original wording ("the only
+step") turned out to be right.
 
 **Q2 — Where does the user land after converting?** §3.2 argues for the back-office order
 workspace at the Venta step, since warehouses and delivery are still owed. Confirm.
@@ -511,15 +499,7 @@ worthless without capture.
 **Explicitly out of scope**: payment, delivery, print/PDF/email (§8.3), `price_adjustment`
 (§4.3, pending Q4).
 
-**Dependencies**: spec 039's `contracts/shared-step-seam.md` (§5.3) — hard.
-**Upstream issue filed**: [mbe-api#213](https://github.com/mictlanix/mbe-api/issues/213) —
-`customer_display_name` on `SalesQuoteSummary` + quote search by customer name (§8.1, §8.2).
-Not a build blocker: the P1 stories do not depend on it, but the P2 list story is degraded
-until it ships.
-**Raised upstream**: origin semantics for quote-converted orders, on
-[mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209#issuecomment-5648664474)
-(§3.2). Awaiting the maintainer's decision; it shapes how conversion is detected but does
-not block the P1 stories.
+**Dependencies**: all cleared as of 2026-09-20 — see §12.
 
 ---
 
@@ -546,3 +526,22 @@ not block the P1 stories.
 **In legacy mbe**
 - `docs/specs/02-sales.md` §2 — the quotations module
 - `docs/data-dictionary.md` §6 — `sales_quote`, `sales_quote_detail`
+
+---
+
+## 12. What changed after this document was written
+
+| § | Recorded as | Status as of 2026-09-20 |
+|---|---|---|
+| §0.3, §5 | Spec 039 unbuilt; capture step hardcodes POS in 11 places | **Landed.** Capture step is host-agnostic in `main`; quote is its third host |
+| §9 Q1 | Open: one step or two? | **One step.** 039 removed its own Cliente step by direct correction; the shipped capture step carries the customer gate |
+| §3.2 | mbe-api#209 does not cover quote conversion | **Shipped.** `convert_to_order` stamps `origin = BACK_OFFICE` |
+| §3.3 | `sales_quote` absent from `SalesOrderSummary` | **Present.** A quote-origin badge on Pedidos is now feasible |
+| §8.1 | `SalesQuoteSummary` has no customer name | **Shipped** (mbe-api#213, closed) |
+| §8.2 | Quote search silently returns the unfiltered page | **Shipped** (mbe-api#213) — non-numeric terms match the customer name |
+| §8.3 | No print / PDF / email for quotes | **Still true.** The sibling `document-printing-research.md` scopes POS tickets, sales orders, CFDI and cash cuts — not quotes |
+| §8.4 | Margin and credit checks not ported | **Still true** |
+
+One new fact, from spec `041`: the "Pedidos" list filters by *excluding* register sales and
+the POS list by *including* only them. A converted quote's order is stamped back-office, so
+it appears in Pedidos and not at the register, with no work required here.
