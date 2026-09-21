@@ -78,8 +78,9 @@ adds exactly one re-fetch per successful open/close, and none on cancel.
 classes gain a facet, two repository methods gain a parameter (interface +
 impl), two list controllers forward it, two screens gain a drawer chip and a
 column, one new shared-pattern chip widget, two `.arb` files, and two cash
-session form controllers gain one line each. Roughly 8 test files affected or
-added.
+session form controllers gain one line each. Eleven test files are affected:
+four unit, five widget (including the shared fixture harness), and two live
+integration suites.
 
 **External dependencies**: **None.**
 [mbe-api#209](https://github.com/mictlanix/mbe-api/issues/209) — recorded as an
@@ -182,16 +183,24 @@ test/
 ├── unit/features/sales/
 │   ├── pos_sales_filter_test.dart          # + origin decode/badge cases
 │   ├── sales_orders_filter_test.dart       # + origin decode/badge cases
-│   └── sales_order_repository_impl_test.dart # + excludeOrigin forwarding
+│   ├── sales_order_list_open_test.dart     # + excludeOrigin on listSales
+│   └── sales_order_list_orders_test.dart   # + excludeOrigin on listOrders
 ├── widget/features/sales/
+│   ├── pos_test_harness.dart               # + origin on testOpenSale fixture
 │   ├── pos_sales_list_screen_test.dart     # + facet, column, overflow
 │   ├── sales_orders_filters_test.dart      # + facet
 │   ├── sales_orders_list_screen_test.dart  # + column
 │   └── cash_sessions_screen_test.dart      # + re-fetch-after-open/close
 └── integration/
     ├── pos_sales_list_flow_test.dart       # + live exclude_origin round trip
+    ├── sales_orders_flow_test.dart         # + live exclude_origin round trip
     └── cash_session_flow_test.dart         # existing open→close cycle
 ```
+
+The two unit test files above are the **existing** homes for wire-level
+parameter assertions on these calls — `listSales`'s query-parameter group lives
+in `sales_order_list_open_test.dart` despite that file's name, alongside
+`listOpen`'s. No new repository test file is created.
 
 **Structure Decision**: No new module, layer or shared component beyond one chip
 widget, which lands beside its existing sibling in

@@ -48,6 +48,10 @@ A back-office user reviewing "Pedidos" wants to see only orders their team took,
 1. **Given** the "Pedidos" list with no origin filter applied, **When** the screen loads, **Then** orders of every origin appear, exactly as today.
 2. **Given** the "Pedidos" list, **When** the user turns on "hide point-of-sale sales", **Then** the list re-fetches and shows only back-office orders and orders with no recorded origin.
 3. **Given** the filter from Scenario 2 is active, **When** the user turns it back off, **Then** the full, unfiltered list returns.
+4. **Given** the origin filter is active together with the list's existing
+   filters (date range, status, and — for an administrator — salesperson and
+   facility), **When** the user changes a different filter, **Then** the origin
+   filter stays applied.
 
 ---
 
