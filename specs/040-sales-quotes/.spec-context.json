@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Sales Quotes — Cotizaciones",
   "branch": "040-sales-quotes",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-21T04:07:29.538Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-21T09:59:16.056Z"
     }
   ],
   "telemetryInstanceId": "3cd58b37-21b3-4d83-8cc1-63b8014f6e14",
@@ -110,6 +117,11 @@
       "note": "Two release checks the client cannot assert (quickstart): the quote list is facility-scoped server-side (endpoint has no facility param), and the live shape of converts refusal bodies.",
       "step": "plan",
       "kind": "verification"
+    },
+    {
+      "note": "During task generation, found 3 permission gates the plan/contracts had not made explicit: confirm (T039), cancel (T052) and duplicate (T058) each needed an access.can(salesQuotes, update|create) gate on the quote_screen.dart action, not just document-state gating. Added to tasks rather than left implicit.",
+      "step": "tasks",
+      "kind": "correction"
     }
   ],
   "expectations": [
