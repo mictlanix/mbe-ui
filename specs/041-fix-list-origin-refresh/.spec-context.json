@@ -3,7 +3,7 @@
   "specName": "Fix List Origin Filtering and Cash Session List Refresh",
   "branch": "041-fix-list-origin-refresh",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-09-21T00:54:15.877Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-21T03:35:47.478Z"
     }
   ],
   "telemetryInstanceId": "7f3f1701-3895-4036-b8ce-b50258fec0ab"
