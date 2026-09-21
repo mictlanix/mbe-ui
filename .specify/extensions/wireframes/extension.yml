@@ -1,0 +1,28 @@
+schema_version: "1.0"
+
+extension:
+  id: wireframes
+  name: "UI Wireframes"
+  version: "1.0.0"
+  description: "Draft low-fidelity wireframes from a feature spec, before planning locks the UI decisions"
+  author: mbe-ui
+  license: MIT
+
+requires:
+  speckit_version: ">=0.2.0"
+
+provides:
+  commands:
+    - name: speckit.wireframes.draft
+      file: commands/speckit.wireframes.draft.md
+      description: "Draw low-fi wireframes for every screen and state the spec describes"
+
+hooks:
+  before_plan:
+    command: speckit.wireframes.draft
+    optional: true
+    description: "Draft wireframes from the spec before planning"
+
+tags:
+  - "ui"
+  - "design"
