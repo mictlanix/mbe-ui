@@ -404,7 +404,6 @@ OpenSale testOpenSale({
   String total = '116.00',
   String? balance,
   DateTime? date,
-  SaleOrigin? origin,
 }) => OpenSale(
   id: id,
   serial: serial,
@@ -414,7 +413,6 @@ OpenSale testOpenSale({
   balance: balance ?? (status == SaleStatus.paid ? '0' : total),
   status: status,
   date: date ?? DateTime(2026, 8, 5, 10),
-  origin: origin,
 );
 
 /// A page of [testOpenSale] rows, `total` defaulting to the item count — for
@@ -438,6 +436,7 @@ void stubListSales(
       search: any(named: 'search'),
       skip: any(named: 'skip'),
       limit: any(named: 'limit'),
+      origin: any(named: 'origin'),
     ),
   ).thenAnswer((_) async => page);
 }

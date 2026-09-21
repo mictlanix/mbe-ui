@@ -110,10 +110,6 @@ void main() {
 
       expect(page.total, 2);
       expect(page.items.map((o) => o.id), [337427, 337426]);
-      // A response omitting `origin` entirely (every pre-mbe-api#209 payload
-      // shape) must decode to `null`, not throw and not default to either
-      // workflow (spec 041 FR-005).
-      expect(page.items.every((o) => o.origin == null), isTrue);
     });
 
     test(

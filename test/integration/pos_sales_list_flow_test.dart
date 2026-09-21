@@ -104,9 +104,9 @@ void main() {
   // without depending on any pre-existing legacy row happening to be in the
   // dev database.
   test(
-    'excludeOrigin: backOffice hides only back-office orders — a '
-    'point-of-sale order and an order with no recorded origin both survive '
-    'the filter (spec 041 FR-002, FR-005, SC-001, SC-003)',
+    'origin: pointOfSale keeps only register sales — a back-office order '
+    'and an order with no recorded origin are both absent (spec 041, '
+    'amended)',
     () async {
       final dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
       final token = await AuthRepositoryImpl(
@@ -136,8 +136,9 @@ void main() {
       });
 
       // Confirms what omitting `origin` on create actually does server-side,
-      // rather than assuming it — this is the fact FR-005's guarantee rests
-      // on for every order raised before mbe-api#209 shipped.
+      // rather than assuming it — an order recording no origin is exactly
+      // the shape every pre-mbe-api#209 sale has, and the register's list
+      // now deliberately leaves those out.
       expect(
         unrecordedProbe.origin,
         isNull,
@@ -150,27 +151,28 @@ void main() {
           pointSale: posProbe.pointSale,
           search: null,
           limit: 100,
-          excludeOrigin: SaleOrigin.backOffice,
+          origin: SaleOrigin.pointOfSale,
         );
         return page.items.any((s) => s.id == saleId);
       }
 
       expect(
-        await foundInFilteredList(officeProbe.id),
-        isFalse,
-        reason: 'excludeOrigin: backOffice must remove every back-office '
-            'order (FR-002)',
-      );
-      expect(
         await foundInFilteredList(posProbe.id),
         isTrue,
-        reason: 'a point-of-sale order must survive the filter',
+        reason: 'a register sale is what this list is for',
+      );
+      expect(
+        await foundInFilteredList(officeProbe.id),
+        isFalse,
+        reason: 'a back-office order must not appear on the register list',
       );
       expect(
         await foundInFilteredList(unrecordedProbe.id),
-        isTrue,
-        reason: 'an order with no recorded origin must never be hidden by '
-            'either list\'s origin filter (FR-005, SC-003)',
+        isFalse,
+        reason: 'an inclusive origin filter also leaves out an order that '
+            'recorded no origin — the deliberate consequence of scoping the '
+            'register list inclusively: every sale predating mbe-api#209 is '
+            'absent here, and remains reachable on the back-office list',
       );
     },
     skip: !_canRun,

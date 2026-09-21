@@ -108,19 +108,28 @@ Tests cannot confirm the feature reads well; this stage is about judgment.
 flutter run -d chrome --dart-define-from-file=.env
 ```
 
-1. **POS list** (`/sales/pos-sales`): confirm the default view is unchanged from
-   before the feature — same rows, same columns plus Origin, same counts.
-2. Open the filter drawer (`Icons.tune`), turn on "hide back-office orders".
-   Confirm: back-office rows vanish, the badge count rises by one, the page
-   returns to the first, and any unrecorded-origin rows **remain**.
-3. Turn it off; confirm the full list returns. Change the date range with the
-   facet on; confirm the origin facet survives (FR-007).
-4. **Pedidos list** (`/sales/orders`): repeat 1–3 mirrored, with
-   "hide point-of-sale sales".
-5. **Column budget**: at the largest text-size level (user settings) and a
-   laptop-width window, confirm neither table scrolls horizontally and no cell
-   clips. This is the risk R5 flagged — if it fails, switch the chip to
-   icon-only per the documented fallback rather than widening the table.
+> **Amended 2026-09-20**: steps 1–5 originally exercised an origin facet and
+> an origin column. Both were removed; each list is now permanently scoped
+> with nothing to toggle (spec.md § Amendments). These are the current checks.
+
+1. **POS list** (`/sales/pos-sales`): confirm the columns are exactly as they
+   were before this feature — **no Origin column** — and that the filter
+   drawer offers **no** origin control.
+2. Confirm the rows are register sales only: a back-office order created
+   today must **not** appear here. Then widen the date range back past the
+   mbe-api#209 migration date and confirm the accepted consequence — sales
+   predating it do not appear on this list at all, because it filters
+   inclusively.
+3. **Pedidos list** (`/sales/orders`): same two checks — no Origin column, no
+   origin control — then confirm a register sale created today does **not**
+   appear here, while older orders with no recorded origin **do** (this list
+   is where that history stays reachable).
+4. Confirm each list's other facets still behave as before: date range,
+   status, and on Pedidos the admin-only salesperson/facility pickers,
+   including their badge counts and clear-all.
+5. **Column budget**: with the Origin column gone both tables are back to
+   their pre-feature six columns — confirm no horizontal scroll at a
+   laptop-width window, at the largest text-size level.
 6. **Cash sessions** (`/sales/cash-sessions`): with the history list visible,
    open a session from the shift sheet. The new session must appear in the list
    **without** any further action. Then close it — via the shift card, which

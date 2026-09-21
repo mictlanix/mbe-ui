@@ -120,8 +120,9 @@ void main() {
     });
 
     test(
-      'excludeOrigin: backOffice reaches the wire as exclude_origin=1, and '
-      'never as an inclusive origin — spec 041 FR-002, contracts/origin-filter.md §1',
+      'origin: pointOfSale reaches the wire as origin=0 — spec 041 (amended): '
+      'the register\'s list filters inclusively, so a sale with no recorded '
+      'origin is left out here too',
       () async {
         final requests = <RequestOptions>[];
         final repository = _repositoryWith((options) async {
@@ -135,24 +136,22 @@ void main() {
 
         await repository.listSales(
           pointSale: 18,
-          excludeOrigin: SaleOrigin.backOffice,
+          origin: SaleOrigin.pointOfSale,
         );
 
         final query = requests.single.queryParameters;
-        expect(query['exclude_origin'], 1);
+        expect(query['origin'], 0);
         expect(
-          query.containsKey('origin'),
+          query.containsKey('exclude_origin'),
           isFalse,
-          reason: 'the inclusive origin parameter must never be sent — it '
-              'would hide every order raised before mbe-api#209 (FR-005)',
+          reason: 'the register\'s list narrows inclusively; exclusion is the '
+              'back-office list\'s mechanism, not this one\'s',
         );
       },
     );
 
     test(
-      'omitting excludeOrigin sends neither exclude_origin nor origin at all '
-      '— the default request stays byte-identical to before this feature '
-      '(FR-012)',
+      'omitting origin sends neither origin nor exclude_origin at all',
       () async {
         final requests = <RequestOptions>[];
         final repository = _repositoryWith((options) async {

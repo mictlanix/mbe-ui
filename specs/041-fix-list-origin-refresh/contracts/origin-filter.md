@@ -2,11 +2,46 @@
 
 **Feature**: `041-fix-list-origin-refresh` | **Date**: 2026-09-20
 
-Covers FR-001 – FR-007 and FR-012. Two list screens, one facet each, mirrored.
+> **SUPERSEDED, 2026-09-20 — read §0 first.** This document describes a
+> user-facing facet and a per-row column that were both removed after review.
+> §0 states the contract as built; everything from §1 onward is the
+> pre-correction design, kept for its reasoning rather than rewritten.
 
 ---
 
-## 1. The guarantee
+## 0. The contract as built
+
+Neither list offers an origin control, and neither renders an origin column.
+Each list is permanently scoped, by a different mechanism:
+
+| | POS sales list | Back-office "Pedidos" list |
+|---|---|---|
+| Repository arg | `origin: SaleOrigin.pointOfSale` | `excludeOrigin: SaleOrigin.pointOfSale` |
+| Wire query | `?origin=0` | `?exclude_origin=0` |
+| Rows kept | `pointOfSale` **only** | `backOffice` + unrecorded |
+| Rows removed | `backOffice` **and unrecorded** | `pointOfSale` |
+| User control | none — fixed | none — fixed |
+
+The asymmetry is deliberate. The register's list is inclusive, so a sale
+that recorded no origin (every sale predating mbe-api#209) does not appear
+there; the back-office list is exclusive, so those same orders remain
+visible there. That makes "Pedidos" the one place pre-#209 history is
+reachable, and it is why the back-office side must **not** be switched to an
+inclusive `origin=backOffice` filter.
+
+The one rule that survives unchanged from §1: `listSales` sends only
+`origin`, `listOrders` sends only `exclude_origin`. Neither method sends
+both, and neither list's scoping is reachable from the URL.
+
+**Removed by this correction**: the `hide-back-office` / `hide-point-of-sale`
+URL facets, both filter-drawer chips, the `SaleOriginChip` widget, the origin
+column on both tables, the nine `saleOrigin*`/`*ColumnOrigin`/`*OriginFilter*`
+l10n keys, and `OpenSale.origin` (which nothing reads once the column is
+gone).
+
+---
+
+## 1. The guarantee *(pre-correction design — see §0)*
 
 > Neither list's origin control may hide an order whose origin was never
 > recorded, in any state of the control.

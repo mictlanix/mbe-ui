@@ -32,11 +32,6 @@ class PosSalesFilter with _$PosSalesFilter {
     SaleStatus? status,
     @Default('') String search,
     @Default(0) int pageIndex,
-
-    /// Hides back-office-originated orders, while always keeping an order
-    /// whose origin was never recorded (spec 041 FR-001/FR-005,
-    /// contracts/origin-filter.md §1-2).
-    @Default(false) bool hideBackOffice,
   }) = _PosSalesFilter;
 
   /// Decodes [query]'s `date-from`/`date-to`/`status` facets, defaulting an
@@ -65,7 +60,6 @@ class PosSalesFilter with _$PosSalesFilter {
       status: statusRaw != null ? _statusByName(statusRaw) : null,
       search: query.search,
       pageIndex: query.pageIndex,
-      hideBackOffice: query.facet('hide-back-office') != null,
     );
   }
 }
@@ -123,9 +117,7 @@ extension PosSalesFilterBadge on PosSalesFilter {
   /// catalog's badge convention (`CashSessionFilterBadge.activeFilterCount`,
   /// which has no search facet to exclude in the first place).
   int activeFilterCount(DateTime today) =>
-      (isToday(today) ? 0 : 1) +
-      (status != null ? 1 : 0) +
-      (hideBackOffice ? 1 : 0);
+      (isToday(today) ? 0 : 1) + (status != null ? 1 : 0);
 
   bool hasActiveFilters(DateTime today) => activeFilterCount(today) > 0;
 }
@@ -169,7 +161,12 @@ class PosSalesListController extends _$PosSalesListController {
           search: filter.search.isEmpty ? null : filter.search,
           skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
-          excludeOrigin: filter.hideBackOffice ? SaleOrigin.backOffice : null,
+          // Unconditional, not a facet the cashier can vary (spec 041,
+          // amended): the register's list is register sales only. Inclusive
+          // `origin` — not `excludeOrigin` — so an order with no recorded
+          // origin (every sale predating mbe-api#209) is left out here too;
+          // the back-office list is where those remain visible.
+          origin: SaleOrigin.pointOfSale,
         );
     final items = filter.status == null
         ? result.items

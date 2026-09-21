@@ -401,6 +401,7 @@ void main() {
             search: any(named: 'search'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
+            origin: any(named: 'origin'),
           ),
         ).called(greaterThan(0));
       },
@@ -434,31 +435,16 @@ void main() {
     );
   });
 
-  group('PosSalesListScreen — origin facet (spec 041 FR-001, FR-002, FR-007)', () {
+  group('PosSalesListScreen — origin scoping (spec 041, amended)', () {
     testWidgets(
-      'toggling "hide back-office orders" updates the URL facet, resets to '
-      'page 0, and raises the filter badge count by one',
+      'every request asks for point-of-sale origin only — unconditionally, '
+      'with no facet offered for it, so back-office orders and orders with '
+      'no recorded origin are both absent from the register\'s list',
       (tester) async {
         stubListSales(salesOrders, page: testSalesPage(const []));
-        final router = await pumpListRouted(
-          tester,
-          query: const ListQuery(pageIndex: 2),
-        );
+        await pumpList(tester);
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
-        await tester.pumpAndSettle();
-
-        final badgeBefore = tester.widget<Badge>(find.byType(Badge));
-        expect(badgeBefore.isLabelVisible, isFalse);
-
-        await tester.tap(
-          find.byKey(const Key('pos_sales_filter_hide_back_office')),
-        );
-        await tester.pumpAndSettle();
-
-        expect(router.state.uri.queryParameters['hide-back-office'], 'true');
-        expect(router.state.uri.queryParameters['page'], isNull);
         verify(
           () => salesOrders.listSales(
             pointSale: any(named: 'pointSale'),
@@ -468,126 +454,27 @@ void main() {
             search: any(named: 'search'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),
-            excludeOrigin: SaleOrigin.backOffice,
+            origin: SaleOrigin.pointOfSale,
           ),
-        ).called(greaterThan(0));
-
-        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
-        await tester.pumpAndSettle();
-        final badgeAfter = tester.widget<Badge>(find.byType(Badge));
-        expect(badgeAfter.isLabelVisible, isTrue);
-        expect((badgeAfter.label as Text?)?.data, '1');
+        ).called(1);
       },
     );
 
     testWidgets(
-      'turning the chip back off returns the full, unfiltered list',
+      'the filter drawer offers no origin control — the scoping is fixed, '
+      'not a facet',
       (tester) async {
         stubListSales(salesOrders, page: testSalesPage(const []));
-        final router = await pumpListRouted(
-          tester,
-          query: const ListQuery(facets: {'hide-back-office': ['true']}),
-        );
+        await pumpListRouted(tester);
         await tester.pumpAndSettle();
 
         await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
         await tester.pumpAndSettle();
-        await tester.tap(
+
+        expect(
           find.byKey(const Key('pos_sales_filter_hide_back_office')),
+          findsNothing,
         );
-        await tester.pumpAndSettle();
-
-        expect(router.state.uri.queryParameters['hide-back-office'], isNull);
-      },
-    );
-
-    testWidgets(
-      'changing an unrelated facet (status) leaves the origin facet intact '
-      '— FR-007, US1 Acceptance Scenario 4',
-      (tester) async {
-        stubListSales(salesOrders, page: testSalesPage(const []));
-        final router = await pumpListRouted(
-          tester,
-          query: const ListQuery(facets: {'hide-back-office': ['true']}),
-        );
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('pos_sales_filter_status_draft')));
-        await tester.pumpAndSettle();
-
-        expect(router.state.uri.queryParameters['status'], 'draft');
-        expect(router.state.uri.queryParameters['hide-back-office'], 'true');
-      },
-    );
-
-    testWidgets(
-      'clear-all also clears the origin facet',
-      (tester) async {
-        stubListSales(salesOrders, page: testSalesPage(const []));
-        final router = await pumpListRouted(
-          tester,
-          query: const ListQuery(facets: {'hide-back-office': ['true']}),
-        );
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
-        await tester.pumpAndSettle();
-
-        expect(router.state.uri.queryParameters['hide-back-office'], isNull);
-      },
-    );
-  });
-
-  group('PosSalesListScreen — origin column (spec 041 FR-006)', () {
-    testWidgets(
-      'renders a distinct chip for point-of-sale, back-office and unrecorded '
-      'origins',
-      (tester) async {
-        stubListSales(
-          salesOrders,
-          page: testSalesPage([
-            testOpenSale(id: 1, origin: SaleOrigin.pointOfSale),
-            testOpenSale(id: 2, origin: SaleOrigin.backOffice),
-            testOpenSale(id: 3, origin: null),
-          ]),
-        );
-        await pumpList(tester);
-        await tester.pumpAndSettle();
-
-        expect(
-          find.byKey(const Key('sale_origin_chip_pointOfSale')),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('sale_origin_chip_backOffice')),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('sale_origin_chip_unrecorded')),
-          findsOneWidget,
-        );
-      },
-    );
-
-    testWidgets(
-      'no layout overflow at desktop width and the largest text-size level',
-      (tester) async {
-        stubListSales(
-          salesOrders,
-          page: testSalesPage([
-            testOpenSale(id: 1, origin: SaleOrigin.pointOfSale),
-            testOpenSale(id: 2, origin: SaleOrigin.backOffice),
-            testOpenSale(id: 3, origin: null),
-          ]),
-        );
-        await pumpListRouted(tester, textLevel: TextSizeLevel.extraLarge);
-        await tester.pumpAndSettle();
-
-        expect(tester.takeException(), isNull);
       },
     );
   });
@@ -608,6 +495,7 @@ void main() {
           search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
+          origin: any(named: 'origin'),
         ),
       );
     });

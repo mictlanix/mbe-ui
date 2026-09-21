@@ -2629,20 +2629,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesOrdersColumnStatus => 'Status';
 
   @override
-  String get salesOrdersColumnOrigin => 'Origin';
-
-  @override
   String get salesOrdersColumnTotal => 'Total';
 
   @override
   String get salesOrdersColumnBalance => 'Balance';
-
-  @override
-  String get salesOrdersOriginFilterLabel => 'Origin';
-
-  @override
-  String get salesOrdersOriginFilterHidePointOfSale =>
-      'Hide point-of-sale sales';
 
   @override
   String get salesOrdersSearchLabel => 'Search orders';
@@ -3099,12 +3089,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posSalesStatusFilterAll => 'All statuses';
 
   @override
-  String get posSalesOriginFilterLabel => 'Origin';
-
-  @override
-  String get posSalesOriginFilterHideBackOffice => 'Hide back-office orders';
-
-  @override
   String get posSalesNewSaleAction => 'New sale';
 
   @override
@@ -3118,9 +3102,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posSalesColumnStatus => 'Status';
-
-  @override
-  String get posSalesColumnOrigin => 'Origin';
 
   @override
   String get posSalesColumnTotal => 'Total';
@@ -3160,15 +3141,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posSaleStatusCancelled => 'Cancelled';
-
-  @override
-  String get saleOriginPointOfSale => 'Point of sale';
-
-  @override
-  String get saleOriginBackOffice => 'Back office';
-
-  @override
-  String get saleOriginUnrecorded => 'Unrecorded';
 
   @override
   String get posSaleUnreachableTitle => 'This sale can\'t be opened';

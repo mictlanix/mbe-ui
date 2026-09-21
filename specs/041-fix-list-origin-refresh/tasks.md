@@ -14,6 +14,20 @@ mandate unit/widget/integration coverage for this kind of change, and
 case belongs in — this task list follows that disposition file by file rather
 than inventing new ones.
 
+> **Amended 2026-09-20, after implementation.** The origin facet and the
+> per-row origin column were removed on review; each list is now permanently
+> scoped with no user control (spec.md § Amendments,
+> contracts/origin-filter.md §0). Tasks below stay checked — they record what
+> was built and then deliberately reduced — but these no longer describe the
+> code: **T003/T004** (`OpenSale.origin` + fixture param, both reverted),
+> **T008** (`SaleOriginChip`, deleted), **T014/T016/T017/T018** and
+> **T024/T026/T027/T028** (facet fields, drawer chips, columns, clear-all
+> wiring — all removed). **T005/T006** stand with `listSales` taking an
+> inclusive `origin` instead of `excludeOrigin`. **T015/T025** stand but now
+> pass their value unconditionally. Their tests were rewritten to match, and
+> two new tests assert the fixed scoping on each list. US3 (T029–T034) is
+> untouched by this amendment.
+
 **Organization**: Tasks are grouped by user story (spec.md's US1–US3). All
 three are priority P1 in the spec, and — unlike a typical feature — they share
 almost no runtime code path: US1 and US2 share the origin-plumbing built in

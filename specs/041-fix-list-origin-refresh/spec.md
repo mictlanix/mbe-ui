@@ -8,6 +8,35 @@
 
 **Input**: User description: "Let's create a spec to fix those lists, and also fix cash sessions list, which is not being updated after a session is opened or closed." — following on from spec 039 (Back-Office Order Workspace), whose OS-2 explicitly deferred giving the point-of-sale sales list and the back-office "Pedidos" list any awareness of the order-origin field it introduced.
 
+## Amendments
+
+- **2026-09-20 — the origin facet and the origin column were both removed;
+  the scoping is now fixed, and asymmetric.** This feature first shipped
+  origin as a *user-facing facet*: an off-by-default chip in each list's
+  filter drawer, plus a per-row origin column. Direct correction after
+  review: neither list should offer the choice at all, and neither should
+  show the column. Each list is now permanently scoped, and — deliberately —
+  the two sides use different mechanisms:
+  - The **point-of-sale list** filters **inclusively** (`origin =
+    pointOfSale`): register sales only. An order with **no recorded
+    origin** — every sale raised before mbe-api#209 — is therefore **not
+    shown here either**, which is a change from this document's original
+    FR-005 and SC-003. This is accepted knowingly: the register's list
+    defaults to today, so in practice it shows the current trading day,
+    where every sale carries an origin.
+  - The **back-office "Pedidos" list** filters **exclusively**
+    (`exclude_origin = pointOfSale`): everything that is not a register
+    sale, unrecorded-origin orders included. This is what keeps pre-#209
+    history reachable anywhere at all.
+
+  FR-001, FR-003, FR-006 and FR-007's origin clause no longer describe the
+  built behaviour, and FR-005/SC-003 now hold only for the back-office
+  list. They are kept below as the pre-correction design rather than
+  rewritten, matching spec 039's own amendment convention. FR-002 and
+  FR-004's *effect* still holds on each respective list; only the
+  mechanism and the absence of a control changed. Everything about the
+  cash-session refresh (FR-008 – FR-011, US3) is unaffected.
+
 ## Context
 
 Spec 039 recorded, for the first time, which workflow raised an order — point of sale or back office — as a durable `origin` field on the order (FR-051/FR-052). It deliberately left both list screens untouched (OS-2): filtering by origin would either hide every order that predates the field or admit every historical register sale, and choosing between those was a backfill-policy question the spec declined to answer on the spot.

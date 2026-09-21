@@ -4827,12 +4827,6 @@ abstract class AppLocalizations {
   /// **'Status'**
   String get salesOrdersColumnStatus;
 
-  /// Spec 041 FR-006 — origin column header, shared naming with posSalesColumnOrigin
-  ///
-  /// In en, this message translates to:
-  /// **'Origin'**
-  String get salesOrdersColumnOrigin;
-
   /// No description provided for @salesOrdersColumnTotal.
   ///
   /// In en, this message translates to:
@@ -4844,18 +4838,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Balance'**
   String get salesOrdersColumnBalance;
-
-  /// Spec 041 — the Pedidos list's origin facet label in the filter drawer
-  ///
-  /// In en, this message translates to:
-  /// **'Origin'**
-  String get salesOrdersOriginFilterLabel;
-
-  /// Spec 041 FR-003 — the Pedidos list's origin facet chip, on/off
-  ///
-  /// In en, this message translates to:
-  /// **'Hide point-of-sale sales'**
-  String get salesOrdersOriginFilterHidePointOfSale;
 
   /// No description provided for @salesOrdersSearchLabel.
   ///
@@ -5665,18 +5647,6 @@ abstract class AppLocalizations {
   /// **'All statuses'**
   String get posSalesStatusFilterAll;
 
-  /// Spec 041 — the POS sales list's origin facet label in the filter drawer
-  ///
-  /// In en, this message translates to:
-  /// **'Origin'**
-  String get posSalesOriginFilterLabel;
-
-  /// Spec 041 FR-001 — the POS sales list's origin facet chip, on/off
-  ///
-  /// In en, this message translates to:
-  /// **'Hide back-office orders'**
-  String get posSalesOriginFilterHideBackOffice;
-
   /// No description provided for @posSalesNewSaleAction.
   ///
   /// In en, this message translates to:
@@ -5706,12 +5676,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status'**
   String get posSalesColumnStatus;
-
-  /// Spec 041 FR-006 — origin column header, shared naming with salesOrdersColumnOrigin
-  ///
-  /// In en, this message translates to:
-  /// **'Origin'**
-  String get posSalesColumnOrigin;
 
   /// No description provided for @posSalesColumnTotal.
   ///
@@ -5784,24 +5748,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get posSaleStatusCancelled;
-
-  /// Origin chip label (spec 041) — the order was raised at a register. Matches the wording already established by salesOrderForeignOrderMessage
-  ///
-  /// In en, this message translates to:
-  /// **'Point of sale'**
-  String get saleOriginPointOfSale;
-
-  /// Origin chip label (spec 041) — the order was raised in the back office
-  ///
-  /// In en, this message translates to:
-  /// **'Back office'**
-  String get saleOriginBackOffice;
-
-  /// Origin chip label (spec 041) — the order predates mbe-api#209 and never recorded which workflow raised it; deliberately not shown as either origin
-  ///
-  /// In en, this message translates to:
-  /// **'Unrecorded'**
-  String get saleOriginUnrecorded;
 
   /// No description provided for @posSaleUnreachableTitle.
   ///

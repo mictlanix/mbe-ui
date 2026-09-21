@@ -2,6 +2,22 @@
 
 **Feature**: `041-fix-list-origin-refresh` | **Date**: 2026-09-20
 
+> **Amended 2026-09-20.** The origin facet and column were removed after
+> review (see spec.md § Amendments, contracts/origin-filter.md §0). Two
+> things below no longer describe the built code:
+> - **§2 `OpenSale.origin` was reverted** — with no column to render, nothing
+>   read it, so the field and its mapping were removed again. `OpenSale` is
+>   exactly as it was before this feature.
+> - **§3's two filter fields were reverted** — `PosSalesFilter.hideBackOffice`
+>   and `SalesOrdersFilter.hidePointOfSale` do not exist; neither filter
+>   class changed at all, and no URL facet was added.
+>
+> **§4 stands, with one change**: `listSales` takes `SaleOrigin? origin`
+> (inclusive) rather than `excludeOrigin`; `listOrders` takes
+> `SaleOrigin? excludeOrigin` as described. Both are passed unconditionally
+> by their controllers rather than from filter state. §1, §5 and §6 are
+> unaffected.
+
 This feature introduces **no new entity**. It adds one field to an existing
 entity, one facet to two existing filter values, and one parameter to two
 existing repository methods. Everything else listed here is unchanged and

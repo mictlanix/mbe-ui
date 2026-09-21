@@ -25,7 +25,6 @@ import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controlle
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/pos_sale_status_chip.dart';
-import 'package:mbe_ui/features/sales/presentation/widgets/sale_origin_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _posPath = '/sales/pos';
@@ -150,7 +149,6 @@ class PosSalesListScreen extends ConsumerWidget {
                         .withFacet('date-from', null)
                         .withFacet('date-to', null)
                         .withFacet('status', null)
-                        .withFacet('hide-back-office', null)
                         .copyWith(pageIndex: 0),
                   ),
                   builder: (_) => CurrentListQueryBuilder(
@@ -174,7 +172,6 @@ class PosSalesListScreen extends ConsumerWidget {
             isFiltered:
                 !filter.isToday(today) ||
                 filter.status != null ||
-                filter.hideBackOffice ||
                 filter.search.isNotEmpty,
             emptyMessage: l10n.posSalesEmptyToday,
             clearFiltersLabel: l10n.clearFiltersButton,
@@ -208,12 +205,6 @@ class PosSalesListScreen extends ConsumerWidget {
                   size: ColumnSize.S,
                   cellBuilder: (context, sale) =>
                       PosSaleStatusChip(status: sale.status),
-                ),
-                DataTableColumn(
-                  label: l10n.posSalesColumnOrigin,
-                  size: ColumnSize.S,
-                  cellBuilder: (context, sale) =>
-                      SaleOriginChip(origin: sale.origin),
                 ),
                 DataTableColumn(
                   label: l10n.posSalesColumnTotal,
@@ -376,22 +367,6 @@ class _PosSalesFiltersPanel extends StatelessWidget {
                 ),
               ),
           ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          l10n.posSalesOriginFilterLabel,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        FilterChip(
-          key: const Key('pos_sales_filter_hide_back_office'),
-          label: Text(l10n.posSalesOriginFilterHideBackOffice),
-          selected: filter.hideBackOffice,
-          onSelected: (selected) => goTo(
-            query
-                .withFacet('hide-back-office', selected ? 'true' : null)
-                .copyWith(pageIndex: 0),
-          ),
         ),
       ],
     );

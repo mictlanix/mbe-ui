@@ -42,11 +42,6 @@ class SalesOrdersFilter with _$SalesOrdersFilter {
     int? facility,
     @Default('') String search,
     @Default(0) int pageIndex,
-
-    /// Hides point-of-sale-originated orders, while always keeping an order
-    /// whose origin was never recorded (spec 041 FR-003/FR-005,
-    /// contracts/origin-filter.md §1-2).
-    @Default(false) bool hidePointOfSale,
   }) = _SalesOrdersFilter;
 
   /// [today] is a parameter, truncated to a calendar date before use — never
@@ -76,7 +71,6 @@ class SalesOrdersFilter with _$SalesOrdersFilter {
       facility: isAdministrator ? _parseIntFacet(query.facet('facility')) : null,
       search: query.search,
       pageIndex: query.pageIndex,
-      hidePointOfSale: query.facet('hide-point-of-sale') != null,
     );
   }
 }
@@ -124,8 +118,7 @@ extension SalesOrdersFilterBadge on SalesOrdersFilter {
       (isDefaultRange(today) ? 0 : 1) +
       (status != null ? 1 : 0) +
       (salesperson != null ? 1 : 0) +
-      (facility != null ? 1 : 0) +
-      (hidePointOfSale ? 1 : 0);
+      (facility != null ? 1 : 0);
 
   bool hasActiveFilters(DateTime today) => activeFilterCount(today) > 0;
 }
@@ -179,7 +172,12 @@ class SalesOrdersListController extends _$SalesOrdersListController {
           search: filter.search.isEmpty ? null : filter.search,
           skip: filter.pageIndex * _pageSize,
           limit: _pageSize,
-          excludeOrigin: filter.hidePointOfSale ? SaleOrigin.pointOfSale : null,
+          // Unconditional, not a facet the user can vary (spec 041,
+          // amended): "Pedidos" is everything that is not a register sale.
+          // Exclusive — not inclusive — so an order with no recorded origin
+          // (every order predating mbe-api#209) stays visible here, which is
+          // what keeps that history reachable at all.
+          excludeOrigin: SaleOrigin.pointOfSale,
         );
     return CatalogPage(
       items: result.items,

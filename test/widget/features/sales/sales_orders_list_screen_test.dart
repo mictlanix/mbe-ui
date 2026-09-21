@@ -7,7 +7,6 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
-import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
@@ -61,6 +60,7 @@ void stubListOrders(
       search: any(named: 'search'),
       skip: any(named: 'skip'),
       limit: any(named: 'limit'),
+      excludeOrigin: any(named: 'excludeOrigin'),
     ),
   ).thenAnswer((_) async => page);
 }
@@ -119,6 +119,7 @@ void main() {
           search: null,
           skip: 0,
           limit: 20,
+          excludeOrigin: any(named: 'excludeOrigin'),
         ),
       ).called(1);
 
@@ -208,72 +209,39 @@ void main() {
           search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
+          excludeOrigin: any(named: 'excludeOrigin'),
         ),
       );
       expect(find.byKey(const Key('sales_orders_no_facility')), findsOneWidget);
     });
   });
 
-  group('origin column (spec 041 FR-006)', () {
+  group('origin scoping (spec 041, amended)', () {
     testWidgets(
-      'renders a distinct chip for point-of-sale, back-office and '
-      'unrecorded origins',
+      'every request excludes point-of-sale origin — unconditionally, with '
+      'no facet offered for it. Exclusion, not inclusion, so an order with '
+      'no recorded origin stays visible here (this list is where that '
+      'history remains reachable)',
       (tester) async {
-        stubListOrders(
-          salesOrders,
-          page: testSalesPage([
-            testOpenSale(id: 1, origin: SaleOrigin.pointOfSale),
-            testOpenSale(id: 2, origin: SaleOrigin.backOffice),
-            testOpenSale(id: 3, origin: null),
-          ]),
-        );
+        stubListOrders(salesOrders, page: testSalesPage(const []));
 
         await pumpList(tester);
         await tester.pumpAndSettle();
 
-        expect(
-          find.byKey(const Key('sale_origin_chip_pointOfSale')),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('sale_origin_chip_backOffice')),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('sale_origin_chip_unrecorded')),
-          findsOneWidget,
-        );
-      },
-    );
-
-    testWidgets(
-      'no layout overflow at desktop width and the largest text-size level',
-      (tester) async {
-        stubListOrders(
-          salesOrders,
-          page: testSalesPage([
-            testOpenSale(id: 1, origin: SaleOrigin.pointOfSale),
-            testOpenSale(id: 2, origin: SaleOrigin.backOffice),
-            testOpenSale(id: 3, origin: null),
-          ]),
-        );
-
-        await pumpOrdersRouted(
-          tester,
-          initialLocation: '/sales/orders',
-          textLevel: TextSizeLevel.extraLarge,
-          overrides: [
-            authNotifierProvider.overrideWith(
-              () => _FixedAuthNotifier(
-                AuthState.authenticated(token: 't', user: _user()),
-              ),
-            ),
-            salesOrderOverride(salesOrders),
-          ],
-        );
-        await tester.pumpAndSettle();
-
-        expect(tester.takeException(), isNull);
+        verify(
+          () => salesOrders.listOrders(
+            mine: any(named: 'mine'),
+            facility: any(named: 'facility'),
+            salesperson: any(named: 'salesperson'),
+            status: any(named: 'status'),
+            dateFrom: any(named: 'dateFrom'),
+            dateTo: any(named: 'dateTo'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+            excludeOrigin: SaleOrigin.pointOfSale,
+          ),
+        ).called(1);
       },
     );
   });

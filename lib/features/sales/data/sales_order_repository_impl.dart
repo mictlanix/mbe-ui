@@ -279,7 +279,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     String? search,
     int skip = 0,
     int limit = 20,
-    SaleOrigin? excludeOrigin,
+    SaleOrigin? origin,
   }) async {
     try {
       final response = await _api.listSalesOrdersApiV1SalesOrdersGet(
@@ -290,7 +290,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
         search: search,
         skip: skip,
         limit: limit,
-        excludeOrigin: excludeOrigin?.toApi(),
+        origin: origin?.toApi(),
       );
       final result = response.data;
       if (result == null) throw const AppError.server();

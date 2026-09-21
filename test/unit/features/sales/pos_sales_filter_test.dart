@@ -70,33 +70,7 @@ void main() {
     });
   });
 
-  group('PosSalesFilter.fromQuery — hide-back-office facet (spec 041 FR-001)', () {
-    test('defaults to false when the facet is absent', () {
-      final filter = PosSalesFilter.fromQuery(
-        const ListQuery(),
-        today: DateTime(2026, 8, 10),
-      );
-      expect(filter.hideBackOffice, isFalse);
-    });
-
-    test('decodes to true when the facet is "true"', () {
-      final filter = PosSalesFilter.fromQuery(
-        const ListQuery(facets: {'hide-back-office': ['true']}),
-        today: DateTime(2026, 8, 10),
-      );
-      expect(filter.hideBackOffice, isTrue);
-    });
-
-    test('any other facet value also decodes to true (presence, not the exact string, is what matters)', () {
-      final filter = PosSalesFilter.fromQuery(
-        const ListQuery(facets: {'hide-back-office': ['1']}),
-        today: DateTime(2026, 8, 10),
-      );
-      expect(filter.hideBackOffice, isTrue);
-    });
-  });
-
-  group('activeFilterCount / hasActiveFilters (spec 041 FR-001, FR-007)', () {
+  group('activeFilterCount / hasActiveFilters', () {
     test('zero for the default filter', () {
       final today = DateTime(2026, 8, 10);
       final filter = PosSalesFilter.fromQuery(const ListQuery(), today: today);
@@ -104,17 +78,9 @@ void main() {
       expect(filter.hasActiveFilters(today), isFalse);
     });
 
-    test('hide-back-office counts toward the badge independently of date/status', () {
-      final today = DateTime(2026, 8, 10);
-      final filter = PosSalesFilter.fromQuery(
-        const ListQuery(facets: {'hide-back-office': ['true']}),
-        today: today,
-      );
-      expect(filter.activeFilterCount(today), 1);
-      expect(filter.hasActiveFilters(today), isTrue);
-    });
-
-    test('a non-default range, a status and hide-back-office all count independently', () {
+    test('a non-default range and a status count independently — origin is '
+        'not a facet here (spec 041, amended: the register\'s list is always '
+        'point-of-sale-only, with nothing for the cashier to vary)', () {
       final today = DateTime(2026, 8, 10);
       final filter = PosSalesFilter.fromQuery(
         const ListQuery(
@@ -122,12 +88,11 @@ void main() {
             'date-from': ['2026-08-01'],
             'date-to': ['2026-08-01'],
             'status': ['draft'],
-            'hide-back-office': ['true'],
           },
         ),
         today: today,
       );
-      expect(filter.activeFilterCount(today), 3);
+      expect(filter.activeFilterCount(today), 2);
     });
   });
 }
