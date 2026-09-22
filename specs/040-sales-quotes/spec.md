@@ -378,7 +378,8 @@ draft appears with the same products and today's prices.
 
 - **Sales Quote**: A priced offer to a named customer. Carries a facility, a customer, a
   salesperson, payment terms, a currency and exchange rate, an issue date, an expiry date, an
-  optional contact, ship-to and comment, a status (draft, confirmed, cancelled), a separate
+  optional contact, ship-to and comment, a status (draft, confirmed, cancelled — "confirmed"
+  is the display label for the wire value `completed`), a separate
   expired indicator, a folio assigned only on confirmation, its lines, and its subtotal, tax
   and total. Never carries a fulfilment intent, a payment, or a delivery.
 - **Quote Line**: One product on a quote — the product with its code and name as they stood

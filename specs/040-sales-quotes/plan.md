@@ -61,9 +61,9 @@ fetch and a per-facility warehouse list that a quote has no use for.
   isolation test and the shared harness.
 - No mbe-api source may be edited from this repo (constitution, Development Workflow).
 
-**Scale/Scope**: One list screen, one quote screen, one repository, one controller, one
-widened entity pair. ~10 new files; 5 shared capture files and 4 order/POS files edited;
-~35-45 new l10n keys; ~15 test files added or touched.
+**Scale/Scope**: One list screen, one quote screen with its own header panel, one
+repository, one controller, one widened entity pair. ~12 new files; 5 shared capture files
+and 4 order/POS files edited; ~40-50 new l10n keys; ~15 test files added or touched.
 
 **External dependencies**: **none open.** For the record, all three that this feature was
 specified against have closed:
@@ -174,6 +174,9 @@ lib/
             ├── sales_quotes_list_screen.dart
             ├── sales_quotes_list_controller.dart
             ├── quote_screen.dart
+            ├── quote_header_panel.dart      # reference/status/currency +
+            │                                # editable expiry & comment,
+            │                                # via CaptureStep's headerExtra
             └── quote_editor_controller.dart
 
 test/

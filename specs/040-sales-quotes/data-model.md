@@ -177,6 +177,7 @@ capture withheld — `CaptureStep`'s existing behaviour under `excludeGenericCus
 | Totals never recomputed locally | FR-017 | `SaleTotalsBar` reads the server's figures; every mutation replaces state wholesale |
 | At least one line before confirming | FR-018 | `onContinue == null` when `lineCount == 0` |
 | No write outstanding, no unconfirmed edit | FR-019 | `pendingWritesProvider(salesQuoteWritesScope)`, `resolveUnconfirmedEdits` |
+| Header shows reference, status, expiry, currency and comment; expiry and comment editable while draft, currency never (A11) | FR-020, FR-022, FR-024 | `QuoteHeaderPanel`, rendered through `CaptureStep`'s `headerExtra` slot — the same seam `OrderHeaderPanel` uses. Customer and payment terms are not duplicated there; `CustomerBar` already owns both |
 | Confirmed/cancelled quote is read-only | FR-023 | `Sale.isEditable`; plus `showAction: false` so the primary action is absent, not greyed |
 | Folio only on confirm | FR-021, FR-022 | **Server**; `Sale.provisionalReference` covers the draft |
 | Convert requires order-create rights | FR-004 | `can(salesOrders, create)` client-side; **server** enforces it too |
