@@ -20,7 +20,13 @@ class Sale with _$Sale {
     required int id,
     int? serial,
     required int facility,
-    required int pointSale,
+    // Nullable since spec 040: a quote is raised by a person, not a
+    // register, and has no point of sale at all. `null` here means "not a
+    // register document" — `capture_step.dart`'s own default-warehouse
+    // resolution already treats it that way (`sale?.pointSale ?? ...`), so
+    // widening this cost no reader outside spec 040's own three sites
+    // (data-model.md §1).
+    int? pointSale,
     required int salesperson,
     required int customer,
     String? customerName,
@@ -40,13 +46,19 @@ class Sale with _$Sale {
     // opened the order; `SalesOrderUpdate` has no such field, so it cannot
     // be edited afterwards.
     SaleOrigin? origin,
-    required DateTime promiseDate,
+    // Nullable since spec 040: a quote promises nothing — delivery is
+    // planned only on the order a conversion produces (data-model.md §1).
+    DateTime? promiseDate,
     required SaleStatus status,
     @Default(<SaleLine>[]) List<SaleLine> lines,
     required String subtotal,
     required String taxTotal,
     required String total,
-    required String balance,
+    // Nullable since spec 040: a quote is never payable. Read
+    // [balanceOrZero] rather than this field directly outside the payment
+    // surface, so "an order always has a balance; only a quote does not" is
+    // asserted once here instead of at every call site (data-model.md §1).
+    String? balance,
     // Back-office order screen fields (spec 029) — all already on the wire in
     // `SalesOrderResponse`, simply never mapped until this feature needed them.
     // POS never reads any of these; adding them is additive.
@@ -57,8 +69,14 @@ class Sale with _$Sale {
     int? contact,
     String? recipient,
     String? recipientName,
-    required Priority priority,
+    // Nullable since spec 040: priority is an order-only concept a quote has
+    // no wire field for (data-model.md §1).
+    Priority? priority,
     String? comment,
+    // Quote-only (spec 040 data-model.md §1): whether the quote's due date
+    // has passed. Orthogonal to `status` — a quote can be both `completed`
+    // and expired. Always `false` for an order, which has no such field.
+    @Default(false) bool hasExpired,
   }) = _Sale;
 
   factory Sale.fromResponse(api.SalesOrderResponse r) => Sale(
@@ -93,9 +111,45 @@ class Sale with _$Sale {
     comment: r.comment,
   );
 
+  /// Maps a `SalesQuoteResponse` onto the same entity a sales order uses
+  /// (spec 040, data-model.md §1) — the seam forecloses a separate `Quote`
+  /// entity: `SaleEditor.ensureOpen()` returns `Future<Sale>` and every
+  /// shared capture widget takes `Sale`. Leaves `pointSale`, `promiseDate`,
+  /// `priority` and `balance` null — none exist on a quote — and sets
+  /// `hasExpired`, which no order ever has.
+  factory Sale.fromQuoteResponse(api.SalesQuoteResponse r) => Sale(
+    id: r.salesQuoteId,
+    serial: r.serial,
+    facility: r.facility,
+    salesperson: r.salesperson,
+    customer: r.customer,
+    paymentTerms: PaymentTerms.fromApi(r.paymentTerms),
+    currency: currencyFromApi(r.currency),
+    exchangeRate: r.exchangeRate,
+    shipTo: r.shipTo,
+    contact: r.contact,
+    status: SaleStatus.fromApi(r.status),
+    lines: (r.lines ?? const <api.SalesQuoteLineResponse>[])
+        .map(SaleLine.fromQuoteLineResponse)
+        .toList(),
+    subtotal: r.subtotal,
+    taxTotal: r.taxTotal,
+    total: r.total,
+    date: r.date,
+    dueDate: r.dueDate,
+    comment: r.comment,
+    hasExpired: r.hasExpired,
+  );
+
   /// The provisional reference before confirmation (FR-040) — callers
   /// display `serial` once non-null, and fall back to this otherwise.
   int get provisionalReference => id;
+
+  /// A quote is never payable (spec 040, data-model.md §1). Reading this
+  /// instead of [balance] directly is what keeps "an order always has a
+  /// balance" a single assertion rather than a `??` repeated at every call
+  /// site in the payment surface.
+  String get balanceOrZero => balance ?? '0';
 
   /// FR-041: capture, customer, mode and terms are only editable while the
   /// sale is a draft. `data-model.md` §1.1.

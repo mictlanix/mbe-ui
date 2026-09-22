@@ -14,6 +14,7 @@ import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -21,17 +22,22 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/quote_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/sales_quotes_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Shared fixtures and pump helper for the POS widget tests. Kept in one
 /// place so a change to `Sale`'s required fields lands once, not in four
 /// test files.
 class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
+
+class MockSalesQuoteRepository extends Mock implements SalesQuoteRepository {}
 
 class MockCustomerPaymentRepository extends Mock
     implements CustomerPaymentRepository {}
@@ -87,6 +93,64 @@ Sale testSale({
   date: DateTime(2026, 8, 5),
   dueDate: DateTime(2026, 8, 5),
   priority: Priority.normal,
+);
+
+/// A quote fixture (spec 040, research.md R7) — the twin of [testSale], with
+/// `pointSale`/`promiseDate`/`priority`/`balance` left `null` (none exist on
+/// a quote) and [hasExpired] added, since no order ever has it.
+Sale testQuote({
+  int id = 42,
+  int? serial,
+  SaleStatus status = SaleStatus.draft,
+  PaymentTerms paymentTerms = PaymentTerms.immediate,
+  String total = '116.00',
+  List<SaleLine> lines = const [],
+  int customer = 7,
+  bool hasExpired = false,
+}) => Sale(
+  id: id,
+  serial: serial,
+  facility: 9,
+  salesperson: 100,
+  customer: customer,
+  paymentTerms: paymentTerms,
+  currency: Currency.mxn,
+  exchangeRate: '1',
+  status: status,
+  lines: lines,
+  subtotal: '100.00',
+  taxTotal: '16.00',
+  total: total,
+  date: DateTime(2026, 8, 5),
+  dueDate: DateTime(2026, 8, 5),
+  hasExpired: hasExpired,
+);
+
+/// A quote line fixture (spec 040, research.md R7) — the twin of [testLine],
+/// with `cost`/`unit`/`photo`/`warehouse` left `null` (none exist on a quote
+/// line) and [priceAdjustment] added, since no order line has it.
+SaleLine testQuoteLine({
+  int id = 5,
+  String quantity = '2',
+  String price = '50.00',
+  String discountRate = '0',
+  String taxRate = '0.16',
+  String productName = 'Widget',
+  String? priceAdjustment,
+}) => SaleLine(
+  id: id,
+  product: 11,
+  productCode: 'P-11',
+  productName: productName,
+  quantity: quantity,
+  price: price,
+  discountRate: discountRate,
+  taxRate: taxRate,
+  taxIncluded: false,
+  subtotal: '100.00',
+  taxTotal: '16.00',
+  total: '116.00',
+  priceAdjustment: priceAdjustment,
 );
 
 SaleLine testLine({
@@ -342,6 +406,89 @@ Future<PosRoutedHarness> pumpOrdersRouted(
   return (router, container);
 }
 
+/// spec 040: the quote screen's own twin of [pumpOrdersRouted] — a real
+/// `GoRouter` wired with `/sales/quotes`, `/sales/quotes/new` and
+/// `/sales/quotes/:quoteId` (mirroring `app_router.dart`), needed by any test
+/// exercising `QuoteScreen`'s own `GoRouter.of(context)` calls (the `/new` →
+/// `/sales/quotes/<id>` URL rewrite, Back) rather than a bare widget pump.
+Future<PosRoutedHarness> pumpQuotesRouted(
+  WidgetTester tester, {
+  List<Override> overrides = const [],
+  String initialLocation = '/sales/quotes/new',
+  Size surface = const Size(1200, 2400),
+  TextSizeLevel? textLevel,
+}) async {
+  tester.view.physicalSize = surface;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+
+  SharedPreferences.setMockInitialValues({});
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final container = ProviderContainer(
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ...overrides,
+    ],
+  );
+  addTearDown(container.dispose);
+
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: [
+      GoRoute(
+        path: '/sales/quotes',
+        builder: (context, state) => Scaffold(
+          body: SalesQuotesListScreen(query: ListQuery.fromUri(state.uri)),
+        ),
+      ),
+      GoRoute(
+        path: '/sales/quotes/new',
+        builder: (context, state) => const QuoteScreen(),
+      ),
+      GoRoute(
+        path: '/sales/quotes/:quoteId',
+        builder: (context, state) => QuoteScreen(
+          quoteId: int.parse(state.pathParameters['quoteId']!),
+        ),
+      ),
+      // spec 040 FR-025…FR-031: a converted quote lands here — the real
+      // `OrderWorkspaceScreen` needs its own, much larger provider setup a
+      // quote test has no reason to also stand up, so a marker screen
+      // stands in for it (only the navigation itself is ever asserted).
+      GoRoute(
+        path: '/sales/orders/:orderId',
+        builder: (context, state) =>
+            Text('order ${state.pathParameters['orderId']}'),
+      ),
+    ],
+  );
+
+  await tester.pumpWidget(
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('es', 'MX'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: textLevel == null
+            ? null
+            : (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: ComposedTextScaler(
+                    platform: TextScaler.noScaling,
+                    level: textLevel,
+                  ),
+                ),
+                child: child!,
+              ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return (router, container);
+}
+
 /// `open()` with any arguments — the matcher to use whenever a test does not
 /// care *which* arguments an open carried.
 ///
@@ -443,6 +590,9 @@ void stubListSales(
 
 Override salesOrderOverride(SalesOrderRepository repository) =>
     salesOrderRepositoryProvider.overrideWithValue(repository);
+
+Override salesQuoteOverride(SalesQuoteRepository repository) =>
+    salesQuoteRepositoryProvider.overrideWithValue(repository);
 
 /// spec 036 R1: seeds [posSaleControllerProvider] directly with [sale],
 /// bypassing `open()`/`load()` — for a test that pumps a step widget (e.g.

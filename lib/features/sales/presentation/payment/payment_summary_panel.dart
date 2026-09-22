@@ -50,7 +50,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
     // Watched so the change row is live; read for the gate, which depends
     // only on the sale's own balance and terms, not on draft state.
     ref.watch(paymentControllerProvider);
-    final change = ref.read(paymentControllerProvider.notifier).changeFor(sale.balance);
+    final change = ref.read(paymentControllerProvider.notifier).changeFor(sale.balanceOrZero);
     // spec 031 FR-007: additional to the balance/terms gate below, not
     // instead of it — a payment (or a reversal) still applying must not let
     // the cashier continue on a balance that is about to change.
@@ -60,11 +60,11 @@ class PaymentSummaryPanel extends ConsumerWidget {
         ref
             .read(posStepControllerProvider.notifier)
             .canLeavePayment(
-              balance: sale.balance,
+              balance: sale.balanceOrZero,
               isCreditTerms: sale.paymentTerms == PaymentTerms.netD,
             );
-    final paid = subtractAmounts(sale.total, sale.balance);
-    final balanceOutstanding = !isZeroAmount(sale.balance);
+    final paid = subtractAmounts(sale.total, sale.balanceOrZero);
+    final balanceOutstanding = !isZeroAmount(sale.balanceOrZero);
 
     return Container(
       key: const Key('payment_summary_panel'),
@@ -85,7 +85,7 @@ class PaymentSummaryPanel extends ConsumerWidget {
             context,
             fmt,
             l10n.posPaymentBalance,
-            sale.balance,
+            sale.balanceOrZero,
             // The same figure the mock draws in amber — here, as everywhere
             // else in this design system, emphasis is a bolder/larger role
             // rather than a literal color (SC-006).

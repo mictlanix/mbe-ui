@@ -77,7 +77,7 @@ void main() {
       // .dart` step 2 — the same document type, same rule).
       final pointSale = await PointSaleRepositoryImpl(
         dio,
-      ).get(pointSaleId: opened.pointSale);
+      ).get(pointSaleId: opened.pointSale!); // always set: a real back-office order
       final warehouse = pointSale.warehouseId;
 
       // 3. Discover one sellable product from that warehouse.

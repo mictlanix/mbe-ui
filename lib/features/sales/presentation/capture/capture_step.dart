@@ -47,6 +47,10 @@ class CaptureStep extends ConsumerStatefulWidget {
     this.attachFulfillmentIntent,
     this.headerExtra,
     this.secondaryAction,
+    this.showWarehouse = true,
+    this.showAction = true,
+    this.actionKey = const Key('pos_continue_to_payment'),
+    this.showComment = false,
   });
 
   /// `null` on a register nobody has started a sale on yet, or a back-office
@@ -107,6 +111,28 @@ class CaptureStep extends ConsumerStatefulWidget {
   /// untouched.
   final Widget? secondaryAction;
 
+  /// spec 040 FR-014/FR-015: `false` for a quote host, which has no
+  /// warehouse column, no stock cache to seed, and no point of sale to
+  /// resolve a default warehouse from — `_addLine` skips both when this is
+  /// false, and never reads [registerPointSaleProvider] for such a host.
+  /// `true` (the default) keeps the register's and the order workspace's
+  /// behaviour unchanged.
+  final bool showWarehouse;
+
+  /// Forwarded to [SaleTotalsBar.showAction]. `true` (the default) keeps
+  /// every existing host unchanged; a quote host sets this to
+  /// `sale?.isEditable ?? true` so the primary action disappears once
+  /// confirmed rather than being greyed out (spec 040 FR-023).
+  final bool showAction;
+
+  /// Forwarded to [SaleTotalsBar.actionKey]. Defaults to the register's own
+  /// key so every existing widget-test finder keeps working unchanged.
+  final Key actionKey;
+
+  /// Forwarded to the line row/card calls in [_lines]. `false` (the
+  /// default) keeps every existing host unchanged.
+  final bool showComment;
+
   @override
   ConsumerState<CaptureStep> createState() => _CaptureStepState();
 }
@@ -116,11 +142,18 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     ProductLookupResult result,
     int? defaultWarehouse,
   ) async {
-    ref
-        .read(productStockCacheProvider.notifier)
-        .update((cache) => {...cache, result.product: result.stock});
+    // spec 040 FR-014/FR-015: a quote host has no warehouse and no stock to
+    // reserve, so the stock cache — the only thing that makes the picker's
+    // stock flag and `shortfall()` meaningful — is never seeded for one.
+    if (widget.showWarehouse) {
+      ref
+          .read(productStockCacheProvider.notifier)
+          .update((cache) => {...cache, result.product: result.stock});
+    }
     // The product table's tax rate, cached for the line's tax picker
-    // (FR-038b) — the lookup is the only payload that carries it.
+    // (FR-038b) — the lookup is the only payload that carries it. Kept for
+    // every host, quotes included: without it a fresh line offers only zero
+    // and its own rate (research.md R1c).
     ref
         .read(productTaxRateCacheProvider.notifier)
         .update((cache) => {...cache, result.product: result.taxRate});
@@ -129,7 +162,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         .addLine(
           product: result.product,
           quantity: _initialQuantity(result),
-          warehouse: defaultWarehouse,
+          warehouse: widget.showWarehouse ? defaultWarehouse : null,
         );
   }
 
@@ -183,13 +216,22 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     final startCustomerBarInSearchMode =
         sale == null && widget.excludeGenericCustomer;
     final compact = LayoutBreakpoints.isCompact(context);
-    // The register's own point of sale, known from the signed-in user's
-    // settings before any sale exists — so the first scan already lands in
-    // the right warehouse (FR-024) instead of one resolved a beat too late.
-    final pointSale = sale?.pointSale ?? ref.watch(registerPointSaleProvider);
-    final defaultWarehouse = pointSale == null
-        ? const AsyncValue<int>.loading()
-        : ref.watch(defaultWarehouseControllerProvider(pointSale));
+    // spec 040 FR-014: a warehouse-less host never resolves a default
+    // warehouse — reading `registerPointSaleProvider` for a quote screen
+    // would consult a register the quote has nothing to do with, and stamp
+    // its warehouse onto every line (research.md R1b). `defaultWarehouse`
+    // simply stays `null` for such a host, and `ProductSearchField` already
+    // supports a null warehouse.
+    int? defaultWarehouse;
+    if (widget.showWarehouse) {
+      // The register's own point of sale, known from the signed-in user's
+      // settings before any sale exists — so the first scan already lands in
+      // the right warehouse (FR-024) instead of one resolved a beat too late.
+      final pointSale = sale?.pointSale ?? ref.watch(registerPointSaleProvider);
+      defaultWarehouse = pointSale == null
+          ? null
+          : ref.watch(defaultWarehouseControllerProvider(pointSale)).value;
+    }
     // spec 031 FR-007, spec 039 FR-007: additional to every condition below,
     // not instead of any of them — a line write still outstanding must not
     // let the user advance on figures the sale does not hold yet (issue
@@ -316,9 +358,8 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         ),
         child: ProductSearchField(
           enabled: canCaptureProducts,
-          warehouse: defaultWarehouse.value,
-          onProductSelected: (result) =>
-              _addLine(result, defaultWarehouse.value),
+          warehouse: defaultWarehouse,
+          onProductSelected: (result) => _addLine(result, defaultWarehouse),
         ),
       ),
     ];
@@ -387,6 +428,8 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           sale: sale,
           compact: compact,
           actionLabel: widget.continueLabel,
+          actionKey: widget.actionKey,
+          showAction: widget.showAction,
           secondaryAction: widget.secondaryAction,
           // spec 036 FR-008: advancing is synchronous now (no server round
           // trip on either host), so there is nothing left for this to show
@@ -425,6 +468,8 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
             line: line,
             facilityId: sale.facility,
             enabled: enabled,
+            showWarehouse: widget.showWarehouse,
+            showComment: widget.showComment,
           ),
         )
       else
@@ -433,6 +478,8 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           line: line,
           facilityId: sale.facility,
           enabled: enabled,
+          showWarehouse: widget.showWarehouse,
+          showComment: widget.showComment,
         ),
   ];
 }

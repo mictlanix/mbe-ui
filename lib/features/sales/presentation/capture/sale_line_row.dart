@@ -35,6 +35,7 @@ class SaleLineRow extends ConsumerStatefulWidget {
     required this.facilityId,
     this.enabled = true,
     this.showComment = false,
+    this.showWarehouse = true,
   });
 
   final SaleLine line;
@@ -46,6 +47,13 @@ class SaleLineRow extends ConsumerStatefulWidget {
   /// it was before this feature — only the back-office order screen passes
   /// `true`.
   final bool showComment;
+
+  /// `false` for a quote line, which has no warehouse at all (spec 040
+  /// FR-014) — the picker is omitted, not disabled, and the column's width
+  /// goes back to the row's product cell (`sale_line_layout.dart`'s
+  /// warehouse-less threshold). `true` (the default) keeps the register's
+  /// and the order workspace's layout unchanged.
+  final bool showWarehouse;
 
   @override
   ConsumerState<SaleLineRow> createState() => _SaleLineRowState();
@@ -102,8 +110,14 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
           children: [
             LayoutBuilder(
               builder: (context, constraints) {
-                final columns = SaleLineColumns.of(constraints.maxWidth);
-                return saleLineLayoutFor(constraints.maxWidth) ==
+                final columns = SaleLineColumns.of(
+                  constraints.maxWidth,
+                  warehouse: widget.showWarehouse,
+                );
+                return saleLineLayoutFor(
+                          constraints.maxWidth,
+                          warehouse: widget.showWarehouse,
+                        ) ==
                         SaleLineLayout.singleRow
                     ? _singleRow(context, l10n, line, enabled, spacing, columns)
                     : _twoRow(context, l10n, line, enabled, spacing, columns);
@@ -378,8 +392,10 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
         children: [
           Expanded(child: _productCell(context, line)),
           gap,
-          _band(width: columns.warehouse, child: _warehouseCell(l10n)),
-          gap,
+          if (widget.showWarehouse) ...[
+            _band(width: columns.warehouse, child: _warehouseCell(l10n)),
+            gap,
+          ],
           _band(
             width: columns.quantity,
             child: _quantityStepper(l10n),
@@ -430,8 +446,10 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
             children: [
               Expanded(child: _productCell(context, line)),
               gap,
-              _band(width: columns.warehouse, child: _warehouseCell(l10n)),
-              gap,
+              if (widget.showWarehouse) ...[
+                _band(width: columns.warehouse, child: _warehouseCell(l10n)),
+                gap,
+              ],
               SizedBox(width: columns.total, child: _totalCell(line)),
               _deleteButton(l10n, enabled),
             ],

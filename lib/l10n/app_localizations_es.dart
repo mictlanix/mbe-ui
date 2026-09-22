@@ -2650,6 +2650,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesOrdersMenuTitle => 'Pedidos';
 
   @override
+  String get salesQuotesMenuTitle => 'Cotizaciones';
+
+  @override
   String get salesOrdersScreenTitle => 'Pedidos';
 
   @override
@@ -2717,6 +2720,85 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get salesOrderFewerDetails => 'Menos detalles';
+
+  @override
+  String get salesQuoteConfirmAction => 'Confirmar cotización';
+
+  @override
+  String get salesQuoteStatusDraft => 'Borrador';
+
+  @override
+  String get salesQuoteStatusCompleted => 'Confirmada';
+
+  @override
+  String get salesQuoteStatusCancelled => 'Cancelada';
+
+  @override
+  String get salesQuoteReferenceLabel => 'Referencia';
+
+  @override
+  String get salesQuoteExpiryLabel => 'Fecha de vencimiento';
+
+  @override
+  String get salesQuoteCurrencyLabel => 'Moneda';
+
+  @override
+  String get salesQuoteCommentLabel => 'Comentario';
+
+  @override
+  String get salesQuoteConvertAction => 'Convertir a pedido';
+
+  @override
+  String get salesQuoteDuplicateAction => 'Duplicar';
+
+  @override
+  String get salesQuoteNewAction => 'Nueva cotización';
+
+  @override
+  String get salesQuotesColumnReference => 'Referencia';
+
+  @override
+  String get salesQuotesColumnCustomer => 'Cliente';
+
+  @override
+  String get salesQuotesColumnDate => 'Fecha';
+
+  @override
+  String get salesQuotesColumnExpiry => 'Vencimiento';
+
+  @override
+  String get salesQuotesColumnStatus => 'Estado';
+
+  @override
+  String get salesQuotesColumnTotal => 'Total';
+
+  @override
+  String get salesQuotesSearchLabel => 'Buscar cotizaciones';
+
+  @override
+  String get salesQuotesStatusFilterLabel => 'Estado';
+
+  @override
+  String get salesQuotesCustomerFilterLabel => 'Cliente';
+
+  @override
+  String get salesQuoteExpiredBadge => 'Vencida';
+
+  @override
+  String get salesQuoteCancelAction => 'Cancelar cotización';
+
+  @override
+  String get salesQuoteCancelDialogTitle => '¿Cancelar esta cotización?';
+
+  @override
+  String get salesQuoteCancelDialogMessage =>
+      'Esta acción no se puede deshacer. La cotización pasará a estado cancelada.';
+
+  @override
+  String get salesQuoteCancelDialogKeepEditing => 'Seguir editando';
+
+  @override
+  String get salesQuoteCancelDialogConfirm => 'Cancelar cotización';
 
   @override
   String get salesOrderPriorityLow => 'Baja';

@@ -7,6 +7,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editing.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
+import 'package:mbe_ui/features/sales/presentation/tracked_editing.dart';
 
 part 'pos_sale_controller.g.dart';
 
@@ -34,7 +35,9 @@ part 'pos_sale_controller.g.dart';
 /// first action that needs one, so a register nobody has touched writes
 /// nothing.
 @riverpod
-class PosSaleController extends _$PosSaleController with SaleEditing implements SaleEditor {
+class PosSaleController extends _$PosSaleController
+    with TrackedEditing, SaleEditing
+    implements SaleEditor {
   @override
   Future<Sale?> build() async => null;
 

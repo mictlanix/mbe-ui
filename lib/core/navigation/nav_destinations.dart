@@ -54,6 +54,11 @@ class NavBranch {
   // `cashSessions` above — display order comes from position within
   // `kNavigationTree` (this destination sits right before `pos` there).
   static const int salesOrders = 20;
+
+  // 040-sales-quotes: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree`
+  // (this destination sits right after `sales-orders` there).
+  static const int salesQuotes = 21;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -280,6 +285,17 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.salesOrders,
         gate: PrivilegeGate(SystemObject.salesOrders, AccessRight.read),
       ),
+      // 040-sales-quotes: placed after Pedidos, before nothing — quotes are
+      // the document that precedes an order, so it sits next to it.
+      NavDestination(
+        id: 'sales-quotes',
+        label: _salesQuotesLabel,
+        icon: Icons.request_quote_outlined,
+        selectedIcon: Icons.request_quote,
+        route: '/sales/quotes',
+        branchIndex: NavBranch.salesQuotes,
+        gate: PrivilegeGate(SystemObject.salesQuotes, AccessRight.read),
+      ),
     ],
   ),
 ];
@@ -313,6 +329,7 @@ String _taxpayerIssuersLabel(AppLocalizations l10n) =>
 String _cashSessionsLabel(AppLocalizations l10n) => l10n.cashSessionsMenuTitle;
 String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
+String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

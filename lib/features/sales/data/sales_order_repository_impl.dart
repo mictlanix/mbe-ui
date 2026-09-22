@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
-import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/sales/data/wire_value_setters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
@@ -128,12 +128,12 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
             ..product = product
             ..warehouse = warehouse
             ..comment = comment;
-          if (quantity != null) _setQuantity(b.quantity, quantity);
-          if (price != null) _setPrice1(b.price, price);
+          if (quantity != null) setQuantity(b.quantity, quantity);
+          if (price != null) setPrice1(b.price, price);
           if (discountRate != null) {
-            _setDiscountRate(b.discountRate, discountRate);
+            setDiscountRate(b.discountRate, discountRate);
           }
-          if (taxRate != null) _setTaxRate1(b.taxRate, taxRate);
+          if (taxRate != null) setTaxRate1(b.taxRate, taxRate);
         }),
       );
       final result = response.data;
@@ -164,12 +164,12 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
               b
                 ..warehouse = warehouse
                 ..comment = comment;
-              if (quantity != null) _setQuantity(b.quantity, quantity);
-              if (price != null) _setPrice1(b.price, price);
+              if (quantity != null) setQuantity(b.quantity, quantity);
+              if (price != null) setPrice1(b.price, price);
               if (discountRate != null) {
-                _setDiscountRate1(b.discountRate, discountRate);
+                setDiscountRate1(b.discountRate, discountRate);
               }
-              if (taxRate != null) _setTaxRate1(b.taxRate, taxRate);
+              if (taxRate != null) setTaxRate1(b.taxRate, taxRate);
             }),
           );
       final result = response.data;
@@ -416,32 +416,4 @@ AppError _toConfirmError(DioException error) {
     }
   }
   return _toSalesOrderError(error);
-}
-
-/// `quantity`/`price`/`discount_rate`/`tax_rate` are all `anyOf: [string,
-/// num]` in mbe-api's schema; this project always sends the String arm via
-/// `AnyOf2<String, num>(values: {0: value})` (String first, key `0` —
-/// mirrors the proven `_setCommission`/`_setOpeningAmount` precedents in
-/// sibling repositories, verified there against a live serialization
-/// round-trip). Each generated wrapper type is distinct
-/// (`Quantity`/`Price1`/`DiscountRate`/`DiscountRate1`/`TaxRate1`), so each
-/// gets its own tiny setter rather than one generic function.
-void _setQuantity(api.QuantityBuilder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setPrice1(api.Price1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setDiscountRate(api.DiscountRateBuilder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setDiscountRate1(api.DiscountRate1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
-}
-
-void _setTaxRate1(api.TaxRate1Builder builder, String value) {
-  builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }

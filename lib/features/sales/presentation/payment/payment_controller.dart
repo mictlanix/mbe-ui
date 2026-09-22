@@ -134,8 +134,8 @@ class PaymentController extends _$PaymentController {
     try {
       return await _tracked(() async {
         final repository = ref.read(customerPaymentRepositoryProvider);
-        final change = changeFor(sale.balance);
-        final applied = isZeroAmount(change) ? draft.amount : sale.balance;
+        final change = changeFor(sale.balanceOrZero);
+        final applied = isZeroAmount(change) ? draft.amount : sale.balanceOrZero;
 
         final paymentId = await repository.createPayment(
           customer: sale.customer,

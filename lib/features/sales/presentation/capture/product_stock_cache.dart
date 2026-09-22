@@ -28,3 +28,18 @@ final productStockCacheProvider =
 final productTaxRateCacheProvider = StateProvider<Map<int, String>>(
   (ref) => const {},
 );
+
+// Both caches above are **intentionally shared across all three capture
+// hosts** — the register, the back-office order workspace, and the quote
+// screen (spec 040, research.md R8) — rather than scoped per host through
+// the `saleEditorProvider`/`saleWritesScopeProvider` seam. They are plain,
+// root-scoped `StateProvider`s keyed only by product id, which is correct
+// here: the data they hold (a product's stock levels, a product's tax rate)
+// is a fact about the *product*, not about any one document, so a product
+// looked up at the register usefully seeding a quote's tax picker later in
+// the same session is sharing working as intended, not a leak between
+// documents. `CaptureStep._addLine` seeds the tax cache for every host —
+// including a quote host with `showWarehouse: false`, since without it a
+// fresh line offers only zero and its own rate — but seeds the stock cache
+// only when `showWarehouse` is `true`: a quote reserves no stock, so there
+// is nothing for it to advise on.

@@ -19,8 +19,14 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$Sale {
   int get id => throw _privateConstructorUsedError;
   int? get serial => throw _privateConstructorUsedError;
-  int get facility => throw _privateConstructorUsedError;
-  int get pointSale => throw _privateConstructorUsedError;
+  int get facility =>
+      throw _privateConstructorUsedError; // Nullable since spec 040: a quote is raised by a person, not a
+  // register, and has no point of sale at all. `null` here means "not a
+  // register document" — `capture_step.dart`'s own default-warehouse
+  // resolution already treats it that way (`sale?.pointSale ?? ...`), so
+  // widening this cost no reader outside spec 040's own three sites
+  // (data-model.md §1).
+  int? get pointSale => throw _privateConstructorUsedError;
   int get salesperson => throw _privateConstructorUsedError;
   int get customer => throw _privateConstructorUsedError;
   String? get customerName => throw _privateConstructorUsedError;
@@ -39,14 +45,20 @@ mixin _$Sale {
   // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
   // opened the order; `SalesOrderUpdate` has no such field, so it cannot
   // be edited afterwards.
-  SaleOrigin? get origin => throw _privateConstructorUsedError;
-  DateTime get promiseDate => throw _privateConstructorUsedError;
+  SaleOrigin? get origin =>
+      throw _privateConstructorUsedError; // Nullable since spec 040: a quote promises nothing — delivery is
+  // planned only on the order a conversion produces (data-model.md §1).
+  DateTime? get promiseDate => throw _privateConstructorUsedError;
   SaleStatus get status => throw _privateConstructorUsedError;
   List<SaleLine> get lines => throw _privateConstructorUsedError;
   String get subtotal => throw _privateConstructorUsedError;
   String get taxTotal => throw _privateConstructorUsedError;
-  String get total => throw _privateConstructorUsedError;
-  String get balance =>
+  String get total =>
+      throw _privateConstructorUsedError; // Nullable since spec 040: a quote is never payable. Read
+  // [balanceOrZero] rather than this field directly outside the payment
+  // surface, so "an order always has a balance; only a quote does not" is
+  // asserted once here instead of at every call site (data-model.md §1).
+  String? get balance =>
       throw _privateConstructorUsedError; // Back-office order screen fields (spec 029) — all already on the wire in
   // `SalesOrderResponse`, simply never mapped until this feature needed them.
   // POS never reads any of these; adding them is additive.
@@ -56,9 +68,15 @@ mixin _$Sale {
   DateTime get dueDate => throw _privateConstructorUsedError;
   int? get contact => throw _privateConstructorUsedError;
   String? get recipient => throw _privateConstructorUsedError;
-  String? get recipientName => throw _privateConstructorUsedError;
-  Priority get priority => throw _privateConstructorUsedError;
-  String? get comment => throw _privateConstructorUsedError;
+  String? get recipientName =>
+      throw _privateConstructorUsedError; // Nullable since spec 040: priority is an order-only concept a quote has
+  // no wire field for (data-model.md §1).
+  Priority? get priority => throw _privateConstructorUsedError;
+  String? get comment =>
+      throw _privateConstructorUsedError; // Quote-only (spec 040 data-model.md §1): whether the quote's due date
+  // has passed. Orthogonal to `status` — a quote can be both `completed`
+  // and expired. Always `false` for an order, which has no such field.
+  bool get hasExpired => throw _privateConstructorUsedError;
 
   /// Create a copy of Sale
   /// with the given fields replaced by the non-null parameter values.
@@ -75,7 +93,7 @@ abstract class $SaleCopyWith<$Res> {
     int id,
     int? serial,
     int facility,
-    int pointSale,
+    int? pointSale,
     int salesperson,
     int customer,
     String? customerName,
@@ -85,20 +103,21 @@ abstract class $SaleCopyWith<$Res> {
     int? shipTo,
     FulfillmentMode? fulfillmentIntent,
     SaleOrigin? origin,
-    DateTime promiseDate,
+    DateTime? promiseDate,
     SaleStatus status,
     List<SaleLine> lines,
     String subtotal,
     String taxTotal,
     String total,
-    String balance,
+    String? balance,
     DateTime date,
     DateTime dueDate,
     int? contact,
     String? recipient,
     String? recipientName,
-    Priority priority,
+    Priority? priority,
     String? comment,
+    bool hasExpired,
   });
 }
 
@@ -120,7 +139,7 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
     Object? id = null,
     Object? serial = freezed,
     Object? facility = null,
-    Object? pointSale = null,
+    Object? pointSale = freezed,
     Object? salesperson = null,
     Object? customer = null,
     Object? customerName = freezed,
@@ -130,20 +149,21 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
     Object? shipTo = freezed,
     Object? fulfillmentIntent = freezed,
     Object? origin = freezed,
-    Object? promiseDate = null,
+    Object? promiseDate = freezed,
     Object? status = null,
     Object? lines = null,
     Object? subtotal = null,
     Object? taxTotal = null,
     Object? total = null,
-    Object? balance = null,
+    Object? balance = freezed,
     Object? date = null,
     Object? dueDate = null,
     Object? contact = freezed,
     Object? recipient = freezed,
     Object? recipientName = freezed,
-    Object? priority = null,
+    Object? priority = freezed,
     Object? comment = freezed,
+    Object? hasExpired = null,
   }) {
     return _then(
       _value.copyWith(
@@ -159,10 +179,10 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.facility
                 : facility // ignore: cast_nullable_to_non_nullable
                       as int,
-            pointSale: null == pointSale
+            pointSale: freezed == pointSale
                 ? _value.pointSale
                 : pointSale // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as int?,
             salesperson: null == salesperson
                 ? _value.salesperson
                 : salesperson // ignore: cast_nullable_to_non_nullable
@@ -199,10 +219,10 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.origin
                 : origin // ignore: cast_nullable_to_non_nullable
                       as SaleOrigin?,
-            promiseDate: null == promiseDate
+            promiseDate: freezed == promiseDate
                 ? _value.promiseDate
                 : promiseDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
             status: null == status
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
@@ -223,10 +243,10 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.total
                 : total // ignore: cast_nullable_to_non_nullable
                       as String,
-            balance: null == balance
+            balance: freezed == balance
                 ? _value.balance
                 : balance // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
@@ -247,14 +267,18 @@ class _$SaleCopyWithImpl<$Res, $Val extends Sale>
                 ? _value.recipientName
                 : recipientName // ignore: cast_nullable_to_non_nullable
                       as String?,
-            priority: null == priority
+            priority: freezed == priority
                 ? _value.priority
                 : priority // ignore: cast_nullable_to_non_nullable
-                      as Priority,
+                      as Priority?,
             comment: freezed == comment
                 ? _value.comment
                 : comment // ignore: cast_nullable_to_non_nullable
                       as String?,
+            hasExpired: null == hasExpired
+                ? _value.hasExpired
+                : hasExpired // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -273,7 +297,7 @@ abstract class _$$SaleImplCopyWith<$Res> implements $SaleCopyWith<$Res> {
     int id,
     int? serial,
     int facility,
-    int pointSale,
+    int? pointSale,
     int salesperson,
     int customer,
     String? customerName,
@@ -283,20 +307,21 @@ abstract class _$$SaleImplCopyWith<$Res> implements $SaleCopyWith<$Res> {
     int? shipTo,
     FulfillmentMode? fulfillmentIntent,
     SaleOrigin? origin,
-    DateTime promiseDate,
+    DateTime? promiseDate,
     SaleStatus status,
     List<SaleLine> lines,
     String subtotal,
     String taxTotal,
     String total,
-    String balance,
+    String? balance,
     DateTime date,
     DateTime dueDate,
     int? contact,
     String? recipient,
     String? recipientName,
-    Priority priority,
+    Priority? priority,
     String? comment,
+    bool hasExpired,
   });
 }
 
@@ -315,7 +340,7 @@ class __$$SaleImplCopyWithImpl<$Res>
     Object? id = null,
     Object? serial = freezed,
     Object? facility = null,
-    Object? pointSale = null,
+    Object? pointSale = freezed,
     Object? salesperson = null,
     Object? customer = null,
     Object? customerName = freezed,
@@ -325,20 +350,21 @@ class __$$SaleImplCopyWithImpl<$Res>
     Object? shipTo = freezed,
     Object? fulfillmentIntent = freezed,
     Object? origin = freezed,
-    Object? promiseDate = null,
+    Object? promiseDate = freezed,
     Object? status = null,
     Object? lines = null,
     Object? subtotal = null,
     Object? taxTotal = null,
     Object? total = null,
-    Object? balance = null,
+    Object? balance = freezed,
     Object? date = null,
     Object? dueDate = null,
     Object? contact = freezed,
     Object? recipient = freezed,
     Object? recipientName = freezed,
-    Object? priority = null,
+    Object? priority = freezed,
     Object? comment = freezed,
+    Object? hasExpired = null,
   }) {
     return _then(
       _$SaleImpl(
@@ -354,10 +380,10 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.facility
             : facility // ignore: cast_nullable_to_non_nullable
                   as int,
-        pointSale: null == pointSale
+        pointSale: freezed == pointSale
             ? _value.pointSale
             : pointSale // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as int?,
         salesperson: null == salesperson
             ? _value.salesperson
             : salesperson // ignore: cast_nullable_to_non_nullable
@@ -394,10 +420,10 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.origin
             : origin // ignore: cast_nullable_to_non_nullable
                   as SaleOrigin?,
-        promiseDate: null == promiseDate
+        promiseDate: freezed == promiseDate
             ? _value.promiseDate
             : promiseDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
         status: null == status
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
@@ -418,10 +444,10 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.total
             : total // ignore: cast_nullable_to_non_nullable
                   as String,
-        balance: null == balance
+        balance: freezed == balance
             ? _value.balance
             : balance // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
@@ -442,14 +468,18 @@ class __$$SaleImplCopyWithImpl<$Res>
             ? _value.recipientName
             : recipientName // ignore: cast_nullable_to_non_nullable
                   as String?,
-        priority: null == priority
+        priority: freezed == priority
             ? _value.priority
             : priority // ignore: cast_nullable_to_non_nullable
-                  as Priority,
+                  as Priority?,
         comment: freezed == comment
             ? _value.comment
             : comment // ignore: cast_nullable_to_non_nullable
                   as String?,
+        hasExpired: null == hasExpired
+            ? _value.hasExpired
+            : hasExpired // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -462,7 +492,7 @@ class _$SaleImpl extends _Sale {
     required this.id,
     this.serial,
     required this.facility,
-    required this.pointSale,
+    this.pointSale,
     required this.salesperson,
     required this.customer,
     this.customerName,
@@ -472,20 +502,21 @@ class _$SaleImpl extends _Sale {
     this.shipTo,
     this.fulfillmentIntent,
     this.origin,
-    required this.promiseDate,
+    this.promiseDate,
     required this.status,
     final List<SaleLine> lines = const <SaleLine>[],
     required this.subtotal,
     required this.taxTotal,
     required this.total,
-    required this.balance,
+    this.balance,
     required this.date,
     required this.dueDate,
     this.contact,
     this.recipient,
     this.recipientName,
-    required this.priority,
+    this.priority,
     this.comment,
+    this.hasExpired = false,
   }) : _lines = lines,
        super._();
 
@@ -495,8 +526,14 @@ class _$SaleImpl extends _Sale {
   final int? serial;
   @override
   final int facility;
+  // Nullable since spec 040: a quote is raised by a person, not a
+  // register, and has no point of sale at all. `null` here means "not a
+  // register document" — `capture_step.dart`'s own default-warehouse
+  // resolution already treats it that way (`sale?.pointSale ?? ...`), so
+  // widening this cost no reader outside spec 040's own three sites
+  // (data-model.md §1).
   @override
-  final int pointSale;
+  final int? pointSale;
   @override
   final int salesperson;
   @override
@@ -525,8 +562,10 @@ class _$SaleImpl extends _Sale {
   // be edited afterwards.
   @override
   final SaleOrigin? origin;
+  // Nullable since spec 040: a quote promises nothing — delivery is
+  // planned only on the order a conversion produces (data-model.md §1).
   @override
-  final DateTime promiseDate;
+  final DateTime? promiseDate;
   @override
   final SaleStatus status;
   final List<SaleLine> _lines;
@@ -544,8 +583,12 @@ class _$SaleImpl extends _Sale {
   final String taxTotal;
   @override
   final String total;
+  // Nullable since spec 040: a quote is never payable. Read
+  // [balanceOrZero] rather than this field directly outside the payment
+  // surface, so "an order always has a balance; only a quote does not" is
+  // asserted once here instead of at every call site (data-model.md §1).
   @override
-  final String balance;
+  final String? balance;
   // Back-office order screen fields (spec 029) — all already on the wire in
   // `SalesOrderResponse`, simply never mapped until this feature needed them.
   // POS never reads any of these; adding them is additive.
@@ -561,14 +604,22 @@ class _$SaleImpl extends _Sale {
   final String? recipient;
   @override
   final String? recipientName;
+  // Nullable since spec 040: priority is an order-only concept a quote has
+  // no wire field for (data-model.md §1).
   @override
-  final Priority priority;
+  final Priority? priority;
   @override
   final String? comment;
+  // Quote-only (spec 040 data-model.md §1): whether the quote's due date
+  // has passed. Orthogonal to `status` — a quote can be both `completed`
+  // and expired. Always `false` for an order, which has no such field.
+  @override
+  @JsonKey()
+  final bool hasExpired;
 
   @override
   String toString() {
-    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, origin: $origin, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance, date: $date, dueDate: $dueDate, contact: $contact, recipient: $recipient, recipientName: $recipientName, priority: $priority, comment: $comment)';
+    return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, origin: $origin, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance, date: $date, dueDate: $dueDate, contact: $contact, recipient: $recipient, recipientName: $recipientName, priority: $priority, comment: $comment, hasExpired: $hasExpired)';
   }
 
   @override
@@ -617,7 +668,9 @@ class _$SaleImpl extends _Sale {
                 other.recipientName == recipientName) &&
             (identical(other.priority, priority) ||
                 other.priority == priority) &&
-            (identical(other.comment, comment) || other.comment == comment));
+            (identical(other.comment, comment) || other.comment == comment) &&
+            (identical(other.hasExpired, hasExpired) ||
+                other.hasExpired == hasExpired));
   }
 
   @override
@@ -650,6 +703,7 @@ class _$SaleImpl extends _Sale {
     recipientName,
     priority,
     comment,
+    hasExpired,
   ]);
 
   /// Create a copy of Sale
@@ -666,7 +720,7 @@ abstract class _Sale extends Sale {
     required final int id,
     final int? serial,
     required final int facility,
-    required final int pointSale,
+    final int? pointSale,
     required final int salesperson,
     required final int customer,
     final String? customerName,
@@ -676,20 +730,21 @@ abstract class _Sale extends Sale {
     final int? shipTo,
     final FulfillmentMode? fulfillmentIntent,
     final SaleOrigin? origin,
-    required final DateTime promiseDate,
+    final DateTime? promiseDate,
     required final SaleStatus status,
     final List<SaleLine> lines,
     required final String subtotal,
     required final String taxTotal,
     required final String total,
-    required final String balance,
+    final String? balance,
     required final DateTime date,
     required final DateTime dueDate,
     final int? contact,
     final String? recipient,
     final String? recipientName,
-    required final Priority priority,
+    final Priority? priority,
     final String? comment,
+    final bool hasExpired,
   }) = _$SaleImpl;
   const _Sale._() : super._();
 
@@ -698,9 +753,14 @@ abstract class _Sale extends Sale {
   @override
   int? get serial;
   @override
-  int get facility;
+  int get facility; // Nullable since spec 040: a quote is raised by a person, not a
+  // register, and has no point of sale at all. `null` here means "not a
+  // register document" — `capture_step.dart`'s own default-warehouse
+  // resolution already treats it that way (`sale?.pointSale ?? ...`), so
+  // widening this cost no reader outside spec 040's own three sites
+  // (data-model.md §1).
   @override
-  int get pointSale;
+  int? get pointSale;
   @override
   int get salesperson;
   @override
@@ -726,9 +786,10 @@ abstract class _Sale extends Sale {
   // opened the order; `SalesOrderUpdate` has no such field, so it cannot
   // be edited afterwards.
   @override
-  SaleOrigin? get origin;
+  SaleOrigin? get origin; // Nullable since spec 040: a quote promises nothing — delivery is
+  // planned only on the order a conversion produces (data-model.md §1).
   @override
-  DateTime get promiseDate;
+  DateTime? get promiseDate;
   @override
   SaleStatus get status;
   @override
@@ -738,9 +799,12 @@ abstract class _Sale extends Sale {
   @override
   String get taxTotal;
   @override
-  String get total;
+  String get total; // Nullable since spec 040: a quote is never payable. Read
+  // [balanceOrZero] rather than this field directly outside the payment
+  // surface, so "an order always has a balance; only a quote does not" is
+  // asserted once here instead of at every call site (data-model.md §1).
   @override
-  String get balance; // Back-office order screen fields (spec 029) — all already on the wire in
+  String? get balance; // Back-office order screen fields (spec 029) — all already on the wire in
   // `SalesOrderResponse`, simply never mapped until this feature needed them.
   // POS never reads any of these; adding them is additive.
   @override
@@ -753,11 +817,16 @@ abstract class _Sale extends Sale {
   @override
   String? get recipient;
   @override
-  String? get recipientName;
+  String? get recipientName; // Nullable since spec 040: priority is an order-only concept a quote has
+  // no wire field for (data-model.md §1).
   @override
-  Priority get priority;
+  Priority? get priority;
   @override
-  String? get comment;
+  String? get comment; // Quote-only (spec 040 data-model.md §1): whether the quote's due date
+  // has passed. Orthogonal to `status` — a quote can be both `completed`
+  // and expired. Always `false` for an order, which has no such field.
+  @override
+  bool get hasExpired;
 
   /// Create a copy of Sale
   /// with the given fields replaced by the non-null parameter values.

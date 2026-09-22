@@ -502,6 +502,7 @@ class _StepHost extends ConsumerWidget {
         sale: order,
         excludeGenericCustomer: true,
         showFulfillmentSelector: false,
+        showWarehouse: true,
         attachFulfillmentIntent: FulfillmentMode.delivery,
         continueLabel: l10n.salesOrderContinueToDeliveryAction,
         onContinue: (order != null && order!.lineCount > 0)

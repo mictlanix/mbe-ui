@@ -6,6 +6,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editing.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart';
+import 'package:mbe_ui/features/sales/presentation/tracked_editing.dart';
 
 part 'order_editor_controller.g.dart';
 
@@ -21,7 +22,7 @@ part 'order_editor_controller.g.dart';
 /// register.
 @riverpod
 class OrderEditorController extends _$OrderEditorController
-    with SaleEditing
+    with TrackedEditing, SaleEditing
     implements SaleEditor {
   @override
   Future<Sale?> build(int? orderId) async {

@@ -4791,6 +4791,12 @@ abstract class AppLocalizations {
   /// **'Sales Orders'**
   String get salesOrdersMenuTitle;
 
+  /// No description provided for @salesQuotesMenuTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Quotes'**
+  String get salesQuotesMenuTitle;
+
   /// No description provided for @salesOrdersScreenTitle.
   ///
   /// In en, this message translates to:
@@ -4928,6 +4934,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fewer details'**
   String get salesOrderFewerDetails;
+
+  /// No description provided for @salesQuoteConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm quote'**
+  String get salesQuoteConfirmAction;
+
+  /// No description provided for @salesQuoteStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get salesQuoteStatusDraft;
+
+  /// No description provided for @salesQuoteStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get salesQuoteStatusCompleted;
+
+  /// No description provided for @salesQuoteStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get salesQuoteStatusCancelled;
+
+  /// No description provided for @salesQuoteReferenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get salesQuoteReferenceLabel;
+
+  /// No description provided for @salesQuoteExpiryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry date'**
+  String get salesQuoteExpiryLabel;
+
+  /// No description provided for @salesQuoteCurrencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get salesQuoteCurrencyLabel;
+
+  /// No description provided for @salesQuoteCommentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get salesQuoteCommentLabel;
+
+  /// No description provided for @salesQuoteConvertAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert to order'**
+  String get salesQuoteConvertAction;
+
+  /// No description provided for @salesQuoteDuplicateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get salesQuoteDuplicateAction;
+
+  /// No description provided for @salesQuoteNewAction.
+  ///
+  /// In en, this message translates to:
+  /// **'New quote'**
+  String get salesQuoteNewAction;
+
+  /// No description provided for @salesQuotesColumnReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get salesQuotesColumnReference;
+
+  /// No description provided for @salesQuotesColumnCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get salesQuotesColumnCustomer;
+
+  /// No description provided for @salesQuotesColumnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get salesQuotesColumnDate;
+
+  /// No description provided for @salesQuotesColumnExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry'**
+  String get salesQuotesColumnExpiry;
+
+  /// No description provided for @salesQuotesColumnStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get salesQuotesColumnStatus;
+
+  /// No description provided for @salesQuotesColumnTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get salesQuotesColumnTotal;
+
+  /// No description provided for @salesQuotesSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search quotes'**
+  String get salesQuotesSearchLabel;
+
+  /// No description provided for @salesQuotesStatusFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get salesQuotesStatusFilterLabel;
+
+  /// No description provided for @salesQuotesCustomerFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get salesQuotesCustomerFilterLabel;
+
+  /// No description provided for @salesQuoteExpiredBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get salesQuoteExpiredBadge;
+
+  /// No description provided for @salesQuoteCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel quote'**
+  String get salesQuoteCancelAction;
+
+  /// No description provided for @salesQuoteCancelDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this quote?'**
+  String get salesQuoteCancelDialogTitle;
+
+  /// No description provided for @salesQuoteCancelDialogMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone. The quote will be marked cancelled.'**
+  String get salesQuoteCancelDialogMessage;
+
+  /// No description provided for @salesQuoteCancelDialogKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get salesQuoteCancelDialogKeepEditing;
+
+  /// No description provided for @salesQuoteCancelDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel quote'**
+  String get salesQuoteCancelDialogConfirm;
 
   /// No description provided for @salesOrderPriorityLow.
   ///

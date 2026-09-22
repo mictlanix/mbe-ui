@@ -43,6 +43,8 @@ import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.da
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/quote_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/sales_quotes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_workspace_screen.dart';
 import 'package:mbe_ui/features/settings/presentation/user_settings_screen.dart';
@@ -298,6 +300,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 040-sales-quotes: appended last (index 21), same rationale as
+          // `cashSessions` above. The quote itself lives at the top-level
+          // `/sales/quotes/new` / `/sales/quotes/:quoteId` routes below,
+          // mirroring `/sales/orders`'s own split.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/quotes',
+                builder: (context, state) =>
+                    SalesQuotesListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -424,6 +439,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/sales/orders/:orderId',
         builder: (context, state) => OrderWorkspaceScreen(
           orderId: int.parse(state.pathParameters['orderId']!),
+        ),
+      ),
+      // 040-sales-quotes: same top-level-sibling shape and `int.parse`
+      // convention as `/sales/orders` above.
+      GoRoute(
+        path: '/sales/quotes/new',
+        builder: (context, state) => const QuoteScreen(),
+      ),
+      GoRoute(
+        path: '/sales/quotes/:quoteId',
+        builder: (context, state) => QuoteScreen(
+          quoteId: int.parse(state.pathParameters['quoteId']!),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -638,6 +665,13 @@ NavGate? _routeGate(String location) {
   // `/sales/pos` one above.
   if (location.startsWith('/sales/orders')) {
     return PrivilegeGate(SystemObject.salesOrders, AccessRight.read);
+  }
+  // 040-sales-quotes: its own `SystemObject` (30), not `salesOrders` — a
+  // quote and an order are permissioned separately server-side, and this
+  // clause matches every quote route, including `/new` and `/:id`, since
+  // they all share the `/sales/quotes` prefix (FR-001, FR-002).
+  if (location.startsWith('/sales/quotes')) {
+    return PrivilegeGate(SystemObject.salesQuotes, AccessRight.read);
   }
   // 038-advanced-product-search: gated on `products`, matching `/products`
   // itself — this is a catalog browser, not a register or order action, and

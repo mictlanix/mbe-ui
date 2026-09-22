@@ -621,10 +621,18 @@ class _StepHost extends ConsumerWidget {
     void advanceToCobro() =>
         ref.read(posStepControllerProvider.notifier).advanceToCobro();
     if (current == null) {
-      return CaptureStep(sale: null, onContinue: advanceToCobro);
+      return CaptureStep(
+        sale: null,
+        onContinue: advanceToCobro,
+        showWarehouse: true,
+      );
     }
     return switch (step) {
-      PosStep.venta => CaptureStep(sale: current, onContinue: advanceToCobro),
+      PosStep.venta => CaptureStep(
+        sale: current,
+        onContinue: advanceToCobro,
+        showWarehouse: true,
+      ),
       PosStep.cobro => PaymentStep(
         sale: current,
         onClose: () => _closePayment(context, ref),
