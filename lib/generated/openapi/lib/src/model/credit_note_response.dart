@@ -19,7 +19,7 @@ part 'credit_note_response.g.dart';
 /// * [refunded]
 /// * [remaining]
 /// * [cashSession]
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 @BuiltValue()
 abstract class CreditNoteResponse
     implements Built<CreditNoteResponse, CreditNoteResponseBuilder> {
@@ -47,6 +47,7 @@ abstract class CreditNoteResponse
   @BuiltValueField(wireName: r'cash_session')
   int? get cashSession;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 

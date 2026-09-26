@@ -16,7 +16,7 @@ part 'pending_delivery_line.g.dart';
 /// * [serial]
 /// * [customer]
 /// * [shipTo]
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [priority]
 /// * [product]
 /// * [productCode]
@@ -41,6 +41,7 @@ abstract class PendingDeliveryLine
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 

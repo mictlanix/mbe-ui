@@ -18,8 +18,8 @@ part 'cash_session_response.g.dart';
 /// * [cashSessionId]
 /// * [cashDrawer]
 /// * [cashier]
-/// * [start]
-/// * [end]
+/// * [start] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [end] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [cashSupervisor]
 /// * [openingAmount]
 /// * [paymentsByMethod]
@@ -35,9 +35,11 @@ abstract class CashSessionResponse
   @BuiltValueField(wireName: r'cashier')
   EmployeeResponse get cashier;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'start')
   DateTime get start;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'end')
   DateTime? get end;
 

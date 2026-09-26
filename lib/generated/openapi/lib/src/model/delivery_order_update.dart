@@ -11,7 +11,7 @@ part 'delivery_order_update.g.dart';
 /// DeliveryOrderUpdate
 ///
 /// Properties:
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [priority]
 /// * [shipTo]
 /// * [contact]
@@ -19,6 +19,7 @@ part 'delivery_order_update.g.dart';
 @BuiltValue()
 abstract class DeliveryOrderUpdate
     implements Built<DeliveryOrderUpdate, DeliveryOrderUpdateBuilder> {
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 

@@ -16,7 +16,7 @@ part 'delivery_order_event_response.g.dart';
 /// * [fromStatus]
 /// * [toStatus]
 /// * [employee]
-/// * [eventTime]
+/// * [eventTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [reason]
 @BuiltValue()
 abstract class DeliveryOrderEventResponse
@@ -36,6 +36,7 @@ abstract class DeliveryOrderEventResponse
   @BuiltValueField(wireName: r'employee')
   int get employee;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'event_time')
   DateTime get eventTime;
 

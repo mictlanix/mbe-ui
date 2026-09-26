@@ -21,8 +21,8 @@ part 'vehicle_operator_response.g.dart';
 /// * [issueDate]
 /// * [expirationDate]
 /// * [issuingLocation]
-/// * [creationTime]
-/// * [modificationTime]
+/// * [creationTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [modificationTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [creator]
 /// * [updater]
 /// * [status]
@@ -51,9 +51,11 @@ abstract class VehicleOperatorResponse
   @BuiltValueField(wireName: r'issuing_location')
   String get issuingLocation;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'creation_time')
   DateTime get creationTime;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'modification_time')
   DateTime get modificationTime;
 

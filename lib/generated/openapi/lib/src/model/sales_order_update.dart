@@ -19,7 +19,7 @@ part 'sales_order_update.g.dart';
 /// * [salesperson]
 /// * [paymentTerms]
 /// * [currency]
-/// * [promiseDate]
+/// * [promiseDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [contact]
 /// * [shipTo]
 /// * [recipient]
@@ -44,6 +44,7 @@ abstract class SalesOrderUpdate
   CurrencyCode? get currency;
   // enum currencyEnum {  0,  1,  2,  };
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'promise_date')
   DateTime? get promiseDate;
 

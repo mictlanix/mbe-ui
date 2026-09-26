@@ -21,8 +21,8 @@ part 'sales_order_summary.g.dart';
 /// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [salesQuote]
 /// * [salesperson]
-/// * [date]
-/// * [dueDate]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [dueDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [currency]
 /// * [status]
 /// * [origin] - Which workflow raised the order: 0 the point of sale, 1 the back office. Null means it was never recorded — not \"point of sale\". Set at creation; it cannot be changed afterwards.
@@ -54,9 +54,11 @@ abstract class SalesOrderSummary
   @BuiltValueField(wireName: r'salesperson')
   int get salesperson;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime get date;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'due_date')
   DateTime get dueDate;
 

@@ -16,7 +16,7 @@ part 'itinerary_stop_response.g.dart';
 /// Properties:
 /// * [deliveriesItineraryStopId]
 /// * [sequence]
-/// * [arrivalTime]
+/// * [arrivalTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [outcome]
 /// * [proofOfDelivery]
 /// * [comment]
@@ -30,6 +30,7 @@ abstract class ItineraryStopResponse
   @BuiltValueField(wireName: r'sequence')
   int get sequence;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'arrival_time')
   DateTime? get arrivalTime;
 

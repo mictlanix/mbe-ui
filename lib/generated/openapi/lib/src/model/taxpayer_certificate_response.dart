@@ -14,8 +14,8 @@ part 'taxpayer_certificate_response.g.dart';
 /// Properties:
 /// * [taxpayerCertificateId]
 /// * [taxpayer]
-/// * [validFrom]
-/// * [validTo]
+/// * [validFrom] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [validTo] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [status]
 @BuiltValue()
 abstract class TaxpayerCertificateResponse
@@ -27,9 +27,11 @@ abstract class TaxpayerCertificateResponse
   @BuiltValueField(wireName: r'taxpayer')
   String get taxpayer;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'valid_from')
   DateTime get validFrom;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'valid_to')
   DateTime get validTo;
 

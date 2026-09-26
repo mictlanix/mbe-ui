@@ -19,7 +19,7 @@ part 'delivery_order_create.g.dart';
 /// * [lines]
 /// * [shipTo]
 /// * [contact]
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [comment]
 @BuiltValue()
 abstract class DeliveryOrderCreate
@@ -40,6 +40,7 @@ abstract class DeliveryOrderCreate
   @BuiltValueField(wireName: r'contact')
   int? get contact;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 

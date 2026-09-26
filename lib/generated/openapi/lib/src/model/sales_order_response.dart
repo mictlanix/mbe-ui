@@ -28,9 +28,9 @@ part 'sales_order_response.g.dart';
 /// * [customerName]
 /// * [salesQuote]
 /// * [paymentTerms]
-/// * [date]
-/// * [promiseDate]
-/// * [dueDate]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [promiseDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [dueDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [contact]
 /// * [shipTo]
 /// * [recipient]
@@ -78,12 +78,15 @@ abstract class SalesOrderResponse
   PaymentTerms get paymentTerms;
   // enum paymentTermsEnum {  0,  1,  };
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime get date;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'promise_date')
   DateTime get promiseDate;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'due_date')
   DateTime get dueDate;
 

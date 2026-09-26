@@ -21,7 +21,7 @@ part 'delivery_order_response.g.dart';
 /// * [customer]
 /// * [salesOrders]
 /// * [shipTo]
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [priority]
 /// * [status]
 /// * [fulfillmentType]
@@ -30,8 +30,8 @@ part 'delivery_order_response.g.dart';
 /// * [comment]
 /// * [rejectionReason]
 /// * [proofOfDelivery]
-/// * [creationTime]
-/// * [modificationTime]
+/// * [creationTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [modificationTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [lines]
 @BuiltValue()
 abstract class DeliveryOrderResponse
@@ -54,6 +54,7 @@ abstract class DeliveryOrderResponse
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 
@@ -83,9 +84,11 @@ abstract class DeliveryOrderResponse
   @BuiltValueField(wireName: r'proof_of_delivery')
   int? get proofOfDelivery;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'creation_time')
   DateTime get creationTime;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'modification_time')
   DateTime get modificationTime;
 

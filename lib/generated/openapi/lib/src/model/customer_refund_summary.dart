@@ -17,7 +17,7 @@ part 'customer_refund_summary.g.dart';
 /// * [salesOrder]
 /// * [customer]
 /// * [serial]
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [currency]
 /// * [status]
 /// * [total]
@@ -36,6 +36,7 @@ abstract class CustomerRefundSummary
   @BuiltValueField(wireName: r'serial')
   int? get serial;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 

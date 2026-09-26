@@ -17,7 +17,7 @@ part 'sales_quote_update.g.dart';
 /// * [salesperson]
 /// * [paymentTerms]
 /// * [currency]
-/// * [dueDate]
+/// * [dueDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [contact]
 /// * [shipTo]
 /// * [comment]
@@ -38,6 +38,7 @@ abstract class SalesQuoteUpdate
   CurrencyCode? get currency;
   // enum currencyEnum {  0,  1,  2,  };
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'due_date')
   DateTime? get dueDate;
 

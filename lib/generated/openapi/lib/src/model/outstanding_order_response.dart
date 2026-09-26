@@ -17,8 +17,8 @@ part 'outstanding_order_response.g.dart';
 /// * [customer]
 /// * [customerName] - The name printed on this document instead of the customer's own, when one was set. Null on an ordinary sale — most rows. To show who the customer is, read `customer_display_name`; this field only says whether the document overrides that name.
 /// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
-/// * [date]
-/// * [dueDate]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [dueDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [currency]
 /// * [total]
 /// * [balance]
@@ -43,9 +43,11 @@ abstract class OutstandingOrderResponse
   @BuiltValueField(wireName: r'customer_display_name')
   String? get customerDisplayName;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime get date;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'due_date')
   DateTime get dueDate;
 

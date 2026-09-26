@@ -17,7 +17,7 @@ part 'application_response.g.dart';
 /// * [amount]
 /// * [amountChange]
 /// * [applier]
-/// * [date]
+/// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [cancelled]
 @BuiltValue()
 abstract class ApplicationResponse
@@ -40,6 +40,7 @@ abstract class ApplicationResponse
   @BuiltValueField(wireName: r'applier')
   int? get applier;
 
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime? get date;
 
