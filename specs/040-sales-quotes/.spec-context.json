@@ -3,7 +3,7 @@
   "specName": "Sales Quotes — Cotizaciones",
   "branch": "040-sales-quotes",
   "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-21T09:59:16.056Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T16:22:31.126Z"
     }
   ],
   "telemetryInstanceId": "3cd58b37-21b3-4d83-8cc1-63b8014f6e14",
