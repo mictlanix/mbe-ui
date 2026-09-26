@@ -122,7 +122,7 @@ These are the ordering and review risks the task list must respect.
 4. Fixture migration in the 9 unit test files, and the `listOpen` guard repurpose.
 5. The staleness test through the real mapping.
 6. DESIGN.md, then the constitution PATCH.
-7. The three-timezone suite run, then the live checks.
+7. The three-timezone suite run, the live checks, the date-only canary (FR-005), then the regeneration survival check (FR-007).
 
 Steps 4 and 5 can run in parallel with each other once 3 is in. Step 6 is independent and can land any time.
 

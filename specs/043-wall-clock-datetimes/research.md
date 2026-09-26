@@ -174,6 +174,8 @@ Widget tests are unaffected. They construct domain entities with `DateTime(...)`
 
 **Rationale**: mictlanix/mbe-api#228 shipped the contract this feature consumes (PR mictlanix/mbe-api#229, deployed). The client was regenerated against it in `db64d5b`, which changed doc comments only: every changed line is a `///`, verified mechanically. The constitution's workflow gate, "re-run codegen when mbe-api changes", is satisfied before this feature starts.
 
+FR-007 asks for more than a current client, though: that the fix *survives* a future regeneration. That is proven rather than argued by re-running `tool/generate_api_client.sh` at the end and confirming both an empty `lib/generated/` diff and a still-green rule and guard test (quickstart step 8). The design makes the guarantee structural, since the override never lives under `lib/generated/`, but structural is not the same as tested.
+
 ---
 
 ## R11. Constitution and DESIGN.md wording

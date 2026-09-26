@@ -31,6 +31,8 @@ TZ=America/New_York flutter test test/unit test/widget
 
 Expected: identical results in all three. `TZ` is honored by the test process (verified: it reports `CST`, `UTC` and `EDT` respectively). New York matters most because it observes daylight saving, where the writing rule's trap lives (research R3). Proves FR-010, SC-006.
 
+Also confirm the date-only canary: `test/unit/features/pricing/exchange_rate_repository_impl_test.dart` asserts bare `2026-01-01`-style wire values for `Date`-typed fields. Those assertions must pass **unmodified** — they are what breaks first if the new serializer ever displaces the generated `DateSerializer` (FR-005).
+
 Known unrelated failure to ignore until it is fixed separately: `test/unit/features/repository_list_params_audit_test.dart` (Products), which reports that `ProductsApi` gained `perishable`, `seriable` and `invoiceable` upstream. It fails identically on `main`.
 
 ## 4. Live: the day filter
@@ -77,3 +79,15 @@ On a draft order, pick a promise date. On a delivery, pick a delivery date. Save
 Expected: the picked dates read back unchanged, and no "couldn't reach the server" error appears. Proves FR-003, SC-003.
 
 This check writes data. Use a draft order you can cancel afterwards.
+
+## 8. The fix survives regeneration
+
+```bash
+./tool/generate_api_client.sh          # needs Docker; defaults to http://127.0.0.1:8000/openapi.json
+git diff --stat lib/generated/         # expect: no output
+flutter test test/unit/core/network/
+```
+
+Expected: regeneration produces no diff, because the client is already current as of `db64d5b`, and the rule and guard tests still pass. The override lives in `lib/core/network/api_serializers.dart` and enters through the generated constructors' own `Serializers` argument, so there is nothing under `lib/generated/` for a rebuild to undo. Proves FR-007.
+
+A non-empty diff means mbe-api's schema moved after `db64d5b`. That is a separate change to absorb deliberately, not part of this feature.
