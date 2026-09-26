@@ -98,7 +98,7 @@ class _HeaderRowStandIn extends ConsumerWidget {
     return Row(
       children: [
         OpenSalesSelector(
-          pointSale: sale.pointSale,
+          pointSale: sale.pointSale!, // always set: a real register sale
           currentId: sale.provisionalReference,
           currentSerial: sale.serial,
           onSelected: onSaleSelected,

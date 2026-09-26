@@ -29,8 +29,11 @@ mixin _$SaleLine {
   // ones. Already resolved through `resolvePhotoUrl`, so a call site hands it
   // straight to `ProductPhoto`. Null for a product with no photo.
   String? get photo => throw _privateConstructorUsedError;
-  String get quantity => throw _privateConstructorUsedError;
-  String get cost => throw _privateConstructorUsedError;
+  String get quantity =>
+      throw _privateConstructorUsedError; // Nullable since spec 040: absent on a quote line. Has exactly one
+  // reader anywhere in `lib/` — this file's own mapping — verified by
+  // grep (data-model.md §2).
+  String? get cost => throw _privateConstructorUsedError;
   String get price => throw _privateConstructorUsedError;
   String get discountRate => throw _privateConstructorUsedError;
   String get taxRate => throw _privateConstructorUsedError;
@@ -44,7 +47,12 @@ mixin _$SaleLine {
   // chosen warehouse, not stored on the line itself (data-model.md §2) —
   // advisory only; the authoritative check happens at confirmation
   // (FR-025, FR-026).
-  String? get availability => throw _privateConstructorUsedError;
+  String? get availability =>
+      throw _privateConstructorUsedError; // Quote-only (spec 040, data-model.md §2): the quote's absolute per-line
+  // markup. Mapped in so the value round-trips, but **read-only in v1**
+  // (spec A3) — no shared widget writes it. `null` on an order line, which
+  // has no such field.
+  String? get priceAdjustment => throw _privateConstructorUsedError;
 
   /// Create a copy of SaleLine
   /// with the given fields replaced by the non-null parameter values.
@@ -66,7 +74,7 @@ abstract class $SaleLineCopyWith<$Res> {
     String? unit,
     String? photo,
     String quantity,
-    String cost,
+    String? cost,
     String price,
     String discountRate,
     String taxRate,
@@ -77,6 +85,7 @@ abstract class $SaleLineCopyWith<$Res> {
     String taxTotal,
     String total,
     String? availability,
+    String? priceAdjustment,
   });
 }
 
@@ -102,7 +111,7 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
     Object? unit = freezed,
     Object? photo = freezed,
     Object? quantity = null,
-    Object? cost = null,
+    Object? cost = freezed,
     Object? price = null,
     Object? discountRate = null,
     Object? taxRate = null,
@@ -113,6 +122,7 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
     Object? taxTotal = null,
     Object? total = null,
     Object? availability = freezed,
+    Object? priceAdjustment = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -144,10 +154,10 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
                 ? _value.quantity
                 : quantity // ignore: cast_nullable_to_non_nullable
                       as String,
-            cost: null == cost
+            cost: freezed == cost
                 ? _value.cost
                 : cost // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             price: null == price
                 ? _value.price
                 : price // ignore: cast_nullable_to_non_nullable
@@ -188,6 +198,10 @@ class _$SaleLineCopyWithImpl<$Res, $Val extends SaleLine>
                 ? _value.availability
                 : availability // ignore: cast_nullable_to_non_nullable
                       as String?,
+            priceAdjustment: freezed == priceAdjustment
+                ? _value.priceAdjustment
+                : priceAdjustment // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -211,7 +225,7 @@ abstract class _$$SaleLineImplCopyWith<$Res>
     String? unit,
     String? photo,
     String quantity,
-    String cost,
+    String? cost,
     String price,
     String discountRate,
     String taxRate,
@@ -222,6 +236,7 @@ abstract class _$$SaleLineImplCopyWith<$Res>
     String taxTotal,
     String total,
     String? availability,
+    String? priceAdjustment,
   });
 }
 
@@ -246,7 +261,7 @@ class __$$SaleLineImplCopyWithImpl<$Res>
     Object? unit = freezed,
     Object? photo = freezed,
     Object? quantity = null,
-    Object? cost = null,
+    Object? cost = freezed,
     Object? price = null,
     Object? discountRate = null,
     Object? taxRate = null,
@@ -257,6 +272,7 @@ class __$$SaleLineImplCopyWithImpl<$Res>
     Object? taxTotal = null,
     Object? total = null,
     Object? availability = freezed,
+    Object? priceAdjustment = freezed,
   }) {
     return _then(
       _$SaleLineImpl(
@@ -288,10 +304,10 @@ class __$$SaleLineImplCopyWithImpl<$Res>
             ? _value.quantity
             : quantity // ignore: cast_nullable_to_non_nullable
                   as String,
-        cost: null == cost
+        cost: freezed == cost
             ? _value.cost
             : cost // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         price: null == price
             ? _value.price
             : price // ignore: cast_nullable_to_non_nullable
@@ -332,6 +348,10 @@ class __$$SaleLineImplCopyWithImpl<$Res>
             ? _value.availability
             : availability // ignore: cast_nullable_to_non_nullable
                   as String?,
+        priceAdjustment: freezed == priceAdjustment
+            ? _value.priceAdjustment
+            : priceAdjustment // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -348,7 +368,7 @@ class _$SaleLineImpl implements _SaleLine {
     this.unit,
     this.photo,
     required this.quantity,
-    required this.cost,
+    this.cost,
     required this.price,
     required this.discountRate,
     required this.taxRate,
@@ -359,6 +379,7 @@ class _$SaleLineImpl implements _SaleLine {
     required this.taxTotal,
     required this.total,
     this.availability,
+    this.priceAdjustment,
   });
 
   @override
@@ -381,8 +402,11 @@ class _$SaleLineImpl implements _SaleLine {
   final String? photo;
   @override
   final String quantity;
+  // Nullable since spec 040: absent on a quote line. Has exactly one
+  // reader anywhere in `lib/` — this file's own mapping — verified by
+  // grep (data-model.md §2).
   @override
-  final String cost;
+  final String? cost;
   @override
   final String price;
   @override
@@ -407,10 +431,16 @@ class _$SaleLineImpl implements _SaleLine {
   // (FR-025, FR-026).
   @override
   final String? availability;
+  // Quote-only (spec 040, data-model.md §2): the quote's absolute per-line
+  // markup. Mapped in so the value round-trips, but **read-only in v1**
+  // (spec A3) — no shared widget writes it. `null` on an order line, which
+  // has no such field.
+  @override
+  final String? priceAdjustment;
 
   @override
   String toString() {
-    return 'SaleLine(id: $id, product: $product, productCode: $productCode, productName: $productName, unit: $unit, photo: $photo, quantity: $quantity, cost: $cost, price: $price, discountRate: $discountRate, taxRate: $taxRate, taxIncluded: $taxIncluded, warehouse: $warehouse, comment: $comment, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, availability: $availability)';
+    return 'SaleLine(id: $id, product: $product, productCode: $productCode, productName: $productName, unit: $unit, photo: $photo, quantity: $quantity, cost: $cost, price: $price, discountRate: $discountRate, taxRate: $taxRate, taxIncluded: $taxIncluded, warehouse: $warehouse, comment: $comment, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, availability: $availability, priceAdjustment: $priceAdjustment)';
   }
 
   @override
@@ -444,11 +474,13 @@ class _$SaleLineImpl implements _SaleLine {
                 other.taxTotal == taxTotal) &&
             (identical(other.total, total) || other.total == total) &&
             (identical(other.availability, availability) ||
-                other.availability == availability));
+                other.availability == availability) &&
+            (identical(other.priceAdjustment, priceAdjustment) ||
+                other.priceAdjustment == priceAdjustment));
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     product,
@@ -468,7 +500,8 @@ class _$SaleLineImpl implements _SaleLine {
     taxTotal,
     total,
     availability,
-  );
+    priceAdjustment,
+  ]);
 
   /// Create a copy of SaleLine
   /// with the given fields replaced by the non-null parameter values.
@@ -488,7 +521,7 @@ abstract class _SaleLine implements SaleLine {
     final String? unit,
     final String? photo,
     required final String quantity,
-    required final String cost,
+    final String? cost,
     required final String price,
     required final String discountRate,
     required final String taxRate,
@@ -499,6 +532,7 @@ abstract class _SaleLine implements SaleLine {
     required final String taxTotal,
     required final String total,
     final String? availability,
+    final String? priceAdjustment,
   }) = _$SaleLineImpl;
 
   @override
@@ -518,9 +552,11 @@ abstract class _SaleLine implements SaleLine {
   @override
   String? get photo;
   @override
-  String get quantity;
+  String get quantity; // Nullable since spec 040: absent on a quote line. Has exactly one
+  // reader anywhere in `lib/` — this file's own mapping — verified by
+  // grep (data-model.md §2).
   @override
-  String get cost;
+  String? get cost;
   @override
   String get price;
   @override
@@ -543,7 +579,12 @@ abstract class _SaleLine implements SaleLine {
   // advisory only; the authoritative check happens at confirmation
   // (FR-025, FR-026).
   @override
-  String? get availability;
+  String? get availability; // Quote-only (spec 040, data-model.md §2): the quote's absolute per-line
+  // markup. Mapped in so the value round-trips, but **read-only in v1**
+  // (spec A3) — no shared widget writes it. `null` on an order line, which
+  // has no such field.
+  @override
+  String? get priceAdjustment;
 
   /// Create a copy of SaleLine
   /// with the given fields replaced by the non-null parameter values.

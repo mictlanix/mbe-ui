@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
+import 'package:mbe_ui/features/sales/presentation/tracked_editing.dart';
 
 /// The mutation bodies [PosSaleController] and the back-office order
 /// controller share (research §R1) — each is "call the repository, replace
@@ -15,31 +15,13 @@ import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 /// this outright, so a second `SaleEditor` implementation doesn't have to
 /// duplicate it.
 ///
-/// No `on` clause: the common ancestor both `PosSaleController` (a plain
-/// `@riverpod` class, generated base `AutoDisposeAsyncNotifier<Sale?>`) and
-/// the order-id-keyed family notifier (generated base
-/// `BuildlessAutoDisposeAsyncNotifier<Sale?>`) actually share is that
-/// package-private type, which cannot be named from outside `package:
-/// riverpod` — verified against the generated code for both shapes rather
-/// than assumed. Declaring [ref] and [state] here instead, matching
-/// `AsyncNotifierBase`'s own signatures exactly, lets Dart's structural
-/// mixin application satisfy them from whichever concrete base a mixing-in
-/// class actually has.
-mixin SaleEditing implements SaleEditor {
-  // The exact type both generated bases actually declare in riverpod 2.6.1
-  // — deprecated in favor of plain `Ref` in a later major version, but
-  // that alias isn't a valid override of this one today, and this is a
-  // structural mixin with no `on` clause to inherit the type from.
-  // ignore: deprecated_member_use
-  AutoDisposeAsyncNotifierProviderRef<Sale?> get ref;
-  AsyncValue<Sale?> get state;
-  set state(AsyncValue<Sale?> value);
-  /// The scope this notifier's writes and unconfirmed edits register
-  /// against (spec 031, spec 029 FR-038) — `posWritesScope` for the
-  /// register, `salesOrderWritesScope` for the back-office order screen.
-  /// Never shared between the two.
-  String get writesScope;
-
+/// Mixes in [TrackedEditing] for the document-agnostic half of that scaffold
+/// — `ref`/`state`/`writesScope`, `tracked()`, `openSale` — (spec 040
+/// research.md R3) and adds everything a sales order specifically needs:
+/// [origin], [ensureOpen]'s call to `SalesOrderRepository.open`, and every
+/// mutation body's order-shaped parameters, none of which a quote's own
+/// `QuoteEditing` shares.
+mixin SaleEditing on TrackedEditing implements SaleEditor {
   /// Which workflow this editor raises orders for (mbe-api#209, spec 039
   /// FR-051) — `SaleOrigin.pointOfSale` for the register,
   /// `SaleOrigin.backOffice` for the order workspace. Declared here rather
@@ -63,26 +45,6 @@ mixin SaleEditing implements SaleEditor {
     state = AsyncValue.data(opened);
     return opened;
   }
-
-  /// For the mutations that cannot be a first action — there is nothing to
-  /// update, remove or confirm before a sale exists.
-  Sale get openSale {
-    final current = state.valueOrNull;
-    if (current == null) {
-      throw StateError('This action needs an open sale; none is started.');
-    }
-    return current;
-  }
-
-  /// Registers this call in `pendingWritesProvider(writesScope)` for the
-  /// whole of [action] — including [action]'s own
-  /// `state = AsyncValue.data(...)` assignment, which must happen *before*
-  /// [action] returns so the count only reaches zero once the figures a
-  /// gated step reads are already the sale's own (spec 031 FR-003, research
-  /// R6). Every mutating method below routes through this rather than
-  /// registering by hand.
-  Future<T> tracked<T>(Future<T> Function() action) =>
-      ref.read(pendingWritesProvider(writesScope).notifier).track(action);
 
   @override
   Future<void> updateHeader({

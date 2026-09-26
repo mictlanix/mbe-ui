@@ -2611,6 +2611,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesOrdersMenuTitle => 'Sales Orders';
 
   @override
+  String get salesQuotesMenuTitle => 'Sales Quotes';
+
+  @override
   String get salesOrdersScreenTitle => 'Sales Orders';
 
   @override
@@ -2678,6 +2681,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salesOrderFewerDetails => 'Fewer details';
+
+  @override
+  String get salesQuoteConfirmAction => 'Confirm quote';
+
+  @override
+  String get salesQuoteStatusDraft => 'Draft';
+
+  @override
+  String get salesQuoteStatusCompleted => 'Confirmed';
+
+  @override
+  String get salesQuoteStatusCancelled => 'Cancelled';
+
+  @override
+  String get salesQuoteReferenceLabel => 'Reference';
+
+  @override
+  String get salesQuoteStatusLabel => 'Status';
+
+  @override
+  String get salesQuoteDateLabel => 'Date';
+
+  @override
+  String get salesQuoteMoreDetails => 'More details';
+
+  @override
+  String get salesQuoteFewerDetails => 'Fewer details';
+
+  @override
+  String get salesQuoteExpiryLabel => 'Expiry date';
+
+  @override
+  String get salesQuoteCurrencyLabel => 'Currency';
+
+  @override
+  String get salesQuoteCommentLabel => 'Comment';
+
+  @override
+  String get salesQuoteConvertAction => 'Convert to order';
+
+  @override
+  String get salesQuoteDuplicateAction => 'Duplicate';
+
+  @override
+  String get salesQuoteNewAction => 'New quote';
+
+  @override
+  String get salesQuotesColumnReference => 'Reference';
+
+  @override
+  String get salesQuotesColumnCustomer => 'Customer';
+
+  @override
+  String get salesQuotesColumnDate => 'Date';
+
+  @override
+  String get salesQuotesColumnExpiry => 'Expiry';
+
+  @override
+  String get salesQuotesColumnStatus => 'Status';
+
+  @override
+  String get salesQuotesColumnTotal => 'Total';
+
+  @override
+  String get salesQuotesSearchLabel => 'Search quotes';
+
+  @override
+  String get salesQuotesStatusFilterLabel => 'Status';
+
+  @override
+  String get salesQuotesCustomerFilterLabel => 'Customer';
+
+  @override
+  String get salesQuoteExpiredBadge => 'Expired';
+
+  @override
+  String get salesQuoteCancelAction => 'Cancel quote';
+
+  @override
+  String get salesQuoteCancelDialogTitle => 'Cancel this quote?';
+
+  @override
+  String get salesQuoteCancelDialogMessage =>
+      'This cannot be undone. The quote will be marked cancelled.';
+
+  @override
+  String get salesQuoteCancelDialogKeepEditing => 'Keep editing';
+
+  @override
+  String get salesQuoteCancelDialogConfirm => 'Cancel quote';
 
   @override
   String get salesOrderPriorityLow => 'Low';

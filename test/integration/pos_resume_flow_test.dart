@@ -60,7 +60,7 @@ void main() {
       final probe = await salesOrders.open();
       final pointSale = await PointSaleRepositoryImpl(
         dio,
-      ).get(pointSaleId: probe.pointSale);
+      ).get(pointSaleId: probe.pointSale!); // always set: a real register sale
       final facility = await FacilityRepositoryImpl(
         dio,
       ).get(facilityId: probe.facility);
@@ -104,7 +104,10 @@ void main() {
         saleId: (await saleWithALine(await salesOrders.open())).id,
       );
       expect(unpaid.status, SaleStatus.completed);
-      expect(compareAmounts(unpaid.balance, '0'), greaterThan(0));
+      expect(
+        compareAmounts(unpaid.balance!, '0'), // always set: a real register sale
+        greaterThan(0),
+      );
 
       // ── Left paid ──────────────────────────────────────────────────────
       final settled = await salesOrders.confirm(
@@ -112,25 +115,25 @@ void main() {
       );
       final paymentId = await payments.createPayment(
         customer: settled.customer,
-        amount: settled.balance,
+        amount: settled.balance!, // always set: a real register sale
         method: PaymentMethod.cash.code,
         currency: settled.currency,
       );
       await payments.applyPayment(
         customerPaymentId: paymentId,
         salesOrder: settled.id,
-        amount: settled.balance,
+        amount: settled.balance!, // always set: a real register sale
       );
       final paid = await salesOrders.getById(saleId: settled.id);
       expect(paid.isPaid, isTrue);
 
       // ── The register finds the unfinished ones again ───────────────────
       final drafts = await salesOrders.listOpen(
-        pointSale: probe.pointSale,
+        pointSale: probe.pointSale!, // always set: a real register sale
         status: SaleStatus.draft,
       );
       final completed = await salesOrders.listOpen(
-        pointSale: probe.pointSale,
+        pointSale: probe.pointSale!, // always set: a real register sale
         status: SaleStatus.completed,
       );
 
@@ -171,7 +174,7 @@ void main() {
       final empty = await salesOrders.open();
       await salesOrders.cancel(saleId: empty.id);
       final afterCancel = await salesOrders.listOpen(
-        pointSale: probe.pointSale,
+        pointSale: probe.pointSale!, // always set: a real register sale
         status: SaleStatus.draft,
       );
       expect(

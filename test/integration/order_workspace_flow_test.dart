@@ -116,7 +116,7 @@ void main() {
       // both confirm live: mbe-api does not fill this in on its own).
       final pointSale = await PointSaleRepositoryImpl(
         dio,
-      ).get(pointSaleId: opened.pointSale);
+      ).get(pointSaleId: opened.pointSale!); // always set: a real back-office order
       final warehouse = pointSale.warehouseId;
 
       // 4. Discover one sellable product from that warehouse.

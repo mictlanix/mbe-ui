@@ -41,6 +41,19 @@ enum SaleLineLayout { singleRow, twoRow, card }
 /// whole row taller with it.
 const saleLineSingleRowMinWidth = 950.0;
 
+/// The single-row threshold for a line with no warehouse column (spec 040
+/// FR-014: quote lines have no warehouse at all). `950 − 168 − 8`:
+/// [saleLineSingleRowMinWidth] minus [SaleLineColumns.floor]'s own
+/// `warehouse` column (168) minus the one `spacing.xs` (8 px) gap that sits
+/// beside it — both are removed along with the column itself, so a
+/// warehouse-less row reaches single-row layout at its own, lower threshold
+/// rather than falling back to the two-row layout at widths where it would
+/// otherwise fit comfortably. Written as a literal rather than derived from
+/// `SaleLineColumns.floor.warehouse` because Dart cannot const-fold an
+/// instance field read, even on a const object; `sale_line_symmetry_test.dart`'s
+/// warehouse-less counterpart is what keeps this number honest.
+const saleLineSingleRowMinWidthNoWarehouse = 774.0;
+
 /// The body role's base font size these dimensions are derived from — 14 px
 /// at the theme's 1.43 line height, unscaled. `bodyMedium` (what every
 /// control in the band renders in) is left at Material 3's own default size
@@ -115,8 +128,16 @@ double saleLineRowHeight(TextScaler scaler) => 60.0 * _saleLineScaleRatio(scaler
 /// itself should not normally be asked to lay out below it.
 const saleLineTwoRowMinWidth = 600.0;
 
-SaleLineLayout saleLineLayoutFor(double availableWidth) {
-  if (availableWidth >= saleLineSingleRowMinWidth) return SaleLineLayout.singleRow;
+/// [warehouse] `false` (spec 040 FR-014) picks
+/// [saleLineSingleRowMinWidthNoWarehouse] as the single-row threshold
+/// instead — the column and its gap are gone, so the row needs less width to
+/// fit on one line. `true` (the default) keeps every existing caller's
+/// behaviour unchanged.
+SaleLineLayout saleLineLayoutFor(double availableWidth, {bool warehouse = true}) {
+  final singleRowMinWidth = warehouse
+      ? saleLineSingleRowMinWidth
+      : saleLineSingleRowMinWidthNoWarehouse;
+  if (availableWidth >= singleRowMinWidth) return SaleLineLayout.singleRow;
   if (availableWidth >= saleLineTwoRowMinWidth) return SaleLineLayout.twoRow;
   return SaleLineLayout.card;
 }
@@ -176,14 +197,22 @@ class SaleLineColumns {
     total: 112,
   );
 
-  static SaleLineColumns of(double availableWidth) {
+  /// [warehouse] `false` (spec 040 FR-014) interpolates from
+  /// [saleLineSingleRowMinWidthNoWarehouse] instead of
+  /// [saleLineSingleRowMinWidth], and returns `warehouse: 0` — there is no
+  /// column to size. `true` (the default) keeps every existing caller's
+  /// behaviour unchanged.
+  static SaleLineColumns of(double availableWidth, {bool warehouse = true}) {
+    final singleRowMinWidth = warehouse
+        ? saleLineSingleRowMinWidth
+        : saleLineSingleRowMinWidthNoWarehouse;
     final t =
-        ((availableWidth - saleLineSingleRowMinWidth) /
-                (saleLineComfortableWidth - saleLineSingleRowMinWidth))
+        ((availableWidth - singleRowMinWidth) /
+                (saleLineComfortableWidth - singleRowMinWidth))
             .clamp(0.0, 1.0);
     double at(double a, double b) => a + (b - a) * t;
     return SaleLineColumns._(
-      warehouse: at(floor.warehouse, comfortable.warehouse),
+      warehouse: warehouse ? at(floor.warehouse, comfortable.warehouse) : 0,
       quantity: at(floor.quantity, comfortable.quantity),
       price: at(floor.price, comfortable.price),
       discount: at(floor.discount, comfortable.discount),

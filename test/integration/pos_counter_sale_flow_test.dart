@@ -88,7 +88,7 @@ void main() {
       // `defaultWarehouseControllerProvider` does on the screen.
       final pointSale = await PointSaleRepositoryImpl(
         dio,
-      ).get(pointSaleId: opened.pointSale);
+      ).get(pointSaleId: opened.pointSale!); // always set: a real register sale
       final warehouse = pointSale.warehouseId;
 
       // 3. Discover two products that are actually sellable *from that
@@ -156,19 +156,23 @@ void main() {
       // 6. FR-046 — one cash tender for the full balance: create, then apply.
       final paymentId = await paymentRepository.createPayment(
         customer: confirmed.customer,
-        amount: confirmed.balance,
+        amount: confirmed.balance!, // always set: a real register sale
         method: PaymentMethod.cash.code,
         currency: confirmed.currency,
       );
       await paymentRepository.applyPayment(
         customerPaymentId: paymentId,
         salesOrder: confirmed.id,
-        amount: confirmed.balance,
+        amount: confirmed.balance!, // always set: a real register sale
       );
 
       // 7. SC-001 — the sale is paid and owes nothing.
       final paid = await salesOrderRepository.getById(saleId: confirmed.id);
-      expect(isZeroAmount(paid.balance), isTrue, reason: 'SC-001: zero balance');
+      expect(
+        isZeroAmount(paid.balance!), // always set: a real register sale
+        isTrue,
+        reason: 'SC-001: zero balance',
+      );
       expect(paid.isPaid, isTrue);
       expect(paid.lineCount, 2, reason: 'both lines survive payment');
       expect(paid.serial, confirmed.serial);

@@ -57,7 +57,7 @@ void main() {
 
       Future<bool> foundBy({String? search, DateTime? dateFrom, DateTime? dateTo}) async {
         final page = await salesOrders.listSales(
-          pointSale: probe.pointSale,
+          pointSale: probe.pointSale!, // always set: a real register sale
           search: search,
           dateFrom: dateFrom,
           dateTo: dateTo,
@@ -148,7 +148,7 @@ void main() {
 
       Future<bool> foundInFilteredList(int saleId) async {
         final page = await salesOrders.listSales(
-          pointSale: posProbe.pointSale,
+          pointSale: posProbe.pointSale!, // always set: a real register sale
           search: null,
           limit: 100,
           origin: SaleOrigin.pointOfSale,

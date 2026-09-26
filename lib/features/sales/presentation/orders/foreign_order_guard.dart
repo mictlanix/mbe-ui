@@ -46,7 +46,7 @@ bool _looksLikeARegisterSale(Sale order, {required AppSettings settings}) {
   // register's payment step leaves behind. A cancelled order is excluded:
   // its payments are cancelled with it, and it is read-only either way.
   if (order.status != SaleStatus.cancelled &&
-      parseAmount(order.balance) < parseAmount(order.total)) {
+      parseAmount(order.balanceOrZero) < parseAmount(order.total)) {
     return true;
   }
   return false;

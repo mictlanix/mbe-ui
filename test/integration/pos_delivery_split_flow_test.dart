@@ -85,7 +85,7 @@ void main() {
       final opened = await salesOrders.open();
       final pointSale = await PointSaleRepositoryImpl(
         dio,
-      ).get(pointSaleId: opened.pointSale);
+      ).get(pointSaleId: opened.pointSale!); // always set: a real register sale
       final warehouse = pointSale.warehouseId;
 
       final matches = await salesOrders.productLookup(
@@ -139,14 +139,14 @@ void main() {
 
       final paymentId = await payments.createPayment(
         customer: confirmed.customer,
-        amount: confirmed.balance,
+        amount: confirmed.balance!, // always set: a real register sale
         method: PaymentMethod.cash.code,
         currency: confirmed.currency,
       );
       await payments.applyPayment(
         customerPaymentId: paymentId,
         salesOrder: confirmed.id,
-        amount: confirmed.balance,
+        amount: confirmed.balance!, // always set: a real register sale
       );
       final paid = await salesOrders.getById(saleId: confirmed.id);
       expect(paid.isPaid, isTrue, reason: 'delivery runs after payment (D-002)');

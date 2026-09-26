@@ -289,6 +289,110 @@ void main() {
     });
   }
 
+  group('warehouse-less line (spec 040 FR-014)', () {
+    /// Every value a warehouse-less single-row line renders — the same set
+    /// as [sharedValues] above, minus `'Main Warehouse'`, which does not
+    /// exist when [SaleLineRow.showWarehouse] is `false`. The reaches-
+    /// single-row-at-its-own-threshold claim itself is tested precisely, and
+    /// without rendering noise, in `sale_line_layout_test.dart` — this file's
+    /// job is baseline-sharing and inset symmetry, at a width comfortably
+    /// inside single-row layout, mirroring how the warehoused tests above
+    /// use 1440px rather than the exact 950px boundary for the same reason.
+    const sharedValuesNoWarehouse = ['2', '50.00', '0', '16.00 %', r'$116.00'];
+
+    testWidgets(
+      'single row (1440px): every value still shares one baseline with no '
+      'warehouse column — constitution VI: a control-band change must be '
+      'measured, not assumed',
+      (tester) async {
+        await pumpGoldenScenario(
+          tester,
+          naturallySized(
+            SaleLineRow(
+              line: testLine(quantity: '2', warehouse: null),
+              facilityId: 9,
+              showWarehouse: false,
+            ),
+          ),
+          brightness: Brightness.light,
+          width: 1440,
+          overrides: [warehouseOverride(warehouseRepository)],
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text('Main Warehouse'), findsNothing);
+
+        final boxes = {
+          for (final value in sharedValuesNoWarehouse)
+            value: tester.getRect(find.text(value).first),
+        };
+        expect(
+          boxes.values.map(roundedTopHeight).toSet(),
+          hasLength(1),
+          reason: boxes.toString(),
+        );
+      },
+    );
+
+    testWidgets(
+      'single row (1440px): the card top inset equals its bottom inset, '
+      'with no warehouse column',
+      (tester) async {
+        await pumpGoldenScenario(
+          tester,
+          naturallySized(
+            SaleLineRow(
+              line: testLine(quantity: '2', warehouse: null),
+              facilityId: 9,
+              showWarehouse: false,
+            ),
+          ),
+          brightness: Brightness.light,
+          width: 1440,
+          overrides: [warehouseOverride(warehouseRepository)],
+        );
+
+        final cardRect = tester.getRect(find.byKey(const Key('sale_line_row_5')));
+        final valueRect = tester.getRect(find.text('50.00').first);
+        final topInset = valueRect.top - cardRect.top;
+        final bottomInset = cardRect.bottom - valueRect.bottom;
+        expect(
+          topInset,
+          closeTo(bottomInset, 0.5),
+          reason: 'card=$cardRect value=$valueRect',
+        );
+      },
+    );
+
+    testWidgets(
+      'reaches single-row layout, with no overflow, at a width below the '
+      'warehoused 950px minimum (900px) — the practical benefit of its own '
+      'lower threshold',
+      (tester) async {
+        await pumpGoldenScenario(
+          tester,
+          naturallySized(
+            SaleLineRow(
+              line: testLine(quantity: '2', warehouse: null),
+              facilityId: 9,
+              showWarehouse: false,
+            ),
+          ),
+          brightness: Brightness.light,
+          width: 900,
+          overrides: [warehouseOverride(warehouseRepository)],
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text('Main Warehouse'), findsNothing);
+        // Single-row, not the two-row fallback: quantity and the total sit
+        // in the same row rather than one above the other.
+        expect(
+          tester.getRect(find.text('2').first).top,
+          tester.getRect(find.text(r'$116.00').first).top,
+        );
+      },
+    );
+  });
+
   group('the warehouse picker\'s stock flag at the largest text-scale level '
       '(US6, T051)', () {
     testWidgets(

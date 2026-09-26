@@ -35,7 +35,10 @@ class SaleLine with _$SaleLine {
     // straight to `ProductPhoto`. Null for a product with no photo.
     String? photo,
     required String quantity,
-    required String cost,
+    // Nullable since spec 040: absent on a quote line. Has exactly one
+    // reader anywhere in `lib/` — this file's own mapping — verified by
+    // grep (data-model.md §2).
+    String? cost,
     required String price,
     required String discountRate,
     required String taxRate,
@@ -50,6 +53,11 @@ class SaleLine with _$SaleLine {
     // advisory only; the authoritative check happens at confirmation
     // (FR-025, FR-026).
     String? availability,
+    // Quote-only (spec 040, data-model.md §2): the quote's absolute per-line
+    // markup. Mapped in so the value round-trips, but **read-only in v1**
+    // (spec A3) — no shared widget writes it. `null` on an order line, which
+    // has no such field.
+    String? priceAdjustment,
   }) = _SaleLine;
 
   factory SaleLine.fromResponse(api.SalesOrderLineResponse r) => SaleLine(
@@ -71,4 +79,26 @@ class SaleLine with _$SaleLine {
     taxTotal: r.taxTotal,
     total: r.total,
   );
+
+  /// Maps a quote line onto the same entity an order line uses (spec 040,
+  /// data-model.md §2). Leaves `cost`, `unit`, `photo` and `warehouse`
+  /// null — none exist on a quote line — and maps `priceAdjustment`, which
+  /// no order line has.
+  factory SaleLine.fromQuoteLineResponse(api.SalesQuoteLineResponse r) =>
+      SaleLine(
+        id: r.salesQuoteDetailId,
+        product: r.product,
+        productCode: r.productCode,
+        productName: r.productName,
+        quantity: r.quantity,
+        price: r.price,
+        discountRate: r.discountRate,
+        taxRate: r.taxRate,
+        taxIncluded: r.taxIncluded,
+        comment: r.comment,
+        subtotal: r.subtotal,
+        taxTotal: r.taxTotal,
+        total: r.total,
+        priceAdjustment: r.priceAdjustment,
+      );
 }

@@ -107,16 +107,18 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
           children: [
             ActionChip(
               label: Text(l10n.posQuickAmountRemaining),
-              onPressed: enabled ? () => _quickAmount(sale.balance) : null,
+              onPressed: enabled ? () => _quickAmount(sale.balanceOrZero) : null,
             ),
-            for (final note in _noteChips(sale.balance))
+            for (final note in _noteChips(sale.balanceOrZero))
               ActionChip(
                 label: Text(fmt.display.currency(note)),
                 onPressed: enabled ? () => _quickAmount(note) : null,
               ),
             ActionChip(
               label: Text(l10n.posQuickAmountHalf),
-              onPressed: enabled ? () => _quickAmount(halveAmount(sale.balance)) : null,
+              onPressed: enabled
+                  ? () => _quickAmount(halveAmount(sale.balanceOrZero))
+                  : null,
             ),
           ],
         ),

@@ -51,9 +51,12 @@ import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repo
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sales_quote_summary.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockProductRepository extends Mock implements ProductRepository {}
@@ -97,6 +100,8 @@ class MockTaxpayerIssuerRepository extends Mock
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 
 class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
+
+class MockSalesQuoteRepository extends Mock implements SalesQuoteRepository {}
 
 /// Bypasses `AuthNotifier.build()`'s real `TokenStorage`/`AuthRepository`
 /// round-trip, resolving directly to a fixed [AuthState] — this test only
@@ -226,6 +231,18 @@ const _salesOrdersReaderUser = User(
   status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [Privilege(systemObject: SystemObject.salesOrders, rawValue: 2)],
+);
+
+/// Holds read on `salesQuotes` (30) alone — no `salesOrders`, no `pos` — the
+/// gate for spec 040's `/sales/quotes*` routes, deliberately its own
+/// privilege so this guard is provably not folded into either sibling's.
+const _salesQuotesReaderUser = User(
+  userId: 'sales-quotes-reader',
+  email: 'sales-quotes-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.salesQuotes, rawValue: 2)],
 );
 
 /// Holds read on the three renumbered branches
@@ -500,6 +517,31 @@ void main() {
       ),
     ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
 
+    // 040-sales-quotes: `SalesQuotesListScreen` calls `listQuotes` eagerly,
+    // and `QuoteEditorController.build` calls `getById` eagerly whenever
+    // `/sales/quotes/:quoteId` names a quote — both need a mock, same
+    // reasoning as `listOrders`/`listSales` above.
+    final salesQuoteRepository = MockSalesQuoteRepository();
+    when(
+      () => salesQuoteRepository.listQuotes(
+        mine: any(named: 'mine'),
+        customer: any(named: 'customer'),
+        salesperson: any(named: 'salesperson'),
+        status: any(named: 'status'),
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const SalesQuotePage(items: [], total: 0));
+    // `getById` is deliberately left unstubbed — like `salesOrderRepository.
+    // getById` for `/sales/orders/:orderId` above, this route's own test
+    // only checks the gate and the resulting path, not a fully rendered
+    // quote; a real customer/payment fetch off a *successfully* loaded
+    // quote would need overrides this shared file has no reason to carry
+    // for every destination. `QuoteEditorController.build` catches the
+    // resulting `MissingStubError` as an `AsyncError`, same as the orders
+    // route does today.
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -550,6 +592,7 @@ void main() {
         facilityRepositoryProvider.overrideWithValue(facilityRepository),
         cashSessionRepositoryProvider.overrideWithValue(cashSessionRepository),
         salesOrderRepositoryProvider.overrideWithValue(salesOrderRepository),
+        salesQuoteRepositoryProvider.overrideWithValue(salesQuoteRepository),
       ],
     );
     addTearDown(container.dispose);
@@ -1029,6 +1072,111 @@ void main() {
             tester,
             _noAccessUser,
             '/sales/orders/42',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+    },
+  );
+
+  group(
+    '040-sales-quotes — /sales/quotes gates on salesQuotes/read, not '
+    'salesOrders or pos (research.md R6, R7)',
+    () {
+      testWidgets(
+        'a user with salesQuotes:read reaches /sales/quotes (the list)',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesQuotesReaderUser,
+            '/sales/quotes',
+          );
+          expect(handle.router.state.uri.path, '/sales/quotes');
+        },
+      );
+
+      testWidgets(
+        'a user without salesQuotes:read is redirected away from '
+        '/sales/quotes',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '/sales/quotes');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'a user holding only salesOrders:read — not salesQuotes — is '
+        'redirected away from /sales/quotes: the two guards are not folded '
+        'into one',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesOrdersReaderUser,
+            '/sales/quotes',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'activates shell branch NavBranch.salesQuotes (21) for '
+        '/sales/quotes',
+        (tester) async {
+          await pumpAt(tester, _salesQuotesReaderUser, '/sales/quotes');
+          final shell = tester.widget<AppShell>(find.byType(AppShell));
+          expect(shell.navigationShell.currentIndex, NavBranch.salesQuotes);
+        },
+      );
+
+      testWidgets(
+        'a user with salesQuotes:read reaches /sales/quotes/new — the '
+        'quote screen, a top-level route with no shell around it',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesQuotesReaderUser,
+            '/sales/quotes/new',
+          );
+          expect(handle.router.state.uri.path, '/sales/quotes/new');
+          await tester.pumpAndSettle();
+          expect(find.byType(AppShell), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'a user without salesQuotes:read is redirected away from '
+        '/sales/quotes/new',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/quotes/new',
+          );
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+
+      testWidgets(
+        'the quote route /sales/quotes/:quoteId parses its int param and '
+        'gates identically to /new',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _salesQuotesReaderUser,
+            '/sales/quotes/42',
+          );
+          expect(handle.router.state.uri.path, '/sales/quotes/42');
+        },
+      );
+
+      testWidgets(
+        'a user without salesQuotes:read is redirected away from '
+        '/sales/quotes/:quoteId too',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/quotes/42',
           );
           expect(handle.router.state.uri.path, '/');
         },

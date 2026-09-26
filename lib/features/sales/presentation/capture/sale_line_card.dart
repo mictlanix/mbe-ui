@@ -23,6 +23,7 @@ class SaleLineCard extends ConsumerStatefulWidget {
     required this.facilityId,
     this.enabled = true,
     this.showComment = false,
+    this.showWarehouse = true,
   });
 
   final SaleLine line;
@@ -34,6 +35,11 @@ class SaleLineCard extends ConsumerStatefulWidget {
   /// it was before this feature — only the back-office order screen passes
   /// `true`.
   final bool showComment;
+
+  /// `false` for a quote line, which has no warehouse at all (spec 040
+  /// FR-014). `true` (the default) keeps every existing host's layout
+  /// unchanged.
+  final bool showWarehouse;
 
   @override
   ConsumerState<SaleLineCard> createState() => _SaleLineCardState();
@@ -189,7 +195,7 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                 Expanded(child: taxRatePicker()),
               ],
             ),
-            warehousePicker(),
+            if (widget.showWarehouse) warehousePicker(),
             // Stacked rather than side by side: the warning text and the
             // adjust action both need the full width here. No Padding(top: 8)
             // wrapper — the outer Column's own `spacing` supplies that gap,
