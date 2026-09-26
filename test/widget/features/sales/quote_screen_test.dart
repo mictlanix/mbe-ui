@@ -9,7 +9,6 @@ import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -20,6 +19,7 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/fulfillment_mode_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/quote_header_panel.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -344,6 +344,16 @@ void main() {
       await pumpQuoteScreen(tester, quoteId: quote.id);
     }
 
+    // Currency and the comment sit behind "More details" (2026-09-26
+    // redesign, mirrors `OrderHeaderPanel`'s own disclosure) — closed on
+    // arrival, so a test reaching either opens it first.
+    Future<void> expandDetails(WidgetTester tester) async {
+      await tester.tap(
+        find.byKey(const Key('sales_quote_more_details_toggle')),
+      );
+      await tester.pumpAndSettle();
+    }
+
     testWidgets('while draft, the expiry date is editable and commits '
         'through updateHeader', (tester) async {
       final draft = testQuote(customer: 7, id: 30);
@@ -375,6 +385,7 @@ void main() {
         ),
       ).thenAnswer((_) async => draft.copyWith(comment: 'Precio válido 30 días'));
       await openQuote(tester, draft);
+      await expandDetails(tester);
 
       await tester.enterText(
         find.byKey(const Key('sales_quote_comment_field')),
@@ -391,8 +402,8 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('currency is rendered read-only — this feature introduces '
-        'no currency selector (spec A11)', (tester) async {
+    testWidgets('currency is rendered read-only in the fact strip — this '
+        'feature introduces no currency selector (spec A11)', (tester) async {
       await openQuote(tester, testQuote(customer: 7, id: 30));
       expect(find.byType(DropdownButtonFormField<Currency>), findsNothing);
       expect(find.text(l10n.salesQuoteCurrencyLabel), findsOneWidget);
@@ -412,6 +423,71 @@ void main() {
       expect(find.byKey(const Key('pos_payment_terms_dropdown')), findsOneWidget);
     });
 
+    testWidgets('the status field is labelled Estado, not Referencia — its '
+        'own field, distinct from the reference (FR-022)', (tester) async {
+      final draft = testQuote(customer: 7, id: 30);
+      await openQuote(tester, draft);
+
+      expect(find.text(l10n.salesQuoteStatusLabel), findsOneWidget);
+      expect(find.text(l10n.salesQuoteStatusDraft), findsOneWidget);
+    });
+
+    testWidgets('the fact strip carries reference, status, date, expiry and '
+        'currency as plain labelled values, collapsed on arrival, with only '
+        'the comment behind "More details" (2026-09-26 redesign, matches '
+        'OrderHeaderPanel)', (tester) async {
+      final draft = testQuote(customer: 7, id: 30, serial: 4001);
+      await openQuote(tester, draft);
+
+      Finder inPanel(String text) => find.descendant(
+        of: find.byType(QuoteHeaderPanel),
+        matching: find.text(text),
+      );
+
+      expect(inPanel(l10n.salesQuoteReferenceLabel), findsOneWidget);
+      expect(inPanel(l10n.salesQuoteStatusLabel), findsOneWidget);
+      expect(inPanel(l10n.salesQuoteDateLabel), findsOneWidget);
+      expect(inPanel(l10n.salesQuoteExpiryLabel), findsOneWidget);
+      expect(inPanel(l10n.salesQuoteCurrencyLabel), findsOneWidget);
+      expect(inPanel('4001'), findsOneWidget);
+      expect(find.text(l10n.salesQuoteMoreDetails), findsOneWidget);
+
+      // Only the comment sits behind the disclosure now — currency is
+      // never anything but a fact here, so it moved back into the strip.
+      expect(
+        find.byKey(const Key('sales_quote_comment_field')),
+        findsNothing,
+      );
+
+      await expandDetails(tester);
+
+      expect(
+        find.byKey(const Key('sales_quote_comment_field')),
+        findsOneWidget,
+      );
+      // Mirrors `OrderHeaderPanel`'s own comment field: the label is the
+      // field's own `InputDecoration.labelText`, not a separate caption.
+      expect(find.text(l10n.salesQuoteCommentLabel), findsOneWidget);
+      expect(find.text(l10n.salesQuoteFewerDetails), findsOneWidget);
+    });
+
+    testWidgets('hasExpired renders a marker beside the status value, never '
+        'folded into it (FR-024, FR-037)', (tester) async {
+      final expired = testQuote(
+        customer: 7,
+        id: 30,
+        status: SaleStatus.completed,
+        hasExpired: true,
+      );
+      await openQuote(tester, expired);
+
+      expect(find.text(l10n.salesQuoteStatusCompleted), findsOneWidget);
+      expect(
+        find.byKey(const Key('sales_quote_expired_marker')),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('once confirmed, the expiry and comment are read-only '
         '(FR-023)', (tester) async {
       final confirmed = testQuote(
@@ -421,10 +497,13 @@ void main() {
         lines: [testQuoteLine()],
       );
       await openQuote(tester, confirmed);
+      await expandDetails(tester);
 
+      // The key now sits on the inner `TextField` (`fieldKey`), matching
+      // `OrderHeaderPanel`'s own comment field exactly.
       expect(
         tester
-            .widget<ConfirmableTextField>(
+            .widget<TextField>(
               find.byKey(const Key('sales_quote_comment_field')),
             )
             .enabled,

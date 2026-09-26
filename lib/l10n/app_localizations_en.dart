@@ -2698,6 +2698,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesQuoteReferenceLabel => 'Reference';
 
   @override
+  String get salesQuoteStatusLabel => 'Status';
+
+  @override
+  String get salesQuoteDateLabel => 'Date';
+
+  @override
+  String get salesQuoteMoreDetails => 'More details';
+
+  @override
+  String get salesQuoteFewerDetails => 'Fewer details';
+
+  @override
   String get salesQuoteExpiryLabel => 'Expiry date';
 
   @override

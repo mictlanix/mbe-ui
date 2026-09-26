@@ -2737,6 +2737,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesQuoteReferenceLabel => 'Referencia';
 
   @override
+  String get salesQuoteStatusLabel => 'Estado';
+
+  @override
+  String get salesQuoteDateLabel => 'Fecha';
+
+  @override
+  String get salesQuoteMoreDetails => 'Más detalles';
+
+  @override
+  String get salesQuoteFewerDetails => 'Menos detalles';
+
+  @override
   String get salesQuoteExpiryLabel => 'Fecha de vencimiento';
 
   @override

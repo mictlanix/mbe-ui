@@ -4965,6 +4965,30 @@ abstract class AppLocalizations {
   /// **'Reference'**
   String get salesQuoteReferenceLabel;
 
+  /// No description provided for @salesQuoteStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get salesQuoteStatusLabel;
+
+  /// No description provided for @salesQuoteDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get salesQuoteDateLabel;
+
+  /// No description provided for @salesQuoteMoreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'More details'**
+  String get salesQuoteMoreDetails;
+
+  /// No description provided for @salesQuoteFewerDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer details'**
+  String get salesQuoteFewerDetails;
+
   /// No description provided for @salesQuoteExpiryLabel.
   ///
   /// In en, this message translates to:
