@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Show Timestamps as the Local Times They Are",
   "branch": "043-wall-clock-datetimes",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-26T19:32:44.153Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T21:31:45.179Z"
     }
   ],
   "telemetryInstanceId": "21afcb9f-b33b-4574-b704-7bc4a9688ed4",

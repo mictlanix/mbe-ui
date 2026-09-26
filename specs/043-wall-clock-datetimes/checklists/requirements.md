@@ -2,7 +2,7 @@
 
 **Purpose**: Validate Companion specification completeness before planning
 **Created**: 2026-09-26
-**Feature**: [wall-clock-datetimes.spec.md](../wall-clock-datetimes.spec.md)
+**Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 

@@ -12,7 +12,7 @@
 
 ### User Story 1 - A recorded time reads back as the time it was (Priority: P1)
 
-A salesperson captures an order in the afternoon and looks at its date on screen. The time shown is the time it happened. The same holds for every other place a time appears: the order list, the order header's due and promise dates, the register's sales list, and a cash session's opening and closing times.
+A salesperson captures an order in the afternoon and looks at its date on screen. The time shown is the time it happened. The same holds for every other place a time appears: the order list, the order header's due and promise dates, the register's sales list, a cash session's opening and closing times, and a digital certificate's validity dates.
 
 **Why this priority**: This is the defect. Every dated screen in the product is wrong today, by a fixed six hours, and a user comparing the screen to a printed ticket or to the legacy system sees two different answers.
 
@@ -23,6 +23,7 @@ A salesperson captures an order in the afternoon and looks at its date on screen
 1. **Given** an order the API reports as `2026-09-26T13:05:28`, **When** a user opens its header, **Then** the date reads 13:05 on 26 September.
 2. **Given** that same order, **When** a user finds it in the orders list, **Then** the list's date column reads the same 13:05.
 3. **Given** a cash session opened at 19:30 and closed at 22:10, **When** a user opens the session, **Then** the two times read 19:30 and 22:10 on the day the session actually ran.
+4. **Given** a certificate whose validity ends at 20:15 on 31 December, **When** a user views its validity, **Then** it reads 31 December, not 1 January. A time shown only as a date still moves to the next day when shifted, so this case fails even where no time is on screen.
 
 ### User Story 2 - The register's trading day still selects the right sales (Priority: P1)
 
@@ -56,10 +57,10 @@ A cash session opened yesterday evening and never closed is shown as stale, whic
 
 - A value arrives carrying an explicit UTC offset, which the API does not send today but could in future. It must be shown as the equivalent local time, not shifted a second time.
 - A value is sent back to the API, either as a filter or as a date the user picked. It must arrive as the wall-clock value the user meant.
-- Fields that carry a date with no time, such as a certificate's validity dates or an employee's birthday, are already correct. They must not change.
+- Fields that carry a date with no time, such as an employee's birthday or a vehicle operator's licence dates, are already correct. They must not change.
 - The generated API client is rebuilt from the published schema. The fix must survive that rebuild without being reapplied by hand.
 - A device whose clock is set to a timezone other than the facility's. See Assumptions.
-- A test host running in a timezone other than the facility's, which is the normal case for a build server.
+- A test host running in a timezone other than the facility's, including one that observes daylight saving, where some wall-clock times do not exist on the night the clocks change.
 
 ## Requirements *(mandatory)*
 
