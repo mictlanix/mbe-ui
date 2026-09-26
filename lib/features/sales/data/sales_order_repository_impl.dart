@@ -92,7 +92,13 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
             ..contact = contact
             ..customerName = customerName
             ..fulfillmentIntent = fulfillmentIntent?.toApi()
-            ..promiseDate = promiseDate
+            // Through [wireDate]: `showDatePicker` hands back a local
+            // midnight, which `Iso8601DateTimeSerializer` refuses outright
+            // (`ArgumentError`), so picking a promise date failed as an
+            // unreachable-server error for a request that never left the
+            // client (mictlanix/mbe-ui#176). The delivery-order repository
+            // already routes its own picked date this way.
+            ..promiseDate = promiseDate == null ? null : wireDate(promiseDate)
             ..salesperson = salesperson
             // Deliberately no `dueDate` here: it is derived server-side and
             // `SalesOrderUpdate` has no such field to set.
@@ -341,15 +347,30 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
   }
 }
 
-/// Midnight of [local]'s date, flagged UTC — the only encoding that both
-/// serializes (built_value's `Iso8601DateTimeSerializer` throws
-/// `ArgumentError` on a local `DateTime`) and selects the intended rows
-/// (mbe-api ignores the offset and reads the value as local wall-clock time —
-/// verified against a live backend: `…T18:00:00Z` and `…T18:00:00` select the
-/// same rows, where `…T12:00:00` selects more). Extracted from
-/// `open_sales_selector_controller.dart`'s `_startOfToday`, which now defers
-/// to this for the same reasoning (spec 023 research R3, R6).
-DateTime wireDate(DateTime local) => DateTime.utc(local.year, local.month, local.day);
+/// The *instant* that is midnight of [local]'s date — the encoding a
+/// `date_from` needs to arrive at mbe-api as the intended `00:00:00`.
+///
+/// mbe-api now declares every datetime as local wall-clock time in the
+/// business timezone and **converts** an inbound offset into it rather than
+/// dropping it (mictlanix/mbe-api#228, `LocalDateTime`/`to_local`). The
+/// client still cannot send a bare wall-clock string — built_value's
+/// `Iso8601DateTimeSerializer` throws `ArgumentError` on a non-UTC
+/// `DateTime` and appends `Z` to a UTC one — so it sends the instant and
+/// lets the server convert it back.
+///
+/// ⚠ This previously sent `DateTime.utc(y, m, d)`: a wall-clock value wearing
+/// a fake UTC flag, which the old server ignored. It no longer does, and that
+/// encoding now arrives as 18:00 on the *previous* day. Stopgap for
+/// mictlanix/mbe-ui#176, whose real fix replaces the serializer so the client
+/// can send wall-clock time directly — at which point this collapses to a
+/// plain start-of-day helper.
+///
+/// ⚠ Assumes the client runs in the business timezone. True of every
+/// deployment today, and the same assumption #176 carries.
+///
+/// Extracted from `open_sales_selector_controller.dart`'s `_startOfToday`,
+/// which defers to this for the same reasoning (spec 023 research R3, R6).
+DateTime wireDate(DateTime local) => DateTime(local.year, local.month, local.day).toUtc();
 
 /// The last instant of [local]'s date — the `date_to` counterpart to
 /// [wireDate], which is only ever right for `date_from`.
@@ -359,8 +380,13 @@ DateTime wireDate(DateTime local) => DateTime.utc(local.year, local.month, local
 /// live: `date_to=…T15:27:35` keeps the 15:27:35 sale, `…T15:27:34` drops it).
 /// So a range whose end is plain midnight selects `[00:00:00, 00:00:00]`, an
 /// empty window that answers `total: 0` for any day with actual trading on it.
+///
+/// Carries [wireDate]'s instant encoding for the same reason, and for a
+/// sharper symptom: under mbe-api#228 the old `DateTime.utc(…, 23, 59, 59)`
+/// arrives as 17:59:59, so every sale after 18:00 — an evening's trading —
+/// fell outside the register's own "today".
 DateTime wireDateEnd(DateTime local) =>
-    DateTime.utc(local.year, local.month, local.day, 23, 59, 59, 999);
+    DateTime(local.year, local.month, local.day, 23, 59, 59, 999).toUtc();
 
 AppError _toAppError(DioException error) {
   final mapped = error.error;

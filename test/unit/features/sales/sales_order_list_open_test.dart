@@ -35,7 +35,9 @@ void main() {
       await repository.listOpen(
         pointSale: 3,
         status: SaleStatus.draft,
-        dateFrom: DateTime.utc(2026, 8, 7),
+        // `listOpen` trusts its caller to have encoded the date — the
+        // production caller is `_startOfToday()`, which is exactly this.
+        dateFrom: wireDate(DateTime(2026, 8, 7)),
       );
 
       expect(requests, hasLength(1));
@@ -44,8 +46,11 @@ void main() {
       expect(query['status'], 'draft');
       expect(
         query['date_from'],
-        '2026-08-07T00:00:00.000Z',
-        reason: 'the wall-clock date the register means, ISO-encoded',
+        DateTime(2026, 8, 7).toUtc().toIso8601String(),
+        reason: 'the instant that is local midnight — mbe-api#228 converts '
+            'the offset back to the wall-clock date the register means. '
+            'Computed, not hard-coded, so the expectation holds on a CI host '
+            'in any timezone',
       );
     });
 
@@ -109,10 +114,10 @@ void main() {
       );
 
       final query = requests.single.queryParameters;
-      expect(query['date_from'], '2026-08-10T00:00:00.000Z');
+      expect(query['date_from'], DateTime(2026, 8, 10).toUtc().toIso8601String());
       expect(
         query['date_to'],
-        '2026-08-10T23:59:59.999Z',
+        DateTime(2026, 8, 10, 23, 59, 59, 999).toUtc().toIso8601String(),
         reason: 'mbe-api compares date_to against the sale\'s full timestamp, '
             'inclusively — encoding it as midnight made the default '
             '"today" filter answer total: 0 for a register that had traded',
