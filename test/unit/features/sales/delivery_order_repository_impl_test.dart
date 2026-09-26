@@ -26,8 +26,8 @@ Map<String, Object?> _orderJson({
   'priority': 0,
   'status': 0,
   'fulfillment_type': fulfillmentType,
-  'creation_time': '2026-08-05T10:00:00.000Z',
-  'modification_time': '2026-08-05T10:00:00.000Z',
+  'creation_time': '2026-08-05T10:00:00.000',
+  'modification_time': '2026-08-05T10:00:00.000',
   'lines': lines ?? [],
 };
 

@@ -32,11 +32,8 @@ void main() {
 
         expect(certificate.taxpayerCertificateId, '00001000000203341766');
         expect(certificate.taxpayer, 'XAXX010101000');
-        expect(
-          certificate.validFrom,
-          DateTime.parse('2025-01-01T00:00:00.000Z'),
-        );
-        expect(certificate.validTo, DateTime.parse('2029-01-01T00:00:00.000Z'));
+        expect(certificate.validFrom, DateTime(2025, 1, 1));
+        expect(certificate.validTo, DateTime(2029, 1, 1));
         expect(certificate.status, EntityStatus.active);
       });
 
@@ -63,8 +60,8 @@ void main() {
 Map<String, Object?> _certificateJson() => {
   'taxpayer_certificate_id': '00001000000203341766',
   'taxpayer': 'XAXX010101000',
-  'valid_from': '2025-01-01T00:00:00.000Z',
-  'valid_to': '2029-01-01T00:00:00.000Z',
+  'valid_from': '2025-01-01T00:00:00.000',
+  'valid_to': '2029-01-01T00:00:00.000',
   'status': 0,
 };
 

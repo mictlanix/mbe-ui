@@ -14,6 +14,7 @@ import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/merge_preview.dart';
@@ -32,7 +33,7 @@ final productRepositoryProvider = Provider<ProductRepository>((ref) {
 class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(Dio dio)
     : _dio = dio,
-      _api = ProductsApi(dio, standardSerializers);
+      _api = ProductsApi(dio, appSerializers);
 
   final Dio _dio;
   final ProductsApi _api;
@@ -349,7 +350,7 @@ class ProductRepositoryImpl implements ProductRepository {
 ProductResponse _deserializeProductResponse(Response<Object?> response) {
   final raw = response.data;
   if (raw == null) throw const AppError.server();
-  return standardSerializers.deserialize(
+  return appSerializers.deserialize(
         raw,
         specifiedType: const FullType(ProductResponse),
       )

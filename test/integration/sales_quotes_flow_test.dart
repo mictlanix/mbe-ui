@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -149,7 +150,7 @@ void main() {
       // the link back to the quote that raised an order — so this one
       // assertion reads the wire response directly rather than widening the
       // shared entity for a single test.
-      final rawOrders = api.SalesOrdersApi(dio, api.standardSerializers);
+      final rawOrders = api.SalesOrdersApi(dio, appSerializers);
 
       final candidates = await customers.list(limit: 50);
       final customer = candidates.items

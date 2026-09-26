@@ -277,9 +277,12 @@ DTOs for a resource that already has a published schema are NOT permitted.
   is confirmed, bypass the generated wrapper for that call and post the
   bytes directly via `dio.post(path, data: FormData.fromMap({...,
   'field': MultipartFile.fromBytes(bytes, filename: ...)}))`, deserializing
-  the raw response with `standardSerializers.deserialize` the same way the
-  generated method would have (see `ProductRepositoryImpl.uploadPhoto` and
-  `TaxpayerCertificateRepositoryImpl.upload` for the pattern). Do not assume
+  the raw response with `appSerializers.deserialize`
+  (`lib/core/network/api_serializers.dart`) the same way the generated
+  method would have (see `ProductRepositoryImpl.uploadPhoto` and
+  `TaxpayerCertificateRepositoryImpl.upload` for the pattern) — never the
+  raw `standardSerializers`, which reads mbe-api's timestamps six hours off
+  (spec 043, mictlanix/mbe-ui#176). Do not assume
   a base64-encoded string field is an acceptable substitute without
   confirming it against the real server first.
 - mbe-ui MUST NOT directly modify mbe-api's source (or any other sibling
@@ -648,4 +651,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.13.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-08-30
+**Version**: 1.13.1 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-09-26

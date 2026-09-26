@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label.dart';
@@ -23,7 +24,7 @@ final allLabelsProvider = FutureProvider<List<LabelItem>>((ref) async {
 });
 
 class LabelRepositoryImpl implements LabelRepository {
-  LabelRepositoryImpl(Dio dio) : _api = LabelsApi(dio, standardSerializers);
+  LabelRepositoryImpl(Dio dio) : _api = LabelsApi(dio, appSerializers);
 
   final LabelsApi _api;
 

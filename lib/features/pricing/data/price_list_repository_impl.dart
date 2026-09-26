@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
@@ -37,7 +38,7 @@ final priceListDisplayNameProvider = FutureProvider.family<String?, int>((
 /// `PriceListsApi` (contracts/mbe-api-pricing.md §1).
 class PriceListRepositoryImpl implements PriceListRepository {
   PriceListRepositoryImpl(Dio dio)
-    : _api = PriceListsApi(dio, standardSerializers);
+    : _api = PriceListsApi(dio, appSerializers);
 
   final PriceListsApi _api;
 

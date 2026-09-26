@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/data/wire_value_setters.dart';
@@ -21,7 +22,7 @@ final salesOrderRepositoryProvider = Provider<SalesOrderRepository>((ref) {
 /// `SalesOrderRepository` backed by the generated `mbe_api_client`
 /// `SalesOrdersApi` (contracts/mbe-api-pos.md §1).
 class SalesOrderRepositoryImpl implements SalesOrderRepository {
-  SalesOrderRepositoryImpl(Dio dio) : _api = api.SalesOrdersApi(dio, api.standardSerializers);
+  SalesOrderRepositoryImpl(Dio dio) : _api = api.SalesOrdersApi(dio, appSerializers);
 
   final api.SalesOrdersApi _api;
 
@@ -347,30 +348,23 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
   }
 }
 
-/// The *instant* that is midnight of [local]'s date — the encoding a
-/// `date_from` needs to arrive at mbe-api as the intended `00:00:00`.
+/// Midnight of [local]'s date, as a plain wall-clock value with no offset —
+/// what a `date_from` needs to select the intended calendar day.
 ///
-/// mbe-api now declares every datetime as local wall-clock time in the
-/// business timezone and **converts** an inbound offset into it rather than
-/// dropping it (mictlanix/mbe-api#228, `LocalDateTime`/`to_local`). The
-/// client still cannot send a bare wall-clock string — built_value's
-/// `Iso8601DateTimeSerializer` throws `ArgumentError` on a non-UTC
-/// `DateTime` and appends `Z` to a UTC one — so it sends the instant and
-/// lets the server convert it back.
-///
-/// ⚠ This previously sent `DateTime.utc(y, m, d)`: a wall-clock value wearing
-/// a fake UTC flag, which the old server ignored. It no longer does, and that
-/// encoding now arrives as 18:00 on the *previous* day. Stopgap for
-/// mictlanix/mbe-ui#176, whose real fix replaces the serializer so the client
-/// can send wall-clock time directly — at which point this collapses to a
-/// plain start-of-day helper.
-///
-/// ⚠ Assumes the client runs in the business timezone. True of every
-/// deployment today, and the same assumption #176 carries.
+/// mbe-api declares every datetime as local wall-clock time in the business
+/// timezone (mictlanix/mbe-api#228, `LocalDateTime`/`to_local`), and
+/// [appSerializers]'s `WallClockDateTimeSerializer` (spec 043,
+/// mictlanix/mbe-ui#176) writes a `DateTime`'s own fields verbatim,
+/// ignoring `isUtc` — so a plain local value round-trips correctly with no
+/// pre-compensation. Earlier versions of this helper flagged the value as
+/// UTC (`.toUtc()`) purely to satisfy the *previous* serializer, which threw
+/// `ArgumentError` on a non-UTC `DateTime`; that workaround must not return,
+/// since under the current serializer it would send `06:00` instead of
+/// `00:00` and cost the register the first six hours of its day.
 ///
 /// Extracted from `open_sales_selector_controller.dart`'s `_startOfToday`,
 /// which defers to this for the same reasoning (spec 023 research R3, R6).
-DateTime wireDate(DateTime local) => DateTime(local.year, local.month, local.day).toUtc();
+DateTime wireDate(DateTime local) => DateTime(local.year, local.month, local.day);
 
 /// The last instant of [local]'s date — the `date_to` counterpart to
 /// [wireDate], which is only ever right for `date_from`.
@@ -381,12 +375,9 @@ DateTime wireDate(DateTime local) => DateTime(local.year, local.month, local.day
 /// So a range whose end is plain midnight selects `[00:00:00, 00:00:00]`, an
 /// empty window that answers `total: 0` for any day with actual trading on it.
 ///
-/// Carries [wireDate]'s instant encoding for the same reason, and for a
-/// sharper symptom: under mbe-api#228 the old `DateTime.utc(…, 23, 59, 59)`
-/// arrives as 17:59:59, so every sale after 18:00 — an evening's trading —
-/// fell outside the register's own "today".
+/// Carries [wireDate]'s plain-local encoding for the same reason.
 DateTime wireDateEnd(DateTime local) =>
-    DateTime(local.year, local.month, local.day, 23, 59, 59, 999).toUtc();
+    DateTime(local.year, local.month, local.day, 23, 59, 59, 999);
 
 AppError _toAppError(DioException error) {
   final mapped = error.error;

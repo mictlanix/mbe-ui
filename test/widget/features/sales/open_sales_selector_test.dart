@@ -409,16 +409,17 @@ void main() {
         expect(captured, isNotNull, reason: '$status must be date-scoped');
         expect(
           captured,
-          DateTime(midnight.year, midnight.month, midnight.day).toUtc(),
-          reason: 'the instant that is local midnight: built_value refuses to '
-              'serialize a local DateTime, and since mictlanix/mbe-api#228 '
-              'the server converts the offset back to wall-clock time rather '
-              'than ignoring it (mictlanix/mbe-ui#176)',
+          DateTime(midnight.year, midnight.month, midnight.day),
+          reason: "today's local midnight, unflagged: WallClockDateTimeSerializer "
+              "(mictlanix/mbe-ui#176) writes a DateTime's own fields with no "
+              'suffix regardless of isUtc, so wireDate no longer needs to '
+              'pretend the value is UTC to reach the wire correctly',
         );
         expect(
           captured!.isUtc,
-          isTrue,
-          reason: 'a local DateTime throws before the request is ever sent',
+          isFalse,
+          reason: 'wireDate returns a plain local value now — the fake UTC '
+              'flag PR #180 needed to satisfy the old serializer is gone',
         );
       }
     });

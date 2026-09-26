@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 
@@ -31,8 +32,8 @@ api.SalesOrderResponse _saleResponse({
     'customer': 7,
     'customer_name': 'Público en general',
     'payment_terms': paymentTerms,
-    'date': '2026-08-05T00:00:00.000Z',
-    'due_date': '2026-08-12T00:00:00.000Z',
+    'date': '2026-08-05T00:00:00.000',
+    'due_date': '2026-08-12T00:00:00.000',
     'contact': contact,
     'recipient': recipient,
     'recipient_name': recipientName,
@@ -41,7 +42,7 @@ api.SalesOrderResponse _saleResponse({
     'currency': currency,
     'exchange_rate': '1',
     'ship_to': null,
-    'promise_date': '2026-08-05T00:00:00.000Z',
+    'promise_date': '2026-08-05T00:00:00.000',
     'status': status,
     'lines': lines,
     'subtotal': '100.00',
@@ -49,7 +50,7 @@ api.SalesOrderResponse _saleResponse({
     'total': '116.00',
     'balance': '116.00',
   };
-  return api.standardSerializers.deserializeWith(
+  return appSerializers.deserializeWith(
     api.SalesOrderResponse.serializer,
     json,
   )!;
@@ -177,8 +178,8 @@ void main() {
             comment: 'Entregar en bodega 2',
           ),
         );
-        expect(sale.date, DateTime.parse('2026-08-05T00:00:00.000Z'));
-        expect(sale.dueDate, DateTime.parse('2026-08-12T00:00:00.000Z'));
+        expect(sale.date, DateTime(2026, 8, 5));
+        expect(sale.dueDate, DateTime(2026, 8, 12));
         expect(sale.contact, 12);
         expect(sale.recipient, 'XAXX010101000');
         expect(sale.recipientName, 'Pública en General');
@@ -235,7 +236,7 @@ void main() {
   group('SaleLine.fromResponse', () {
     test('maps the product, amounts and the editable tax rate (FR-023)', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(),
         )!,
@@ -256,7 +257,7 @@ void main() {
     test('availability is never mapped from the wire — it is joined at the '
         'display edge, not stored on the line (data-model.md §2)', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(),
         )!,
@@ -266,7 +267,7 @@ void main() {
 
     test('maps the unit\'s symbol in preference to its name (mbe-api#145)', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(),
         )!,
@@ -276,7 +277,7 @@ void main() {
 
     test('falls back to the unit name when it has no symbol', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(unit: {'id': 'XBX', 'name': 'Caja'}),
         )!,
@@ -286,7 +287,7 @@ void main() {
 
     test('a product with no unit on file maps to null, not a placeholder', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(unit: null),
         )!,
@@ -296,7 +297,7 @@ void main() {
 
     test('the product\'s photo is resolved to a fetchable URL (mbe-api#157)', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           // An absolute URL — what mbe-api sends with its own
           // `IMAGES_BASE_URL` configured — passes through untouched.
@@ -309,7 +310,7 @@ void main() {
     test('a product with no photo maps to null, so the line placeholders '
         '(mbe-api#157)', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(),
         )!,
@@ -319,7 +320,7 @@ void main() {
 
     test('a line with no warehouse maps to null rather than a sentinel', () {
       final line = SaleLine.fromResponse(
-        api.standardSerializers.deserializeWith(
+        appSerializers.deserializeWith(
           api.SalesOrderLineResponse.serializer,
           _lineJson(warehouse: null),
         )!,

@@ -10,18 +10,24 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 
 /// `listOpen` through the **real** generated client rather than a mocked
 /// repository, because that is where the open-sales selector broke: a local
-/// `DateTime` passed as `date_from` makes built_value's
-/// `Iso8601DateTimeSerializer` throw while the query string is being built, so
-/// the request is abandoned before dio ever sends it. Every widget test mocks
-/// `SalesOrderRepository`, so none of them can see that.
+/// `DateTime` passed as `date_from` used to make built_value's
+/// `Iso8601DateTimeSerializer` throw while the query string was being built,
+/// so the request was abandoned before dio ever sent it. Every widget test
+/// mocks `SalesOrderRepository`, so none of them could see that.
+///
+/// Since spec 043 (mictlanix/mbe-ui#176), `appSerializers`'s
+/// `WallClockDateTimeSerializer` accepts a local `DateTime` and writes it as
+/// mbe-api's own wall-clock convention — a plain string with no offset — so
+/// the regression this file guards against is that a *future* change
+/// reintroduces the throw, not that today's code has it.
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
 };
 
 void main() {
   group('listOpen query parameters', () {
-    test('a UTC-flagged date reaches the wire as a plain ISO instant — the '
-        'request is actually sent', () async {
+    test("wireDate's output reaches the wire as its own wall-clock string — "
+        'the request is actually sent', () async {
       final requests = <RequestOptions>[];
       final repository = _repositoryWith((options) async {
         requests.add(options);
@@ -46,34 +52,43 @@ void main() {
       expect(query['status'], 'draft');
       expect(
         query['date_from'],
-        DateTime(2026, 8, 7).toUtc().toIso8601String(),
-        reason: 'the instant that is local midnight — mbe-api#228 converts '
-            'the offset back to the wall-clock date the register means. '
-            'Computed, not hard-coded, so the expectation holds on a CI host '
-            'in any timezone',
+        '2026-08-07T00:00:00.000',
+        reason: 'the wall-clock date the register means, with no offset — '
+            'the literal string mbe-api always receives regardless of host '
+            'timezone, since WallClockDateTimeSerializer formats a value\'s '
+            'own fields rather than converting through the host\'s clock '
+            '(FR-003, FR-004)',
       );
     });
 
-    test('a local DateTime is refused outright — the guard that would have '
-        'caught the selector silently making no requests at all', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
+    test('a local DateTime reaches the wire as its own wall clock — the '
+        'guard that would have caught the selector silently making no '
+        'requests at all', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
           jsonEncode({'items': <Object?>[], 'total': 0}),
           200,
           headers: _jsonHeaders,
-        ),
+        );
+      });
+
+      await repository.listOpen(
+        pointSale: 3,
+        status: SaleStatus.draft,
+        // Exactly what `DateTime(y, m, d)` produces — no longer refused.
+        dateFrom: DateTime(2026, 8, 7),
       );
 
+      expect(requests, hasLength(1));
       expect(
-        () => repository.listOpen(
-          pointSale: 3,
-          status: SaleStatus.draft,
-          // Exactly what `DateTime(y, m, d)` produces.
-          dateFrom: DateTime(2026, 8, 7),
-        ),
-        throwsA(isA<ArgumentError>()),
-        reason: 'built_value serializes UTC only; this must never reach '
-            'production as a silently dropped request',
+        requests.single.queryParameters['date_from'],
+        '2026-08-07T00:00:00.000',
+        reason: 'a local DateTime used to make built_value serialize-time '
+            'throw an ArgumentError, silently dropping the request before '
+            'dio ever sent it (research R5); it must now reach the wire '
+            'with no offset instead (FR-003)',
       );
     });
 
@@ -114,10 +129,10 @@ void main() {
       );
 
       final query = requests.single.queryParameters;
-      expect(query['date_from'], DateTime(2026, 8, 10).toUtc().toIso8601String());
+      expect(query['date_from'], '2026-08-10T00:00:00.000');
       expect(
         query['date_to'],
-        DateTime(2026, 8, 10, 23, 59, 59, 999).toUtc().toIso8601String(),
+        '2026-08-10T23:59:59.999',
         reason: 'mbe-api compares date_to against the sale\'s full timestamp, '
             'inclusively — encoding it as midnight made the default '
             '"today" filter answer total: 0 for a register that had traded',

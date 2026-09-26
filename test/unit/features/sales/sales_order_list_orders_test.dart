@@ -48,11 +48,8 @@ void main() {
       expect(query['facility'], 9);
       expect(query['salesperson'], 100);
       expect(query['status'], 'draft');
-      expect(query['date_from'], DateTime(2026, 8, 1).toUtc().toIso8601String());
-      expect(
-        query['date_to'],
-        DateTime(2026, 8, 31, 23, 59, 59, 999).toUtc().toIso8601String(),
-      );
+      expect(query['date_from'], '2026-08-01T00:00:00.000');
+      expect(query['date_to'], '2026-08-31T23:59:59.999');
       expect(query['search'], 'Acme');
       expect(query['skip'], 20);
       expect(query['limit'], 20);
@@ -174,8 +171,8 @@ Map<String, Object?> _summaryJson({required int id}) => {
   'customer_name': null,
   'customer_display_name': 'PÚBLICO EN GENERAL',
   'salesperson': 100,
-  'date': '2026-08-18T00:00:00.000Z',
-  'due_date': '2026-08-18T00:00:00.000Z',
+  'date': '2026-08-18T00:00:00.000',
+  'due_date': '2026-08-18T00:00:00.000',
   'currency': 0,
   'status': 'draft',
   'total': '17962.00',

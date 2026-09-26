@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
@@ -70,7 +71,7 @@ void main() {
     final paymentMethodOptionRepository = PaymentMethodOptionRepositoryImpl(
       dio,
     );
-    final addressesApi = AddressesApi(dio, standardSerializers);
+    final addressesApi = AddressesApi(dio, appSerializers);
 
     final suffix = DateTime.now().millisecondsSinceEpoch;
     final rfc = 'XAXX$suffix'.substring(0, 13.clamp(0, 'XAXX$suffix'.length));

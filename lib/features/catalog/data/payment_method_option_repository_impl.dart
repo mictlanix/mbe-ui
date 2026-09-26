@@ -5,6 +5,7 @@ import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
@@ -22,7 +23,7 @@ final paymentMethodOptionRepositoryProvider =
 class PaymentMethodOptionRepositoryImpl
     implements PaymentMethodOptionRepository {
   PaymentMethodOptionRepositoryImpl(Dio dio)
-    : _api = PaymentMethodOptionsApi(dio, standardSerializers);
+    : _api = PaymentMethodOptionsApi(dio, appSerializers);
 
   final PaymentMethodOptionsApi _api;
 

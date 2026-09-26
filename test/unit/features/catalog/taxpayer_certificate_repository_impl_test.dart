@@ -111,8 +111,8 @@ void main() {
 Map<String, Object?> _certificateJson() => {
   'taxpayer_certificate_id': '00001000000203341766',
   'taxpayer': 'XAXX010101000',
-  'valid_from': '2025-01-01T00:00:00.000Z',
-  'valid_to': '2029-01-01T00:00:00.000Z',
+  'valid_from': '2025-01-01T00:00:00.000',
+  'valid_to': '2029-01-01T00:00:00.000',
   'status': 0,
 };
 

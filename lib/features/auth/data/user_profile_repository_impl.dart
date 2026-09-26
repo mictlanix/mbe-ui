@@ -6,6 +6,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
@@ -19,7 +20,7 @@ final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
 /// `UserProfilesApi` (024-user-profiles contracts/mbe-api-user-profiles.md).
 class UserProfileRepositoryImpl implements UserProfileRepository {
   UserProfileRepositoryImpl(Dio dio)
-    : _api = UserProfilesApi(dio, standardSerializers);
+    : _api = UserProfilesApi(dio, appSerializers);
 
   final UserProfilesApi _api;
 

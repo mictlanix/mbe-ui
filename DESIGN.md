@@ -198,7 +198,10 @@ signature against a live upload before trusting it; if it's `String`-typed,
 bypass the generated wrapper and call `dio.post(path, data:
 FormData.fromMap({..., 'field': MultipartFile.fromBytes(bytes, filename:
 ...)}))` directly, deserializing the response with
-`standardSerializers.deserialize` the same way the generated method would.
+`appSerializers.deserialize` (`lib/core/network/api_serializers.dart`) the
+same way the generated method would — never the raw `standardSerializers`,
+which reads mbe-api's timestamps six hours off (spec 043,
+mictlanix/mbe-ui#176).
 
 ### 3.4 Error handling
 

@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
@@ -16,7 +17,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 /// (contracts/mbe-api-auth-users.md "POST /api/v1/auth/login",
 /// "GET /api/v1/auth/me").
 class AuthRepositoryImpl implements AuthRepository {
-  AuthRepositoryImpl(Dio dio) : _api = AuthApi(dio, standardSerializers);
+  AuthRepositoryImpl(Dio dio) : _api = AuthApi(dio, appSerializers);
 
   final AuthApi _api;
 
