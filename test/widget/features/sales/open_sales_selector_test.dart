@@ -409,10 +409,11 @@ void main() {
         expect(captured, isNotNull, reason: '$status must be date-scoped');
         expect(
           captured,
-          DateTime.utc(midnight.year, midnight.month, midnight.day),
-          reason: "today's local date, but UTC-flagged: built_value refuses to "
-              'serialize a local DateTime, and mbe-api reads the value as '
-              'wall-clock time anyway',
+          DateTime(midnight.year, midnight.month, midnight.day).toUtc(),
+          reason: 'the instant that is local midnight: built_value refuses to '
+              'serialize a local DateTime, and since mictlanix/mbe-api#228 '
+              'the server converts the offset back to wall-clock time rather '
+              'than ignoring it (mictlanix/mbe-ui#176)',
         );
         expect(
           captured!.isUtc,
