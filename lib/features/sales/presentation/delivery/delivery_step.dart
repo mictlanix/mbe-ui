@@ -138,6 +138,15 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
   /// with its own nested Navigator, which would tear the sheet down the
   /// moment this step's own state changed underneath it.
   ///
+  /// A route on the root navigator is not a descendant of the host's own
+  /// `ProviderScope`, though: the back-office order workspace overrides the
+  /// sale editor, write scope and confirm-failure seam in a nested one
+  /// (contracts/shared-step-seam.md §5). So the editor is handed this step's
+  /// own [DeliveryController], read here, inside that scope. Reading it from
+  /// the sheet instead resolved the register's defaults, and "Add
+  /// destination" confirmed the register's sale, or threw with none open
+  /// (mictlanix/mbe-ui#183).
+  ///
   /// [destination] non-null opens the composer in edit mode (spec 030
   /// FR-018) — same presentation, same mechanics, a different title
   /// (FR-019) and a `DestinationEditor` that already carries that
@@ -153,8 +162,10 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
     final editor = DestinationEditor(
       sale: widget.sale,
       destination: destination,
+      controller: ref.read(deliveryControllerProvider(widget.sale).notifier),
       onDone: () => Navigator.of(context, rootNavigator: true).pop(),
     );
+    final opened = widget.sale;
     final priorIds =
         (ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
                 const <Destination>[])
@@ -191,7 +202,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
           ),
         ),
       );
-      _markJustCreated(priorIds);
+      await _afterSheet(opened, priorIds);
       return;
     }
 
@@ -254,6 +265,30 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
         child: child,
       ),
     );
+    await _afterSheet(opened, priorIds);
+  }
+
+  /// The sale's first destination confirms it, and confirming changes the
+  /// [Sale] the delivery controller is keyed by. The instance keyed by the
+  /// confirmed sale — the one this step now watches — may have listed
+  /// destinations while the create was still in flight and found none; the
+  /// created one landed on the instance keyed by [opened], which nothing
+  /// watches any more (mictlanix/mbe-ui#183). So re-read it once the sheet
+  /// is closed, before looking for what it created.
+  ///
+  /// Invalidated by key, not as the whole family: an invalidated family is
+  /// looked up in the root container, which misses this provider's instances
+  /// in the back-office workspace's nested scope.
+  Future<void> _afterSheet(Sale opened, Set<int> priorIds) async {
+    if (!mounted) return;
+    if (widget.sale != opened) {
+      ref.invalidate(deliveryControllerProvider(widget.sale));
+      try {
+        await ref.read(deliveryControllerProvider(widget.sale).future);
+      } catch (_) {
+        // The step renders the failed load itself (`destinations.when`).
+      }
+    }
     _markJustCreated(priorIds);
   }
 

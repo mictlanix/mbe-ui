@@ -35,11 +35,19 @@ class DestinationEditor extends ConsumerStatefulWidget {
     super.key,
     required this.sale,
     required this.onDone,
+    required this.controller,
     this.destination,
   });
 
   final Sale sale;
   final Destination? destination;
+
+  /// The host step's own delivery controller, passed in rather than read
+  /// here: this editor is shown in a route on the root navigator, outside
+  /// the host's `ProviderScope`, where `deliveryControllerProvider` would
+  /// resolve against the register's scope instead of the host's
+  /// (mictlanix/mbe-ui#183).
+  final DeliveryController controller;
 
   /// Invoked once the destination is saved, or Cancel is pressed — the
   /// caller (the sheet opener, `delivery_step.dart`) decides what that means
@@ -133,12 +141,10 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       final comment = _comment.text.trim().isEmpty ? null : _comment.text.trim();
       final destination = widget.destination;
       if (destination == null) {
-        await ref
-            .read(deliveryControllerProvider(widget.sale).notifier)
+        await widget.controller
             .addDestination(shipTo: _shipTo!, contact: _contact, date: _date, comment: comment);
       } else {
-        await ref
-            .read(deliveryControllerProvider(widget.sale).notifier)
+        await widget.controller
             .updateDestination(
               destinationId: destination.id,
               shipTo: _shipTo,
@@ -152,6 +158,11 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       // Stays open with the reason; nothing already created/edited is
       // affected (FR-022, FR-037).
       setState(() => _error = e);
+    } catch (_) {
+      // Anything else is a defect, not a refusal — but it must still read as
+      // a failure, never as a button that silently does nothing
+      // (mictlanix/mbe-ui#183).
+      if (mounted) setState(() => _error = const AppError.server());
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
