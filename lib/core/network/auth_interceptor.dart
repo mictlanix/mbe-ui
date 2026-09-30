@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 import '../errors/app_error.dart';
@@ -48,18 +50,39 @@ AppError mapDioException(DioException error) {
   }
 
   final statusCode = response.statusCode ?? 0;
+  final body = _jsonBodyOf(response);
   switch (statusCode) {
     case 401:
-      return AppError.auth(_detailFrom(response.data));
+      return AppError.auth(_detailFrom(body));
     case 404:
-      return AppError.notFound(_detailFrom(response.data));
+      return AppError.notFound(_detailFrom(body));
     case 422:
-      return AppError.validation(_fieldErrorsFrom(response.data));
+      return AppError.validation(_fieldErrorsFrom(body));
     default:
       return AppError.server(
         statusCode: statusCode,
-        message: _detailFrom(response.data),
+        message: _detailFrom(body),
       );
+  }
+}
+
+/// The response body, with a JSON error re-read from bytes.
+///
+/// `ResponseType.bytes` applies to error responses as well as successes, so
+/// a request made that way (the generated PDF print methods, spec 044) gets
+/// even `{"detail": "Sales order not found"}` as a `Uint8List`. Without this,
+/// `_detailFrom` and `_fieldErrorsFrom` see a non-`Map` and the server's only
+/// explanation is dropped. A body that is not JSON, or does not parse, is
+/// returned untouched, so those helpers yield no message rather than throw.
+Object? _jsonBodyOf(Response<dynamic> response) {
+  final data = response.data;
+  if (data is! List<int>) return data;
+  final contentType = response.headers.value(Headers.contentTypeHeader) ?? '';
+  if (!contentType.contains('json')) return data;
+  try {
+    return jsonDecode(utf8.decode(data));
+  } on FormatException {
+    return data;
   }
 }
 

@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
@@ -88,6 +91,7 @@ class PosSalesListScreen extends ConsumerWidget {
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.salesOrders, AccessRight.update);
     final canCreate = access.can(SystemObject.pos, AccessRight.create);
+    final canViewTicket = canOpenDocument(access, DocumentKind.saleTicket);
     final sessionOpen =
         ref.watch(currentSessionControllerProvider).valueOrNull?.state !=
         SessionState.none;
@@ -247,6 +251,22 @@ class PosSalesListScreen extends ConsumerWidget {
                   onEdit: canUpdate && workable
                       ? () => openSale(sale.id)
                       : null,
+                  // spec 044 FR-003: the one extra row action Principle VI
+                  // allows beyond Edit — a ticket for every saved sale, in
+                  // any state (the server prints the pre-payment ticket for a
+                  // draft and the receipt for a completed one). Absent, not
+                  // disabled, without sales-orders read.
+                  extraActions: [
+                    if (canViewTicket)
+                      CatalogRowAction(
+                        key: Key('pos_sale_view_ticket_${sale.id}'),
+                        icon: Icons.receipt_long_outlined,
+                        tooltip: l10n.posSaleViewTicketTooltip,
+                        onPressed: () => ref
+                            .read(documentActionsProvider)
+                            .preview(context, _ticketRef(l10n, sale)),
+                      ),
+                  ],
                 );
               },
               // FR-006a: a stray click always opens the sale, read-only for
@@ -372,3 +392,13 @@ class _PosSalesFiltersPanel extends StatelessWidget {
     );
   }
 }
+
+/// The ticket of [sale], titled by its folio, or by its id padded as mbe-api
+/// pads the file name (`ticket-00000007.pdf`) while it has none yet.
+DocumentRef _ticketRef(AppLocalizations l10n, OpenSale sale) => DocumentRef(
+  kind: DocumentKind.saleTicket,
+  recordId: sale.id,
+  title: l10n.documentTicketTitle(
+    sale.serial?.toString() ?? sale.id.toString().padLeft(8, '0'),
+  ),
+);

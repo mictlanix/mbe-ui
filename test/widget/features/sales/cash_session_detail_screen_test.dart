@@ -8,6 +8,10 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
+import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
@@ -16,6 +20,8 @@ import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repositor
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+import '../../../unit/core/documents/document_fakes.dart';
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 
@@ -37,6 +43,29 @@ const _cannotCloseUser = User(
   privileges: [],
 );
 
+/// Reads the point of sale (so may view a cash cut) but cannot close sessions.
+const _cutReaderUser = User(
+  userId: 'auditor',
+  email: 'auditor@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.pos, rawValue: 2)],
+);
+
+/// Can close a session and view its cut.
+const _closerAndCutReaderUser = User(
+  userId: 'supervisor-pos',
+  email: 'supervisor-pos@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.cashSessionClose, rawValue: 4),
+    Privilege(systemObject: SystemObject.pos, rawValue: 2),
+  ],
+);
+
 CashSession _openSession() => CashSession(
   cashSessionId: 1,
   cashDrawerId: 1,
@@ -49,8 +78,8 @@ CashSession _openSession() => CashSession(
   paymentsByMethod: const [PaymentMethodTotal(method: 1, total: '3240')],
 );
 
-CashSession _closedSession() => CashSession(
-  cashSessionId: 2,
+CashSession _closedSession({int id = 2}) => CashSession(
+  cashSessionId: id,
   cashDrawerId: 1,
   cashDrawerName: 'Caja 1',
   cashDrawerCode: 'CJ1',
@@ -74,6 +103,7 @@ void main() {
     WidgetTester tester, {
     required User user,
     required CashSession session,
+    List<Override> overrides = const [],
   }) async {
     when(
       () => repository.get(cashSessionId: session.cashSessionId),
@@ -88,6 +118,7 @@ void main() {
         accessControlProvider.overrideWithValue(
           AccessControlService(AuthState.authenticated(token: 't', user: user)),
         ),
+        ...overrides,
       ],
     );
     addTearDown(container.dispose);
@@ -233,6 +264,217 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => repository.close(cashSessionId: 1, counts: const [])).called(1);
+    });
+  });
+
+  group('CashSessionDetailScreen — the cash cut (spec 044 US3)', () {
+    late FakeDocumentSource source;
+    late FakeDocumentOutput output;
+
+    setUp(() {
+      source = FakeDocumentSource();
+      output = FakeDocumentOutput();
+    });
+
+    List<Override> documentOverrides() => [
+      documentSourceProvider.overrideWithValue(source),
+      documentOutputProvider.overrideWithValue(output),
+    ];
+
+    final viewCutButton = find.byKey(const Key('cash_session_view_cut_button'));
+    final viewCutInDialog = find.byKey(
+      const Key('cash_session_view_cut_dialog_button'),
+    );
+
+    /// Counts 3 × 500 and presses Close, leaving the "Session closed" dialog
+    /// showing.
+    Future<void> closeSession(WidgetTester tester) async {
+      await tester.enterText(
+        find.byKey(const Key('cash_session_denomination_field_500')),
+        '3',
+      );
+      await tester.pump();
+      await tester.ensureVisible(find.byKey(const Key('cash_session_close_button')));
+      await tester.tap(find.byKey(const Key('cash_session_close_button')));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a closed session offers "View cut" in the body to a user '
+        'with point-of-sale read (FR-006)', (tester) async {
+      await pumpScreen(
+        tester,
+        user: _cutReaderUser,
+        session: _closedSession(),
+        overrides: documentOverrides(),
+      );
+
+      expect(viewCutButton, findsOneWidget);
+      expect(find.text('View cut'), findsOneWidget);
+    });
+
+    testWidgets('sits under the payment amounts, its right edge on theirs, '
+        'not at the screen\'s left edge', (tester) async {
+      final session = _closedSession().copyWith(
+        paymentsByMethod: const [PaymentMethodTotal(method: 1, total: '1750')],
+      );
+      await pumpScreen(
+        tester,
+        user: _cutReaderUser,
+        session: session,
+        overrides: documentOverrides(),
+      );
+
+      final amount = find.textContaining('1,750');
+      expect(amount, findsOneWidget);
+      expect(
+        tester.getTopRight(viewCutButton).dx,
+        closeTo(tester.getTopRight(amount).dx, 0.5),
+      );
+      expect(
+        tester.getTopLeft(viewCutButton).dy,
+        greaterThan(tester.getBottomLeft(amount).dy),
+      );
+    });
+
+    testWidgets('pressing it opens that session\'s cut in the preview',
+        (tester) async {
+      await pumpScreen(
+        tester,
+        user: _cutReaderUser,
+        session: _closedSession(),
+        overrides: documentOverrides(),
+      );
+
+      await tester.ensureVisible(viewCutButton);
+      await tester.tap(viewCutButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(source.fetched, hasLength(1));
+      expect(source.fetched.single.kind, DocumentKind.cashCut);
+      expect(source.fetched.single.recordId, 2);
+      expect(source.fetched.single.title, 'Cash cut · 000002');
+    });
+
+    testWidgets('is absent for a user without point-of-sale read — even one '
+        'who can close sessions (FR-040)', (tester) async {
+      await pumpScreen(
+        tester,
+        user: _canCloseUser,
+        session: _closedSession(),
+        overrides: documentOverrides(),
+      );
+
+      expect(viewCutButton, findsNothing);
+    });
+
+    testWidgets('is absent on an open session, whatever the user may do '
+        '(US3-5)', (tester) async {
+      await pumpScreen(
+        tester,
+        user: _closerAndCutReaderUser,
+        session: _openSession(),
+        overrides: documentOverrides(),
+      );
+
+      expect(viewCutButton, findsNothing);
+      expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
+    });
+
+    testWidgets('the close dialog no longer says the figures will not be '
+        'shown again (FR-008)', (tester) async {
+      when(
+        () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
+      ).thenAnswer((_) async => _openSession());
+      await pumpScreen(
+        tester,
+        user: _closerAndCutReaderUser,
+        session: _openSession(),
+        overrides: documentOverrides(),
+      );
+
+      await closeSession(tester);
+
+      expect(find.text('Session closed'), findsOneWidget);
+      // The message still reports the three figures ...
+      expect(find.textContaining(', difference '), findsOneWidget);
+      // ... and no longer claims they cannot be seen again.
+      expect(find.textContaining('will not be shown again'), findsNothing);
+    });
+
+    testWidgets('the close dialog offers "View cut" to a user with '
+        'point-of-sale read, and pressing it closes that dialog before '
+        'opening the preview, so dialogs never stack (FR-005)', (tester) async {
+      when(
+        () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
+      ).thenAnswer((_) async => _openSession());
+      await pumpScreen(
+        tester,
+        user: _closerAndCutReaderUser,
+        session: _openSession(),
+        overrides: documentOverrides(),
+      );
+      await closeSession(tester);
+      expect(viewCutInDialog, findsOneWidget);
+
+      await tester.tap(viewCutInDialog);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(
+        find.byType(Dialog),
+        findsOneWidget,
+        reason: 'only the preview is open',
+      );
+      expect(source.fetched.single.kind, DocumentKind.cashCut);
+      expect(source.fetched.single.recordId, 1);
+      expect(source.fetched.single.title, 'Cash cut · 000001');
+    });
+
+    testWidgets('the close dialog offers no "View cut" to a user who may '
+        'close but not view cuts — nothing is shown disabled', (tester) async {
+      when(
+        () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
+      ).thenAnswer((_) async => _openSession());
+      await pumpScreen(
+        tester,
+        user: _canCloseUser,
+        session: _openSession(),
+        overrides: documentOverrides(),
+      );
+
+      await closeSession(tester);
+
+      expect(find.text('Session closed'), findsOneWidget);
+      expect(viewCutInDialog, findsNothing);
+      expect(find.text('OK'), findsOneWidget);
+    });
+
+    testWidgets('after the close, the screen shows the session as closed with '
+        'its own "View cut", without leaving it (FR-007, US3-4)',
+        (tester) async {
+      when(
+        () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
+      ).thenAnswer((_) async => _closedSession(id: 1));
+      await pumpScreen(
+        tester,
+        user: _closerAndCutReaderUser,
+        session: _openSession(),
+        overrides: documentOverrides(),
+      );
+      // The server now reports the session closed.
+      when(
+        () => repository.get(cashSessionId: 1),
+      ).thenAnswer((_) async => _closedSession(id: 1));
+
+      await closeSession(tester);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('cash_session_status_chip_closed')), findsOneWidget);
+      expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
+      expect(viewCutButton, findsOneWidget);
     });
   });
 }

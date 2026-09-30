@@ -48,6 +48,7 @@ dependencies:
   one_of: ^1.5.0
   data_table_2: ^2.5.16
   file_picker: ^8.1.2
+  printing: ^5.15.1
   built_value: ^8.12.6
   built_collection: ^5.1.1
   decimal: ^3.2.6

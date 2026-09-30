@@ -18,6 +18,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/order_payments_contro
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_completed_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
@@ -647,7 +648,6 @@ class _StepHost extends ConsumerWidget {
 
   /// The sale is done — show its folio and offer the next one (FR-050).
   void _finish(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
     // The sale that just finished is no longer one the register can resume,
     // so the header selector's own listing has to be re-read — the same
     // refresh `_startNewSale` and `_selectSale` already do when *they* move
@@ -656,22 +656,14 @@ class _StepHost extends ConsumerWidget {
     ref.invalidate(openSalesSelectorControllerProvider);
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.posSaleCompletedTitle),
-        content: Text(
-          l10n.posSaleReference('${sale?.serial ?? sale?.provisionalReference}'),
-        ),
-        actions: [
-          FilledButton(
-            key: const Key('start_new_sale_button'),
-            onPressed: () {
-              Navigator.of(context).pop();
-              ref.read(posSaleControllerProvider.notifier).startNew();
-              ref.read(posStepControllerProvider.notifier).reset();
-            },
-            child: Text(l10n.posNewSaleAction),
-          ),
-        ],
+      builder: (dialogContext) => PosSaleCompletedDialog(
+        saleId: sale?.id,
+        reference: '${sale?.serial ?? sale?.provisionalReference}',
+        onNewSale: () {
+          Navigator.of(dialogContext).pop();
+          ref.read(posSaleControllerProvider.notifier).startNew();
+          ref.read(posStepControllerProvider.notifier).reset();
+        },
       ),
     );
   }

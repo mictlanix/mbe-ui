@@ -14,6 +14,7 @@ import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/denomination_count.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
+import 'package:mbe_ui/features/sales/presentation/cash_session_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/close_session_form_controller.dart';
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
@@ -181,6 +182,56 @@ void main() {
 
       expect(container.read(closeSessionFormControllerProvider).closed, isTrue);
       verify(() => repository.close(cashSessionId: 1, counts: const [])).called(1);
+    });
+  });
+
+  group('CloseSessionFormController.submit — the detail screen refreshes', () {
+    test('a successful close invalidates the session\'s detail, so it is '
+        're-read as closed (spec 044 FR-007, research R14)', () async {
+      when(() => repository.get(cashSessionId: 1))
+          .thenAnswer((_) async => _session());
+      when(
+        () => repository.close(cashSessionId: 1, counts: const []),
+      ).thenAnswer((_) async => _session(payments: const []));
+
+      // The detail screen is watching the session.
+      final detail = container.listen(
+        cashSessionDetailControllerProvider(1),
+        (previous, next) {},
+      );
+      addTearDown(detail.close);
+      await container.read(cashSessionDetailControllerProvider(1).future);
+      verify(() => repository.get(cashSessionId: 1)).called(1);
+
+      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      controller.loadSession(_session());
+      await controller.submit();
+      await container.read(cashSessionDetailControllerProvider(1).future);
+
+      verify(() => repository.get(cashSessionId: 1)).called(1);
+    });
+
+    test('a failed close does not refresh it', () async {
+      when(() => repository.get(cashSessionId: 1))
+          .thenAnswer((_) async => _session());
+      when(
+        () => repository.close(cashSessionId: 1, counts: const []),
+      ).thenThrow(const AppError.server(statusCode: 500));
+
+      final detail = container.listen(
+        cashSessionDetailControllerProvider(1),
+        (previous, next) {},
+      );
+      addTearDown(detail.close);
+      await container.read(cashSessionDetailControllerProvider(1).future);
+      clearInteractions(repository);
+
+      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      controller.loadSession(_session());
+      await controller.submit();
+      await container.pump();
+
+      verifyNever(() => repository.get(cashSessionId: 1));
     });
   });
 

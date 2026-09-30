@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
@@ -20,6 +24,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
+import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
 import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/pos_sale_status_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -117,6 +122,36 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
   void dispose() {
     _commentController.dispose();
     super.dispose();
+  }
+
+  /// Opens the pedido, once nothing this screen is still saving or holding
+  /// unconfirmed can make it differ from what is on screen (spec 044 FR-009).
+  ///
+  /// The button is disabled while a write is in flight (the same reactive gate
+  /// the workspace's other critical actions use), so what is left to settle
+  /// here is typed-but-unconfirmed text, through the prompt the workspace
+  /// already shows before it continues to delivery. "Seguir editando" cancels.
+  Future<void> _viewPedido() async {
+    final title = AppLocalizations.of(context)!.documentSalesOrderTitle(
+      widget.sale.id.toString().padLeft(8, '0'),
+    );
+    final saleId = widget.sale.id;
+    final proceed = await resolveUnconfirmedEdits(
+      context,
+      ref,
+      salesOrderWritesScope,
+    );
+    if (!proceed || !mounted) return;
+    await ref
+        .read(documentActionsProvider)
+        .preview(
+          context,
+          DocumentRef(
+            kind: DocumentKind.salesOrder,
+            recordId: saleId,
+            title: title,
+          ),
+        );
   }
 
   Future<bool> _commitComment(String value) async {
@@ -368,6 +403,23 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final canEdit = widget.canEdit;
+    final canViewPedido = canOpenDocument(
+      ref.watch(accessControlProvider),
+      DocumentKind.salesOrder,
+    );
+    final writesPending =
+        ref.watch(pendingWritesProvider(salesOrderWritesScope)) > 0;
+
+    final detailsToggle = TextButton.icon(
+      key: const Key('sales_order_more_details_toggle'),
+      onPressed: () => setState(() => _expanded = !_expanded),
+      // The control names where it will take you, not where you are.
+      label: Text(
+        _expanded ? l10n.salesOrderFewerDetails : l10n.salesOrderMoreDetails,
+      ),
+      icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+      iconAlignment: IconAlignment.end,
+    );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -449,16 +501,30 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
         // "Menos detalles", and at the compact tier with scaled-up text an
         // inflexible button overruns the row (FR-018).
         Flexible(
-          child: TextButton.icon(
-            key: const Key('sales_order_more_details_toggle'),
-            onPressed: () => setState(() => _expanded = !_expanded),
-            // The control names where it will take you, not where you are.
-            label: Text(
-              _expanded ? l10n.salesOrderFewerDetails : l10n.salesOrderMoreDetails,
-            ),
-            icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-            iconAlignment: IconAlignment.end,
-          ),
+          // spec 044 FR-004: "Ver pedido" sits beside the toggle in the same
+          // trailing group, which wraps rather than overflowing when a
+          // narrow tier or a large text scale leaves it too little room.
+          // Absent — not disabled — without sales-orders read.
+          child: canViewPedido
+              ? Wrap(
+                  alignment: WrapAlignment.end,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: spacing.sm,
+                  runSpacing: spacing.xs,
+                  children: [
+                    OutlinedButton.icon(
+                      key: const Key('sales_order_view_pedido_button'),
+                      // Held while a write is in flight, so the document
+                      // cannot be fetched a moment before the edit it should
+                      // show has landed.
+                      onPressed: writesPending ? null : _viewPedido,
+                      icon: const Icon(Icons.description_outlined),
+                      label: Text(l10n.salesOrderViewDocumentAction),
+                    ),
+                    detailsToggle,
+                  ],
+                )
+              : detailsToggle,
         ),
       ],
     );
