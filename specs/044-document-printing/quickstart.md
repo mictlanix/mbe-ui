@@ -6,8 +6,8 @@ How to prove the feature works. The contracts are in [contracts/](./contracts/),
 
 ## Prerequisites
 
-- On branch `044-document-printing`, with `flutter pub get` run after `printing` was added. Flutter 3.44.x / Dart ≥ 3.12 (research R1).
-- `web/pdfjs/pdf.min.mjs`, `web/pdfjs/pdf.worker.min.mjs` and `web/pdfjs/LICENSE` exist (pdfjs-dist 6.2.108), and `web/index.html` sets `dartPdfJsBaseUrl = "pdfjs/"` (research R3).
+- On branch `044-document-printing`, with `flutter pub get` run after `printing` was added. Flutter 3.44.x. `printing` 5.15.1 needs Dart ≥ 3.12 to build (research R1).
+- `web/pdfjs/pdf.min.mjs`, `web/pdfjs/pdf.worker.min.mjs` and `web/pdfjs/LICENSE` exist (pdfjs-dist 6.2.108), and `web/index.html` sets `dartPdfJsBaseUrl = "./pdfjs/"` (research R3).
 - For live checks: an mbe-api at or after mbe-api#231, plus `.env` with `MBE_POS_*` (the admin account). See the POS integration-test memory: use `--dart-define=MBE_POS_PRODUCT_PATTERN=clavo`.
 
 ## 1. Automated tests

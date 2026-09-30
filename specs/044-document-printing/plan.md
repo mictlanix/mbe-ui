@@ -21,7 +21,7 @@ pdf.js is served from the app's own origin, so a preview reaches no third party.
 
 ## Technical Context
 
-**Language/Version**: Dart ≥ 3.12 (constraint raised from `^3.10.3`, research R1), Flutter 3.44.2 stable
+**Language/Version**: Dart `^3.10.3` (unchanged, research R1; `printing` needs Dart ≥ 3.12 at build time, which the installed toolchain has), Flutter 3.44.2 stable
 
 **Primary Dependencies**:
 - New: `printing` ^5.15.1, which brings `pdf`, `image`, `http` and `web` transitively.
@@ -50,12 +50,12 @@ pdf.js is served from the app's own origin, so a preview reaches no third party.
 - Any future CSP must carry the directives in [quickstart.md](./quickstart.md) § Deployment (R4).
 
 **Scale/Scope**:
-- New module `lib/core/documents/`, 11 source files:
+- New module `lib/core/documents/`, 12 source files:
   - domain (4): kind, ref/rendered/page, and 2 interfaces
   - data (2): the source impl and the printing output
-  - presentation (5): actions, preview dialog, controller, page viewer, zoom/page math
+  - presentation (6): actions, the access gate, preview dialog, controller, page viewer, zoom/page math
 - Edits to 6 existing files: `auth_interceptor.dart`, `pos_workspace_screen.dart`, `pos_sales_list_screen.dart`, `order_header_panel.dart`, `cash_session_detail_screen.dart`, `close_session_form_controller.dart`.
-- Also `pubspec.yaml`, `web/index.html`, and both `.arb` files: about 17 new keys, and 1 reworded (`cashSessionCloseSuccessMessage`).
+- Also `pubspec.yaml` (adds `printing` only), `web/index.html`, and both `.arb` files: about 17 new keys, and 1 reworded (`cashSessionCloseSuccessMessage`).
 
 ## Constitution Check
 
@@ -110,7 +110,8 @@ lib/core/documents/                          # NEW
 │   ├── document_source_impl.dart            # 3 generated methods, filename parse, _toAppError
 │   └── printing_document_output.dart        # Printing.layoutPdf / sharePdf / raster, dpi cap
 └── presentation/
-    ├── document_actions.dart                # preview() / printDirect(), gate re-check, in-flight guard
+    ├── document_access.dart                 # canOpenDocument / requireDocumentAccess (shared by actions and controller)
+    ├── document_actions.dart                # preview() / printDirect(), in-flight guards
     ├── document_preview_dialog.dart         # Dialog vs Dialog.fullscreen, title/action bars
     ├── document_preview_controller.dart     # AsyncNotifier family (fetch → raster)
     ├── document_zoom.dart                   # pure zoom steps, clamp, readout, page-in-view
@@ -123,7 +124,7 @@ lib/features/sales/presentation/orders/order_header_panel.dart     # EDIT: "Ver 
 lib/features/sales/presentation/cash_session_detail_screen.dart    # EDIT: "Ver corte" (close dialog + closed body)
 lib/features/sales/presentation/close_session_form_controller.dart # EDIT: invalidate detail after close (R14)
 lib/l10n/app_en.arb, app_es.arb                                    # EDIT: new keys; reword close message
-pubspec.yaml                                                       # EDIT: printing; sdk ^3.12.0
+pubspec.yaml                                                       # EDIT: printing (sdk constraint unchanged, research R1)
 web/index.html                                                     # EDIT: dartPdfJsBaseUrl
 web/pdfjs/{pdf.min.mjs,pdf.worker.min.mjs,LICENSE}                 # NEW (vendored pdfjs-dist 6.2.108)
 

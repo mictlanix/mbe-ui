@@ -95,6 +95,13 @@
     }
   </script>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <!-- Self-hosted pdf.js for the `printing` package's in-app document preview
+       (spec 044, FR-014): keeps the viewer off any third-party CDN. The leading
+       "./" is required: the package loads it with a dynamic import(), which
+       rejects a bare "pdfjs/..." specifier. The trailing slash is required too. -->
+  <script>
+    var dartPdfJsBaseUrl = "./pdfjs/";
+  </script>
 </head>
 <body>
   <picture id="splash">

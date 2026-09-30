@@ -46,7 +46,7 @@ One rasterized page (R2, R7).
 | Field | Type | Rules |
 |---|---|---|
 | `image` | `ImageProvider` | the rastered page |
-| `size` | `Size` | the page's pixel size at raster dpi. It sets the aspect ratio drawn in the preview (FR-011). |
+| `size` | `Size` | the page's size in PDF points (1/72 inch), not raster pixels, so it does not depend on the dpi used. It sets the aspect ratio drawn in the preview, and how wide a page narrower than the preview (a 72 mm ticket) is shown (FR-011). |
 
 ## DocumentPreviewState (presentation)
 

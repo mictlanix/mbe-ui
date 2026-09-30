@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,6 +9,10 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/design/text_scale.dart';
+import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
+import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
@@ -25,6 +30,7 @@ import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../unit/core/documents/document_fakes.dart';
 import 'pos_test_harness.dart';
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
@@ -44,6 +50,7 @@ const _pointSale = 3;
 
 User _user({
   bool canUpdateSalesOrders = true,
+  bool canReadSalesOrders = false,
   bool canCreatePos = true,
   int? pointSaleId = _pointSale,
 }) => User(
@@ -54,8 +61,11 @@ User _user({
   sessionVersion: 1,
   settings: pointSaleId == null ? null : UserSettings(pointSaleId: pointSaleId),
   privileges: [
-    if (canUpdateSalesOrders)
-      const Privilege(systemObject: SystemObject.salesOrders, rawValue: 4),
+    if (canUpdateSalesOrders || canReadSalesOrders)
+      Privilege(
+        systemObject: SystemObject.salesOrders,
+        rawValue: (canUpdateSalesOrders ? 4 : 0) | (canReadSalesOrders ? 2 : 0),
+      ),
     if (canCreatePos) const Privilege(systemObject: SystemObject.pos, rawValue: 1),
   ],
 );
@@ -99,6 +109,7 @@ void main() {
     ListQuery query = const ListQuery(),
     User? user,
     bool sessionOpen = true,
+    List<Override> overrides = const [],
   }) async {
     when(() => cashSessions.getCurrent()).thenAnswer(
       (_) async => CurrentSession(
@@ -117,6 +128,7 @@ void main() {
         salesOrderOverride(salesOrders),
         cashSessionRepositoryProvider.overrideWithValue(cashSessions),
         customerRepositoryProvider.overrideWithValue(customers),
+        ...overrides,
       ],
     );
   }
@@ -530,6 +542,123 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('pos_sales_new_sale_button')), findsNothing);
+    });
+  });
+
+  group('PosSalesListScreen — "Ver ticket" row action (spec 044 US4)', () {
+    late FakeDocumentSource source;
+    late FakeDocumentOutput output;
+
+    setUp(() {
+      source = FakeDocumentSource();
+      output = FakeDocumentOutput();
+    });
+
+    List<Override> documentOverrides() => [
+      documentSourceProvider.overrideWithValue(source),
+      documentOutputProvider.overrideWithValue(output),
+    ];
+
+    final ticketIcon = find.byIcon(Icons.receipt_long_outlined);
+
+    testWidgets('every saved sale gets a "Ver ticket" icon — draft, paid and '
+        'cancelled alike — for a user who may read sales orders (FR-003)', (
+      tester,
+    ) async {
+      stubListSales(
+        salesOrders,
+        page: testSalesPage([
+          testOpenSale(id: 1, status: SaleStatus.draft),
+          testOpenSale(id: 2, status: SaleStatus.paid, serial: 1234),
+          testOpenSale(id: 3, status: SaleStatus.cancelled),
+        ]),
+      );
+      await pumpList(
+        tester,
+        user: _user(canReadSalesOrders: true),
+        overrides: documentOverrides(),
+      );
+
+      expect(ticketIcon, findsNWidgets(3));
+      expect(find.byTooltip('Ver ticket'), findsNWidgets(3));
+    });
+
+    testWidgets('is absent — not disabled — without sales-orders read '
+        '(FR-040)', (tester) async {
+      stubListSales(
+        salesOrders,
+        page: testSalesPage([testOpenSale(id: 1, status: SaleStatus.draft)]),
+      );
+      await pumpList(
+        tester,
+        user: _user(),
+        overrides: documentOverrides(),
+      );
+
+      expect(ticketIcon, findsNothing);
+    });
+
+    testWidgets('a row that also has Edit still shows exactly two icons and '
+        'no overflow menu (US4-4)', (tester) async {
+      stubListSales(
+        salesOrders,
+        page: testSalesPage([testOpenSale(id: 1, status: SaleStatus.draft)]),
+      );
+      await pumpList(
+        tester,
+        user: _user(canReadSalesOrders: true),
+        overrides: documentOverrides(),
+      );
+
+      expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+      expect(ticketIcon, findsOneWidget);
+      expect(find.byIcon(Icons.more_vert), findsNothing);
+    });
+
+    testWidgets('pressing it opens that sale\'s ticket in the preview, and '
+        'does not also open the sale (US4-2)', (tester) async {
+      stubListSales(
+        salesOrders,
+        page: testSalesPage([
+          testOpenSale(id: 1, status: SaleStatus.draft),
+          testOpenSale(id: 2, status: SaleStatus.paid, serial: 1234),
+        ]),
+      );
+      await pumpList(
+        tester,
+        user: _user(canReadSalesOrders: true),
+        overrides: documentOverrides(),
+      );
+
+      // `pumpList` has no router: had the tap also reached the row's own
+      // tap handler, opening the sale would have thrown here.
+      await tester.tap(ticketIcon.last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(source.fetched, hasLength(1));
+      expect(source.fetched.single.kind, DocumentKind.saleTicket);
+      expect(source.fetched.single.recordId, 2);
+      expect(source.fetched.single.title, 'Ticket · Folio #1234');
+    });
+
+    testWidgets('a sale with no folio yet is titled by its id, padded to '
+        'eight digits like the server\'s file name (US4-3)', (tester) async {
+      stubListSales(
+        salesOrders,
+        page: testSalesPage([testOpenSale(id: 7, status: SaleStatus.draft)]),
+      );
+      await pumpList(
+        tester,
+        user: _user(canReadSalesOrders: true),
+        overrides: documentOverrides(),
+      );
+
+      await tester.tap(ticketIcon);
+      await tester.pumpAndSettle();
+
+      expect(source.fetched.single.recordId, 7);
+      expect(source.fetched.single.title, 'Ticket · Folio #00000007');
     });
   });
 }

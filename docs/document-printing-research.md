@@ -1,7 +1,8 @@
 # Document & Ticket Printing — Research & Design Foundation
 
-**Status**: Pre-spec — foundation for a future `NNN-document-printing` feature. mbe-api's
-Phase 1 endpoints (minus CFDI) have landed — see §0.1.
+**Status**: Foundation for spec `044-document-printing`, which implements the mbe-ui side of
+Phase 1 (see `specs/044-document-printing/`). mbe-api's Phase 1 endpoints (minus CFDI) have
+landed — see §0.1 — and §0.2 records what implementing them found.
 **Date**: 2026-09-12 (updated 2026-09-29)
 **Audience**: whoever writes the spec, and whoever picks up the mbe-api side
 **Sources**: legacy `mbe` (`Web/Mvc/CustomController.cs`, `Web/Views/`, `Web/Content/`),
@@ -84,6 +85,42 @@ Other facts worth knowing: renders are serialized per process (`anyio.CapacityLi
 there is no per-facility authorization on these routes, matching the read endpoints; the pagaré
 text is deployment config (`PROMISSORY_NOTE_TEMPLATE`); running mbe-api's print tests on macOS
 needs `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib` for pango.
+
+### 0.2 Update 2026-09-30 — what spec 044 found
+
+Facts established while planning and building the mbe-ui side, several of which change what
+§8 assumed. The decisions themselves are in `specs/044-document-printing/research.md`.
+
+1. **On web, the app cannot tell what happened after `Printing.layoutPdf`.** It returns `true`
+   whether the user printed, cancelled, or a pop-up blocker stopped the new tab (native
+   platforms do report a cancel). So there is no "blocked pop-up" message to show, and a
+   cancelled print is never an error. Descargar is the fallback. (§8.6)
+2. **The `printing` web plugin needs a relaxed Content Security Policy.** Raster and `info()`
+   reach pdf.js through `window.eval`, and printing injects an inline `<script>` into a hidden
+   iframe. Any CSP the web app adds later must allow `script-src 'self' 'unsafe-eval'
+   'unsafe-inline'` and `worker-src 'self' blob:`. `web/index.html` sets no CSP today. §8.6's
+   "hard no" for `'unsafe-eval'` was about loading code from a public CDN; with pdf.js served
+   from the app's own origin the exposure is narrower, but it is not nil.
+3. **pdf.js is vendored, and its base URL must start with `./`.** `web/pdfjs/` holds
+   `pdf.min.mjs` and `pdf.worker.min.mjs` (pdfjs-dist 6.2.108, the version `printing` 5.15.1
+   pins) and `web/index.html` sets `dartPdfJsBaseUrl = "./pdfjs/"`. The package's README shows a
+   bare relative path, which predates ES modules: `import("pdfjs/…")` is a bare specifier and
+   browsers reject it. Verified in headless Chrome 154 (research R3).
+4. **Raising `environment.sdk` to `^3.12.0` breaks the app.** `printing` 5.15.1 needs Dart 3.12
+   to build, but pub checks that against the installed SDK, not the declared bound. Raising the
+   bound alone gives `mbe_ui` a newer language version than the generated client and stops
+   every import of it compiling. The bound stays `^3.10.3`; raise it together with a client
+   regeneration, which copies it into the generated package.
+5. **Error bodies of a binary request arrive as bytes.** `_detailFrom` in `auth_interceptor.dart`
+   now re-reads a JSON body from bytes, so "Sales order not found", "Cash session is not
+   closed" and "Insufficient privileges" reach the user. §8.3's fix, shipped with the first unit
+   test that file has ever had.
+6. **A page narrower than the preview is not stretched.** A 72 mm ticket is shown at its
+   natural size (204 pt = 272 px at 96 dpi), centred, rather than fitted to the dialog's width;
+   only a page wider than the preview is fitted down.
+7. **Downloading uses `Printing.sharePdf` on every platform.** On web it is a real download under
+   the server's file name; on desktop it opens the PDF in the default viewer or share sheet,
+   not a Save dialog (`file_picker` 8.3.7's `saveFile` does not take bytes on web or macOS).
 
 ---
 
@@ -647,7 +684,9 @@ Reading the package's web plugin settles the design question:
   be meaningless.
 
 So make **going straight to the print dialog the default path**, and treat an in-app preview
-as optional. **Phase 1 can ship with no `PdfPreview` at all** and still satisfy every
+as optional. *(Spec 044 shipped both: direct print at the POS completion moment, and an in-app
+preview everywhere else, built on `Printing.raster` with a self-hosted pdf.js rather than on
+`PdfPreview` — see §0.2.)* **Phase 1 can ship with no `PdfPreview` at all** and still satisfy every
 requirement — no CDN, no `unsafe-eval`, nothing in `web/index.html`. If a preview is wanted
 later, self-host pdf.js by setting `dartPdfJsBaseUrl` in `web/index.html` and vendoring the
 `.mjs` files, rather than accepting the unpkg dependency.

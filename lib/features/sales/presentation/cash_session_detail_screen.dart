@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
@@ -123,11 +126,36 @@ class _DetailBody extends ConsumerWidget {
                 l10n.cashSessionSupervisorRequiredMessage,
                 key: const Key('cash_session_supervisor_required_message'),
               ),
+          // spec 044 FR-006: the cut of a closed session, viewable again at
+          // any time. Absent — not disabled — without point-of-sale read.
+          if (status == CashSessionStatus.closed &&
+              canOpenDocument(access, DocumentKind.cashCut))
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: OutlinedButton.icon(
+                key: const Key('cash_session_view_cut_button'),
+                onPressed: () => ref
+                    .read(documentActionsProvider)
+                    .preview(context, _cutRef(l10n, session)),
+                icon: const Icon(Icons.receipt_long_outlined),
+                label: Text(l10n.cashSessionViewCutAction),
+              ),
+            ),
         ],
       ),
     );
   }
 }
+
+/// The cut of [session], titled with its id padded as mbe-api pads the file
+/// name (`corte-000123.pdf`).
+DocumentRef _cutRef(AppLocalizations l10n, CashSession session) => DocumentRef(
+  kind: DocumentKind.cashCut,
+  recordId: session.cashSessionId,
+  title: l10n.documentCashCutTitle(
+    session.cashSessionId.toString().padLeft(6, '0'),
+  ),
+);
 
 class _LabeledText extends StatelessWidget {
   const _LabeledText(this.label, this.value);
@@ -287,7 +315,19 @@ class _CloseSection extends ConsumerWidget {
     final state = ref.read(closeSessionFormControllerProvider);
     if (!state.closed) return;
 
-    await showDialog<void>(
+    // spec 044: closing refreshes the detail to its closed state, which
+    // unmounts this section while the dialog below is still up. So what is
+    // needed after the dialog is captured before it: the root navigator's
+    // context and the actions object both outlive this widget, and neither
+    // reads this widget's `ref` or `context` afterwards.
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+    final documentActions = ref.read(documentActionsProvider);
+    final canViewCut = canOpenDocument(
+      ref.read(accessControlProvider),
+      DocumentKind.cashCut,
+    );
+
+    final viewCut = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.cashSessionCloseSuccessTitle),
@@ -299,13 +339,25 @@ class _CloseSection extends ConsumerWidget {
           ),
         ),
         actions: [
+          if (canViewCut)
+            OutlinedButton(
+              key: const Key('cash_session_view_cut_dialog_button'),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(l10n.cashSessionViewCutAction),
+            ),
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(l10n.okButton),
           ),
         ],
       ),
     );
+
+    // The dialog is gone before the preview opens, so they never stack
+    // (FR-005).
+    if (viewCut == true && rootContext.mounted) {
+      await documentActions.preview(rootContext, _cutRef(l10n, session));
+    }
   }
 }
 

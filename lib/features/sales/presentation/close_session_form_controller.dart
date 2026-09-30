@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/denomination_count.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/presentation/cash_session_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 
@@ -138,6 +139,9 @@ class CloseSessionFormController extends _$CloseSessionFormController {
       // spec 041 US3/FR-009: see the matching comment in
       // OpenSessionFormController.submit().
       ref.invalidate(cashSessionsListControllerProvider);
+      // spec 044 FR-007: the detail screen this was closed from is showing the
+      // session as open, and would keep doing so — and never offer the cut.
+      ref.invalidate(cashSessionDetailControllerProvider(cashSessionId));
       state = state.copyWith(submitting: false, closed: true);
     } on AppError catch (e) {
       if (e is ValidationError) {

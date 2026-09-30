@@ -5502,7 +5502,7 @@ abstract class AppLocalizations {
   /// No description provided for @cashSessionCloseSuccessMessage.
   ///
   /// In en, this message translates to:
-  /// **'Counted {counted}, expected {expected}, difference {difference}. These figures will not be shown again.'**
+  /// **'Counted {counted}, expected {expected}, difference {difference}.'**
   String cashSessionCloseSuccessMessage(
     String counted,
     String expected,
@@ -6726,6 +6726,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep editing'**
   String get recordSheetDiscardCancel;
+
+  /// spec 044: the document preview's print button
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get documentPrintAction;
+
+  /// spec 044: the document preview's download button (saves the PDF)
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get documentDownloadAction;
+
+  /// No description provided for @documentLoadingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading document…'**
+  String get documentLoadingMessage;
+
+  /// spec 044: heading above the server's own reason when a document fetch fails
+  ///
+  /// In en, this message translates to:
+  /// **'The document could not be loaded.'**
+  String get documentLoadFailedError;
+
+  /// No description provided for @documentCloseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get documentCloseTooltip;
+
+  /// No description provided for @documentZoomOutTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get documentZoomOutTooltip;
+
+  /// No description provided for @documentZoomInTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get documentZoomInTooltip;
+
+  /// No description provided for @documentZoomFitTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit to width'**
+  String get documentZoomFitTooltip;
+
+  /// spec 044 FR-011: the page in view out of the total; both are strings so a loading document can show a dash
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} / {total}'**
+  String documentPageIndicator(String current, String total);
+
+  /// No description provided for @documentTicketTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket · Reference #{reference}'**
+  String documentTicketTitle(String reference);
+
+  /// No description provided for @documentSalesOrderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales order · {reference}'**
+  String documentSalesOrderTitle(String reference);
+
+  /// No description provided for @documentCashCutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash cut · {reference}'**
+  String documentCashCutTitle(String reference);
+
+  /// spec 044 FR-002: the completed-sale dialog's direct-print button
+  ///
+  /// In en, this message translates to:
+  /// **'Print ticket'**
+  String get posSalePrintTicketAction;
+
+  /// spec 044 US1-4: heading above the server's reason when printing the ticket fails
+  ///
+  /// In en, this message translates to:
+  /// **'The ticket could not be printed.'**
+  String get posSalePrintTicketError;
+
+  /// spec 044 FR-005/FR-006: opens a closed cash session's cut (corte de caja) in the document preview
+  ///
+  /// In en, this message translates to:
+  /// **'View cut'**
+  String get cashSessionViewCutAction;
+
+  /// spec 044 FR-003: the POS sales list row action that opens a sale's ticket in the document preview
+  ///
+  /// In en, this message translates to:
+  /// **'View ticket'**
+  String get posSaleViewTicketTooltip;
+
+  /// spec 044 FR-004: opens the order's letter-size document (pedido) in the document preview, from the order workspace header
+  ///
+  /// In en, this message translates to:
+  /// **'View sales order'**
+  String get salesOrderViewDocumentAction;
 }
 
 class _AppLocalizationsDelegate

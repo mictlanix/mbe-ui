@@ -157,8 +157,8 @@ no state to draw: Descargar stays enabled in the loaded state as the fallback.
 - On Compact the dialog fills the screen, and the close button moves to the leading edge of
   the title bar.
 - The action bar wraps onto two lines: zoom and the page indicator first, then Descargar
-  and Imprimir. The zoom level readout is dropped to save width, while pinch zoom stays; the
-  page indicator is kept.
+  and Imprimir. It wraps rather than overflowing at any width or text scale. The zoom level
+  readout is kept (FR-011 asks for the level to be visible), and so is the page indicator.
 - A letter page opens fitted to width, which is small on a phone, and is read with pinch
   zoom or `[+]`.
 

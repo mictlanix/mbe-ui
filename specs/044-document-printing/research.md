@@ -8,11 +8,13 @@ This feature builds on [docs/document-printing-research.md](../../docs/document-
 
 ## R1. The `printing` package: version and SDK
 
-**Decision**: Add `printing: ^5.15.1`. It brings `pdf ^3.13.0`, `image`, `http` and `web` with it. Raise `environment.sdk` in `pubspec.yaml` from `^3.10.3` to `^3.12.0`.
+**Decision**: Add `printing: ^5.15.1`. It brings `pdf ^3.13.0`, `image`, `http` and `web` with it. **Leave `environment.sdk` at `^3.10.3`** (revised during implementation; see below).
 
-**Rationale**: Constitution Technology Stack names `printing` for preview, print and share, and research §3.1 notes it is absent from the repo. Version 5.15.1 declares `sdk >=3.12.0`, `flutter >=3.41.0`. The installed toolchain is Flutter 3.44.2 with Dart 3.12.2, so it resolves today. The repo's lower bound of `^3.10.3` would then be wrong: nobody on Dart 3.10 or 3.11 could build it. So the bound moves up to match. This bump only states a requirement that already exists; no language feature changes.
+**Rationale**: Constitution Technology Stack names `printing` for preview, print and share, and research §3.1 notes it is absent from the repo. Version 5.15.1 declares `sdk >=3.12.0`, `flutter >=3.41.0`, and the installed toolchain (Flutter 3.44.2, Dart 3.12.2) satisfies that, so it resolves.
 
-**Alternatives considered**: Pinning an older `printing` to keep `^3.10.3`. Rejected: the older versions default pdf.js to older unpkg builds, and nothing in this feature needs to run on Dart 3.10.
+**Revised at implementation: the planned bump to `^3.12.0` is not made.** pub checks a dependency's SDK requirement against the *installed* SDK, not the root's declared lower bound, so `printing` resolves and builds under `^3.10.3`. Raising the root bound alone also breaks the app: it moves `mbe_ui` to language version 3.12 while the generated `mbe_api_client` package stays at 3.10, and every library that imports the client then fails to compile with "The language version override has to be the same in the library and its part(s)." `tool/generate_api_client.sh` (lines 101-111) deliberately copies the root's lower bound into the generated package's `pubspec.yaml`, so the two move together at a regeneration. Patching only the generated pubspec by hand would edit a generated file (§III). A developer on an SDK older than 3.12 gets pub's own clear error when resolving `printing`. If the bound is raised later, do it together with a regeneration of the client.
+
+**Alternatives considered**: Pinning an older `printing`. Rejected: older versions default pdf.js to older unpkg builds. Raising `environment.sdk` to `^3.12.0`, as first planned. Rejected for the reason above.
 
 ---
 
@@ -39,9 +41,11 @@ All six platforms support both raster and print.
 
 ## R3. pdf.js on web: served by the app itself (FR-014)
 
-**Decision**: Vendor `pdf.min.mjs` and `pdf.worker.min.mjs` from `pdfjs-dist@6.2.108/build/` into `web/pdfjs/`, together with pdf.js's `LICENSE`. In `web/index.html`, before the Flutter bootstrap script, set `<script>var dartPdfJsBaseUrl = "pdfjs/";</script>`. The value is relative to the app's base href and needs its trailing slash.
+**Decision**: Vendor `pdf.min.mjs` and `pdf.worker.min.mjs` from `pdfjs-dist@6.2.108/build/` into `web/pdfjs/`, together with pdf.js's `LICENSE`. In `web/index.html`, before the Flutter bootstrap script, set `<script>var dartPdfJsBaseUrl = "./pdfjs/";</script>`. The value is relative to the app's base href and needs its trailing slash.
 
 **Rationale**: `printing`'s web plugin loads pdf.js from `https://unpkg.com/pdfjs-dist@6.2.108/build/` unless that global is set (`printing_web.dart:38-39, 52-54, 75-87`). A request to a third-party CDN on every preview breaks FR-014 and SC-004. The global is the package's documented self-hosting knob (`README.md:55-67`). Version 6.2.108 is pinned to match what the package expects, and moving it is a deliberate act done together with a `printing` upgrade.
+
+**Verified in a real browser (2026-09-30).** A page served from the release web build ran the same steps `printing_web` does (an `eval`'d dynamic `import()` of `pdf.min.mjs`, then `workerSrc`) in headless Chrome 154. With `dartPdfJsBaseUrl = "./pdfjs/"` it loaded, the worker ran, and a 204 × 200 pt page rastered at 200 dpi to 567 × 556 px with its text drawn. The only host contacted was the page's own origin. With the bare `"pdfjs/"` it failed with `Failed to resolve module specifier 'pdfjs/pdf.min.mjs'`, which is why the value must start with `./`. This reproduces the package's loading path; it is not the app's own preview, which still needs the manual check in quickstart M3/M9.
 
 **Not needed**: `cmaps/`, because the package never configures it (`printing_web.dart:311`). The WeasyPrint output embeds TrueType subsets and needs no CMap lookups. The `wasm/` JPEG2000 decoders are also not needed: mbe-api's templates embed SVG barcodes and PNG/JPEG logos, never JPX.
 

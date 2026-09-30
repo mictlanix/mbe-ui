@@ -3034,7 +3034,7 @@ class AppLocalizationsEs extends AppLocalizations {
     String expected,
     String difference,
   ) {
-    return 'Contado $counted, esperado $expected, diferencia $difference. Estas cifras no se mostrarán de nuevo.';
+    return 'Contado $counted, esperado $expected, diferencia $difference.';
   }
 
   @override
@@ -3731,4 +3731,63 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get recordSheetDiscardCancel => 'Seguir editando';
+
+  @override
+  String get documentPrintAction => 'Imprimir';
+
+  @override
+  String get documentDownloadAction => 'Descargar';
+
+  @override
+  String get documentLoadingMessage => 'Cargando documento…';
+
+  @override
+  String get documentLoadFailedError => 'No se pudo cargar el documento.';
+
+  @override
+  String get documentCloseTooltip => 'Cerrar';
+
+  @override
+  String get documentZoomOutTooltip => 'Alejar';
+
+  @override
+  String get documentZoomInTooltip => 'Acercar';
+
+  @override
+  String get documentZoomFitTooltip => 'Ajustar al ancho';
+
+  @override
+  String documentPageIndicator(String current, String total) {
+    return 'Página $current / $total';
+  }
+
+  @override
+  String documentTicketTitle(String reference) {
+    return 'Ticket · Folio #$reference';
+  }
+
+  @override
+  String documentSalesOrderTitle(String reference) {
+    return 'Pedido · $reference';
+  }
+
+  @override
+  String documentCashCutTitle(String reference) {
+    return 'Corte de caja · $reference';
+  }
+
+  @override
+  String get posSalePrintTicketAction => 'Imprimir ticket';
+
+  @override
+  String get posSalePrintTicketError => 'No se pudo imprimir el ticket.';
+
+  @override
+  String get cashSessionViewCutAction => 'Ver corte';
+
+  @override
+  String get posSaleViewTicketTooltip => 'Ver ticket';
+
+  @override
+  String get salesOrderViewDocumentAction => 'Ver pedido';
 }

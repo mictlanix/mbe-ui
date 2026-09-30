@@ -2184,7 +2184,7 @@
   "@cashSessionClosePermissionDeniedError": {},
   "cashSessionCloseSuccessTitle": "Session closed",
   "@cashSessionCloseSuccessTitle": {},
-  "cashSessionCloseSuccessMessage": "Counted {counted}, expected {expected}, difference {difference}. These figures will not be shown again.",
+  "cashSessionCloseSuccessMessage": "Counted {counted}, expected {expected}, difference {difference}.",
   "@cashSessionCloseSuccessMessage": {
     "placeholders": {
       "counted": {"type": "String"},
@@ -2604,5 +2604,45 @@
   "recordSheetDiscardConfirm": "Discard",
   "@recordSheetDiscardConfirm": {},
   "recordSheetDiscardCancel": "Keep editing",
-  "@recordSheetDiscardCancel": {}
+  "@recordSheetDiscardCancel": {},
+  "documentPrintAction": "Print",
+  "@documentPrintAction": {"description": "spec 044: the document preview's print button"},
+  "documentDownloadAction": "Download",
+  "@documentDownloadAction": {"description": "spec 044: the document preview's download button (saves the PDF)"},
+  "documentLoadingMessage": "Loading document…",
+  "@documentLoadingMessage": {},
+  "documentLoadFailedError": "The document could not be loaded.",
+  "@documentLoadFailedError": {"description": "spec 044: heading above the server's own reason when a document fetch fails"},
+  "documentCloseTooltip": "Close",
+  "@documentCloseTooltip": {},
+  "documentZoomOutTooltip": "Zoom out",
+  "@documentZoomOutTooltip": {},
+  "documentZoomInTooltip": "Zoom in",
+  "@documentZoomInTooltip": {},
+  "documentZoomFitTooltip": "Fit to width",
+  "@documentZoomFitTooltip": {},
+  "documentPageIndicator": "Page {current} / {total}",
+  "@documentPageIndicator": {
+    "description": "spec 044 FR-011: the page in view out of the total; both are strings so a loading document can show a dash",
+    "placeholders": {
+      "current": {"type": "String"},
+      "total": {"type": "String"}
+    }
+  },
+  "documentTicketTitle": "Ticket · Reference #{reference}",
+  "@documentTicketTitle": {"placeholders": {"reference": {"type": "String"}}},
+  "documentSalesOrderTitle": "Sales order · {reference}",
+  "@documentSalesOrderTitle": {"placeholders": {"reference": {"type": "String"}}},
+  "documentCashCutTitle": "Cash cut · {reference}",
+  "@documentCashCutTitle": {"placeholders": {"reference": {"type": "String"}}},
+  "posSalePrintTicketAction": "Print ticket",
+  "@posSalePrintTicketAction": {"description": "spec 044 FR-002: the completed-sale dialog's direct-print button"},
+  "posSalePrintTicketError": "The ticket could not be printed.",
+  "@posSalePrintTicketError": {"description": "spec 044 US1-4: heading above the server's reason when printing the ticket fails"},
+  "cashSessionViewCutAction": "View cut",
+  "@cashSessionViewCutAction": {"description": "spec 044 FR-005/FR-006: opens a closed cash session's cut (corte de caja) in the document preview"},
+  "posSaleViewTicketTooltip": "View ticket",
+  "@posSaleViewTicketTooltip": {"description": "spec 044 FR-003: the POS sales list row action that opens a sale's ticket in the document preview"},
+  "salesOrderViewDocumentAction": "View sales order",
+  "@salesOrderViewDocumentAction": {"description": "spec 044 FR-004: opens the order's letter-size document (pedido) in the document preview, from the order workspace header"}
 }
