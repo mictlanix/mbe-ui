@@ -1,0 +1,374 @@
+{
+  "workflow": "companion",
+  "specName": "Show Timestamps as the Local Times They Are",
+  "branch": "043-wall-clock-datetimes",
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-09-26T19:29:19.095Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T19:32:44.153Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T21:31:45.179Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T22:13:14.086Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-26T23:05:13.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-30T02:48:10.587Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-30T02:48:10.587Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-30T03:11:42.686Z"
+    }
+  ],
+  "telemetryInstanceId": "21afcb9f-b33b-4574-b704-7bc4a9688ed4",
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "coverage": {
+    "FR-001": {
+      "title": "A timestamp received without a UTC offset is displayed as that same wall-clock value, unchanged"
+    },
+    "FR-002": {
+      "title": "A timestamp received with a UTC offset is displayed as the equivalent local time"
+    },
+    "FR-003": {
+      "title": "A timestamp the app sends arrives as the wall-clock value the user meant"
+    },
+    "FR-004": {
+      "title": "The outgoing day-shifting compensation is removed and filters still select the intended local day"
+    },
+    "FR-005": {
+      "title": "Date-only fields keep behaving exactly as they do today"
+    },
+    "FR-006": {
+      "title": "The conversion rule lives in one shared place every data-access path uses"
+    },
+    "FR-007": {
+      "title": "The change survives a rebuild of the generated API client"
+    },
+    "FR-008": {
+      "title": "A cash session status matches the rule the API applies to the same session"
+    },
+    "FR-009": {
+      "title": "An automated check fails the build when a data-access path bypasses the shared rule"
+    },
+    "FR-010": {
+      "title": "Timestamp tests pass on a host in any timezone"
+    }
+  },
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 41,
+    "projectedTasks": 24,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "expectations": [
+    "No change to date-only fields or the generated Date type",
+    "No backfill of stored data, no record found carrying the corrupt signature",
+    "No move to offset-bearing UTC timestamps, that is the server-side option mbe-api#228 rejected",
+    "No change to how dates are formatted for display, spec 028 owns that surface"
+  ],
+  "context": [
+    "area: lib/generated/openapi (built_value serializer registration, regenerated artifact, must not be hand-edited)",
+    "area: lib/features/*/data (every *_repository_impl.dart constructs its generated API with the shared serializers)",
+    "area: lib/features/sales/data/sales_order_repository_impl.dart (wireDate/wireDateEnd, the outgoing stopgap to remove)",
+    "area: lib/core/formatting (the single display surface, spec 028, needs no change)",
+    "constraint: mbe-api#228 contract, local wall-clock with no offset, inbound offsets converted",
+    "constraint: PR #180 stopgap is on main and must be removed in the same change or the two cancel",
+    "constraint: client and facility share one timezone, the assumption the whole design rests on",
+    "verified live: old encoding returned the wrong day entirely, 14 rows all from the previous day"
+  ],
+  "intent": "Display every mbe-api timestamp as the local wall-clock time it is, and remove the outgoing compensation that exists only because it is not",
+  "currentTask": "T032"
+}

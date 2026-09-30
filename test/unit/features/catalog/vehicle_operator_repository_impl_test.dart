@@ -200,8 +200,8 @@ Map<String, Object?> _operatorJson({
   'issue_date': '2026-01-01',
   'expiration_date': '2027-01-01',
   'issuing_location': 'CDMX',
-  'creation_time': '2026-01-01T00:00:00Z',
-  'modification_time': '2026-01-01T00:00:00Z',
+  'creation_time': '2026-01-01T00:00:00',
+  'modification_time': '2026-01-01T00:00:00',
   'creator': {
     'employee_id': 1,
     'first_name': 'Admin',

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/expense.dart';
@@ -13,7 +14,7 @@ final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
 });
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
-  ExpenseRepositoryImpl(Dio dio) : _api = ExpensesApi(dio, standardSerializers);
+  ExpenseRepositoryImpl(Dio dio) : _api = ExpensesApi(dio, appSerializers);
 
   final ExpensesApi _api;
 

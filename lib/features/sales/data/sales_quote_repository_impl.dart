@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/data/wire_value_setters.dart';
@@ -18,7 +19,7 @@ final salesQuoteRepositoryProvider = Provider<SalesQuoteRepository>((ref) {
 /// `SalesQuoteRepository` backed by the generated `mbe_api_client`
 /// `SalesQuotesApi` (spec 040, contracts/sales-quote-repository.md §1).
 class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
-  SalesQuoteRepositoryImpl(Dio dio) : _api = api.SalesQuotesApi(dio, api.standardSerializers);
+  SalesQuoteRepositoryImpl(Dio dio) : _api = api.SalesQuotesApi(dio, appSerializers);
 
   final api.SalesQuotesApi _api;
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
@@ -16,7 +17,7 @@ final contactRepositoryProvider = Provider<ContactRepository>((ref) {
 /// (mbe-api#133, contracts/mbe-api-pos.md §4).
 class ContactRepositoryImpl implements ContactRepository {
   ContactRepositoryImpl(Dio dio)
-    : _api = api.ContactsApi(dio, api.standardSerializers);
+    : _api = api.ContactsApi(dio, appSerializers);
 
   final api.ContactsApi _api;
 

@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
@@ -38,7 +39,7 @@ final supplierDisplayNameProvider = FutureProvider.family<String?, int>((
 
 class SupplierRepositoryImpl implements SupplierRepository {
   SupplierRepositoryImpl(Dio dio)
-    : _api = SuppliersApi(dio, standardSerializers);
+    : _api = SuppliersApi(dio, appSerializers);
 
   final SuppliersApi _api;
 

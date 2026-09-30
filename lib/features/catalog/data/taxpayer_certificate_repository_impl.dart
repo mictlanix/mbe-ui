@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_certificate.dart';
@@ -22,7 +23,7 @@ final taxpayerCertificateRepositoryProvider =
 class TaxpayerCertificateRepositoryImpl
     implements TaxpayerCertificateRepository {
   TaxpayerCertificateRepositoryImpl(this._dio)
-    : _api = TaxpayerCertificatesApi(_dio, standardSerializers);
+    : _api = TaxpayerCertificatesApi(_dio, appSerializers);
 
   final Dio _dio;
   final TaxpayerCertificatesApi _api;
@@ -70,7 +71,7 @@ class TaxpayerCertificateRepositoryImpl
       final raw = response.data;
       if (raw == null) throw const AppError.server();
       final certificate =
-          standardSerializers.deserialize(
+          appSerializers.deserialize(
                 raw,
                 specifiedType: const FullType(TaxpayerCertificateResponse),
               )

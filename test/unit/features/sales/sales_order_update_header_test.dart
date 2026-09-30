@@ -32,8 +32,8 @@ void main() {
       await repository.updateHeader(
         saleId: 42,
         // A **local** midnight, exactly what `showDatePicker` hands back:
-        // before mictlanix/mbe-ui#176's stopgap this threw `ArgumentError`
-        // inside the serializer and the request never left the client.
+        // before mictlanix/mbe-ui#176, this threw `ArgumentError` inside the
+        // serializer and the request never left the client.
         promiseDate: DateTime(2026, 8, 20),
         salesperson: 100,
         priority: Priority.high,
@@ -44,7 +44,7 @@ void main() {
       expect(requests, hasLength(1));
       expect(requests.single.method, 'PUT');
       final body = _decodeBody(requests.single.data);
-      expect(body['promise_date'], DateTime(2026, 8, 20).toUtc().toIso8601String());
+      expect(body['promise_date'], '2026-08-20T00:00:00.000');
       expect(body['salesperson'], 100);
       // Priority.high = 2 (mbe-api LOW=0, NORMAL=1, HIGH=2, CRITICAL=3).
       expect(body['priority'], 2);
@@ -110,9 +110,9 @@ Map<String, Object?> _saleJson() => {
   'customer': 7,
   'customer_name': null,
   'payment_terms': 0,
-  'date': '2026-08-05T00:00:00.000Z',
-  'promise_date': '2026-08-05T00:00:00.000Z',
-  'due_date': '2026-08-05T00:00:00.000Z',
+  'date': '2026-08-05T00:00:00.000',
+  'promise_date': '2026-08-05T00:00:00.000',
+  'due_date': '2026-08-05T00:00:00.000',
   'contact': null,
   'ship_to': null,
   'recipient': null,

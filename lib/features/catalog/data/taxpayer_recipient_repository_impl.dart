@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient.dart';
@@ -16,7 +17,7 @@ final taxpayerRecipientRepositoryProvider =
 
 class TaxpayerRecipientRepositoryImpl implements TaxpayerRecipientRepository {
   TaxpayerRecipientRepositoryImpl(Dio dio)
-    : _api = TaxpayerRecipientsApi(dio, standardSerializers);
+    : _api = TaxpayerRecipientsApi(dio, appSerializers);
 
   final TaxpayerRecipientsApi _api;
 

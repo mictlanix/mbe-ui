@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide AddressType;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
@@ -14,7 +15,7 @@ final addressRepositoryProvider = Provider<AddressRepository>((ref) {
 
 class AddressRepositoryImpl implements AddressRepository {
   AddressRepositoryImpl(Dio dio)
-    : _api = AddressesApi(dio, standardSerializers);
+    : _api = AddressesApi(dio, appSerializers);
 
   final AddressesApi _api;
 

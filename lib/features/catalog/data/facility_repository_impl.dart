@@ -6,6 +6,7 @@ import 'package:mbe_api_client/mbe_api_client.dart'
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/facility_type.dart' as domain;
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
@@ -37,7 +38,7 @@ final facilityDisplayNameProvider = FutureProvider.family<String?, int>((
 
 class FacilityRepositoryImpl implements FacilityRepository {
   FacilityRepositoryImpl(Dio dio)
-    : _api = FacilitiesApi(dio, standardSerializers);
+    : _api = FacilitiesApi(dio, appSerializers);
 
   final FacilitiesApi _api;
 

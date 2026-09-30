@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
@@ -36,7 +37,7 @@ final employeeDisplayNameProvider = FutureProvider.family<String?, int>((
 
 class EmployeeRepositoryImpl implements EmployeeRepository {
   EmployeeRepositoryImpl(Dio dio)
-    : _api = EmployeesApi(dio, standardSerializers);
+    : _api = EmployeesApi(dio, appSerializers);
 
   final EmployeesApi _api;
 

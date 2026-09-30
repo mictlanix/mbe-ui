@@ -5,6 +5,7 @@ import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -22,8 +23,8 @@ final customerPaymentRepositoryProvider = Provider<CustomerPaymentRepository>((r
 /// impl holds both clients.
 class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
   CustomerPaymentRepositoryImpl(Dio dio)
-    : _payments = api.CustomerPaymentsApi(dio, api.standardSerializers),
-      _salesOrders = api.SalesOrdersApi(dio, api.standardSerializers);
+    : _payments = api.CustomerPaymentsApi(dio, appSerializers),
+      _salesOrders = api.SalesOrdersApi(dio, appSerializers);
 
   final api.CustomerPaymentsApi _payments;
   final api.SalesOrdersApi _salesOrders;

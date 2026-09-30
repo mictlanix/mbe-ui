@@ -5,6 +5,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
@@ -26,7 +27,7 @@ final deliveryOrderRepositoryProvider = Provider<DeliveryOrderRepository>((ref) 
 /// call, and the sale is a first-class filter.
 class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
   DeliveryOrderRepositoryImpl(Dio dio)
-    : _api = api.DeliveryOrdersApi(dio, api.standardSerializers);
+    : _api = api.DeliveryOrdersApi(dio, appSerializers);
 
   final api.DeliveryOrdersApi _api;
 
