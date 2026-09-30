@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Document Printing",
   "branch": "044-document-printing",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -11,6 +11,13 @@
       "kind": "start",
       "by": "extension",
       "at": "2026-09-30T03:31:52.188Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-09-30T11:40:27.797Z"
     }
   ],
   "telemetryInstanceId": "b555946d-0055-4a80-95dc-bf5c239ab553"

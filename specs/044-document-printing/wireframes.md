@@ -128,17 +128,11 @@ pieces, because nothing in `core/widgets/` fits (Open Question 1).
 - An expired session goes through the normal sign-in redirect. The dialog never shows a
   partial document.
 
-### State: print hand-off failed (phone/tablet browser)
+### ~~State: print hand-off failed~~ (removed)
 
-```
-   │ ┌──────────────────────────────────────────────────────────────────────┐ │
-   │ │ ⚠ No se pudo abrir el documento para imprimir. Usa «Descargar».      │ │
-   │ └──────────────────────────────────────────────────────────────────────┘ │
-   │   (page still shown below)                                               │
-```
-
-- Shown when printing from a mobile browser opens a new tab and the pop-up blocker refuses
-  it (edge case). The document stays visible and Descargar stays enabled.
+Dropped at planning (research R5). On a phone or tablet browser, printing opens the PDF in a
+new tab, and the package gives the app no signal when a pop-up blocker refuses it. There is
+no state to draw: Descargar stays enabled in the loaded state as the fallback.
 
 ### Compact tier — full-screen dialog
 

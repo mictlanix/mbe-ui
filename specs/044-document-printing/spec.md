@@ -128,9 +128,9 @@ A salesperson working on an order in the back-office order workspace opens its l
 - **The network drops mid-download**: the preview shows the load failure with retry, never a half-drawn or corrupted document.
 - **The user presses the print action twice quickly**: only one fetch and one print dialog result.
 - **A browser on a phone or tablet**: where the browser cannot print from within the page, printing opens the PDF in a new tab or the device's viewer instead. The user can still print or share from there. The preview itself still works.
-- **The browser blocks the new tab** (pop-up blocker) on such devices: the user is told the document could not be opened and can use "Descargar" instead.
+- **The browser blocks the new tab** (pop-up blocker) on such devices: the platform gives the app no signal that this happened, so no message is promised; "Descargar" stays available in the preview as the fallback (research R5).
 - **A very long ticket** (many lines): the preview shows it as one long page, as the server renders it.
-- **Printing cancelled in the print dialog**: no error is shown; the user returns to where they were.
+- **Printing cancelled in the print dialog**: no error is shown; the user returns to where they were. (Browsers do not report a cancel at all; native platforms do, and it is treated as nothing to report.)
 
 ## Requirements *(mandatory)*
 
