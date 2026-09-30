@@ -1,7 +1,8 @@
 # Document & Ticket Printing — Research & Design Foundation
 
-**Status**: Pre-spec — foundation for a future `NNN-document-printing` feature
-**Date**: 2026-09-12
+**Status**: Pre-spec — foundation for a future `NNN-document-printing` feature. mbe-api's
+Phase 1 endpoints (minus CFDI) have landed — see §0.1.
+**Date**: 2026-09-12 (updated 2026-09-29)
 **Audience**: whoever writes the spec, and whoever picks up the mbe-api side
 **Sources**: legacy `mbe` (`Web/Mvc/CustomController.cs`, `Web/Views/`, `Web/Content/`),
 mbe-api source (`app/`, `pyproject.toml`), the generated OpenAPI client in this repo,
@@ -44,6 +45,45 @@ Four findings dominate everything else:
 
 The single largest scope risk is **CFDI**: it carries 14 per-tenant/per-version layouts in
 legacy, and `FiscalDocument` is modelled in mbe-api but has **no router at all**. (§6.3)
+
+### 0.1 Update 2026-09-29 — mbe-api Phase 1 landed
+
+mbe-api#231 (`019-document-printing`, issue #230) shipped the rendering core and three
+documents; mbe-ui's client was regenerated in `93bb31f`. Sections 2 and 3 describe the state
+*before* this landed and are kept as the record of that baseline; the sections below that
+changed are annotated inline.
+
+| Route | Geometry | Privilege | Generated method |
+|---|---|---|---|
+| `GET /sales-orders/{id}/ticket` | 72 mm wide, one page, height = content, margin 0 | `salesOrders` read | `SalesOrdersApi.printSalesOrderTicketApiV1SalesOrdersSalesOrderIdTicketGet` |
+| `GET /sales-orders/{id}/document` | Letter, 6 mm margin | `salesOrders` read | `SalesOrdersApi.printSalesOrderDocumentApiV1SalesOrdersSalesOrderIdDocumentGet` |
+| `GET /cash-sessions/{id}/ticket` | 72 mm wide, one page, height = content, margin 0 | `pos` read | `CashSessionsApi.printCashSessionCutApiV1CashSessionsCashSessionIdTicketGet` |
+
+All three return `application/pdf` inline (`Content-Disposition: inline; filename="ticket-{id:08d}.pdf"`
+/ `pedido-{id:08d}.pdf` / `corte-{id:06d}.pdf`). Errors keep FastAPI's JSON shape: 401, 403
+`Insufficient privileges`, 404 `Sales order not found` / `Cash session not found`, and 409
+`Cash session is not closed` (cut only). The contract lives in mbe-api
+`specs/019-document-printing/contracts/print-endpoints.md`.
+
+What differs from what this document assumed:
+
+1. **RBAC** — the sale ticket is `salesOrders:read`, not `pos:read`; the cut is `pos:read`,
+   which resolves §11 Q6. (§7)
+2. **Ticket height is fitted to content**, not 297 mm: laid out on a 72 × 5000 mm probe page,
+   then cut at a `ticket-end` anchor. A long ticket never splits across pages. (§6.1, §6.4, §10)
+3. **One ticket route, two documents.** A non-completed order returns legacy's pre-payment
+   ticket (`POS/Print`, "Punto de Venta"); a completed one returns the final receipt
+   (`Payments/Print`, "Ticket de Venta"). (§6.1, §8.4)
+4. **The cut is reprintable any time after close**, which makes §11 Q7 a live problem.
+5. **The binary-response checks passed** (§8.2), but the error-body fix in §8.3 is now required.
+6. **CFDI is not included** — no `/fiscal-documents` router yet, as §6.3 anticipated.
+7. **Library choice**: WeasyPrint 70.0 + Jinja2 + python-barcode, as §4 recommended. No `segno`
+   yet — QR waits for CFDI.
+
+Other facts worth knowing: renders are serialized per process (`anyio.CapacityLimiter(1)`);
+there is no per-facility authorization on these routes, matching the read endpoints; the pagaré
+text is deployment config (`PROMISSORY_NOTE_TEMPLATE`); running mbe-api's print tests on macOS
+needs `DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib` for pango.
 
 ---
 
@@ -165,7 +205,10 @@ A second delivery channel exists: **email**, via MimeKit, attaching the same PDF
 
 ---
 
-## 2. What mbe-api Has Today
+## 2. What mbe-api Had (2026-09-12 baseline)
+
+> Superseded by §0.1 for sales orders and cash sessions; still accurate for CFDI and the other
+> legacy documents.
 
 **No document surface whatsoever.** `grep -riE "pdf|weasyprint|wkhtmltopdf|playwright|reportlab|jinja2|puppeteer|chromium"`
 over `app/` and `pyproject.toml` returns **zero hits**. None of the 34 registered routers is
@@ -352,9 +395,15 @@ Four documents, agreed with the user.
 
 ### 6.1 POS sale ticket
 
-72 mm × 297 mm. Ports `POS/Print.cshtml` + `_TicketLayout.cshtml`. Consumes
+72 mm wide. Ports `POS/Print.cshtml` + `_TicketLayout.cshtml`. Consumes
 `PaymentMethodOption.display_on_ticket` and `Facility.receipt_message`, both already on the
 wire. Highest-frequency document and the primary Phase 2 target.
+
+**As shipped (§0.1):** height is fitted to content rather than 297 mm. The route switches on
+the order's state — `POS/Print` pre-payment ticket before completion, `Payments/Print` final
+receipt after (payments, change, pagaré on unpaid credit, card legend, receipt message,
+"Cancelado" stamp). A payment option with `display_on_ticket` off prints under its base method
+name.
 
 ### 6.2 Sales order / pedido
 
@@ -390,6 +439,11 @@ the `Print20/22/32/33` families are historical-reprint support and can follow.
 Ticket geometry. Ports `Payments/_CashCountTicket.cshtml`. Legacy prints this at close, and
 mbe-api already has `POST /cash-sessions/{id}/close`.
 
+**As shipped (§0.1):** 72 mm wide, height fitted to content. Returns 409 for an open session;
+a closed session's cut can be fetched at any time afterwards. Payments are classified by type
+*and* sign (a refund is a credit-note payment or any negative one), fixing legacy's mis-sum of
+negative cash payouts; the cash-sales row reads "Ventas en Efectivo".
+
 ---
 
 ## 7. RBAC — No New `SystemObject` Needed
@@ -408,16 +462,18 @@ already used at `pos_sales_list_screen.dart:88-90`.
 
 | Document | `SystemObject` | Right |
 |---|---|---|
-| POS ticket | `pos` | `read` |
+| POS ticket | `salesOrders` | `read` |
 | Sales order | `salesOrders` | `read` |
 | CFDI representation | `fiscalDocuments` | `read` |
-| Cash session cut | ⚠️ **no `cashSessions` object exists** | — |
+| Cash session cut | `pos` | `read` |
 
-**Gap to resolve:** there is no `cashSessions` `SystemObject` — only `cashDrawers(10)` and
-`cashSessionClose(111)`. `cash_session_detail_screen.dart:64` already gates closing on
-`cashSessionClose + update`, so gating the corte print on `cashSessionClose + read` is the
-consistent choice even though it reads oddly. Worth one clarifying question to the spec
-author (see §11).
+**Resolved by mbe-api#231 (§0.1).** This table originally proposed `pos:read` for the POS
+ticket and flagged the cut as a gap (there is no `cashSessions` object, only `cashDrawers(10)`
+and `cashSessionClose(111)`, and `cashSessionClose + read` was the tentative choice). The
+server now enforces the values above: the ticket uses the same privilege as reading a sales
+order, and the cut the same as reading a cash session (`pos`, as every `/cash-sessions` read
+route already does). The client gate must mirror these exactly — a `pos`-only gate on the
+ticket would show a button that 403s for a user without `salesOrders:read`.
 
 Derive the gate from a getter on the document reference rather than repeating it at four
 call sites, and re-check it defensively immediately before firing — the way
@@ -495,6 +551,7 @@ Therefore:
    verification principle III already mandates for uploads. Two things must both hold: the
    signature is `Future<Response<Uint8List>>`, **and** the body contains
    `responseType: ResponseType.bytes`.
+   **Done 2026-09-29 (`93bb31f`): both checks pass for all three generated methods.**
 3. **If either check fails**, fall back to a hand-written `dio.get<List<int>>` with
    `Options(responseType: ResponseType.bytes)` — the same escape hatch
    `ProductRepositoryImpl.uploadPhoto` (`lib/features/catalog/data/product_repository_impl.dart:227`)
@@ -526,6 +583,10 @@ and `_fieldErrorsFrom` to re-hydrate a JSON body from bytes when `data is List<i
 content-type is JSON, *before* the existing `is! Map` guards. This must ship with a unit
 test or it will regress silently.
 
+**Now required (§0.1):** the shipped routes return JSON error bodies — 404 `Sales order not
+found` / `Cash session not found` and 409 `Cash session is not closed` — which reach the client
+as bytes. Without this fix, all of them render as a generic error.
+
 ### 8.4 Call sites
 
 All constrained by principle VI — `AppBar.actions` MUST stay empty, screen actions are body
@@ -538,6 +599,13 @@ expose **at most one** action beyond Edit before it must collapse into a kebab.
 | `pos_sales_list_screen.dart` | Reprint row action — consumes the single permitted extra row action. |
 | `lib/features/sales/presentation/orders/` | Sales-order document; reverses spec 029 A5 / spec 039 OS-4. |
 | `cash_session_detail_screen.dart` | Cut ticket, at close. |
+
+**State matters for the POS ticket (§0.1).** The same route prints the pre-payment ticket for
+a non-completed order and the final receipt for a completed one, so the "Imprimir ticket"
+action in `_finish` must fire only after the order is completed — otherwise the customer gets
+"Punto de Venta" instead of the receipt. Confirm the order's state at that point when writing
+the spec. The cut, conversely, only exists after close: the button must not be offered on an
+open session (the server answers 409).
 
 ### 8.5 Localization
 
@@ -606,14 +674,14 @@ codegen.** Nothing in this repo can be built against a contract that does not ex
 
 **Track B — mbe-api (filed as issues, never edited from an mbe-ui session):**
 
-1. **Rendering core** — add `weasyprint`, `jinja2`, `segno`, `python-barcode`; an
-   `app/services/rendering/` module with a Jinja environment, a zero-network `url_fetcher`,
-   bundled fonts, and `render_pdf(template, context, page) -> bytes` wrapped in
-   `run_in_threadpool`. Two base templates mirroring `_PrintLayout` and `_TicketLayout`.
-2. `GET /sales-orders/{id}/document` → `application/pdf`, Letter.
-3. `GET /sales-orders/{id}/ticket` → `application/pdf`, 72 mm × 297 mm.
-4. `GET /cash-sessions/{id}/ticket`.
-5. **CFDI** — `/fiscal-documents` router first, then `GET /fiscal-documents/{id}/pdf`.
+1. ✅ **Rendering core** — shipped in mbe-api#231 as `app/rendering/` (WeasyPrint 70.0,
+   Jinja2, python-barcode; `segno` deferred to CFDI), with a zero-network fetcher, bundled
+   fonts, and renders off the event loop via `anyio.to_thread` behind a one-slot limiter.
+2. ✅ `GET /sales-orders/{id}/document` → `application/pdf`, Letter.
+3. ✅ `GET /sales-orders/{id}/ticket` → `application/pdf`, 72 mm wide, height fitted to content.
+4. ✅ `GET /cash-sessions/{id}/ticket`.
+5. **CFDI** — `/fiscal-documents` router first, then `GET /fiscal-documents/{id}/pdf`. *Not
+   started.*
 6. *(Phase 2)* ESC/POS encoder, job queue table, CloudPRNT / Server Direct Print polling
    endpoint, plus `POST /sales-orders/{id}/ticket/print` for mbe-ui to enqueue.
 
@@ -634,8 +702,8 @@ polling-capable printer, so nothing in Phase 1 is throwaway.
 - **Fidelity** — render each document against a known legacy record and diff against the
   jsreport output for the same id: same page geometry, same totals, same folio. Legacy
   remains available to generate the reference.
-- **Geometry** — assert the ticket PDF's MediaBox is 72 mm × 297 mm and the document PDF's
-  is Letter.
+- **Geometry** — assert the ticket PDF is one page, 72 mm wide, with height fitted to its
+  content, and the document PDF is Letter. (Covered by mbe-api's own tests.)
 - **Zero-network render** — run the renderer with outbound network blocked; it must still
   produce a byte-identical PDF. This is the regression test for the single worst legacy
   failure mode (§1.5).
@@ -671,13 +739,13 @@ polling-capable printer, so nothing in Phase 1 is throwaway.
 5. ~~**`printing` on Flutter web**~~ **Resolved** (§8.6): `Printing.layoutPdf` needs nothing
    in `web/index.html` — only `PdfPreview` pulls pdf.js from a CDN. Ship Phase 1 without an
    in-app preview and the question disappears.
-6. **Which `SystemObject` gates the corte de caja print** — there is no `cashSessions`
-   object; `cashSessionClose + read` is the consistent choice but reads oddly (§7). Needs a
-   spec-author decision.
+6. ~~**Which `SystemObject` gates the corte de caja print**~~ **Resolved** (§7): mbe-api
+   enforces `pos:read`, the same as every `/cash-sessions` read route.
 7. **Does reprinting a corte contradict the close dialog?** `cashSessionCloseSuccessMessage`
-   currently tells the user "estas cifras no se mostrarán de nuevo". If a closed session's
-   cut can be reprinted later, that sentence becomes false. A product question, not a
-   technical one.
+   currently tells the user "estas cifras no se mostrarán de nuevo". **mbe-api now allows
+   the cut of any closed session to be fetched at any time**, so if mbe-ui offers the print
+   anywhere other than the close moment, that sentence becomes false. Still a product
+   question: offer reprint (and reword the message), or print only at close.
 8. **Where the sales-order print action lives** depends on spec 039, which is
    spec+research-only on this branch and replaces `order_screen.dart` with a three-step
    workspace. The durable placement is *the step that commits the order* — so this should be
