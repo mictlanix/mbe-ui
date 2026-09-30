@@ -15,6 +15,17 @@
 - Q: How does the in-app preview relate to printing? → A: The POS "sale completed" moment prints the ticket straight to the print dialog, for speed at the register. Every other entry point (ticket reprint, pedido, cash cut) opens the shared preview first, where the user prints or downloads.
 - Q: mbe-api lets a closed session's cut be fetched at any time, but the close dialog says the figures "no se mostrarán de nuevo". What does mbe-ui do? → A: Allow reprinting the cut from any closed session, and reword the close message so it no longer claims the figures cannot be seen again.
 
+### Session 2026-09-30 (wireframe review)
+
+- Q: What surface presents the preview? → A: A modal dialog over the calling screen, full-screen on phone-sized screens — not a side panel and not a separate page. Closing it returns to the caller unchanged.
+- Q: How is a document read when it is too small at fit-to-width (a letter page on a phone)? → A: Both pinch zoom and explicit zoom controls (zoom out, zoom in, fit to width, with the current level shown).
+- Q: How is the "saved version" note on a pedido presented? → A: ~~A plain informational strip~~ Superseded below: the order workspace saves every edit immediately, so there is no lasting unsaved state to note.
+- Q: A user can have the privilege to close a session without the privilege to view its cut. → A: Recorded as an edge case: the cut action is simply absent for them.
+- Q: In the "Venta completada" dialog, which action is primary? → A: "Nueva venta" stays primary; "Imprimir ticket" is secondary, so the default key still starts the next sale.
+- Q: The order workspace saves every edit as it happens; its only transient local states are typed-but-unconfirmed text and writes still in flight. How does "Ver pedido" treat them? → A: It resolves them first — waits for in-flight writes and runs the workspace's existing keep/discard prompt for unconfirmed text, as other critical actions already do. The document then always matches the screen, and the "saved version" strip is dropped.
+- Q: When "Ver corte" is pressed in the "Sesión cerrada" dialog, what happens to that dialog? → A: It closes, then the preview opens over the refreshed detail screen. Only one dialog is ever open.
+- Q: Does the preview show a page indicator? → A: Always — "Página n / N" for every document, including one-page tickets and cuts.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - A cashier prints the ticket when a sale is completed (Priority: P1)
@@ -50,8 +61,9 @@ Any document opened for review — a ticket reprint, a pedido, or a cash cut —
 3. **Given** a document is shown in the preview, **When** the user presses "Descargar", **Then** the PDF is saved or offered for saving under the file name the server supplies (for example `pedido-00001234.pdf`).
 4. **Given** the document is still loading, **When** the preview opens, **Then** it shows a loading state, and "Imprimir" and "Descargar" are unavailable until the document arrives.
 5. **Given** the document fails to load, **When** the preview shows the failure, **Then** it states the server's reason when there is one (for example "Cash session is not closed") and offers a retry.
-6. **Given** a multi-page document (a long pedido), **When** it is previewed, **Then** every page can be reached by scrolling.
+6. **Given** a multi-page document (a long pedido), **When** it is previewed, **Then** every page can be reached by scrolling, and the preview shows which page is in view out of the total ("Página 1 / 2").
 7. **Given** the preview is open, **When** the user closes it, **Then** they return to the screen they came from, unchanged.
+8. **Given** a document is shown in the preview, **When** the user zooms in or out — with the zoom controls, or by pinching on a touch screen — **Then** the pages scale accordingly, the current zoom level is visible, the user can pan across a zoomed page, and "fit to width" restores the opening view.
 
 ---
 
@@ -102,7 +114,7 @@ A salesperson working on an order in the back-office order workspace opens its l
 
 1. **Given** a saved order in any state (draft, completed, paid or cancelled) open in the order workspace, **When** a user with the privilege to read sales orders looks at it, **Then** a "Ver pedido" action is offered.
 2. **Given** the user opens it, **When** the document loads, **Then** the preview shows the letter-size pedido for that order.
-3. **Given** a draft with unsaved changes, **When** the user opens the pedido, **Then** the document reflects the order as last saved on the server, and the user is told so.
+3. **Given** the user has typed into a field without confirming it, or an edit is still being saved, **When** they press "Ver pedido", **Then** in-flight edits finish first and the workspace's existing keep/discard prompt resolves the unconfirmed text before the document is fetched, so the pedido shows exactly what is on screen.
 
 ---
 
@@ -110,6 +122,7 @@ A salesperson working on an order in the back-office order workspace opens its l
 
 - **The record was deleted or does not exist** (a stale list row): the preview shows the server's "not found" message; nothing crashes.
 - **The cut is requested for a session the server still considers open** (a race with another user): the preview shows "Cash session is not closed" as the reason.
+- **A user can close a session but lacks the privilege to view cuts** (closing and viewing the cut are gated by different privileges): the close dialog shows no "Ver corte" action and the detail screen offers none; the close dialog's counted/expected/difference figures are all they see. Nothing is shown disabled.
 - **The privilege was revoked after the screen loaded**: the request is refused and the preview shows a permission error; the action disappears on next load.
 - **The session expires while a document loads**: the usual sign-in handling applies; no partial document is shown.
 - **The network drops mid-download**: the preview shows the load failure with retry, never a half-drawn or corrupted document.
@@ -126,18 +139,19 @@ A salesperson working on an order in the back-office order workspace opens its l
 **Documents and where they are offered**
 
 - **FR-001**: The system MUST offer three server-generated documents: the sale ticket (pre-payment ticket or final receipt, as the server decides from the order's state), the sales order document (pedido), and the cash session cut (corte de caja).
-- **FR-002**: The "Venta completada" dialog MUST offer "Imprimir ticket" alongside "Nueva venta". It MUST send the final receipt directly to the device's print dialog, without the preview, and MUST leave the completion dialog open afterwards.
+- **FR-002**: The "Venta completada" dialog MUST offer "Imprimir ticket" alongside "Nueva venta". It MUST send the final receipt directly to the device's print dialog, without the preview, and MUST leave the completion dialog open afterwards. "Nueva venta" MUST remain the dialog's primary (default) action, with "Imprimir ticket" visually secondary.
 - **FR-003**: The POS sales list MUST offer a "Ver ticket" row action for every saved sale, opening that sale's ticket in the preview. It MUST respect the existing rule of at most one row action beyond Edit before collapsing into an overflow menu.
 - **FR-004**: The back-office order workspace MUST offer a "Ver pedido" action for a saved order in any state, opening its document in the preview. It MUST be a body action, never an app-bar action.
-- **FR-005**: The "Sesión cerrada" dialog MUST offer "Ver corte", opening the just-closed session's cut in the preview.
+- **FR-005**: The "Sesión cerrada" dialog MUST offer "Ver corte". Pressing it MUST close that dialog and then open the just-closed session's cut in the preview, so no two dialogs are stacked.
 - **FR-006**: A closed session's detail screen MUST offer "Ver corte", opening its cut in the preview. An open session MUST NOT offer it.
 - **FR-007**: After a session is closed from its detail screen, that screen MUST reflect the closed state (status, and the "Ver corte" action) once the close dialog is dismissed, without the user leaving and returning.
 - **FR-008**: The close dialog's message MUST no longer state that the figures will not be shown again. It keeps reporting counted, expected and difference.
 
 **Shared preview**
 
-- **FR-010**: The system MUST provide one shared preview surface used by every document entry point except the POS completion print (FR-002).
-- **FR-011**: The preview MUST show the document's pages as the server rendered them, in order, legibly, at their true proportions, all reachable by scrolling, with the document's title.
+- **FR-010**: The system MUST provide one shared preview surface used by every document entry point except the POS completion print (FR-002). It MUST be a modal dialog over the calling screen, filling the screen on phone-sized displays; it MUST NOT be a side panel or a separate navigable page.
+- **FR-011**: The preview MUST show the document's pages as the server rendered them, in order, at their true proportions, all reachable by scrolling, with the document's title. Each document MUST open fitted to the available width. The user MUST be able to zoom both with explicit controls (zoom out, zoom in, fit to width, with the current level displayed) and with pinch gestures on touch screens, and MUST be able to pan across a zoomed page. The preview MUST always show a page indicator ("Página n / N") for the page in view, including for single-page documents.
+- **FR-016**: Before fetching the pedido, the order workspace MUST let in-flight edits finish and MUST resolve any unconfirmed typed text through its existing keep/discard prompt — the same one its other critical actions use — so the document reflects exactly what the user sees. Choosing to keep editing MUST cancel opening the preview.
 - **FR-012**: The preview MUST offer "Imprimir" (opens the device's print dialog with the same document) and "Descargar" (saves the PDF under the server-supplied file name), and a way to close it.
 - **FR-013**: While loading, the preview MUST show a loading state and keep "Imprimir" and "Descargar" unavailable. On failure, it MUST show the reason the server gave when there is one, a generic message otherwise, and offer a retry.
 - **FR-014**: The preview MUST NOT contact any third-party service at runtime (no public content-delivery network for its viewer code). It MUST work in a deployment that allows only the application's own origin and mbe-api.
@@ -186,7 +200,7 @@ A salesperson working on an order in the back-office order workspace opens its l
 
 - **mbe-api is ready.** The three documents already exist server-side (mbe-api#231, issue #230): the sale ticket and pedido are available for an order in any state, and the cut only for a closed session. This feature consumes them and changes nothing in mbe-api.
 - **Which ticket prints is the server's decision.** The same ticket request returns the pre-payment ticket before an order is completed and the final receipt after. The POS completion dialog is shown only after the order is committed on the server, so it always prints the final receipt.
-- **Unsaved order changes.** The pedido reflects the order as last saved on the server. When the workspace has unsaved changes, the user is told the document shows the saved version, rather than blocked. This follows from mbe-ui never rendering documents itself.
+- **Order edits are already saved.** The order workspace writes every change to the server as it happens, with no Save button; the only local-only states are typed-but-unconfirmed text and writes in flight, both of which it already resolves before critical actions. So the pedido — always rendered from server data — matches the screen once those are resolved (FR-016).
 - **Printing goes through the device's print dialog**, exactly as legacy did. Silent printing, the cash-drawer kick and direct thermal output are a later phase (server-side printing); FR-015 keeps room for it.
 - **Web on desktop is the primary target.** Native desktop and Android builds are expected to work through the same flows. On phone and tablet browsers, in-page printing degrades to opening the PDF in a new tab (see Edge Cases). This is a known platform limit, stated rather than solved here.
 - **Per-store access is not narrowed.** Like the existing read screens, printing is gated by privilege only; mbe-api does not restrict single-record reads by store, and this feature does not add a client-side restriction.
