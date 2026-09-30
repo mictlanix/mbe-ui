@@ -50,10 +50,10 @@ pdf.js is served from the app's own origin, so a preview reaches no third party.
 - Any future CSP must carry the directives in [quickstart.md](./quickstart.md) § Deployment (R4).
 
 **Scale/Scope**:
-- New module `lib/core/documents/`, about 8 source files:
-  - domain: kind/ref/rendered/page plus 2 interfaces
-  - data: 2 impls
-  - presentation: actions, preview dialog, controller, page viewer
+- New module `lib/core/documents/`, 11 source files:
+  - domain (4): kind, ref/rendered/page, and 2 interfaces
+  - data (2): the source impl and the printing output
+  - presentation (5): actions, preview dialog, controller, page viewer, zoom/page math
 - Edits to 6 existing files: `auth_interceptor.dart`, `pos_workspace_screen.dart`, `pos_sales_list_screen.dart`, `order_header_panel.dart`, `cash_session_detail_screen.dart`, `close_session_form_controller.dart`.
 - Also `pubspec.yaml`, `web/index.html`, and both `.arb` files: about 17 new keys, and 1 reworded (`cashSessionCloseSuccessMessage`).
 
@@ -63,7 +63,7 @@ pdf.js is served from the app's own origin, so a preview reaches no third party.
 
 | Principle | Verdict | How |
 |---|---|---|
-| **I. Feature-first layering** | Pass | Three features consume the documents, so the module is shared infrastructure in `lib/core/documents/{domain,data,presentation}`, like `core/network/`. Feature `presentation/` files import only `core/documents/presentation` and `domain`, never `data`. |
+| **I. Feature-first layering** | Pass | Three features consume the documents, so the module is shared infrastructure in `lib/core/documents/{domain,data,presentation}`, like `core/network/`. Feature call sites import only `core/documents/presentation` and `domain`. Inside the module, `presentation/` reads its own `data/` providers (`documentSourceProvider`, `documentOutputProvider`). That follows the repo's existing provider-import practice, e.g. `cash_session_detail_controller.dart:3` importing `cash_session_repository_impl.dart` for its provider. |
 | **II. Riverpod** | Pass | `documentSourceProvider`, `documentOutputProvider` and `documentActionsProvider` are providers, overridable in tests. `DocumentPreviewController` is an autoDispose `AsyncNotifier` family exposing `AsyncValue`. Zoom and page-in-view are local UI state. |
 | **III. Contract-driven API** | Pass | Uses the three generated methods as emitted. `ResponseType.bytes` and `Uint8List` were verified (research §8.2, contract E1). No generated file is edited and no dio bypass is used. A PDF has no DTO, so there is no `freezed` mapping. Errors map to shared `AppError` types through the fixed `mapDioException` (R9). **No mbe-api change needed**: #231 has shipped, and codegen is current (`93bb31f`). |
 | **IV. Deny-by-default RBAC** | Pass | Each `DocumentKind` carries its gate (`salesOrders`/`pos` + `read`), matching mbe-api. Actions are hidden, not disabled, without it, and re-checked before fetching (FR-040/041). No new `SystemObject`, so the `core/` table is untouched. |
@@ -113,6 +113,7 @@ lib/core/documents/                          # NEW
     ├── document_actions.dart                # preview() / printDirect(), gate re-check, in-flight guard
     ├── document_preview_dialog.dart         # Dialog vs Dialog.fullscreen, title/action bars
     ├── document_preview_controller.dart     # AsyncNotifier family (fetch → raster)
+    ├── document_zoom.dart                   # pure zoom steps, clamp, readout, page-in-view
     └── document_page_viewer.dart            # InteractiveViewer, zoom steps, wheel handling, page-in-view
 
 lib/core/network/auth_interceptor.dart               # EDIT: bytes → JSON before detail/field-error guards (R9)

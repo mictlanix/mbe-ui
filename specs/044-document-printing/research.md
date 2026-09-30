@@ -205,7 +205,7 @@ Call sites hide the action with `accessControlProvider.can(kind.gate…)`. `Docu
 
 ---
 
-## R13. Letting the order workspace settle before "Ver pedido" (FR-016)
+## R13. Letting the order workspace settle before "Ver pedido" (FR-009)
 
 **Decision**: "Ver pedido" follows the pattern the workspace's other critical actions use:
 - It is **disabled while** `pendingWritesProvider(saleWritesScopeProvider) > 0` (the reactive gate at `capture_step.dart:240-242`).

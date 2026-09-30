@@ -36,7 +36,9 @@ Tests override both (Principle II).
 /// The only entry points call sites use.
 class DocumentActions {
   /// Opens the shared preview dialog (FR-010): a modal Dialog at ≥ medium, Dialog.fullscreen on Compact.
-  /// Re-checks ref.kind's gate first (FR-041).
+  /// Re-checks ref.kind's gate first (FR-041). On failure it still opens the dialog, directly in its
+  /// error state with the permission error and no fetch, so it never throws and call sites need no
+  /// error handling.
   Future<void> preview(BuildContext context, DocumentRef ref);
 
   /// Fetches, then prints straight away, with no preview. Used ONLY by the POS completion dialog (FR-002).
@@ -67,7 +69,7 @@ The wireframes define the layout: [wireframes.md](../wireframes.md), "Shared doc
 | Region | Content | Keys (for tests) |
 |---|---|---|
 | Title bar | `ref.title`, plus a close `IconButton` (leading on Compact, trailing otherwise) | `document_preview_close` |
-| Page area | the zoomable viewer (research R8), or the loading indicator, or `ErrorBanner` + Reintentar | `document_preview_pages`, `document_preview_retry` |
+| Page area | the zoomable viewer (research R8); or the loading indicator; or, on error, a heading (`documentLoadFailedError`), then `ErrorBanner(error)`, then a separate `TextButton` Reintentar. `ErrorBanner` has no retry slot. | `document_preview_pages`, `document_preview_retry` |
 | Action bar | `[−]` level `[+]` `[⤢]`, then "Página n / N", then `OutlinedButton.icon` Descargar and `FilledButton.icon` Imprimir | `document_zoom_out`, `document_zoom_level`, `document_zoom_in`, `document_zoom_fit`, `document_page_indicator`, `document_download`, `document_print` |
 
 ## Call sites
@@ -76,6 +78,6 @@ The wireframes define the layout: [wireframes.md](../wireframes.md), "Shared doc
 |---|---|---|---|
 | `pos_workspace_screen.dart` `_finish` dialog | `printDirect(DocumentRef(saleTicket, sale.id, …))` from an `OutlinedButton.icon` placed before the `FilledButton` "Nueva venta" | `salesOrders` read | Busy and error states shown inline in the dialog; the dialog stays open (FR-002, US1). |
 | `pos_sales_list_screen.dart` row | `preview(saleTicket, openSale.id)` as the single `CatalogRowAction` | `salesOrders` read | FR-003 |
-| `orders/order_header_panel.dart` `_headerRow` | `preview(salesOrder, sale.id)`, after `resolveUnconfirmedEdits` | `salesOrders` read | Disabled while pending writes > 0 (FR-016, research R13). |
+| `orders/order_header_panel.dart` `_headerRow` | `preview(salesOrder, sale.id)`, after `resolveUnconfirmedEdits` | `salesOrders` read | Disabled while pending writes > 0 (FR-009, research R13). |
 | `cash_session_detail_screen.dart` close dialog | pop the dialog, then `preview(cashCut, session.id)` | `pos` read | FR-005 |
 | `cash_session_detail_screen.dart` body (closed only) | `preview(cashCut, session.id)` | `pos` read | FR-006 |

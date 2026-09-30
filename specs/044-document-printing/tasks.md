@@ -47,6 +47,7 @@ description: "Task list for Document Printing"
   - a 409 body `{"detail":"Cash session is not closed"}` yields `ServerError(statusCode: 409)` with that message
   - a 403 body yields `ServerError(statusCode: 403)` with `Insufficient privileges`
   - a 422 body yields `ValidationError` with its field errors
+  - a 401 byte body yields `AuthError` and still triggers the unauthorized callback (edge case "session expires while a document loads")
   - a non-JSON byte body yields a null message and does not throw
   - a body that is already a `Map` behaves exactly as today. This test fails until T006
 - [ ] T006 In `lib/core/network/auth_interceptor.dart`, make `_detailFrom` and `_fieldErrorsFrom` first normalize `response.data`. When it is a `List<int>` and the `content-type` is JSON, decode it as UTF-8 JSON, catching decode errors and falling back to null. The existing `is! Map` / `is! List` guards then run unchanged. Do not add a new `AppError` subtype for 409 (research R9) (depends on T005)
@@ -62,7 +63,7 @@ description: "Task list for Document Printing"
 
 ### Document source (FR-020, FR-030)
 
-- [ ] T010 [P] Write `test/unit/core/documents/generated_client_bytes_test.dart`: a `dart:io` source check that, in `lib/generated/openapi/lib/src/api/sales_orders_api.dart` and `cash_sessions_api.dart`, the three print methods (`printSalesOrderTicket…`, `printSalesOrderDocument…`, `printCashSessionCut…`) are declared `Future<Response<Uint8List>>` and contain `responseType: ResponseType.bytes`. This is the regeneration guard for contract fact E1
+- [ ] T010 [P] Write `test/unit/core/documents/generated_client_bytes_test.dart`: a `dart:io` source check that, in `lib/generated/openapi/lib/src/api/sales_orders_api.dart` and `cash_sessions_api.dart`, the three print methods (`printSalesOrderTicket…`, `printSalesOrderDocument…`, `printCashSessionCut…`) are declared `Future<Response<Uint8List>>` and contain `responseType: ResponseType.bytes`. This is the regeneration guard for contract fact E1. The generated signatures wrap onto a second line (`Future<Response<Uint8List>>\n  printSalesOrder…({`), so match across whitespace, not line by line
 - [ ] T011 [P] Write `test/unit/core/documents/document_source_impl_test.dart`, using the stubbed dio adapter pattern of `test/unit/features/sales/cash_session_repository_impl_test.dart`, with the interceptor attached so byte errors run through the real mapping. Assert:
   - bytes come back identical to the stub's body, and a body not starting with `%PDF-` is a `ServerError`
   - `Content-Disposition: inline; filename="pedido-00001234.pdf"` is parsed, and a missing or unparseable header falls back to `DocumentKind.fallbackFilename`
@@ -72,15 +73,17 @@ description: "Task list for Document Printing"
 
 ### Document output (FR-012, research R5–R7)
 
-- [ ] T013 [P] Write `test/unit/core/documents/raster_dpi_test.dart` for a pure function `double rasterDpiFor(double widthPt, double heightPt)`. Assert:
+- [ ] T013 [P] Write `test/unit/core/documents/printing_document_output_test.dart`. First, for the pure function `double rasterDpiFor(double widthPt, double heightPt)`, assert:
   - Letter (612 × 792 pt) yields 200
   - a 72 mm × 1000 mm ticket yields 200
   - a page whose side would exceed 30 000 px or whose area would exceed 16 MP at 200 dpi yields a lower dpi that satisfies both caps
-  - the result is never below a sane floor (for example 36). Fails until T014
+  - the result is never below a sane floor (for example 36)
+
+  Then, with a fake injected print function (see T014): a `false` result (user cancelled, on native) completes normally, with no throw and no error (FR-031); `print` hands over exactly the document's bytes and filename; `save` passes the filename through. Fails until T014
 - [ ] T014 Create `lib/core/documents/data/printing_document_output.dart`: `rasterDpiFor` plus `PrintingDocumentOutput`.
-  - `print` calls `Printing.layoutPdf(onLayout: (_) async => bytes, name: filename)`, ignores the returned bool, and never treats false as an error (FR-031, research R5)
-  - `save` calls `Printing.sharePdf(bytes:, filename:)` (research R6)
-  - `raster` reads each page's size from `Printing.raster` and requests the pages at `rasterDpiFor`, yielding `DocumentPage`s (research R2, R7).
+  - `print` calls `layoutPdf(onLayout: (_) async => bytes, name: filename)`, ignores the returned bool, and never treats false as an error (FR-031, research R5). The constructor takes `layoutPdf` and `sharePdf` as injectable function parameters, defaulting to `Printing.layoutPdf` / `Printing.sharePdf`, so T013 can fake them
+  - `save` calls `sharePdf(bytes:, filename:)` (research R6)
+  - `raster` makes **two passes**, because `Printing.raster` takes one dpi for every page and a page's size is only known once it has been rastered. First it rasters page 0 alone at 72 dpi (`pages: [0]`), where one pixel equals one point, to read the page size in points. Then it rasters all pages at `rasterDpiFor(width, height)` and yields `DocumentPage`s. One dpi for all pages is right for these documents, because a ticket or cut is one page and a pedido's pages are all Letter (research R2, R7).
 
   Add `documentOutputProvider` (depends on T008, T009, T013)
 
@@ -92,6 +95,8 @@ description: "Task list for Document Printing"
   - a second `printDirect` for the same `DocumentRef` while the first is in flight is ignored, and a call after it settles works (FR-032, contract G1)
   - a fetch error propagates as `AppError` and leaves the in-flight guard cleared so retry works
   - `canOpenDocument` mirrors each kind's gate, admin included. Fails until T016
+
+  (The `preview` cases are added in T024, with the dialog.)
 - [ ] T016 Create `lib/core/documents/presentation/document_actions.dart`: `canOpenDocument(AccessControlService, DocumentKind)`, and `DocumentActions` with `printDirect(DocumentRef)`, re-checking the gate through `accessControlProvider` before any fetch and guarding in-flight calls by `DocumentRef`. Add `documentActionsProvider`. `preview` is added in T029 (depends on T012, T014, T015)
 
 ### Localization
@@ -121,7 +126,7 @@ description: "Task list for Document Printing"
 ### Implementation for User Story 1
 
 - [ ] T019 [US1] Add `posSalePrintTicketAction` ("Imprimir ticket") and `posSalePrintTicketError` ("No se pudo imprimir el ticket.") to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`
-- [ ] T020 [US1] Create `lib/features/sales/presentation/pos_sale_completed_dialog.dart`: a `ConsumerStatefulWidget` extracted from the `AlertDialog` built in `_finish`, keeping the same title, folio content and `start_new_sale_button`, and adding the `OutlinedButton.icon` `print_ticket_button` per [wireframes.md](./wireframes.md) (POS "Venta completada" dialog). It is hidden without `salesOrders` read via `canOpenDocument`, calls `documentActionsProvider.printDirect(DocumentRef(saleTicket, saleId, title))` (title from `documentTicketTitle`), disables itself and shows progress while running, and shows `ErrorBanner` plus a "Reintentar" label on failure. It never pops itself (FR-002) (depends on T016, T019)
+- [ ] T020 [US1] Create `lib/features/sales/presentation/pos_sale_completed_dialog.dart`: a `ConsumerStatefulWidget` extracted from the `AlertDialog` built in `_finish`, keeping the same title, folio content and `start_new_sale_button`, and adding the `OutlinedButton.icon` `print_ticket_button` per [wireframes.md](./wireframes.md) (POS "Venta completada" dialog). It is hidden without `salesOrders` read via `canOpenDocument`, calls `documentActionsProvider.printDirect(DocumentRef(saleTicket, saleId, title))` (title from `documentTicketTitle`, with the reference rule in data-model.md › DocumentRef), disables itself and shows progress while running. On failure it shows, in the dialog content, a `Text` heading `posSalePrintTicketError` above `ErrorBanner(error: …)`. `ErrorBanner` has no retry of its own, so retry is the print button itself, relabelled with the existing `retryButton` string. It never pops itself (FR-002) (depends on T016, T019)
 - [ ] T021 [US1] In `lib/features/sales/presentation/pos_workspace_screen.dart`, replace the inline `AlertDialog` in `_finish` (~L649-677) with `PosSaleCompletedDialog`, passing the sale's id and the same reference text (`serial ?? provisionalReference`). Keep the `openSalesSelectorControllerProvider` invalidation and the `startNew()` + `reset()` behaviour of "Nueva venta" exactly as today (depends on T020)
 
 **Checkpoint**: T018 passes and existing `test/widget/features/sales/` POS tests still pass. US1 alone is a shippable increment.
@@ -156,15 +161,18 @@ description: "Task list for Document Printing"
   - error: `ErrorBanner` shows the server's reason and Reintentar refetches
   - at Compact width, a full-screen dialog with the close button leading. At Medium and wider, a constrained dialog
   - closing pops back to the caller with no other change (G5)
+  - **Action-bar alignment (constitution §VI, v1.11.0)**: the action bar is a control band (icon buttons, the level readout, the page indicator, two labelled buttons). Measure it the way `test/widget/features/sales/sale_line_row_test.dart` does: symmetric vertical insets, and one shared text baseline for the level readout, the page indicator and the two button labels. Check at both Medium and Compact width
+  - calling `DocumentActions.preview` twice for the same ref while its dialog is open pushes one dialog and fetches once (FR-032, spec edge case "presses the print action twice quickly")
+  - `preview` for a user lacking the kind's gate opens the dialog directly in its error state with the permission error, and the fake source records zero calls (FR-041, contracts/document-module.md)
   - Fails until T027–T029
 
 ### Implementation for User Story 2
 
 - [ ] T025 [P] [US2] Create `lib/core/documents/presentation/document_zoom.dart`: the zoom steps, `nextStep`/`previousStep`, `clampScale`, the readout formatter and `pageInView(...)`, all pure and Flutter-free (research R7, R8, data-model.md "Zoom model") (depends on T022)
 - [ ] T026 [US2] Create `lib/core/documents/presentation/document_preview_controller.dart`: an autoDispose `AsyncNotifier` family keyed by `DocumentRef` that fetches through `documentSourceProvider`, rasters through `documentOutputProvider`, and exposes `AsyncValue<DocumentPreviewData>` (`RenderedDocument document`, `List<DocumentPage> pages`). Emit `AsyncData` only once all pages exist (depends on T012, T014, T023)
-- [ ] T027 [US2] Create `lib/core/documents/presentation/document_page_viewer.dart`: pages stacked vertically inside `InteractiveViewer(constrained: false)` with a `TransformationController`, each page drawn at its true aspect ratio on a neutral surround and opening fitted to width (FR-011). A `Listener` on `PointerScrollEvent` zooms only when Ctrl or ⌘ is held and otherwise pans vertically, with the viewer's own wheel-zoom disabled. Expose zoom-in, zoom-out and fit as methods for the action bar, and report the page in view through `document_zoom.dart` (research R8) (depends on T025)
-- [ ] T028 [US2] Create `lib/core/documents/presentation/document_preview_dialog.dart` per [wireframes.md](./wireframes.md), with keys from contracts/document-module.md ("Preview dialog regions"). A `Dialog` with a maximum width and height from `core/design/spacing.dart` tokens at Medium and wider, and `Dialog.fullscreen` when `LayoutBreakpoints.isCompact`. The title bar shows `ref.title` and a close `IconButton` (leading on Compact). The page area shows `CircularProgressIndicator` with `documentLoadingMessage`, `ErrorBanner` with retry, or the viewer. The action bar has zoom controls, "Página n / N" and the two buttons, disabled unless loaded. Imprimir calls `documentOutputProvider.print`, Descargar calls `.save`, and a print/save `AppError` shows through `ErrorBanner` (depends on T017, T026, T027)
-- [ ] T029 [US2] Extend `lib/core/documents/presentation/document_actions.dart` with `preview(BuildContext, DocumentRef)`: re-check the gate, ignore a repeated call for the same ref while its dialog is open, and `showDialog` the `DocumentPreviewDialog` (depends on T016, T028)
+- [ ] T027 [US2] Create `lib/core/documents/presentation/document_page_viewer.dart`: pages stacked vertically inside `InteractiveViewer(constrained: false)` with a `TransformationController`, each page drawn at its true aspect ratio on a neutral surround (a `ColorScheme` surface-container role, never a hard-coded colour, per §V) and opening fitted to width (FR-011). A `Listener` on `PointerScrollEvent` zooms only when Ctrl or ⌘ is held and otherwise pans vertically, with the viewer's own wheel-zoom disabled. Expose zoom-in, zoom-out and fit as methods for the action bar, and report the page in view through `document_zoom.dart` (research R8) (depends on T025)
+- [ ] T028 [US2] Create `lib/core/documents/presentation/document_preview_dialog.dart` per [wireframes.md](./wireframes.md), with keys from contracts/document-module.md ("Preview dialog regions"). A `Dialog` with a maximum width and height from `core/design/spacing.dart` tokens at Medium and wider, and `Dialog.fullscreen` when `LayoutBreakpoints.isCompact`. The title bar shows `ref.title` and a close `IconButton` (leading on Compact). The page area shows one of three things: a `CircularProgressIndicator` with `documentLoadingMessage`; or, on error, a `Text` heading `documentLoadFailedError` above `ErrorBanner(error: …)` followed by a separate `TextButton` labelled with `retryButton` (key `document_preview_retry`), since `ErrorBanner` has no retry of its own; or the viewer. The action bar has zoom controls, "Página n / N" and the two buttons, disabled unless loaded. Imprimir calls `documentOutputProvider.print`, Descargar calls `.save`, and a print/save `AppError` shows through `ErrorBanner` (depends on T017, T026, T027)
+- [ ] T029 [US2] Extend `lib/core/documents/presentation/document_actions.dart` with `preview(BuildContext, DocumentRef)`. It ignores a repeated call for the same ref while its dialog is open, and `showDialog`s the `DocumentPreviewDialog`. It re-checks the gate first, and on failure **still opens the dialog, directly in its error state** with the permission error and no fetch. So `preview` never throws, and no call site needs error handling (FR-041, contracts/document-module.md) (depends on T016, T028)
 
 **Checkpoint**: T022–T024 pass. US2 has no call site yet, so nothing appears in the running app until US3.
 
@@ -216,7 +224,7 @@ description: "Task list for Document Printing"
 ### Implementation for User Story 4
 
 - [ ] T036 [US4] Add `posSaleViewTicketTooltip` ("Ver ticket") to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`
-- [ ] T037 [US4] In `lib/features/sales/presentation/pos_sales_list_screen.dart` (`rowActionsBuilder`, ~L229-250), pass one `CatalogRowAction` (`Icons.receipt_long_outlined`, tooltip `posSaleViewTicketTooltip`) as `extraActions` to `buildCatalogRowActions`, shown only when `canOpenDocument(access, DocumentKind.saleTicket)`. It calls `preview(DocumentRef(saleTicket, openSale.id, documentTicketTitle(folio)))`, with the folio shown as in the list's Folio column. Do not add a second extra action, since two or more would collapse into a kebab (FR-003) (depends on T029, T036)
+- [ ] T037 [US4] In `lib/features/sales/presentation/pos_sales_list_screen.dart` (`rowActionsBuilder`, ~L229-250), pass one `CatalogRowAction` (`Icons.receipt_long_outlined`, tooltip `posSaleViewTicketTooltip`) as `extraActions` to `buildCatalogRowActions`, shown only when `canOpenDocument(access, DocumentKind.saleTicket)`. It calls `preview(DocumentRef(saleTicket, openSale.id, documentTicketTitle(folio)))`, with the reference rule in data-model.md › DocumentRef: the serial when it is set, otherwise the sales order id padded to 8 digits. `OpenSale` has no provisional reference, and a draft's `serial` is null. Do not add a second extra action, since two or more would collapse into a kebab (FR-003) (depends on T029, T036)
 
 **Checkpoint**: T035 passes, and quickstart M2 shows "Punto de Venta" for a draft and the receipt for a paid sale.
 
@@ -232,19 +240,18 @@ description: "Task list for Document Printing"
 
 - [ ] T038 [P] [US5] Extend `test/widget/features/sales/order_workspace_test.dart`. Assert:
   - "Ver pedido" is offered for draft, completed, paid and cancelled orders with `salesOrders` read, and absent without it (FR-004, FR-040, US5-1)
-  - it is disabled while `pendingWritesProvider('back-office-sale') > 0`, and enabled again when that returns to zero (FR-016)
+  - it is disabled while `pendingWritesProvider('back-office-sale') > 0`, and enabled again when that returns to zero (FR-009)
   - with unconfirmed typed text registered in `unconfirmedEditsProvider`, pressing it shows the existing "Cambios sin confirmar" dialog
     - "Seguir editando" opens no preview and fetches nothing
     - "Conservar" confirms the entries first, then opens the preview
     - "Descartar" discards them, then opens the preview
   - with none registered, it opens the preview directly (US5-2)
-  - it is a body action and `AppBar.actions` stays empty (FR-004). Fails until T041
+  - it is a body action and `AppBar.actions` stays empty (FR-004). Fails until T040
 
 ### Implementation for User Story 5
 
 - [ ] T039 [US5] Add `salesOrderViewDocumentAction` ("Ver pedido") to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`
-- [ ] T040 [US5] Confirm `OrderHeaderPanel` can read `saleWritesScopeProvider` and `pendingWritesProvider` (convert to a `ConsumerStatefulWidget` only if it is not one already, keeping every existing behaviour)
-- [ ] T041 [US5] In `lib/features/sales/presentation/orders/order_header_panel.dart` (`_headerRow`, ~L372), add an `OutlinedButton.icon` "Ver pedido" at the trailing edge, before or after the more/fewer-details toggle per [wireframes.md](./wireframes.md). It is gated by `canOpenDocument(access, DocumentKind.salesOrder)` and disabled while `pendingWritesProvider(ref.watch(saleWritesScopeProvider)) > 0`. On press it awaits `resolveUnconfirmedEdits(context, ref, scope)` (`lib/features/sales/presentation/unconfirmed_edits_resolver.dart`) and, only when that returns `true` and the widget is still mounted, calls `preview(DocumentRef(salesOrder, sale.id, documentSalesOrderTitle(sale id padded to 8 digits)))` (FR-016, research R13) (depends on T029, T039, T040)
+- [ ] T040 [US5] In `lib/features/sales/presentation/orders/order_header_panel.dart` (`_headerRow`, ~L372), add an `OutlinedButton.icon` "Ver pedido" at the trailing edge, before or after the more/fewer-details toggle per [wireframes.md](./wireframes.md). It is gated by `canOpenDocument(access, DocumentKind.salesOrder)` and disabled while `pendingWritesProvider(ref.watch(saleWritesScopeProvider)) > 0`. On press it awaits `resolveUnconfirmedEdits(context, ref, scope)` (`lib/features/sales/presentation/unconfirmed_edits_resolver.dart`) and, only when that returns `true` and the widget is still mounted, calls `preview(DocumentRef(salesOrder, sale.id, documentSalesOrderTitle(sale id padded to 8 digits)))` (FR-009, research R13). `OrderHeaderPanel` is already a `ConsumerStatefulWidget` (`order_header_panel.dart:60`), so it can watch both providers directly (depends on T029, T039)
 
 **Checkpoint**: T038 passes, and quickstart M4 and M5 behave as written.
 
@@ -252,10 +259,10 @@ description: "Task list for Document Printing"
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T042 [P] Write `test/integration/document_printing_flow_test.dart` against a live mbe-api, in the style of `test/integration/sales_orders_flow_test.dart` (bare `Dio`, `AuthRepositoryImpl(dio).login`, `String.fromEnvironment('MBE_POS_USERNAME')` credentials, skipping rather than failing when they are empty). Discover fixtures at runtime: a completed sale, a closed cash session and an open one. For each print endpoint, assert that `DocumentSourceImpl.fetch` returns bytes starting `%PDF-` that are **byte-identical** to a direct `dio.get` of the same URL (SC-003), and that the cut of an open session surfaces `Cash session is not closed` (SC-005). Run with `flutter test test/integration/document_printing_flow_test.dart --dart-define-from-file=.env --dart-define=MBE_POS_PRODUCT_PATTERN=clavo`
-- [ ] T043 [P] Run `flutter analyze` and `flutter test test/unit test/widget`, and compare with the T001 baseline. No new analyzer issues, and no failures beyond the ones recorded there. Confirm `test/unit/core/l10n_parity_test.dart` passes with all new keys in both `.arb` files
-- [ ] T044 [P] Update `docs/document-printing-research.md` §8.6 and §0.1 to record two facts this feature found (research R4, R5): on web, `Printing.layoutPdf` cannot report a cancel or a blocked pop-up, and the package's web raster and print need `'unsafe-eval'` and `'unsafe-inline'` under any future CSP. Point the document's status line at spec 044
-- [ ] T045 Run the manual checks in [quickstart.md](./quickstart.md): M1–M9 in Chrome, then H1 (real 80 mm thermal printer, actual size) and H2 (phone browser). Record each result. H1 and H2 need hardware and a device, so if they cannot run in this session, report them as not run rather than passed (SC-006)
+- [ ] T041 [P] Write `test/integration/document_printing_flow_test.dart` against a live mbe-api, in the style of `test/integration/sales_orders_flow_test.dart` (bare `Dio`, `AuthRepositoryImpl(dio).login`, `String.fromEnvironment('MBE_POS_USERNAME')` credentials, skipping rather than failing when they are empty). Discover fixtures at runtime: a completed sale, a closed cash session and an open one. For each print endpoint, assert that `DocumentSourceImpl.fetch` returns bytes starting `%PDF-` that are **byte-identical** to a direct `dio.get` of the same URL (SC-003), and that the cut of an open session surfaces `Cash session is not closed` (SC-005). Run with `flutter test test/integration/document_printing_flow_test.dart --dart-define-from-file=.env --dart-define=MBE_POS_PRODUCT_PATTERN=clavo`
+- [ ] T042 [P] Run `flutter analyze` and `flutter test test/unit test/widget`, and compare with the T001 baseline. No new analyzer issues, and no failures beyond the ones recorded there. Confirm `test/unit/core/l10n_parity_test.dart` passes with all new keys in both `.arb` files
+- [ ] T043 [P] Update `docs/document-printing-research.md` §8.6 and §0.1 to record two facts this feature found (research R4, R5): on web, `Printing.layoutPdf` cannot report a cancel or a blocked pop-up, and the package's web raster and print need `'unsafe-eval'` and `'unsafe-inline'` under any future CSP. Point the document's status line at spec 044
+- [ ] T044 Run the manual checks in [quickstart.md](./quickstart.md): M1–M9 in Chrome, recording the stopwatch timings M1, M4 and M6 ask for against SC-001, SC-002 and SC-007, then H1 (real 80 mm thermal printer, actual size) and H2 (phone browser). Record each result. H1 and H2 need hardware and a device, so if they cannot run in this session, report them as not run rather than passed (SC-006)
 
 ---
 
@@ -275,7 +282,7 @@ description: "Task list for Document Printing"
 - **US1 (Phase 3)**: depends on Phase 2 only.
 - **US2 (Phase 4)**: depends on Phase 2 and T017. It is independent of US1.
 - **US3, US4, US5**: each depends on **US2** (T029). They are independent of one another and of US1.
-- **Polish (Phase 8)**: after all wanted stories. T042 needs Phase 2 only, but runs last with the rest.
+- **Polish (Phase 8)**: after all wanted stories. T041 needs Phase 2 only, but runs last with the rest.
 
 ### Within each story
 

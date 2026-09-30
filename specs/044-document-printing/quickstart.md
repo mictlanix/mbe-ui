@@ -36,12 +36,12 @@ flutter test test/integration/document_printing_flow_test.dart \
 
 | # | Steps | Expected | Covers |
 |---|---|---|---|
-| M1 | Complete a POS sale, then in "Venta completada" press **Imprimir ticket**. | The browser's print preview opens with the "Ticket de Venta", 72 mm wide. The dialog stays open, and "Nueva venta" is still the filled button. | US1, FR-002, SC-001 |
+| M1 | Complete a POS sale, then in "Venta completada" press **Imprimir ticket**. | The browser's print preview opens with the "Ticket de Venta", 72 mm wide. The dialog stays open, and "Nueva venta" is still the filled button. **Time it from the press to the print preview appearing: under 3 s.** | US1, FR-002, SC-001 |
 | M2 | POS sales list: press the ticket icon on a draft and on a paid sale. | The preview opens. The draft shows "Punto de Venta" (pre-payment), the paid sale shows the receipt. The page indicator reads "Página 1 / 1". | US4, FR-003 |
 | M3 | In the preview, use `[+]` twice, pinch (trackpad), Ctrl/⌘ + wheel, a plain wheel, then `[⤢]`. | The level readout changes through the steps. A plain wheel scrolls and doesn't zoom. `[⤢]` returns to fit-to-width. You can pan a zoomed page. | FR-011, US2-8 |
-| M4 | Open a pedido with more than one page from the order workspace. | "Página 1 / N" updates as you scroll. **Descargar** saves `pedido-000XXXXX.pdf`. | US5, US2-3, US2-6 |
-| M5 | In the workspace, type into the comment field without pressing Enter, then press **Ver pedido**. | The "Cambios sin confirmar" prompt appears. "Seguir editando" cancels; "Conservar" saves, then the preview opens showing the new comment. | FR-016 |
-| M6 | Close a cash session, then press **Ver corte** in "Sesión cerrada". | The dialog closes, and the preview opens over a detail screen that now shows *Cerrada* with its own **Ver corte**. The close message no longer says "no se mostrarán de nuevo". | US3, FR-005/007/008 |
+| M4 | Open a pedido with more than one page from the order workspace. | "Página 1 / N" updates as you scroll. **Descargar** saves `pedido-000XXXXX.pdf`. **Time it from pressing Ver pedido to every page being visible: under 3 s.** | US5, US2-3, US2-6, SC-002 |
+| M5 | In the workspace, type into the comment field without pressing Enter, then press **Ver pedido**. | The "Cambios sin confirmar" prompt appears. "Seguir editando" cancels; "Conservar" saves, then the preview opens showing the new comment. | FR-009 |
+| M6 | Close a cash session, then press **Ver corte** in "Sesión cerrada". | The dialog closes, and the preview opens over a detail screen that now shows *Cerrada* with its own **Ver corte**. The close message no longer says "no se mostrarán de nuevo". **Then time a reprint: from the cash sessions list, open that session and get its cut on screen in under 30 s.** | US3, FR-005/007/008, SC-007 |
 | M7 | Stop mbe-api and open any preview. | An error banner with Reintentar. Restart the API, press Reintentar, and the document loads. | FR-013 |
 | M8 | Sign in as a user without `salesOrders` read, then as one without `pos` read. | No ticket or pedido actions for the first; no Ver corte for the second. | FR-040, SC-008 |
 | M9 | DevTools → Network, preserve log. Open, zoom, print and download a document. | Every request goes to the app's own origin or mbe-api. None to unpkg or any other host. | FR-014, SC-004 |

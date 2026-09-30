@@ -24,7 +24,7 @@ An immutable request for one document (spec: "Document reference").
 |---|---|---|
 | `kind` | `DocumentKind` | required |
 | `recordId` | `int` | required, > 0. For `saleTicket` and `salesOrder` it is a sales order id; for `cashCut` it is a cash session id. |
-| `title` | `String` | required. The localized preview title, e.g. "Ticket · Folio #1234", "Pedido · 00001234", "Corte de caja · 000123". Built by the call site, which knows the folio or serial. |
+| `title` | `String` | required. The localized preview title. Built by the call site with one rule per kind: **ticket**: "Ticket · Folio #{serial}" when the sale has a serial; otherwise the POS completion dialog uses its provisional reference, and the POS list (where `OpenSale` has none) uses the sales order id padded to 8 digits. **Pedido**: "Pedido · {id:08d}". **Cut**: "Corte de caja · {id:06d}". The padded forms match the server's file names. |
 
 Equality is by value (`kind`, `recordId`, `title`), so it can key a provider family.
 
@@ -78,5 +78,5 @@ One rasterized page (R2, R7).
 | Trigger | Effect |
 |---|---|
 | Cash session closed | `cashSessionDetailControllerProvider(id)` is invalidated → the detail shows the closed state and "Ver corte" (FR-007, R14) |
-| Order workspace pending writes > 0 | "Ver pedido" is disabled (FR-016, R13) |
-| Unconfirmed edits present on "Ver pedido" | `resolveUnconfirmedEdits`: keep/discard proceeds; keep-editing cancels (FR-016) |
+| Order workspace pending writes > 0 | "Ver pedido" is disabled (FR-009, R13) |
+| Unconfirmed edits present on "Ver pedido" | `resolveUnconfirmedEdits`: keep/discard proceeds; keep-editing cancels (FR-009) |

@@ -38,4 +38,4 @@
 - FR-030 depends on a shared error-handling fix (research §8.3); the plan must include it with a unit test.
 - The detail-screen refresh after close (FR-007) fixes an existing stale-state gap, but it is included because FR-006's reprint action is unreachable without it.
 - 2026-09-30: wireframe review folded back in (modal/full-screen preview, pinch + zoom controls, info strip, close-vs-cut privilege edge case, primary action in the completion dialog). Re-validated; all items still pass.
-- 2026-09-30 (second pass): Q3/Q5/Q8 resolved; saved-version strip replaced by resolve-first (FR-016 rewritten, US5-3 rewritten). Re-validated; all items pass.
+- 2026-09-30 (second pass): Q3/Q5/Q8 resolved; saved-version strip replaced by resolve-first (FR-009 rewritten, US5-3 rewritten). Re-validated; all items pass.

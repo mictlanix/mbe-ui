@@ -121,6 +121,9 @@ pieces, because nothing in `core/widgets/` fits (Open Question 1).
    └──────────────────────────────────────────────────────────────────────────┘
 ```
 
+- The heading line ("No se pudo cargar el documento.") is a `Text` above the banner. Reintentar is a separate
+  `TextButton` below it, because `ErrorBanner` has no retry slot. The box drawn above shows the grouping,
+  not one widget.
 - `ErrorBanner` (`core/widgets/error_banner.dart`) shows the server's own reason when there
   is one (FR-013, FR-030, SC-005), e.g. not found, not closed, insufficient privileges.
 - Reintentar reuses the existing `retryButton` key. Each retry fetches again, since nothing
@@ -360,7 +363,7 @@ no state to draw: Descargar stays enabled in the loaded state as the fallback.
   read.
 - Before fetching, it lets in-flight edits finish and runs the workspace's existing
   keep/discard prompt for unconfirmed typed text, the one other critical actions already use
-  (FR-016, US5-3). "Seguir editando" cancels. The pedido then matches the screen, so there
+  (FR-009, US5-3). "Seguir editando" cancels. The pedido then matches the screen, so there
   is no "saved version" strip.
 
 ```
@@ -407,7 +410,7 @@ no state to draw: Descargar stays enabled in the loaded state as the fallback.
    so there is no lasting unsaved state. The only transient states are unconfirmed typed
    text and writes in flight. "Ver pedido" resolves both first, with the existing
    unconfirmed-edits prompt and pending-writes tracking, and the document then matches the
-   screen (FR-016).
+   screen (FR-009).
 7. ~~**The close gate differs from the cut gate.**~~ **Resolved 2026-09-30:** added to the
    spec as an edge case. A user who can close a session but lacks `pos` read gets no
    "Ver corte" button, and the close dialog's figures are all they see.
