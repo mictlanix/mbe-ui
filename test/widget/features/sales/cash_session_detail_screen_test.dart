@@ -312,6 +312,30 @@ void main() {
       expect(find.text('View cut'), findsOneWidget);
     });
 
+    testWidgets('sits under the payment amounts, its right edge on theirs, '
+        'not at the screen\'s left edge', (tester) async {
+      final session = _closedSession().copyWith(
+        paymentsByMethod: const [PaymentMethodTotal(method: 1, total: '1750')],
+      );
+      await pumpScreen(
+        tester,
+        user: _cutReaderUser,
+        session: session,
+        overrides: documentOverrides(),
+      );
+
+      final amount = find.textContaining('1,750');
+      expect(amount, findsOneWidget);
+      expect(
+        tester.getTopRight(viewCutButton).dx,
+        closeTo(tester.getTopRight(amount).dx, 0.5),
+      );
+      expect(
+        tester.getTopLeft(viewCutButton).dy,
+        greaterThan(tester.getBottomLeft(amount).dy),
+      );
+    });
+
     testWidgets('pressing it opens that session\'s cut in the preview',
         (tester) async {
       await pumpScreen(

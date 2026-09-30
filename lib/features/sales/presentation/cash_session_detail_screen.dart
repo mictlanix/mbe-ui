@@ -116,6 +116,26 @@ class _DetailBody extends ConsumerWidget {
                 span: FormGridSpan.full,
                 _PaymentsByMethodSection(session: session),
               ),
+              // spec 044 FR-006: the cut of a closed session, viewable again
+              // at any time. Inside the grid so it shares its width, and at
+              // the end, under the amounts it summarizes. Absent — not
+              // disabled — without point-of-sale read.
+              if (status == CashSessionStatus.closed &&
+                  canOpenDocument(access, DocumentKind.cashCut))
+                FormGridChild(
+                  span: FormGridSpan.full,
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: OutlinedButton.icon(
+                      key: const Key('cash_session_view_cut_button'),
+                      onPressed: () => ref
+                          .read(documentActionsProvider)
+                          .preview(context, _cutRef(l10n, session)),
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      label: Text(l10n.cashSessionViewCutAction),
+                    ),
+                  ),
+                ),
             ],
           ),
           if (status != CashSessionStatus.closed)
@@ -126,21 +146,6 @@ class _DetailBody extends ConsumerWidget {
                 l10n.cashSessionSupervisorRequiredMessage,
                 key: const Key('cash_session_supervisor_required_message'),
               ),
-          // spec 044 FR-006: the cut of a closed session, viewable again at
-          // any time. Absent — not disabled — without point-of-sale read.
-          if (status == CashSessionStatus.closed &&
-              canOpenDocument(access, DocumentKind.cashCut))
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: OutlinedButton.icon(
-                key: const Key('cash_session_view_cut_button'),
-                onPressed: () => ref
-                    .read(documentActionsProvider)
-                    .preview(context, _cutRef(l10n, session)),
-                icon: const Icon(Icons.receipt_long_outlined),
-                label: Text(l10n.cashSessionViewCutAction),
-              ),
-            ),
         ],
       ),
     );
