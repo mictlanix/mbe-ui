@@ -84,7 +84,12 @@ rejects a path inside it.
    `rsync -av --delete build/web/ <user>@<host>:/var/www/<site>/`.
 2. The server must send every unknown path to `index.html` so reloads and deep
    links work (nginx: `try_files $uri $uri/ /index.html;`), and serve `.wasm`
-   as `application/wasm` and `.mjs` as `text/javascript`.
+   as `application/wasm` and `.mjs` as JavaScript. Ubuntu's nginx `mime.types`
+   knows `.wasm` but not `.mjs`; without it Chrome refuses to start the
+   WebAssembly build and the PDF preview fails everywhere. Fix it once with
+   `sudo sed -i 's|^\(\s*application/javascript\s\+\)js;|\1js mjs;|' /etc/nginx/mime.types`
+   then `sudo nginx -t && sudo systemctl reload nginx`. Check:
+   `curl -sI https://<site>/main.dart.mjs` shows `application/javascript`.
 3. Optional: for multi-threaded WebAssembly, also send
    `Cross-Origin-Opener-Policy: same-origin` and
    `Cross-Origin-Embedder-Policy: require-corp` (then every cross-origin

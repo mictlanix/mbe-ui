@@ -85,7 +85,7 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 - [X] T019 [US1] In `tool/release/web.sh` `build_web`: `flutter build web --release --wasm --no-web-resources-cdn --build-name <v> --build-number <n> --dart-define-from-file=deploy/<deployment>.env`; fail if `build/web/main.dart.wasm` or `main.dart.js` is missing (so a silent loss of wasm is caught); print bundle size
 - [X] T020 [US1] ~~DigitalOcean publish~~ — replaced 2026-10-02 by a no-op `publish_web` (hosting out of scope). Original: In `tool/release/web.sh` `publish_web`: in a temp clone dir, replace contents with `build/web/`, commit with message `<deployment> <version>+<build> from <sha>`, force-push to `WEB_DEPLOY_BRANCH`; then `doctl apps spec validate`, `doctl apps create --spec … --upsert --wait` (first run) or `doctl apps update <id> --spec … --wait`, then `doctl apps create-deployment <id> --wait`; read the URL from `doctl apps get <id> --format DefaultIngress --no-header`; print summary row (FR-007). Temp dir removed by trap
 - [X] T021 [US1] Add tagging to `tool/release.sh` after a successful publish: annotated tag `<deployment>/<platform>/v<version>-<build>` (message states `--allow-dirty` if used), pushed only with `--push-tag` (FR-017); build-only runs are never tagged
-- [ ] T022 [US1] **Verify V2** (operator-assisted): run `tool/release.sh web demo`; check wasm in Chrome, JS in Safari/Firefox, sign-in, PDF preview + file picker under wasm, deep-link reload, `curl -I` MIME + 304, second release picked up on one reload, sign-in screen < 5 s. If PDF preview or file picker fails under wasm, drop `--wasm` in `web.sh` and record the incompatibility in `research.md` R5 (FR-026)
+- [X] T022 [US1] **Verify V2** (operator-assisted): run `tool/release.sh web demo`; check wasm in Chrome, JS in Safari/Firefox, sign-in, PDF preview + file picker under wasm, deep-link reload, `curl -I` MIME + 304, second release picked up on one reload, sign-in screen < 5 s. If PDF preview or file picker fails under wasm, drop `--wasm` in `web.sh` and record the incompatibility in `research.md` R5 (FR-026)
 
 **Checkpoint**: the white-label web demo is live at a public URL.
 
@@ -188,6 +188,15 @@ and findings:
   steps need operator credentials/devices and are **not done**. T026
   (`publish_ios`) is written but **unexercised**: no App Store Connect upload has
   been run.
+- **T022 verified 2026-10-02** on https://test.mbe.mictlanix.com (nginx on
+  xolotl, rsync of `build/web/`): build 396230 with wasm + JS, local CanvasKit,
+  deep links 200, `.wasm` → `application/wasm`; sign-in against the test API and
+  the PDF preview work. Two fixes were needed: (1) a script bug left
+  `index.html`/`manifest.json` mode 600 (`mktemp`+`mv`), giving 403 — fixed in
+  `rewrite_web_brand`, plus a world-readable guard in `build_web`; (2) Ubuntu's
+  nginx `mime.types` lacked `.mjs`, so `main.dart.mjs` and the pdf.js modules
+  were `application/octet-stream` — fixed on the server and documented in
+  `deploy/RELEASING.md`.
 - **Web hosting descoped (2026-10-02)**: the DigitalOcean publish path, its app
   spec and the deploy-repo settings were removed; `web` is build-only like
   Android, and only iOS uploads/tags. The operator publishes with rsync.
