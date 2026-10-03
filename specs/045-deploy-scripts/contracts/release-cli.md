@@ -11,7 +11,7 @@ tool/release.sh --status
 
 | Option | Effect |
 |---|---|
-| `--build-only` | Build (and sign) the artifact; never upload, publish or tag (FR-003). Android is always build-only (spec 3a); the flag is accepted for symmetry. |
+| `--build-only` | Build the artifact; never upload, publish or tag (FR-003). iOS yields the **unsigned** archive (signing happens at export). Android is always build-only (spec 3a); the flag is accepted for symmetry. |
 | `--allow-dirty` | Proceed with uncommitted changes; the summary and any tag message state it (FR-006). |
 | `--push-tag` | After tagging, push the tag to `origin`. |
 | `--list` | Print valid deployments and their brands. |

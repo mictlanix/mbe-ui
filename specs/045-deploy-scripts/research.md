@@ -157,7 +157,9 @@ to be revisited if a brand ever adds push or app groups.
   `path_provider_foundation` is FFI-only; `printing` uses no required-reason
   API. **No Runner `PrivacyInfo.xcprivacy` now**; add one only if App Store
   Connect returns ITMS-91053.
-- Deployment target stays iOS 13.0. Uploads since 2026-04-28 must be built with
+- **Deployment target must be ≥ 15.0** (corrected during implementation: Xcode 27
+  rejects 13.0 with "supported deployment target versions is 15.0 to 27.0"; the
+  earlier "keep 13.0" was wrong). Uploads since 2026-04-28 must be built with
   Xcode 26+ / iOS 26 SDK; Xcode 27 qualifies
   (developer.apple.com/news/upcoming-requirements/).
 

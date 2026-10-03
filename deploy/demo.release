@@ -1,0 +1,5 @@
+# Release settings for the `demo` deployment (read by tool/release.sh, never
+# passed to the app). See deploy/RELEASING.md.
+BRAND=mbe
+WEB_DEPLOY_REPO=git@github.com:mictlanix/mbe-ui-web-deploy.git
+WEB_DEPLOY_BRANCH=web/demo
