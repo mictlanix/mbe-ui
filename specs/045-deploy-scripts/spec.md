@@ -17,9 +17,12 @@ for re-litigation in clarify/plan:
    and credential comes from the environment or from files outside the
    repository, so a CI runner can later invoke the very same scripts
    unattended. Writing the CI workflows themselves is out of scope.
-2. **Web hosting** is DigitalOcean App Platform, as a static site. The
-   WebAssembly build is preferred for performance, with automatic fallback to
-   the JavaScript build for browsers that cannot run it.
+2. **Web is built, not hosted** (revised 2026-10-02; DigitalOcean App Platform
+   was the original choice). The script produces the deployable bundle; copying
+   it to a web server (today: rsync to a private Mictlanix server) is outside
+   the release tooling. The WebAssembly build is preferred for performance,
+   with automatic fallback to the JavaScript build for browsers that cannot
+   run it.
 3. **iOS delivery stops at TestFlight.** Promoting a build to production
    remains a manual action in App Store Connect.
 3a. **Android is built, not shipped** (decided 2026-10-02). The Android
@@ -52,12 +55,12 @@ Actors:
   customer.
 - **CI runner** — a future unattended machine running the same scripts.
 
-### User Story 1 - Publish the white-label web demo (Priority: P1)
+### User Story 1 - Build the white-label web demo (Priority: P1)
 
 The release operator runs one command naming the white-label deployment. The
-app is built for the web, uploaded to the hosting provider, and becomes
-reachable at the deployment's public URL, talking to
-`https://test.api.mbe.mictlanix.com`. The operator sends the URL to a
+app is built for the web as a self-contained bundle, talking to
+`https://test.api.mbe.mictlanix.com`, which the operator copies to a web
+server. The operator sends the URL to a
 prospective customer, who opens it in a browser and signs in.
 
 **Why this priority**: The web demo is the cheapest artifact to show a
@@ -70,9 +73,9 @@ against the test API; navigate to a deep link and reload it.
 
 **Acceptance Scenarios**:
 
-1. **Given** a clean checkout and the hosting credentials in the environment,
-   **When** the operator runs the web deploy for the white-label deployment,
-   **Then** the site is published and the command reports the public URL.
+1. **Given** a clean checkout, **When** the operator runs the web build for the
+   white-label deployment, **Then** a bundle containing both the WebAssembly
+   and JavaScript builds is produced and the command reports its path.
 2. **Given** the published site, **When** a visitor opens it in a current
    browser, **Then** the app loads using the WebAssembly build, shows the
    white-label branding, and signs in against the test API.
@@ -330,13 +333,12 @@ completes (or fails with a named reason) without waiting for input.
   fallback to the JavaScript build. If a dependency proves incompatible with
   WebAssembly, the release MUST ship the JavaScript build rather than a site
   with a broken feature, and the incompatibility MUST be recorded.
-- **FR-027**: The hosted site MUST serve the app for every in-app route
-  (reload and direct links work).
-- **FR-028**: The hosted site MUST be configured so returning visitors get a
-  new release on their next load, while unchanged static assets are cached.
-- **FR-029**: The hosting configuration for a deployment MUST be kept in the
-  repository, so a site can be recreated from the repository plus
-  credentials.
+- **FR-027**: *(Moved to hosting, out of scope 2026-10-02.)* The web server
+  MUST serve the app for every in-app route; `deploy/RELEASING.md` documents
+  the required server configuration.
+- **FR-028**: *(Out of scope 2026-10-02.)* Cache behaviour is the web server's.
+- **FR-029**: *(Out of scope 2026-10-02.)* Hosting configuration is not kept
+  in this repository.
 
 **Documentation**
 
@@ -369,8 +371,8 @@ completes (or fails with a named reason) without waiting for input.
 - **SC-001**: The white-label demo is available to prospective customers on
   a public web URL and on TestFlight, and a sign-in against the test API
   succeeds on each; a side-loaded white-label Android build also signs in.
-- **SC-002**: Once one-time setup is done, a release operator publishes a
-  deployment to web and TestFlight and builds its Android bundle with a
+- **SC-002**: Once one-time setup is done, a release operator uploads a
+  deployment to TestFlight and builds its web and Android bundles with a
   single command and no manual steps other than waiting for store
   processing.
 - **SC-003**: Misconfiguration (missing credential, missing brand item,
@@ -417,6 +419,8 @@ completes (or fails with a named reason) without waiting for input.
 ## Out of Scope
 
 - CI workflows (GitHub Actions or otherwise) — only CI-readiness is in scope.
+- Web hosting and publishing (DigitalOcean App Platform or any server); the
+  web script stops at the built bundle.
 - macOS, Windows and Linux releases.
 - Any Google Play upload or publishing (internal testing, closed/open
   testing, production), and the Play Console app record. The Android build

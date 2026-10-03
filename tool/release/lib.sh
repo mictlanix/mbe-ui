@@ -85,7 +85,7 @@ check_field() { # check_field NAME VALUE REGEX
 }
 
 # Resolve and validate a deployment. Sets DEPLOYMENT, ENV_FILE, REL_FILE,
-# APP_YAML, BRAND, BRAND_DIR, BRAND_PROPS, the brand fields and the web fields.
+# BRAND, BRAND_DIR, BRAND_PROPS and the brand fields.
 # Problems are accumulated; the caller runs fail_if_problems.
 load_deployment() {
   DEPLOYMENT="$1"
@@ -97,12 +97,9 @@ load_deployment() {
   fi
   ENV_FILE="deploy/$DEPLOYMENT.env"
   REL_FILE="deploy/$DEPLOYMENT.release"
-  APP_YAML="deploy/$DEPLOYMENT.app.yaml"
   [[ -f "$REPO_ROOT/$ENV_FILE" ]] || problem "missing $ENV_FILE"
 
   BRAND="$(prop "$REPO_ROOT/$REL_FILE" BRAND)"
-  WEB_DEPLOY_REPO="$(prop "$REPO_ROOT/$REL_FILE" WEB_DEPLOY_REPO)"
-  WEB_DEPLOY_BRANCH="$(prop "$REPO_ROOT/$REL_FILE" WEB_DEPLOY_BRANCH "web/$DEPLOYMENT")"
   BRAND_DIR="deploy/brands/$BRAND"
   BRAND_PROPS="$BRAND_DIR/brand.properties"
   if [[ -z "$BRAND" || ! -f "$REPO_ROOT/$BRAND_PROPS" ]]; then
@@ -257,10 +254,14 @@ rewrite_web_brand() {
   t="$(mktemp)"
   sed -e "s|<title>.*</title>|<title>$WEB_TITLE</title>|" \
     -e "s|\(<meta name=\"apple-mobile-web-app-title\" content=\"\)[^\"]*|\1$WEB_SHORT_NAME|" \
-    "$idx" >"$t" && mv "$t" "$idx"
+    "$idx" >"$t"
+  cat "$t" >"$idx" # overwrite in place: keep the file's permissions
+  rm -f "$t"
   t="$(mktemp)"
   sed -e "s|\(\"name\": \"\)[^\"]*|\1$WEB_TITLE|" \
     -e "s|\(\"short_name\": \"\)[^\"]*|\1$WEB_SHORT_NAME|" \
     -e "s|\(\"theme_color\": \"\)[^\"]*|\1$WEB_THEME_COLOR|" \
-    "$man" >"$t" && mv "$t" "$man"
+    "$man" >"$t"
+  cat "$t" >"$man" # overwrite in place: keep the file's permissions
+  rm -f "$t"
 }

@@ -32,7 +32,7 @@ worked examples of every supported pattern.
 
 ## Releasing
 
-Building and publishing a deployment (web, iOS TestFlight, Android bundle) is
+Building a deployment (web bundle, iOS TestFlight upload, Android bundle) is
 done with `tool/release.sh`; see [RELEASING.md](RELEASING.md) for the
-`deploy/<deployment>.release` and `.app.yaml` files, credentials, one-time
-setup and how to add a brand.
+`deploy/<deployment>.release` file, credentials, one-time setup and how to
+add a brand.

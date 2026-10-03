@@ -14,8 +14,6 @@ conventional local names (`*.jks`, `*.keystore`, `*.p8`, `AuthKey_*.p8`,
 | `MBE_ANDROID_KEYSTORE_PASSWORD` | Android build | keystore password | non-empty |
 | `MBE_ANDROID_KEY_ALIAS` | Android build | key alias (convention `upload`) | non-empty |
 | `MBE_ANDROID_KEY_PASSWORD` | Android build | key password | non-empty |
-| `DIGITALOCEAN_ACCESS_TOKEN` | web publish | DigitalOcean API token (read by `doctl`) | non-empty; `doctl account get` succeeds |
-| *(git credentials)* | web publish | push access to `WEB_DEPLOY_REPO` — the ambient SSH agent or credential helper locally; a deploy key or token in CI | `git ls-remote` succeeds |
 
 Notes:
 

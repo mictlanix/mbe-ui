@@ -4,14 +4,14 @@
 publishes it. One command per platform, or all three:
 
 ```bash
-tool/release.sh web     demo     # WebAssembly build -> DigitalOcean App Platform
+tool/release.sh web     demo     # WebAssembly bundle in build/web/, NOT published
 tool/release.sh ios     demo     # unsigned archive -> cloud-signed upload -> TestFlight
 tool/release.sh android demo     # signed .aab + .apk, NOT published
 tool/release.sh all     demo     # all three; one platform failing never hides the others
 
 tool/release.sh ios demo --build-only    # build, never upload/publish/tag
-tool/release.sh web demo --allow-dirty   # release from an uncommitted tree (stated in output)
-tool/release.sh web demo --push-tag      # also push the release tag to origin
+tool/release.sh ios demo --allow-dirty   # release from an uncommitted tree (stated in output)
+tool/release.sh ios demo --push-tag      # also push the release tag to origin
 tool/release.sh --list                   # valid deployments
 tool/release.sh --status                 # which brand the tree is configured for
 ```
@@ -24,15 +24,14 @@ never print a secret.
 
 Version name comes from `pubspec.yaml` (`1.0.0` of `1.0.0+1`; the `+n` is
 ignored). The build number is minutes since 2026-01-01 UTC, so it only ever
-goes up. A successful web/iOS publish is tagged `<deployment>/<platform>/v<version>-<build>`.
+goes up. A successful iOS upload is tagged `<deployment>/<platform>/v<version>-<build>`.
 
 ## Files
 
 | File | Purpose |
 |---|---|
 | `deploy/<deployment>.env` | app settings (`API_BASE_URL`, locale, formatting, brand tokens) passed with `--dart-define-from-file`; see `deploy/README.md` |
-| `deploy/<deployment>.release` | release settings: `BRAND`, `WEB_DEPLOY_REPO`, `WEB_DEPLOY_BRANCH` |
-| `deploy/<deployment>.app.yaml` | DigitalOcean App Platform spec for the deployment's web site |
+| `deploy/<deployment>.release` | release settings: `BRAND` |
 | `deploy/brands/<brand>/brand.properties` | native identity: bundle/application id, display name, iOS team, web title/short name/theme color |
 | `deploy/brands/<brand>/overlay/` | the brand's icons and splash (non-default brands only) |
 
@@ -57,9 +56,6 @@ export MBE_ANDROID_KEYSTORE_PATH=~/.config/mbe/upload-keystore.jks
 export MBE_ANDROID_KEYSTORE_PASSWORD=...
 export MBE_ANDROID_KEY_ALIAS=upload
 export MBE_ANDROID_KEY_PASSWORD=...
-
-# Web (DigitalOcean)
-export DIGITALOCEAN_ACCESS_TOKEN=...
 ```
 
 Key and keystore files must live **outside** the repository; the preflight
@@ -82,27 +78,27 @@ rejects a path inside it.
 3. Release builds fail without the four `MBE_ANDROID_*` variables; they are
    never signed with the debug key.
 
-**Web**
-1. `brew install doctl`; create a DigitalOcean API token.
-2. Create a **private** GitHub repository for the built sites,
-   `mictlanix/mbe-ui-web-deploy` (a public mbe-ui must not host a customer's
-   build). The script force-pushes each deployment's bundle to its own branch
-   (`web/<deployment>`).
-3. Grant the DigitalOcean GitHub app access to that repository
-   (DigitalOcean → Apps → Create → GitHub → Configure).
-4. First `tool/release.sh web <deployment>` creates the App Platform app from
-   `deploy/<deployment>.app.yaml`; later runs update and redeploy it.
-5. Optional: add a custom domain to the app spec.
-6. The API must allow the web origin for cross-origin requests (CORS). If it
+**Web** (build only; hosting is not part of the release tooling)
+1. Build with `tool/release.sh web <deployment>`, then copy the bundle to your
+   web server, e.g.
+   `rsync -av --delete build/web/ <user>@<host>:/var/www/<site>/`.
+2. The server must send every unknown path to `index.html` so reloads and deep
+   links work (nginx: `try_files $uri $uri/ /index.html;`), and serve `.wasm`
+   as `application/wasm` and `.mjs` as `text/javascript`.
+3. Optional: for multi-threaded WebAssembly, also send
+   `Cross-Origin-Opener-Policy: same-origin` and
+   `Cross-Origin-Embedder-Policy: require-corp` (then every cross-origin
+   resource, e.g. API product photos, must allow it). Without them the app runs
+   single-threaded WebAssembly, which is fine.
+4. The API must allow the web origin for cross-origin requests (CORS). If it
    does not, file an mbe-api issue; do not work around it in the client.
 
 ## What the web build does
 
 `flutter build web --wasm --no-web-resources-cdn`: WebAssembly where the
 browser supports it (Chromium browsers today), the JavaScript build otherwise,
-chosen by the loader. Everything is served from the site's own origin. App
-Platform cannot send the cross-origin-isolation headers, so WebAssembly runs
-single-threaded. If a dependency ever breaks under WebAssembly, drop `--wasm`
+chosen by the loader. Everything (including CanvasKit/skwasm) is served from
+the site's own origin. If a dependency ever breaks under WebAssembly, drop `--wasm`
 in `tool/release/web.sh` and note it in `specs/045-deploy-scripts/research.md`.
 
 ## Adding a brand
@@ -117,8 +113,8 @@ Adding a customer touches only `deploy/` (plus a one-time artwork generation):
 3. Run `tool/release/brand_artwork.sh <brand>` and commit the generated
    `deploy/brands/<brand>/overlay/`. It runs the icon and splash generators in
    a temporary worktree, so your working tree is never touched.
-4. Create `deploy/<deployment>.env`, `.release` (`BRAND=<brand>`) and
-   `.app.yaml` (a new app name and branch).
+4. Create `deploy/<deployment>.env` and `deploy/<deployment>.release`
+   (`BRAND=<brand>`).
 5. Register the new bundle id with Apple and create its App Store Connect
    record.
 6. `tool/release.sh all <deployment> --build-only` and check each artifact's

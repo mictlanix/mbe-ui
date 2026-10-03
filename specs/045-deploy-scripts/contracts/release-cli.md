@@ -22,7 +22,7 @@ tool/release.sh --status
 1. **Preflight** (no build work; target < 30 s, SC-003). Collects *all*
    problems, then fails once listing them:
    - unknown platform/deployment (lists valid ones);
-   - missing `.env`/`.release`/`.app.yaml`, unknown `BRAND`, invalid
+   - missing `.env`/`.release`, unknown `BRAND`, invalid
      `brand.properties` field, missing overlay path from the manifest (non-default brand);
    - `API_BASE_URL` absent or not `https://`;
    - working tree dirty without `--allow-dirty`;
@@ -34,9 +34,9 @@ tool/release.sh --status
    an EXIT/INT/TERM trap that restores the tree.
 3. **Build** with `--release --build-name <v> --build-number <n>
    --dart-define-from-file=deploy/<deployment>.env`.
-4. **Publish** (unless `--build-only`): web → deploy repo push + doctl; iOS →
-   export + upload.
-5. **Tag** (publish only), optionally push.
+4. **Publish** (unless `--build-only`): iOS → export + upload. Web and Android
+   are build-only (hosting and Google Play are out of scope).
+5. **Tag** (iOS upload only), optionally push.
 6. **Summary** line(s): `deployment platform version build commit destination`.
 
 `all` runs web, ios, android in sequence, continuing past a failure, then

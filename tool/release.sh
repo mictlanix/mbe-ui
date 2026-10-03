@@ -137,7 +137,7 @@ DESTINATION=""
 if [[ $BUILD_ONLY -eq 0 ]]; then
   "publish_$PLATFORM"
   TAG="$DEPLOYMENT/$PLATFORM/v$VERSION-$BUILD"
-  if [[ "$PLATFORM" != "android" ]]; then
+  if [[ "$PLATFORM" == "ios" ]]; then
     git tag -a "$TAG" -m "$DEPLOYMENT $PLATFORM $VERSION+$BUILD (commit $SHA)"
     info "tagged $TAG"
     [[ $PUSH_TAG -eq 1 ]] && git push origin "$TAG"

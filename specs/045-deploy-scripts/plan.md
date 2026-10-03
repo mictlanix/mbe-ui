@@ -8,8 +8,8 @@
 
 One Bash entry point, `tool/release.sh <web|ios|android|all> <deployment>`,
 releases a *deployment* (a brand + its app settings) to each platform: the web
-build (WebAssembly with JS fallback) is pushed to a private deploy repository
-and deployed to DigitalOcean App Platform; the iOS build is archived unsigned,
+build (WebAssembly with JS fallback) is left in `build/web/` for the operator
+to copy to a server (hosting descoped 2026-10-02); the iOS build is archived unsigned,
 cloud-signed and uploaded to TestFlight by `xcodebuild -exportArchive`; the
 Android build is signed with an environment-supplied upload key and left on
 disk (no Play upload). Per-brand native identity comes from two generated,
@@ -25,7 +25,7 @@ against `https://test.api.mbe.mictlanix.com`. Details and evidence:
 (Gradle) and xcconfig for native build changes; Flutter 3.44.2 / Dart ^3.10.
 
 **Primary Dependencies**: Flutter CLI, Xcode 26+ (`xcodebuild`), Android SDK
-(`apksigner`), `doctl`, git. No fastlane, no Ruby (research R3).
+(`apksigner`), git. No fastlane, no Ruby (research R3).
 
 **Storage**: N/A — configuration files in `deploy/`.
 
@@ -88,7 +88,7 @@ tool/
 ├── release.sh                     # NEW entry point
 └── release/
     ├── lib.sh                     # NEW preflight, versioning, staging, trap, logging
-    ├── web.sh                     # NEW build + deploy-repo push + doctl
+    ├── web.sh                     # NEW wasm build + per-brand web metadata
     ├── ios.sh                     # NEW unsigned archive + export/upload
     ├── android.sh                 # NEW aab + apk + signature verification
     ├── brand_artwork.sh           # NEW one-time overlay generation (temp worktree)
@@ -98,8 +98,7 @@ deploy/
 ├── README.md                      # UPDATED: points to RELEASING.md
 ├── RELEASING.md                   # NEW one-time setup, per-release steps, adding a brand (FR-030/031)
 ├── demo.env                       # NEW API_BASE_URL=https://test.api.mbe.mictlanix.com
-├── demo.release                   # NEW BRAND=mbe, WEB_DEPLOY_REPO, WEB_DEPLOY_BRANCH
-├── demo.app.yaml                  # NEW App Platform static-site spec
+├── demo.release                   # NEW BRAND=mbe
 └── brands/
     └── mbe/
         └── brand.properties       # NEW white-label identity (no overlay: repo baseline)
@@ -133,7 +132,7 @@ established. Adding a brand touches only `deploy/` (SC-006).
    white-label, `flutter test` green.
 2. **Shared lib + preflight + versioning** (`lib.sh`, `release.sh`, `--list`,
    `--status`) → quickstart V1.
-3. **Web** (`web.sh`, `demo.*`, deploy repo) → V2. P1.
+3. **Web** (`web.sh`, `demo.*`) → V2. P1.
 4. **iOS** spike then script (`ios.sh`, Info.plist encryption key) → V3. P1.
    The spike settles research R3's disagreement on the first real upload.
 5. **Android** signing config + `android.sh` → V4.
@@ -166,7 +165,9 @@ only the sign-in check waits).
   `destination=export` — add only if needed.
 - **wasm runtime** of PDF preview and file picker unverified until V2; JS-only
   fallback per FR-026.
-- **App Platform static-site size limit** undocumented; bundle ≈ 53 MB+.
+- **Web hosting descoped** (2026-10-02): research R6/R7 (DigitalOcean) are
+  superseded; the server's SPA fallback and wasm MIME type are the operator's
+  (documented in `deploy/RELEASING.md`).
 - **Staging interrupted by SIGKILL** leaves overlay files in the tree; caught by
   the next run's dirty-tree check (FR-006); generated gitignored files are
   rewritten/removed at every start.

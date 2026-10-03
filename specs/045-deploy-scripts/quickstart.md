@@ -7,11 +7,11 @@ Runnable checks that prove the feature end to end. Command and option details:
 
 ## Prerequisites
 
-- Release Mac with Flutter 3.44.x, Xcode 26+ (27 today), Android SDK, `doctl`,
-  `shellcheck` (`brew install doctl shellcheck`).
+- Release Mac with Flutter 3.44.x, Xcode 26+ (27 today), Android SDK,
+  `shellcheck` (`brew install shellcheck`).
 - One-time setup done per `deploy/RELEASING.md` (written by this feature):
   App Store Connect API key (Admin) + app record for `com.mictlanix.mbe`;
-  Android upload keystore; deploy repo + DigitalOcean GitHub app access.
+  Android upload keystore; a web server to copy the web bundle to.
 - External: `test.api.mbe.mictlanix.com` live and allowing the web demo's
   origin (research R10). V1/V4/V6 do not need it; V2/V3/V5 sign-in steps do.
 
@@ -32,12 +32,11 @@ Each failure appears in under 30 s, before any `flutter build` output.
 
 ```bash
 tool/release.sh web demo
+rsync -av --delete build/web/ <user>@<host>:/var/www/<site>/
 ```
 
-Expect: summary with version, build number, commit and the public URL; tag
-`demo/web/v<version>-<build>` exists locally.
-
-Then:
+Expect: summary with version, build number, commit and `build/web`. Then, on
+the server's URL:
 
 1. Chrome, fresh profile: open the URL → app loads; DevTools shows
    `main.dart.wasm` fetched; no request to `gstatic.com`.
@@ -119,7 +118,6 @@ changed (`git diff --stat` before removal).
 ```bash
 tool/release.sh all demo 2>&1 | tee /tmp/release.log
 grep -F "$MBE_ANDROID_KEYSTORE_PASSWORD" /tmp/release.log   # no match
-grep -F "$DIGITALOCEAN_ACCESS_TOKEN" /tmp/release.log       # no match
 git ls-files | grep -E '\.(jks|keystore|p8)$'               # no match
 shellcheck tool/release.sh tool/release/*.sh                # clean
 ```

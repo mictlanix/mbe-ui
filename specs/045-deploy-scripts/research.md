@@ -235,6 +235,9 @@ the API are unaffected.
 
 ## R6. Web hosting: prebuilt bundle pushed to a deploy repo, deployed with doctl
 
+> **Superseded 2026-10-02**: web hosting is out of scope; the script stops at
+> `build/web/` and the operator copies it to a server (rsync today).
+
 **Decision**: App Platform static sites build only from a git source (no
 direct upload, no container image for static sites —
 docs.digitalocean.com/products/app-platform/how-to/deploy-from-container-images/).
@@ -281,6 +284,8 @@ COOP/COEP and per-file Cache-Control, but departs from the locked host).
 ---
 
 ## R7. Web caching: App Platform defaults suffice
+
+> **Superseded 2026-10-02** with R6: caching is the web server's concern.
 
 **Decision**: add nothing. Static sites always get `Cache-Control:
 public,max-age=10,s-maxage=86400`, and each deployment purges the CDN edge

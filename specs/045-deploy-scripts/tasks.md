@@ -25,9 +25,8 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 
 - ASC API key + app record + distribution cert: **done 2026-10-02**
   (`MBE_ASC_KEY_ID=9SRYTMY8Z8`, key in `~/.private_keys/`).
-- Needed before V2: `doctl` (`brew install doctl`), `DIGITALOCEAN_ACCESS_TOKEN`,
-  private deploy repo `mictlanix/mbe-ui-web-deploy` with the DigitalOcean GitHub
-  app granted access.
+- Needed before V2: a web server to copy `build/web/` to (rsync to the private
+  Mictlanix server today) with SPA fallback and the wasm MIME type.
 - Needed before V4: Android upload keystore (`keytool` command in
   `deploy/RELEASING.md`, T041) and the four `MBE_ANDROID_*` variables.
 - Needed for any sign-in check: `test.api.mbe.mictlanix.com` live and allowing
@@ -77,14 +76,14 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 
 ## Phase 3: User Story 1 — White-label web demo (P1) 🎯 MVP
 
-**Goal**: one command builds the wasm web app and publishes it to DigitalOcean.
+**Goal**: one command builds the wasm web bundle (hosting descoped 2026-10-02).
 
 **Independent Test**: quickstart V2.
 
-- [X] T017 [P] [US1] Create `deploy/demo.app.yaml` (App Platform spec: `name: mbe-web-demo`, `static_sites[web]` from `github.repo`/`branch: web/demo`, `deploy_on_push: false`, `output_dir: /`, `index_document: index.html`, `catchall_document: index.html`) per research R6
+- [X] T017 [P] [US1] ~~Create `deploy/demo.app.yaml`~~ (removed 2026-10-02: hosting out of scope) (App Platform spec: `name: mbe-web-demo`, `static_sites[web]` from `github.repo`/`branch: web/demo`, `deploy_on_push: false`, `output_dir: /`, `index_document: index.html`, `catchall_document: index.html`) per research R6
 - [X] T018 [US1] Create `tool/release/web.sh` `preflight_web`: tools (`flutter`, `git`, `doctl` unless `--build-only`); files (`demo.env`, `demo.app.yaml`); `API_BASE_URL` is https (FR-010) — put this shared check in `lib.sh` so ios/android preflights reuse it; for publish: `DIGITALOCEAN_ACCESS_TOKEN` set and `doctl account get` succeeds, `git ls-remote "$WEB_DEPLOY_REPO"` succeeds
 - [X] T019 [US1] In `tool/release/web.sh` `build_web`: `flutter build web --release --wasm --no-web-resources-cdn --build-name <v> --build-number <n> --dart-define-from-file=deploy/<deployment>.env`; fail if `build/web/main.dart.wasm` or `main.dart.js` is missing (so a silent loss of wasm is caught); print bundle size
-- [X] T020 [US1] In `tool/release/web.sh` `publish_web`: in a temp clone dir, replace contents with `build/web/`, commit with message `<deployment> <version>+<build> from <sha>`, force-push to `WEB_DEPLOY_BRANCH`; then `doctl apps spec validate`, `doctl apps create --spec … --upsert --wait` (first run) or `doctl apps update <id> --spec … --wait`, then `doctl apps create-deployment <id> --wait`; read the URL from `doctl apps get <id> --format DefaultIngress --no-header`; print summary row (FR-007). Temp dir removed by trap
+- [X] T020 [US1] ~~DigitalOcean publish~~ — replaced 2026-10-02 by a no-op `publish_web` (hosting out of scope). Original: In `tool/release/web.sh` `publish_web`: in a temp clone dir, replace contents with `build/web/`, commit with message `<deployment> <version>+<build> from <sha>`, force-push to `WEB_DEPLOY_BRANCH`; then `doctl apps spec validate`, `doctl apps create --spec … --upsert --wait` (first run) or `doctl apps update <id> --spec … --wait`, then `doctl apps create-deployment <id> --wait`; read the URL from `doctl apps get <id> --format DefaultIngress --no-header`; print summary row (FR-007). Temp dir removed by trap
 - [X] T021 [US1] Add tagging to `tool/release.sh` after a successful publish: annotated tag `<deployment>/<platform>/v<version>-<build>` (message states `--allow-dirty` if used), pushed only with `--push-tag` (FR-017); build-only runs are never tagged
 - [ ] T022 [US1] **Verify V2** (operator-assisted): run `tool/release.sh web demo`; check wasm in Chrome, JS in Safari/Firefox, sign-in, PDF preview + file picker under wasm, deep-link reload, `curl -I` MIME + 304, second release picked up on one reload, sign-in screen < 5 s. If PDF preview or file picker fails under wasm, drop `--wasm` in `web.sh` and record the incompatibility in `research.md` R5 (FR-026)
 
@@ -186,9 +185,12 @@ and findings:
 - `WEB_SHORT_NAME` was added to `brand.properties` so the white-label web output
   is unchanged ("MBE" short name / Apple title).
 - T022 (web V2), T027 (iOS V3 first real upload) and T032's side-load/sign-in
-  steps need operator credentials/devices and are **not done**. T020
-  (`publish_web`) and T026 (`publish_ios`) are written but **unexercised**:
-  `doctl` auth, the deploy repo and an App Store Connect upload have not been run.
+  steps need operator credentials/devices and are **not done**. T026
+  (`publish_ios`) is written but **unexercised**: no App Store Connect upload has
+  been run.
+- **Web hosting descoped (2026-10-02)**: the DigitalOcean publish path, its app
+  spec and the deploy-repo settings were removed; `web` is build-only like
+  Android, and only iOS uploads/tags. The operator publishes with rsync.
 - T044/T045 remain.
 
 ## Dependencies & Execution Order
