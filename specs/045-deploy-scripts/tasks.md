@@ -157,7 +157,7 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 - [X] T042 [P] Update `deploy/README.md` to point at `RELEASING.md` and describe the `.release` and `.app.yaml` files; update `.env.template` with a one-line pointer that release credentials are in `deploy/RELEASING.md` (not in `.env`)
 - [X] T043 [P] Amend `DESIGN.md` (§4.x brand configuration — find the section citing flavors) to record that native brand identity is selected by generated build config, not `--flavor`; then bump `.specify/memory/constitution.md` §V wording and version 1.13.1 → 1.13.2 (PATCH) per its Governance order, updating the "Last Amended" date and any Sync Impact header
 - [ ] T044 Run the full quickstart V1–V7 once end to end on a clean checkout; run `flutter analyze` and `flutter test` to confirm no Dart regressions; update `plan.md` risks with outcomes (iOS signing path, wasm runtime result, App Platform size)
-- [ ] T045 Open a PR for `045-deploy-scripts`; description lists the operator one-time steps, the iOS signing outcome, the pre-existing pbxproj `ASSETCATALOG_…SYMBOL_EXTENSIONS = AppIcon` oddity (not fixed), and the open decision about an Organization developer account before public release
+- [X] T045 Open a PR for `045-deploy-scripts`; description lists the operator one-time steps, the iOS signing outcome, the pre-existing pbxproj `ASSETCATALOG_…SYMBOL_EXTENSIONS = AppIcon` oddity (not fixed), and the open decision about an Organization developer account before public release
 
 ---
 
