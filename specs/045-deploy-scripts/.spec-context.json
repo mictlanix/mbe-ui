@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Deployment Scripts",
   "branch": "045-deploy-scripts",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-03T02:48:06.450Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-03T03:03:23.052Z"
     }
   ],
   "telemetryInstanceId": "f130f028-260d-4ff6-8638-60fe4d44aba5"
