@@ -1,8 +1,17 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Per-brand identity (spec 045). tool/release.sh writes android/brand.properties
+// (gitignored) for a non-default brand; absent => white-label defaults.
+val brand = Properties().apply {
+    val f = rootProject.file("brand.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -20,8 +29,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.mictlanix.mbe"
+        applicationId = brand.getProperty("APPLICATION_ID", "com.mictlanix.mbe")
+        resValue("string", "app_name", brand.getProperty("DISPLAY_NAME", "Mictlanix Business Essentials"))
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -30,11 +39,37 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release signing comes from the environment (spec 045 FR-023): the upload
+    // keystore lives outside the repository. Debug builds never need it.
+    signingConfigs {
+        create("release") {
+            System.getenv("MBE_ANDROID_KEYSTORE_PATH")?.let { storeFile = file(it) }
+            storePassword = System.getenv("MBE_ANDROID_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("MBE_ANDROID_KEY_ALIAS")
+            keyPassword = System.getenv("MBE_ANDROID_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val releaseTask = Regex("^:app:(assemble|bundle|package).*Release$")
+    if (allTasks.any { releaseTask.matches(it.path) }) {
+        val missing = listOf(
+            "MBE_ANDROID_KEYSTORE_PATH",
+            "MBE_ANDROID_KEYSTORE_PASSWORD",
+            "MBE_ANDROID_KEY_ALIAS",
+            "MBE_ANDROID_KEY_PASSWORD",
+        ).filter { System.getenv(it).isNullOrEmpty() }
+        if (missing.isNotEmpty()) {
+            throw GradleException(
+                "Release builds are signed with the upload key; set: ${missing.joinToString(", ")}",
+            )
         }
     }
 }

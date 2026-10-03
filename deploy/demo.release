@@ -1,0 +1,3 @@
+# Release settings for the `demo` deployment (read by tool/release.sh, never
+# passed to the app). See deploy/RELEASING.md.
+BRAND=mbe

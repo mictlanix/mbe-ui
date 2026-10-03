@@ -96,3 +96,9 @@ Sales Orders:
   - From nav, move Sales Orders after Point of Sales
   - Improve design, too much wasted space within the text fields.
   - If a customer has a credit line, select it by default.
+
+## 2026-10-02
+
+Products catalog:
+  - Click to image should open an bigger image preview
+  

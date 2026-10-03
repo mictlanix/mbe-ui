@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.13.0
+Version change: 1.0.0 → 1.13.2
 Modified principles:
   - V. Material 3, White-Labeled Design System — materially expanded with
     two rules [1.11.0]: (a) **two levels of configuration, kept distinct** —
@@ -209,6 +209,12 @@ Follow-up TODOs: none — DESIGN.md §4.3's "switches|prices" reference was
     accepted loss of deep-linkable per-record URLs for those entities in
     exchange for a lighter-weight create/view/edit flow that does not leave
     the list screen [1.13.0]
+  - V. Material 3, White-Labeled Design System — PATCH [1.13.2]: the brand
+    token bullet said "build-time Flutter flavors"; reworded to name the
+    mechanism actually used (build-time brand selection via
+    `--dart-define-from-file` plus generated native build config, no
+    Gradle/Xcode `--flavor`). Intent unchanged. Prompted by
+    specs/045-deploy-scripts (research R1); DESIGN.md §4.1 amended first.
 -->
 
 # MBE-UI Constitution
@@ -329,9 +335,11 @@ The UI MUST use Material 3 components and structure exclusively — no
 Cupertino-specific branches.
 
 - Brand tokens (seed color, logo, app display name, typography) MUST be
-  configurable per deployment via build-time Flutter flavors
-  (`--dart-define`/flavor-specific entry points), never hardcoded in
-  `app/theme/`.
+  configurable per deployment at build time (`--dart-define-from-file`, and
+  for a brand's native identity — bundle/application id, display name,
+  launcher icon, splash — generated per-build native config selected by
+  `tool/release.sh`; Gradle/Xcode `--flavor` is not used), never hardcoded
+  in `app/theme/`.
 - Both light and dark `ColorScheme` MUST be derived from the same
   per-customer seed color via `ColorScheme.fromSeed`. Users MUST be able to
   choose Light/Dark/System, persisted per device.
@@ -651,4 +659,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.13.1 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-09-26
+**Version**: 1.13.2 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-10-02

@@ -29,3 +29,10 @@ DATE_TIME_FORMAT=d/M/yyyy HH:mm
 
 See `.env.template`'s formatting section for the full set of keys and
 worked examples of every supported pattern.
+
+## Releasing
+
+Building a deployment (web bundle, iOS TestFlight upload, Android bundle) is
+done with `tool/release.sh`; see [RELEASING.md](RELEASING.md) for the
+`deploy/<deployment>.release` file, credentials, one-time setup and how to
+add a brand.

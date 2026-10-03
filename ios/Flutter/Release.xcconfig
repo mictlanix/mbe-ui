@@ -1,2 +1,8 @@
-#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+// White-label brand identity (spec 045). tool/release.sh writes Brand.xcconfig
+// (gitignored) to override these for another brand; absent => white-label.
+PRODUCT_BUNDLE_IDENTIFIER = com.mictlanix.mbe
+BRAND_DISPLAY_NAME = Mictlanix Business Essentials
+DEVELOPMENT_TEAM = 4ZJ2FWD2BR
+#include? "Brand.xcconfig"
