@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Para tomar una foto al agregar la imagen de un producto, si eliges usar la cámara.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Para elegir una imagen de tu fototeca como foto de un producto.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

@@ -153,6 +153,13 @@ to be revisited if a brand ever adds push or app groups.
 - `Info.plist`: add `ITSAppUsesNonExemptEncryption = false` — the app only
   uses HTTPS and the Keychain, both exempt
   (developer.apple.com/documentation/security/complying-with-encryption-export-regulations).
+- **Purpose strings (learned from the first upload, 2026-10-02)**: App Store
+  Connect rejected build 396256 with ITMS-90683 — `file_picker` references
+  Apple's image picker, so `NSPhotoLibraryUsageDescription` and
+  `NSCameraUsageDescription` are required even though the app never opens the
+  camera itself. Both added (Spanish, the app's default language).
+  `NSLocationWhenInUseUsageDescription` was flagged as optional; no plugin here
+  uses location, so it is not added.
 - Privacy manifests: the Flutter engine, `shared_preferences_foundation`,
   `flutter_secure_storage_darwin` and `file_picker` ship their own;
   `path_provider_foundation` is FFI-only; `printing` uses no required-reason
