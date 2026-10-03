@@ -158,8 +158,13 @@ to be revisited if a brand ever adds push or app groups.
   Apple's image picker, so `NSPhotoLibraryUsageDescription` and
   `NSCameraUsageDescription` are required even though the app never opens the
   camera itself. Both added (Spanish, the app's default language).
-  `NSLocationWhenInUseUsageDescription` was flagged as optional; no plugin here
-  uses location, so it is not added.
+  `NSLocationWhenInUseUsageDescription` was flagged as optional and is **left
+  as a warning** (build 396274 processed and reached TestFlight with it): the
+  reference comes from `file_picker` 8.3.7's Swift package dependency
+  `DKImagePickerController` (its camera component can geotag photos); the app
+  never requests location, so declaring it would be inaccurate. Follow-up, out
+  of this feature's scope: check whether `file_picker` 10/11 drops that
+  dependency, and add the string only if Apple turns the warning into an error.
 - Privacy manifests: the Flutter engine, `shared_preferences_foundation`,
   `flutter_secure_storage_darwin` and `file_picker` ship their own;
   `path_provider_foundation` is FFI-only; `printing` uses no required-reason
