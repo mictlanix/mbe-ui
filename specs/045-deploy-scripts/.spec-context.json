@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Deployment Scripts",
+  "branch": "045-deploy-scripts",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-03T02:32:08.158Z"
+    }
+  ],
+  "telemetryInstanceId": "f130f028-260d-4ff6-8638-60fe4d44aba5"
+}
