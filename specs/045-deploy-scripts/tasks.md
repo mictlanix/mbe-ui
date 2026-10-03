@@ -192,7 +192,10 @@ and findings:
   396256 (commit 8239f77, tag `demo/ios/v1.0.0-396256`) on the first attempt.
   The **primary path works** — unsigned `flutter build ipa --no-codesign`, then
   `xcodebuild -exportArchive` cloud-signing with the Admin API key — so the
-  sign-at-archive fallback was not needed. No ITMS/privacy-manifest warnings.
+  sign-at-archive fallback was not needed. Apple then rejected 396256
+  (ITMS-90683: missing photo-library and camera purpose strings, triggered by
+  `file_picker`); fixed in e2fd9ad and re-uploaded as build 396274
+  (tag `demo/ios/v1.0.0-396274`).
 - **T022 verified 2026-10-02** on https://test.mbe.mictlanix.com (nginx on
   xolotl, rsync of `build/web/`): build 396230 with wasm + JS, local CanvasKit,
   deep links 200, `.wasm` → `application/wasm`; sign-in against the test API and
