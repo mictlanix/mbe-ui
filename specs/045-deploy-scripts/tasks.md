@@ -101,7 +101,7 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 - [X] T024 [US2] Create `tool/release/ios.sh` `preflight_ios`: tools (`flutter`, `xcodebuild`, `xcrun`); for publish require `MBE_ASC_KEY_ID`, `MBE_ASC_ISSUER_ID` (UUID shape), `MBE_ASC_KEY_PATH` (readable, outside repo); check `xcodebuild -version` ≥ 26 (Apple upload rule since 2026-04-28); `--build-only` needs no credentials
 - [X] T025 [US2] In `tool/release/ios.sh` `build_ios`: `write_brand_files`, then `flutter build ipa --release --no-codesign --build-name <v> --build-number <n> --dart-define-from-file=deploy/<deployment>.env`; locate `build/ios/archive/Runner.xcarchive`; assert the archive's `Info.plist` `CFBundleIdentifier` equals the brand's `BUNDLE_ID` and `CFBundleVersion` equals the build number
 - [X] T026 [US2] In `tool/release/ios.sh` `publish_ios`: generate an `ExportOptions.plist` in a temp dir (`method=app-store-connect`, `destination=upload`, `teamID`, `signingStyle=automatic`, `manageAppVersionAndBuildNumber=false`); run `xcodebuild -exportArchive -archivePath … -exportOptionsPlist … -allowProvisioningUpdates -authenticationKeyPath "$MBE_ASC_KEY_PATH" -authenticationKeyID "$MBE_ASC_KEY_ID" -authenticationKeyIssuerID "$MBE_ASC_ISSUER_ID"`; on success print the summary row and say "upload accepted; Apple processing continues" (spec edge case)
-- [ ] T027 [US2] **Spike + verify V3** (operator-assisted, first real upload): run `tool/release.sh ios demo`. If export fails on the unsigned archive, implement the sign-at-archive fallback in `ios.sh` (`xcodebuild archive -allowProvisioningUpdates -authenticationKey…`, then export) and update plan.md/research.md R3 with the outcome. Confirm build appears in TestFlight with no export-compliance prompt; second run gets a higher build number
+- [X] T027 [US2] **Spike + verify V3** (operator-assisted, first real upload): run `tool/release.sh ios demo`. If export fails on the unsigned archive, implement the sign-at-archive fallback in `ios.sh` (`xcodebuild archive -allowProvisioningUpdates -authenticationKey…`, then export) and update plan.md/research.md R3 with the outcome. Confirm build appears in TestFlight with no export-compliance prompt; second run gets a higher build number
 - [X] T028 [US2] Add `--build-only` semantics note to `ios.sh`/`release-cli.md`: it yields the **unsigned** archive (plan risk); if a signed `.ipa` without upload is wanted, add `destination=export` — leave as a documented follow-up, do not build it
 
 **Checkpoint**: the white-label iOS beta is installable from TestFlight.
@@ -188,6 +188,11 @@ and findings:
   steps need operator credentials/devices and are **not done**. T026
   (`publish_ios`) is written but **unexercised**: no App Store Connect upload has
   been run.
+- **T027 verified 2026-10-02**: `tool/release.sh ios demo` uploaded build
+  396256 (commit 8239f77, tag `demo/ios/v1.0.0-396256`) on the first attempt.
+  The **primary path works** — unsigned `flutter build ipa --no-codesign`, then
+  `xcodebuild -exportArchive` cloud-signing with the Admin API key — so the
+  sign-at-archive fallback was not needed. No ITMS/privacy-manifest warnings.
 - **T022 verified 2026-10-02** on https://test.mbe.mictlanix.com (nginx on
   xolotl, rsync of `build/web/`): build 396230 with wasm + JS, local CanvasKit,
   deep links 200, `.wasm` → `application/wasm`; sign-in against the test API and

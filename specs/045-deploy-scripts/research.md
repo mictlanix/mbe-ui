@@ -142,7 +142,8 @@ proposed instead `flutter build ios --config-only` + `xcodebuild archive
 export. The iOS investigation rejected signing at archive time because on CI
 Xcode would mint a new *Development* certificate per run and exhaust the
 account's limit. **Primary path: unsigned archive + cloud-signed export.
-Fallback: sign at archive time.** The first real upload (quickstart V3) decides;
+Fallback: sign at archive time.** **Resolved 2026-10-02: the primary path
+worked on the first real upload (build 396256); the fallback was not needed.** The first real upload (quickstart V3) decides;
 the plan's first iOS task is that spike. Known caveat of the primary path: an
 unsigned archive carries no entitlements — harmless today (Runner has none),
 to be revisited if a brand ever adds push or app groups.
