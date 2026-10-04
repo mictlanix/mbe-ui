@@ -52,6 +52,8 @@ build_android() {
   target="$(sed -n "s/^targetSdkVersion:'\([0-9]*\)'.*/\1/p" <<<"$badging")"
   [[ "$pkg" == "$APPLICATION_ID" ]] || die "APK application id is '$pkg', expected '$APPLICATION_ID'"
   [[ "${target:-0}" -ge 36 ]] || die "APK targetSdk is ${target:-unknown}; Google Play requires 36 or newer"
+  grep -q "^uses-permission: name='android.permission.INTERNET'" <<<"$badging" ||
+    die "APK does not request android.permission.INTERNET: it could not reach the API"
   DESTINATION="$aab and $apk (signed with upload key; not published)"
 }
 
