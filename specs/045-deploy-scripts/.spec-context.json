@@ -3,7 +3,7 @@
   "specName": "Deployment Scripts",
   "branch": "045-deploy-scripts",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -392,6 +392,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-04T17:21:58.801Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-04T17:25:43.725Z"
     }
   ],
   "telemetryInstanceId": "f130f028-260d-4ff6-8638-60fe4d44aba5",
