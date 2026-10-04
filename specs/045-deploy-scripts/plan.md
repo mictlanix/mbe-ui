@@ -156,9 +156,9 @@ only the sign-in check waits).
   Mac's keychain (so local sign-at-archive is also available), and the App
   Store Connect record "Mictlanix Business Essentials" exists. It is an
   individual developer account (José Augusto González Reyes), so the store
-  seller name is the individual's, not Mictlanix's — acceptable for TestFlight;
-  an organization account (D-U-N-S) is a business decision before a public
-  release.
+  seller name is the individual's, not Mictlanix's. **Decided 2026-10-04: the
+  individual account stays** — it suits the current small team; no
+  organization account (D-U-N-S) is planned.
 - **iOS `--build-only`** yields an *unsigned* archive (signing happens at
   export). This is a narrow reading of FR-003 ("signed artifact"); producing a
   signed `.ipa` without uploading would need the same credentials via
