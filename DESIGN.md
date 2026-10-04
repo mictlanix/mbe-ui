@@ -294,9 +294,15 @@ deployment rather than hardcoded:
 - A `ThemeData` is built from Material 3's `ColorScheme.fromSeed`, but the
   seed color (and other brand tokens — logo asset, app display name) is read
   from a per-deployment configuration rather than a constant in `app/theme/`.
-- **Decision**: configuration source is build-time **Flutter flavors**
-  (`--dart-define`/flavor-specific entry points producing per-customer
-  builds), not a runtime tenant config fetched from mbe-api.
+- **Decision**: configuration source is **build-time brand selection**
+  (`--dart-define-from-file=deploy/<customer>.env` for app settings and
+  in-app brand tokens, plus generated native build config for a brand's
+  bundle/application id, display name and artwork — see
+  `specs/045-deploy-scripts`), producing per-customer builds from one
+  codebase, not a runtime tenant config fetched from mbe-api. Gradle/Xcode
+  `--flavor` is deliberately not used: each flavor needs edits to shared
+  native project files, so adding a customer would no longer be "add
+  files only".
 - All UI stays within Material 3 component shapes/structure regardless of
   theme — customization is limited to color scheme, typography, and branding
   assets, not layout/structure, to keep the design system consistent across

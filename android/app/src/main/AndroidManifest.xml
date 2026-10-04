@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Release builds talk to mbe-api; Flutter only adds INTERNET to the
+         debug/profile manifests. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="Mictlanix Business Essentials"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

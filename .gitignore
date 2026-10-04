@@ -141,3 +141,12 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# Release tooling (spec 045): generated per-brand build config and credentials
+**/ios/Flutter/Brand.xcconfig
+**/android/brand.properties
+*.keystore
+*.p8
+AuthKey_*.p8
+key.properties
+/build/ios/ipa/

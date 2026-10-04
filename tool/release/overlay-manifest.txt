@@ -1,0 +1,16 @@
+# Artwork every non-default brand overlay must provide (spec 045 FR-013).
+# Paths are globs relative to deploy/brands/<brand>/overlay/ and mirror the
+# repo paths of what flutter_launcher_icons / flutter_native_splash generate.
+ios/Runner/Assets.xcassets/AppIcon.appiconset/*
+ios/Runner/Assets.xcassets/LaunchImage.imageset/*
+ios/Runner/Assets.xcassets/LaunchBackground.imageset/*
+ios/Runner/Base.lproj/LaunchScreen.storyboard
+android/app/src/main/res/mipmap-*/ic_launcher*
+android/app/src/main/res/drawable/launch_background.xml
+android/app/src/main/res/drawable-*/splash.png
+android/app/src/main/res/drawable-*/android12splash.png
+android/app/src/main/res/values/styles.xml
+android/app/src/main/res/values-v31/styles.xml
+web/favicon.png
+web/icons/*
+web/splash/img/*
