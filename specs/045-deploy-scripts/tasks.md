@@ -117,7 +117,7 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 - [X] T029 [US3] In `android/app/build.gradle.kts` replace the debug-key release signing with a `release` signingConfig read from `MBE_ANDROID_KEYSTORE_PATH`, `MBE_ANDROID_KEYSTORE_PASSWORD`, `MBE_ANDROID_KEY_ALIAS`, `MBE_ANDROID_KEY_PASSWORD`; throw a `GradleException` naming every missing variable **only when a release task is in the task graph**; remove `signingConfigs.getByName("debug")` for release (FR-023). Debug builds unaffected; remove the stale TODO comment
 - [X] T030 [P] [US3] Create `tool/release/android.sh` `preflight_android`: tools (`flutter`, `keytool`, `apksigner` from the SDK build-tools, resolved via `ANDROID_HOME`); the four `MBE_ANDROID_*` variables, keystore path readable and outside repo
 - [X] T031 [US3] In `tool/release/android.sh` `build_android`: `write_brand_files`; `flutter build appbundle --release …` and `flutter build apk --release …` (same `--build-name/--build-number/--dart-define-from-file`); verify with `apksigner verify --print-certs` that the signer is the upload key (compare SHA-256 to `keytool -list` of the keystore) and fail if it is a debug cert; assert application id and `targetSdk ≥ 36` from the built manifest (`aapt2 dump badging`) (FR-025); print `.aab`/`.apk` paths + version/build; `publish_android` is a no-op that says "not published (out of scope)" (FR-024)
-- [ ] T032 [US3] **Verify V4** (operator-assisted): generate the upload key (command in `deploy/RELEASING.md`, T041); run `tool/release.sh android demo`; side-load the APK and sign in; confirm `env -u MBE_ANDROID_KEYSTORE_PATH flutter build appbundle` fails naming the variable and `flutter run` (debug) still works
+- [X] T032 [US3] **Verify V4** (operator-assisted): generate the upload key (command in `deploy/RELEASING.md`, T041); run `tool/release.sh android demo`; side-load the APK and sign in; confirm `env -u MBE_ANDROID_KEYSTORE_PATH flutter build appbundle` fails naming the variable and `flutter run` (debug) still works
 
 **Checkpoint**: signed Android artifacts exist locally; no Play dependency.
 
@@ -156,7 +156,7 @@ Bash under `tool/`; per-deployment data under `deploy/`.
 - [X] T041 [P] Write `deploy/RELEASING.md`: one-time setup per platform (Apple API key + app record + distribution cert; Android `keytool` command from research R4 and the four variables; `doctl` + token; deploy repo + DigitalOcean GitHub app; optional custom domain; test-API CORS prerequisite), a ready-to-copy `~/.config/mbe/release.env` template using the real variable names, the per-release procedure, `--build-only`/`--allow-dirty`/`--push-tag`, and the "Adding a brand" checklist (FR-030/031)
 - [X] T042 [P] Update `deploy/README.md` to point at `RELEASING.md` and describe the `.release` and `.app.yaml` files; update `.env.template` with a one-line pointer that release credentials are in `deploy/RELEASING.md` (not in `.env`)
 - [X] T043 [P] Amend `DESIGN.md` (§4.x brand configuration — find the section citing flavors) to record that native brand identity is selected by generated build config, not `--flavor`; then bump `.specify/memory/constitution.md` §V wording and version 1.13.1 → 1.13.2 (PATCH) per its Governance order, updating the "Last Amended" date and any Sync Impact header
-- [ ] T044 Run the full quickstart V1–V7 once end to end on a clean checkout; run `flutter analyze` and `flutter test` to confirm no Dart regressions; update `plan.md` risks with outcomes (iOS signing path, wasm runtime result, App Platform size)
+- [X] T044 Run the full quickstart V1–V7 once end to end on a clean checkout; run `flutter analyze` and `flutter test` to confirm no Dart regressions; update `plan.md` risks with outcomes (iOS signing path, wasm runtime result, App Platform size)
 - [X] T045 Open a PR for `045-deploy-scripts`; description lists the operator one-time steps, the iOS signing outcome, the pre-existing pbxproj `ASSETCATALOG_…SYMBOL_EXTENSIONS = AppIcon` oddity (not fixed), and the open decision about an Organization developer account before public release
 
 ---
@@ -196,6 +196,16 @@ and findings:
   (ITMS-90683: missing photo-library and camera purpose strings, triggered by
   `file_picker`); fixed in e2fd9ad and re-uploaded as build 396274
   (tag `demo/ios/v1.0.0-396274`).
+- **T032 verified 2026-10-04**: the first side-loaded release APK could not reach
+  the API — Flutter's template declares `android.permission.INTERNET` only in
+  the debug/profile manifests. Fixed in 4ec4db7 (permission in the main
+  manifest, plus an `android.sh` check that fails a release APK without it).
+  Rebuilt with the real upload key, side-loaded, and working; served as
+  `mbe-demo.apk` from xolotl.
+- **T044**: V1–V7 all exercised (V1/V5/V6/V7 locally, V2 web live, V3
+  TestFlight 396274, V4 real-key APK on a device); `flutter analyze` clean;
+  `flutter test` has 8 failures that also occur on a clean `main`.
+- Follow-up filed: #187 (migrate Android to built-in Kotlin).
 - **T022 verified 2026-10-02** on https://test.mbe.mictlanix.com (nginx on
   xolotl, rsync of `build/web/`): build 396230 with wasm + JS, local CanvasKit,
   deep links 200, `.wasm` → `application/wasm`; sign-in against the test API and
