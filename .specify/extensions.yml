@@ -29,7 +29,8 @@ hooks:
     optional: false
     priority: 10
     prompt: Execute speckit.companion.after-specify?
-    description: Record specify completion (currentStep=specify, status=specified) into .spec-context.json
+    description: Record specify completion (currentStep=specify, status=specified)
+      into .spec-context.json
     condition: null
   after_plan:
   - extension: agent-context
@@ -74,6 +75,14 @@ hooks:
     prompt: Execute speckit.git.feature?
     description: Create feature branch before specification
     condition: null
+  - extension: companion
+    command: speckit.companion.before-step
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.before-step?
+    description: Read the clock so after_specify can record when specify started
+    condition: null
   before_clarify:
   - extension: git
     command: speckit.git.commit
@@ -100,6 +109,14 @@ hooks:
     prompt: Commit outstanding changes before planning?
     description: Auto-commit before implementation planning
     condition: null
+  - extension: companion
+    command: speckit.companion.before-step
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.before-step?
+    description: Record plan start (currentStep=plan, status=planning) into .spec-context.json
+    condition: null
   before_tasks:
   - extension: git
     command: speckit.git.commit
@@ -109,6 +126,14 @@ hooks:
     prompt: Commit outstanding changes before task generation?
     description: Auto-commit before task generation
     condition: null
+  - extension: companion
+    command: speckit.companion.before-step
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.before-step?
+    description: Record tasks start (currentStep=tasks, status=tasking) into .spec-context.json
+    condition: null
   before_implement:
   - extension: git
     command: speckit.git.commit
@@ -117,6 +142,15 @@ hooks:
     priority: 10
     prompt: Commit outstanding changes before implementation?
     description: Auto-commit before implementation
+    condition: null
+  - extension: companion
+    command: speckit.companion.before-step
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.before-step?
+    description: Record implement start (currentStep=implement, status=implementing)
+      into .spec-context.json
     condition: null
   before_checklist:
   - extension: git
@@ -178,8 +212,8 @@ hooks:
     optional: false
     priority: 10
     prompt: Execute speckit.companion.after-tasks?
-    description: Record tasks completion (currentStep=tasks, status=ready-to-implement) into
-      .spec-context.json
+    description: Record tasks completion (currentStep=tasks, status=ready-to-implement)
+      into .spec-context.json
     condition: null
   after_implement:
   - extension: git
@@ -225,4 +259,24 @@ hooks:
     priority: 10
     prompt: Commit after syncing issues?
     description: Auto-commit after tasks-to-issues conversion
+    condition: null
+  before_converge:
+  - extension: companion
+    command: speckit.companion.before-converge
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.before-converge?
+    description: Record converge start (currentStep=converge, status unchanged) into
+      .spec-context.json
+    condition: null
+  after_converge:
+  - extension: companion
+    command: speckit.companion.after-converge
+    enabled: true
+    optional: false
+    priority: 10
+    prompt: Execute speckit.companion.after-converge?
+    description: Record converge finish (currentStep=converge, status unchanged) into
+      .spec-context.json
     condition: null
