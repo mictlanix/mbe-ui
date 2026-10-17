@@ -3,7 +3,7 @@
   "specName": "Catalog Improvements",
   "branch": "046-catalog-improvements",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -524,6 +524,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-17T19:59:17.446Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-17T20:01:30.614Z"
     }
   ],
   "telemetryInstanceId": "b82834c4-2564-4752-bf70-a965068d8d3e",
