@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/stock_gate.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -31,6 +32,11 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// The line being edited, and the facility whose warehouses may hold it.
   SaleLine get line;
   int get facilityId;
+
+  /// The sale-wide stock judgement for this line, passed down by
+  /// [CaptureStep] so quantities of the same product in the same warehouse
+  /// are summed across lines (spec 047 FR-009). `null` judges the line alone.
+  StockGate? get stockGate => null;
 
   /// False once `Sale.isEditable` is (FR-041) — decided by the caller, never
   /// by the line itself.
@@ -474,18 +480,16 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// snapshot cached at the moment the product was last looked up. `null`
   /// when there is nothing to warn about.
   String? shortfall(AppLocalizations l10n) {
-    final cached = ref.watch(productStockCacheProvider)[line.product];
+    final cache = ref.watch(productStockCacheProvider);
     final fmt = ref.watch(formattersProvider);
-    if (cached == null || line.warehouse == null) return null;
+    // Marked short exactly when it blocks Continue (spec 047 FR-008).
+    final gate = stockGate ?? evaluateLines([line], cache);
+    if (!gate.shortLineIds.contains(line.id)) return null;
     final entry = _stockIn(line.warehouse);
     if (entry == null) return null;
     final available = Decimal.tryParse(entry.available) ?? Decimal.zero;
-    final ordered = Decimal.tryParse(line.quantity) ?? Decimal.zero;
     if (available.sign <= 0) return l10n.posLineNoStock;
-    if (ordered > available) {
-      return l10n.posLineShortfall(fmt.field.quantity(entry.available));
-    }
-    return null;
+    return l10n.posLineShortfall(fmt.field.quantity(entry.available));
   }
 
   /// What "adjust to available" sets the quantity to (FR-026).

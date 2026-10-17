@@ -1,6 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 
 /// Per-warehouse availability last seen for a product, keyed by product id
 /// (FR-025, FR-026). `Sale`/`SaleLine` carry no availability field of their
@@ -19,6 +22,47 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 /// product that is not stockable comes back with an empty list.
 final productStockCacheProvider =
     StateProvider<Map<int, ProductStock>>((ref) => const {});
+
+/// Loads the stock of every product on [sale] that has no cache entry yet, so
+/// a resumed sale is gated like a freshly built one (spec 047 FR-010, R4).
+///
+/// Stopgap: one `product-lookup` per distinct product code, until mbe-api#237
+/// (batch lookup by product ids) ships. A failed lookup, or one that does not
+/// return the product, leaves it uncached, which reads as "unknown" and never
+/// blocks. Never throws.
+Future<void> ensureStockFor(WidgetRef ref, Sale sale) async {
+  final cached = ref.read(productStockCacheProvider);
+  final repository = ref.read(salesOrderRepositoryProvider);
+  // Read before the awaits: the step may be gone by the time they finish.
+  final notifier = ref.read(productStockCacheProvider.notifier);
+  final missing = {
+    for (final line in sale.lines)
+      if (!cached.containsKey(line.product)) line.product: line.productCode,
+  };
+  final found = await Future.wait([
+    for (final entry in missing.entries)
+      () async {
+        try {
+          final results = await repository.productLookup(
+            pattern: entry.value,
+            customer: sale.customer,
+          );
+          for (final r in results) {
+            if (r.product == entry.key) return MapEntry(entry.key, ProductStock.fromLookup(r));
+          }
+        } on Object {
+          // Unknown stock is a warning, not a failure.
+        }
+        return null;
+      }(),
+  ]);
+  final loaded = {
+    for (final e in found)
+      if (e != null) e.key: e.value,
+  };
+  if (loaded.isEmpty) return;
+  notifier.update((cache) => {...loaded, ...cache});
+}
 
 /// What the product lookup said about a product's stock (spec 047).
 ///
