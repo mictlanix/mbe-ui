@@ -314,9 +314,9 @@ void main() {
 
       expect(photos, hasLength(_testProducts.length));
       expect(photos[0].photoUrl, 'http://test/images/widget.png');
-      // Sized to the shared 44 px row less a 4 px inset above and below
+      // Sized to the shared 44 px row less a 1.2 px inset above and below
       // (046-catalog-improvements FR-018), not the 84 px default.
-      expect(photos[0].size, 36);
+      expect(photos[0].size, moreOrLessEquals(41.6));
       expect(photos[1].photoUrl, isNull);
     },
   );

@@ -104,6 +104,35 @@ Future<void> showAppSideSheet(
   );
 }
 
+/// Asks whether to discard unsaved changes; `true` means discard. The prompt
+/// a record surface shows before closing over edits — the side panel's own
+/// dismiss below, and a full detail screen's back navigation
+/// (spec 035 FR-032).
+Future<bool> confirmDiscardChanges(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      key: const Key('record_sheet_discard_dialog'),
+      title: Text(l10n.recordSheetDiscardTitle),
+      content: Text(l10n.recordSheetDiscardBody),
+      actions: [
+        TextButton(
+          key: const Key('record_sheet_discard_cancel'),
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: Text(l10n.recordSheetDiscardCancel),
+        ),
+        FilledButton(
+          key: const Key('record_sheet_discard_confirm'),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: Text(l10n.recordSheetDiscardConfirm),
+        ),
+      ],
+    ),
+  );
+  return confirmed == true;
+}
+
 /// Shared panel chrome (title/close header, scrollable body, footer)
 /// rendered for both the bottom-sheet and side-sheet presentations.
 class _AppSideSheet extends StatelessWidget {
@@ -124,29 +153,9 @@ class _AppSideSheet extends StatelessWidget {
   final bool Function()? confirmDismiss;
 
   Future<void> _dismiss(BuildContext context) async {
-    if (confirmDismiss?.call() ?? false) {
-      final l10n = AppLocalizations.of(context)!;
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          key: const Key('record_sheet_discard_dialog'),
-          title: Text(l10n.recordSheetDiscardTitle),
-          content: Text(l10n.recordSheetDiscardBody),
-          actions: [
-            TextButton(
-              key: const Key('record_sheet_discard_cancel'),
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(l10n.recordSheetDiscardCancel),
-            ),
-            FilledButton(
-              key: const Key('record_sheet_discard_confirm'),
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(l10n.recordSheetDiscardConfirm),
-            ),
-          ],
-        ),
-      );
-      if (confirmed != true) return;
+    if ((confirmDismiss?.call() ?? false) &&
+        !await confirmDiscardChanges(context)) {
+      return;
     }
     if (context.mounted) Navigator.of(context).pop();
   }
@@ -220,7 +229,11 @@ class _AppSideSheet extends StatelessWidget {
         color: theme.colorScheme.surface,
         elevation: 1,
         child: SafeArea(
-          child: SizedBox(width: width, height: double.infinity, child: guarded),
+          child: SizedBox(
+            width: width,
+            height: double.infinity,
+            child: guarded,
+          ),
         ),
       );
     }

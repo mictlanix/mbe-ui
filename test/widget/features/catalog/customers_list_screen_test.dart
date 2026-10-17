@@ -216,8 +216,8 @@ void main() {
   });
 
   testWidgets(
-    'a row click opens the record read-only in a panel over the list — no '
-    'navigation, since there is no per-record route anymore (spec 035 US5)',
+    'a row click opens the record read-only on its own screen, and Edit '
+    'opens it editable (046-catalog-improvements, constitution §VI v1.13.3)',
     (tester) async {
       when(
         () => repository.list(
@@ -232,27 +232,19 @@ void main() {
         (_) async =>
             CustomerPage(items: _testCustomers, total: _testCustomers.length),
       );
-      when(() => repository.get(customerId: 1)).thenAnswer(
-        (_) async => const Customer(
-          customerId: 1,
-          code: 'CUST-001',
-          name: 'Acme Corp',
-          creditLimit: '1000.50',
-          creditDays: 30,
-          priceList: PriceListRef(id: 1, name: 'Retail'),
-          salesperson: EmployeeRef(id: 2, name: 'Jane Doe'),
-          status: EntityStatus.active,
-        ),
-      );
 
       final router = GoRouter(
-        initialLocation: '/',
+        initialLocation: '/customers',
         routes: [
           GoRoute(
-            path: '/',
+            path: '/customers',
             builder: (_, state) => Scaffold(
               body: CustomersListScreen(query: ListQuery.fromUri(state.uri)),
             ),
+          ),
+          GoRoute(
+            path: '/customers/:customerId',
+            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
           ),
         ],
       );
@@ -279,14 +271,13 @@ void main() {
 
       await tester.tap(find.text('Acme Corp'));
       await tester.pumpAndSettle();
+      expect(find.text('/customers/1?view=true'), findsOneWidget);
 
-      expect(router.state.uri.path, '/');
-      final codeField = tester.widget<TextFormField>(
-        find.byKey(const Key('code_field')),
-      );
-      expect(codeField.initialValue, 'CUST-001');
-      expect(codeField.enabled, isFalse);
-      expect(find.byKey(const Key('edit_customer_button')), findsOneWidget);
+      router.pop();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Edit').first);
+      await tester.pumpAndSettle();
+      expect(find.text('/customers/1'), findsOneWidget);
     },
   );
 

@@ -142,6 +142,7 @@ Product thumbnails in the catalog have visible space around them. They no longer
 - **FR-007**: The sections MUST work both when creating and when editing a customer.
 - **FR-008**: The sections MUST follow the existing permission rules: read-only without edit permission, and "create new" only with create permission on that record type.
 - **FR-009**: The customer form MUST NOT edit linked addresses or contacts in place. They are shared records, so corrections are made by unlinking and then linking or creating the correct record.
+- **FR-020** *(added 2026-10-17)*: The customer form MUST open on its own screen (create, view and edit), not in the side panel over the list. Row click opens it read-only, Edit opens it editable, and leaving with unsaved edits asks first.
 
 **Facilities catalog**
 
@@ -185,6 +186,7 @@ Product thumbnails in the catalog have visible space around them. They no longer
 - **Not covered by this spec.** These are not relationships, so this spec does not add them:
   - zone, credit limit and credit-days columns in the customer list;
   - customer balance / credit status.
+- **Changed 2026-10-17.** At the product owner's request, the customer form moved from the side panel to its own screen (FR-020); with the linked-record sections it was too much for a panel.
 - **Clarified 2026-10-16.** No in-place editing of shared addresses and contacts from the customer form; the form only links, unlinks and creates them.
 - **Unlinking only.** The customer form never deletes addresses, contacts or taxpayers. It only unlinks them.
 - **Single photo.** The preview uses the one photo the backend already serves. No new image size is needed. Zoom and pan inside the preview are out of scope.

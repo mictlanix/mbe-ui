@@ -126,6 +126,16 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 ---
 
+### Follow-up: customer form on its own screen (added 2026-10-17, FR-020)
+
+- [X] T051 [US1] Amend constitution §VI to v1.13.3 (Customers moves to the full-screen list) and DESIGN.md §4.2 to match, in `.specify/memory/constitution.md` and `DESIGN.md`
+- [X] T052 [US1] Create `lib/features/catalog/presentation/customer_detail_screen.dart` (titles per mode, Edit replaces the route, discard prompt on back); add `onEditRequested` and `didUpdateWidget` to `customer_form.dart`; pair Addresses and Contacts on wide tiers
+- [X] T053 [US1] Extract the shared discard prompt `confirmDiscardChanges` in `lib/core/widgets/app_side_sheet.dart`
+- [X] T054 [US1] Add the `/customers/new` and `/customers/:customerId` routes and drop `/customers` from the legacy redirects in `lib/app/router/app_router.dart`; push them from `customers_list_screen.dart` instead of `showRecordSheet`
+- [X] T055 [US1] Tests: `test/widget/features/catalog/customer_detail_screen_test.dart` (new), `customers_list_screen_test.dart`, `test/unit/app/router/app_router_test.dart`
+
+---
+
 ## Phase 4: User Story 2 — Production sites can have points of sale and cash drawers (Priority: P2)
 
 **Goal**: A production site shows and manages Warehouses, Points of Sale and Cash Drawers exactly like a store.

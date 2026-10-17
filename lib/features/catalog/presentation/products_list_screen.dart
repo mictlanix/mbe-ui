@@ -435,14 +435,20 @@ class _TriStateFilterChip extends StatelessWidget {
 /// (046-catalog-improvements FR-018) instead of being clipped by it.
 ({double size, double verticalInset, double horizontalInset, double columnWidth})
 _photoMetrics(BuildContext context) {
-  final theme = Theme.of(context);
-  final spacing = theme.spacing;
-  final rowHeight = theme.density.tableDataRowHeight ?? 44;
-  final size = rowHeight - 2 * spacing.xxs;
+  final rowHeight = Theme.of(context).density.tableDataRowHeight ?? 44;
+  final size = rowHeight - 2 * _photoInset;
   return (
     size: size,
-    verticalInset: spacing.xxs,
-    horizontalInset: spacing.xs,
-    columnWidth: size + 2 * spacing.xs,
+    verticalInset: _photoInset,
+    horizontalInset: _photoInset,
+    columnWidth: size + 2 * _photoInset,
   );
 }
+
+/// The gap around a list thumbnail. A deliberate exception to constitution
+/// §VI's "spacing from tokens only" rule: the smallest spacing token is 4 px,
+/// which leaves a 36 px photo in the shared 44 px row — too small to recognize
+/// a product. 1.2 px keeps the photo off the row borders while letting it
+/// fill nearly the whole row (about 41.6 px). Recorded in the plan's
+/// Complexity Tracking table (046-catalog-improvements).
+const double _photoInset = 1.2;

@@ -28,19 +28,30 @@ import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Create / view / edit form for a single customer (spec 035 US5 —
-/// converted from the pushed `/customers/new` / `/customers/:customerId`
-/// routes to the shared record panel, `showRecordSheet`). [customerId] is
-/// `null` in create mode. Owns two `CatalogEntityPicker`s (price list,
+/// Create / view / edit form for a single customer, hosted by
+/// `CustomerDetailScreen` on the `/customers/new` and
+/// `/customers/:customerId` routes (moved back from the shared record panel
+/// by 046-catalog-improvements: the linked-record sections outgrew it).
+/// [customerId] is `null` in create mode. Owns two `CatalogEntityPicker`s (price list,
 /// salesperson/employee) and three [LinkedRecordsSection]s — addresses,
 /// contacts and taxpayer recipients — where the customer's links are added,
 /// created and removed (046-catalog-improvements US1). The linked records
 /// are shared, so they are never edited from here (FR-009). See
 /// `label_form.dart` for the base pattern (spec 035 T029).
 class CustomerForm extends ConsumerStatefulWidget {
-  const CustomerForm({super.key, this.customerId, this.forceReadOnly = false});
+  const CustomerForm({
+    super.key,
+    this.customerId,
+    this.forceReadOnly = false,
+    this.onEditRequested,
+  });
 
   final int? customerId;
+
+  /// What the Edit control does on a read-only form. `null` switches this
+  /// form to editable in place; the detail screen passes a navigation to its
+  /// edit route instead, so its AppBar title follows the mode.
+  final VoidCallback? onEditRequested;
 
   /// Opens the form read-only regardless of the caller's update privilege —
   /// set for a row-click open (constitution §VI). The in-panel Edit control
@@ -57,6 +68,16 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
   bool get _isEdit => widget.customerId != null;
 
   late bool _readOnlyOverride = widget.forceReadOnly;
+
+  /// The detail screen's Edit replaces `?view=true` with the edit route, and
+  /// the router keeps this same widget for it — so follow the new mode.
+  @override
+  void didUpdateWidget(CustomerForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.forceReadOnly != widget.forceReadOnly) {
+      _readOnlyOverride = widget.forceReadOnly;
+    }
+  }
 
   /// Snapshot of [CustomerFormState] captured once loading actually
   /// completes — awaited directly in [initState], not inferred from a
@@ -280,8 +301,8 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
         // sections are disabled exactly when the fields are); searching
         // needs read on the linked kind, creating needs create on it.
         const FormGridChild(span: FormGridSpan.full, Divider()),
+        // Addresses and contacts pair side by side on wide tiers (§VI).
         FormGridChild(
-          span: FormGridSpan.full,
           LinkedRecordsSection<AddressListItem>(
             key: const Key('customer_addresses_section'),
             sectionId: 'addresses',
@@ -306,9 +327,7 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
                 : null,
           ),
         ),
-        const FormGridChild(span: FormGridSpan.full, Divider()),
         FormGridChild(
-          span: FormGridSpan.full,
           LinkedRecordsSection<Contact>(
             key: const Key('customer_contacts_section'),
             sectionId: 'contacts',
@@ -380,7 +399,8 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             saveKey: const Key('save_button'),
             deleteKey: const Key('delete_customer_button'),
             onEdit: (canUpdate && widget.customerId != null)
-                ? () => setState(() => _readOnlyOverride = false)
+                ? (widget.onEditRequested ??
+                      () => setState(() => _readOnlyOverride = false))
                 : null,
             onSave: canSave
                 ? (_isEdit ? controller.submitUpdate : controller.submitCreate)

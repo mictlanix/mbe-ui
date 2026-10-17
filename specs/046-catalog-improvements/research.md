@@ -2,7 +2,7 @@
 
 Every decision below rests on an audit of mbe-ui, mbe-api and the legacy `mbe` docs carried out on 2026-10-16; file references are mbe-ui paths unless noted otherwise. No backend change is needed: every decision uses endpoints and fields that already exist in the generated client.
 
-## R1 — Customer surface stays the shared side panel
+## R1 — Customer surface stays the shared side panel *(superseded 2026-10-17 — see R16)*
 
 - **Decision**: The three link sections go inside the existing `CustomerForm`, which `showRecordSheet` opens as a 640 px side sheet. Customers do not get a full detail screen.
 - **Rationale**: §VI names Customers explicitly as a panel entity, and the full detail screen is reserved for entities with nested child collections. Addresses, contacts and taxpayers are shared records that a customer only links to (many-to-many), not children the customer owns. They also have no per-record CRUD on this surface (see R6), so the sections behave like multi-value fields, which a panel form can hold. The sheet already scrolls, gives a full-width bottom sheet on Compact, and handles the dirty check.
@@ -181,5 +181,15 @@ Adding discounts or shipping would first need an mbe-api issue (§III). No issue
 - **R11**: with the `facilityType` key gone, the warehouse, point-of-sale and cash-drawer form controllers no longer fetch the facility just to invalidate its children.
 - **R13**: the tap target is a `GestureDetector` + click cursor (no `Material` ancestor needed in a table cell). The close button reuses the existing `documentCloseTooltip` string, so no preview strings were added. `product_photo_preview.dart` is a documented golden exclusion (network image only).
 - **C1**: keys are built from a stable `sectionId` (`addresses`, `contacts`, `taxpayers`): `linked_new_<section>`, `linked_picker_<section>_<n>`, `linked_row_<section>_<id>`, `unlink_<section>_<id>`; the picker is boxed (with its "Link an existing …" label) rather than bare.
+- **R14, amended 2026-10-17**: at the product owner's request the thumbnail inset is a 1.2 px literal on all four sides (photo ≈ 41.6 px, column ≈ 44 px), a recorded exception to §VI's token rule (plan, Complexity Tracking). The detail screen's 8 px padding is unchanged.
 - **Tests**: a shared `test/helpers/network_image_stub.dart` serves a real 1×1 PNG to `Image.network`, so tests can reach a photo's loaded state.
+
+## R16 — Customer form on its own screen (2026-10-17, supersedes R1)
+
+- **Decision**: Customers get a full detail screen, `CustomerDetailScreen`, on `/customers/new` and `/customers/:customerId` (`?view=true` for read-only), hosting the same `CustomerForm`. The list pushes those routes instead of opening `showRecordSheet`; `/customers` leaves the spec 035 legacy-redirect list.
+- **Rationale**: The product owner found the form, with its three linked-record sections, too much for a 640 px panel. Constitution §VI was amended (v1.13.3, PATCH) to list Customers among the full-screen entities; DESIGN.md §4.2 records the same move.
+- **Details**:
+  - Edit on the read-only screen replaces the route with the edit route, so the AppBar title follows the mode (the Facilities pattern); `CustomerForm.onEditRequested` carries that, and `didUpdateWidget` follows a changed `forceReadOnly`, since the router keeps the same widget across the replace.
+  - Back navigation with unsaved edits shows the same discard prompt the panel did (spec US1 scenario 7), now the shared `confirmDiscardChanges` in `core/widgets/app_side_sheet.dart`.
+  - With the wider surface, Addresses and Contacts pair side by side on wide tiers; Tax recipients stays full width.
 

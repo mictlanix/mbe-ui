@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/expenses_list_screen.dart';
@@ -377,6 +378,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/customers/new',
+        builder: (context, state) => const CustomerDetailScreen(),
+      ),
+      GoRoute(
+        path: '/customers/:customerId',
+        builder: (context, state) => CustomerDetailScreen(
+          customerId: int.parse(state.pathParameters['customerId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
         path: '/facilities/new',
         builder: (context, state) => const FacilityDetailScreen(),
       ),
@@ -543,7 +555,6 @@ const _convertedEntityListPaths = <String, String>{
   '/exchange-rates': '/exchange-rates',
   '/payment-method-options': '/payment-method-options',
   '/employees': '/employees',
-  '/customers': '/customers',
   '/taxpayer-recipients': '/taxpayer-recipients',
   '/warehouses': '/facilities',
   '/points-of-sale': '/facilities',
