@@ -28,6 +28,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockDeliveryOrderRepository extends Mock implements DeliveryOrderRepository {}
 
@@ -289,6 +290,7 @@ void main() {
       overrides: [
         salesOrderOverride(salesOrder),
         customerPaymentOverride(paymentRepository),
+        openSessionOverride(),
       ],
     );
 

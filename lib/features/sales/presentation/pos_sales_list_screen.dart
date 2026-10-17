@@ -100,6 +100,25 @@ class PosSalesListScreen extends ConsumerWidget {
     void goTo(ListQuery updated) =>
         context.go(updated.toUri(_posPath).toString());
 
+    // spec 047 FR-001/FR-002 (contracts C1): the cached state may be hours
+    // old, so it is re-read at the tap. Open starts a sale; stale goes to
+    // that session's close screen with the reason; none keeps the button's
+    // own disabled explanation.
+    Future<void> startNewSale() async {
+      final messenger = ScaffoldMessenger.of(context);
+      final router = GoRouter.of(context);
+      final current = await ref.refresh(currentSessionControllerProvider.future);
+      switch (current.state) {
+        case SessionState.open:
+          await router.push('$_posPath/new');
+        case SessionState.stale:
+          messenger.showSnackBar(SnackBar(content: Text(l10n.posSessionExpiredRedirect)));
+          router.go('/sales/cash-sessions/${current.session!.cashSessionId}');
+        case SessionState.none:
+          messenger.showSnackBar(SnackBar(content: Text(l10n.posSalesNewSaleBlockedNoSession)));
+      }
+    }
+
     Future<void> openSale(int saleId) async {
       await context.push('$_posPath/$saleId');
       if (!context.mounted) return;
@@ -132,7 +151,7 @@ class PosSalesListScreen extends ConsumerWidget {
             _NewSaleAction(
               canCreate: canCreate,
               sessionOpen: sessionOpen,
-              onPressed: () => context.push('$_posPath/new'),
+              onPressed: startNewSale,
             ),
           ],
           filters: [

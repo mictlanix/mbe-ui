@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.da
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockPaymentMethodOptionRepository extends Mock
     implements PaymentMethodOptionRepository {}
@@ -51,6 +52,7 @@ void main() {
         ),
         overrides: [
           customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
           paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
         ],
       );

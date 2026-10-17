@@ -4,9 +4,12 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
@@ -14,6 +17,8 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 
 class MockCustomerPaymentRepository extends Mock
     implements CustomerPaymentRepository {}
+
+class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 
 class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
 
@@ -55,11 +60,16 @@ Sale _sale({SaleStatus status = SaleStatus.draft, String balance = '116.00'}) =>
 void main() {
   late MockCustomerPaymentRepository payments;
   late MockSalesOrderRepository salesOrders;
+  late MockCashSessionRepository cashSessions;
   late ProviderContainer container;
 
   setUp(() {
     payments = MockCustomerPaymentRepository();
     salesOrders = MockSalesOrderRepository();
+    cashSessions = MockCashSessionRepository();
+    when(() => cashSessions.getCurrent()).thenAnswer(
+      (_) async => const CurrentSession(state: SessionState.open),
+    );
     when(
       () => payments.createPayment(
         customer: any(named: 'customer'),
@@ -88,6 +98,7 @@ void main() {
       overrides: [
         customerPaymentRepositoryProvider.overrideWithValue(payments),
         salesOrderRepositoryProvider.overrideWithValue(salesOrders),
+        cashSessionRepositoryProvider.overrideWithValue(cashSessions),
         posSaleControllerProvider.overrideWith(() => _FixedPosSale(sale)),
       ],
     );
@@ -186,4 +197,42 @@ void main() {
       );
     },
   );
+
+  for (final state in [SessionState.stale, SessionState.none]) {
+    test(
+      'a $state session at payment time sets sessionInvalid and makes no API '
+      'call (spec 047 FR-005)',
+      () async {
+        final sale = _sale();
+        container = containerFor(sale);
+        await container.read(posSaleControllerProvider.future);
+        when(() => cashSessions.getCurrent()).thenAnswer(
+          (_) async => CurrentSession(state: state),
+        );
+
+        final notifier = container.read(paymentControllerProvider.notifier);
+        notifier.setAmount('116.00');
+        notifier.selectMethod(methodCode: 1);
+
+        final ok = await notifier.submit(sale);
+
+        expect(ok, isFalse);
+        expect(
+          container.read(paymentControllerProvider).issue,
+          PaymentIssue.sessionInvalid,
+        );
+        verifyNever(() => salesOrders.confirm(saleId: any(named: 'saleId')));
+        verifyNever(
+          () => payments.createPayment(
+            customer: any(named: 'customer'),
+            amount: any(named: 'amount'),
+            method: any(named: 'method'),
+            currency: any(named: 'currency'),
+            paymentCharge: any(named: 'paymentCharge'),
+            reference: any(named: 'reference'),
+          ),
+        );
+      },
+    );
+  }
 }

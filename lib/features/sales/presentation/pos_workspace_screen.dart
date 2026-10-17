@@ -53,8 +53,16 @@ class PosWorkspaceScreen extends ConsumerWidget {
     final currentSession = ref.watch(currentSessionControllerProvider);
     return currentSession.when(
       data: (current) {
-        if (current.state == SessionState.none) {
-          return const Scaffold(body: PosGateScreen());
+        // spec 047 FR-001..FR-004: only *starting* a sale (`/new`) needs a
+        // valid session. An existing sale stays reachable under `none` and
+        // `stale`, with its payments blocked on the payment step.
+        if (saleId == null) {
+          if (current.state == SessionState.none) {
+            return const Scaffold(body: PosGateScreen());
+          }
+          if (current.state == SessionState.stale) {
+            return _StaleSessionRedirect(sessionId: current.session!.cashSessionId);
+          }
         }
         return _PosWorkspaceBody(saleId: saleId);
       },
@@ -74,6 +82,36 @@ class PosWorkspaceScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// `/sales/pos/new` under a stale session: replaces itself with the session's
+/// close screen and says why, before any sale is created (spec 047 FR-002,
+/// research R2). `go`, not `push`, so Back never returns to a POS screen that
+/// cannot be used.
+class _StaleSessionRedirect extends StatefulWidget {
+  const _StaleSessionRedirect({required this.sessionId});
+
+  final int sessionId;
+
+  @override
+  State<_StaleSessionRedirect> createState() => _StaleSessionRedirectState();
+}
+
+class _StaleSessionRedirectState extends State<_StaleSessionRedirect> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final message = AppLocalizations.of(context)!.posSessionExpiredRedirect;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      context.go('/sales/cash-sessions/${widget.sessionId}');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: CircularProgressIndicator()));
 }
 
 class _PosWorkspaceBody extends ConsumerStatefulWidget {
@@ -355,11 +393,10 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Renders nothing when the session is healthy; the non-blocking
-          // stale-session banner otherwise (`state == none` never reaches
-          // here — the top-level gate in `PosWorkspaceScreen` already
-          // stopped there).
-          const PosGateScreen(),
+          // Renders nothing when the session is healthy; the blocking banner
+          // otherwise. The payment step carries its own copy beside the
+          // method tiles it disables.
+          if (step.current != PosStep.cobro) const PosSessionBlockedBanner(),
           Expanded(
             child: sale.when(
               data: (value) => _StepHost(step: step.current, sale: value),

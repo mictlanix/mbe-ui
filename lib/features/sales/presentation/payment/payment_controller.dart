@@ -5,12 +5,17 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_confirm.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_write_scope.dart';
 
 part 'payment_controller.g.dart';
+
+/// A local, non-API reason a tender was refused (spec 047). Carried beside
+/// [PaymentDraft.error], which stays for failures that came back from mbe-api.
+enum PaymentIssue { sessionInvalid }
 
 /// The tender being composed on the payment step — never the applied
 /// payments themselves, which live server-side and are read back through
@@ -24,6 +29,7 @@ class PaymentDraft {
     this.requiresReference = false,
     this.submitting = false,
     this.error,
+    this.issue,
   });
 
   final String amount;
@@ -33,6 +39,7 @@ class PaymentDraft {
   final bool requiresReference;
   final bool submitting;
   final AppError? error;
+  final PaymentIssue? issue;
 
   /// FR-046: a tender needs an amount, a method, and — when the chosen
   /// option says so (`PaymentMethodOption.requiresReference`) — a reference.
@@ -51,6 +58,7 @@ class PaymentDraft {
     bool? requiresReference,
     bool? submitting,
     AppError? error,
+    PaymentIssue? issue,
     bool clearError = false,
   }) => PaymentDraft(
     amount: amount ?? this.amount,
@@ -60,6 +68,7 @@ class PaymentDraft {
     requiresReference: requiresReference ?? this.requiresReference,
     submitting: submitting ?? this.submitting,
     error: clearError ? null : (error ?? this.error),
+    issue: clearError ? null : (issue ?? this.issue),
   );
 }
 
@@ -111,6 +120,18 @@ class PaymentController extends _$PaymentController {
   Future<T> _tracked<T>(Future<T> Function() action) =>
       ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
 
+  /// spec 047 FR-005 / research R1: the session is re-read, never trusted from
+  /// cache, immediately before money is booked — it may have expired or been
+  /// closed since the screen rendered. A failed read counts as invalid.
+  Future<bool> _sessionIsValid() async {
+    try {
+      final current = await ref.refresh(currentSessionControllerProvider.future);
+      return current.isValid;
+    } on Object {
+      return false;
+    }
+  }
+
   /// Records the tender and applies it to [sale], then refreshes the sale
   /// and the applied-payments panel. Returns `true` when it went through;
   /// on refusal the draft is kept (contracts/pos-screen.md §6) and the
@@ -118,6 +139,11 @@ class PaymentController extends _$PaymentController {
   Future<bool> submit(Sale sale) async {
     final draft = state;
     if (!draft.isSubmittable) return false;
+
+    if (!await _sessionIsValid()) {
+      state = draft.copyWith(issue: PaymentIssue.sessionInvalid);
+      return false;
+    }
 
     // spec 036 FR-008/R1: the sale is confirmed here, immediately before the
     // first payment — not earlier, at Venta→Cobro. A no-op once already

@@ -5,10 +5,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
+import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockPaymentMethodOptionRepository extends Mock
     implements PaymentMethodOptionRepository {}
@@ -41,6 +44,7 @@ void main() {
     required String balance,
     PaymentTerms paymentTerms = PaymentTerms.immediate,
     VoidCallback? onClose,
+    CurrentSession? session,
   }) async {
     await pumpPos(
       tester,
@@ -54,6 +58,7 @@ void main() {
       ),
       overrides: [
         customerPaymentOverride(paymentRepository),
+        session == null ? openSessionOverride() : sessionOverride(session),
         paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
       ],
     );
@@ -141,6 +146,57 @@ void main() {
       );
       expect(submit.onPressed, isNull);
     });
+  });
+
+  group('the cash session gate (spec 047 FR-004)', () {
+    final stale = CurrentSession(
+      state: SessionState.stale,
+      session: CashSession(
+        cashSessionId: 77,
+        cashDrawerId: 1,
+        cashDrawerName: 'Caja 1',
+        cashDrawerCode: 'CJ1',
+        cashierId: 100,
+        cashierName: 'Ana López',
+        start: DateTime(2026, 8, 4, 9),
+        openingAmount: '500',
+      ),
+    );
+
+    testWidgets('an open session shows no banner and enables the tiles', (
+      tester,
+    ) async {
+      await pumpStep(tester, balance: '116.00');
+
+      expect(find.byKey(const Key('pos_session_blocked_banner')), findsNothing);
+      final tile = tester.widget<InkWell>(
+        find.descendant(
+          of: find.byKey(const Key('payment_method_1')),
+          matching: find.byType(InkWell),
+        ),
+      );
+      expect(tile.onTap, isNotNull);
+    });
+
+    for (final (label, current) in [
+      ('stale', stale),
+      ('none', const CurrentSession(state: SessionState.none)),
+    ]) {
+      testWidgets('a $label session shows the blocking banner and disables '
+          'the tiles', (tester) async {
+        await pumpStep(tester, balance: '116.00', session: current);
+
+        expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
+        expect(find.byKey(const Key('pos_session_blocked_action')), findsOneWidget);
+        final tile = tester.widget<InkWell>(
+          find.descendant(
+            of: find.byKey(const Key('payment_method_1')),
+            matching: find.byType(InkWell),
+          ),
+        );
+        expect(tile.onTap, isNull);
+      });
+    }
   });
 
   group('the status filter passed to the option catalog', () {

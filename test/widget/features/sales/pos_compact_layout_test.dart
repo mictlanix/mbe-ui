@@ -20,6 +20,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
@@ -116,6 +117,7 @@ void main() {
         warehouseOverride(warehouses),
         customerRepositoryProvider.overrideWithValue(customers),
         customerPaymentOverride(payments),
+        openSessionOverride(),
       ],
     );
   }
@@ -235,6 +237,7 @@ void main() {
         surface: phoneSurface,
         overrides: [
           customerPaymentOverride(payments),
+          openSessionOverride(),
           paymentMethodOptionRepositoryProvider.overrideWithValue(paymentOptions),
         ],
       );
