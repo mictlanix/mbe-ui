@@ -128,19 +128,21 @@ void main() {
     );
 
     testWidgets(
-      'applying a cash payment end to end adds it to the rail with no '
-      'scroll gesture',
+      'tapping a method applies the pre-filled balance end to end, with no '
+      'apply button and no scroll gesture (spec 047 US5)',
       (tester) async {
         await pumpStep(tester, surface: const Size(1280, 900));
 
-        await tester.tap(find.byKey(const Key('payment_method_1')));
-        await tester.pumpAndSettle();
-        await tester.enterText(
-          find.byKey(const Key('payment_amount_field')),
+        expect(find.byKey(const Key('payment_submit_button')), findsNothing);
+        expect(
+          tester
+              .widget<TextField>(find.byKey(const Key('payment_amount_field')))
+              .controller!
+              .text,
           '116.00',
         );
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('payment_submit_button')));
+
+        await tester.tap(find.byKey(const Key('payment_method_1')));
         await tester.pumpAndSettle();
 
         expect(

@@ -332,8 +332,7 @@ void main() {
 
       final paymentNotifier = container.read(paymentControllerProvider.notifier);
       paymentNotifier.setAmount('50.00');
-      paymentNotifier.selectMethod(methodCode: 1);
-      final submitted = paymentNotifier.submit(initial);
+      final submitted = paymentNotifier.tender(initial, methodCode: 1);
       await tester.pump();
 
       expect(

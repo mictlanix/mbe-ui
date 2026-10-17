@@ -15,65 +15,60 @@ part 'payment_controller.g.dart';
 
 /// A local, non-API reason a tender was refused (spec 047). Carried beside
 /// [PaymentDraft.error], which stays for failures that came back from mbe-api.
-enum PaymentIssue { sessionInvalid }
+enum PaymentIssue { amountRequired, sessionInvalid }
+
+/// What a call to [PaymentController.tender] did.
+enum TenderResult {
+  /// A tender was already in flight; the tap was dropped (FR-017).
+  ignored,
+
+  /// Refused locally; the reason is on `PaymentDraft.issue`. No API call.
+  refused,
+
+  /// The method needs a reference — the UI asks for it and calls `tender`
+  /// again with it.
+  needsReference,
+
+  applied,
+
+  /// mbe-api refused; the reason is on `PaymentDraft.error`.
+  failed,
+}
 
 /// The tender being composed on the payment step — never the applied
 /// payments themselves, which live server-side and are read back through
-/// `orderPaymentsControllerProvider`.
+/// `orderPaymentsControllerProvider`. The method is not part of it: tapping a
+/// method tile *is* the tender (spec 047 R7), so the method, charge and
+/// reference live only for the length of one `tender` call.
 class PaymentDraft {
   const PaymentDraft({
     this.amount = '',
-    this.methodCode,
-    this.paymentCharge,
-    this.reference,
-    this.requiresReference = false,
     this.submitting = false,
     this.error,
     this.issue,
   });
 
   final String amount;
-  final int? methodCode;
-  final int? paymentCharge;
-  final String? reference;
-  final bool requiresReference;
   final bool submitting;
   final AppError? error;
   final PaymentIssue? issue;
 
-  /// FR-046: a tender needs an amount, a method, and — when the chosen
-  /// option says so (`PaymentMethodOption.requiresReference`) — a reference.
-  bool get isSubmittable =>
-      !submitting &&
-      methodCode != null &&
-      amount.isNotEmpty &&
-      compareAmounts(amount, '0') > 0 &&
-      (!requiresReference || (reference?.isNotEmpty ?? false));
-
   PaymentDraft copyWith({
     String? amount,
-    int? methodCode,
-    int? paymentCharge,
-    String? reference,
-    bool? requiresReference,
     bool? submitting,
     AppError? error,
     PaymentIssue? issue,
     bool clearError = false,
   }) => PaymentDraft(
     amount: amount ?? this.amount,
-    methodCode: methodCode ?? this.methodCode,
-    paymentCharge: paymentCharge ?? this.paymentCharge,
-    reference: reference ?? this.reference,
-    requiresReference: requiresReference ?? this.requiresReference,
     submitting: submitting ?? this.submitting,
     error: clearError ? null : (error ?? this.error),
     issue: clearError ? null : (issue ?? this.issue),
   );
 }
 
-/// Amount entry, method selection, reference, and the create-then-apply
-/// sequence (contracts/mbe-api-pos.md §3). After each successful
+/// Amount entry and the create-then-apply sequence
+/// (contracts/mbe-api-pos.md §3). After each successful
 /// application it refreshes `PosSaleController` — applying a payment changes
 /// `Sale.balance` through a *different* repository, so nothing updates it
 /// automatically (contracts/pos-screen.md §3–§4) — and invalidates
@@ -87,21 +82,11 @@ class PaymentController extends _$PaymentController {
     state = state.copyWith(amount: amount, clearError: true);
   }
 
-  void selectMethod({
-    required int methodCode,
-    int? paymentCharge,
-    bool requiresReference = false,
-  }) {
-    state = state.copyWith(
-      methodCode: methodCode,
-      paymentCharge: paymentCharge,
-      requiresReference: requiresReference,
-      clearError: true,
-    );
-  }
-
-  void setReference(String reference) {
-    state = state.copyWith(reference: reference, clearError: true);
+  /// FR-016: opens the step with the balance already in the amount field, so
+  /// the common case — paying it all — is one tap on a method.
+  void prefillAmount(String balance) {
+    if (state.amount.isNotEmpty || isZeroAmount(balance)) return;
+    state = state.copyWith(amount: balance);
   }
 
   /// FR-047: the excess over the sale's balance, handed back rather than
@@ -116,7 +101,7 @@ class PaymentController extends _$PaymentController {
   /// [action] — including [action]'s own state-publishing, which must
   /// happen *before* [action] returns so the count only reaches zero once
   /// the balance a gated step reads is already the sale's own (spec 031
-  /// FR-003, research R6). [submit] and [reverse] both route through this.
+  /// FR-003, research R6). [tender] and [reverse] both route through this.
   Future<T> _tracked<T>(Future<T> Function() action) =>
       ref.read(pendingWritesProvider(posWritesScope).notifier).track(action);
 
@@ -132,44 +117,65 @@ class PaymentController extends _$PaymentController {
     }
   }
 
-  /// Records the tender and applies it to [sale], then refreshes the sale
-  /// and the applied-payments panel. Returns `true` when it went through;
-  /// on refusal the draft is kept (contracts/pos-screen.md §6) and the
-  /// reason is on `state.error`.
-  Future<bool> submit(Sale sale) async {
-    final draft = state;
-    if (!draft.isSubmittable) return false;
+  /// Tapping a method tile (spec 047 US5): validates the draft amount, re-reads
+  /// the cash session, then records the tender and applies it to [sale],
+  /// refreshing the sale and the applied-payments panel. On refusal the draft
+  /// is kept (contracts/pos-screen.md §6).
+  ///
+  /// A method that [requiresReference] returns [TenderResult.needsReference]
+  /// until it is called again with a [reference] — nothing is applied without
+  /// one.
+  Future<TenderResult> tender(
+    Sale sale, {
+    required int methodCode,
+    int? paymentCharge,
+    bool requiresReference = false,
+    String? reference,
+  }) async {
+    if (state.submitting) return TenderResult.ignored;
 
+    final amount = state.amount;
+    if (amount.isEmpty || compareAmounts(amount, '0') <= 0) {
+      state = state.copyWith(issue: PaymentIssue.amountRequired);
+      return TenderResult.refused;
+    }
+
+    // Held through the session re-read too, so a second tap cannot slip in.
+    state = state.copyWith(submitting: true, clearError: true);
     if (!await _sessionIsValid()) {
-      state = draft.copyWith(issue: PaymentIssue.sessionInvalid);
-      return false;
+      state = state.copyWith(submitting: false, issue: PaymentIssue.sessionInvalid);
+      return TenderResult.refused;
+    }
+    if (requiresReference && (reference?.isEmpty ?? true)) {
+      state = state.copyWith(submitting: false);
+      return TenderResult.needsReference;
     }
 
     // spec 036 FR-008/R1: the sale is confirmed here, immediately before the
     // first payment — not earlier, at Venta→Cobro. A no-op once already
-    // confirmed. A failure is routed to Venta's own banner and this submit
+    // confirmed. A failure is routed to Venta's own banner and this tender
     // aborts without ever setting the payment draft's own error, since the
     // failure is about the sale, not this tender.
     try {
       await confirmBeforePayableAction(ref.read, sale);
     } on AppError {
-      return false;
+      state = state.copyWith(submitting: false);
+      return TenderResult.failed;
     }
 
-    state = draft.copyWith(submitting: true, clearError: true);
     try {
       return await _tracked(() async {
         final repository = ref.read(customerPaymentRepositoryProvider);
         final change = changeFor(sale.balanceOrZero);
-        final applied = isZeroAmount(change) ? draft.amount : sale.balanceOrZero;
+        final applied = isZeroAmount(change) ? amount : sale.balanceOrZero;
 
         final paymentId = await repository.createPayment(
           customer: sale.customer,
-          amount: draft.amount,
-          method: draft.methodCode!,
+          amount: amount,
+          method: methodCode,
           currency: sale.currency,
-          paymentCharge: draft.paymentCharge,
-          reference: draft.reference,
+          paymentCharge: paymentCharge,
+          reference: reference,
         );
         await repository.applyPayment(
           customerPaymentId: paymentId,
@@ -181,14 +187,17 @@ class PaymentController extends _$PaymentController {
         await ref.read(posSaleControllerProvider.notifier).refresh();
         ref.invalidate(orderPaymentsControllerProvider(sale.id));
 
-        // Cleared for the next tender — a partial payment leaves a balance
-        // the cashier goes straight on to collect.
-        state = const PaymentDraft();
-        return true;
+        // FR-016: the next tender starts from what is still owed — a partial
+        // payment leaves a balance the cashier goes straight on to collect.
+        final remaining = ref.read(posSaleControllerProvider).value?.balanceOrZero;
+        state = PaymentDraft(
+          amount: remaining == null || isZeroAmount(remaining) ? '' : remaining,
+        );
+        return TenderResult.applied;
       });
     } on AppError catch (e) {
       state = state.copyWith(submitting: false, error: e);
-      return false;
+      return TenderResult.failed;
     }
   }
 

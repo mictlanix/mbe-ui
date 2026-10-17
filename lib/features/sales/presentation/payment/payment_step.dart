@@ -49,6 +49,7 @@ class PaymentStep extends ConsumerWidget {
         ref.watch(currentSessionControllerProvider).value?.isValid ?? false;
 
     final issueMessage = switch (draft.issue) {
+      PaymentIssue.amountRequired => l10n.posPaymentAmountRequired,
       PaymentIssue.sessionInvalid => l10n.posPaymentSessionInvalid,
       null => null,
     };

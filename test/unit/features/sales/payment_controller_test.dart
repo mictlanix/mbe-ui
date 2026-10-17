@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,7 +25,7 @@ class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
 
 /// Seeds `posSaleControllerProvider` directly with a sale, bypassing
-/// `open()`/`load()` — `submit`'s own `confirmBeforePayableAction` call reads
+/// `open()`/`load()` — `tender`'s own `confirmBeforePayableAction` call reads
 /// this controller, not the `sale` parameter `submit` is handed.
 class _FixedPosSale extends PosSaleController {
   _FixedPosSale(this._sale);
@@ -54,7 +56,7 @@ Sale _sale({SaleStatus status = SaleStatus.draft, String balance = '116.00'}) =>
       priority: Priority.normal,
     );
 
-/// spec 036 R1: `submit` confirms the sale — still `draft` at this point —
+/// spec 036 R1: `tender` confirms the sale — still `draft` at this point —
 /// immediately before the first tender rather than earlier at Venta→Cobro
 /// (`pos_confirm.dart`).
 void main() {
@@ -108,7 +110,7 @@ void main() {
   }
 
   test(
-    'submit confirms the still-draft sale exactly once, before creating the '
+    'tender confirms the still-draft sale exactly once, before creating the '
     'payment',
     () async {
       final sale = _sale();
@@ -119,11 +121,10 @@ void main() {
 
       final notifier = container.read(paymentControllerProvider.notifier);
       notifier.setAmount('116.00');
-      notifier.selectMethod(methodCode: 1);
 
-      final ok = await notifier.submit(sale);
+      final result = await notifier.tender(sale, methodCode: 1);
 
-      expect(ok, isTrue);
+      expect(result, TenderResult.applied);
       verify(() => salesOrders.confirm(saleId: 42)).called(1);
       verify(
         () => payments.createPayment(
@@ -149,11 +150,10 @@ void main() {
 
       final notifier = container.read(paymentControllerProvider.notifier);
       notifier.setAmount('50.00');
-      notifier.selectMethod(methodCode: 1);
 
-      final ok = await notifier.submit(sale);
+      final result = await notifier.tender(sale, methodCode: 1);
 
-      expect(ok, isTrue);
+      expect(result, TenderResult.applied);
       verifyNever(() => salesOrders.confirm(saleId: any(named: 'saleId')));
       verify(
         () => payments.createPayment(
@@ -180,11 +180,10 @@ void main() {
 
       final notifier = container.read(paymentControllerProvider.notifier);
       notifier.setAmount('116.00');
-      notifier.selectMethod(methodCode: 1);
 
-      final ok = await notifier.submit(sale);
+      final result = await notifier.tender(sale, methodCode: 1);
 
-      expect(ok, isFalse);
+      expect(result, TenderResult.failed);
       verifyNever(
         () => payments.createPayment(
           customer: any(named: 'customer'),
@@ -212,11 +211,10 @@ void main() {
 
         final notifier = container.read(paymentControllerProvider.notifier);
         notifier.setAmount('116.00');
-        notifier.selectMethod(methodCode: 1);
 
-        final ok = await notifier.submit(sale);
+        final result = await notifier.tender(sale, methodCode: 1);
 
-        expect(ok, isFalse);
+        expect(result, TenderResult.refused);
         expect(
           container.read(paymentControllerProvider).issue,
           PaymentIssue.sessionInvalid,
@@ -235,4 +233,143 @@ void main() {
       },
     );
   }
+
+  group('tender (spec 047 US5)', () {
+    void expectNoPaymentCreated() => verifyNever(
+      () => payments.createPayment(
+        customer: any(named: 'customer'),
+        amount: any(named: 'amount'),
+        method: any(named: 'method'),
+        currency: any(named: 'currency'),
+        paymentCharge: any(named: 'paymentCharge'),
+        reference: any(named: 'reference'),
+      ),
+    );
+
+    for (final amount in ['', '0', '0.00']) {
+      test('an amount of "$amount" is refused with amountRequired and no API call', () async {
+        final sale = _sale(status: SaleStatus.completed);
+        container = containerFor(sale);
+        await container.read(posSaleControllerProvider.future);
+        final notifier = container.read(paymentControllerProvider.notifier);
+        notifier.setAmount(amount);
+
+        final result = await notifier.tender(sale, methodCode: 1);
+
+        expect(result, TenderResult.refused);
+        expect(
+          container.read(paymentControllerProvider).issue,
+          PaymentIssue.amountRequired,
+        );
+        expectNoPaymentCreated();
+      });
+    }
+
+    test('a tap while a tender is in flight is ignored (FR-017)', () async {
+      final sale = _sale(status: SaleStatus.completed);
+      container = containerFor(sale);
+      await container.read(posSaleControllerProvider.future);
+      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
+      final gate = Completer<int>();
+      when(
+        () => payments.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      ).thenAnswer((_) => gate.future);
+      // The draft is `autoDispose`: a mounted payment step is what keeps it
+      // alive while the first tender is still awaiting its API calls.
+      container.listen(paymentControllerProvider, (_, _) {});
+      final notifier = container.read(paymentControllerProvider.notifier);
+      notifier.setAmount('50.00');
+
+      final first = notifier.tender(sale, methodCode: 1);
+      await pumpEventQueue();
+      final second = await notifier.tender(sale, methodCode: 1);
+      gate.complete(900);
+
+      expect(second, TenderResult.ignored);
+      expect(await first, TenderResult.applied);
+      verify(
+        () => payments.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      ).called(1);
+    });
+
+    test('a method that requires a reference asks for one and applies nothing '
+        'until it is given', () async {
+      final sale = _sale(status: SaleStatus.completed);
+      container = containerFor(sale);
+      await container.read(posSaleControllerProvider.future);
+      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
+      final notifier = container.read(paymentControllerProvider.notifier);
+      notifier.setAmount('50.00');
+
+      final asked = await notifier.tender(
+        sale,
+        methodCode: 4,
+        paymentCharge: 2,
+        requiresReference: true,
+      );
+      expect(asked, TenderResult.needsReference);
+      expect(container.read(paymentControllerProvider).submitting, isFalse);
+      expectNoPaymentCreated();
+
+      final applied = await notifier.tender(
+        sale,
+        methodCode: 4,
+        paymentCharge: 2,
+        requiresReference: true,
+        reference: 'AUTH-1',
+      );
+      expect(applied, TenderResult.applied);
+      verify(
+        () => payments.createPayment(
+          customer: 7,
+          amount: '50.00',
+          method: 4,
+          currency: any(named: 'currency'),
+          paymentCharge: 2,
+          reference: 'AUTH-1',
+        ),
+      ).called(1);
+    });
+
+    test('after a partial payment the amount becomes the new remaining balance', () async {
+      final sale = _sale(status: SaleStatus.completed);
+      container = containerFor(sale);
+      await container.read(posSaleControllerProvider.future);
+      when(() => salesOrders.getById(saleId: 42))
+          .thenAnswer((_) async => _sale(status: SaleStatus.completed, balance: '66.00'));
+      final notifier = container.read(paymentControllerProvider.notifier);
+      notifier.setAmount('50.00');
+
+      await notifier.tender(sale, methodCode: 1);
+
+      expect(container.read(paymentControllerProvider).amount, '66.00');
+      expect(container.read(paymentControllerProvider).submitting, isFalse);
+    });
+
+    test('prefillAmount seeds an empty amount, never overwrites a keyed one', () async {
+      container = containerFor(_sale());
+      final notifier = container.read(paymentControllerProvider.notifier);
+
+      notifier.prefillAmount('116.00');
+      expect(container.read(paymentControllerProvider).amount, '116.00');
+
+      notifier.setAmount('20.00');
+      notifier.prefillAmount('116.00');
+      expect(container.read(paymentControllerProvider).amount, '20.00');
+    });
+  });
 }

@@ -107,44 +107,88 @@ void main() {
     });
   });
 
-  group('the tender itself', () {
-    testWidgets('applying is blocked until an amount and a method are chosen '
-        '(FR-046)', (tester) async {
+  group('the tender itself (spec 047 US5)', () {
+    void stubTender() {
+      when(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      ).thenAnswer((_) async => 500);
+      when(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).thenAnswer((_) async {});
+    }
+
+    String amountText(WidgetTester tester) => tester
+        .widget<TextField>(find.byKey(const Key('payment_amount_field')))
+        .controller!
+        .text;
+
+    testWidgets('there is no apply button, and the amount opens pre-filled '
+        'with the balance (FR-016)', (tester) async {
       await pumpStep(tester, balance: '116.00');
-      final submit = tester.widget<FilledButton>(
-        find.byKey(const Key('payment_submit_button')),
-      );
-      expect(submit.onPressed, isNull);
+
+      expect(find.byKey(const Key('payment_submit_button')), findsNothing);
+      expect(find.byKey(const Key('payment_reference_field')), findsNothing);
+      expect(amountText(tester), '116.00');
     });
 
-    testWidgets('choosing a method and an amount enables applying', (tester) async {
+    testWidgets('tapping a method applies the keyed amount with that method', (
+      tester,
+    ) async {
+      stubTender();
       await pumpStep(tester, balance: '116.00');
 
-      // The facility has no options configured, so the grid falls back to the
-      // shared PaymentMethod enum — cash is code 1.
+      await tester.enterText(find.byKey(const Key('payment_amount_field')), '50.00');
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('payment_method_1')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '116.00');
-      await tester.pumpAndSettle();
 
-      final submit = tester.widget<FilledButton>(
-        find.byKey(const Key('payment_submit_button')),
-      );
-      expect(submit.onPressed, isNotNull);
+      verify(
+        () => paymentRepository.createPayment(
+          customer: 7,
+          amount: '50.00',
+          method: 1,
+          currency: any(named: 'currency'),
+          paymentCharge: null,
+          reference: null,
+        ),
+      ).called(1);
     });
 
-    testWidgets('an amount of zero is never submittable', (tester) async {
+    testWidgets('an empty or zero amount applies nothing and says why', (
+      tester,
+    ) async {
+      stubTender();
       await pumpStep(tester, balance: '116.00');
 
-      await tester.tap(find.byKey(const Key('payment_method_1')));
-      await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const Key('payment_amount_field')), '0');
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('payment_method_1')));
+      await tester.pumpAndSettle();
 
-      final submit = tester.widget<FilledButton>(
-        find.byKey(const Key('payment_submit_button')),
+      expect(find.byKey(const Key('payment_issue_message')), findsOneWidget);
+      expect(find.text('Captura un monto mayor a cero.'), findsOneWidget);
+      verifyNever(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
       );
-      expect(submit.onPressed, isNull);
     });
   });
 
