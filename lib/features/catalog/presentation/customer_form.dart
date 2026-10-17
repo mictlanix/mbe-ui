@@ -296,6 +296,16 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             maxLines: 3,
           ),
         ),
+        // Status belongs with the customer's own fields, ahead of the
+        // linked-record sections.
+        if (_isEdit)
+          FormGridChild(
+            span: FormGridSpan.full,
+            EntityStatusFormField(
+              value: formState.status,
+              onChanged: fieldsEnabled ? controller.statusChanged : null,
+            ),
+          ),
         // Linked records (046-catalog-improvements FR-001..FR-008). Linking or
         // unlinking needs the same right as saving the customer (the
         // sections are disabled exactly when the fields are); searching
@@ -379,14 +389,6 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
                 : null,
           ),
         ),
-        if (_isEdit)
-          FormGridChild(
-            span: FormGridSpan.full,
-            EntityStatusFormField(
-              value: formState.status,
-              onChanged: fieldsEnabled ? controller.statusChanged : null,
-            ),
-          ),
         FormGridChild(
           span: FormGridSpan.full,
           RecordFormActions(

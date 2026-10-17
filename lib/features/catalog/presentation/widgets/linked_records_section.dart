@@ -130,7 +130,17 @@ class _LinkedRecordsSectionState<T extends Object>
               ),
             ),
           ),
-        for (final item in widget.items) _row(context, item),
+        // A hairline between rows, and under the last one, so each record —
+        // and the unlink control on its line — reads as its own band.
+        for (final item in widget.items) ...[
+          _row(context, item),
+          Divider(
+            key: ValueKey(
+              'linked_divider_${widget.sectionId}_${widget.idOf(item)}',
+            ),
+            height: 1,
+          ),
+        ],
         if (search != null)
           Padding(
             padding: EdgeInsets.only(top: spacing.xs),

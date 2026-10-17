@@ -70,6 +70,22 @@ void main() {
     expect(find.text('Nothing linked.'), findsNothing);
   });
 
+  testWidgets('each row is set off by a hairline below it', (tester) async {
+    await pumpSection(tester, items: [_a, _b]);
+
+    final row = tester.getRect(
+      find.byKey(const ValueKey('linked_row_things_1')),
+    );
+    final line = tester.getRect(
+      find.byKey(const ValueKey('linked_divider_things_1')),
+    );
+    expect(line.top, moreOrLessEquals(row.bottom, epsilon: 0.5));
+    expect(
+      find.byKey(const ValueKey('linked_divider_things_2')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('shows the empty text when nothing is linked', (tester) async {
     await pumpSection(tester, items: const []);
 
