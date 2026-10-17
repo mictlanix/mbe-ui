@@ -116,7 +116,7 @@ Pos Sales
   - Completed sale should show details (read only), but it's redirecting to payment
 
 Customers
-  - Form is incomplete, missing address and rfc
+  - Form is incomplete, missing addresses, contacts and taxpayers.
 
 Login
   - Change pwd should ask to confirm the new one
