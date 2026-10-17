@@ -3852,6 +3852,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get posWarehousePickerTitle => 'Almacén';
 
   @override
+  String get posWarehousePickerNotTracked =>
+      'Este producto no controla existencia, así que cualquier almacén es válido.';
+
+  @override
   String get posPaymentAmountRequired => 'Captura un monto mayor a cero.';
 
   @override

@@ -633,6 +633,7 @@ class _StepHost extends ConsumerWidget {
         sale: current,
         onContinue: advanceToCobro,
         showWarehouse: true,
+        enforceStock: true,
       ),
       PosStep.cobro => PaymentStep(
         sale: current,
