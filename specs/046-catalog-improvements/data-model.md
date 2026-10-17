@@ -61,6 +61,7 @@ New factory: `TaxpayerRecipientListItem.fromRecipient(TaxpayerRecipient r)`, whi
 ## 6. Facility children (`FacilityChildrenState`)
 
 - **Shape**: unchanged.
+- **Provider key**: `facilityChildrenControllerProvider(facilityId)`; the `facilityType` family parameter is removed (research R11).
 - **Behavior**: `pointsOfSaleReadable` and `cashDrawersReadable` depend only on `can(..., read)`, not on `facility.type`.
 
 ## 7. Relationship summary

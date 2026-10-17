@@ -51,19 +51,19 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 ### Domain and data
 
 - [ ] T002 [P] [US1] In `lib/features/catalog/domain/entities/address_list_item.dart`, add `@Default(EntityStatus.active) EntityStatus status`, mapped from `AddressResponse.status` in `fromResponse` (data-model §2); re-run build_runner
-- [ ] T003 [P] [US1] In `lib/features/catalog/domain/entities/taxpayer_recipient_list_item.dart`, add `TaxpayerRecipientListItem.fromRecipient(TaxpayerRecipient r)` carrying `taxpayerRecipientId`, `name`, `email`, if no equivalent mapping already exists (data-model §4)
+- [ ] T003 [P] [US1] In `lib/features/catalog/domain/entities/taxpayer_recipient_list_item.dart`, add `TaxpayerRecipientListItem.fromRecipient(TaxpayerRecipient r)` carrying `taxpayerRecipientId`, `name`, `email`. Only `fromResponse` exists today, and `Customer.taxpayers` holds full `TaxpayerRecipient` entities, so this factory is required (data-model §4)
 - [ ] T004 [P] [US1] Add an optional `EntityStatus? status` parameter to `list(...)` in `lib/features/catalog/domain/repositories/address_repository.dart` and pass it to the generated `listAddresses(status:)` in `lib/features/catalog/data/address_repository_impl.dart` (data-model §3). Existing callers must compile unchanged
 - [ ] T005 [US1] In `lib/features/catalog/presentation/taxpayer_recipient_form_controller.dart`, add `TaxpayerRecipient? created` to the state and set it from the repository's return value in `submitCreate`. In `lib/features/catalog/presentation/taxpayer_recipient_form.dart`, on `saved` call `Navigator.pop(state.created)` instead of a bare pop; update flow must still pop with no value (research R7, data-model §5); re-run build_runner
 
 ### Localization
 
 - [ ] T006 [US1] Add the US1 strings to `lib/l10n/app_en.arb` (with `@` metadata) and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`:
-  - section titles: Addresses, Contacts, Taxpayers (es: Direcciones, Contactos, Contribuyentes);
+  - section titles: Addresses, Contacts, Tax recipients (es: Direcciones, Contactos, Receptores fiscales — matching the existing `taxpayerRecipientsMenuTitle` wording);
   - "No addresses linked" / contacts / taxpayers empty texts;
   - "Unlink" (es: Desvincular);
   - "New" (es: Nuevo) as the link-section create button;
   - "Link existing…" picker label per section;
-  - taxpayer inline-create dialog title.
+  - taxpayer inline-create dialog title (es: reuse the existing `newTaxpayerRecipientTitle` "Nuevo receptor fiscal" if it fits; add a key only if it doesn't).
 
 ### Controller and widgets
 
@@ -96,14 +96,16 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
   - update sends all three id lists complete: a customer with 2 RFCs keeps both after saving an unrelated change (FR-006);
   - create sends the lists;
   - `taxpayerSelected` replaces the list with one item;
-  - `isDirty()` flips on a link change.
+  - `isDirty()` flips on a link change;
+  - unlinking never deletes the record: `verifyNever` on any address, contact or taxpayer-recipient delete/update call (spec US1 scenario 5).
 - [ ] T013 [P] [US1] Create `test/widget/features/catalog/linked_records_section_test.dart`: rows and counts; unlink calls back; an already-linked record is excluded from the picker options; "New" result is passed to `onLinked`; read-only shows no controls; inactive badge; empty text; a long list does not overflow at a compact width
 - [ ] T014 [P] [US1] Create `test/widget/features/catalog/taxpayer_recipient_inline_create_test.dart` (returns the created record; cancel returns null). Extend `test/unit/features/catalog/taxpayer_recipient_form_controller_test.dart` with `created` being set on create and null on update
 - [ ] T015 [P] [US1] Extend the address repository test under `test/unit/features/catalog/` (find the existing `address_repository_impl` test) to assert `status` is forwarded and that omitting it keeps the old request
 - [ ] T016 [US1] Update `test/widget/features/catalog/customer_form_test.dart`:
   - add provider overrides for the address, contact and taxpayer-recipient repositories;
   - cover the three sections listing linked records, read-only hiding every control, "New" hidden without the create privilege, link then Save sending the full lists, and cancel discarding changes with the dirty prompt;
-  - cover a customer with 2 RFCs saved without losing either (depends on T011)
+  - cover a customer with 2 RFCs saved without losing either;
+  - cover create-then-failed-save: a contact created with "Nuevo" stays in the section, the customer save fails and shows the error, and retrying Save sends that contact's id once, with no second contact created (spec edge case "Failure while creating a linked record") (depends on T011)
 - [ ] T017 [US1] Run and, if needed, update `test/widget/features/sales/customer_inline_create_test.dart` and `test/widget/features/sales/quote_customer_inline_create_test.dart`; behavior must be unchanged (depends on T010)
 - [ ] T018 [US1] Manual validation: quickstart scenarios 1–6 against the dev backend, including the read-only user (scenario 5)
 
@@ -117,16 +119,20 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 **Independent Test**: Quickstart scenario 7. Expand a production site, see all three sections, create a point of sale and a cash drawer, and confirm both appear.
 
-- [ ] T019 [P] [US2] In `lib/features/catalog/presentation/facility_children_controller.dart`, remove the `isStore` gate (lines ~40–49): `pointsOfSaleReadable` and `cashDrawersReadable` depend only on `can(..., read)`. Update the doc comment about per-type fetching. Re-run build_runner if the file is generated-backed
-- [ ] T020 [P] [US2] In `lib/features/catalog/presentation/widgets/facility_card.dart`, remove every `isStore` branch on children (research R11):
+- [ ] T019 [US2] In `lib/features/catalog/presentation/facility_children_controller.dart`, remove the `isStore` gate (lines ~40–49): `pointsOfSaleReadable` and `cashDrawersReadable` depend only on `can(..., read)`. **Drop the now-dead `FacilityType facilityType` family parameter** so the provider is keyed by `facilityId` alone, and update the doc comment about per-type fetching. Update every caller of `facilityChildrenControllerProvider(id, type)` to `(id)`:
+  - `lib/features/catalog/presentation/facility_form_controller.dart:199-201`: `_invalidateOwnChildren(int facilityId)` drops its `type` argument, and its doc comment loses the remark about the type being part of the form state; update its callers in the same file;
+  - `lib/features/catalog/presentation/widgets/facility_card.dart` and any other call site found with `grep -rn facilityChildrenControllerProvider lib test`.
+  
+  Re-run build_runner (research R11)
+- [ ] T020 [US2] In `lib/features/catalog/presentation/widgets/facility_card.dart`, remove every `isStore` branch on children (research R11):
   - the count badges;
   - the Points of Sale and Cash Drawers sections with their "+" actions;
   - the `productionSiteChildrenNote` block.
   
-  Keep the type icon and label (FR-013). Remove the `isStore` local and parameters only where it is no longer used
+  Keep the type icon and label (FR-013): `_Header` still needs `isStore` for them. Remove the `isStore` parameter from the badge and body widgets, which no longer use it. Coordinate with T019, which edits the provider call in the same file
 - [ ] T021 [US2] Delete `productionSiteChildrenNote` (with its `@` entry) from `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n` (depends on T020)
-- [ ] T022 [P] [US2] Invert `test/unit/features/catalog/facility_children_controller_test.dart` (~lines 149–178): a production site now requests all three child lists, and `pointsOfSaleReadable` / `cashDrawersReadable` follow the privilege
-- [ ] T023 [P] [US2] Invert `test/widget/features/catalog/facilities_list_screen_test.dart` (~lines 342–381): the production-site card shows Warehouses, Points of Sale and Cash Drawers with counts and "+" actions, the note is absent, and POS and drawer lists are fetched. Check the other uses of `_productionSite` (~lines 287, 498) still hold
+- [ ] T022 [P] [US2] Invert `test/unit/features/catalog/facility_children_controller_test.dart` (~lines 149–178): a production site now requests all three child lists, and `pointsOfSaleReadable` / `cashDrawersReadable` follow the privilege. Update every `facilityChildrenControllerProvider(id, type)` reference to the single-key form (T019), here and in `test/unit/features/catalog/` facility form controller tests if they reference it
+- [ ] T023 [P] [US2] Invert `test/widget/features/catalog/facilities_list_screen_test.dart` (~lines 342–381): the production-site card shows Warehouses, Points of Sale and Cash Drawers with counts and "+" actions, the note is absent, and POS and drawer lists are fetched. Check the other uses of `_productionSite` (~lines 287, 498) still hold. Add a case for spec US2 scenario 3: a production site that has points of sale and cash drawers lists them under their sections with the right counts
 - [ ] T024 [P] [US2] Update `test/integration/facility_children_controller_live_test.dart` (~lines 88–93): drop the assertion that a production site's points of sale and cash drawers are empty
 - [ ] T025 [US2] Manual validation: quickstart scenario 7. Also change a store that has points of sale to a production site and confirm its children stay visible (spec US2 scenario 3)
 
@@ -159,8 +165,8 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 - [ ] T031 [US4] Create `lib/core/widgets/product_photo_preview.dart` per contracts C4: `showProductPhotoPreview(context, {photoUrl, title})`, a `Dialog` with an ellipsized title, a close `IconButton` (`Key('photo_preview_close')`), an `Image.network(fit: BoxFit.contain)` limited to about 90% of the viewport, and the shared placeholder on load error. Escape, barrier tap and close all dismiss (depends on T029, T030)
 - [ ] T032 [US4] In `lib/features/catalog/presentation/products_list_screen.dart` (the photo cell, ~lines 128–132), pass `onTap: p.photo == null ? null : () => showProductPhotoPreview(context, photoUrl: p.photo!, title: p.name)` (depends on T031)
 - [ ] T033 [US4] In `lib/features/catalog/presentation/product_detail_screen.dart`, make only the saved-photo branch of `_thumbnail()` previewable; a pending (unsaved) upload is not (depends on T031)
-- [ ] T034 [P] [US4] Extend `test/widget/core/widgets/product_photo_test.dart`: `onTap` fires on a loaded photo; it does not fire on the null-URL or error placeholder; existing cases unchanged
-- [ ] T035 [P] [US4] Create `test/widget/core/widgets/product_photo_preview_test.dart`: shows the title and image; Escape, barrier tap and the close button each dismiss; load error shows the placeholder
+- [ ] T034 [P] [US4] Extend `test/widget/core/widgets/product_photo_test.dart`: `onTap` fires on a loaded photo; it does not fire on the null-URL or error placeholder; existing cases unchanged. To make a photo actually load, reuse the network-image stub pattern this file already uses for its "network image" case; the default test HTTP client returns errors, which would only exercise the placeholder
+- [ ] T035 [P] [US4] Create `test/widget/core/widgets/product_photo_preview_test.dart`: shows the title and image; Escape, barrier tap and the close button each dismiss; load error shows the placeholder; a tall portrait image fits inside the dialog without overflow or page scroll (spec edge case "Very large or portrait photos"). Use the same image stub as T034
 - [ ] T036 [US4] Extend `test/widget/features/catalog/products_list_screen_test.dart`: tapping a photo opens the preview and does **not** navigate to the product; tapping elsewhere in the row still opens the read-only view; a product without a photo has no preview (depends on T032)
 - [ ] T037 [US4] Manual validation: quickstart scenarios 9 and 10
 
@@ -211,7 +217,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 US1 domain:    T002 | T003 | T004            (then T005)
 US1 widgets:   T008 | T009                   (after T006; T009 also after T005)
 US1 tests:     T012 | T013 | T014 | T015     (each after its implementation)
-US2:           T019 | T020                   (then T021); T022 | T023 | T024
+US2:           T019 → T020 → T021 (T019 and T020 share facility_card.dart); T022 | T023 | T024
 US4 tests:     T034 | T035
 Across stories: US1 and US2 can run on separate branches/agents; US2 and US4 only meet in the arb files.
 ```

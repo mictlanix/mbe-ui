@@ -6,7 +6,7 @@
 
 ```text
 LinkedRecordsSection<T extends Object>({
-  required String title,                       // "Direcciones" / "Contactos" / "Contribuyentes"
+  required String title,                       // "Direcciones" / "Contactos" / "Receptores fiscales"
   required List<T> items,                      // currently linked
   required Object Function(T) idOf,            // used for dedupe and keys
   required String Function(T) labelOf,
@@ -102,7 +102,7 @@ Future<void> showProductPhotoPreview(BuildContext context, {required String phot
 ## C6 — Facilities
 
 - **`FacilityCard`.** Every type renders the badges and the sections for Warehouses, Points of Sale and Cash Drawers. The `productionSiteChildrenNote` text and its arb key are removed. The type icon and label stay.
-- **`facility_children_controller`.** Fetches all three child lists for every type, gated only by RBAC read.
+- **`facility_children_controller`.** Fetches all three child lists for every type, gated only by RBAC read. Keyed by `facilityId` only; the `facilityType` family parameter is removed.
 - **es arb.** `facilityTypeProductionSite` changes to "Planta".
 
 ## C7 — Endpoints consumed

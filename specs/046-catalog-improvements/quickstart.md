@@ -36,7 +36,7 @@ flutter test test/integration/facility_children_controller_live_test.dart --dart
 | # | Story | Steps | Expected |
 |---|---|---|---|
 | 1 | US1 | Open the Customers list. Edit a customer that has 2 or more RFCs. Change Zone and save. Reopen it. | All RFCs are still linked (SC-002). |
-| 2 | US1 | On the same customer, link an existing address, create a new contact with "Nuevo", and unlink one RFC. Save and reopen. | The address and contact are linked. Only the removed RFC is gone. The RFC itself still exists in Contribuyentes. |
+| 2 | US1 | On the same customer, link an existing address, create a new contact with "Nuevo", and unlink one RFC. Save and reopen. | The address and contact are linked. Only the removed RFC is gone. The RFC itself still exists in Receptores Fiscales. |
 | 3 | US1 | Make link changes, then close the sheet. | The discard confirmation appears. If you confirm, nothing changes on the server. |
 | 4 | US1 | Create a new customer with 1 address, 1 contact and 1 RFC before the first save. | The customer is created with all three links. |
 | 5 | US1 | Sign in as a user with customer read-only access, then click a customer row. | The sections list the links, with no Nuevo, unlink or picker controls. |

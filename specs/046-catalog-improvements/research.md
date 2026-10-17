@@ -108,10 +108,12 @@ Adding discounts or shipping would first need an mbe-api issue (§III). No issue
   Also delete the arb key `productionSiteChildrenNote` from both arb files and regenerate the committed `app_localizations*.dart` with `flutter gen-l10n`.
   
   Keep the type icon and label (`:172-177`, FR-013). The `isStore` local disappears wherever it is no longer used.
+  
+  The provider's `FacilityType facilityType` family parameter is dropped too, so the provider is keyed by `facilityId` alone. Once the gate is gone the type changes nothing about what is fetched, and keeping it in the key would only cause a pointless refetch on a type change. Callers update to match, notably `facility_form_controller.dart:199-201` `_invalidateOwnChildren`.
 - **Rationale**: mbe-api never enforced the rule (spec 018 research §2). The forms for points of sale and cash drawers already accept any facility.
 - **Tests to invert**:
   - `facilities_list_screen_test.dart:342`: now expect all three sections and no note.
-  - `facility_children_controller_test.dart:149-178`: now expect all three fetches.
+  - `facility_children_controller_test.dart:149-178`: now expect all three fetches, with the single-key provider.
   - `facility_children_controller_live_test.dart:88-93`: drop the assertion that the production site's lists are empty.
 
 ## R12 — "Planta"

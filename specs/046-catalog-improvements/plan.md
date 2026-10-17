@@ -52,9 +52,9 @@ This plan covers three independent slices across three catalogs. None needs a ba
 
 | | Files |
 |---|---|
-| **New (4)** | `linked_records_section.dart`, `taxpayer_recipient_inline_create.dart`, `core/widgets/product_photo_preview.dart`, plus their tests |
+| **New (3 source files, plus tests)** | `linked_records_section.dart`, `taxpayer_recipient_inline_create.dart`, `core/widgets/product_photo_preview.dart` |
 | **Edited, customers** | `customer_form.dart`, `customer_form_controller.dart`, `customer_inline_create.dart` (POS), `address_list_item.dart`, `address_repository.dart` + impl, `taxpayer_recipient_form.dart` + controller, `taxpayer_recipient_list_item.dart` (factory) |
-| **Edited, facilities** | `facility_children_controller.dart`, `facility_card.dart` |
+| **Edited, facilities** | `facility_children_controller.dart` (drops the `facilityType` family key), `facility_form_controller.dart` (`_invalidateOwnChildren`), `facility_card.dart` |
 | **Edited, products** | `product_photo.dart`, `products_list_screen.dart`, `product_detail_screen.dart` |
 | **Edited, l10n** | both `.arb` files, plus the regenerated `app_localizations*.dart` |
 
@@ -118,7 +118,8 @@ lib/
 │       ├── taxpayer_recipient_form.dart             # pop(created)
 │       ├── taxpayer_recipient_form_controller.dart  # + created
 │       ├── taxpayer_recipient_inline_create.dart    # NEW (C2)
-│       ├── facility_children_controller.dart        # drop isStore gate
+│       ├── facility_children_controller.dart        # drop isStore gate + facilityType family key
+│       ├── facility_form_controller.dart            # _invalidateOwnChildren(id)
 │       ├── products_list_screen.dart                # photo cell (C5) + preview
 │       ├── product_detail_screen.dart               # preview + thumbnail padding
 │       └── widgets/
