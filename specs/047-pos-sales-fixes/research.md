@@ -103,7 +103,7 @@ All paths are relative to the repository root. The audit for this research was d
 ## R6 — Warehouse pop-up
 
 **Decision**:
-- `warehousePicker()` stops being a `DropdownButtonFormField`. It becomes a read-only field that looks like the other line controls: an `InputDecorator` showing the warehouse name, the stock indicator and a trailing arrow icon. Tapping it opens `showWarehousePicker(context, ...)`, which returns `Future<int?>`.
+- `warehousePicker()` stops being a `DropdownButtonFormField`. It becomes a read-only field that looks like the other line controls: an `InputDecorator` showing the warehouse name (ellipsized), a fixed-size status icon only when the line is short (warning icon, error-colored border) or its stock is unknown (help icon), and a trailing arrow icon. Stock *text* stays out of the closed field: per the existing note (research R11 of the capture spec), a stock flag there would put the shared row-height and baseline at risk. The quantities live in the pop-up and in the line's existing shortfall warning. Approved in the interactive mockup (Claude Design canvas "POS Warehouse Selector", 2026-10-17). Tapping it opens `showWarehousePicker(context, ...)`, which returns `Future<int?>`.
 - The dialog is an `AlertDialog`, built the same way as `showCustomerAddressPicker`:
   - width capped at 480, list height at 320;
   - each row is a `ListTile` with the full name, the available quantity (or "unknown") and the short/no-stock indicator for the line's quantity;

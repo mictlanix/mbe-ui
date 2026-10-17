@@ -55,7 +55,7 @@ Future<int?> showWarehousePicker(
 });
 ```
 
-- The field has the key `sale_line_warehouse_<lineId>`. It is an `InputDecorator`-styled tap target showing the name and the stock flag. It does nothing when the line is not editable.
+- The field has the key `sale_line_warehouse_<lineId>`. It is an `InputDecorator`-styled tap target showing the name (ellipsized), plus a fixed-size icon only when the line is short (warning, error border) or its stock is unknown (help icon), and a trailing arrow. No stock text in the closed field. It does nothing when the line is not editable.
 - The dialog has the key `warehouse_picker_dialog`. Its rows have the key `warehouse_option_<id>`, and the selected row shows `Icons.check`.
 - Returns the picked id, or `null` on cancel. The caller ignores `null`, and ignores a result equal to the current warehouse.
 
