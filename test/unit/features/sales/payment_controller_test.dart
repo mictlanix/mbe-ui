@@ -372,4 +372,113 @@ void main() {
       expect(container.read(paymentControllerProvider).amount, '20.00');
     });
   });
+
+  group('overpayment and change (spec 047 US6)', () {
+    Future<(PaymentController, Sale)> arrange({String amount = '150.00'}) async {
+      final sale = _sale(status: SaleStatus.completed);
+      container = containerFor(sale);
+      container.listen(paymentControllerProvider, (_, _) {});
+      await container.read(posSaleControllerProvider.future);
+      when(() => salesOrders.getById(saleId: 42)).thenAnswer(
+        (_) async => _sale(status: SaleStatus.completed, balance: '0.00'),
+      );
+      final notifier = container.read(paymentControllerProvider.notifier);
+      notifier.setAmount(amount);
+      return (notifier, sale);
+    }
+
+    test('a non-cash method over the balance is refused before any API call', () async {
+      final (notifier, sale) = await arrange();
+
+      final result = await notifier.tender(sale, methodCode: 4);
+
+      expect(result, TenderResult.refused);
+      expect(
+        container.read(paymentControllerProvider).issue,
+        PaymentIssue.overpayNonCash,
+      );
+      verifyNever(() => cashSessions.getCurrent());
+      verifyNever(
+        () => payments.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      );
+    });
+
+    test('a non-cash method at exactly the balance is accepted', () async {
+      final (notifier, sale) = await arrange(amount: '116.00');
+
+      expect(await notifier.tender(sale, methodCode: 4), TenderResult.applied);
+    });
+
+    test('cash over the balance applies the balance, records the change and '
+        'keeps it as lastChange', () async {
+      final (notifier, sale) = await arrange();
+
+      final result = await notifier.tender(sale, methodCode: 1);
+
+      expect(result, TenderResult.applied);
+      verify(
+        () => payments.applyPayment(
+          customerPaymentId: 900,
+          salesOrder: 42,
+          amount: '116.00',
+          amountChange: '34',
+        ),
+      ).called(1);
+      final draft = container.read(paymentControllerProvider);
+      expect(draft.lastChange, '34');
+      expect(draft.amount, '');
+    });
+
+    test('cash at or under the balance leaves no lastChange', () async {
+      final (notifier, sale) = await arrange(amount: '116.00');
+
+      await notifier.tender(sale, methodCode: 1);
+
+      expect(container.read(paymentControllerProvider).lastChange, isNull);
+    });
+
+    test('lastChange survives typing, and is cleared by dismissChange', () async {
+      final (notifier, sale) = await arrange();
+      await notifier.tender(sale, methodCode: 1);
+
+      notifier.setAmount('20.00');
+      expect(container.read(paymentControllerProvider).lastChange, '34');
+
+      notifier.dismissChange();
+      expect(container.read(paymentControllerProvider).lastChange, isNull);
+    });
+
+    test('the next tender clears lastChange', () async {
+      final (notifier, sale) = await arrange();
+      await notifier.tender(sale, methodCode: 1);
+      expect(container.read(paymentControllerProvider).lastChange, '34');
+
+      notifier.setAmount('0');
+      await notifier.tender(sale, methodCode: 1);
+      // Refused for the empty amount — before it started, nothing was cleared…
+      expect(container.read(paymentControllerProvider).lastChange, '34');
+
+      notifier.setAmount('10.00');
+      await notifier.tender(sale, methodCode: 1);
+      // …but a tender that goes ahead clears the previous change.
+      expect(container.read(paymentControllerProvider).lastChange, isNull);
+    });
+
+    test('leaving the step disposes the draft, and with it lastChange', () async {
+      final (notifier, sale) = await arrange();
+      await notifier.tender(sale, methodCode: 1);
+      expect(container.read(paymentControllerProvider).lastChange, '34');
+
+      container.invalidate(paymentControllerProvider);
+
+      expect(container.read(paymentControllerProvider).lastChange, isNull);
+    });
+  });
 }

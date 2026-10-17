@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
+import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -15,7 +16,7 @@ part 'payment_controller.g.dart';
 
 /// A local, non-API reason a tender was refused (spec 047). Carried beside
 /// [PaymentDraft.error], which stays for failures that came back from mbe-api.
-enum PaymentIssue { amountRequired, sessionInvalid }
+enum PaymentIssue { amountRequired, overpayNonCash, sessionInvalid }
 
 /// What a call to [PaymentController.tender] did.
 enum TenderResult {
@@ -46,6 +47,7 @@ class PaymentDraft {
     this.submitting = false,
     this.error,
     this.issue,
+    this.lastChange,
   });
 
   final String amount;
@@ -53,17 +55,24 @@ class PaymentDraft {
   final AppError? error;
   final PaymentIssue? issue;
 
+  /// FR-020: the change owed after the last cash overpayment, kept until the
+  /// cashier dismisses it, starts the next tender, or leaves the step. `null`
+  /// when none is owed.
+  final String? lastChange;
+
   PaymentDraft copyWith({
     String? amount,
     bool? submitting,
     AppError? error,
     PaymentIssue? issue,
     bool clearError = false,
+    bool clearLastChange = false,
   }) => PaymentDraft(
     amount: amount ?? this.amount,
     submitting: submitting ?? this.submitting,
     error: clearError ? null : (error ?? this.error),
     issue: clearError ? null : (issue ?? this.issue),
+    lastChange: clearLastChange ? null : lastChange,
   );
 }
 
@@ -80,6 +89,10 @@ class PaymentController extends _$PaymentController {
 
   void setAmount(String amount) {
     state = state.copyWith(amount: amount, clearError: true);
+  }
+
+  void dismissChange() {
+    state = state.copyWith(clearLastChange: true);
   }
 
   /// FR-016: opens the step with the balance already in the amount field, so
@@ -140,8 +153,16 @@ class PaymentController extends _$PaymentController {
       return TenderResult.refused;
     }
 
+    // FR-018/FR-019: only cash may exceed the balance — a card or transfer
+    // for more than is owed would book money that was never charged.
+    if (methodCode != PaymentMethod.cash.code &&
+        compareAmounts(amount, sale.balanceOrZero) > 0) {
+      state = state.copyWith(issue: PaymentIssue.overpayNonCash);
+      return TenderResult.refused;
+    }
+
     // Held through the session re-read too, so a second tap cannot slip in.
-    state = state.copyWith(submitting: true, clearError: true);
+    state = state.copyWith(submitting: true, clearError: true, clearLastChange: true);
     if (!await _sessionIsValid()) {
       state = state.copyWith(submitting: false, issue: PaymentIssue.sessionInvalid);
       return TenderResult.refused;
@@ -192,6 +213,7 @@ class PaymentController extends _$PaymentController {
         final remaining = ref.read(posSaleControllerProvider).value?.balanceOrZero;
         state = PaymentDraft(
           amount: remaining == null || isZeroAmount(remaining) ? '' : remaining,
+          lastChange: isZeroAmount(change) ? null : change,
         );
         return TenderResult.applied;
       });

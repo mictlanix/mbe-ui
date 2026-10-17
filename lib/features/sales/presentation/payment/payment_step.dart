@@ -8,6 +8,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/applied_payments_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_capture_pane.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/payment_change_card.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_summary_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
@@ -50,6 +51,7 @@ class PaymentStep extends ConsumerWidget {
 
     final issueMessage = switch (draft.issue) {
       PaymentIssue.amountRequired => l10n.posPaymentAmountRequired,
+      PaymentIssue.overpayNonCash => l10n.posPaymentOverpayNonCash,
       PaymentIssue.sessionInvalid => l10n.posPaymentSessionInvalid,
       null => null,
     };
@@ -72,6 +74,17 @@ class PaymentStep extends ConsumerWidget {
     );
     final appliedPayments = AppliedPaymentsPanel(saleId: sale.id, enabled: enabled);
     final summary = PaymentSummaryPanel(sale: sale, onClose: onClose);
+    // spec 047 FR-020: above the summary, not inside the draft's own amount
+    // area — the draft is already reset for the next tender by now.
+    final changeCard = draft.lastChange == null
+        ? null
+        : Padding(
+            padding: EdgeInsets.all(spacing.sm),
+            child: PaymentChangeCard(
+              amount: draft.lastChange!,
+              onDismiss: ref.read(paymentControllerProvider.notifier).dismissChange,
+            ),
+          );
 
     final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
 
@@ -131,6 +144,7 @@ class PaymentStep extends ConsumerWidget {
                 Divider(height: 1, color: theme.colorScheme.outlineVariant),
                 SizedBox(height: spacing.sm),
                 Expanded(child: appliedPayments),
+                ?changeCard,
                 summary,
               ],
             ),
@@ -164,6 +178,7 @@ class PaymentStep extends ConsumerWidget {
             ],
           ),
         ),
+        ?changeCard,
         summary,
       ],
     );
