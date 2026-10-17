@@ -3806,6 +3806,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get posWarehousePickerTitle => 'Warehouse';
 
   @override
+  String get posWarehousePickerNotTracked =>
+      'This product is not stock-tracked, so any warehouse is valid.';
+
+  @override
   String get posPaymentAmountRequired => 'Enter an amount greater than zero.';
 
   @override

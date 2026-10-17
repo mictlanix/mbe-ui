@@ -6925,6 +6925,12 @@ abstract class AppLocalizations {
   /// **'Warehouse'**
   String get posWarehousePickerTitle;
 
+  /// Note at the top of the warehouse pop-up when the product is not checked against stock.
+  ///
+  /// In en, this message translates to:
+  /// **'This product is not stock-tracked, so any warehouse is valid.'**
+  String get posWarehousePickerNotTracked;
+
   /// spec 047: shown when a payment method is tapped with no amount
   ///
   /// In en, this message translates to:

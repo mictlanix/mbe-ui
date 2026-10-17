@@ -2677,6 +2677,8 @@
   "@posCaptureShortLines": {"description": "spec 047 FR-010: reason shown while Continue is blocked", "placeholders": {"count": {"type": "int"}}},
   "posWarehousePickerTitle": "Warehouse",
   "@posWarehousePickerTitle": {"description": "spec 047 FR-012: title of the warehouse pop-up"},
+  "posWarehousePickerNotTracked": "This product is not stock-tracked, so any warehouse is valid.",
+  "@posWarehousePickerNotTracked": {"description": "Note at the top of the warehouse pop-up when the product is not checked against stock."},
   "posPaymentAmountRequired": "Enter an amount greater than zero.",
   "@posPaymentAmountRequired": {"description": "spec 047: shown when a payment method is tapped with no amount"},
   "posPaymentOverpayNonCash": "Only cash can exceed the balance.",
