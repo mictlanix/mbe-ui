@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "POS Sales Fixes",
+  "branch": "047-pos-sales-fixes",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-17T20:08:05.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-17T20:40:32.872Z"
+    }
+  ],
+  "telemetryInstanceId": "1b4a6616-9ac0-4114-ad93-e6eec63012bf"
+}
