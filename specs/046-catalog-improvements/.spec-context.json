@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Catalog Improvements",
+  "branch": "046-catalog-improvements",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-17T00:32:36.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-17T01:50:07.264Z"
+    }
+  ],
+  "telemetryInstanceId": "b82834c4-2564-4752-bf70-a965068d8d3e"
+}
