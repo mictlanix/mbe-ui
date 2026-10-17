@@ -120,7 +120,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
   - cover a customer with 2 RFCs saved without losing either;
   - cover create-then-failed-save: a contact created with "Nuevo" stays in the section, the customer save fails and shows the error, and retrying Save sends that contact's id once, with no second contact created (spec edge case "Failure while creating a linked record") (depends on T011)
 - [X] T017 [US1] Run and, if needed, update `test/widget/features/sales/customer_inline_create_test.dart` and `test/widget/features/sales/quote_customer_inline_create_test.dart`; behavior must be unchanged (depends on T010)
-- [ ] T018 [US1] Manual validation: quickstart scenarios 1–6 against the dev backend, including the read-only user (scenario 5)
+- [X] T018 [US1] Manual validation: quickstart scenarios 1–6 against the dev backend, including the read-only user (scenario 5) — *confirmed in the running app by the product owner, 2026-10-17*
 
 **Checkpoint**: US1 is shippable on its own.
 
@@ -163,7 +163,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 - [X] T022 [P] [US2] Invert `test/unit/features/catalog/facility_children_controller_test.dart` (~lines 149–178): a production site now requests all three child lists, and `pointsOfSaleReadable` / `cashDrawersReadable` follow the privilege. Update every `facilityChildrenControllerProvider(id, type)` reference to the single-key form (T019), here and in `test/unit/features/catalog/` facility form controller tests if they reference it
 - [X] T023 [P] [US2] Invert `test/widget/features/catalog/facilities_list_screen_test.dart` (~lines 342–381): the production-site card shows Warehouses, Points of Sale and Cash Drawers with counts and "+" actions, the note is absent, and POS and drawer lists are fetched. Check the other uses of `_productionSite` (~lines 287, 498) still hold. Add a case for spec US2 scenario 3: a production site that has points of sale and cash drawers lists them under their sections with the right counts
 - [X] T024 [P] [US2] Update `test/integration/facility_children_controller_live_test.dart` (~lines 88–93): drop the assertion that a production site's points of sale and cash drawers are empty
-- [ ] T025 [US2] Manual validation: quickstart scenario 7. Also change a store that has points of sale to a production site and confirm its children stay visible (spec US2 scenario 3)
+- [X] T025 [US2] Manual validation: quickstart scenario 7. Also change a store that has points of sale to a production site and confirm its children stay visible (spec US2 scenario 3) — *confirmed in the running app by the product owner, 2026-10-17*
 
 **Checkpoint**: US2 is shippable on its own.
 
@@ -177,7 +177,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 - [X] T026 [US3] In `lib/l10n/app_es.arb`, change `facilityTypeProductionSite` from "Sitio de producción" to "Planta"; leave English unchanged. Run `flutter gen-l10n` (after T021, since both edit the arb files)
 - [X] T027 [US3] Run `grep -rni "sitio de producci" lib test` and fix any remaining occurrence. Add a Spanish-locale assertion in `test/widget/features/catalog/facilities_list_screen_test.dart` that the production-site card reads "Planta" and the facility form type dropdown offers "Planta" in `test/widget/features/catalog/facility_detail_screen_test.dart` (depends on T026)
-- [ ] T028 [US3] Manual validation: quickstart scenario 8
+- [X] T028 [US3] Manual validation: quickstart scenario 8 — *confirmed in the running app by the product owner, 2026-10-17*
 
 **Checkpoint**: US3 is shippable on its own.
 
@@ -197,7 +197,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 - [X] T034 [P] [US4] Extend `test/widget/core/widgets/product_photo_test.dart`: `onTap` fires on a loaded photo; it does not fire on the null-URL or error placeholder; existing cases unchanged. To make a photo actually load, reuse the network-image stub pattern this file already uses for its "network image" case; the default test HTTP client returns errors, which would only exercise the placeholder
 - [X] T035 [P] [US4] Create `test/widget/core/widgets/product_photo_preview_test.dart`: shows the title and image; Escape, barrier tap and the close button each dismiss; load error shows the placeholder; a tall portrait image fits inside the dialog without overflow or page scroll (spec edge case "Very large or portrait photos"). Use the same image stub as T034
 - [X] T036 [US4] Extend `test/widget/features/catalog/products_list_screen_test.dart`: tapping a photo opens the preview and does **not** navigate to the product; tapping elsewhere in the row still opens the read-only view; a product without a photo has no preview (depends on T032)
-- [ ] T037 [US4] Manual validation: quickstart scenarios 9 and 10
+- [X] T037 [US4] Manual validation: quickstart scenarios 9 and 10 — *confirmed in the running app by the product owner, 2026-10-17*
 
 **Checkpoint**: US4 is shippable on its own.
 
@@ -212,7 +212,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 - [X] T038 [US5] In `lib/features/catalog/presentation/products_list_screen.dart`, size the photo cell per contracts C5: `size = (density.tableDataRowHeight ?? 44) - 2 * spacing.xxs`, wrapped in a centered `Padding(symmetric(vertical: spacing.xxs, horizontal: spacing.xs))`, with the column's `fixedWidth` set to `size + 2 * spacing.xs`. Use the existing density and spacing providers; no literals (after T032)
 - [X] T039 [P] [US5] In `lib/features/catalog/presentation/product_detail_screen.dart` `_PhotoSection`, add `spacing.xs` padding around the thumbnail so it keeps a gap from the upload, replace and remove buttons in both the wide and compact layouts (FR-019)
 - [X] T040 [US5] Update `test/widget/features/catalog/products_list_screen_test.dart` (~lines 295–312): replace the `size == 84` assertion with the derived size, and add a measuring test (§VI) that the space above the photo equals the space below it and is greater than 0, at both pointer and touch densities (after T036)
-- [ ] T041 [US5] Manual validation: quickstart scenario 11, plus the detail screen at both layouts
+- [X] T041 [US5] Manual validation: quickstart scenario 11, plus the detail screen at both layouts — *confirmed in the running app by the product owner, 2026-10-17*
 
 **Checkpoint**: US5 is shippable on its own.
 
@@ -222,7 +222,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 - [X] T042 Run `dart format` on every changed file and `flutter analyze`; fix anything this feature introduced. Mention, but do not fix, unrelated warnings
 - [X] T043 Run the full `flutter test` suite, including `test/unit/core/formatting_guard_test.dart`; confirm nothing outside the files named in this list changed behavior — *as built: 2934 pass, 62 skipped, 19 fail; all 19 predate this feature (research R15: Flutter 3.47 golden diffs, the regenerated products client, the live backend's 500)*
-- [ ] T044 Run the whole of `specs/046-catalog-improvements/quickstart.md` once end to end (all 11 scenarios) in Spanish, then confirm the success criteria SC-001 to SC-006 in `spec.md`
+- [X] T044 Run the whole of `specs/046-catalog-improvements/quickstart.md` once end to end (all 11 scenarios) in Spanish, then confirm the success criteria SC-001 to SC-006 in `spec.md` — *confirmed in the running app by the product owner, 2026-10-17*
 
 ---
 
