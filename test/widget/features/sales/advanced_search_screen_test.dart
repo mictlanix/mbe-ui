@@ -369,6 +369,61 @@ void main() {
       expect(router.state.uri.queryParameters['page'], isNull);
       expect(router.state.uri.queryParameters['stockable'], 'true');
     });
+
+    testWidgets('three labels then Stockable, all accumulate while the screen is pushed; '
+        'deselecting one removes only that one (spec 047 US2)', (tester) async {
+      final router = await pumpScreen(
+        tester,
+        labels: const [
+          LabelItem(labelId: 1, name: 'Alfa'),
+          LabelItem(labelId: 2, name: 'Beta'),
+          LabelItem(labelId: 3, name: 'Gama'),
+        ],
+        query: const ListQuery(search: 'wid'),
+      );
+      await openFilterSheet(tester);
+
+      final chips = find.descendant(
+        of: find.byKey(const Key('advanced_search_filter_label')),
+        matching: find.byType(FilterChip),
+      );
+      bool isSelected(int index) => tester.widget<FilterChip>(chips.at(index)).selected;
+
+      for (var i = 0; i < 3; i++) {
+        await tester.tap(chips.at(i));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.byKey(const Key('advanced_search_filter_stockable')));
+      await tester.pumpAndSettle();
+
+      expect([isSelected(0), isSelected(1), isSelected(2)], [true, true, true]);
+      final uri = router.routerDelegate.currentConfiguration.uri;
+      expect(currentRouteUri(router).queryParametersAll['label'], ['1', '2', '3']);
+      expect(currentRouteUri(router).queryParameters['stockable'], 'true');
+      expect(currentRouteUri(router).queryParameters['search'], 'wid');
+      expect(uri.path, isNot(advancedSearchPath)); // base route is still /host
+
+      final captured = verify(
+        () => productRepository.list(
+          search: captureAny(named: 'search'),
+          status: any(named: 'status'),
+          stockable: captureAny(named: 'stockable'),
+          salable: any(named: 'salable'),
+          purchasable: any(named: 'purchasable'),
+          supplier: any(named: 'supplier'),
+          labels: captureAny(named: 'labels'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).captured;
+      expect(captured.sublist(captured.length - 3), [[1, 2, 3], 'wid', true]);
+
+      await tester.tap(chips.at(1));
+      await tester.pumpAndSettle();
+      expect([isSelected(0), isSelected(1), isSelected(2)], [true, false, true]);
+      expect(currentRouteUri(router).queryParametersAll['label'], ['1', '3']);
+      expect(currentRouteUri(router).queryParameters['stockable'], 'true');
+    });
   });
 
   group('the forced filter is unforgeable (FR-008, SC-004)', () {
