@@ -11,8 +11,41 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 /// warning simply doesn't render for a line whose product was never looked
 /// up in this session (e.g. right after resuming a sale) — advisory, not a
 /// substitute for the authoritative check at confirmation.
+///
+/// A key that is **missing** means the product's stock is unknown; a key that
+/// is present with [ProductStock.checked] `false` means the product is not
+/// stock-tracked (spec 047, data-model.md ProductStock). The old
+/// `List<WarehouseStock>` value could not tell those two apart, because a
+/// product that is not stockable comes back with an empty list.
 final productStockCacheProvider =
-    StateProvider<Map<int, List<WarehouseStock>>>((ref) => const {});
+    StateProvider<Map<int, ProductStock>>((ref) => const {});
+
+/// What the product lookup said about a product's stock (spec 047).
+///
+/// [stockable] and [stockRequired] are both needed because that is exactly the
+/// rule the backend applies when it confirms a sale (`stock_verification AND
+/// stockable`): a product kept in inventory but configured to skip the check
+/// can be oversold and so is never "short".
+class ProductStock {
+  const ProductStock({
+    this.stockable = true,
+    this.stockRequired = true,
+    this.warehouses = const <WarehouseStock>[],
+  });
+
+  factory ProductStock.fromLookup(ProductLookupResult result) => ProductStock(
+    stockable: result.stockable,
+    stockRequired: result.stockRequired,
+    warehouses: result.stock,
+  );
+
+  final bool stockable;
+  final bool stockRequired;
+  final List<WarehouseStock> warehouses;
+
+  /// Whether a sale line for this product is checked against stock.
+  bool get checked => stockable && stockRequired;
+}
 
 /// The product table's own tax rate, keyed by product id — the same
 /// lookup-derived, screen-local cache as [productStockCacheProvider], written

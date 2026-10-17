@@ -6894,6 +6894,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This is the walk-in customer: its only tax recipient is {rfc} (general public), and nothing else can be linked to it.'**
   String customerGenericTaxpayerNote(String rfc);
+
+  /// spec 047 FR-003: snackbar shown when an expired session sends the cashier to its close screen
+  ///
+  /// In en, this message translates to:
+  /// **'Your cash session has expired. Close it to keep selling.'**
+  String get posSessionExpiredRedirect;
+
+  /// spec 047 FR-004: blocking banner on the payment step
+  ///
+  /// In en, this message translates to:
+  /// **'The cash session has expired. Close it to take payments.'**
+  String get posSessionExpiredPaymentsBlocked;
+
+  /// spec 047: banner action that opens the expired session's close screen
+  ///
+  /// In en, this message translates to:
+  /// **'Close session'**
+  String get posSessionCloseAction;
+
+  /// spec 047 FR-010: reason shown while Continue is blocked
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line without enough stock} other{{count} lines without enough stock}}'**
+  String posCaptureShortLines(int count);
+
+  /// spec 047 FR-012: title of the warehouse pop-up
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get posWarehousePickerTitle;
+
+  /// spec 047: shown when a payment method is tapped with no amount
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero.'**
+  String get posPaymentAmountRequired;
+
+  /// spec 047 FR-019
+  ///
+  /// In en, this message translates to:
+  /// **'Only cash can exceed the balance.'**
+  String get posPaymentOverpayNonCash;
+
+  /// spec 047 FR-005: shown when the pre-payment session re-read finds it expired or closed
+  ///
+  /// In en, this message translates to:
+  /// **'The cash session is no longer valid. Close it and open a new one to take payments.'**
+  String get posPaymentSessionInvalid;
+
+  /// spec 047 FR-020: label of the change card
+  ///
+  /// In en, this message translates to:
+  /// **'Change to hand back'**
+  String get posPaymentChangeDue;
+
+  /// spec 047: dismisses the change card
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get posPaymentDismissChange;
+
+  /// spec 047 FR-015: title of the reference dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reference'**
+  String get posPaymentReferenceTitle;
+
+  /// spec 047 FR-015: confirm button of the reference dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Apply payment'**
+  String get posPaymentReferenceConfirm;
 }
 
 class _AppLocalizationsDelegate

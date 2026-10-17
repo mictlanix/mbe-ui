@@ -416,9 +416,11 @@ void main() {
             // the widest of the four states — rather than a blank item.
             productStockCacheProvider.overrideWith(
               (ref) => const {
-                11: [
-                  WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
-                ],
+                11: ProductStock(
+                  warehouses: [
+                    WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
+                  ],
+                ),
               },
             ),
           ],

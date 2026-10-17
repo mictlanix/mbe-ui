@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "POS Sales Fixes",
   "branch": "047-pos-sales-fixes",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,13 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-17T21:10:41.704Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-17T22:22:57.471Z"
     }
   ],
   "telemetryInstanceId": "1b4a6616-9ac0-4114-ad93-e6eec63012bf"

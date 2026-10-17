@@ -450,7 +450,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     if (warehouseId == null) return null;
     final cache = ref.read(productStockCacheProvider)[line.product];
     if (cache == null) return null;
-    for (final entry in cache) {
+    for (final entry in cache.warehouses) {
       if (entry.warehouse == warehouseId) return entry;
     }
     return null;

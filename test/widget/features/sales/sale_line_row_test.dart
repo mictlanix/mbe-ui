@@ -54,7 +54,7 @@ void main() {
     WidgetTester tester, {
     bool enabled = true,
     String quantity = '2',
-    Map<int, List<WarehouseStock>> stock = const {},
+    Map<int, ProductStock> stock = const {},
   }) async {
     await pumpPos(
       tester,
@@ -645,9 +645,9 @@ void main() {
         tester,
         quantity: '2',
         stock: const {
-          11: [
+          11: ProductStock(warehouses: [
             WarehouseStock(warehouse: 3, onHand: '10', available: '10'),
-          ],
+          ]),
         },
       );
       expect(find.byIcon(Icons.warning_amber), findsNothing);
@@ -660,9 +660,9 @@ void main() {
         tester,
         quantity: '5',
         stock: const {
-          11: [
+          11: ProductStock(warehouses: [
             WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
-          ],
+          ]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -678,9 +678,9 @@ void main() {
         tester,
         quantity: '1',
         stock: const {
-          11: [
+          11: ProductStock(warehouses: [
             WarehouseStock(warehouse: 3, onHand: '0', available: '0'),
-          ],
+          ]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -706,7 +706,7 @@ void main() {
           tester,
           quantity: '2',
           stock: const {
-            11: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')],
+            11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')]),
           },
         );
 
@@ -731,7 +731,7 @@ void main() {
         tester,
         quantity: '5',
         stock: const {
-          11: [WarehouseStock(warehouse: 3, onHand: '2', available: '2')],
+          11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '2', available: '2')]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -750,7 +750,7 @@ void main() {
         tester,
         quantity: '2',
         stock: const {
-          11: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')],
+          11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -771,7 +771,7 @@ void main() {
         tester,
         quantity: '1',
         stock: const {
-          11: [WarehouseStock(warehouse: 4, onHand: '0', available: '0')],
+          11: ProductStock(warehouses: [WarehouseStock(warehouse: 4, onHand: '0', available: '0')]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -816,7 +816,7 @@ void main() {
           salesOrderOverride(salesOrder),
           productStockCacheProvider.overrideWith(
             (ref) => const {
-              11: [WarehouseStock(warehouse: 4, onHand: '2', available: '2')],
+              11: ProductStock(warehouses: [WarehouseStock(warehouse: 4, onHand: '2', available: '2')]),
             },
           ),
         ],

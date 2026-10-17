@@ -28,7 +28,7 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 **Purpose**: Establish a clean baseline before changing anything.
 
-- [ ] T001 Run `flutter analyze` and `flutter test test/unit/features/sales test/widget/features/sales` on the branch, and record any pre-existing failures in a comment on this task so they are not mistaken for regressions (research R9 notes stale failure images in `test/golden/failures`)
+- [X] T001 Run `flutter analyze` and `flutter test test/unit/features/sales test/widget/features/sales` on the branch, and record any pre-existing failures in a comment on this task so they are not mistaken for regressions (research R9 notes stale failure images in `test/golden/failures`)
 
 ---
 
@@ -36,7 +36,7 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 **Purpose**: Shared pieces that more than one story needs. Nothing below starts until these are done.
 
-- [ ] T002 Add all new strings to both `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, following the existing `pos*` key naming, then regenerate `lib/l10n/app_localizations*.dart` (do not hand-edit them). Keys:
+- [X] T002 Add all new strings to both `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, following the existing `pos*` key naming, then regenerate `lib/l10n/app_localizations*.dart` (do not hand-edit them). Keys:
   - `posSessionExpiredRedirect`
   - `posSessionExpiredPaymentsBlocked`
   - `posSessionCloseAction` ("Cerrar sesión")
@@ -49,10 +49,10 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
   - `posPaymentReferenceConfirm`
   - `posPaymentDismissChange`
   - `posPaymentSessionInvalid`
-- [ ] T003 [P] Add an `isValid` getter (`state == SessionState.open`) to `CurrentSession` in `lib/features/sales/domain/entities/current_session.dart`, and regenerate the freezed output if the entity is generated (data-model, CurrentSession)
-- [ ] T004 [P] Add a `/sales/cash-sessions/:cashSessionId` stub route to `pumpPosRouted` in `test/widget/features/sales/pos_test_harness.dart`, so tests can assert a redirect landed there (research R9)
-- [ ] T005 Replace the cache value with `ProductStock` in `lib/features/sales/presentation/capture/product_stock_cache.dart`: a type with `stockable`, `stockRequired`, `warehouses` and a derived `checked` (`stockable && stockRequired`); change `productStockCacheProvider` to `Map<int, ProductStock>`. Update the readers in `capture/sale_line_editing.dart` (`_stockIn`, `_stockLevelIn`, `shortfall`) and the seeding in `capture/capture_step.dart:148-152` to the new type, **keeping behavior identical** (data-model, ProductStock). Used by US3 and US4.
-- [ ] T006 Run the existing sales tests to confirm T005 changed no behavior: `flutter test test/widget/features/sales test/unit/features/sales`
+- [X] T003 [P] Add an `isValid` getter (`state == SessionState.open`) to `CurrentSession` in `lib/features/sales/domain/entities/current_session.dart`, and regenerate the freezed output if the entity is generated (data-model, CurrentSession)
+- [X] T004 [P] Add a `/sales/cash-sessions/:cashSessionId` stub route to `pumpPosRouted` in `test/widget/features/sales/pos_test_harness.dart`, so tests can assert a redirect landed there (research R9)
+- [X] T005 Replace the cache value with `ProductStock` in `lib/features/sales/presentation/capture/product_stock_cache.dart`: a type with `stockable`, `stockRequired`, `warehouses` and a derived `checked` (`stockable && stockRequired`); change `productStockCacheProvider` to `Map<int, ProductStock>`. Update the readers in `capture/sale_line_editing.dart` (`_stockIn`, `_stockLevelIn`, `shortfall`) and the seeding in `capture/capture_step.dart:148-152` to the new type, **keeping behavior identical** (data-model, ProductStock). Used by US3 and US4.
+- [X] T006 Run the existing sales tests to confirm T005 changed no behavior: `flutter test test/widget/features/sales test/unit/features/sales`
 
 **Checkpoint**: Strings, the session getter, the harness stub and the typed stock cache are in place.
 

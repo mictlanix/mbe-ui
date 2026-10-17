@@ -3825,4 +3825,52 @@ class AppLocalizationsEs extends AppLocalizations {
   String customerGenericTaxpayerNote(String rfc) {
     return 'Este es el cliente de mostrador: su único receptor fiscal es $rfc (público en general) y no se le puede vincular nada más.';
   }
+
+  @override
+  String get posSessionExpiredRedirect =>
+      'Tu sesión de caja está vencida. Ciérrala para continuar vendiendo.';
+
+  @override
+  String get posSessionExpiredPaymentsBlocked =>
+      'La sesión de caja está vencida. Ciérrala para cobrar.';
+
+  @override
+  String get posSessionCloseAction => 'Cerrar sesión';
+
+  @override
+  String posCaptureShortLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partidas sin existencia suficiente',
+      one: '1 partida sin existencia suficiente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get posWarehousePickerTitle => 'Almacén';
+
+  @override
+  String get posPaymentAmountRequired => 'Captura un monto mayor a cero.';
+
+  @override
+  String get posPaymentOverpayNonCash =>
+      'Solo el efectivo puede exceder el saldo.';
+
+  @override
+  String get posPaymentSessionInvalid =>
+      'La sesión de caja ya no es válida. Ciérrala y abre una nueva para cobrar.';
+
+  @override
+  String get posPaymentChangeDue => 'Cambio a entregar';
+
+  @override
+  String get posPaymentDismissChange => 'Entendido';
+
+  @override
+  String get posPaymentReferenceTitle => 'Referencia del pago';
+
+  @override
+  String get posPaymentReferenceConfirm => 'Aplicar pago';
 }

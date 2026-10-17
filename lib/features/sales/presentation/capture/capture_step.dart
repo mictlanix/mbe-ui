@@ -148,7 +148,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     if (widget.showWarehouse) {
       ref
           .read(productStockCacheProvider.notifier)
-          .update((cache) => {...cache, result.product: result.stock});
+          .update((cache) => {...cache, result.product: ProductStock.fromLookup(result)});
     }
     // The product table's tax rate, cached for the line's tax picker
     // (FR-038b) — the lookup is the only payload that carries it. Kept for
