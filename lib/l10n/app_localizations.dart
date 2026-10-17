@@ -6888,6 +6888,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New'**
   String get linkedRecordNewAction;
+
+  /// spec 046 FR-021: note on the POS default customer's form
+  ///
+  /// In en, this message translates to:
+  /// **'This is the walk-in customer: its only tax recipient is {rfc} (general public), and nothing else can be linked to it.'**
+  String customerGenericTaxpayerNote(String rfc);
 }
 
 class _AppLocalizationsDelegate

@@ -134,6 +134,12 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 - [X] T054 [US1] Add the `/customers/new` and `/customers/:customerId` routes and drop `/customers` from the legacy redirects in `lib/app/router/app_router.dart`; push them from `customers_list_screen.dart` instead of `showRecordSheet`
 - [X] T055 [US1] Tests: `test/widget/features/catalog/customer_detail_screen_test.dart` (new), `customers_list_screen_test.dart`, `test/unit/app/router/app_router_test.dart`
 
+### Follow-up: the walk-in customer's links are fixed (added 2026-10-17, FR-021)
+
+- [X] T056 [US1] In `customer_form_controller.dart`, add `genericTaxpayerRfc` and `isGenericCustomer` (via `AppSettings.isGenericCustomer`); ignore link additions and RFC removals for it; send only the generic RFC on update
+- [X] T057 [US1] In `customer_form.dart`, hide link/New controls and RFC unlink for the walk-in customer and show the note (`customerGenericTaxpayerNote` in both `.arb` files)
+- [X] T058 [US1] Tests: walk-in group in `customer_form_controller_test.dart`; walk-in widget test and an `appSettingsProvider` override in `customer_form_test.dart`
+
 ---
 
 ## Phase 4: User Story 2 — Production sites can have points of sale and cash drawers (Priority: P2)

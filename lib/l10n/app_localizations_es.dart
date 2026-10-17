@@ -3820,4 +3820,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get linkedRecordNewAction => 'Nuevo';
+
+  @override
+  String customerGenericTaxpayerNote(String rfc) {
+    return 'Este es el cliente de mostrador: su único receptor fiscal es $rfc (público en general) y no se le puede vincular nada más.';
+  }
 }

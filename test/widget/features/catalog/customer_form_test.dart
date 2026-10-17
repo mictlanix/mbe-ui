@@ -9,6 +9,10 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/config/app_settings.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
@@ -160,6 +164,9 @@ void main() {
     int? customerId,
     Customer existing = _existingWithSalesperson,
     bool forceReadOnly = false,
+    // The deployment's POS default customer; by default an id no fixture
+    // uses, so the walk-in rule (FR-021) applies only where a test asks.
+    int walkInCustomerId = 999,
   }) async {
     if (customerId != null) {
       when(
@@ -184,6 +191,16 @@ void main() {
             taxpayerRepository,
           ),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
+          appSettingsProvider.overrideWithValue(
+            AppSettings(
+              apiBaseUrl: 'http://test',
+              photosBaseUrl: 'http://test',
+              posDefaultCustomerId: walkInCustomerId,
+              brand: const BrandConfig(displayName: 'Test'),
+              defaultLocale: const Locale('es', 'MX'),
+              formatting: const FormattingSettings(),
+            ),
+          ),
         ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -693,5 +710,31 @@ void main() {
         ),
       ).called(1);
     });
+  });
+
+  testWidgets('the walk-in customer offers nothing to link, keeps its RFC '
+      'fixed, says why, and still lets a stray address be unlinked '
+      '(046-catalog-improvements FR-021)', (tester) async {
+    await pumpScreen(
+      tester,
+      signedInAs: _linkingUser,
+      customerId: 3,
+      existing: _linked,
+      walkInCustomerId: 3,
+    );
+
+    for (final section in ['addresses', 'contacts', 'taxpayers']) {
+      expect(find.byKey(Key('linked_new_$section')), findsNothing);
+      expect(find.byKey(Key('linked_picker_${section}_0')), findsNothing);
+    }
+    expect(
+      find.byKey(const Key('unlink_taxpayers_AAA010101AAA')),
+      findsNothing,
+    );
+    expect(find.byKey(const Key('unlink_addresses_10')), findsOneWidget);
+    expect(
+      find.byKey(const Key('customer_generic_taxpayer_note')),
+      findsOneWidget,
+    );
   });
 }

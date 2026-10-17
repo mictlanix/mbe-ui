@@ -142,6 +142,7 @@ Product thumbnails in the catalog have visible space around them. They no longer
 - **FR-007**: The sections MUST work both when creating and when editing a customer.
 - **FR-008**: The sections MUST follow the existing permission rules: read-only without edit permission, and "create new" only with create permission on that record type.
 - **FR-009**: The customer form MUST NOT edit linked addresses or contacts in place. They are shared records, so corrections are made by unlinking and then linking or creating the correct record.
+- **FR-021** *(added 2026-10-17)*: The walk-in customer (the deployment's POS default customer) MUST NOT accept new addresses, contacts or taxpayers from the customer form. Its only taxpayer is XAXX010101000 (general public): the form shows it fixed with an explanatory note, and saving always sends exactly that RFC. Unlinking a stray address or contact stays allowed. This rule lives in mbe-ui only; mbe-api does not enforce it.
 - **FR-020** *(added 2026-10-17)*: The customer form MUST open on its own screen (create, view and edit), not in the side panel over the list. Row click opens it read-only, Edit opens it editable, and leaving with unsaved edits asks first.
 
 **Facilities catalog**

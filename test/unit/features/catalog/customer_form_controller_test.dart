@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,6 +9,10 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/config/app_settings.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -39,10 +44,27 @@ const _fullAccessUser = User(
   privileges: [Privilege(systemObject: SystemObject.customers, rawValue: 15)],
 );
 
-ProviderContainer _containerFor(User user, CustomerRepository repository) {
+/// [walkInCustomerId] is the deployment's POS default customer. It defaults
+/// to an id no fixture uses, so the walk-in rule (FR-021) only applies in the
+/// tests that ask for it.
+ProviderContainer _containerFor(
+  User user,
+  CustomerRepository repository, {
+  int walkInCustomerId = 999,
+}) {
   return ProviderContainer(
     retry: (_, _) => null,
     overrides: [
+      appSettingsProvider.overrideWithValue(
+        AppSettings(
+          apiBaseUrl: 'http://test',
+          photosBaseUrl: 'http://test',
+          posDefaultCustomerId: walkInCustomerId,
+          brand: const BrandConfig(displayName: 'Test'),
+          defaultLocale: const Locale('es', 'MX'),
+          formatting: const FormattingSettings(),
+        ),
+      ),
       customerRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(
         AccessControlService(AuthState.authenticated(token: 't', user: user)),
@@ -466,6 +488,100 @@ void main() {
 
       notifier.taxpayerSelected(null, '');
       expect(container.read(customerFormControllerProvider).taxpayers, isEmpty);
+    });
+  });
+  group('the walk-in customer (046-catalog-improvements FR-021)', () {
+    late ProviderContainer walkIn;
+
+    setUp(() {
+      walkIn = _containerFor(_fullAccessUser, repository, walkInCustomerId: 1);
+      addTearDown(walkIn.dispose);
+      when(() => repository.get(customerId: 1)).thenAnswer(
+        (_) async =>
+            _customer(addresses: [_address10], taxpayers: [_rfcA, _rfcB]),
+      );
+      when(
+        () => repository.update(
+          customerId: any(named: 'customerId'),
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          priceList: any(named: 'priceList'),
+          zone: any(named: 'zone'),
+          creditLimit: any(named: 'creditLimit'),
+          creditDays: any(named: 'creditDays'),
+          salesperson: any(named: 'salesperson'),
+          status: any(named: 'status'),
+          comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
+          taxpayers: any(named: 'taxpayers'),
+        ),
+      ).thenAnswer((_) async => _customer());
+    });
+
+    test(
+      'nothing can be linked to it, and its RFCs cannot be removed',
+      () async {
+        final notifier = walkIn.read(customerFormControllerProvider.notifier);
+        await notifier.loadForEdit(1);
+        expect(notifier.isGenericCustomer, isTrue);
+
+        notifier
+          ..addressAdded(_address11)
+          ..contactAdded(_contact20)
+          ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcB))
+          ..taxpayerRemoved('AAA010101AAA');
+
+        final state = walkIn.read(customerFormControllerProvider);
+        expect(state.addresses, [_address10]);
+        expect(state.contacts, isEmpty);
+        expect(state.taxpayers, hasLength(2));
+      },
+    );
+
+    test('a stray address can still be unlinked', () async {
+      final notifier = walkIn.read(customerFormControllerProvider.notifier);
+      await notifier.loadForEdit(1);
+
+      notifier.addressRemoved(10);
+
+      expect(walkIn.read(customerFormControllerProvider).addresses, isEmpty);
+    });
+
+    test(
+      'saving always sends the generic RFC alone, correcting any other',
+      () async {
+        final notifier = walkIn.read(customerFormControllerProvider.notifier);
+        await notifier.loadForEdit(1);
+
+        await notifier.submitUpdate();
+
+        final sent = verify(
+          () => repository.update(
+            customerId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            priceList: any(named: 'priceList'),
+            zone: any(named: 'zone'),
+            creditLimit: any(named: 'creditLimit'),
+            creditDays: any(named: 'creditDays'),
+            salesperson: any(named: 'salesperson'),
+            status: any(named: 'status'),
+            comment: any(named: 'comment'),
+            addresses: any(named: 'addresses'),
+            contacts: any(named: 'contacts'),
+            taxpayers: captureAny(named: 'taxpayers'),
+          ),
+        ).captured;
+        expect(sent.single, [genericTaxpayerRfc]);
+      },
+    );
+
+    test('any other customer is not affected', () async {
+      final notifier = container.read(customerFormControllerProvider.notifier);
+      await notifier.loadForEdit(1);
+
+      expect(notifier.isGenericCustomer, isFalse);
     });
   });
 }

@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
@@ -15,6 +16,11 @@ import 'package:mbe_ui/features/catalog/presentation/customers_list_controller.d
 
 part 'customer_form_controller.freezed.dart';
 part 'customer_form_controller.g.dart';
+
+/// SAT's RFC for the general public — the only taxpayer recipient the
+/// walk-in customer (`AppSettings.posDefaultCustomerId`) may carry
+/// (046-catalog-improvements FR-021).
+const genericTaxpayerRfc = 'XAXX010101000';
 
 /// Error codes for [CustomerFormState.error]/`fieldErrors`, localized in the
 /// UI layer.
@@ -133,7 +139,16 @@ class CustomerFormController extends _$CustomerFormController {
               ],
       );
 
+  /// Whether the loaded customer is the walk-in customer, whose links are
+  /// fixed: nothing can be linked to it, and its only RFC is
+  /// [genericTaxpayerRfc] (FR-021).
+  bool get isGenericCustomer {
+    final id = state.customerId;
+    return id != null && ref.read(appSettingsProvider).isGenericCustomer(id);
+  }
+
   void addressAdded(AddressListItem address) {
+    if (isGenericCustomer) return;
     if (state.addresses.any((a) => a.addressId == address.addressId)) return;
     state = _clear(state.copyWith(addresses: [...state.addresses, address]));
   }
@@ -148,6 +163,7 @@ class CustomerFormController extends _$CustomerFormController {
   );
 
   void contactAdded(Contact contact) {
+    if (isGenericCustomer) return;
     if (state.contacts.any((c) => c.contactId == contact.contactId)) return;
     state = _clear(state.copyWith(contacts: [...state.contacts, contact]));
   }
@@ -162,19 +178,23 @@ class CustomerFormController extends _$CustomerFormController {
   );
 
   void taxpayerAdded(TaxpayerRecipientListItem taxpayer) {
+    if (isGenericCustomer) return;
     final rfc = taxpayer.taxpayerRecipientId;
     if (state.taxpayers.any((t) => t.taxpayerRecipientId == rfc)) return;
     state = _clear(state.copyWith(taxpayers: [...state.taxpayers, taxpayer]));
   }
 
-  void taxpayerRemoved(String rfc) => state = _clear(
-    state.copyWith(
-      taxpayers: [
-        for (final t in state.taxpayers)
-          if (t.taxpayerRecipientId != rfc) t,
-      ],
-    ),
-  );
+  void taxpayerRemoved(String rfc) {
+    if (isGenericCustomer) return;
+    state = _clear(
+      state.copyWith(
+        taxpayers: [
+          for (final t in state.taxpayers)
+            if (t.taxpayerRecipientId != rfc) t,
+        ],
+      ),
+    );
+  }
 
   CustomerFormState _clear(CustomerFormState s) =>
       s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
@@ -367,7 +387,11 @@ class CustomerFormController extends _$CustomerFormController {
             comment: state.comment,
             addresses: _addressIdsOf(state),
             contacts: _contactIdsOf(state),
-            taxpayers: _taxpayerIdsOf(state),
+            // The walk-in customer's RFC is fixed; saving it also corrects
+            // any other RFC it was carrying (FR-021).
+            taxpayers: isGenericCustomer
+                ? const [genericTaxpayerRfc]
+                : _taxpayerIdsOf(state),
           );
       ref.invalidate(customersListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);

@@ -120,6 +120,9 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
     final taxpayerRepo = ref.read(taxpayerRecipientRepositoryProvider);
     final addressRepo = ref.read(addressRepositoryProvider);
     final contactRepo = ref.read(contactRepositoryProvider);
+    // The walk-in customer's links are fixed (FR-021): nothing can be linked
+    // to it, and its RFC is always the generic one.
+    final isGeneric = controller.isGenericCustomer;
 
     if (formState.loading) {
       return const Center(
@@ -324,7 +327,9 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             statusOf: (a) => a.status,
             editable: fieldsEnabled,
             searchLabel: l10n.customerAddressLinkLabel,
-            searchExisting: access.can(SystemObject.addresses, AccessRight.read)
+            searchExisting:
+                !isGeneric &&
+                    access.can(SystemObject.addresses, AccessRight.read)
                 ? (query) async => (await addressRepo.list(
                     search: query.isEmpty ? null : query,
                     status: EntityStatus.active,
@@ -332,7 +337,9 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
                 : null,
             onLinked: controller.addressAdded,
             onUnlinked: (a) => controller.addressRemoved(a.addressId),
-            onCreateNew: access.can(SystemObject.addresses, AccessRight.create)
+            onCreateNew:
+                !isGeneric &&
+                    access.can(SystemObject.addresses, AccessRight.create)
                 ? () => showAddressInlineCreateDialog(context)
                 : null,
           ),
@@ -349,13 +356,17 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             subtitleOf: (c) => c.preferredPhone ?? c.email,
             editable: fieldsEnabled,
             searchLabel: l10n.customerContactLinkLabel,
-            searchExisting: access.can(SystemObject.contacts, AccessRight.read)
+            searchExisting:
+                !isGeneric &&
+                    access.can(SystemObject.contacts, AccessRight.read)
                 ? (query) =>
                       contactRepo.list(search: query.isEmpty ? null : query)
                 : null,
             onLinked: controller.contactAdded,
             onUnlinked: (c) => controller.contactRemoved(c.contactId),
-            onCreateNew: access.can(SystemObject.contacts, AccessRight.create)
+            onCreateNew:
+                !isGeneric &&
+                    access.can(SystemObject.contacts, AccessRight.create)
                 ? () => showContactInlineCreateDialog(context)
                 : null,
           ),
@@ -372,10 +383,14 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             idOf: (t) => t.taxpayerRecipientId,
             labelOf: (t) => t.taxpayerRecipientId,
             subtitleOf: (t) => t.name,
-            editable: fieldsEnabled,
+            editable: fieldsEnabled && !isGeneric,
             searchLabel: l10n.customerTaxpayerLinkLabel,
             searchExisting:
-                access.can(SystemObject.taxpayerRecipients, AccessRight.read)
+                !isGeneric &&
+                    access.can(
+                      SystemObject.taxpayerRecipients,
+                      AccessRight.read,
+                    )
                 ? (query) async => (await taxpayerRepo.list(
                     search: query.isEmpty ? null : query,
                   )).items
@@ -384,11 +399,24 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             onUnlinked: (t) =>
                 controller.taxpayerRemoved(t.taxpayerRecipientId),
             onCreateNew:
-                access.can(SystemObject.taxpayerRecipients, AccessRight.create)
+                !isGeneric &&
+                    access.can(
+                      SystemObject.taxpayerRecipients,
+                      AccessRight.create,
+                    )
                 ? () => showTaxpayerRecipientInlineCreateDialog(context)
                 : null,
           ),
         ),
+        if (isGeneric)
+          FormGridChild(
+            span: FormGridSpan.full,
+            Text(
+              l10n.customerGenericTaxpayerNote(genericTaxpayerRfc),
+              key: const Key('customer_generic_taxpayer_note'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
         FormGridChild(
           span: FormGridSpan.full,
           RecordFormActions(

@@ -3774,4 +3774,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkedRecordNewAction => 'New';
+
+  @override
+  String customerGenericTaxpayerNote(String rfc) {
+    return 'This is the walk-in customer: its only tax recipient is $rfc (general public), and nothing else can be linked to it.';
+  }
 }

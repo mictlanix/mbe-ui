@@ -1189,5 +1189,6 @@
   "customerContactLinkLabel": "Vincular un contacto existente",
   "customerTaxpayerLinkLabel": "Vincular un receptor fiscal existente",
   "linkedRecordUnlinkTooltip": "Desvincular",
-  "linkedRecordNewAction": "Nuevo"
+  "linkedRecordNewAction": "Nuevo",
+  "customerGenericTaxpayerNote": "Este es el cliente de mostrador: su único receptor fiscal es {rfc} (público en general) y no se le puede vincular nada más."
 }

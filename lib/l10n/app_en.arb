@@ -2664,5 +2664,7 @@
   "linkedRecordUnlinkTooltip": "Unlink",
   "@linkedRecordUnlinkTooltip": {"description": "spec 046: removes a link from the customer without deleting the record itself"},
   "linkedRecordNewAction": "New",
-  "@linkedRecordNewAction": {"description": "spec 046: creates a record from a customer form section and links it"}
+  "@linkedRecordNewAction": {"description": "spec 046: creates a record from a customer form section and links it"},
+  "customerGenericTaxpayerNote": "This is the walk-in customer: its only tax recipient is {rfc} (general public), and nothing else can be linked to it.",
+  "@customerGenericTaxpayerNote": {"description": "spec 046 FR-021: note on the POS default customer's form", "placeholders": {"rfc": {"type": "String"}}}
 }
