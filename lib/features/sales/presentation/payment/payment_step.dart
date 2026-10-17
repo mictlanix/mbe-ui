@@ -5,10 +5,13 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/applied_payments_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_capture_pane.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/payment_change_card.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_summary_panel.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The Cobro step (contracts/pos-screen.md §3, spec 025 contracts/
@@ -41,17 +44,47 @@ class PaymentStep extends ConsumerWidget {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final enabled = !draft.submitting;
+    // spec 047 FR-004: payments need a valid cash session. `.value` keeps the
+    // previous state while a re-read is in flight, so tiles do not flicker.
+    final sessionValid =
+        ref.watch(currentSessionControllerProvider).value?.isValid ?? false;
 
-    final error = draft.error == null
+    final issueMessage = switch (draft.issue) {
+      PaymentIssue.amountRequired => l10n.posPaymentAmountRequired,
+      PaymentIssue.overpayNonCash => l10n.posPaymentOverpayNonCash,
+      PaymentIssue.sessionInvalid => l10n.posPaymentSessionInvalid,
+      null => null,
+    };
+    final error = draft.error == null && issueMessage == null
         ? null
         : Padding(
             padding: EdgeInsets.only(bottom: spacing.sm),
-            child: ErrorBanner(error: draft.error!),
+            child: draft.error != null
+                ? ErrorBanner(error: draft.error!)
+                : Text(
+                    issueMessage!,
+                    key: const Key('payment_issue_message'),
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
           );
 
-    final capturePane = PaymentCapturePane(sale: sale, enabled: enabled);
+    final capturePane = PaymentCapturePane(
+      sale: sale,
+      enabled: enabled && sessionValid,
+    );
     final appliedPayments = AppliedPaymentsPanel(saleId: sale.id, enabled: enabled);
     final summary = PaymentSummaryPanel(sale: sale, onClose: onClose);
+    // spec 047 FR-020: above the summary, not inside the draft's own amount
+    // area — the draft is already reset for the next tender by now.
+    final changeCard = draft.lastChange == null
+        ? null
+        : Padding(
+            padding: EdgeInsets.all(spacing.sm),
+            child: PaymentChangeCard(
+              amount: draft.lastChange!,
+              onDismiss: ref.read(paymentControllerProvider.notifier).dismissChange,
+            ),
+          );
 
     final wide = MediaQuery.sizeOf(context).width >= LayoutBreakpoints.large;
 
@@ -72,7 +105,7 @@ class PaymentStep extends ConsumerWidget {
               padding: EdgeInsets.all(spacing.screenMargin),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [?error, capturePane],
+                children: [const PosSessionBlockedBanner(), ?error, capturePane],
               ),
             ),
           ),
@@ -111,6 +144,7 @@ class PaymentStep extends ConsumerWidget {
                 Divider(height: 1, color: theme.colorScheme.outlineVariant),
                 SizedBox(height: spacing.sm),
                 Expanded(child: appliedPayments),
+                ?changeCard,
                 summary,
               ],
             ),
@@ -131,6 +165,7 @@ class PaymentStep extends ConsumerWidget {
           child: ListView(
             padding: EdgeInsets.all(spacing.screenMargin),
             children: [
+              const PosSessionBlockedBanner(),
               ?error,
               capturePane,
               Divider(height: spacing.xl * 2),
@@ -143,6 +178,7 @@ class PaymentStep extends ConsumerWidget {
             ],
           ),
         ),
+        ?changeCard,
         summary,
       ],
     );

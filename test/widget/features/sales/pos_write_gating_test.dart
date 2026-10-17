@@ -28,6 +28,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockDeliveryOrderRepository extends Mock implements DeliveryOrderRepository {}
 
@@ -289,6 +290,7 @@ void main() {
       overrides: [
         salesOrderOverride(salesOrder),
         customerPaymentOverride(paymentRepository),
+        openSessionOverride(),
       ],
     );
 
@@ -330,8 +332,7 @@ void main() {
 
       final paymentNotifier = container.read(paymentControllerProvider.notifier);
       paymentNotifier.setAmount('50.00');
-      paymentNotifier.selectMethod(methodCode: 1);
-      final submitted = paymentNotifier.submit(initial);
+      final submitted = paymentNotifier.tender(initial, methodCode: 1);
       await tester.pump();
 
       expect(

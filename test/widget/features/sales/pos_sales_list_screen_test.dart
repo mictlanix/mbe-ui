@@ -22,6 +22,7 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
@@ -68,6 +69,17 @@ User _user({
       ),
     if (canCreatePos) const Privilege(systemObject: SystemObject.pos, rawValue: 1),
   ],
+);
+
+CashSession _staleSession() => CashSession(
+  cashSessionId: 77,
+  cashDrawerId: 1,
+  cashDrawerName: 'Caja 1',
+  cashDrawerCode: 'CJ1',
+  cashierId: 100,
+  cashierName: 'Ana López',
+  start: DateTime(2026, 8, 4, 9),
+  openingAmount: '500',
 );
 
 void main() {
@@ -542,6 +554,53 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('pos_sales_new_sale_button')), findsNothing);
+    });
+
+    testWidgets('enabled with a stale session (the tap redirects, spec 047)', (
+      tester,
+    ) async {
+      stubListSales(salesOrders, page: testSalesPage(const []));
+      when(() => cashSessions.getCurrent()).thenAnswer(
+        (_) async => CurrentSession(state: SessionState.stale, session: _staleSession()),
+      );
+      await pumpList(tester);
+      await tester.pumpAndSettle();
+
+      final button = tester.widget<FilledButton>(
+        find.byKey(const Key('pos_sales_new_sale_button')),
+      );
+      expect(button.onPressed, isNotNull);
+    });
+
+    testWidgets('with a stale session, tapping lands on that session\'s close '
+        'screen with the explanation (spec 047 C1)', (tester) async {
+      stubListSales(salesOrders, page: testSalesPage(const []));
+      final router = await pumpListRouted(tester);
+      when(() => cashSessions.getCurrent()).thenAnswer(
+        (_) async => CurrentSession(state: SessionState.stale, session: _staleSession()),
+      );
+
+      await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/cash-sessions/77');
+      expect(find.text('cash-session-77'), findsOneWidget);
+      expect(
+        find.text(
+          'Tu sesión de caja está vencida. Ciérrala para continuar vendiendo.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('with an open session, tapping opens /sales/pos/new', (tester) async {
+      stubListSales(salesOrders, page: testSalesPage(const []));
+      final router = await pumpListRouted(tester);
+
+      await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/pos/new');
     });
   });
 

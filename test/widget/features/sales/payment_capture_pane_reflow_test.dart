@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.da
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockPaymentMethodOptionRepository extends Mock
     implements PaymentMethodOptionRepository {}
@@ -51,6 +52,7 @@ void main() {
         ),
         overrides: [
           customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
           paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
         ],
       );
@@ -94,4 +96,25 @@ void main() {
       expect(field.controller!.text, '250.00');
     },
   );
+
+  testWidgets('opens with the balance pre-filled (spec 047 FR-016)', (tester) async {
+    final container = await pumpPos(
+      tester,
+      PaymentCapturePane(sale: testSale(balance: '116.00'), enabled: true),
+      overrides: [
+        customerPaymentOverride(paymentRepository),
+        openSessionOverride(),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+      ],
+    );
+
+    expect(container.read(paymentControllerProvider).amount, '116.00');
+    expect(
+      tester
+          .widget<TextField>(find.byKey(const Key('payment_amount_field')))
+          .controller!
+          .text,
+      '116.00',
+    );
+  });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/presentation/current_session_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -17,9 +18,9 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 ///   (contracts/pos-screen.md §1).
 /// - `state == open`: renders nothing — `PosWorkspaceScreen` proceeds to its
 ///   own header band and step host below/around this widget.
-/// - `state == stale`: renders the non-blocking banner —
-///   `PosWorkspaceScreen` still proceeds, embedding this widget in its
-///   header band.
+/// - `state == stale`: renders the blocking banner
+///   ([PosSessionBlockedBanner]) — payments are refused until the session is
+///   closed (spec 047).
 ///
 /// Has no state of its own beyond watching `currentSessionControllerProvider`
 /// (021-cash-sessions, reused as-is: no new repository, no new entity here).
@@ -33,7 +34,7 @@ class PosGateScreen extends ConsumerWidget {
       data: (current) => switch (current.state) {
         SessionState.none => _GateBody(theme: Theme.of(context)),
         SessionState.open => const SizedBox.shrink(),
-        SessionState.stale => const _StaleSessionBanner(),
+        SessionState.stale => const PosSessionBlockedBanner(),
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       // A failed session lookup is treated like `none` — safer to block a
@@ -84,20 +85,65 @@ class _GateBody extends StatelessWidget {
   }
 }
 
-class _StaleSessionBanner extends StatelessWidget {
-  const _StaleSessionBanner();
+/// The blocking banner (spec 047 contracts C2): shown wherever a sale is in
+/// hand but the cash session is not valid — expired (`stale`) or absent
+/// (`none`) — in place of the old non-blocking stale notice. It says payments
+/// are blocked and offers the one action that unblocks them: the stale
+/// session's close screen, or the cash-sessions list when there is none.
+/// Renders nothing while the session is open (or still loading).
+class PosSessionBlockedBanner extends ConsumerWidget {
+  const PosSessionBlockedBanner({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = ref.watch(currentSessionControllerProvider);
+    // A failed lookup reads like `none`, as in `PosGateScreen`.
+    final state = current.hasError ? null : current.value;
+    if (current.isLoading && state == null) return const SizedBox.shrink();
+    if (state != null && state.isValid) return const SizedBox.shrink();
+    final sessionId = state?.state == SessionState.stale
+        ? state?.session?.cashSessionId
+        : null;
+    return _BlockedBanner(sessionId: sessionId);
+  }
+}
+
+class _BlockedBanner extends StatelessWidget {
+  const _BlockedBanner({required this.sessionId});
+
+  /// The stale session to close, or `null` when there is no session.
+  final int? sessionId;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final stale = sessionId != null;
     return Container(
+      key: const Key('pos_session_blocked_banner'),
       width: double.infinity,
-      color: Theme.of(context).colorScheme.errorContainer,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Text(
-        key: const Key('pos_stale_session_banner'),
-        l10n.posStaleSessionBanner,
-        style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+      color: theme.colorScheme.errorContainer,
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.screenMargin,
+        vertical: theme.spacing.xs,
+      ),
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: theme.spacing.sm,
+        children: [
+          Text(
+            stale ? l10n.posSessionExpiredPaymentsBlocked : l10n.posGateNoSessionBody,
+            style: TextStyle(color: theme.colorScheme.onErrorContainer),
+          ),
+          TextButton(
+            key: const Key('pos_session_blocked_action'),
+            onPressed: () => context.go(
+              stale ? '/sales/cash-sessions/$sessionId' : '/sales/cash-sessions',
+            ),
+            child: Text(stale ? l10n.posSessionCloseAction : l10n.posGateOpenSessionAction),
+          ),
+        ],
       ),
     );
   }
