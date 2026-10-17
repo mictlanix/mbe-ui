@@ -27,7 +27,9 @@ A cashier can only start a new sale, or take a payment, when their cash session 
 
 **Why this priority**: Without this, sales and cash payments land in a session from a previous day. That corrupts the cash cut, which is a financial control.
 
-**Independent Test**: Use a cashier with an expired session. Open the POS sales list and try to start a sale. Confirm you are taken to that session's close screen. Close it, open a new session, and confirm you can now start a sale.
+**Note**: A cashier who lacks the privilege to close cash sessions still lands on the close screen, where they are told a supervisor must close it. The redirect gets them to the right place, but a supervisor has to finish the close.
+
+**Independent Test**: Use a cashier, with the privilege to close sessions, who has an expired session. Open the POS sales list and try to start a sale. Confirm you are taken to that session's close screen. Close it, open a new session, and confirm you can now start a sale.
 
 **Acceptance Scenarios**:
 
@@ -70,7 +72,7 @@ When a sale line asks for more than its chosen warehouse has, the cashier sees t
 1. **Given** a line whose quantity is greater than the stock available in its warehouse, **When** the cashier looks at the capture step, **Then** the line is marked as short and *Continue* is disabled with a message saying which lines are short.
 2. **Given** a short line, **When** the cashier lowers the quantity to what is available, switches to a warehouse with enough stock, or removes the line, **Then** *Continue* is enabled once no line is short.
 3. **Given** the same product appears on two lines from the same warehouse, **When** their combined quantity is greater than the stock, **Then** both lines count as short.
-4. **Given** a product that is not stock-tracked (e.g. a service), **When** it is on the sale, **Then** it never blocks *Continue*.
+4. **Given** a product that is not stock-tracked (e.g. a service, or a stocked product configured to skip the stock check), **When** it is on the sale, **Then** it never blocks *Continue*, whatever its quantity.
 5. **Given** a resumed sale, **When** the capture step opens, **Then** stock is loaded for every line, so the check works the same as for a new sale.
 6. **Given** the stock for a line cannot be loaded, **When** the cashier tries to continue, **Then** the line shows that its stock is unknown and does not block *Continue*.
 7. **Given** a short line, **When** the cashier looks for a way to continue anyway, **Then** none is offered to any user or privilege (hard block).
@@ -164,7 +166,7 @@ When a customer pays cash with more than they owe, the cashier enters the amount
 - **FR-008**: The capture step MUST know the available stock of each line's warehouse for every stock-tracked product on the sale, including on resumed sales.
 - **FR-009**: A line MUST be marked short when the total quantity of that product from that warehouse across the sale is greater than what is available there.
 - **FR-010**: *Continue* to payment MUST be disabled while any line is short, with a message identifying the short lines.
-- **FR-011**: Products that are not stock-tracked MUST NOT be checked against stock. Lines whose stock could not be loaded MUST show an "unknown stock" warning and MUST NOT block *Continue*.
+- **FR-011**: Products that are not stock-tracked MUST NOT be checked against stock. A product is *stock-tracked* when it is both kept in inventory and configured to require a stock check, the same products the backend refuses to confirm when they are short. Lines whose stock could not be loaded MUST show an "unknown stock" warning and MUST NOT block *Continue*.
 - **FR-011a**: The stock block MUST have no override: no privilege, role or sale type (including delivery sales) bypasses it.
 
 **Warehouse pop-up**
@@ -192,7 +194,7 @@ When a customer pays cash with more than they owe, the cashier enters the amount
 ### Key Entities
 
 - **Cash session**: A cashier's shift on a cash drawer, with a start and an optional end. Valid = open and started today; expired = open and started on an earlier day.
-- **Sale line**: A product, quantity and source warehouse on a POS sale. It is short when the quantity is more than the stock available in its warehouse.
+- **Sale line**: A product, quantity and source warehouse on a POS sale. It is short when its product is stock-tracked and the quantity is more than the stock available in its warehouse.
 - **Warehouse stock**: How many units of a product are available in a warehouse.
 - **Payment application**: A tender applied to a sale: method, amount applied, optional reference and, for cash only, change given back.
 
@@ -218,6 +220,7 @@ When a customer pays cash with more than they owe, the cashier enters the amount
 ## Assumptions
 
 - "Expired" uses the same day-boundary rule the backend already uses to mark a session as expired. This spec does not introduce a configurable session length.
+- Closing a session keeps its existing privilege. A cashier without it reaches the close screen but needs a supervisor to close the session, so SC-002's "one tap" means reaching the close screen, not finishing the close.
 - Viewing sales, and reversing payments already applied, stay allowed without a valid session. Only starting sales and adding payments are blocked.
 - The session gate is enforced in the POS screens only. Adding the rule to the backend is a possible follow-up for mbe-api and is not required here.
 - "Available stock" is the warehouse stock the backend reports for the product. Units held by other unfinished sales are not subtracted.

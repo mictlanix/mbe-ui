@@ -72,6 +72,7 @@ All paths are relative to the repository root. The audit for this research was d
 - mbe-api has no stock endpoint and no batch lookup. `product-lookup` is the only source of per-warehouse stock (`sales_orders.py:82-93`).
 - That endpoint returns `stockable` and `stockRequired` alongside `stock`, which separates a product that is not tracked (`stock: []`) from one that is unknown. Today's cache cannot tell these apart.
 - Matching on `code`: the endpoint searches `ilike %pattern%` across code, name and similar fields with `limit 20`. In theory a product could be pushed out of the results by 20 others whose fields contain its code. That case degrades to "unknown", which is safe under Q1.
+- Known gap: per mbe-api#208, a 13-digit `code` with no matching barcode returns an empty lookup. Those products also stay "unknown" on a resumed sale, so the gate does not apply to them. This is accepted and not worked around, the same decision as for #208.
 - POS sales have few distinct products, so N concurrent calls are acceptable.
 
 **Follow-up (not a dependency)**:

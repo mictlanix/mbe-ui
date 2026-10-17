@@ -67,6 +67,7 @@ Future<int?> showWarehousePicker(
 - **New errors**:
   - `posPaymentAmountRequired`
   - `posPaymentOverpayNonCash` ("Solo el efectivo puede exceder el saldo")
+  - `posPaymentSessionInvalid` (shown when the pre-payment session re-read finds the session expired or closed; the blocking banner from C2 then replaces the grid)
 - **Amount field**: pre-filled with the balance (C7 below).
 
 ## C7 — Change card
