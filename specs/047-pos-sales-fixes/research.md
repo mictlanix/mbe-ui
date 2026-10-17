@@ -72,13 +72,13 @@ All paths are relative to the repository root. The audit for this research was d
 - mbe-api has no stock endpoint and no batch lookup. `product-lookup` is the only source of per-warehouse stock (`sales_orders.py:82-93`).
 - That endpoint returns `stockable` and `stockRequired` alongside `stock`, which separates a product that is not tracked (`stock: []`) from one that is unknown. Today's cache cannot tell these apart.
 - Matching on `code`: the endpoint searches `ilike %pattern%` across code, name and similar fields with `limit 20`. In theory a product could be pushed out of the results by 20 others whose fields contain its code. That case degrades to "unknown", which is safe under Q1.
-- Known gap: per mbe-api#208, a 13-digit `code` with no matching barcode returns an empty lookup. Those products also stay "unknown" on a resumed sale, so the gate does not apply to them. This is accepted and not worked around, the same decision as for #208.
+- A 13-digit `code` with no matching barcode used to return nothing (mbe-api#208). That was fixed upstream on 2026-09-12 (mbe-api#214): a search that finds no barcode now falls back to the normal search. Looking up by code therefore resolves those products too.
 - POS sales have few distinct products, so N concurrent calls are acceptable.
 
 **Follow-up (not a dependency)**:
 - Propose an mbe-api issue for a batched `products=[ids]` parameter on `product-lookup`. The service already computes stock for a set of products at `sales_order_service.py:1365`.
 - Optionally, also propose adding `stockable` and `stock_verification` to `SalesOrderLineResponse`.
-- This feature works without either change, so per §III it is only proposed to the user, not filed.
+- **Filed 2026-10-17 as mbe-api#237**: a batch `products=[ids]` parameter on `product-lookup`, plus filling the always-null `warehouse_name`. Until it ships, this feature uses the per-code lookup above. Once it ships, regenerate the client and replace the per-code calls with one batch call. That also removes the limit-20 risk described above.
 
 **Alternatives considered**:
 - *`GET /products/{id}`*: rejected. It needs the PRODUCTS read privilege, which the lookup was designed to avoid (#157), and it carries no stock.

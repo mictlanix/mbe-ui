@@ -80,4 +80,4 @@ Future<int?> showWarehousePicker(
 ## C8 — No API contract changes
 
 - No endpoint, schema or codegen changes.
-- An optional mbe-api follow-up is proposed: a batch `products` parameter on `product-lookup` (research R4).
+- mbe-api follow-up filed as mbe-api#237: a batch `products` parameter on `product-lookup` (research R4). It is not a dependency of this feature.
