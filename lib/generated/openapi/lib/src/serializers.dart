@@ -90,6 +90,9 @@ import 'package:mbe_api_client/src/model/facility_summary.dart';
 import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:mbe_api_client/src/model/facility_update.dart';
 import 'package:mbe_api_client/src/model/fiscal_certification_provider.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_line.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_response.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_summary.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
@@ -118,6 +121,7 @@ import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
 import 'package:mbe_api_client/src/model/list_response_exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/list_response_expense_response.dart';
 import 'package:mbe_api_client/src/model/list_response_facility_response.dart';
+import 'package:mbe_api_client/src/model/list_response_fiscal_document_summary.dart';
 import 'package:mbe_api_client/src/model/list_response_itinerary_summary.dart';
 import 'package:mbe_api_client/src/model/list_response_label_response.dart';
 import 'package:mbe_api_client/src/model/list_response_outstanding_order_response.dart';
@@ -333,6 +337,9 @@ part 'serializers.g.dart';
   FacilityType,
   FacilityUpdate,
   FiscalCertificationProvider,
+  FiscalDocumentLine,
+  FiscalDocumentResponse,
+  FiscalDocumentSummary,
   FulfillmentType,
   HTTPValidationError,
   HighProfit,
@@ -361,6 +368,7 @@ part 'serializers.g.dart';
   ListResponseExchangeRateResponse,
   ListResponseExpenseResponse,
   ListResponseFacilityResponse,
+  ListResponseFiscalDocumentSummary,
   ListResponseItinerarySummary,
   ListResponseLabelResponse,
   ListResponseOutstandingOrderResponse,
@@ -616,6 +624,10 @@ Serializers serializers =
             () => ListBuilder<ProductStockResponse>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(FiscalDocumentSummary)]),
+            () => ListBuilder<FiscalDocumentSummary>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(UserListItem)]),
             () => ListBuilder<UserListItem>(),
           )
@@ -718,6 +730,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(OutstandingOrderResponse)]),
             () => ListBuilder<OutstandingOrderResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(FiscalDocumentLine)]),
+            () => ListBuilder<FiscalDocumentLine>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(int)]),
