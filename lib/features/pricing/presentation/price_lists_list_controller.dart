@@ -16,7 +16,7 @@ const _pageSize = 20;
 /// the route's [ListQuery] — the URL, not a mutable notifier, is the
 /// source of truth.
 @freezed
-class PriceListFilter with _$PriceListFilter {
+abstract class PriceListFilter with _$PriceListFilter {
   const factory PriceListFilter({
     @Default('') String search,
     @Default(0) int pageIndex,

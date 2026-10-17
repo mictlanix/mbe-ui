@@ -11,7 +11,7 @@ part 'user_profile.freezed.dart';
 /// **sparse** — an entry exists only for a system object the profile grants
 /// something on; every other object is denied.
 @freezed
-class UserProfile with _$UserProfile {
+abstract class UserProfile with _$UserProfile {
   const factory UserProfile({
     required int userProfileId,
     required String name,
@@ -39,7 +39,7 @@ class UserProfile with _$UserProfile {
 /// `UserProfileListItem`. Carries no privileges — the list endpoint doesn't
 /// expand them.
 @freezed
-class UserProfileSummary with _$UserProfileSummary {
+abstract class UserProfileSummary with _$UserProfileSummary {
   const factory UserProfileSummary({
     required int userProfileId,
     required String name,

@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'pos_sales_list_controller.dart';
@@ -9,239 +9,283 @@ part of 'pos_sales_list_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$PosSalesFilter {
-  DateTime get from => throw _privateConstructorUsedError;
-  DateTime get to => throw _privateConstructorUsedError;
-  SaleStatus? get status => throw _privateConstructorUsedError;
-  String get search => throw _privateConstructorUsedError;
-  int get pageIndex => throw _privateConstructorUsedError;
 
-  /// Create a copy of PosSalesFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $PosSalesFilterCopyWith<PosSalesFilter> get copyWith =>
-      throw _privateConstructorUsedError;
+ DateTime get from; DateTime get to; SaleStatus? get status; String get search; int get pageIndex;
+/// Create a copy of PosSalesFilter
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PosSalesFilterCopyWith<PosSalesFilter> get copyWith => _$PosSalesFilterCopyWithImpl<PosSalesFilter>(this as PosSalesFilter, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as PosSalesFilter;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PosSalesFilter&&(identical(other.from, _this.from) || other.from == _this.from)&&(identical(other.to, _this.to) || other.to == _this.to)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as PosSalesFilter;
+  return Object.hash(runtimeType,_this.from,_this.to,_this.status,_this.search,_this.pageIndex);
+}
+
+@override
+String toString() {
+  final _this = this as PosSalesFilter;
+  return 'PosSalesFilter(from: ${_this.from}, to: ${_this.to}, status: ${_this.status}, search: ${_this.search}, pageIndex: ${_this.pageIndex})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $PosSalesFilterCopyWith<$Res> {
-  factory $PosSalesFilterCopyWith(
-    PosSalesFilter value,
-    $Res Function(PosSalesFilter) then,
-  ) = _$PosSalesFilterCopyWithImpl<$Res, PosSalesFilter>;
-  @useResult
-  $Res call({
-    DateTime from,
-    DateTime to,
-    SaleStatus? status,
-    String search,
-    int pageIndex,
-  });
-}
+abstract mixin class $PosSalesFilterCopyWith<$Res>  {
+  factory $PosSalesFilterCopyWith(PosSalesFilter value, $Res Function(PosSalesFilter) _then) = _$PosSalesFilterCopyWithImpl;
+@useResult
+$Res call({
+ DateTime from, DateTime to, SaleStatus? status, String search, int pageIndex
+});
 
+
+
+
+}
 /// @nodoc
-class _$PosSalesFilterCopyWithImpl<$Res, $Val extends PosSalesFilter>
+class _$PosSalesFilterCopyWithImpl<$Res>
     implements $PosSalesFilterCopyWith<$Res> {
-  _$PosSalesFilterCopyWithImpl(this._value, this._then);
+  _$PosSalesFilterCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final PosSalesFilter _self;
+  final $Res Function(PosSalesFilter) _then;
 
-  /// Create a copy of PosSalesFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? from = null,
-    Object? to = null,
-    Object? status = freezed,
-    Object? search = null,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            from: null == from
-                ? _value.from
-                : from // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            to: null == to
-                ? _value.to
-                : to // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            status: freezed == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as SaleStatus?,
-            search: null == search
-                ? _value.search
-                : search // ignore: cast_nullable_to_non_nullable
-                      as String,
-            pageIndex: null == pageIndex
-                ? _value.pageIndex
-                : pageIndex // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of PosSalesFilter
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? from = null,Object? to = null,Object? status = freezed,Object? search = null,Object? pageIndex = null,}) {
+  return _then(PosSalesFilter(
+from: null == from ? _self.from : from // ignore: cast_nullable_to_non_nullable
+as DateTime,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
+as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as SaleStatus?,search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PosSalesFilter].
+extension PosSalesFilterPatterns on PosSalesFilter {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PosSalesFilter value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PosSalesFilter() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PosSalesFilter value)  $default,){
+final _that = this;
+switch (_that) {
+case _PosSalesFilter():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PosSalesFilter value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PosSalesFilter() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime from,  DateTime to,  SaleStatus? status,  String search,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PosSalesFilter() when $default != null:
+return $default(_that.from,_that.to,_that.status,_that.search,_that.pageIndex);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime from,  DateTime to,  SaleStatus? status,  String search,  int pageIndex)  $default,) {final _that = this;
+switch (_that) {
+case _PosSalesFilter():
+return $default(_that.from,_that.to,_that.status,_that.search,_that.pageIndex);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime from,  DateTime to,  SaleStatus? status,  String search,  int pageIndex)?  $default,) {final _that = this;
+switch (_that) {
+case _PosSalesFilter() when $default != null:
+return $default(_that.from,_that.to,_that.status,_that.search,_that.pageIndex);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$PosSalesFilterImplCopyWith<$Res>
-    implements $PosSalesFilterCopyWith<$Res> {
-  factory _$$PosSalesFilterImplCopyWith(
-    _$PosSalesFilterImpl value,
-    $Res Function(_$PosSalesFilterImpl) then,
-  ) = __$$PosSalesFilterImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    DateTime from,
-    DateTime to,
-    SaleStatus? status,
-    String search,
-    int pageIndex,
-  });
+
+
+class _PosSalesFilter implements PosSalesFilter {
+  const _PosSalesFilter({required this.from, required this.to, this.status, this.search = '', this.pageIndex = 0});
+  
+
+@override final  DateTime from;
+@override final  DateTime to;
+@override final  SaleStatus? status;
+@override@JsonKey() final  String search;
+@override@JsonKey() final  int pageIndex;
+
+/// Create a copy of PosSalesFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PosSalesFilterCopyWith<_PosSalesFilter> get copyWith => __$PosSalesFilterCopyWithImpl<_PosSalesFilter>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PosSalesFilter&&(identical(other.from, from) || other.from == from)&&(identical(other.to, to) || other.to == to)&&(identical(other.status, status) || other.status == status)&&(identical(other.search, search) || other.search == search)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
 }
 
-/// @nodoc
-class __$$PosSalesFilterImplCopyWithImpl<$Res>
-    extends _$PosSalesFilterCopyWithImpl<$Res, _$PosSalesFilterImpl>
-    implements _$$PosSalesFilterImplCopyWith<$Res> {
-  __$$PosSalesFilterImplCopyWithImpl(
-    _$PosSalesFilterImpl _value,
-    $Res Function(_$PosSalesFilterImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of PosSalesFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? from = null,
-    Object? to = null,
-    Object? status = freezed,
-    Object? search = null,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _$PosSalesFilterImpl(
-        from: null == from
-            ? _value.from
-            : from // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        to: null == to
-            ? _value.to
-            : to // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        status: freezed == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as SaleStatus?,
-        search: null == search
-            ? _value.search
-            : search // ignore: cast_nullable_to_non_nullable
-                  as String,
-        pageIndex: null == pageIndex
-            ? _value.pageIndex
-            : pageIndex // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,from,to,status,search,pageIndex);
 }
 
-/// @nodoc
-
-class _$PosSalesFilterImpl implements _PosSalesFilter {
-  const _$PosSalesFilterImpl({
-    required this.from,
-    required this.to,
-    this.status,
-    this.search = '',
-    this.pageIndex = 0,
-  });
-
-  @override
-  final DateTime from;
-  @override
-  final DateTime to;
-  @override
-  final SaleStatus? status;
-  @override
-  @JsonKey()
-  final String search;
-  @override
-  @JsonKey()
-  final int pageIndex;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'PosSalesFilter(from: $from, to: $to, status: $status, search: $search, pageIndex: $pageIndex)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PosSalesFilterImpl &&
-            (identical(other.from, from) || other.from == from) &&
-            (identical(other.to, to) || other.to == to) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.search, search) || other.search == search) &&
-            (identical(other.pageIndex, pageIndex) ||
-                other.pageIndex == pageIndex));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, from, to, status, search, pageIndex);
-
-  /// Create a copy of PosSalesFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PosSalesFilterImplCopyWith<_$PosSalesFilterImpl> get copyWith =>
-      __$$PosSalesFilterImplCopyWithImpl<_$PosSalesFilterImpl>(
-        this,
-        _$identity,
-      );
 }
 
-abstract class _PosSalesFilter implements PosSalesFilter {
-  const factory _PosSalesFilter({
-    required final DateTime from,
-    required final DateTime to,
-    final SaleStatus? status,
-    final String search,
-    final int pageIndex,
-  }) = _$PosSalesFilterImpl;
 
-  @override
-  DateTime get from;
-  @override
-  DateTime get to;
-  @override
-  SaleStatus? get status;
-  @override
-  String get search;
-  @override
-  int get pageIndex;
-
-  /// Create a copy of PosSalesFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PosSalesFilterImplCopyWith<_$PosSalesFilterImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$PosSalesFilterCopyWith<$Res> implements $PosSalesFilterCopyWith<$Res> {
+  factory _$PosSalesFilterCopyWith(_PosSalesFilter value, $Res Function(_PosSalesFilter) _then) = __$PosSalesFilterCopyWithImpl;
+@override @useResult
+$Res call({
+ DateTime from, DateTime to, SaleStatus? status, String search, int pageIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$PosSalesFilterCopyWithImpl<$Res>
+    implements _$PosSalesFilterCopyWith<$Res> {
+  __$PosSalesFilterCopyWithImpl(this._self, this._then);
+
+  final _PosSalesFilter _self;
+  final $Res Function(_PosSalesFilter) _then;
+
+/// Create a copy of PosSalesFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? from = null,Object? to = null,Object? status = freezed,Object? search = null,Object? pageIndex = null,}) {
+  return _then(_PosSalesFilter(
+from: null == from ? _self.from : from // ignore: cast_nullable_to_non_nullable
+as DateTime,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
+as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as SaleStatus?,search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on

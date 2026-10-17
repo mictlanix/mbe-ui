@@ -35,6 +35,7 @@ void main() {
     when(() => cashSessionRepository.getCurrent()).thenAnswer((_) async => current);
 
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         cashSessionRepositoryProvider.overrideWithValue(cashSessionRepository),
       ],

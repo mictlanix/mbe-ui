@@ -34,6 +34,7 @@ const _duplicate = ProductListItem(
 
 ProviderContainer _containerWith(ProductRepository repository) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [productRepositoryProvider.overrideWithValue(repository)],
   );
 }

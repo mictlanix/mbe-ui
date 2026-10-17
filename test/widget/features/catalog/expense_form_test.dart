@@ -62,6 +62,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           expenseRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
@@ -196,6 +197,7 @@ void main() {
       final key = GlobalKey<ExpenseFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             expenseRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(
@@ -224,6 +226,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             expenseRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(

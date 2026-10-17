@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'label_item.dart';
@@ -9,155 +9,274 @@ part of 'label_item.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$LabelItem {
-  int get labelId => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
 
-  /// Create a copy of LabelItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $LabelItemCopyWith<LabelItem> get copyWith =>
-      throw _privateConstructorUsedError;
+ int get labelId; String get name;
+/// Create a copy of LabelItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LabelItemCopyWith<LabelItem> get copyWith => _$LabelItemCopyWithImpl<LabelItem>(this as LabelItem, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as LabelItem;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LabelItem&&(identical(other.labelId, _this.labelId) || other.labelId == _this.labelId)&&(identical(other.name, _this.name) || other.name == _this.name));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as LabelItem;
+  return Object.hash(runtimeType,_this.labelId,_this.name);
+}
+
+@override
+String toString() {
+  final _this = this as LabelItem;
+  return 'LabelItem(labelId: ${_this.labelId}, name: ${_this.name})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $LabelItemCopyWith<$Res> {
-  factory $LabelItemCopyWith(LabelItem value, $Res Function(LabelItem) then) =
-      _$LabelItemCopyWithImpl<$Res, LabelItem>;
-  @useResult
-  $Res call({int labelId, String name});
-}
+abstract mixin class $LabelItemCopyWith<$Res>  {
+  factory $LabelItemCopyWith(LabelItem value, $Res Function(LabelItem) _then) = _$LabelItemCopyWithImpl;
+@useResult
+$Res call({
+ int labelId, String name
+});
 
+
+
+
+}
 /// @nodoc
-class _$LabelItemCopyWithImpl<$Res, $Val extends LabelItem>
+class _$LabelItemCopyWithImpl<$Res>
     implements $LabelItemCopyWith<$Res> {
-  _$LabelItemCopyWithImpl(this._value, this._then);
+  _$LabelItemCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final LabelItem _self;
+  final $Res Function(LabelItem) _then;
 
-  /// Create a copy of LabelItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? labelId = null, Object? name = null}) {
-    return _then(
-      _value.copyWith(
-            labelId: null == labelId
-                ? _value.labelId
-                : labelId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of LabelItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? labelId = null,Object? name = null,}) {
+  return _then(LabelItem(
+labelId: null == labelId ? _self.labelId : labelId // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [LabelItem].
+extension LabelItemPatterns on LabelItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LabelItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LabelItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LabelItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _LabelItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LabelItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LabelItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int labelId,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LabelItem() when $default != null:
+return $default(_that.labelId,_that.name);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int labelId,  String name)  $default,) {final _that = this;
+switch (_that) {
+case _LabelItem():
+return $default(_that.labelId,_that.name);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int labelId,  String name)?  $default,) {final _that = this;
+switch (_that) {
+case _LabelItem() when $default != null:
+return $default(_that.labelId,_that.name);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$LabelItemImplCopyWith<$Res>
-    implements $LabelItemCopyWith<$Res> {
-  factory _$$LabelItemImplCopyWith(
-    _$LabelItemImpl value,
-    $Res Function(_$LabelItemImpl) then,
-  ) = __$$LabelItemImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({int labelId, String name});
+
+
+class _LabelItem implements LabelItem {
+  const _LabelItem({required this.labelId, required this.name});
+  
+
+@override final  int labelId;
+@override final  String name;
+
+/// Create a copy of LabelItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LabelItemCopyWith<_LabelItem> get copyWith => __$LabelItemCopyWithImpl<_LabelItem>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LabelItem&&(identical(other.labelId, labelId) || other.labelId == labelId)&&(identical(other.name, name) || other.name == name));
 }
 
-/// @nodoc
-class __$$LabelItemImplCopyWithImpl<$Res>
-    extends _$LabelItemCopyWithImpl<$Res, _$LabelItemImpl>
-    implements _$$LabelItemImplCopyWith<$Res> {
-  __$$LabelItemImplCopyWithImpl(
-    _$LabelItemImpl _value,
-    $Res Function(_$LabelItemImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of LabelItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? labelId = null, Object? name = null}) {
-    return _then(
-      _$LabelItemImpl(
-        labelId: null == labelId
-            ? _value.labelId
-            : labelId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,labelId,name);
 }
 
-/// @nodoc
-
-class _$LabelItemImpl implements _LabelItem {
-  const _$LabelItemImpl({required this.labelId, required this.name});
-
-  @override
-  final int labelId;
-  @override
-  final String name;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'LabelItem(labelId: $labelId, name: $name)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LabelItemImpl &&
-            (identical(other.labelId, labelId) || other.labelId == labelId) &&
-            (identical(other.name, name) || other.name == name));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, labelId, name);
-
-  /// Create a copy of LabelItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LabelItemImplCopyWith<_$LabelItemImpl> get copyWith =>
-      __$$LabelItemImplCopyWithImpl<_$LabelItemImpl>(this, _$identity);
 }
 
-abstract class _LabelItem implements LabelItem {
-  const factory _LabelItem({
-    required final int labelId,
-    required final String name,
-  }) = _$LabelItemImpl;
 
-  @override
-  int get labelId;
-  @override
-  String get name;
-
-  /// Create a copy of LabelItem
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$LabelItemImplCopyWith<_$LabelItemImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$LabelItemCopyWith<$Res> implements $LabelItemCopyWith<$Res> {
+  factory _$LabelItemCopyWith(_LabelItem value, $Res Function(_LabelItem) _then) = __$LabelItemCopyWithImpl;
+@override @useResult
+$Res call({
+ int labelId, String name
+});
+
+
+
+
+}
+/// @nodoc
+class __$LabelItemCopyWithImpl<$Res>
+    implements _$LabelItemCopyWith<$Res> {
+  __$LabelItemCopyWithImpl(this._self, this._then);
+
+  final _LabelItem _self;
+  final $Res Function(_LabelItem) _then;
+
+/// Create a copy of LabelItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? labelId = null,Object? name = null,}) {
+  return _then(_LabelItem(
+labelId: null == labelId ? _self.labelId : labelId // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

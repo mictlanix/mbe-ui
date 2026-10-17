@@ -29,6 +29,7 @@ Future<ProviderContainer> containerWith({AppSettings appSettings = _settings}) a
   SharedPreferences.setMockInitialValues({});
   final sharedPreferences = await SharedPreferences.getInstance();
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       appSettingsProvider.overrideWithValue(appSettings),
@@ -88,6 +89,7 @@ void main() {
     // repeated here, in the original order, with only appSettingsProvider's
     // value changed.
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         appSettingsProvider.overrideWithValue(_settings),

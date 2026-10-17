@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
@@ -33,17 +31,24 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
 
   @override
   Future<Sale> ensureOpen() async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current != null) return current;
     // Carries [origin] like every other open: this is the path a register
     // sale takes when the first *scan* opens it rather than a customer pick,
     // and an order that recorded no origin can never be told apart later
     // (`SalesOrderUpdate` has no such field).
-    final opened = await ref
-        .read(salesOrderRepositoryProvider)
-        .open(origin: origin);
-    state = AsyncValue.data(opened);
-    return opened;
+    // Kept alive across the request, like every `tracked` write: a lookup
+    // can open the document from a provider that does not watch this one.
+    final keepAlive = ref.keepAlive();
+    try {
+      final opened = await ref
+          .read(salesOrderRepositoryProvider)
+          .open(origin: origin);
+      publish(opened);
+      return opened;
+    } finally {
+      keepAlive.close();
+    }
   }
 
   @override
@@ -74,7 +79,7 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
     // what FR-014 exists to prevent. Any *other* field requested alongside
     // still falls through to the general path unchanged, since `open()`
     // takes only these three.
-    if (state.valueOrNull == null &&
+    if (state.value == null &&
         paymentTerms == null &&
         currency == null &&
         shipTo == null &&
@@ -84,7 +89,7 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
         priority == null &&
         comment == null &&
         recipient == null) {
-      state = AsyncValue.data(
+      publish(
         await repository.open(
           customer: customer,
           salesperson: salesperson,
@@ -110,7 +115,7 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
       comment: comment,
       recipient: recipient,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -123,8 +128,8 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
     int? warehouse,
     String? comment,
   }) => tracked(() async {
-    final current = await ensureOpen();
     final repository = ref.read(salesOrderRepositoryProvider);
+    final current = await ensureOpen();
     final updated = await repository.addLine(
       saleId: current.id,
       product: product,
@@ -135,7 +140,7 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
       warehouse: warehouse,
       comment: comment,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -160,7 +165,7 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
       warehouse: warehouse,
       comment: comment,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -171,7 +176,7 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
       saleId: current.id,
       lineId: lineId,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -179,6 +184,6 @@ mixin SaleEditing on TrackedEditing implements SaleEditor {
     final current = openSale;
     final repository = ref.read(salesOrderRepositoryProvider);
     final updated = await repository.confirm(saleId: current.id);
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 }

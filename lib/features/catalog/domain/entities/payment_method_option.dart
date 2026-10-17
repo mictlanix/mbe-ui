@@ -12,7 +12,7 @@ part 'payment_method_option.freezed.dart';
 /// catalog's list and detail screens (data-model.md §1), mapped from
 /// `PaymentMethodOptionResponse`.
 @freezed
-class PaymentMethodOption with _$PaymentMethodOption {
+abstract class PaymentMethodOption with _$PaymentMethodOption {
   const factory PaymentMethodOption({
     required int paymentMethodOptionId,
     required int facilityId,

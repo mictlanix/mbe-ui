@@ -237,6 +237,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
@@ -283,6 +284,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
@@ -314,6 +316,7 @@ void main() {
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         authRepositoryProvider.overrideWithValue(authRepository),
         tokenStorageProvider.overrideWithValue(tokenStorage),

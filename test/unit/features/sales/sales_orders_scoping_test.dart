@@ -69,9 +69,10 @@ void main() {
 
   ProviderContainer container({required User user}) {
     final c = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         salesOrderRepositoryProvider.overrideWithValue(repository),
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
         ),
       ],
@@ -138,10 +139,10 @@ void main() {
   test('an administrator with no facility facet set still scopes to their '
       'own facility — never every facility unscoped (US5 scenario 1)', () async {
     final c = container(user: _user(administrator: true, facilityId: 9));
-    // `userFacilityIdProvider` reads through the async `authNotifierProvider`
+    // `userFacilityIdProvider` reads through the async `authProvider`
     // — settle it first, or `_fetch` reads it mid-`loading` and treats the
     // caller as having no facility at all.
-    await c.read(authNotifierProvider.future);
+    await c.read(authProvider.future);
 
     await c.read(
       salesOrdersListControllerProvider(_filter(), true).future,

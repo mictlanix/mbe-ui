@@ -13,7 +13,7 @@ part 'sale.freezed.dart';
 /// passes (FR-002a). Every mutation replaces this entity wholesale with
 /// whatever the server returns (research.md §1) — never patched locally.
 @freezed
-class Sale with _$Sale {
+abstract class Sale with _$Sale {
   const Sale._();
 
   const factory Sale({

@@ -134,6 +134,7 @@ void main() {
       () => salesOrders.confirm(saleId: sale.id),
     ).thenAnswer((_) async => sale);
     final c = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
         customerRepositoryProvider.overrideWithValue(customers),
@@ -334,7 +335,7 @@ void main() {
     );
 
     expect(
-      container.read(deliveryControllerProvider(sale)).valueOrNull,
+      container.read(deliveryControllerProvider(sale)).value,
       isEmpty,
     );
   });

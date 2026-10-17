@@ -98,7 +98,7 @@ class _CustomerContactPickerState extends ConsumerState<_CustomerContactPicker> 
           key: const Key('contact_create_button'),
           onPressed: _linking
               ? null
-              : () => _createAndLink(customer.valueOrNull?.contacts ?? const []),
+              : () => _createAndLink(customer.value?.contacts ?? const []),
           child: _linking
               ? const SizedBox(
                   width: 16,

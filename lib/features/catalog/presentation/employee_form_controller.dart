@@ -36,7 +36,7 @@ abstract final class EmployeeFormErrorCode {
 /// Create/edit form state for a single employee. [employeeId] is `null` in
 /// create mode.
 @freezed
-class EmployeeFormState with _$EmployeeFormState {
+abstract class EmployeeFormState with _$EmployeeFormState {
   const factory EmployeeFormState({
     int? employeeId,
     @Default('') String firstName,

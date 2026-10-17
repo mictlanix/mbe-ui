@@ -17,7 +17,7 @@ const _pageSize = 20;
 /// **No `search` field**: the endpoint has none, and a session has no
 /// free-text field one would match against (spec D-003).
 @freezed
-class CashSessionFilter with _$CashSessionFilter {
+abstract class CashSessionFilter with _$CashSessionFilter {
   const factory CashSessionFilter({
     int? cashDrawerId,
     int? cashierId,

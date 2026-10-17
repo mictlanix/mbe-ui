@@ -1,7 +1,15 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.13.2
+Version change: 1.0.0 → 1.13.3
 Modified principles:
+  - VI. Desktop/Web-First, Compact-Ready Layout — Customers moves from the
+    shared-panel list to the full-detail-screen list [1.13.3, PATCH: a
+    per-entity reassignment under the existing "record surface" rule, no
+    rule added or changed]. specs/046-catalog-improvements gave the
+    customer form three linked-record sections (addresses, contacts,
+    taxpayer recipients); with them the form is too much for a 640 px side
+    panel, which is the same reason entities with nested child collections
+    already get a full screen. Requested by the product owner, 2026-10-17.
   - V. Material 3, White-Labeled Design System — materially expanded with
     two rules [1.11.0]: (a) **two levels of configuration, kept distinct** —
     deployment configuration resolves once at startup from build-time
@@ -471,9 +479,9 @@ multi-column forms.
   list screen (`core/widgets/record_sheet.dart`, `showRecordSheet`).
   Which surface an entity uses is a per-entity choice, not a per-screen
   one: a full detail screen for Products, Facilities, Taxpayer Issuers,
-  Users, User Profiles, and any other entity with nested child
+  Users, User Profiles, Customers, and any other entity with nested child
   collections; the shared panel for every other catalog/list entity
-  (Labels, Suppliers, Employees, Customers, Taxpayer Recipients,
+  (Labels, Suppliers, Employees, Taxpayer Recipients,
   Expenses, Vehicles, Vehicle Operators, Warehouses, Points of Sale, Cash
   Drawers, Price Lists, Exchange Rates, and Payment Method Options). Both
   surfaces render the identical form and MUST satisfy every rule below
@@ -659,4 +667,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.13.2 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-10-02
+**Version**: 1.13.3 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-10-17

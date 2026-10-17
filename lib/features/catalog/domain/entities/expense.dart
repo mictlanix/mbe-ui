@@ -9,7 +9,7 @@ part 'expense.freezed.dart';
 /// normalized to `name` here for consistency with create/update and every
 /// other catalog entity (research.md §3).
 @freezed
-class Expense with _$Expense {
+abstract class Expense with _$Expense {
   const factory Expense({
     required int expenseId,
     required String name,

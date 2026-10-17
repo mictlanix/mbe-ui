@@ -4053,12 +4053,6 @@ abstract class AppLocalizations {
   /// **'No cash drawers registered.'**
   String get noCashDrawersInFacility;
 
-  /// No description provided for @productionSiteChildrenNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Production sites only manage warehouses: they have no points of sale or cash drawers.'**
-  String get productionSiteChildrenNote;
-
   /// No description provided for @pointSaleForeignFacilityBadge.
   ///
   /// In en, this message translates to:
@@ -6828,6 +6822,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View sales order'**
   String get salesOrderViewDocumentAction;
+
+  /// spec 046: customer form section listing the addresses linked to the customer
+  ///
+  /// In en, this message translates to:
+  /// **'Addresses'**
+  String get customerAddressesSection;
+
+  /// spec 046: customer form section listing the contacts linked to the customer
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get customerContactsSection;
+
+  /// spec 046: customer form section listing the taxpayer recipients (RFCs) linked to the customer
+  ///
+  /// In en, this message translates to:
+  /// **'Tax recipients'**
+  String get customerTaxpayersSection;
+
+  /// No description provided for @customerAddressesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No addresses linked.'**
+  String get customerAddressesEmpty;
+
+  /// No description provided for @customerContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts linked.'**
+  String get customerContactsEmpty;
+
+  /// No description provided for @customerTaxpayersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No tax recipients linked.'**
+  String get customerTaxpayersEmpty;
+
+  /// No description provided for @customerAddressLinkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Link an existing address'**
+  String get customerAddressLinkLabel;
+
+  /// No description provided for @customerContactLinkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Link an existing contact'**
+  String get customerContactLinkLabel;
+
+  /// No description provided for @customerTaxpayerLinkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Link an existing tax recipient'**
+  String get customerTaxpayerLinkLabel;
+
+  /// spec 046: removes a link from the customer without deleting the record itself
+  ///
+  /// In en, this message translates to:
+  /// **'Unlink'**
+  String get linkedRecordUnlinkTooltip;
+
+  /// spec 046: creates a record from a customer form section and links it
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get linkedRecordNewAction;
+
+  /// spec 046 FR-021: note on the POS default customer's form
+  ///
+  /// In en, this message translates to:
+  /// **'This is the walk-in customer: its only tax recipient is {rfc} (general public), and nothing else can be linked to it.'**
+  String customerGenericTaxpayerNote(String rfc);
 }
 
 class _AppLocalizationsDelegate

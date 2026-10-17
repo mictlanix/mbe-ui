@@ -13,7 +13,7 @@ part 'taxpayer_recipient.freezed.dart';
 /// (code + description); reused directly as `SatCatalogItem` rather than a
 /// separate value type, since the shape is identical (data-model.md §5).
 @freezed
-class TaxpayerRecipient with _$TaxpayerRecipient {
+abstract class TaxpayerRecipient with _$TaxpayerRecipient {
   const factory TaxpayerRecipient({
     required String taxpayerRecipientId,
     required String name,

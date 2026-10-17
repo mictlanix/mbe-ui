@@ -64,7 +64,7 @@ class PricingGridScreen extends ConsumerWidget {
     final canUpdate = access.can(SystemObject.pricing, AccessRight.update);
     final l10n = AppLocalizations.of(context)!;
 
-    final loadedState = gridAsync.valueOrNull;
+    final loadedState = gridAsync.value;
     final noPriceLists = loadedState != null && loadedState.allLists.isEmpty;
 
     // Scoped to this screen, not a global handler (research.md §R4).
@@ -325,7 +325,7 @@ class _WorklistChips extends ConsumerWidget {
             filter.copyWith(missingPriceList: null),
           ),
         )
-        .valueOrNull;
+        .value;
     if (facets == null) return const SizedBox.shrink();
 
     final countByListId = {
@@ -584,7 +584,7 @@ class _ColumnHeader extends ConsumerWidget {
     if (!canUpdate) return Text(priceList.name);
 
     final notifier = ref.read(pricingGridControllerProvider(filter).notifier);
-    final state = ref.watch(pricingGridControllerProvider(filter)).valueOrNull;
+    final state = ref.watch(pricingGridControllerProvider(filter)).value;
     final costList = state == null ? null : notifier.costListOf(state);
 
     Future<void> run(Future<int> Function() action) async {
@@ -752,18 +752,13 @@ class _PricingGridFiltersPanel extends ConsumerWidget {
     final filter = PricingGridFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
     final allLists =
-        ref
-            .watch(pricingGridControllerProvider(filter))
-            .valueOrNull
-            ?.allLists ??
+        ref.watch(pricingGridControllerProvider(filter)).value?.allLists ??
         const <PriceList>[];
     final shownIds = ref.watch(pricingGridShownColumnsProvider);
-    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
+    final allLabels = ref.watch(allLabelsProvider).value ?? <LabelItem>[];
     final supplierRepo = ref.read(supplierRepositoryProvider);
     final supplierDisplayText = filter.supplier != null
-        ? ref
-                  .watch(supplierDisplayNameProvider(filter.supplier!))
-                  .valueOrNull ??
+        ? ref.watch(supplierDisplayNameProvider(filter.supplier!)).value ??
               '${filter.supplier}'
         : '';
 

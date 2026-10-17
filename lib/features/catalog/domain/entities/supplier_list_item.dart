@@ -6,7 +6,7 @@ part 'supplier_list_item.freezed.dart';
 /// A supplier search result used as the supplier picker's item type
 /// (data-model.md "SupplierListItem").
 @freezed
-class SupplierListItem with _$SupplierListItem {
+abstract class SupplierListItem with _$SupplierListItem {
   const factory SupplierListItem({
     required int supplierId,
     required String code,

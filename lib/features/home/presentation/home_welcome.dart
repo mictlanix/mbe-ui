@@ -101,7 +101,7 @@ class _XbeDashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final authState = ref.watch(authNotifierProvider).valueOrNull;
+    final authState = ref.watch(authProvider).value;
     final greetingName = authState is AuthAuthenticated
         ? _localPart(authState.user.email)
         : '';

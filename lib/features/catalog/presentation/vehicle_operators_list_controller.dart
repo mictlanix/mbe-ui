@@ -19,7 +19,7 @@ const _pageSize = 20;
 /// route's [ListQuery] — the URL, not a mutable notifier, is the source of
 /// truth.
 @freezed
-class VehicleOperatorFilter with _$VehicleOperatorFilter {
+abstract class VehicleOperatorFilter with _$VehicleOperatorFilter {
   const factory VehicleOperatorFilter({
     @Default('') String search,
     int? driverId,

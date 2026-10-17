@@ -140,7 +140,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     // the wrong step and never be moved again.
     //
     // A lookup that has *failed* is a different case and must not wait
-    // forever — `valueOrNull` is null for both, and treating them alike left
+    // forever — `value` is null for both, and treating them alike left
     // resume silently broken for every sale, including drafts and unpaid ones
     // where the facility address does not affect the answer. On failure the
     // sale is resolved without it, which is what `resumeTargetFor`'s nullable
@@ -152,7 +152,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     _syncedSaleId = sale.id;
     final target = resumeTargetFor(
       sale,
-      facilityAddressId: facilityAddress.valueOrNull,
+      facilityAddressId: facilityAddress.value,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -212,7 +212,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   }
 
   Future<void> _selectSale(OpenSale selected) async {
-    final leaving = ref.read(posSaleControllerProvider).valueOrNull;
+    final leaving = ref.read(posSaleControllerProvider).value;
     if (leaving?.id == selected.id) return;
     await _discardIfEmpty(leaving);
     await ref.read(posSaleControllerProvider.notifier).load(selected.id);
@@ -220,7 +220,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   }
 
   Future<void> _startNewSale() async {
-    final leaving = ref.read(posSaleControllerProvider).valueOrNull;
+    final leaving = ref.read(posSaleControllerProvider).value;
     await _discardIfEmpty(leaving);
     await ref.read(posSaleControllerProvider.notifier).startNew();
     ref.read(posStepControllerProvider.notifier).reset();
@@ -229,7 +229,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
 
   void _refreshSelector() {
     final pointSale =
-        ref.read(posSaleControllerProvider).valueOrNull?.pointSale ??
+        ref.read(posSaleControllerProvider).value?.pointSale ??
         ref.read(registerPointSaleProvider);
     if (pointSale != null) {
       ref.invalidate(openSalesSelectorControllerProvider(pointSale));
@@ -261,7 +261,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   @override
   Widget build(BuildContext context) {
     final sale = ref.watch(posSaleControllerProvider);
-    final current = sale.valueOrNull;
+    final current = sale.value;
 
     final unreachable = _unreachableReasonFor(sale, current);
     if (unreachable != null) return _UnreachableSalePanel(reason: unreachable);

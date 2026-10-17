@@ -19,7 +19,7 @@ const _reservedParamNames = {'search', 'page', 'view'};
 /// value degrades to absent (contracts/list-query.md §5) — this type only
 /// guarantees the *decode* never throws, not that every value is meaningful.
 @freezed
-class ListQuery with _$ListQuery {
+abstract class ListQuery with _$ListQuery {
   const factory ListQuery({
     @Default('') String search,
     @Default(0) int pageIndex,

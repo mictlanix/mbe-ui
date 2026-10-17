@@ -73,7 +73,7 @@ class _PriceListDeleteDialogState
       priceListDeletePreviewProvider(priceListId: widget.priceList.priceListId),
     );
 
-    final preview = previewAsync.valueOrNull;
+    final preview = previewAsync.value;
     final previewLoading = previewAsync.isLoading && !previewAsync.hasValue;
     final previewFailed = previewAsync.hasError;
     final isEmpty = preview?.isEmpty ?? false;

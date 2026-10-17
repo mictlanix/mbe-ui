@@ -47,7 +47,7 @@ class CatalogListStateView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final page = state.valueOrNull;
+    final page = state.value;
     if (page == null && state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

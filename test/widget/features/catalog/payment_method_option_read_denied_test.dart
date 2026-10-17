@@ -50,6 +50,7 @@ void main() {
   test('the Payment Method Options destination is absent without read '
       'privilege (SC-007)', () {
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         accessControlProvider.overrideWithValue(
           AccessControlService(
@@ -70,6 +71,7 @@ void main() {
     'the Payment Method Options destination appears with read privilege',
     () {
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           accessControlProvider.overrideWithValue(
             AccessControlService(

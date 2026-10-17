@@ -80,6 +80,7 @@ void main() {
     facilityRepository = MockFacilityRepository();
     warehouseRepository = MockWarehouseRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         pointSaleRepositoryProvider.overrideWithValue(repository),
         facilityRepositoryProvider.overrideWithValue(facilityRepository),

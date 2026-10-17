@@ -221,7 +221,7 @@ class _PaymentMethodOptionFiltersPanel extends ConsumerWidget {
     final facilityRepo = ref.read(facilityRepositoryProvider);
 
     final resolvedFacilityName = filter.facilityId != null
-        ? ref.watch(facilityDisplayNameProvider(filter.facilityId!)).valueOrNull
+        ? ref.watch(facilityDisplayNameProvider(filter.facilityId!)).value
         : null;
 
     void goTo(ListQuery updated) =>

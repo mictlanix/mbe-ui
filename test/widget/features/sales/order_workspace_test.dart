@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -69,7 +70,7 @@ const _noCustomerCreateUser = User(
 );
 
 Override _authOverride([User user = _updaterUser]) =>
-    authNotifierProvider.overrideWith(
+    authProvider.overrideWith(
       () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
     );
 
@@ -375,6 +376,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => result);
@@ -462,6 +465,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       );
@@ -490,6 +495,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenThrow(

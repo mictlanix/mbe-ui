@@ -326,12 +326,12 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ProductFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
-    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
+    final allLabels = ref.watch(allLabelsProvider).value ?? <LabelItem>[];
     final forcedFilter = filter.copyWith(status: EntityStatus.active, salable: true);
-    final labelCounts = ref.watch(productLabelFacetsProvider(forcedFilter)).valueOrNull;
+    final labelCounts = ref.watch(productLabelFacetsProvider(forcedFilter)).value;
     final supplierRepo = ref.read(supplierRepositoryProvider);
     final supplierDisplayText = filter.supplier != null
-        ? ref.watch(supplierDisplayNameProvider(filter.supplier!)).valueOrNull ?? '${filter.supplier}'
+        ? ref.watch(supplierDisplayNameProvider(filter.supplier!)).value ?? '${filter.supplier}'
         : '';
 
     return Column(

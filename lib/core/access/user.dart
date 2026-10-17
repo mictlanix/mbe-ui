@@ -12,7 +12,7 @@ part 'user.freezed.dart';
 /// from `UserResponse`. Shared kernel, consumed by `AuthState` (T012) and
 /// `AccessControlService` (T017).
 @freezed
-class User with _$User {
+abstract class User with _$User {
   const factory User({
     required String userId,
     required String email,
@@ -54,7 +54,7 @@ class User with _$User {
 /// A row in the admin Users list (data-model.md "UserSummary"), mapped from
 /// `UserListItem`.
 @freezed
-class UserSummary with _$UserSummary {
+abstract class UserSummary with _$UserSummary {
   const factory UserSummary({
     required String userId,
     required String email,

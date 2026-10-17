@@ -10,7 +10,7 @@ part 'product_lookup_result.freezed.dart';
 /// `GET /sales-orders/product-lookup`. Backs both the scan and the search
 /// path (FR-020, FR-021).
 @freezed
-class ProductLookupResult with _$ProductLookupResult {
+abstract class ProductLookupResult with _$ProductLookupResult {
   const factory ProductLookupResult({
     required int product,
     required String code,
@@ -58,7 +58,7 @@ class ProductLookupResult with _$ProductLookupResult {
 /// `onHand` — is what the shortfall warning (FR-025, FR-026) compares
 /// against: it is exactly what confirmation itself checks.
 @freezed
-class WarehouseStock with _$WarehouseStock {
+abstract class WarehouseStock with _$WarehouseStock {
   const factory WarehouseStock({
     required int warehouse,
     String? warehouseName,

@@ -10,7 +10,7 @@ part 'product_price.freezed.dart';
 /// id (research.md §5) — the join key for the left join is
 /// `priceList.priceListId`.
 @freezed
-class ProductPrice with _$ProductPrice {
+abstract class ProductPrice with _$ProductPrice {
   const factory ProductPrice({
     required int productPriceId,
     required int productId,

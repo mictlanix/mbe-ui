@@ -94,6 +94,7 @@ void main() {
   }) async {
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           accessControlProvider.overrideWithValue(_accessFor(user)),
           if (brand != null) brandConfigProvider.overrideWithValue(brand),

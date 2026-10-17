@@ -79,6 +79,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           employeeRepositoryProvider.overrideWithValue(repository),
@@ -236,6 +237,7 @@ void main() {
       final key = GlobalKey<EmployeeFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             employeeRepositoryProvider.overrideWithValue(repository),
@@ -267,6 +269,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             employeeRepositoryProvider.overrideWithValue(repository),

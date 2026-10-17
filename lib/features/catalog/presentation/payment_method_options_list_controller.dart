@@ -21,7 +21,7 @@ const _pageSize = 20;
 /// change once it ships. Derived from the route's [ListQuery] — the URL,
 /// not a mutable notifier, is the source of truth.
 @freezed
-class PaymentMethodOptionFilter with _$PaymentMethodOptionFilter {
+abstract class PaymentMethodOptionFilter with _$PaymentMethodOptionFilter {
   const factory PaymentMethodOptionFilter({
     @Default('') String search,
     int? facilityId,

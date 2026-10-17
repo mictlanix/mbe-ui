@@ -114,6 +114,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             overrides: [
               productRepositoryProvider.overrideWithValue(repository),
               allLabelsProvider.overrideWith((_) async => []),
@@ -194,6 +195,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             overrides: [
               sharedPreferencesProvider.overrideWithValue(sharedPreferences),
               exchangeRateRepositoryProvider.overrideWithValue(repository),
@@ -277,6 +279,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             overrides: [
               productRepositoryProvider.overrideWithValue(repository),
               allLabelsProvider.overrideWith((_) async => []),
@@ -362,6 +365,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             overrides: [
               productRepositoryProvider.overrideWithValue(repository),
               allLabelsProvider.overrideWith((_) async => []),

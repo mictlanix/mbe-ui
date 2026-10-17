@@ -31,7 +31,7 @@ abstract final class SupplierFormErrorCode {
 /// Create/edit form state for a single supplier. [supplierId] is `null` in
 /// create mode.
 @freezed
-class SupplierFormState with _$SupplierFormState {
+abstract class SupplierFormState with _$SupplierFormState {
   const factory SupplierFormState({
     int? supplierId,
     @Default('') String code,

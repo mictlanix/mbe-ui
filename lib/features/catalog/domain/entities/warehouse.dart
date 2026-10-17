@@ -9,7 +9,7 @@ part 'warehouse.freezed.dart';
 /// entity for the Warehouses catalog's list and detail screens
 /// (data-model.md "Warehouse"), mapped from `WarehouseResponse`.
 @freezed
-class Warehouse with _$Warehouse {
+abstract class Warehouse with _$Warehouse {
   const factory Warehouse({
     required int warehouseId,
     required int facilityId,

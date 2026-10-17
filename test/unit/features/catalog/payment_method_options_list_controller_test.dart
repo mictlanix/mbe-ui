@@ -30,6 +30,7 @@ void main() {
   setUp(() {
     repository = MockPaymentMethodOptionRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
       ],

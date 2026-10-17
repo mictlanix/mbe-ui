@@ -207,6 +207,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer(id: 99, name: 'FERRETERÍA LOS PINOS'));
@@ -240,6 +242,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).called(1);
@@ -268,6 +272,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer(id: 99, priceList: 'Mayoreo'));
@@ -311,6 +317,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenThrow(
@@ -358,6 +366,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer(id: 99));
@@ -399,6 +409,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: captureAny(named: 'taxpayers'),
         ),
       ).captured.single;
@@ -422,6 +434,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer(id: 99));
@@ -448,6 +462,8 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
+          addresses: any(named: 'addresses'),
+          contacts: any(named: 'contacts'),
           taxpayers: captureAny(named: 'taxpayers'),
         ),
       ).captured.single;

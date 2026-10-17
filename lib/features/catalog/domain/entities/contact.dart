@@ -12,7 +12,7 @@ part 'contact.freezed.dart';
 /// record also carries `phoneExt`, `fax`, `website`, `im` and `sip`, none of
 /// which a cashier picking a delivery contact needs.
 @freezed
-class Contact with _$Contact {
+abstract class Contact with _$Contact {
   const factory Contact({
     required int contactId,
     required String name,

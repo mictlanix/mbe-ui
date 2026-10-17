@@ -8,7 +8,7 @@ part 'employee_list_item.freezed.dart';
 /// A lightweight employee projection used by the Employees list and by the
 /// Customer form's salesperson `CatalogEntityPicker` (data-model.md §3).
 @freezed
-class EmployeeListItem with _$EmployeeListItem {
+abstract class EmployeeListItem with _$EmployeeListItem {
   const factory EmployeeListItem({
     required int employeeId,
     required String fullName,

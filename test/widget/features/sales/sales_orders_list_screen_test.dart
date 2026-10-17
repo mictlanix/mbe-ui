@@ -85,7 +85,7 @@ void main() {
     tester,
     SalesOrdersListScreen(query: query),
     overrides: [
-      authNotifierProvider.overrideWith(
+      authProvider.overrideWith(
         () => _FixedAuthNotifier(
           AuthState.authenticated(token: 't', user: user ?? _user()),
         ),

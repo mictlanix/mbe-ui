@@ -211,7 +211,7 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
     final canEdit = widget.canEdit;
     final customer = ref
         .watch(saleCustomerControllerProvider(sale.customer))
-        .valueOrNull;
+        .value;
 
     return Card(
       // The screen already supplies the horizontal inset this card sits in,

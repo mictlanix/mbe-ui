@@ -9,7 +9,7 @@ part 'user_settings.freezed.dart';
 /// server-side (mbe-api#79) and are display-only; `toUpdate()` sends only
 /// the ids back, since names are derived, not stored, by the client.
 @freezed
-class UserSettings with _$UserSettings {
+abstract class UserSettings with _$UserSettings {
   const UserSettings._();
 
   const factory UserSettings({

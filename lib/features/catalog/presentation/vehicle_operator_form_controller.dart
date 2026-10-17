@@ -35,7 +35,7 @@ abstract final class VehicleOperatorFormErrorCode {
 /// Create/edit form state for a single vehicle operator. [vehicleOperatorId]
 /// is `null` in create mode.
 @freezed
-class VehicleOperatorFormState with _$VehicleOperatorFormState {
+abstract class VehicleOperatorFormState with _$VehicleOperatorFormState {
   const factory VehicleOperatorFormState({
     int? vehicleOperatorId,
     int? driverId,

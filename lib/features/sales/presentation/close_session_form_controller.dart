@@ -32,7 +32,7 @@ abstract final class CloseSessionFormErrorCode {
 /// render time, so "updates immediately" (FR-017) is a property of the state
 /// a widget test can assert after one quantity change.
 @freezed
-class CloseSessionFormState with _$CloseSessionFormState {
+abstract class CloseSessionFormState with _$CloseSessionFormState {
   const factory CloseSessionFormState({
     int? cashSessionId,
     @Default(<String, int>{}) Map<String, int> quantities,
@@ -131,6 +131,10 @@ class CloseSessionFormController extends _$CloseSessionFormController {
         if (entry.value > 0)
           DenominationCount(denomination: entry.key, quantity: entry.value),
     ];
+    // Kept alive until the close settles: the invalidations below must still
+    // run if the dialog that owns this form is closed mid-request (riverpod 3
+    // forbids using a disposed provider's ref).
+    final keepAlive = ref.keepAlive();
     try {
       await ref
           .read(cashSessionRepositoryProvider)
@@ -167,6 +171,8 @@ class CloseSessionFormController extends _$CloseSessionFormController {
           errorDetail: e.serverMessage,
         );
       }
+    } finally {
+      keepAlive.close();
     }
   }
 }

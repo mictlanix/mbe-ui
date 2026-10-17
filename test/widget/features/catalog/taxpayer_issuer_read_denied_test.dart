@@ -48,6 +48,7 @@ void main() {
   test('the Taxpayer Issuers destination is absent without read privilege '
       '(SC-007)', () {
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         accessControlProvider.overrideWithValue(
           AccessControlService(
@@ -66,6 +67,7 @@ void main() {
 
   test('the Taxpayer Issuers destination appears with read privilege', () {
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         accessControlProvider.overrideWithValue(
           AccessControlService(

@@ -19,7 +19,7 @@ const _pageSize = 20;
 /// three operational catalogs that reference it. Derived from the route's
 /// [ListQuery] — the URL, not a mutable notifier, is the source of truth.
 @freezed
-class FacilityFilter with _$FacilityFilter {
+abstract class FacilityFilter with _$FacilityFilter {
   const factory FacilityFilter({
     @Default('') String search,
     EntityStatus? status,

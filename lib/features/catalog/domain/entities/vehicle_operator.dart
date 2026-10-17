@@ -13,7 +13,7 @@ part 'vehicle_operator.freezed.dart';
 /// fields (`creator`/`updater`/`creationTime`/`modificationTime`) are
 /// available on the response but not surfaced by any FR — omitted here.
 @freezed
-class VehicleOperator with _$VehicleOperator {
+abstract class VehicleOperator with _$VehicleOperator {
   const factory VehicleOperator({
     required int vehicleOperatorId,
     required int driverId,

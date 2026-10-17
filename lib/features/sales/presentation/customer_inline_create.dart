@@ -184,7 +184,7 @@ class _CustomerInlineCreateFormState
               t.taxpayerRecipientId,
               t.name,
             ),
-            initialDisplayText: form.taxpayerDisplayText,
+            initialDisplayText: form.taxpayers.firstOrNull?.name ?? '',
             enabled: enabled,
           ),
         ),

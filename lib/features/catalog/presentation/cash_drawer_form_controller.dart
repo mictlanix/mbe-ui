@@ -7,7 +7,6 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
-import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_children_controller.dart';
 
@@ -32,7 +31,7 @@ abstract final class CashDrawerFormErrorCode {
 /// Create/edit form state for a single cashDrawer. [cashDrawerId] is `null` in
 /// create mode.
 @freezed
-class CashDrawerFormState with _$CashDrawerFormState {
+abstract class CashDrawerFormState with _$CashDrawerFormState {
   const factory CashDrawerFormState({
     int? cashDrawerId,
     int? facilityId,
@@ -146,17 +145,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
   }
 
   Future<void> _invalidateFacilityChildren(int facilityId) async {
-    try {
-      final facility = await ref
-          .read(facilityRepositoryProvider)
-          .get(facilityId: facilityId);
-      ref.invalidate(
-        facilityChildrenControllerProvider(facilityId, facility.type),
-      );
-    } on AppError {
-      // Best-effort — if the facility can no longer be resolved (e.g.
-      // deleted concurrently), there is no live card to refresh.
-    }
+    ref.invalidate(facilityChildrenControllerProvider(facilityId));
   }
 
   /// Creates the cash drawer (FR-016, FR-017). Re-checks the caller's

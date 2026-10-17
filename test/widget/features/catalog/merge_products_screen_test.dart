@@ -149,6 +149,7 @@ void main() {
     addTearDown(tester.view.reset);
 
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         productRepositoryProvider.overrideWithValue(productRepository),
       ],

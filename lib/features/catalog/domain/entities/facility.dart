@@ -13,7 +13,7 @@ part 'facility.freezed.dart';
 /// Full detail entity for the Facilities catalog's own list and detail
 /// screens, mapped from `FacilityResponse`.
 @freezed
-class Facility with _$Facility {
+abstract class Facility with _$Facility {
   const factory Facility({
     required int facilityId,
     required String code,

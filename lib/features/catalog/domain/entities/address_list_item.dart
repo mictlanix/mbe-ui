@@ -1,25 +1,31 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide AddressType;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    hide AddressType, EntityStatus;
 
 import 'package:mbe_ui/core/domain/address_type.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/address_formatting.dart';
 
 part 'address_list_item.freezed.dart';
 
 /// A lightweight address projection used by the facility form's address
-/// `CatalogEntityPicker` (data-model.md "AddressListItem", FR-031).
+/// `CatalogEntityPicker` (data-model.md "AddressListItem", FR-031) and the
+/// customer form's Addresses section (046-catalog-improvements), which marks
+/// a linked address that is no longer active.
 @freezed
-class AddressListItem with _$AddressListItem {
+abstract class AddressListItem with _$AddressListItem {
   const factory AddressListItem({
     required int addressId,
     required String label,
     required AddressType type,
+    @Default(EntityStatus.active) EntityStatus status,
   }) = _AddressListItem;
 
   factory AddressListItem.fromResponse(AddressResponse r) => AddressListItem(
     addressId: r.addressId,
     label: formatAddress(r),
     type: AddressType.fromApi(r.type),
+    status: EntityStatus.fromApi(r.status),
   );
 }
 

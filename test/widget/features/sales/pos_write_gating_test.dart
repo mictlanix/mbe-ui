@@ -87,7 +87,7 @@ void main() {
         tester,
         Consumer(
           builder: (context, ref, _) {
-            final sale = ref.watch(posSaleControllerProvider).valueOrNull;
+            final sale = ref.watch(posSaleControllerProvider).value;
             return CaptureStep(sale: sale, onContinue: () {});
           },
         ),
@@ -280,7 +280,7 @@ void main() {
       tester,
       Consumer(
         builder: (context, ref, _) {
-          final sale = ref.watch(posSaleControllerProvider).valueOrNull;
+          final sale = ref.watch(posSaleControllerProvider).value;
           return sale == null
               ? const SizedBox.shrink()
               : PaymentSummaryPanel(sale: sale, onClose: () {});

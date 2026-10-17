@@ -231,9 +231,7 @@ class _VehicleOperatorFiltersPanel extends ConsumerWidget {
     final employeeRepo = ref.read(employeeRepositoryProvider);
     final l10n = AppLocalizations.of(context)!;
     final driverDisplayText = filter.driverId != null
-        ? ref
-                  .watch(employeeDisplayNameProvider(filter.driverId!))
-                  .valueOrNull ??
+        ? ref.watch(employeeDisplayNameProvider(filter.driverId!)).value ??
               '${filter.driverId}'
         : '';
 

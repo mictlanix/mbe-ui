@@ -15,11 +15,11 @@
 - ~~Inicio de caja~~
 
 ## 2026-08-02
-- Quitar restricción de plantas de producción
+- ~~Quitar restricción de plantas de producción~~
 - ~~Filtrar Activo por defecto~~
 - Operadores -> Agregar foto de licencia
 - Vehiculos -> Agregar Foto de tarjeta de circulación
-- Renombrar Sitio de producción => Planta de producción
+- ~~Renombrar Sitio de producción => Planta de producción~~
 - ~~En formularios sencillos, cambiar navegación por drawers~~
 - ¿Quitar catalogo Formas de Pago?
 - ~~Mejorar UX de lista de precios, que sea lista de productos pivoted~~
@@ -100,11 +100,11 @@ Sales Orders:
 ## 2026-10-02
 
 Products catalog:
-  - Click to image should open an bigger image preview
-  - Add margins to images
+  - ~~Click to image should open an bigger image preview~~
+  - ~~Add margins to images~~
 
 Facilities
-  -  Replace `Sitio de Produccion` to `Planta``
+  -  ~~Replace `Sitio de Produccion` to `Planta``~~
   
 Pos Sales
   - Can't start a sale if there is no cash session. If session is expired, redirect to close it.
@@ -116,7 +116,7 @@ Pos Sales
   - Completed sale should show details (read only), but it's redirecting to payment
 
 Customers
-  - Form is incomplete, missing address and rfc
+  - ~~Form is incomplete, missing addresses, contacts and taxpayers.~~
 
 Login
   - Change pwd should ask to confirm the new one

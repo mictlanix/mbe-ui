@@ -93,6 +93,10 @@ doc/FacilitySummary.md
 doc/FacilityType.md
 doc/FacilityUpdate.md
 doc/FiscalCertificationProvider.md
+doc/FiscalDocumentLine.md
+doc/FiscalDocumentResponse.md
+doc/FiscalDocumentSummary.md
+doc/FiscalDocumentsApi.md
 doc/FulfillmentType.md
 doc/HTTPValidationError.md
 doc/HealthApi.md
@@ -123,6 +127,7 @@ doc/ListResponseEmployeeResponse.md
 doc/ListResponseExchangeRateResponse.md
 doc/ListResponseExpenseResponse.md
 doc/ListResponseFacilityResponse.md
+doc/ListResponseFiscalDocumentSummary.md
 doc/ListResponseItinerarySummary.md
 doc/ListResponseLabelResponse.md
 doc/ListResponseOutstandingOrderResponse.md
@@ -292,6 +297,7 @@ lib/src/api/employees_api.dart
 lib/src/api/exchange_rates_api.dart
 lib/src/api/expenses_api.dart
 lib/src/api/facilities_api.dart
+lib/src/api/fiscal_documents_api.dart
 lib/src/api/health_api.dart
 lib/src/api/labels_api.dart
 lib/src/api/payment_method_options_api.dart
@@ -395,6 +401,9 @@ lib/src/model/facility_summary.dart
 lib/src/model/facility_type.dart
 lib/src/model/facility_update.dart
 lib/src/model/fiscal_certification_provider.dart
+lib/src/model/fiscal_document_line.dart
+lib/src/model/fiscal_document_response.dart
+lib/src/model/fiscal_document_summary.dart
 lib/src/model/fulfillment_type.dart
 lib/src/model/high_profit.dart
 lib/src/model/high_profit_margin.dart
@@ -423,6 +432,7 @@ lib/src/model/list_response_employee_response.dart
 lib/src/model/list_response_exchange_rate_response.dart
 lib/src/model/list_response_expense_response.dart
 lib/src/model/list_response_facility_response.dart
+lib/src/model/list_response_fiscal_document_summary.dart
 lib/src/model/list_response_itinerary_summary.dart
 lib/src/model/list_response_label_response.dart
 lib/src/model/list_response_outstanding_order_response.dart

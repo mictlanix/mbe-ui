@@ -27,7 +27,7 @@ typedef MergeComparison = ({Product kept, Product deleted});
 /// operator confirm a deletion against data that never loaded.
 @riverpod
 Future<MergeComparison> mergeComparison(
-  MergeComparisonRef ref, {
+  Ref ref, {
   required int canonicalId,
   required int duplicateId,
 }) async {
@@ -50,7 +50,7 @@ Future<MergeComparison> mergeComparison(
 /// would couple those two very different failure policies.
 @riverpod
 Future<MergePreview> mergePreview(
-  MergePreviewRef ref, {
+  Ref ref, {
   required int canonicalId,
   required int duplicateId,
 }) {

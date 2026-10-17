@@ -65,7 +65,7 @@ void main() {
       tester,
       Consumer(
         builder: (context, ref, _) {
-          final sale = ref.watch(posSaleControllerProvider).valueOrNull;
+          final sale = ref.watch(posSaleControllerProvider).value;
           return CaptureStep(
             sale: sale,
             onContinue: () =>

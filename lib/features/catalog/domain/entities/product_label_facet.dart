@@ -13,7 +13,7 @@ part 'product_label_facet.freezed.dart';
 /// name collision with this domain entity, mirroring how `ProductListItem`
 /// hides the generated type in the data layer).
 @freezed
-class ProductLabelFacet with _$ProductLabelFacet {
+abstract class ProductLabelFacet with _$ProductLabelFacet {
   const factory ProductLabelFacet({required int labelId, required int count}) =
       _ProductLabelFacet;
 

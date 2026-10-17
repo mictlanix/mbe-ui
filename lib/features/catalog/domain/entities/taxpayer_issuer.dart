@@ -15,7 +15,7 @@ part 'taxpayer_issuer.freezed.dart';
 /// picker projection spec 014's facility-form autocomplete consumes
 /// (research §13) — this is the catalog's own row/detail shape.
 @freezed
-class TaxpayerIssuer with _$TaxpayerIssuer {
+abstract class TaxpayerIssuer with _$TaxpayerIssuer {
   const factory TaxpayerIssuer({
     required String rfc,
     required String name,

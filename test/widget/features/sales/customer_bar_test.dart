@@ -409,7 +409,7 @@ void main() {
         // inside it — nothing in a bare `CustomerBar` pump reads
         // `posSaleControllerProvider` to force it to settle before this,
         // unlike a real screen that watches it to render. Without this,
-        // `state.valueOrNull` is still null when the tap fires, and the
+        // `state.value` is still null when the tap fires, and the
         // very fast path this scenario means to rule out fires instead.
         // `posSaleControllerProvider` is auto-dispose and nothing in a bare
         // `CustomerBar` pump keeps a live subscription on it (unlike a real

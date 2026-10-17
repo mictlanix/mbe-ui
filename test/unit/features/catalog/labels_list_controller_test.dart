@@ -19,6 +19,7 @@ void main() {
   setUp(() {
     repository = MockLabelRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [labelRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

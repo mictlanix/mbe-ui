@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'account_controller.dart';
@@ -9,497 +9,559 @@ part of 'account_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$ChangePasswordFormState {
-  String get oldPassword => throw _privateConstructorUsedError;
-  String get newPassword => throw _privateConstructorUsedError;
-  bool get submitting => throw _privateConstructorUsedError;
-  bool get success => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
 
-  /// Create a copy of ChangePasswordFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $ChangePasswordFormStateCopyWith<ChangePasswordFormState> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get oldPassword; String get newPassword; bool get submitting; bool get success; String? get error;
+/// Create a copy of ChangePasswordFormState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChangePasswordFormStateCopyWith<ChangePasswordFormState> get copyWith => _$ChangePasswordFormStateCopyWithImpl<ChangePasswordFormState>(this as ChangePasswordFormState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as ChangePasswordFormState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChangePasswordFormState&&(identical(other.oldPassword, _this.oldPassword) || other.oldPassword == _this.oldPassword)&&(identical(other.newPassword, _this.newPassword) || other.newPassword == _this.newPassword)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.success, _this.success) || other.success == _this.success)&&(identical(other.error, _this.error) || other.error == _this.error));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as ChangePasswordFormState;
+  return Object.hash(runtimeType,_this.oldPassword,_this.newPassword,_this.submitting,_this.success,_this.error);
+}
+
+@override
+String toString() {
+  final _this = this as ChangePasswordFormState;
+  return 'ChangePasswordFormState(oldPassword: ${_this.oldPassword}, newPassword: ${_this.newPassword}, submitting: ${_this.submitting}, success: ${_this.success}, error: ${_this.error})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $ChangePasswordFormStateCopyWith<$Res> {
-  factory $ChangePasswordFormStateCopyWith(
-    ChangePasswordFormState value,
-    $Res Function(ChangePasswordFormState) then,
-  ) = _$ChangePasswordFormStateCopyWithImpl<$Res, ChangePasswordFormState>;
-  @useResult
-  $Res call({
-    String oldPassword,
-    String newPassword,
-    bool submitting,
-    bool success,
-    String? error,
-  });
-}
+abstract mixin class $ChangePasswordFormStateCopyWith<$Res>  {
+  factory $ChangePasswordFormStateCopyWith(ChangePasswordFormState value, $Res Function(ChangePasswordFormState) _then) = _$ChangePasswordFormStateCopyWithImpl;
+@useResult
+$Res call({
+ String oldPassword, String newPassword, bool submitting, bool success, String? error
+});
 
+
+
+
+}
 /// @nodoc
-class _$ChangePasswordFormStateCopyWithImpl<
-  $Res,
-  $Val extends ChangePasswordFormState
->
+class _$ChangePasswordFormStateCopyWithImpl<$Res>
     implements $ChangePasswordFormStateCopyWith<$Res> {
-  _$ChangePasswordFormStateCopyWithImpl(this._value, this._then);
+  _$ChangePasswordFormStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final ChangePasswordFormState _self;
+  final $Res Function(ChangePasswordFormState) _then;
 
-  /// Create a copy of ChangePasswordFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? oldPassword = null,
-    Object? newPassword = null,
-    Object? submitting = null,
-    Object? success = null,
-    Object? error = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            oldPassword: null == oldPassword
-                ? _value.oldPassword
-                : oldPassword // ignore: cast_nullable_to_non_nullable
-                      as String,
-            newPassword: null == newPassword
-                ? _value.newPassword
-                : newPassword // ignore: cast_nullable_to_non_nullable
-                      as String,
-            submitting: null == submitting
-                ? _value.submitting
-                : submitting // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            success: null == success
-                ? _value.success
-                : success // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            error: freezed == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of ChangePasswordFormState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? oldPassword = null,Object? newPassword = null,Object? submitting = null,Object? success = null,Object? error = freezed,}) {
+  return _then(ChangePasswordFormState(
+oldPassword: null == oldPassword ? _self.oldPassword : oldPassword // ignore: cast_nullable_to_non_nullable
+as String,newPassword: null == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
+as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
+as bool,success: null == success ? _self.success : success // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ChangePasswordFormState].
+extension ChangePasswordFormStatePatterns on ChangePasswordFormState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ChangePasswordFormState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ChangePasswordFormState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ChangePasswordFormState value)  $default,){
+final _that = this;
+switch (_that) {
+case _ChangePasswordFormState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ChangePasswordFormState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ChangePasswordFormState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String oldPassword,  String newPassword,  bool submitting,  bool success,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ChangePasswordFormState() when $default != null:
+return $default(_that.oldPassword,_that.newPassword,_that.submitting,_that.success,_that.error);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String oldPassword,  String newPassword,  bool submitting,  bool success,  String? error)  $default,) {final _that = this;
+switch (_that) {
+case _ChangePasswordFormState():
+return $default(_that.oldPassword,_that.newPassword,_that.submitting,_that.success,_that.error);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String oldPassword,  String newPassword,  bool submitting,  bool success,  String? error)?  $default,) {final _that = this;
+switch (_that) {
+case _ChangePasswordFormState() when $default != null:
+return $default(_that.oldPassword,_that.newPassword,_that.submitting,_that.success,_that.error);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$ChangePasswordFormStateImplCopyWith<$Res>
-    implements $ChangePasswordFormStateCopyWith<$Res> {
-  factory _$$ChangePasswordFormStateImplCopyWith(
-    _$ChangePasswordFormStateImpl value,
-    $Res Function(_$ChangePasswordFormStateImpl) then,
-  ) = __$$ChangePasswordFormStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String oldPassword,
-    String newPassword,
-    bool submitting,
-    bool success,
-    String? error,
-  });
+
+
+class _ChangePasswordFormState implements ChangePasswordFormState {
+  const _ChangePasswordFormState({this.oldPassword = '', this.newPassword = '', this.submitting = false, this.success = false, this.error});
+  
+
+@override@JsonKey() final  String oldPassword;
+@override@JsonKey() final  String newPassword;
+@override@JsonKey() final  bool submitting;
+@override@JsonKey() final  bool success;
+@override final  String? error;
+
+/// Create a copy of ChangePasswordFormState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ChangePasswordFormStateCopyWith<_ChangePasswordFormState> get copyWith => __$ChangePasswordFormStateCopyWithImpl<_ChangePasswordFormState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChangePasswordFormState&&(identical(other.oldPassword, oldPassword) || other.oldPassword == oldPassword)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.success, success) || other.success == success)&&(identical(other.error, error) || other.error == error));
 }
 
-/// @nodoc
-class __$$ChangePasswordFormStateImplCopyWithImpl<$Res>
-    extends
-        _$ChangePasswordFormStateCopyWithImpl<
-          $Res,
-          _$ChangePasswordFormStateImpl
-        >
-    implements _$$ChangePasswordFormStateImplCopyWith<$Res> {
-  __$$ChangePasswordFormStateImplCopyWithImpl(
-    _$ChangePasswordFormStateImpl _value,
-    $Res Function(_$ChangePasswordFormStateImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of ChangePasswordFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? oldPassword = null,
-    Object? newPassword = null,
-    Object? submitting = null,
-    Object? success = null,
-    Object? error = freezed,
-  }) {
-    return _then(
-      _$ChangePasswordFormStateImpl(
-        oldPassword: null == oldPassword
-            ? _value.oldPassword
-            : oldPassword // ignore: cast_nullable_to_non_nullable
-                  as String,
-        newPassword: null == newPassword
-            ? _value.newPassword
-            : newPassword // ignore: cast_nullable_to_non_nullable
-                  as String,
-        submitting: null == submitting
-            ? _value.submitting
-            : submitting // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        success: null == success
-            ? _value.success
-            : success // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        error: freezed == error
-            ? _value.error
-            : error // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,oldPassword,newPassword,submitting,success,error);
 }
 
-/// @nodoc
-
-class _$ChangePasswordFormStateImpl implements _ChangePasswordFormState {
-  const _$ChangePasswordFormStateImpl({
-    this.oldPassword = '',
-    this.newPassword = '',
-    this.submitting = false,
-    this.success = false,
-    this.error,
-  });
-
-  @override
-  @JsonKey()
-  final String oldPassword;
-  @override
-  @JsonKey()
-  final String newPassword;
-  @override
-  @JsonKey()
-  final bool submitting;
-  @override
-  @JsonKey()
-  final bool success;
-  @override
-  final String? error;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'ChangePasswordFormState(oldPassword: $oldPassword, newPassword: $newPassword, submitting: $submitting, success: $success, error: $error)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ChangePasswordFormStateImpl &&
-            (identical(other.oldPassword, oldPassword) ||
-                other.oldPassword == oldPassword) &&
-            (identical(other.newPassword, newPassword) ||
-                other.newPassword == newPassword) &&
-            (identical(other.submitting, submitting) ||
-                other.submitting == submitting) &&
-            (identical(other.success, success) || other.success == success) &&
-            (identical(other.error, error) || other.error == error));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    oldPassword,
-    newPassword,
-    submitting,
-    success,
-    error,
-  );
-
-  /// Create a copy of ChangePasswordFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ChangePasswordFormStateImplCopyWith<_$ChangePasswordFormStateImpl>
-  get copyWith =>
-      __$$ChangePasswordFormStateImplCopyWithImpl<
-        _$ChangePasswordFormStateImpl
-      >(this, _$identity);
 }
 
-abstract class _ChangePasswordFormState implements ChangePasswordFormState {
-  const factory _ChangePasswordFormState({
-    final String oldPassword,
-    final String newPassword,
-    final bool submitting,
-    final bool success,
-    final String? error,
-  }) = _$ChangePasswordFormStateImpl;
 
-  @override
-  String get oldPassword;
-  @override
-  String get newPassword;
-  @override
-  bool get submitting;
-  @override
-  bool get success;
-  @override
-  String? get error;
+}
 
-  /// Create a copy of ChangePasswordFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ChangePasswordFormStateImplCopyWith<_$ChangePasswordFormStateImpl>
-  get copyWith => throw _privateConstructorUsedError;
+/// @nodoc
+abstract mixin class _$ChangePasswordFormStateCopyWith<$Res> implements $ChangePasswordFormStateCopyWith<$Res> {
+  factory _$ChangePasswordFormStateCopyWith(_ChangePasswordFormState value, $Res Function(_ChangePasswordFormState) _then) = __$ChangePasswordFormStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String oldPassword, String newPassword, bool submitting, bool success, String? error
+});
+
+
+
+
+}
+/// @nodoc
+class __$ChangePasswordFormStateCopyWithImpl<$Res>
+    implements _$ChangePasswordFormStateCopyWith<$Res> {
+  __$ChangePasswordFormStateCopyWithImpl(this._self, this._then);
+
+  final _ChangePasswordFormState _self;
+  final $Res Function(_ChangePasswordFormState) _then;
+
+/// Create a copy of ChangePasswordFormState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? oldPassword = null,Object? newPassword = null,Object? submitting = null,Object? success = null,Object? error = freezed,}) {
+  return _then(_ChangePasswordFormState(
+oldPassword: null == oldPassword ? _self.oldPassword : oldPassword // ignore: cast_nullable_to_non_nullable
+as String,newPassword: null == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
+as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
+as bool,success: null == success ? _self.success : success // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$RecoveryFormState {
-  String get recoveryToken => throw _privateConstructorUsedError;
-  String get newPassword => throw _privateConstructorUsedError;
-  bool get submitting => throw _privateConstructorUsedError;
-  bool get success => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
 
-  /// Create a copy of RecoveryFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $RecoveryFormStateCopyWith<RecoveryFormState> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get recoveryToken; String get newPassword; bool get submitting; bool get success; String? get error;
+/// Create a copy of RecoveryFormState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RecoveryFormStateCopyWith<RecoveryFormState> get copyWith => _$RecoveryFormStateCopyWithImpl<RecoveryFormState>(this as RecoveryFormState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as RecoveryFormState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecoveryFormState&&(identical(other.recoveryToken, _this.recoveryToken) || other.recoveryToken == _this.recoveryToken)&&(identical(other.newPassword, _this.newPassword) || other.newPassword == _this.newPassword)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.success, _this.success) || other.success == _this.success)&&(identical(other.error, _this.error) || other.error == _this.error));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as RecoveryFormState;
+  return Object.hash(runtimeType,_this.recoveryToken,_this.newPassword,_this.submitting,_this.success,_this.error);
+}
+
+@override
+String toString() {
+  final _this = this as RecoveryFormState;
+  return 'RecoveryFormState(recoveryToken: ${_this.recoveryToken}, newPassword: ${_this.newPassword}, submitting: ${_this.submitting}, success: ${_this.success}, error: ${_this.error})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $RecoveryFormStateCopyWith<$Res> {
-  factory $RecoveryFormStateCopyWith(
-    RecoveryFormState value,
-    $Res Function(RecoveryFormState) then,
-  ) = _$RecoveryFormStateCopyWithImpl<$Res, RecoveryFormState>;
-  @useResult
-  $Res call({
-    String recoveryToken,
-    String newPassword,
-    bool submitting,
-    bool success,
-    String? error,
-  });
-}
+abstract mixin class $RecoveryFormStateCopyWith<$Res>  {
+  factory $RecoveryFormStateCopyWith(RecoveryFormState value, $Res Function(RecoveryFormState) _then) = _$RecoveryFormStateCopyWithImpl;
+@useResult
+$Res call({
+ String recoveryToken, String newPassword, bool submitting, bool success, String? error
+});
 
+
+
+
+}
 /// @nodoc
-class _$RecoveryFormStateCopyWithImpl<$Res, $Val extends RecoveryFormState>
+class _$RecoveryFormStateCopyWithImpl<$Res>
     implements $RecoveryFormStateCopyWith<$Res> {
-  _$RecoveryFormStateCopyWithImpl(this._value, this._then);
+  _$RecoveryFormStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final RecoveryFormState _self;
+  final $Res Function(RecoveryFormState) _then;
 
-  /// Create a copy of RecoveryFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? recoveryToken = null,
-    Object? newPassword = null,
-    Object? submitting = null,
-    Object? success = null,
-    Object? error = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            recoveryToken: null == recoveryToken
-                ? _value.recoveryToken
-                : recoveryToken // ignore: cast_nullable_to_non_nullable
-                      as String,
-            newPassword: null == newPassword
-                ? _value.newPassword
-                : newPassword // ignore: cast_nullable_to_non_nullable
-                      as String,
-            submitting: null == submitting
-                ? _value.submitting
-                : submitting // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            success: null == success
-                ? _value.success
-                : success // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            error: freezed == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of RecoveryFormState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? recoveryToken = null,Object? newPassword = null,Object? submitting = null,Object? success = null,Object? error = freezed,}) {
+  return _then(RecoveryFormState(
+recoveryToken: null == recoveryToken ? _self.recoveryToken : recoveryToken // ignore: cast_nullable_to_non_nullable
+as String,newPassword: null == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
+as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
+as bool,success: null == success ? _self.success : success // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [RecoveryFormState].
+extension RecoveryFormStatePatterns on RecoveryFormState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RecoveryFormState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RecoveryFormState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RecoveryFormState value)  $default,){
+final _that = this;
+switch (_that) {
+case _RecoveryFormState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RecoveryFormState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RecoveryFormState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String recoveryToken,  String newPassword,  bool submitting,  bool success,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RecoveryFormState() when $default != null:
+return $default(_that.recoveryToken,_that.newPassword,_that.submitting,_that.success,_that.error);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String recoveryToken,  String newPassword,  bool submitting,  bool success,  String? error)  $default,) {final _that = this;
+switch (_that) {
+case _RecoveryFormState():
+return $default(_that.recoveryToken,_that.newPassword,_that.submitting,_that.success,_that.error);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String recoveryToken,  String newPassword,  bool submitting,  bool success,  String? error)?  $default,) {final _that = this;
+switch (_that) {
+case _RecoveryFormState() when $default != null:
+return $default(_that.recoveryToken,_that.newPassword,_that.submitting,_that.success,_that.error);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$RecoveryFormStateImplCopyWith<$Res>
-    implements $RecoveryFormStateCopyWith<$Res> {
-  factory _$$RecoveryFormStateImplCopyWith(
-    _$RecoveryFormStateImpl value,
-    $Res Function(_$RecoveryFormStateImpl) then,
-  ) = __$$RecoveryFormStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String recoveryToken,
-    String newPassword,
-    bool submitting,
-    bool success,
-    String? error,
-  });
+
+
+class _RecoveryFormState implements RecoveryFormState {
+  const _RecoveryFormState({this.recoveryToken = '', this.newPassword = '', this.submitting = false, this.success = false, this.error});
+  
+
+@override@JsonKey() final  String recoveryToken;
+@override@JsonKey() final  String newPassword;
+@override@JsonKey() final  bool submitting;
+@override@JsonKey() final  bool success;
+@override final  String? error;
+
+/// Create a copy of RecoveryFormState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RecoveryFormStateCopyWith<_RecoveryFormState> get copyWith => __$RecoveryFormStateCopyWithImpl<_RecoveryFormState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecoveryFormState&&(identical(other.recoveryToken, recoveryToken) || other.recoveryToken == recoveryToken)&&(identical(other.newPassword, newPassword) || other.newPassword == newPassword)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.success, success) || other.success == success)&&(identical(other.error, error) || other.error == error));
 }
 
-/// @nodoc
-class __$$RecoveryFormStateImplCopyWithImpl<$Res>
-    extends _$RecoveryFormStateCopyWithImpl<$Res, _$RecoveryFormStateImpl>
-    implements _$$RecoveryFormStateImplCopyWith<$Res> {
-  __$$RecoveryFormStateImplCopyWithImpl(
-    _$RecoveryFormStateImpl _value,
-    $Res Function(_$RecoveryFormStateImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of RecoveryFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? recoveryToken = null,
-    Object? newPassword = null,
-    Object? submitting = null,
-    Object? success = null,
-    Object? error = freezed,
-  }) {
-    return _then(
-      _$RecoveryFormStateImpl(
-        recoveryToken: null == recoveryToken
-            ? _value.recoveryToken
-            : recoveryToken // ignore: cast_nullable_to_non_nullable
-                  as String,
-        newPassword: null == newPassword
-            ? _value.newPassword
-            : newPassword // ignore: cast_nullable_to_non_nullable
-                  as String,
-        submitting: null == submitting
-            ? _value.submitting
-            : submitting // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        success: null == success
-            ? _value.success
-            : success // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        error: freezed == error
-            ? _value.error
-            : error // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,recoveryToken,newPassword,submitting,success,error);
 }
 
-/// @nodoc
-
-class _$RecoveryFormStateImpl implements _RecoveryFormState {
-  const _$RecoveryFormStateImpl({
-    this.recoveryToken = '',
-    this.newPassword = '',
-    this.submitting = false,
-    this.success = false,
-    this.error,
-  });
-
-  @override
-  @JsonKey()
-  final String recoveryToken;
-  @override
-  @JsonKey()
-  final String newPassword;
-  @override
-  @JsonKey()
-  final bool submitting;
-  @override
-  @JsonKey()
-  final bool success;
-  @override
-  final String? error;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'RecoveryFormState(recoveryToken: $recoveryToken, newPassword: $newPassword, submitting: $submitting, success: $success, error: $error)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$RecoveryFormStateImpl &&
-            (identical(other.recoveryToken, recoveryToken) ||
-                other.recoveryToken == recoveryToken) &&
-            (identical(other.newPassword, newPassword) ||
-                other.newPassword == newPassword) &&
-            (identical(other.submitting, submitting) ||
-                other.submitting == submitting) &&
-            (identical(other.success, success) || other.success == success) &&
-            (identical(other.error, error) || other.error == error));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    recoveryToken,
-    newPassword,
-    submitting,
-    success,
-    error,
-  );
-
-  /// Create a copy of RecoveryFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$RecoveryFormStateImplCopyWith<_$RecoveryFormStateImpl> get copyWith =>
-      __$$RecoveryFormStateImplCopyWithImpl<_$RecoveryFormStateImpl>(
-        this,
-        _$identity,
-      );
 }
 
-abstract class _RecoveryFormState implements RecoveryFormState {
-  const factory _RecoveryFormState({
-    final String recoveryToken,
-    final String newPassword,
-    final bool submitting,
-    final bool success,
-    final String? error,
-  }) = _$RecoveryFormStateImpl;
 
-  @override
-  String get recoveryToken;
-  @override
-  String get newPassword;
-  @override
-  bool get submitting;
-  @override
-  bool get success;
-  @override
-  String? get error;
-
-  /// Create a copy of RecoveryFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$RecoveryFormStateImplCopyWith<_$RecoveryFormStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$RecoveryFormStateCopyWith<$Res> implements $RecoveryFormStateCopyWith<$Res> {
+  factory _$RecoveryFormStateCopyWith(_RecoveryFormState value, $Res Function(_RecoveryFormState) _then) = __$RecoveryFormStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String recoveryToken, String newPassword, bool submitting, bool success, String? error
+});
+
+
+
+
+}
+/// @nodoc
+class __$RecoveryFormStateCopyWithImpl<$Res>
+    implements _$RecoveryFormStateCopyWith<$Res> {
+  __$RecoveryFormStateCopyWithImpl(this._self, this._then);
+
+  final _RecoveryFormState _self;
+  final $Res Function(_RecoveryFormState) _then;
+
+/// Create a copy of RecoveryFormState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? recoveryToken = null,Object? newPassword = null,Object? submitting = null,Object? success = null,Object? error = freezed,}) {
+  return _then(_RecoveryFormState(
+recoveryToken: null == recoveryToken ? _self.recoveryToken : recoveryToken // ignore: cast_nullable_to_non_nullable
+as String,newPassword: null == newPassword ? _self.newPassword : newPassword // ignore: cast_nullable_to_non_nullable
+as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
+as bool,success: null == success ? _self.success : success // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+// dart format on

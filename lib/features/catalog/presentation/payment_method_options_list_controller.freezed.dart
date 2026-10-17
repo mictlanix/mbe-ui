@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'payment_method_options_list_controller.dart';
@@ -9,227 +9,280 @@ part of 'payment_method_options_list_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$PaymentMethodOptionFilter {
-  String get search => throw _privateConstructorUsedError;
-  int? get facilityId => throw _privateConstructorUsedError;
-  EntityStatus? get status => throw _privateConstructorUsedError;
-  int get pageIndex => throw _privateConstructorUsedError;
 
-  /// Create a copy of PaymentMethodOptionFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $PaymentMethodOptionFilterCopyWith<PaymentMethodOptionFilter> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get search; int? get facilityId; EntityStatus? get status; int get pageIndex;
+/// Create a copy of PaymentMethodOptionFilter
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PaymentMethodOptionFilterCopyWith<PaymentMethodOptionFilter> get copyWith => _$PaymentMethodOptionFilterCopyWithImpl<PaymentMethodOptionFilter>(this as PaymentMethodOptionFilter, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as PaymentMethodOptionFilter;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentMethodOptionFilter&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as PaymentMethodOptionFilter;
+  return Object.hash(runtimeType,_this.search,_this.facilityId,_this.status,_this.pageIndex);
+}
+
+@override
+String toString() {
+  final _this = this as PaymentMethodOptionFilter;
+  return 'PaymentMethodOptionFilter(search: ${_this.search}, facilityId: ${_this.facilityId}, status: ${_this.status}, pageIndex: ${_this.pageIndex})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $PaymentMethodOptionFilterCopyWith<$Res> {
-  factory $PaymentMethodOptionFilterCopyWith(
-    PaymentMethodOptionFilter value,
-    $Res Function(PaymentMethodOptionFilter) then,
-  ) = _$PaymentMethodOptionFilterCopyWithImpl<$Res, PaymentMethodOptionFilter>;
-  @useResult
-  $Res call({
-    String search,
-    int? facilityId,
-    EntityStatus? status,
-    int pageIndex,
-  });
-}
+abstract mixin class $PaymentMethodOptionFilterCopyWith<$Res>  {
+  factory $PaymentMethodOptionFilterCopyWith(PaymentMethodOptionFilter value, $Res Function(PaymentMethodOptionFilter) _then) = _$PaymentMethodOptionFilterCopyWithImpl;
+@useResult
+$Res call({
+ String search, int? facilityId, EntityStatus? status, int pageIndex
+});
 
+
+
+
+}
 /// @nodoc
-class _$PaymentMethodOptionFilterCopyWithImpl<
-  $Res,
-  $Val extends PaymentMethodOptionFilter
->
+class _$PaymentMethodOptionFilterCopyWithImpl<$Res>
     implements $PaymentMethodOptionFilterCopyWith<$Res> {
-  _$PaymentMethodOptionFilterCopyWithImpl(this._value, this._then);
+  _$PaymentMethodOptionFilterCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final PaymentMethodOptionFilter _self;
+  final $Res Function(PaymentMethodOptionFilter) _then;
 
-  /// Create a copy of PaymentMethodOptionFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? search = null,
-    Object? facilityId = freezed,
-    Object? status = freezed,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            search: null == search
-                ? _value.search
-                : search // ignore: cast_nullable_to_non_nullable
-                      as String,
-            facilityId: freezed == facilityId
-                ? _value.facilityId
-                : facilityId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            status: freezed == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as EntityStatus?,
-            pageIndex: null == pageIndex
-                ? _value.pageIndex
-                : pageIndex // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of PaymentMethodOptionFilter
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? search = null,Object? facilityId = freezed,Object? status = freezed,Object? pageIndex = null,}) {
+  return _then(PaymentMethodOptionFilter(
+search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PaymentMethodOptionFilter].
+extension PaymentMethodOptionFilterPatterns on PaymentMethodOptionFilter {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PaymentMethodOptionFilter value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PaymentMethodOptionFilter() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PaymentMethodOptionFilter value)  $default,){
+final _that = this;
+switch (_that) {
+case _PaymentMethodOptionFilter():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PaymentMethodOptionFilter value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PaymentMethodOptionFilter() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String search,  int? facilityId,  EntityStatus? status,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PaymentMethodOptionFilter() when $default != null:
+return $default(_that.search,_that.facilityId,_that.status,_that.pageIndex);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String search,  int? facilityId,  EntityStatus? status,  int pageIndex)  $default,) {final _that = this;
+switch (_that) {
+case _PaymentMethodOptionFilter():
+return $default(_that.search,_that.facilityId,_that.status,_that.pageIndex);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String search,  int? facilityId,  EntityStatus? status,  int pageIndex)?  $default,) {final _that = this;
+switch (_that) {
+case _PaymentMethodOptionFilter() when $default != null:
+return $default(_that.search,_that.facilityId,_that.status,_that.pageIndex);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$PaymentMethodOptionFilterImplCopyWith<$Res>
-    implements $PaymentMethodOptionFilterCopyWith<$Res> {
-  factory _$$PaymentMethodOptionFilterImplCopyWith(
-    _$PaymentMethodOptionFilterImpl value,
-    $Res Function(_$PaymentMethodOptionFilterImpl) then,
-  ) = __$$PaymentMethodOptionFilterImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String search,
-    int? facilityId,
-    EntityStatus? status,
-    int pageIndex,
-  });
+
+
+class _PaymentMethodOptionFilter implements PaymentMethodOptionFilter {
+  const _PaymentMethodOptionFilter({this.search = '', this.facilityId, this.status, this.pageIndex = 0});
+  
+
+@override@JsonKey() final  String search;
+@override final  int? facilityId;
+@override final  EntityStatus? status;
+@override@JsonKey() final  int pageIndex;
+
+/// Create a copy of PaymentMethodOptionFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PaymentMethodOptionFilterCopyWith<_PaymentMethodOptionFilter> get copyWith => __$PaymentMethodOptionFilterCopyWithImpl<_PaymentMethodOptionFilter>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentMethodOptionFilter&&(identical(other.search, search) || other.search == search)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.status, status) || other.status == status)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
 }
 
-/// @nodoc
-class __$$PaymentMethodOptionFilterImplCopyWithImpl<$Res>
-    extends
-        _$PaymentMethodOptionFilterCopyWithImpl<
-          $Res,
-          _$PaymentMethodOptionFilterImpl
-        >
-    implements _$$PaymentMethodOptionFilterImplCopyWith<$Res> {
-  __$$PaymentMethodOptionFilterImplCopyWithImpl(
-    _$PaymentMethodOptionFilterImpl _value,
-    $Res Function(_$PaymentMethodOptionFilterImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of PaymentMethodOptionFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? search = null,
-    Object? facilityId = freezed,
-    Object? status = freezed,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _$PaymentMethodOptionFilterImpl(
-        search: null == search
-            ? _value.search
-            : search // ignore: cast_nullable_to_non_nullable
-                  as String,
-        facilityId: freezed == facilityId
-            ? _value.facilityId
-            : facilityId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        status: freezed == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as EntityStatus?,
-        pageIndex: null == pageIndex
-            ? _value.pageIndex
-            : pageIndex // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,search,facilityId,status,pageIndex);
 }
 
-/// @nodoc
-
-class _$PaymentMethodOptionFilterImpl implements _PaymentMethodOptionFilter {
-  const _$PaymentMethodOptionFilterImpl({
-    this.search = '',
-    this.facilityId,
-    this.status,
-    this.pageIndex = 0,
-  });
-
-  @override
-  @JsonKey()
-  final String search;
-  @override
-  final int? facilityId;
-  @override
-  final EntityStatus? status;
-  @override
-  @JsonKey()
-  final int pageIndex;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'PaymentMethodOptionFilter(search: $search, facilityId: $facilityId, status: $status, pageIndex: $pageIndex)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$PaymentMethodOptionFilterImpl &&
-            (identical(other.search, search) || other.search == search) &&
-            (identical(other.facilityId, facilityId) ||
-                other.facilityId == facilityId) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.pageIndex, pageIndex) ||
-                other.pageIndex == pageIndex));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, search, facilityId, status, pageIndex);
-
-  /// Create a copy of PaymentMethodOptionFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$PaymentMethodOptionFilterImplCopyWith<_$PaymentMethodOptionFilterImpl>
-  get copyWith =>
-      __$$PaymentMethodOptionFilterImplCopyWithImpl<
-        _$PaymentMethodOptionFilterImpl
-      >(this, _$identity);
 }
 
-abstract class _PaymentMethodOptionFilter implements PaymentMethodOptionFilter {
-  const factory _PaymentMethodOptionFilter({
-    final String search,
-    final int? facilityId,
-    final EntityStatus? status,
-    final int pageIndex,
-  }) = _$PaymentMethodOptionFilterImpl;
 
-  @override
-  String get search;
-  @override
-  int? get facilityId;
-  @override
-  EntityStatus? get status;
-  @override
-  int get pageIndex;
-
-  /// Create a copy of PaymentMethodOptionFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PaymentMethodOptionFilterImplCopyWith<_$PaymentMethodOptionFilterImpl>
-  get copyWith => throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$PaymentMethodOptionFilterCopyWith<$Res> implements $PaymentMethodOptionFilterCopyWith<$Res> {
+  factory _$PaymentMethodOptionFilterCopyWith(_PaymentMethodOptionFilter value, $Res Function(_PaymentMethodOptionFilter) _then) = __$PaymentMethodOptionFilterCopyWithImpl;
+@override @useResult
+$Res call({
+ String search, int? facilityId, EntityStatus? status, int pageIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$PaymentMethodOptionFilterCopyWithImpl<$Res>
+    implements _$PaymentMethodOptionFilterCopyWith<$Res> {
+  __$PaymentMethodOptionFilterCopyWithImpl(this._self, this._then);
+
+  final _PaymentMethodOptionFilter _self;
+  final $Res Function(_PaymentMethodOptionFilter) _then;
+
+/// Create a copy of PaymentMethodOptionFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? search = null,Object? facilityId = freezed,Object? status = freezed,Object? pageIndex = null,}) {
+  return _then(_PaymentMethodOptionFilter(
+search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on

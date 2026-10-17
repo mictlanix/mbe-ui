@@ -8,7 +8,7 @@ part 'merge_preview.freezed.dart';
 /// (specs/016-product-merge-review FR-006), from
 /// `GET /api/v1/products/merge/preview`.
 @freezed
-class MergePreview with _$MergePreview {
+abstract class MergePreview with _$MergePreview {
   const factory MergePreview({
     /// One entry per referencing relation, in the server's order (largest
     /// count first).
@@ -38,7 +38,7 @@ class MergePreview with _$MergePreview {
 /// One referencing relation and how many of its rows point at the product
 /// being deleted.
 @freezed
-class MergePreviewCategory with _$MergePreviewCategory {
+abstract class MergePreviewCategory with _$MergePreviewCategory {
   const factory MergePreviewCategory({
     /// The raw `table.column` identifier as mbe-api reports it (e.g.
     /// `sales_order_detail.product`). Kept verbatim: the category set is

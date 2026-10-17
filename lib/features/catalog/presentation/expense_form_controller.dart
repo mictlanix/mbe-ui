@@ -28,7 +28,7 @@ abstract final class ExpenseFormErrorCode {
 /// Create/edit form state for a single expense. [expenseId] is `null` in
 /// create mode.
 @freezed
-class ExpenseFormState with _$ExpenseFormState {
+abstract class ExpenseFormState with _$ExpenseFormState {
   const factory ExpenseFormState({
     int? expenseId,
     @Default('') String name,

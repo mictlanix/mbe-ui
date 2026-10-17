@@ -45,6 +45,7 @@ void main() {
 
   ProviderContainer makeContainer() {
     return ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         userRepositoryProvider.overrideWithValue(userRepository),
         authRepositoryProvider.overrideWithValue(authRepository),

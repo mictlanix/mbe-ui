@@ -141,6 +141,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           vehicleOperatorRepositoryProvider.overrideWithValue(repository),
           employeeRepositoryProvider.overrideWithValue(employeeRepository),
@@ -260,6 +261,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             vehicleOperatorRepositoryProvider.overrideWithValue(repository),
@@ -457,6 +459,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             overrides: [
               vehicleOperatorRepositoryProvider.overrideWithValue(repository),
               employeeRepositoryProvider.overrideWithValue(employeeRepository),

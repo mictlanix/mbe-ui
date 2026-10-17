@@ -1907,7 +1907,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get facilityTypeStore => 'Tienda';
 
   @override
-  String get facilityTypeProductionSite => 'Sitio de producción';
+  String get facilityTypeProductionSite => 'Planta';
 
   @override
   String get columnFacility => 'Instalación';
@@ -2245,10 +2245,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noCashDrawersInFacility => 'Sin cajas registradas.';
-
-  @override
-  String get productionSiteChildrenNote =>
-      'Los sitios de producción solo administran almacenes: no tienen puntos de venta ni cajas.';
 
   @override
   String get pointSaleForeignFacilityBadge => 'Otra instalación';
@@ -3790,4 +3786,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get salesOrderViewDocumentAction => 'Ver pedido';
+
+  @override
+  String get customerAddressesSection => 'Direcciones';
+
+  @override
+  String get customerContactsSection => 'Contactos';
+
+  @override
+  String get customerTaxpayersSection => 'Receptores fiscales';
+
+  @override
+  String get customerAddressesEmpty => 'Sin direcciones vinculadas.';
+
+  @override
+  String get customerContactsEmpty => 'Sin contactos vinculados.';
+
+  @override
+  String get customerTaxpayersEmpty => 'Sin receptores fiscales vinculados.';
+
+  @override
+  String get customerAddressLinkLabel => 'Vincular una dirección existente';
+
+  @override
+  String get customerContactLinkLabel => 'Vincular un contacto existente';
+
+  @override
+  String get customerTaxpayerLinkLabel =>
+      'Vincular un receptor fiscal existente';
+
+  @override
+  String get linkedRecordUnlinkTooltip => 'Desvincular';
+
+  @override
+  String get linkedRecordNewAction => 'Nuevo';
+
+  @override
+  String customerGenericTaxpayerNote(String rfc) {
+    return 'Este es el cliente de mostrador: su único receptor fiscal es $rfc (público en general) y no se le puede vincular nada más.';
+  }
 }

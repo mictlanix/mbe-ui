@@ -19,6 +19,7 @@ void main() {
   setUp(() {
     repository = MockExpenseRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [expenseRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

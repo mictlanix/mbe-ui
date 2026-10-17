@@ -10,7 +10,7 @@ part 'sales_quote_summary.freezed.dart';
 /// `GET /sales-quotes`. `OpenSale` cannot be reused: it requires `balance`,
 /// which a quote does not have, and has no `hasExpired`.
 @freezed
-class SalesQuoteSummary with _$SalesQuoteSummary {
+abstract class SalesQuoteSummary with _$SalesQuoteSummary {
   const factory SalesQuoteSummary({
     required int id,
     int? serial,

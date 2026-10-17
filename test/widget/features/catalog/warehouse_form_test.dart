@@ -100,6 +100,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           warehouseRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -222,6 +223,7 @@ void main() {
       );
 
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           warehouseRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -281,6 +283,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             warehouseRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -341,6 +344,7 @@ void main() {
       final key = GlobalKey<WarehouseFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             warehouseRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -370,6 +374,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             warehouseRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),

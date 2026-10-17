@@ -13,7 +13,7 @@ part 'destination.freezed.dart';
 /// the customer's own addresses and contacts; the source of truth stays the
 /// linked records, never a local copy (data-model.md §5).
 @freezed
-class Destination with _$Destination {
+abstract class Destination with _$Destination {
   const Destination._();
 
   const factory Destination({

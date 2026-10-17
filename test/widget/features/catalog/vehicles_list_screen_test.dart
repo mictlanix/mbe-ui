@@ -116,6 +116,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           vehicleRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
@@ -209,6 +210,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             vehicleRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(
@@ -398,6 +400,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             vehicleRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(

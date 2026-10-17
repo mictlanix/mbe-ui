@@ -11,7 +11,7 @@ part 'customer_list_item.freezed.dart';
 /// (data-model.md §4), mapped from `CustomerListItem` (the generated DTO of
 /// the same name — this is the domain-layer projection).
 @freezed
-class CustomerListItem with _$CustomerListItem {
+abstract class CustomerListItem with _$CustomerListItem {
   const factory CustomerListItem({
     required int customerId,
     required String code,

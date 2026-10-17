@@ -69,12 +69,19 @@ void main() {
           () => salesOrders.getById(saleId: 2),
         ).thenAnswer((_) async => testSale(id: 2));
 
+        // A host's screen watches its controller; so does the test, or
+
+        // riverpod 3 disposes it between these reads.
+
+        container.listen(posSaleControllerProvider, (_, _) {});
+
         await container.read(posSaleControllerProvider.notifier).ensureOpen();
+        container.listen(orderEditorControllerProvider(2), (_, _) {});
         await container.read(orderEditorControllerProvider(2).future);
 
-        expect(container.read(posSaleControllerProvider).valueOrNull?.id, 1);
+        expect(container.read(posSaleControllerProvider).value?.id, 1);
         expect(
-          container.read(orderEditorControllerProvider(2)).valueOrNull?.id,
+          container.read(orderEditorControllerProvider(2)).value?.id,
           2,
         );
 
@@ -99,11 +106,11 @@ void main() {
             .updateLine(lineId: 5, quantity: '3');
 
         expect(
-          container.read(posSaleControllerProvider).valueOrNull?.total,
+          container.read(posSaleControllerProvider).value?.total,
           '999.00',
         );
         expect(
-          container.read(orderEditorControllerProvider(2)).valueOrNull?.id,
+          container.read(orderEditorControllerProvider(2)).value?.id,
           2,
           reason: 'the order is still exactly what it was — untouched',
         );
@@ -123,12 +130,19 @@ void main() {
           () => salesQuotes.getById(quoteId: 3),
         ).thenAnswer((_) async => testQuote(id: 3));
 
+        // A host's screen watches its controller; so does the test, or
+
+        // riverpod 3 disposes it between these reads.
+
+        container.listen(posSaleControllerProvider, (_, _) {});
+
         await container.read(posSaleControllerProvider.notifier).ensureOpen();
+        container.listen(quoteEditorControllerProvider(3), (_, _) {});
         await container.read(quoteEditorControllerProvider(3).future);
 
-        expect(container.read(posSaleControllerProvider).valueOrNull?.id, 1);
+        expect(container.read(posSaleControllerProvider).value?.id, 1);
         expect(
-          container.read(quoteEditorControllerProvider(3)).valueOrNull?.id,
+          container.read(quoteEditorControllerProvider(3)).value?.id,
           3,
         );
 
@@ -150,11 +164,11 @@ void main() {
             .updateLine(lineId: 5, quantity: '3');
 
         expect(
-          container.read(posSaleControllerProvider).valueOrNull?.total,
+          container.read(posSaleControllerProvider).value?.total,
           '999.00',
         );
         expect(
-          container.read(quoteEditorControllerProvider(3)).valueOrNull?.id,
+          container.read(quoteEditorControllerProvider(3)).value?.id,
           3,
           reason: 'the quote is still exactly what it was — untouched',
         );
@@ -174,7 +188,10 @@ void main() {
           () => salesQuotes.getById(quoteId: 3),
         ).thenAnswer((_) async => testQuote(id: 3));
 
+        container.listen(orderEditorControllerProvider(2), (_, _) {});
+
         await container.read(orderEditorControllerProvider(2).future);
+        container.listen(quoteEditorControllerProvider(3), (_, _) {});
         await container.read(quoteEditorControllerProvider(3).future);
 
         when(
@@ -194,11 +211,11 @@ void main() {
             .updateLine(lineId: 5, quantity: '3');
 
         expect(
-          container.read(quoteEditorControllerProvider(3)).valueOrNull?.total,
+          container.read(quoteEditorControllerProvider(3)).value?.total,
           '999.00',
         );
         expect(
-          container.read(orderEditorControllerProvider(2)).valueOrNull?.id,
+          container.read(orderEditorControllerProvider(2)).value?.id,
           2,
           reason: 'the order is still exactly what it was — untouched',
         );
@@ -305,6 +322,7 @@ void main() {
           final container = await pumpPos(
             tester,
             ProviderScope(
+              retry: (_, _) => null,
               overrides: [
                 // The exact four-provider override block
                 // `OrderWorkspaceScreen.build()` installs
@@ -357,8 +375,13 @@ void main() {
           // All three open at once, exactly as a cashier, a back-office
           // user and a salesperson writing a quote would have them in the
           // same running app.
+          // A host's screen watches its controller; so does the test, or
+          // riverpod 3 disposes it between these reads.
+          container.listen(posSaleControllerProvider, (_, _) {});
           await container.read(posSaleControllerProvider.notifier).ensureOpen();
+          orderContainer.listen(orderEditorControllerProvider(2), (_, _) {});
           await orderContainer.read(orderEditorControllerProvider(2).future);
+          container.listen(quoteEditorControllerProvider(3), (_, _) {});
           await container.read(quoteEditorControllerProvider(3).future);
 
           // The trigger a real destination create fires — resolved through
@@ -371,18 +394,18 @@ void main() {
           expect(
             orderContainer
                 .read(orderEditorControllerProvider(2))
-                .valueOrNull
+                .value
                 ?.status,
             SaleStatus.completed,
             reason: 'the order is committed',
           );
           expect(
-            container.read(posSaleControllerProvider).valueOrNull?.status,
+            container.read(posSaleControllerProvider).value?.status,
             SaleStatus.draft,
             reason: 'the register sale, open at the same time, is untouched',
           );
           expect(
-            container.read(quoteEditorControllerProvider(3)).valueOrNull?.status,
+            container.read(quoteEditorControllerProvider(3)).value?.status,
             SaleStatus.draft,
             reason: 'the open quote, untouched, is not confirmed either',
           );
@@ -397,6 +420,7 @@ void main() {
           final container = await pumpPos(
             tester,
             ProviderScope(
+              retry: (_, _) => null,
               overrides: [
                 // The quote screen's own four-provider override block
                 // (contracts/quote-capture-host.md §1).
@@ -442,8 +466,16 @@ void main() {
             ),
           );
 
+          // A host's screen watches its controller; so does the test, or
+
+          // riverpod 3 disposes it between these reads.
+
+          container.listen(posSaleControllerProvider, (_, _) {});
+
           await container.read(posSaleControllerProvider.notifier).ensureOpen();
+          container.listen(orderEditorControllerProvider(2), (_, _) {});
           await container.read(orderEditorControllerProvider(2).future);
+          quoteContainer.listen(quoteEditorControllerProvider(3), (_, _) {});
           await quoteContainer.read(quoteEditorControllerProvider(3).future);
 
           await quoteContainer.read(saleEditorProvider).confirm();
@@ -453,18 +485,18 @@ void main() {
           expect(
             quoteContainer
                 .read(quoteEditorControllerProvider(3))
-                .valueOrNull
+                .value
                 ?.status,
             SaleStatus.completed,
             reason: 'the quote is confirmed',
           );
           expect(
-            container.read(posSaleControllerProvider).valueOrNull?.status,
+            container.read(posSaleControllerProvider).value?.status,
             SaleStatus.draft,
             reason: 'the register sale, open at the same time, is untouched',
           );
           expect(
-            container.read(orderEditorControllerProvider(2)).valueOrNull?.status,
+            container.read(orderEditorControllerProvider(2)).value?.status,
             SaleStatus.draft,
             reason: 'the open order, untouched, is not confirmed either',
           );
@@ -488,6 +520,7 @@ void main() {
             Row(
               children: [
                 ProviderScope(
+                  retry: (_, _) => null,
                   overrides: [
                     saleEditorProvider.overrideWith(
                       (ref) => ref.watch(orderEditorControllerProvider(2).notifier),
@@ -504,6 +537,7 @@ void main() {
                   ),
                 ),
                 ProviderScope(
+                  retry: (_, _) => null,
                   overrides: [
                     saleEditorProvider.overrideWith(
                       (ref) => ref.watch(quoteEditorControllerProvider(3).notifier),

@@ -159,7 +159,7 @@ class _OpenForm extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final access = ref.watch(accessControlProvider);
-    final authState = ref.watch(authNotifierProvider).valueOrNull;
+    final authState = ref.watch(authProvider).value;
     final settings = authState is AuthAuthenticated
         ? authState.user.settings
         : null;
@@ -329,7 +329,7 @@ class _OpenShiftCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final fmt = ref.watch(formattersProvider);
     final hasOtherOpenSessions =
-        ref.watch(hasOtherOpenSessionsProvider).valueOrNull ?? false;
+        ref.watch(hasOtherOpenSessionsProvider).value ?? false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,12 +534,10 @@ class _CashSessionFiltersPanel extends ConsumerWidget {
     final employeeRepo = ref.read(employeeRepositoryProvider);
 
     final resolvedDrawerName = filter.cashDrawerId != null
-        ? ref
-              .watch(cashDrawerDisplayNameProvider(filter.cashDrawerId!))
-              .valueOrNull
+        ? ref.watch(cashDrawerDisplayNameProvider(filter.cashDrawerId!)).value
         : null;
     final resolvedCashierName = filter.cashierId != null
-        ? ref.watch(employeeDisplayNameProvider(filter.cashierId!)).valueOrNull
+        ? ref.watch(employeeDisplayNameProvider(filter.cashierId!)).value
         : null;
 
     void goTo(ListQuery updated) =>

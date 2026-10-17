@@ -29,7 +29,7 @@ String toIsoDateFacet(DateTime date) =>
 /// integer currency-code facets. Derived from the route's [ListQuery] — the
 /// URL, not a mutable notifier, is the source of truth.
 @freezed
-class ExchangeRateFilter with _$ExchangeRateFilter {
+abstract class ExchangeRateFilter with _$ExchangeRateFilter {
   const factory ExchangeRateFilter({
     DateTime? dateFrom,
     DateTime? dateTo,

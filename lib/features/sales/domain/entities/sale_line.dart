@@ -20,7 +20,7 @@ String? unitLabelOf(api.SatUnitOfMeasurementResponse? unit) {
 /// (FR-023, resolved 2026-08-05: mbe-api#135 shipped a writable line tax
 /// rate, so nothing here is read-only).
 @freezed
-class SaleLine with _$SaleLine {
+abstract class SaleLine with _$SaleLine {
   const factory SaleLine({
     required int id,
     required int product,

@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/expenses_list_screen.dart';
@@ -377,6 +378,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/customers/new',
+        builder: (context, state) => const CustomerDetailScreen(),
+      ),
+      GoRoute(
+        path: '/customers/:customerId',
+        builder: (context, state) => CustomerDetailScreen(
+          customerId: int.parse(state.pathParameters['customerId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
         path: '/facilities/new',
         builder: (context, state) => const FacilityDetailScreen(),
       ),
@@ -469,13 +481,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Notifies `GoRouter` to re-run [_redirect] whenever [authNotifierProvider]
+/// Notifies `GoRouter` to re-run [_redirect] whenever [authProvider]
 /// changes — including the `401`-triggered transition to `unauthenticated`
 /// (FR-003, SC-003; research.md §4).
 class _AuthRefreshListenable extends ChangeNotifier {
   _AuthRefreshListenable(Ref ref) {
     _subscription = ref.listen(
-      authNotifierProvider,
+      authProvider,
       (_, _) => notifyListeners(),
     );
   }
@@ -490,9 +502,9 @@ class _AuthRefreshListenable extends ChangeNotifier {
 }
 
 String? _redirect(Ref ref, GoRouterState state) {
-  final authState = ref.read(authNotifierProvider).valueOrNull;
+  final authState = ref.read(authProvider).value;
   // Still loading/erroring: let it settle, refreshListenable will re-run
-  // this once `authNotifierProvider` resolves.
+  // this once `authProvider` resolves.
   if (authState == null || authState is AuthAuthenticating) return null;
 
   final isAuthRoute = state.matchedLocation.startsWith('/auth/');
@@ -543,7 +555,6 @@ const _convertedEntityListPaths = <String, String>{
   '/exchange-rates': '/exchange-rates',
   '/payment-method-options': '/payment-method-options',
   '/employees': '/employees',
-  '/customers': '/customers',
   '/taxpayer-recipients': '/taxpayer-recipients',
   '/warehouses': '/facilities',
   '/points-of-sale': '/facilities',

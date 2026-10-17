@@ -13,7 +13,7 @@ part 'customer.freezed.dart';
 /// (data-model.md §4, research.md §7 — response-only expansion; writes send
 /// a plain id).
 @freezed
-class PriceListRef with _$PriceListRef {
+abstract class PriceListRef with _$PriceListRef {
   const factory PriceListRef({required int id, required String name}) =
       _PriceListRef;
 
@@ -24,7 +24,7 @@ class PriceListRef with _$PriceListRef {
 /// A resolved salesperson (Employee) FK reference, mapped from the expanded
 /// `EmployeeResponse` embedded in `CustomerResponse`/`CustomerListItem`.
 @freezed
-class EmployeeRef with _$EmployeeRef {
+abstract class EmployeeRef with _$EmployeeRef {
   const factory EmployeeRef({required int id, required String name}) =
       _EmployeeRef;
 
@@ -37,7 +37,7 @@ class EmployeeRef with _$EmployeeRef {
 /// as `String` end-to-end (research.md §4). `priceList`/`salesperson` are
 /// expanded on read; writes send plain ids (research.md §7).
 @freezed
-class Customer with _$Customer {
+abstract class Customer with _$Customer {
   const factory Customer({
     required int customerId,
     required String code,

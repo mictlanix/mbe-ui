@@ -16,7 +16,7 @@ part 'pricing_grid_row.freezed.dart';
 /// uses via a nullable field, expressed here as map membership since a row
 /// spans many lists at once.
 @freezed
-class PricingGridRow with _$PricingGridRow {
+abstract class PricingGridRow with _$PricingGridRow {
   const factory PricingGridRow({
     required ProductListItem product,
     required Map<int, ProductPrice> prices,

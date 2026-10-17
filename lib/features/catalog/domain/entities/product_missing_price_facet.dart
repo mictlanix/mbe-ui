@@ -15,7 +15,7 @@ part 'product_missing_price_facet.freezed.dart';
 /// ⚠️ [priceListId] of `0` is real — `Costo` in the deployment — so every
 /// check on it must test for absence, never for falsiness (spec FR-019a).
 @freezed
-class ProductMissingPriceFacet with _$ProductMissingPriceFacet {
+abstract class ProductMissingPriceFacet with _$ProductMissingPriceFacet {
   const factory ProductMissingPriceFacet({
     required int priceListId,
     required int missingCount,

@@ -10,7 +10,7 @@ part 'cash_drawer.freezed.dart';
 /// (data-model.md "CashDrawer"), mapped from `CashDrawerResponse`.
 /// Structurally identical to [Warehouse] (research.md §3).
 @freezed
-class CashDrawer with _$CashDrawer {
+abstract class CashDrawer with _$CashDrawer {
   const factory CashDrawer({
     required int cashDrawerId,
     required int facilityId,

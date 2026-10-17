@@ -80,6 +80,7 @@ Product _product() => Product(
 
 ProviderContainer _containerFor(User user, ProductRepository repository) {
   final container = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       productRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

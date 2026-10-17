@@ -108,7 +108,7 @@ class _CustomerAddressPickerState extends ConsumerState<_CustomerAddressPicker> 
           key: const Key('address_create_button'),
           onPressed: _linking
               ? null
-              : () => _createAndLink(customer.valueOrNull?.addresses ?? const []),
+              : () => _createAndLink(customer.value?.addresses ?? const []),
           child: _linking
               ? const SizedBox(
                   width: 16,

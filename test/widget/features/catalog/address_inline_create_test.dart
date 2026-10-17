@@ -29,6 +29,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [addressRepositoryProvider.overrideWithValue(repository)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -118,6 +119,7 @@ void main() {
     AddressListItem? returned;
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [addressRepositoryProvider.overrideWithValue(repository)],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show Override;
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -120,7 +120,7 @@ void main() {
       tester,
       PosSalesListScreen(query: query),
       overrides: [
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: user ?? _user()),
           ),
@@ -151,7 +151,7 @@ void main() {
       initialLocation: query.toUri('/sales/pos').toString(),
       textLevel: textLevel,
       overrides: [
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _user())),
         ),
         salesOrderOverride(salesOrders),

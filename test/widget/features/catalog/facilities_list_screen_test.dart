@@ -156,6 +156,7 @@ void main() {
     required User signedInAs,
     List<FacilityListItem> facilities = const [],
     ListQuery query = const ListQuery(),
+    Locale? locale,
   }) async {
     when(
       () => facilityRepository.list(
@@ -205,6 +206,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
           warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
@@ -214,6 +216,7 @@ void main() {
         ],
         child: MaterialApp.router(
           routerConfig: router,
+          locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
@@ -340,7 +343,9 @@ void main() {
     });
 
     testWidgets(
-      'a production site shows only Warehouses plus the explanatory note',
+      'a production site shows all three sections with their rows, and no '
+      'warehouses-only note (046-catalog-improvements FR-010/FR-011, US2 '
+      'scenario 3)',
       (tester) async {
         when(
           () => warehouseRepository.list(
@@ -350,6 +355,25 @@ void main() {
           ),
         ).thenAnswer(
           (_) async => WarehouseListResult(items: [_warehouse(1, 2)], total: 1),
+        );
+        when(
+          () => pointSaleRepository.list(
+            facilityId: 2,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async =>
+              PointSaleListResult(items: [_pointSale(1, 2, 1)], total: 1),
+        );
+        when(
+          () => cashDrawerRepository.list(
+            facilityId: 2,
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => CashDrawerListResult(items: [_cashDrawer(1, 2)], total: 1),
         );
 
         await pumpScreen(
@@ -366,28 +390,39 @@ void main() {
         );
         expect(
           find.byKey(const Key('facility_section_points_of_sale_2')),
-          findsNothing,
+          findsOneWidget,
         );
         expect(
           find.byKey(const Key('facility_section_cash_drawers_2')),
-          findsNothing,
-        );
-        expect(
-          find.text(
-            AppLocalizations.of(
-              tester.element(find.byKey(const Key('facilities_search_field'))),
-            )!.productionSiteChildrenNote,
-          ),
           findsOneWidget,
         );
-        // Never even requested for a production site (research §2).
-        verifyNever(
-          () => pointSaleRepository.list(
-            facilityId: 2,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
+        expect(find.byKey(const Key('point_sale_1')), findsOneWidget);
+        expect(find.byKey(const Key('cash_drawer_1')), findsOneWidget);
+        expect(
+          find.byKey(const Key('facility_create_point_sale_2')),
+          findsOneWidget,
         );
+        expect(
+          find.byKey(const Key('facility_create_cash_drawer_2')),
+          findsOneWidget,
+        );
+        expect(find.byIcon(Icons.info_outline), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'in Spanish the production-site type reads "Planta" '
+      '(046-catalog-improvements FR-012)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          facilities: [_productionSite],
+          locale: const Locale('es'),
+        );
+
+        expect(find.text('Planta'), findsOneWidget);
+        expect(find.textContaining('Sitio de producción'), findsNothing);
       },
     );
 
@@ -790,6 +825,7 @@ void main() {
         ).thenAnswer((_) async => FacilityListResult(items: page1, total: 25));
 
         final container = ProviderContainer(
+          retry: (_, _) => null,
           overrides: [
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
             warehouseRepositoryProvider.overrideWithValue(warehouseRepository),

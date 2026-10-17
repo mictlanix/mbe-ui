@@ -51,6 +51,11 @@ const _excludedFiles = {
   // showAppSideSheet (already covered above via catalog_filter_sheet.dart's
   // golden), so it has no visual surface of its own to test.
   'record_sheet.dart',
+  // spec 046 — a function opening a stock M3 `Dialog` around an
+  // `Image.network`; the golden harness cannot load network images, and its
+  // only other content (the product name and a close button) adds no custom
+  // drawing. Behavior is covered by product_photo_preview_test.dart.
+  'product_photo_preview.dart',
 };
 
 /// Every widget file with real golden coverage below.
@@ -511,7 +516,7 @@ void main() {
         'user_menu_button',
         (brightness, width) => const UserMenuButton(),
         overrides: [
-          authNotifierProvider.overrideWith(_FixtureAuthNotifier.new),
+          authProvider.overrideWith(_FixtureAuthNotifier.new),
         ],
       );
     });

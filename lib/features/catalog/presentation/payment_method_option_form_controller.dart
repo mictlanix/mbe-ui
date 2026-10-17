@@ -35,7 +35,8 @@ abstract final class PaymentMethodOptionFormErrorCode {
 /// defaults to `1` and [displayOnTicket] to `true` (FR-005) so a create left
 /// untouched persists those defaults.
 @freezed
-class PaymentMethodOptionFormState with _$PaymentMethodOptionFormState {
+abstract class PaymentMethodOptionFormState
+    with _$PaymentMethodOptionFormState {
   const factory PaymentMethodOptionFormState({
     int? paymentMethodOptionId,
     int? facilityId,

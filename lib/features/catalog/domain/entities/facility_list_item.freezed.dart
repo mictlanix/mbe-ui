@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'facility_list_item.dart';
@@ -9,237 +9,283 @@ part of 'facility_list_item.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$FacilityListItem {
-  int get facilityId => throw _privateConstructorUsedError;
-  String get code => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  FacilityType get type => throw _privateConstructorUsedError;
-  EntityStatus get status => throw _privateConstructorUsedError;
 
-  /// Create a copy of FacilityListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $FacilityListItemCopyWith<FacilityListItem> get copyWith =>
-      throw _privateConstructorUsedError;
+ int get facilityId; String get code; String get name; FacilityType get type; EntityStatus get status;
+/// Create a copy of FacilityListItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FacilityListItemCopyWith<FacilityListItem> get copyWith => _$FacilityListItemCopyWithImpl<FacilityListItem>(this as FacilityListItem, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as FacilityListItem;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FacilityListItem&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.status, _this.status) || other.status == _this.status));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as FacilityListItem;
+  return Object.hash(runtimeType,_this.facilityId,_this.code,_this.name,_this.type,_this.status);
+}
+
+@override
+String toString() {
+  final _this = this as FacilityListItem;
+  return 'FacilityListItem(facilityId: ${_this.facilityId}, code: ${_this.code}, name: ${_this.name}, type: ${_this.type}, status: ${_this.status})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $FacilityListItemCopyWith<$Res> {
-  factory $FacilityListItemCopyWith(
-    FacilityListItem value,
-    $Res Function(FacilityListItem) then,
-  ) = _$FacilityListItemCopyWithImpl<$Res, FacilityListItem>;
-  @useResult
-  $Res call({
-    int facilityId,
-    String code,
-    String name,
-    FacilityType type,
-    EntityStatus status,
-  });
-}
+abstract mixin class $FacilityListItemCopyWith<$Res>  {
+  factory $FacilityListItemCopyWith(FacilityListItem value, $Res Function(FacilityListItem) _then) = _$FacilityListItemCopyWithImpl;
+@useResult
+$Res call({
+ int facilityId, String code, String name, FacilityType type, EntityStatus status
+});
 
+
+
+
+}
 /// @nodoc
-class _$FacilityListItemCopyWithImpl<$Res, $Val extends FacilityListItem>
+class _$FacilityListItemCopyWithImpl<$Res>
     implements $FacilityListItemCopyWith<$Res> {
-  _$FacilityListItemCopyWithImpl(this._value, this._then);
+  _$FacilityListItemCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final FacilityListItem _self;
+  final $Res Function(FacilityListItem) _then;
 
-  /// Create a copy of FacilityListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? facilityId = null,
-    Object? code = null,
-    Object? name = null,
-    Object? type = null,
-    Object? status = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            facilityId: null == facilityId
-                ? _value.facilityId
-                : facilityId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            code: null == code
-                ? _value.code
-                : code // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as FacilityType,
-            status: null == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as EntityStatus,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of FacilityListItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? facilityId = null,Object? code = null,Object? name = null,Object? type = null,Object? status = null,}) {
+  return _then(FacilityListItem(
+facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as FacilityType,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [FacilityListItem].
+extension FacilityListItemPatterns on FacilityListItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _FacilityListItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _FacilityListItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _FacilityListItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _FacilityListItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _FacilityListItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _FacilityListItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int facilityId,  String code,  String name,  FacilityType type,  EntityStatus status)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _FacilityListItem() when $default != null:
+return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.status);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int facilityId,  String code,  String name,  FacilityType type,  EntityStatus status)  $default,) {final _that = this;
+switch (_that) {
+case _FacilityListItem():
+return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.status);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int facilityId,  String code,  String name,  FacilityType type,  EntityStatus status)?  $default,) {final _that = this;
+switch (_that) {
+case _FacilityListItem() when $default != null:
+return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.status);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$FacilityListItemImplCopyWith<$Res>
-    implements $FacilityListItemCopyWith<$Res> {
-  factory _$$FacilityListItemImplCopyWith(
-    _$FacilityListItemImpl value,
-    $Res Function(_$FacilityListItemImpl) then,
-  ) = __$$FacilityListItemImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int facilityId,
-    String code,
-    String name,
-    FacilityType type,
-    EntityStatus status,
-  });
+
+
+class _FacilityListItem implements FacilityListItem {
+  const _FacilityListItem({required this.facilityId, required this.code, required this.name, required this.type, required this.status});
+  
+
+@override final  int facilityId;
+@override final  String code;
+@override final  String name;
+@override final  FacilityType type;
+@override final  EntityStatus status;
+
+/// Create a copy of FacilityListItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FacilityListItemCopyWith<_FacilityListItem> get copyWith => __$FacilityListItemCopyWithImpl<_FacilityListItem>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FacilityListItem&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.code, code) || other.code == code)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.status, status) || other.status == status));
 }
 
-/// @nodoc
-class __$$FacilityListItemImplCopyWithImpl<$Res>
-    extends _$FacilityListItemCopyWithImpl<$Res, _$FacilityListItemImpl>
-    implements _$$FacilityListItemImplCopyWith<$Res> {
-  __$$FacilityListItemImplCopyWithImpl(
-    _$FacilityListItemImpl _value,
-    $Res Function(_$FacilityListItemImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of FacilityListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? facilityId = null,
-    Object? code = null,
-    Object? name = null,
-    Object? type = null,
-    Object? status = null,
-  }) {
-    return _then(
-      _$FacilityListItemImpl(
-        facilityId: null == facilityId
-            ? _value.facilityId
-            : facilityId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        code: null == code
-            ? _value.code
-            : code // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as FacilityType,
-        status: null == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as EntityStatus,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,facilityId,code,name,type,status);
 }
 
-/// @nodoc
-
-class _$FacilityListItemImpl implements _FacilityListItem {
-  const _$FacilityListItemImpl({
-    required this.facilityId,
-    required this.code,
-    required this.name,
-    required this.type,
-    required this.status,
-  });
-
-  @override
-  final int facilityId;
-  @override
-  final String code;
-  @override
-  final String name;
-  @override
-  final FacilityType type;
-  @override
-  final EntityStatus status;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'FacilityListItem(facilityId: $facilityId, code: $code, name: $name, type: $type, status: $status)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FacilityListItemImpl &&
-            (identical(other.facilityId, facilityId) ||
-                other.facilityId == facilityId) &&
-            (identical(other.code, code) || other.code == code) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.status, status) || other.status == status));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, facilityId, code, name, type, status);
-
-  /// Create a copy of FacilityListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FacilityListItemImplCopyWith<_$FacilityListItemImpl> get copyWith =>
-      __$$FacilityListItemImplCopyWithImpl<_$FacilityListItemImpl>(
-        this,
-        _$identity,
-      );
 }
 
-abstract class _FacilityListItem implements FacilityListItem {
-  const factory _FacilityListItem({
-    required final int facilityId,
-    required final String code,
-    required final String name,
-    required final FacilityType type,
-    required final EntityStatus status,
-  }) = _$FacilityListItemImpl;
 
-  @override
-  int get facilityId;
-  @override
-  String get code;
-  @override
-  String get name;
-  @override
-  FacilityType get type;
-  @override
-  EntityStatus get status;
-
-  /// Create a copy of FacilityListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$FacilityListItemImplCopyWith<_$FacilityListItemImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$FacilityListItemCopyWith<$Res> implements $FacilityListItemCopyWith<$Res> {
+  factory _$FacilityListItemCopyWith(_FacilityListItem value, $Res Function(_FacilityListItem) _then) = __$FacilityListItemCopyWithImpl;
+@override @useResult
+$Res call({
+ int facilityId, String code, String name, FacilityType type, EntityStatus status
+});
+
+
+
+
+}
+/// @nodoc
+class __$FacilityListItemCopyWithImpl<$Res>
+    implements _$FacilityListItemCopyWith<$Res> {
+  __$FacilityListItemCopyWithImpl(this._self, this._then);
+
+  final _FacilityListItem _self;
+  final $Res Function(_FacilityListItem) _then;
+
+/// Create a copy of FacilityListItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? facilityId = null,Object? code = null,Object? name = null,Object? type = null,Object? status = null,}) {
+  return _then(_FacilityListItem(
+facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as FacilityType,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus,
+  ));
+}
+
+
+}
+
+// dart format on

@@ -31,6 +31,8 @@ import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../helpers/network_image_stub.dart';
+
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockTokenStorage extends Mock implements TokenStorage {}
@@ -96,6 +98,8 @@ void main() {
   late MockTokenStorage tokenStorage;
   late MockProductRepository productRepository;
   late MockSupplierRepository supplierRepository;
+
+  setUpAll(stubNetworkImages);
 
   setUp(() {
     authRepository = MockAuthRepository();
@@ -183,6 +187,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
@@ -249,6 +254,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
@@ -308,10 +314,82 @@ void main() {
 
       expect(photos, hasLength(_testProducts.length));
       expect(photos[0].photoUrl, 'http://test/images/widget.png');
-      expect(photos[0].size, 84);
+      // Sized to the shared 44 px row less a 1.2 px inset above and below
+      // (046-catalog-improvements FR-018), not the 84 px default.
+      expect(photos[0].size, moreOrLessEquals(41.6));
       expect(photos[1].photoUrl, isNull);
     },
   );
+
+  // macOS resolves the pointer density, Android the touch one.
+  testWidgets(
+    'the thumbnail sits inside its row with an equal, non-zero gap above and '
+    'below (FR-018, constitution §VI)',
+    variant: TargetPlatformVariant(const {
+      TargetPlatform.macOS,
+      TargetPlatform.android,
+    }),
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _readOnlyUser);
+
+      final photo = tester.getRect(
+        find
+            .descendant(
+              of: find.byKey(const Key('products_table')),
+              matching: find.byType(ProductPhoto),
+            )
+            .first,
+      );
+      final row = tester.getRect(
+        find
+            .ancestor(
+              of: find.byType(ProductPhoto).first,
+              matching: find.byType(TableRowInkWell),
+            )
+            .first,
+      );
+      final above = photo.top - row.top;
+      final below = row.bottom - photo.bottom;
+      expect(above, greaterThan(0));
+      expect(above, moreOrLessEquals(below, epsilon: 0.5));
+      expect(photo.left - row.left, greaterThan(0));
+    },
+  );
+
+  testWidgets('clicking a photo opens its enlarged preview and does not open '
+      'the product (FR-014, FR-016)', (tester) async {
+    await pumpScreenWithRouter(tester, signedInAs: _fullAccessUser);
+    await pumpUntilImagesLoad(tester);
+
+    await tester.tap(find.byType(ProductPhoto).first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('photo_preview_dialog')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('photo_preview_dialog')),
+        matching: find.text('Widget'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('/products/1?view=true'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('photo_preview_close')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('photo_preview_dialog')), findsNothing);
+  });
+
+  testWidgets('a product with no photo opens no preview (FR-017)', (
+    tester,
+  ) async {
+    await pumpScreenWithRouter(tester, signedInAs: _fullAccessUser);
+    await pumpUntilImagesLoad(tester);
+
+    await tester.tap(find.byType(ProductPhoto).last, warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('photo_preview_dialog')), findsNothing);
+  });
 
   testWidgets(
     'shows the search field and a Filters button; facets live in the sheet '
@@ -1349,6 +1427,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             authRepositoryProvider.overrideWithValue(authRepository),
             tokenStorageProvider.overrideWithValue(tokenStorage),

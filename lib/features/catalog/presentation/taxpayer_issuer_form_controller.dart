@@ -32,7 +32,7 @@ abstract final class TaxpayerIssuerFormErrorCode {
 /// the user on create and, once [isEdit] (a record has been loaded), is
 /// **immutable** — the screen renders it disabled (FR-012).
 @freezed
-class TaxpayerIssuerFormState with _$TaxpayerIssuerFormState {
+abstract class TaxpayerIssuerFormState with _$TaxpayerIssuerFormState {
   const factory TaxpayerIssuerFormState({
     @Default(false) bool isEdit,
     @Default('') String rfc,

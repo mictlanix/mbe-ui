@@ -22,6 +22,7 @@ import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
@@ -415,6 +416,19 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const CustomerPage(items: [], total: 0));
+    when(
+      () => customerRepository.get(customerId: any(named: 'customerId')),
+    ).thenAnswer(
+      (_) async => const Customer(
+        customerId: 1,
+        code: 'CUST-001',
+        name: 'Acme Corp',
+        creditLimit: '0',
+        creditDays: 0,
+        priceList: PriceListRef(id: 1, name: 'Retail'),
+        status: EntityStatus.active,
+      ),
+    );
 
     final taxpayerRecipientRepository = MockTaxpayerRecipientRepository();
     when(
@@ -546,12 +560,13 @@ void main() {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         // formattersProvider (spec 028) reads through resolvedLocaleProvider,
         // which needs a real SharedPreferences instance — every destination
         // screen migrated to the formatting surface now needs this.
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: user),
           ),
@@ -1298,7 +1313,7 @@ void main() {
       // (app_router.dart's `_convertedEntityListPaths` — the two lists MUST
       // stay in lockstep, since a path named here but not yet converted
       // would just pass against the still-live detail route).
-      for (final path in ['/labels', '/suppliers', '/expenses', '/vehicles', '/vehicle-operators', '/price-lists', '/exchange-rates', '/payment-method-options', '/employees', '/customers', '/taxpayer-recipients']) {
+      for (final path in ['/labels', '/suppliers', '/expenses', '/vehicles', '/vehicle-operators', '/price-lists', '/exchange-rates', '/payment-method-options', '/employees', '/taxpayer-recipients']) {
         testWidgets('$path/new redirects to $path', (tester) async {
           final handle = await pumpAt(
             tester,
@@ -1345,6 +1360,31 @@ void main() {
           },
         );
       }
+    },
+  );
+
+  group(
+    '046-catalog-improvements: Customers has per-record routes again '
+    '(constitution §VI v1.13.3), gated on customers/read',
+    () {
+      for (final location in [
+        '/customers/new',
+        '/customers/1',
+        '/customers/1?view=true',
+      ]) {
+        testWidgets('$location resolves to the customer detail screen', (
+          tester,
+        ) async {
+          final handle = await pumpAt(tester, _catalogsReaderUser, location);
+          expect(handle.router.state.uri.toString(), location);
+        });
+      }
+
+      testWidgets('a user without customers/read hitting /customers/1 is '
+          'denied', (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/customers/1');
+        expect(handle.router.state.uri.path, '/');
+      });
     },
   );
 

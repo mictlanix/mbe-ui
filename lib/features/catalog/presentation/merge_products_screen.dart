@@ -179,7 +179,7 @@ class MergeProductsScreen extends ConsumerWidget {
                         l10n,
                         controller,
                         state,
-                        preview?.valueOrNull?.total,
+                        preview?.value?.total,
                       )
                     : null,
                 child: state.submission.isLoading

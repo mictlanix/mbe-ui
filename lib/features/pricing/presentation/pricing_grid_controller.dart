@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:decimal/decimal.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -61,7 +60,7 @@ abstract final class PricingGridErrorCode {
 /// preference, not a narrowing — so they live in [pricingGridShownColumnsProvider]
 /// instead of the URL (research.md §R9).
 @freezed
-class PricingGridFilter with _$PricingGridFilter {
+abstract class PricingGridFilter with _$PricingGridFilter {
   const factory PricingGridFilter({
     @Default('') String search,
     @Default(0) int pageIndex,
@@ -100,7 +99,7 @@ class PricingGridFilter with _$PricingGridFilter {
 /// [PricingGridState.rejected] is itself the "show the rejected badge"
 /// signal; the stored price in [PricingGridState.rows] is untouched.
 @freezed
-class RejectedEdit with _$RejectedEdit {
+abstract class RejectedEdit with _$RejectedEdit {
   const factory RejectedEdit({required String typed, required String reason}) =
       _RejectedEdit;
 }
@@ -113,7 +112,7 @@ enum PriceChangeKind { cell, fillDown, copyFromCost, adjustPercent }
 /// touched, what it held before, and what it was set to. `previous == null`
 /// means the cell had no price row before this change (a create).
 @freezed
-class PriceWrite with _$PriceWrite {
+abstract class PriceWrite with _$PriceWrite {
   const factory PriceWrite({
     required PriceCellKey cell,
     required String? previous,
@@ -127,7 +126,7 @@ class PriceWrite with _$PriceWrite {
 /// either way, which is what makes "a fill-down of 9 rows is one undo, not
 /// nine" true by construction rather than by bookkeeping.
 @freezed
-class PriceChange with _$PriceChange {
+abstract class PriceChange with _$PriceChange {
   const factory PriceChange({
     required PriceChangeKind kind,
     required List<PriceWrite> writes,
@@ -149,7 +148,7 @@ class PriceChange with _$PriceChange {
 /// which is exactly what silently lost edits (FR-009). [active] names
 /// *which* cell [activeDraft] belongs to.
 @freezed
-class PricingGridState with _$PricingGridState {
+abstract class PricingGridState with _$PricingGridState {
   const factory PricingGridState({
     @Default(<PricingGridRow>[]) List<PricingGridRow> rows,
     @Default(<PriceList>[]) List<PriceList> allLists,
@@ -251,7 +250,7 @@ List<PricingGridRow> _withPrice(
 /// chip must not move the numbers on the chips beside it — and clearing the
 /// field here means selecting a chip does not even invalidate the provider.
 ///
-/// Consumers read `.valueOrNull` and treat `null` (loading or failed) as
+/// Consumers read `.value` and treat `null` (loading or failed) as
 /// "counts unknown", which renders **no chips at all** rather than chips
 /// reading zero (FR-019) — the same fail-quiet shape `productLabelFacets`
 /// uses, with the opposite default, because a wrong count here is a lie about

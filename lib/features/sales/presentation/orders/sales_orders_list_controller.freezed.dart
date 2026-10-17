@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'sales_orders_list_controller.dart';
@@ -9,289 +9,289 @@ part of 'sales_orders_list_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$SalesOrdersFilter {
-  DateTime get from => throw _privateConstructorUsedError;
-  DateTime get to => throw _privateConstructorUsedError;
-  SaleStatus? get status => throw _privateConstructorUsedError;
-  int? get salesperson => throw _privateConstructorUsedError;
-  int? get facility => throw _privateConstructorUsedError;
-  String get search => throw _privateConstructorUsedError;
-  int get pageIndex => throw _privateConstructorUsedError;
 
-  /// Create a copy of SalesOrdersFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SalesOrdersFilterCopyWith<SalesOrdersFilter> get copyWith =>
-      throw _privateConstructorUsedError;
+ DateTime get from; DateTime get to; SaleStatus? get status; int? get salesperson; int? get facility; String get search; int get pageIndex;
+/// Create a copy of SalesOrdersFilter
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SalesOrdersFilterCopyWith<SalesOrdersFilter> get copyWith => _$SalesOrdersFilterCopyWithImpl<SalesOrdersFilter>(this as SalesOrdersFilter, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as SalesOrdersFilter;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SalesOrdersFilter&&(identical(other.from, _this.from) || other.from == _this.from)&&(identical(other.to, _this.to) || other.to == _this.to)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.salesperson, _this.salesperson) || other.salesperson == _this.salesperson)&&(identical(other.facility, _this.facility) || other.facility == _this.facility)&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as SalesOrdersFilter;
+  return Object.hash(runtimeType,_this.from,_this.to,_this.status,_this.salesperson,_this.facility,_this.search,_this.pageIndex);
+}
+
+@override
+String toString() {
+  final _this = this as SalesOrdersFilter;
+  return 'SalesOrdersFilter(from: ${_this.from}, to: ${_this.to}, status: ${_this.status}, salesperson: ${_this.salesperson}, facility: ${_this.facility}, search: ${_this.search}, pageIndex: ${_this.pageIndex})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $SalesOrdersFilterCopyWith<$Res> {
-  factory $SalesOrdersFilterCopyWith(
-    SalesOrdersFilter value,
-    $Res Function(SalesOrdersFilter) then,
-  ) = _$SalesOrdersFilterCopyWithImpl<$Res, SalesOrdersFilter>;
-  @useResult
-  $Res call({
-    DateTime from,
-    DateTime to,
-    SaleStatus? status,
-    int? salesperson,
-    int? facility,
-    String search,
-    int pageIndex,
-  });
-}
+abstract mixin class $SalesOrdersFilterCopyWith<$Res>  {
+  factory $SalesOrdersFilterCopyWith(SalesOrdersFilter value, $Res Function(SalesOrdersFilter) _then) = _$SalesOrdersFilterCopyWithImpl;
+@useResult
+$Res call({
+ DateTime from, DateTime to, SaleStatus? status, int? salesperson, int? facility, String search, int pageIndex
+});
 
+
+
+
+}
 /// @nodoc
-class _$SalesOrdersFilterCopyWithImpl<$Res, $Val extends SalesOrdersFilter>
+class _$SalesOrdersFilterCopyWithImpl<$Res>
     implements $SalesOrdersFilterCopyWith<$Res> {
-  _$SalesOrdersFilterCopyWithImpl(this._value, this._then);
+  _$SalesOrdersFilterCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SalesOrdersFilter _self;
+  final $Res Function(SalesOrdersFilter) _then;
 
-  /// Create a copy of SalesOrdersFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? from = null,
-    Object? to = null,
-    Object? status = freezed,
-    Object? salesperson = freezed,
-    Object? facility = freezed,
-    Object? search = null,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            from: null == from
-                ? _value.from
-                : from // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            to: null == to
-                ? _value.to
-                : to // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            status: freezed == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as SaleStatus?,
-            salesperson: freezed == salesperson
-                ? _value.salesperson
-                : salesperson // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            facility: freezed == facility
-                ? _value.facility
-                : facility // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            search: null == search
-                ? _value.search
-                : search // ignore: cast_nullable_to_non_nullable
-                      as String,
-            pageIndex: null == pageIndex
-                ? _value.pageIndex
-                : pageIndex // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of SalesOrdersFilter
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? from = null,Object? to = null,Object? status = freezed,Object? salesperson = freezed,Object? facility = freezed,Object? search = null,Object? pageIndex = null,}) {
+  return _then(SalesOrdersFilter(
+from: null == from ? _self.from : from // ignore: cast_nullable_to_non_nullable
+as DateTime,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
+as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as SaleStatus?,salesperson: freezed == salesperson ? _self.salesperson : salesperson // ignore: cast_nullable_to_non_nullable
+as int?,facility: freezed == facility ? _self.facility : facility // ignore: cast_nullable_to_non_nullable
+as int?,search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SalesOrdersFilter].
+extension SalesOrdersFilterPatterns on SalesOrdersFilter {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SalesOrdersFilter value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SalesOrdersFilter() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SalesOrdersFilter value)  $default,){
+final _that = this;
+switch (_that) {
+case _SalesOrdersFilter():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SalesOrdersFilter value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SalesOrdersFilter() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime from,  DateTime to,  SaleStatus? status,  int? salesperson,  int? facility,  String search,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SalesOrdersFilter() when $default != null:
+return $default(_that.from,_that.to,_that.status,_that.salesperson,_that.facility,_that.search,_that.pageIndex);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime from,  DateTime to,  SaleStatus? status,  int? salesperson,  int? facility,  String search,  int pageIndex)  $default,) {final _that = this;
+switch (_that) {
+case _SalesOrdersFilter():
+return $default(_that.from,_that.to,_that.status,_that.salesperson,_that.facility,_that.search,_that.pageIndex);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime from,  DateTime to,  SaleStatus? status,  int? salesperson,  int? facility,  String search,  int pageIndex)?  $default,) {final _that = this;
+switch (_that) {
+case _SalesOrdersFilter() when $default != null:
+return $default(_that.from,_that.to,_that.status,_that.salesperson,_that.facility,_that.search,_that.pageIndex);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$SalesOrdersFilterImplCopyWith<$Res>
-    implements $SalesOrdersFilterCopyWith<$Res> {
-  factory _$$SalesOrdersFilterImplCopyWith(
-    _$SalesOrdersFilterImpl value,
-    $Res Function(_$SalesOrdersFilterImpl) then,
-  ) = __$$SalesOrdersFilterImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    DateTime from,
-    DateTime to,
-    SaleStatus? status,
-    int? salesperson,
-    int? facility,
-    String search,
-    int pageIndex,
-  });
+
+
+class _SalesOrdersFilter implements SalesOrdersFilter {
+  const _SalesOrdersFilter({required this.from, required this.to, this.status, this.salesperson, this.facility, this.search = '', this.pageIndex = 0});
+  
+
+@override final  DateTime from;
+@override final  DateTime to;
+@override final  SaleStatus? status;
+@override final  int? salesperson;
+@override final  int? facility;
+@override@JsonKey() final  String search;
+@override@JsonKey() final  int pageIndex;
+
+/// Create a copy of SalesOrdersFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SalesOrdersFilterCopyWith<_SalesOrdersFilter> get copyWith => __$SalesOrdersFilterCopyWithImpl<_SalesOrdersFilter>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SalesOrdersFilter&&(identical(other.from, from) || other.from == from)&&(identical(other.to, to) || other.to == to)&&(identical(other.status, status) || other.status == status)&&(identical(other.salesperson, salesperson) || other.salesperson == salesperson)&&(identical(other.facility, facility) || other.facility == facility)&&(identical(other.search, search) || other.search == search)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
 }
 
-/// @nodoc
-class __$$SalesOrdersFilterImplCopyWithImpl<$Res>
-    extends _$SalesOrdersFilterCopyWithImpl<$Res, _$SalesOrdersFilterImpl>
-    implements _$$SalesOrdersFilterImplCopyWith<$Res> {
-  __$$SalesOrdersFilterImplCopyWithImpl(
-    _$SalesOrdersFilterImpl _value,
-    $Res Function(_$SalesOrdersFilterImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of SalesOrdersFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? from = null,
-    Object? to = null,
-    Object? status = freezed,
-    Object? salesperson = freezed,
-    Object? facility = freezed,
-    Object? search = null,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _$SalesOrdersFilterImpl(
-        from: null == from
-            ? _value.from
-            : from // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        to: null == to
-            ? _value.to
-            : to // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        status: freezed == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as SaleStatus?,
-        salesperson: freezed == salesperson
-            ? _value.salesperson
-            : salesperson // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        facility: freezed == facility
-            ? _value.facility
-            : facility // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        search: null == search
-            ? _value.search
-            : search // ignore: cast_nullable_to_non_nullable
-                  as String,
-        pageIndex: null == pageIndex
-            ? _value.pageIndex
-            : pageIndex // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,from,to,status,salesperson,facility,search,pageIndex);
 }
 
-/// @nodoc
-
-class _$SalesOrdersFilterImpl implements _SalesOrdersFilter {
-  const _$SalesOrdersFilterImpl({
-    required this.from,
-    required this.to,
-    this.status,
-    this.salesperson,
-    this.facility,
-    this.search = '',
-    this.pageIndex = 0,
-  });
-
-  @override
-  final DateTime from;
-  @override
-  final DateTime to;
-  @override
-  final SaleStatus? status;
-  @override
-  final int? salesperson;
-  @override
-  final int? facility;
-  @override
-  @JsonKey()
-  final String search;
-  @override
-  @JsonKey()
-  final int pageIndex;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'SalesOrdersFilter(from: $from, to: $to, status: $status, salesperson: $salesperson, facility: $facility, search: $search, pageIndex: $pageIndex)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SalesOrdersFilterImpl &&
-            (identical(other.from, from) || other.from == from) &&
-            (identical(other.to, to) || other.to == to) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.salesperson, salesperson) ||
-                other.salesperson == salesperson) &&
-            (identical(other.facility, facility) ||
-                other.facility == facility) &&
-            (identical(other.search, search) || other.search == search) &&
-            (identical(other.pageIndex, pageIndex) ||
-                other.pageIndex == pageIndex));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    from,
-    to,
-    status,
-    salesperson,
-    facility,
-    search,
-    pageIndex,
-  );
-
-  /// Create a copy of SalesOrdersFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SalesOrdersFilterImplCopyWith<_$SalesOrdersFilterImpl> get copyWith =>
-      __$$SalesOrdersFilterImplCopyWithImpl<_$SalesOrdersFilterImpl>(
-        this,
-        _$identity,
-      );
 }
 
-abstract class _SalesOrdersFilter implements SalesOrdersFilter {
-  const factory _SalesOrdersFilter({
-    required final DateTime from,
-    required final DateTime to,
-    final SaleStatus? status,
-    final int? salesperson,
-    final int? facility,
-    final String search,
-    final int pageIndex,
-  }) = _$SalesOrdersFilterImpl;
 
-  @override
-  DateTime get from;
-  @override
-  DateTime get to;
-  @override
-  SaleStatus? get status;
-  @override
-  int? get salesperson;
-  @override
-  int? get facility;
-  @override
-  String get search;
-  @override
-  int get pageIndex;
-
-  /// Create a copy of SalesOrdersFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SalesOrdersFilterImplCopyWith<_$SalesOrdersFilterImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$SalesOrdersFilterCopyWith<$Res> implements $SalesOrdersFilterCopyWith<$Res> {
+  factory _$SalesOrdersFilterCopyWith(_SalesOrdersFilter value, $Res Function(_SalesOrdersFilter) _then) = __$SalesOrdersFilterCopyWithImpl;
+@override @useResult
+$Res call({
+ DateTime from, DateTime to, SaleStatus? status, int? salesperson, int? facility, String search, int pageIndex
+});
+
+
+
+
+}
+/// @nodoc
+class __$SalesOrdersFilterCopyWithImpl<$Res>
+    implements _$SalesOrdersFilterCopyWith<$Res> {
+  __$SalesOrdersFilterCopyWithImpl(this._self, this._then);
+
+  final _SalesOrdersFilter _self;
+  final $Res Function(_SalesOrdersFilter) _then;
+
+/// Create a copy of SalesOrdersFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? from = null,Object? to = null,Object? status = freezed,Object? salesperson = freezed,Object? facility = freezed,Object? search = null,Object? pageIndex = null,}) {
+  return _then(_SalesOrdersFilter(
+from: null == from ? _self.from : from // ignore: cast_nullable_to_non_nullable
+as DateTime,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
+as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as SaleStatus?,salesperson: freezed == salesperson ? _self.salesperson : salesperson // ignore: cast_nullable_to_non_nullable
+as int?,facility: freezed == facility ? _self.facility : facility // ignore: cast_nullable_to_non_nullable
+as int?,search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+// dart format on

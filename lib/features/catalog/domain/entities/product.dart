@@ -14,7 +14,7 @@ part 'product.freezed.dart';
 /// `core/` — research.md §4 explains why `Product` is a `catalog` shared
 /// kernel entity rather than a `core/access` one.
 @freezed
-class Product with _$Product {
+abstract class Product with _$Product {
   const factory Product({
     required int productId,
     required String code,

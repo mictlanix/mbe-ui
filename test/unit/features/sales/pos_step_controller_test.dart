@@ -8,7 +8,7 @@ void main() {
   late ProviderContainer container;
 
   setUp(() {
-    container = ProviderContainer();
+    container = ProviderContainer(retry: (_, _) => null, );
     addTearDown(container.dispose);
   });
 

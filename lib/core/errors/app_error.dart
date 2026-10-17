@@ -35,7 +35,7 @@ sealed class AppError with _$AppError {
 
 /// A single `loc`/`msg`/`type` entry from mbe-api's `ValidationError` schema.
 @freezed
-class FieldError with _$FieldError {
+abstract class FieldError with _$FieldError {
   const factory FieldError({
     required List<String> loc,
     required String msg,

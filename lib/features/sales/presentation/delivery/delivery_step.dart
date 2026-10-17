@@ -167,7 +167,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
     );
     final opened = widget.sale;
     final priorIds =
-        (ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
+        (ref.read(deliveryControllerProvider(widget.sale)).value ??
                 const <Destination>[])
             .map((d) => d.id)
             .toSet();
@@ -295,7 +295,7 @@ class _DeliveryStepState extends ConsumerState<DeliveryStep> {
   void _markJustCreated(Set<int> priorIds) {
     if (!mounted) return;
     final current =
-        ref.read(deliveryControllerProvider(widget.sale)).valueOrNull ??
+        ref.read(deliveryControllerProvider(widget.sale)).value ??
         const <Destination>[];
     final created = current.where((d) => !priorIds.contains(d.id));
     if (created.isNotEmpty) setState(() => _justCreatedId = created.first.id);

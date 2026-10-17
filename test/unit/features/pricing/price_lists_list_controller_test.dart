@@ -22,6 +22,7 @@ void main() {
   setUp(() {
     repository = MockPriceListRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [priceListRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

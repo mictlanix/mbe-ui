@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
-import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
@@ -55,6 +54,7 @@ void main() {
         privileges: [],
       );
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           dioProvider.overrideWithValue(dio),
           accessControlProvider.overrideWithValue(
@@ -73,10 +73,7 @@ void main() {
       final allChildren = await Future.wait([
         for (final facility in facilities.items)
           container.read(
-            facilityChildrenControllerProvider(
-              facility.facilityId,
-              facility.type,
-            ).future,
+            facilityChildrenControllerProvider(facility.facilityId).future,
           ),
       ]);
 
@@ -85,12 +82,6 @@ void main() {
         final children = allChildren[i];
 
         expect(children.facilityId, facility.facilityId);
-        // Fetch-by-type (research §2): a production site never has points of
-        // sale or cash drawers, by the domain invariant this feature codifies.
-        if (facility.type == FacilityType.productionSite) {
-          expect(children.pointsOfSale, isEmpty);
-          expect(children.cashDrawers, isEmpty);
-        }
         // Every point of sale nests under the facility named by its OWN
         // facilityId — the isCrossFacility check must not throw even when a
         // legacy record's warehouse belongs elsewhere (research §3).

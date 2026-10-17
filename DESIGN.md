@@ -419,9 +419,11 @@ either a full detail screen (its own route) or the shared responsive side
 panel opened over the entity's list screen
 (`core/widgets/record_sheet.dart`, `showRecordSheet`). Which surface an
 entity uses is a per-entity choice: a full detail screen for Products,
-Facilities, Taxpayer Issuers, Users, User Profiles, and any other entity
-with nested child collections; the shared panel for every other
-catalog/list entity — Labels, Suppliers, Employees, Customers, Taxpayer
+Facilities, Taxpayer Issuers, Users, User Profiles, Customers (moved from
+the panel 2026-10-17, specs/046-catalog-improvements: its addresses,
+contacts and taxpayer-recipient sections outgrew a side panel), and any
+other entity with nested child collections; the shared panel for every
+other catalog/list entity — Labels, Suppliers, Employees, Taxpayer
 Recipients, Expenses, Vehicles, Vehicle Operators, Warehouses, Points of
 Sale, Cash Drawers, Price Lists, Exchange Rates, and Payment Method
 Options. Both surfaces render the identical form via the same

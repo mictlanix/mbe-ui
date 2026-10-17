@@ -133,6 +133,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -251,6 +252,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),

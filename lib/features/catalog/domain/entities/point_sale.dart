@@ -10,7 +10,7 @@ part 'point_sale.freezed.dart';
 /// catalog's list and detail screens (data-model.md "Point of Sale"), mapped
 /// from `PointSaleResponse`.
 @freezed
-class PointSale with _$PointSale {
+abstract class PointSale with _$PointSale {
   const factory PointSale({
     required int pointSaleId,
     required int facilityId,

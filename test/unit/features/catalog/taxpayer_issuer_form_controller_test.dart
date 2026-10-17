@@ -43,6 +43,7 @@ ProviderContainer _containerFor(
   TaxpayerIssuerRepository repository,
 ) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
@@ -30,8 +29,13 @@ Future<List<ProductLookupResult>> productLookupController(
   if (trimmed.isEmpty) return const [];
   // Pricing is per customer and the customer is the sale's, so a lookup is
   // one of the actions that opens the sale when none is started yet.
+  // Watched before the await: riverpod 3 forbids `ref.watch` once this
+  // lookup is disposed, which a newer keystroke can do mid-request.
+  final repository = ref.watch(salesOrderRepositoryProvider);
   final sale = await ref.read(saleEditorProvider).ensureOpen();
-  return ref
-      .watch(salesOrderRepositoryProvider)
-      .productLookup(pattern: trimmed, customer: sale.customer, warehouse: warehouse);
+  return repository.productLookup(
+    pattern: trimmed,
+    customer: sale.customer,
+    warehouse: warehouse,
+  );
 }

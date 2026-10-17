@@ -90,7 +90,7 @@ void main() {
       tester,
       initialLocation: '/sales/orders/${order.id}',
       overrides: [
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: _updaterUser),
           ),
