@@ -66,17 +66,17 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 ### Tests for User Story 1
 
-- [ ] T007 [P] [US1] Extend `test/widget/features/sales/pos_sales_list_screen_test.dart`: with `stale`, tapping *New sale* re-reads the session and lands on `/sales/cash-sessions/<id>` with the redirect snackbar; with `none`, the button is disabled; with `open`, it opens `/sales/pos/new`; a session that turns stale between render and tap is caught by the re-read (C1)
-- [ ] T008 [P] [US1] Extend `test/widget/features/sales/pos_workspace_route_test.dart`: `/sales/pos/new` under `stale` redirects to the close screen and creates no sale; `/sales/pos/:saleId` under `stale` and `none` still renders the sale (C2)
-- [ ] T009 [P] [US1] Extend `test/widget/features/sales/pos_gate_screen_test.dart`: under `stale` the payment step shows `pos_session_blocked_banner` and `pos_session_blocked_action` (to the close screen), and under `none` the action goes to `/sales/cash-sessions` (C2)
+- [X] T007 [P] [US1] Extend `test/widget/features/sales/pos_sales_list_screen_test.dart`: with `stale`, tapping *New sale* re-reads the session and lands on `/sales/cash-sessions/<id>` with the redirect snackbar; with `none`, the button is disabled; with `open`, it opens `/sales/pos/new`; a session that turns stale between render and tap is caught by the re-read (C1)
+- [X] T008 [P] [US1] Extend `test/widget/features/sales/pos_workspace_route_test.dart`: `/sales/pos/new` under `stale` redirects to the close screen and creates no sale; `/sales/pos/:saleId` under `stale` and `none` still renders the sale (C2)
+- [X] T009 [P] [US1] Extend `test/widget/features/sales/pos_gate_screen_test.dart`: under `stale` the payment step shows `pos_session_blocked_banner` and `pos_session_blocked_action` (to the close screen), and under `none` the action goes to `/sales/cash-sessions` (C2)
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] In `lib/features/sales/presentation/pos_sales_list_screen.dart` (around lines 95-136 and 288-315): enable *New sale* for `open` and `stale`, keep it disabled for `none`. On tap, `await ref.refresh(currentSessionControllerProvider.future)`, then push `/sales/pos/new` for `open`, `go` to `/sales/cash-sessions/<cashSessionId>` plus the `posSessionExpiredRedirect` snackbar for `stale`, and the existing `none` message for `none` (C1, R1, R2)
-- [ ] T011 [US1] In `lib/features/sales/presentation/pos_workspace_screen.dart` (around lines 51-74 and 362): when the route is `/new` and the state is `stale`, replace the route with the close screen and show the same snackbar before any `ensureOpen` runs. Narrow the full-screen `PosGateScreen` swap at lines 52-56 to the `/new` route (`saleId == null`): under `none`, `/sales/pos/new` keeps the full-screen gate, but `/sales/pos/:saleId` renders the sale, with payments blocked by T012/T013 (FR-004, C2, R2)
-- [ ] T012 [US1] In `lib/features/sales/presentation/pos_gate_screen.dart`: replace `_StaleSessionBanner` with a blocking banner (`pos_session_blocked_banner`) and an action button (`pos_session_blocked_action`) that navigates to the stale session's close screen, or to `/sales/cash-sessions` for `none` (C2)
-- [ ] T013 [US1] In `lib/features/sales/presentation/payment/payment_step.dart` and `payment/payment_method_grid.dart`: show the blocking banner on the payment step and disable the method tiles while the session is not `open`, and show the `posPaymentSessionInvalid` message when `PaymentDraft.error` is `sessionInvalid` (set by T014) (C2, C6). *Coordinate with T034, which changes the same tiles; do this task first.*
-- [ ] T014 [US1] In `lib/features/sales/presentation/payment/payment_controller.dart`: before creating a payment, re-read the session with `ref.refresh(currentSessionControllerProvider.future)`. When it is not `open`, set `PaymentDraft.error` to a new `sessionInvalid` value and return without any API call (FR-005, R1). This is the guard for a session that expires or is closed after the screen was rendered. Cover it in a new `payment_controller_test` case in `test/unit/features/sales/payment_controller_test.dart`
+- [X] T010 [US1] In `lib/features/sales/presentation/pos_sales_list_screen.dart` (around lines 95-136 and 288-315): enable *New sale* for `open` and `stale`, keep it disabled for `none`. On tap, `await ref.refresh(currentSessionControllerProvider.future)`, then push `/sales/pos/new` for `open`, `go` to `/sales/cash-sessions/<cashSessionId>` plus the `posSessionExpiredRedirect` snackbar for `stale`, and the existing `none` message for `none` (C1, R1, R2)
+- [X] T011 [US1] In `lib/features/sales/presentation/pos_workspace_screen.dart` (around lines 51-74 and 362): when the route is `/new` and the state is `stale`, replace the route with the close screen and show the same snackbar before any `ensureOpen` runs. Narrow the full-screen `PosGateScreen` swap at lines 52-56 to the `/new` route (`saleId == null`): under `none`, `/sales/pos/new` keeps the full-screen gate, but `/sales/pos/:saleId` renders the sale, with payments blocked by T012/T013 (FR-004, C2, R2)
+- [X] T012 [US1] In `lib/features/sales/presentation/pos_gate_screen.dart`: replace `_StaleSessionBanner` with a blocking banner (`pos_session_blocked_banner`) and an action button (`pos_session_blocked_action`) that navigates to the stale session's close screen, or to `/sales/cash-sessions` for `none` (C2)
+- [X] T013 [US1] In `lib/features/sales/presentation/payment/payment_step.dart` and `payment/payment_method_grid.dart`: show the blocking banner on the payment step and disable the method tiles while the session is not `open`, and show the `posPaymentSessionInvalid` message when `PaymentDraft.error` is `sessionInvalid` (set by T014) (C2, C6). *Coordinate with T034, which changes the same tiles; do this task first.*
+- [X] T014 [US1] In `lib/features/sales/presentation/payment/payment_controller.dart`: before creating a payment, re-read the session with `ref.refresh(currentSessionControllerProvider.future)`. When it is not `open`, set `PaymentDraft.error` to a new `sessionInvalid` value and return without any API call (FR-005, R1). This is the guard for a session that expires or is closed after the screen was rendered. Cover it in a new `payment_controller_test` case in `test/unit/features/sales/payment_controller_test.dart`
 
 **Checkpoint**: Story 1 works on its own. It is the first deliverable together with US2.
 
@@ -90,13 +90,13 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Create `test/unit/core/navigation/list_query_test.dart`: `currentRouteUri` returns the pushed route's URI when the top match is an `ImperativeRouteMatch`, and `currentConfiguration.uri` otherwise (C3)
-- [ ] T016 [P] [US2] Extend `test/widget/features/sales/advanced_search_screen_test.dart`: using the existing `/host` plus `router.push` variant (around line 158), select three labels one after the other, toggle *stockable*, and assert all three still show as selected, the term is kept, and `ProductFilter` sent all three (SC-003). Also deselect one label and assert only that one is removed. This test must **fail before T017**
+- [X] T015 [P] [US2] Create `test/unit/core/navigation/list_query_test.dart`: `currentRouteUri` returns the pushed route's URI when the top match is an `ImperativeRouteMatch`, and `currentConfiguration.uri` otherwise (C3)
+- [X] T016 [P] [US2] Extend `test/widget/features/sales/advanced_search_screen_test.dart`: using the existing `/host` plus `router.push` variant (around line 158), select three labels one after the other, toggle *stockable*, and assert all three still show as selected, the term is kept, and `ProductFilter` sent all three (SC-003). Also deselect one label and assert only that one is removed. This test must **fail before T017**
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] In `lib/core/navigation/list_query.dart` (lines 150-165): add `Uri currentRouteUri(GoRouter router)` that returns the top-most match's URI (an `ImperativeRouteMatch`'s own `matches.uri`, else `currentConfiguration.uri`), and make `CurrentListQueryBuilder` use it (C3, R3)
-- [ ] T018 [US2] Run the other 14 `CurrentListQueryBuilder` screens' tests (the list-screen widget tests under `test/widget/features/`) to confirm no `go`-reached screen changed behavior. If the `ImperativeRouteMatch` lookup proves fragile, fall back to passing `widget.query` into the panel in `sales/presentation/capture/advanced_search_screen.dart:137-142` (research R3, alternatives)
+- [X] T017 [US2] In `lib/core/navigation/list_query.dart` (lines 150-165): add `Uri currentRouteUri(GoRouter router)` that returns the top-most match's URI (an `ImperativeRouteMatch`'s own `matches.uri`, else `currentConfiguration.uri`), and make `CurrentListQueryBuilder` use it (C3, R3)
+- [X] T018 [US2] Run the other 14 `CurrentListQueryBuilder` screens' tests (the list-screen widget tests under `test/widget/features/`) to confirm no `go`-reached screen changed behavior. If the `ImperativeRouteMatch` lookup proves fragile, fall back to passing `widget.query` into the panel in `sales/presentation/capture/advanced_search_screen.dart:137-142` (research R3, alternatives)
 
 **Checkpoint**: Stories 1 and 2 are both done and can ship as the P1 release.
 
@@ -110,7 +110,7 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 ### Tests for User Story 3
 
-- [ ] T019 [P] [US3] Create `test/unit/features/sales/stock_gate_test.dart` for `evaluateStock`:
+- [X] T019 [P] [US3] Create `test/unit/features/sales/stock_gate_test.dart` for `evaluateStock`:
   - a single short line, and an exact fit (not short);
   - two lines of the same product and warehouse that are short together;
   - the same product in two warehouses, each judged separately;
@@ -118,14 +118,14 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
   - a product with no cache entry goes into `unknownLineIds` and does not block;
   - a non-draft sale never blocks;
   - there is no override input (data-model, Stock gate)
-- [ ] T020 [P] [US3] Create `test/widget/features/sales/capture_step_gate_test.dart`: *Continue* is disabled with `capture_continue_blocked_reason` while a line is short, becomes enabled after lowering the quantity or switching warehouse, and is enabled when stock is unknown. A resumed sale's stock is loaded, so the gate still blocks (FR-008, FR-010)
+- [X] T020 [P] [US3] Create `test/widget/features/sales/capture_step_gate_test.dart`: *Continue* is disabled with `capture_continue_blocked_reason` while a line is short, becomes enabled after lowering the quantity or switching warehouse, and is enabled when stock is unknown. A resumed sale's stock is loaded, so the gate still blocks (FR-008, FR-010)
 
 ### Implementation for User Story 3
 
-- [ ] T021 [P] [US3] Create `lib/features/sales/presentation/capture/stock_gate.dart` with `StockGate` (`shortLineIds`, `unknownLineIds`, `blocks`) and `StockGate evaluateStock(Sale sale, Map<int, ProductStock> cache)`, implemented per the data-model rules and R5
-- [ ] T022 [US3] Add `ensureStockFor(Sale sale)` to the stock cache notifier in `capture/product_stock_cache.dart`: for each distinct product on the sale without a cache entry, call `productLookup(pattern: line.productCode, customer: sale.customer)` concurrently, keep the row whose `product` matches, and leave a failed or missing product uncached (R4, Q1). Add a code comment noting that this per-code lookup is a stopgap until mbe-api#237 (batch lookup by ids) ships. Seed the new `ProductStock` fields from the lookup in `_addLine` (`capture/capture_step.dart:148-152`)
-- [ ] T023 [US3] In `capture/capture_step.dart`: call `ensureStockFor` when the step opens for a sale (including a resumed one, not only on `_addLine`), watch the cache, and compute `evaluateStock`. Set `SaleTotalsBar.onContinue` to `null` while `gate.blocks` (around lines 438-444), and show `capture_continue_blocked_reason` with `posCaptureShortLines(count)` (C4)
-- [ ] T024 [US3] In `capture/sale_line_editing.dart`: make the per-line short indicator and `shortfall()` agree with `evaluateStock` (so a line is marked short exactly when it blocks), keeping the existing "unknown" flag for `unknownLineIds` (C4). Do not cap the quantity field (the note at lines 52-56 stays)
+- [X] T021 [P] [US3] Create `lib/features/sales/presentation/capture/stock_gate.dart` with `StockGate` (`shortLineIds`, `unknownLineIds`, `blocks`) and `StockGate evaluateStock(Sale sale, Map<int, ProductStock> cache)`, implemented per the data-model rules and R5
+- [X] T022 [US3] Add `ensureStockFor(Sale sale)` to the stock cache notifier in `capture/product_stock_cache.dart`: for each distinct product on the sale without a cache entry, call `productLookup(pattern: line.productCode, customer: sale.customer)` concurrently, keep the row whose `product` matches, and leave a failed or missing product uncached (R4, Q1). Add a code comment noting that this per-code lookup is a stopgap until mbe-api#237 (batch lookup by ids) ships. Seed the new `ProductStock` fields from the lookup in `_addLine` (`capture/capture_step.dart:148-152`)
+- [X] T023 [US3] In `capture/capture_step.dart`: call `ensureStockFor` when the step opens for a sale (including a resumed one, not only on `_addLine`), watch the cache, and compute `evaluateStock`. Set `SaleTotalsBar.onContinue` to `null` while `gate.blocks` (around lines 438-444), and show `capture_continue_blocked_reason` with `posCaptureShortLines(count)` (C4)
+- [X] T024 [US3] In `capture/sale_line_editing.dart`: make the per-line short indicator and `shortfall()` agree with `evaluateStock` (so a line is marked short exactly when it blocks), keeping the existing "unknown" flag for `unknownLineIds` (C4). Do not cap the quantity field (the note at lines 52-56 stays)
 
 **Checkpoint**: Story 3 works with the existing dropdown. Stories 1–3 are independent of US4–US6.
 
@@ -139,14 +139,14 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 ### Tests for User Story 4
 
-- [ ] T025 [P] [US4] Create `test/widget/features/sales/warehouse_picker_dialog_test.dart`: rows show the full name, stock (or "unknown") and the short/no-stock indicator for the given quantity; the current warehouse shows `Icons.check`; picking returns the id; cancel returns `null`; at a 390 px surface there is no horizontal scroll (`expectNoHorizontalScroll` from the harness) (C5)
-- [ ] T026 [P] [US4] Extend `test/widget/features/sales/sale_line_row_test.dart` and `test/widget/features/sales/sale_line_symmetry_test.dart`: tapping `sale_line_warehouse_<lineId>` opens `warehouse_picker_dialog`, picking a row updates the line, the field does nothing on a non-editable sale, and the line band's measured height and baseline are unchanged (§VI)
+- [X] T025 [P] [US4] Create `test/widget/features/sales/warehouse_picker_dialog_test.dart`: rows show the full name, stock (or "unknown") and the short/no-stock indicator for the given quantity; the current warehouse shows `Icons.check`; picking returns the id; cancel returns `null`; at a 390 px surface there is no horizontal scroll (`expectNoHorizontalScroll` from the harness) (C5)
+- [X] T026 [P] [US4] Extend `test/widget/features/sales/sale_line_row_test.dart` and `test/widget/features/sales/sale_line_symmetry_test.dart`: tapping `sale_line_warehouse_<lineId>` opens `warehouse_picker_dialog`, picking a row updates the line, the field does nothing on a non-editable sale, and the line band's measured height and baseline are unchanged (§VI)
 
 ### Implementation for User Story 4
 
-- [ ] T027 [P] [US4] Create `lib/features/sales/presentation/capture/warehouse_picker_dialog.dart` with `Future<int?> showWarehousePicker(BuildContext, {required List<Warehouse> warehouses, required int? selected, required ProductStock? stock, required Decimal quantity})`: an `AlertDialog` built like `showCustomerAddressPicker` (width cap 480, list height cap 320, 16 px inset on compact), rows keyed `warehouse_option_<id>`, dialog keyed `warehouse_picker_dialog` (R6, C5)
-- [ ] T028 [US4] Replace `warehousePicker()` in `capture/sale_line_editing.dart:337-391` (and the stock-flag helpers at 405-445 as needed) with an `InputDecorator`-styled tap field keyed `sale_line_warehouse_<lineId>` that shows the name (ellipsized), a fixed-size warning icon plus error border when the line is short or a help icon when its stock is unknown (no stock text: the R11 row-height invariant), and a trailing arrow, and opens `showWarehousePicker`. Match the approved mockup (canvas "POS Warehouse Selector"). Ignore a `null` result or the current id. Make it inert when the line is not editable. Keep the field inside the existing `saleLineRowHeight` band
-- [ ] T029 [US4] Update the wiring in `capture/sale_line_row.dart:233-236` (and the single-row and two-row bands) and `capture/sale_line_card.dart:198` for the new field. Then run `flutter test test/widget/features/sales/sale_line_symmetry_test.dart` and the compact tests to confirm alignment and no overflow at the largest text size (§V, §VI)
+- [X] T027 [P] [US4] Create `lib/features/sales/presentation/capture/warehouse_picker_dialog.dart` with `Future<int?> showWarehousePicker(BuildContext, {required List<Warehouse> warehouses, required int? selected, required ProductStock? stock, required Decimal quantity})`: an `AlertDialog` built like `showCustomerAddressPicker` (width cap 480, list height cap 320, 16 px inset on compact), rows keyed `warehouse_option_<id>`, dialog keyed `warehouse_picker_dialog` (R6, C5)
+- [X] T028 [US4] Replace `warehousePicker()` in `capture/sale_line_editing.dart:337-391` (and the stock-flag helpers at 405-445 as needed) with an `InputDecorator`-styled tap field keyed `sale_line_warehouse_<lineId>` that shows the name (ellipsized), a fixed-size warning icon plus error border when the line is short or a help icon when its stock is unknown (no stock text: the R11 row-height invariant), and a trailing arrow, and opens `showWarehousePicker`. Match the approved mockup (canvas "POS Warehouse Selector"). Ignore a `null` result or the current id. Make it inert when the line is not editable. Keep the field inside the existing `saleLineRowHeight` band
+- [X] T029 [US4] Update the wiring in `capture/sale_line_row.dart:233-236` (and the single-row and two-row bands) and `capture/sale_line_card.dart:198` for the new field. Then run `flutter test test/widget/features/sales/sale_line_symmetry_test.dart` and the compact tests to confirm alignment and no overflow at the largest text size (§V, §VI)
 
 **Checkpoint**: Stories 3 and 4 together give the full stock workflow (see a short line, open the pop-up, fix it).
 
@@ -160,22 +160,22 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 ### Tests for User Story 5
 
-- [ ] T030 [P] [US5] Extend `test/unit/features/sales/payment_controller_test.dart` for `tender`:
+- [X] T030 [P] [US5] Extend `test/unit/features/sales/payment_controller_test.dart` for `tender`:
   - applies at once for a method without a reference;
   - ignores a second tap while `submitting`;
   - rejects an empty or zero amount with `amountRequired` and makes no API call;
   - for `requiresReference`, applies nothing until a reference is supplied and nothing on cancel;
   - after success the amount is the new balance (pre-fill), and the method is not kept selected;
   - on an `AppError` the draft keeps its amount and sets `error`
-- [ ] T031 [P] [US5] Update `test/widget/features/sales/payment_step_gate_test.dart`, `payment_step_layout_test.dart`, `payment_capture_pane_reflow_test.dart`, `payment_method_grid_test.dart` and `pos_compact_layout_test.dart` (lines 227-290): there is no `payment_submit_button`, tapping a tile applies the payment, the amount field is pre-filled with the balance, and the reference dialog (`payment_reference_dialog`, `payment_reference_input`, `payment_reference_confirm`) appears for a reference method. Compact (390 px) shows no horizontal scroll
+- [X] T031 [P] [US5] Update `test/widget/features/sales/payment_step_gate_test.dart`, `payment_step_layout_test.dart`, `payment_capture_pane_reflow_test.dart`, `payment_method_grid_test.dart` and `pos_compact_layout_test.dart` (lines 227-290): there is no `payment_submit_button`, tapping a tile applies the payment, the amount field is pre-filled with the balance, and the reference dialog (`payment_reference_dialog`, `payment_reference_input`, `payment_reference_confirm`) appears for a reference method. Compact (390 px) shows no horizontal scroll
 
 ### Implementation for User Story 5
 
-- [ ] T032 [US5] In `sales/presentation/payment/payment_controller.dart`: add `tender(Sale sale, PaymentMethodOption option)`. It ignores the tap while `submitting`, validates the amount (`amountRequired`), re-checks the session (T014), and, for `requiresReference`, returns a request so the UI collects the reference before the existing submit pipeline runs (confirm draft → create → apply → refresh). After success, set the amount to the new remaining balance instead of `''`. Remove the persistent method selection (`methodCode`, `paymentCharge`, `requiresReference` live only for one call) (R7, data-model). Pre-fill the amount with the balance when the step opens (FR-016)
-- [ ] T033 [P] [US5] Create `payment/payment_reference_dialog.dart`: a small dialog with one field (`payment_reference_input`), confirm (`payment_reference_confirm`) and cancel, returning the reference or `null` (C6)
-- [ ] T034 [US5] In `payment/payment_method_grid.dart` (lines 38-88): make each tile's `onTap` call `tender`, show the reference dialog when asked, drop the "selected" visual state, and disable tiles while `submitting` or while the session is invalid (C6). This includes the fallback cash/credit/debit/eft tiles at lines 58-72
-- [ ] T035 [US5] In `payment/payment_capture_pane.dart`: remove `payment_submit_button` (lines 161-171) and the inline `payment_reference_field` (151-159); seed the amount field from the pre-filled draft amount (lines 40-49 and 92-94) (C6)
-- [ ] T036 [US5] Run the payment and compact tests from T031 and fix layout fallout. Confirm the number pad and quick chips (`Restante`, notes, half) still work and reflow correctly at 390 px
+- [X] T032 [US5] In `sales/presentation/payment/payment_controller.dart`: add `tender(Sale sale, PaymentMethodOption option)`. It ignores the tap while `submitting`, validates the amount (`amountRequired`), re-checks the session (T014), and, for `requiresReference`, returns a request so the UI collects the reference before the existing submit pipeline runs (confirm draft → create → apply → refresh). After success, set the amount to the new remaining balance instead of `''`. Remove the persistent method selection (`methodCode`, `paymentCharge`, `requiresReference` live only for one call) (R7, data-model). Pre-fill the amount with the balance when the step opens (FR-016)
+- [X] T033 [P] [US5] Create `payment/payment_reference_dialog.dart`: a small dialog with one field (`payment_reference_input`), confirm (`payment_reference_confirm`) and cancel, returning the reference or `null` (C6)
+- [X] T034 [US5] In `payment/payment_method_grid.dart` (lines 38-88): make each tile's `onTap` call `tender`, show the reference dialog when asked, drop the "selected" visual state, and disable tiles while `submitting` or while the session is invalid (C6). This includes the fallback cash/credit/debit/eft tiles at lines 58-72
+- [X] T035 [US5] In `payment/payment_capture_pane.dart`: remove `payment_submit_button` (lines 161-171) and the inline `payment_reference_field` (151-159); seed the amount field from the pre-filled draft amount (lines 40-49 and 92-94) (C6)
+- [X] T036 [US5] Run the payment and compact tests from T031 and fix layout fallout. Confirm the number pad and quick chips (`Restante`, notes, half) still work and reflow correctly at 390 px
 
 **Checkpoint**: Story 5 works. It builds on T014 for the session guard.
 
@@ -191,18 +191,18 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 ### Tests for User Story 6
 
-- [ ] T037 [P] [US6] Extend `test/unit/features/sales/payment_controller_test.dart`:
+- [X] T037 [P] [US6] Extend `test/unit/features/sales/payment_controller_test.dart`:
   - a cash overpayment applies only the balance, sends `amountChange`, and sets `lastChange`;
   - a non-cash overpayment is refused with `overpayNonCash` and makes no API call;
   - a cash payment at or below the balance leaves `lastChange` null;
   - `lastChange` is cleared by the next `tender`
-- [ ] T038 [P] [US6] Create `test/widget/features/sales/payment_change_card_test.dart`: `payment_change_card` shows the amount from `formattersProvider` after a cash overpayment and stays until `payment_change_dismiss` is tapped, and the summary's live "Cambio" row still previews while typing. Extend `payment_summary_panel_test.dart` if its layout changes
+- [X] T038 [P] [US6] Create `test/widget/features/sales/payment_change_card_test.dart`: `payment_change_card` shows the amount from `formattersProvider` after a cash overpayment and stays until `payment_change_dismiss` is tapped, and the summary's live "Cambio" row still previews while typing. Extend `payment_summary_panel_test.dart` if its layout changes
 
 ### Implementation for User Story 6
 
-- [ ] T039 [US6] In `payment/payment_controller.dart`: add `lastChange` to `PaymentDraft`. In `tender`, refuse a non-cash method whose amount exceeds the balance with `overpayNonCash` before any API call (cash is identified by `PaymentMethod.cash`). After a cash payment with change > 0, set `lastChange`; clear it on dismiss, on the next `tender`, and when the step is left (R8, data-model)
-- [ ] T040 [P] [US6] Create `payment/payment_change_card.dart`: a card keyed `payment_change_card` with the `posPaymentChangeDue` label, the amount in a large display style via `formattersProvider` (no `NumberFormat` or `toStringAsFixed`, §V), and a dismiss button `payment_change_dismiss` (C7)
-- [ ] T041 [US6] In `payment/payment_step.dart` (and `payment_summary_panel.dart` if needed): render the change card above the summary while `lastChange != null`, show the `posPaymentOverpayNonCash` and `posPaymentAmountRequired` errors, and keep the summary's live "Cambio" row as the preview (C7, FR-020)
+- [X] T039 [US6] In `payment/payment_controller.dart`: add `lastChange` to `PaymentDraft`. In `tender`, refuse a non-cash method whose amount exceeds the balance with `overpayNonCash` before any API call (cash is identified by `PaymentMethod.cash`). After a cash payment with change > 0, set `lastChange`; clear it on dismiss, on the next `tender`, and when the step is left (R8, data-model)
+- [X] T040 [P] [US6] Create `payment/payment_change_card.dart`: a card keyed `payment_change_card` with the `posPaymentChangeDue` label, the amount in a large display style via `formattersProvider` (no `NumberFormat` or `toStringAsFixed`, §V), and a dismiss button `payment_change_dismiss` (C7)
+- [X] T041 [US6] In `payment/payment_step.dart` (and `payment_summary_panel.dart` if needed): render the change card above the summary while `lastChange != null`, show the `posPaymentOverpayNonCash` and `posPaymentAmountRequired` errors, and keep the summary's live "Cambio" row as the preview (C7, FR-020)
 
 **Checkpoint**: All six stories work.
 
@@ -212,10 +212,10 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 
 **Purpose**: Regressions, goldens and end-to-end checks across stories.
 
-- [ ] T042 [P] Update the POS integration tests that go through the payment step so they tap a method instead of pressing apply: `test/integration/pos_counter_sale_flow_test.dart`, `pos_delivery_split_flow_test.dart`, `pos_resume_flow_test.dart`
-- [ ] T043 Regenerate the POS goldens and screenshots (`test/golden/pos_capture_golden_test.dart`, `test/screenshots/pos_screens_screenshot_test.dart`) with `--update-goldens`, review every diff, and delete stale failure images only after reviewing them
-- [ ] T044 [P] Verify the largest text-size level and the 390 px compact surface for the capture and payment steps (§V, §VI): no clipping or horizontal scroll
-- [ ] T045 [P] Run `flutter test test/unit/core/formatting_guard_test.dart` to confirm the change card and any new amount displays use `formattersProvider`
+- [X] T042 [P] Update the POS integration tests that go through the payment step so they tap a method instead of pressing apply: `test/integration/pos_counter_sale_flow_test.dart`, `pos_delivery_split_flow_test.dart`, `pos_resume_flow_test.dart`
+- [X] T043 Regenerate the POS goldens and screenshots (`test/golden/pos_capture_golden_test.dart`, `test/screenshots/pos_screens_screenshot_test.dart`) with `--update-goldens`, review every diff, and delete stale failure images only after reviewing them
+- [X] T044 [P] Verify the largest text-size level and the 390 px compact surface for the capture and payment steps (§V, §VI): no clipping or horizontal scroll
+- [X] T045 [P] Run `flutter test test/unit/core/formatting_guard_test.dart` to confirm the change card and any new amount displays use `formattersProvider`
 - [ ] T046 Run `flutter analyze` and the full test suite, then walk through every scenario in [quickstart.md](./quickstart.md) against a live mbe-api, including checking the session's cash cut after scenario 9. Also resume a sale holding a product whose `code` is 13 digits, and confirm its stock loads and the gate applies (the mbe-api#208 fallback)
 - [ ] T047 Update `specs/047-pos-sales-fixes/spec.md` status to Implemented when everything passes
 

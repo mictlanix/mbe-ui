@@ -143,8 +143,13 @@ class PaymentStep extends ConsumerWidget {
                 // than a divider between two list items.
                 Divider(height: 1, color: theme.colorScheme.outlineVariant),
                 SizedBox(height: spacing.sm),
-                Expanded(child: appliedPayments),
-                ?changeCard,
+                // The change card scrolls with the applied payments instead of
+                // sitting beside the summary as a fixed band: at the largest
+                // text size a fixed card overflowed the rail at 800 px tall
+                // (spec 047 T044). It still lands right above the summary.
+                Expanded(
+                  child: ListView(children: [appliedPayments, ?changeCard]),
+                ),
                 summary,
               ],
             ),
